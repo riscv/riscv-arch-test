@@ -11,7 +11,7 @@ from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
 
 cfls_config = InstructionTypeConfig(
-    required_params={"fd", "immval", "temp_reg", "temp_val"},
+    required_params={"fd", "immval", "temp_fval"},
     reg_range=range(32),  # f0 is a valid float destination
     imm_bits=9,  # c.ldsp: [0, 504] in multiples of 8, c.lwsp: [0, 252] in multiples of 4
     imm_signed=False,
@@ -23,7 +23,7 @@ def format_cfls_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
     """Format CFLS-type stack-pointer-based loads instruction."""
-    assert params.temp_reg is not None and params.temp_val is not None
+    assert params.temp_fval is not None
     assert params.fd is not None and params.immval is not None
 
     # Determine alignment requirement and max value: c.ldsp needs 8-byte, c.lwsp needs 4-byte
@@ -43,7 +43,7 @@ def format_cfls_type(
 
     # Add value to load data region
     assert test_data.test_chunk is not None
-    test_data.test_chunk.data_values.append(params.temp_val)
+    test_data.test_chunk.data_values.append(params.temp_fval)
 
     setup: list[str] = ["fsflagsi 0b00000 # clear all fflags"]
     # sp (x2) is used as the base pointer for CFLS instructions
@@ -59,7 +59,7 @@ def format_cfls_type(
         ]
     )
     test = [
-        f"{instr_name} f{params.fd}, {params.immval}(sp) # perform load ({to_hex(params.temp_val, test_data.xlen)})",
+        f"{instr_name} f{params.fd}, {params.immval}(sp) # perform load ({to_hex(params.temp_fval, test_data.flen)})",
     ]
     check = [
         write_sigupd(params.fd, test_data, "float"),

@@ -11,7 +11,7 @@ from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
 
 cils_config = InstructionTypeConfig(
-    required_params={"rd", "immval", "temp_reg", "temp_val"},
+    required_params={"rd", "immval", "temp_val"},
     reg_range=range(1, 32),  # rd cannot be x0
     imm_bits=9,  # c.ldsp: [0, 504] in multiples of 8, c.lwsp: [0, 252] in multiples of 4
     imm_signed=False,
@@ -23,7 +23,7 @@ def format_cils_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
     """Format CILS-type stack-pointer-based loads instruction."""
-    assert params.temp_reg is not None and params.temp_val is not None
+    assert params.temp_val is not None
     assert params.rd is not None and params.immval is not None
 
     # Determine alignment requirement and max value: c.ldsp needs 8-byte, c.lwsp needs 4-byte

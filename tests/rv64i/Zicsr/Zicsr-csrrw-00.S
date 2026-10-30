@@ -16,10 +16,10 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 234
+#define SIGUPD_COUNT 238
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
-
+#define RVTEST_USES_TEST_CSR
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -2537,6 +2537,68 @@ Zicsr_csrrw_cg_cp_rs1_edges_0x100000001:
   # Check if x1 contains the expected result. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x12, x5, x4, x1, Zicsr_csrrw_cg_cp_rs1_edges_0x100000001, Zicsr_csrrw_cg_cp_rs1_edges_0x100000001_str)
 
+# Testcase cp_rs1_edges (Test source rs1 value = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x30, x18) # load rs1: x18 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x30, x13) # load temp reg: x13 = 0xcdd0a5f43ff68a87
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#ifdef RVTEST_READ_ONLY_TEST_CSR
+  li x0, 0x42 # avoid write to read-only CSR, or inconsistent result with rs1 or rd = 0
+#else
+  csrrw x0, RVTEST_TEST_CSR, x13
+#endif
+
+Zicsr_csrrw_cg_cp_rs1_edges_0x80000000:
+// perform operation
+#ifdef RVTEST_READ_ONLY_TEST_CSR
+  li x17, 0x42 # avoid write to read-only CSR, or inconsistent result with rs1 or rd = 0
+#else
+  csrrw x17, RVTEST_TEST_CSR, x18
+#endif
+
+  # Check if x17 contains the expected result. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x12, x5, x4, x17, Zicsr_csrrw_cg_cp_rs1_edges_0x80000000, Zicsr_csrrw_cg_cp_rs1_edges_0x80000000_str)
+// read back CSR to check updated value
+#ifdef RVTEST_READ_ONLY_TEST_CSR
+  li x13, 0x42 # avoid write to read-only CSR, or inconsistent result with rs1 or rd = 0
+#else
+  csrrs x13, RVTEST_TEST_CSR, x0
+#endif
+
+  # Check if x13 contains the expected result. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x12, x5, x4, x13, Zicsr_csrrw_cg_cp_rs1_edges_0x80000000, Zicsr_csrrw_cg_cp_rs1_edges_0x80000000_str)
+
+# Testcase cp_rs1_edges (Test source rs1 value = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x30, x27) # load rs1: x27 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x30, x13) # load temp reg: x13 = 0x09707b668c8f9d92
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#ifdef RVTEST_READ_ONLY_TEST_CSR
+  li x0, 0x42 # avoid write to read-only CSR, or inconsistent result with rs1 or rd = 0
+#else
+  csrrw x0, RVTEST_TEST_CSR, x13
+#endif
+
+Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffff:
+// perform operation
+#ifdef RVTEST_READ_ONLY_TEST_CSR
+  li x26, 0x42 # avoid write to read-only CSR, or inconsistent result with rs1 or rd = 0
+#else
+  csrrw x26, RVTEST_TEST_CSR, x27
+#endif
+
+  # Check if x26 contains the expected result. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x12, x5, x4, x26, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffff, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffff_str)
+// read back CSR to check updated value
+#ifdef RVTEST_READ_ONLY_TEST_CSR
+  li x13, 0x42 # avoid write to read-only CSR, or inconsistent result with rs1 or rd = 0
+#else
+  csrrs x13, RVTEST_TEST_CSR, x0
+#endif
+
+  # Check if x13 contains the expected result. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x12, x5, x4, x13, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffff, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffff_str)
+
 /////////////////////////////////
 // cmp_rd_rs1
 /////////////////////////////////
@@ -3710,6 +3772,10 @@ RVTEST_DATA_BEGIN
 .dword 0x630c7d5eabe9ab28
 .dword 0x0000000100000001
 .dword 0xce9c8e61b3de1c56
+.dword 0x0000000080000000
+.dword 0xcdd0a5f43ff68a87
+.dword 0x000000007fffffff
+.dword 0x09707b668c8f9d92
 .dword 0x260fdf4f1010b257
 .dword 0xa86be39e3866e9f4
 .dword 0x0d58d9448aceba3f
@@ -3856,38 +3922,40 @@ Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff_str: .string "\"test: 77; cg: Zicsr_csrrw
 Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe_str: .string "\"test: 78; cg: Zicsr_csrrw_cg; cp: cp_rs1_edges; bin: 0xfffffffe\""
 Zicsr_csrrw_cg_cp_rs1_edges_0x100000000_str: .string "\"test: 79; cg: Zicsr_csrrw_cg; cp: cp_rs1_edges; bin: 0x100000000\""
 Zicsr_csrrw_cg_cp_rs1_edges_0x100000001_str: .string "\"test: 80; cg: Zicsr_csrrw_cg; cp: cp_rs1_edges; bin: 0x100000001\""
-Zicsr_csrrw_cg_cmp_rd_rs1_b0_str: .string "\"test: 81; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b0\""
-Zicsr_csrrw_cg_cmp_rd_rs1_b1_str: .string "\"test: 82; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b1\""
-Zicsr_csrrw_cg_cmp_rd_rs1_b2_str: .string "\"test: 83; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b2\""
-Zicsr_csrrw_cg_cmp_rd_rs1_b3_str: .string "\"test: 84; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b3\""
-Zicsr_csrrw_cg_cmp_rd_rs1_b4_str: .string "\"test: 85; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b4\""
-Zicsr_csrrw_cg_cmp_rd_rs1_b5_str: .string "\"test: 86; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b5\""
-Zicsr_csrrw_cg_cmp_rd_rs1_b6_str: .string "\"test: 87; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b6\""
-Zicsr_csrrw_cg_cmp_rd_rs1_b7_str: .string "\"test: 88; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b7\""
-Zicsr_csrrw_cg_cmp_rd_rs1_b8_str: .string "\"test: 89; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b8\""
-Zicsr_csrrw_cg_cmp_rd_rs1_b9_str: .string "\"test: 90; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b9\""
-Zicsr_csrrw_cg_cmp_rd_rs1_b10_str: .string "\"test: 91; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b10\""
-Zicsr_csrrw_cg_cmp_rd_rs1_b11_str: .string "\"test: 92; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b11\""
-Zicsr_csrrw_cg_cmp_rd_rs1_b12_str: .string "\"test: 93; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b12\""
-Zicsr_csrrw_cg_cmp_rd_rs1_b13_str: .string "\"test: 94; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b13\""
-Zicsr_csrrw_cg_cmp_rd_rs1_b14_str: .string "\"test: 95; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b14\""
-Zicsr_csrrw_cg_cmp_rd_rs1_b15_str: .string "\"test: 96; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b15\""
-Zicsr_csrrw_cg_cmp_rd_rs1_b16_str: .string "\"test: 97; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b16\""
-Zicsr_csrrw_cg_cmp_rd_rs1_b17_str: .string "\"test: 98; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b17\""
-Zicsr_csrrw_cg_cmp_rd_rs1_b18_str: .string "\"test: 99; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b18\""
-Zicsr_csrrw_cg_cmp_rd_rs1_b19_str: .string "\"test: 100; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b19\""
-Zicsr_csrrw_cg_cmp_rd_rs1_b20_str: .string "\"test: 101; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b20\""
-Zicsr_csrrw_cg_cmp_rd_rs1_b21_str: .string "\"test: 102; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b21\""
-Zicsr_csrrw_cg_cmp_rd_rs1_b22_str: .string "\"test: 103; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b22\""
-Zicsr_csrrw_cg_cmp_rd_rs1_b23_str: .string "\"test: 104; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b23\""
-Zicsr_csrrw_cg_cmp_rd_rs1_b24_str: .string "\"test: 105; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b24\""
-Zicsr_csrrw_cg_cmp_rd_rs1_b25_str: .string "\"test: 106; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b25\""
-Zicsr_csrrw_cg_cmp_rd_rs1_b26_str: .string "\"test: 107; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b26\""
-Zicsr_csrrw_cg_cmp_rd_rs1_b27_str: .string "\"test: 108; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b27\""
-Zicsr_csrrw_cg_cmp_rd_rs1_b28_str: .string "\"test: 109; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b28\""
-Zicsr_csrrw_cg_cmp_rd_rs1_b29_str: .string "\"test: 110; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b29\""
-Zicsr_csrrw_cg_cmp_rd_rs1_b30_str: .string "\"test: 111; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b30\""
-Zicsr_csrrw_cg_cmp_rd_rs1_b31_str: .string "\"test: 112; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b31\""
+Zicsr_csrrw_cg_cp_rs1_edges_0x80000000_str: .string "\"test: 81; cg: Zicsr_csrrw_cg; cp: cp_rs1_edges; bin: 0x80000000\""
+Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffff_str: .string "\"test: 82; cg: Zicsr_csrrw_cg; cp: cp_rs1_edges; bin: 0x7fffffff\""
+Zicsr_csrrw_cg_cmp_rd_rs1_b0_str: .string "\"test: 83; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b0\""
+Zicsr_csrrw_cg_cmp_rd_rs1_b1_str: .string "\"test: 84; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b1\""
+Zicsr_csrrw_cg_cmp_rd_rs1_b2_str: .string "\"test: 85; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b2\""
+Zicsr_csrrw_cg_cmp_rd_rs1_b3_str: .string "\"test: 86; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b3\""
+Zicsr_csrrw_cg_cmp_rd_rs1_b4_str: .string "\"test: 87; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b4\""
+Zicsr_csrrw_cg_cmp_rd_rs1_b5_str: .string "\"test: 88; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b5\""
+Zicsr_csrrw_cg_cmp_rd_rs1_b6_str: .string "\"test: 89; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b6\""
+Zicsr_csrrw_cg_cmp_rd_rs1_b7_str: .string "\"test: 90; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b7\""
+Zicsr_csrrw_cg_cmp_rd_rs1_b8_str: .string "\"test: 91; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b8\""
+Zicsr_csrrw_cg_cmp_rd_rs1_b9_str: .string "\"test: 92; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b9\""
+Zicsr_csrrw_cg_cmp_rd_rs1_b10_str: .string "\"test: 93; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b10\""
+Zicsr_csrrw_cg_cmp_rd_rs1_b11_str: .string "\"test: 94; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b11\""
+Zicsr_csrrw_cg_cmp_rd_rs1_b12_str: .string "\"test: 95; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b12\""
+Zicsr_csrrw_cg_cmp_rd_rs1_b13_str: .string "\"test: 96; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b13\""
+Zicsr_csrrw_cg_cmp_rd_rs1_b14_str: .string "\"test: 97; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b14\""
+Zicsr_csrrw_cg_cmp_rd_rs1_b15_str: .string "\"test: 98; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b15\""
+Zicsr_csrrw_cg_cmp_rd_rs1_b16_str: .string "\"test: 99; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b16\""
+Zicsr_csrrw_cg_cmp_rd_rs1_b17_str: .string "\"test: 100; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b17\""
+Zicsr_csrrw_cg_cmp_rd_rs1_b18_str: .string "\"test: 101; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b18\""
+Zicsr_csrrw_cg_cmp_rd_rs1_b19_str: .string "\"test: 102; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b19\""
+Zicsr_csrrw_cg_cmp_rd_rs1_b20_str: .string "\"test: 103; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b20\""
+Zicsr_csrrw_cg_cmp_rd_rs1_b21_str: .string "\"test: 104; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b21\""
+Zicsr_csrrw_cg_cmp_rd_rs1_b22_str: .string "\"test: 105; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b22\""
+Zicsr_csrrw_cg_cmp_rd_rs1_b23_str: .string "\"test: 106; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b23\""
+Zicsr_csrrw_cg_cmp_rd_rs1_b24_str: .string "\"test: 107; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b24\""
+Zicsr_csrrw_cg_cmp_rd_rs1_b25_str: .string "\"test: 108; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b25\""
+Zicsr_csrrw_cg_cmp_rd_rs1_b26_str: .string "\"test: 109; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b26\""
+Zicsr_csrrw_cg_cmp_rd_rs1_b27_str: .string "\"test: 110; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b27\""
+Zicsr_csrrw_cg_cmp_rd_rs1_b28_str: .string "\"test: 111; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b28\""
+Zicsr_csrrw_cg_cmp_rd_rs1_b29_str: .string "\"test: 112; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b29\""
+Zicsr_csrrw_cg_cmp_rd_rs1_b30_str: .string "\"test: 113; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b30\""
+Zicsr_csrrw_cg_cmp_rd_rs1_b31_str: .string "\"test: 114; cg: Zicsr_csrrw_cg; cp: cmp_rd_rs1; bin: b31\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

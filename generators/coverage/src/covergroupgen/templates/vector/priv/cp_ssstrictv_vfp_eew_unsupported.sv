@@ -9,8 +9,8 @@
         // SEW=8 (vsew=0) is never a supported FP width
         bins sew8 = {0};
         `ifndef D_COVERAGE
-        // SEW=64 (vsew=3) unsupported without D extension (FLEN < 64)
-        bins sew64 = {3};
+            // SEW=64 (vsew=3) unsupported without D extension (FLEN < 64)
+            bins sew64 = {3};
         `endif
     }
 

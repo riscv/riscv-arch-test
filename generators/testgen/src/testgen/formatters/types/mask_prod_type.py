@@ -21,45 +21,57 @@ from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig,
 
 # Mask = Mask op Mask
 mmm_config = InstructionTypeConfig(
-    required_params={"vd", "vs1", "vs2"}, vector_data=VectorTypeConfig(mask_regs={"vd", "vs1", "vs2"})
+    required_params={"vd", "vs1", "vs2"},
+    vector_data=VectorTypeConfig(mask_regs={"vd", "vs1", "vs2"}, maskable=False),
 )
 # Mask = Vector op Vector
 mvv_config = InstructionTypeConfig(
     required_params={"vd", "vs1", "vs2"},
     vector_data=VectorTypeConfig(
         mask_regs={"vd"},
+        overlap_constraints={("vd", "vs1_not_one"), ("vd", "vs2_not_one")},
         masked_constraints={("vs1", "v0"), ("vs2", "v0")},
     ),
 )
 # Mask = Vector op Integer
 mvx_config = InstructionTypeConfig(
     required_params={"vd", "rs1", "vs2"},
-    vector_data=VectorTypeConfig(mask_regs={"vd"}, masked_constraints={("vs2", "v0")}),
+    vector_data=VectorTypeConfig(
+        mask_regs={"vd"}, overlap_constraints={("vd", "vs2_not_one")}, masked_constraints={("vs2", "v0")}
+    ),
 )
 # Mask = Vector op Immediate
 mvi_config = InstructionTypeConfig(
     required_params={"vd", "vs2", "immval"},
     imm_bits=5,
-    vector_data=VectorTypeConfig(mask_regs={"vd"}, masked_constraints={("vs2", "v0")}),
+    vector_data=VectorTypeConfig(
+        mask_regs={"vd"}, overlap_constraints={("vd", "vs2_not_one")}, masked_constraints={("vs2", "v0")}
+    ),
 )
 # Mask = Vector op Vector (carry variant, so not maskable)
 mvvc_config = InstructionTypeConfig(
-    required_params={"vd", "vs1", "vs2"}, vector_data=VectorTypeConfig(mask_regs={"vd"})
+    required_params={"vd", "vs1", "vs2"},
+    vector_data=VectorTypeConfig(
+        mask_regs={"vd"}, overlap_constraints={("vd", "vs2_not_one"), ("vd", "vs1_not_one")}, maskable=False
+    ),
 )
 # Mask = Vector op Integer (carry variant, so not maskable)
 mvxc_config = InstructionTypeConfig(
-    required_params={"vd", "rs1", "vs2"}, vector_data=VectorTypeConfig(mask_regs={"vd"})
+    required_params={"vd", "rs1", "vs2"},
+    vector_data=VectorTypeConfig(mask_regs={"vd"}, overlap_constraints={("vd", "vs2_not_one")}, maskable=False),
 )
 # Mask = Vector op Immediate (carry variant, so not maskable)
 mvic_config = InstructionTypeConfig(
-    required_params={"vd", "vs2", "immval"}, imm_bits=5, vector_data=VectorTypeConfig(mask_regs={"vd"})
+    required_params={"vd", "vs2", "immval"},
+    imm_bits=5,
+    vector_data=VectorTypeConfig(mask_regs={"vd"}, overlap_constraints={("vd", "vs2_not_one")}, maskable=False),
 )
 # Mask = Vector op Vector op Mask
 mvvm_config = InstructionTypeConfig(
     required_params={"vd", "vs1", "vs2", "maskval"},
     vector_data=VectorTypeConfig(
         mask_regs={"vd"},
-        overlap_constraints={("vs2", "v0"), ("vs1", "v0")},
+        overlap_constraints={("vs2", "v0"), ("vs1", "v0"), ("vd", "vs1_not_one"), ("vd", "vs2_not_one")},
     ),
 )
 # Mask = Vector op Integer op Mask
@@ -67,7 +79,7 @@ mvxm_config = InstructionTypeConfig(
     required_params={"vd", "rs1", "vs2", "maskval"},
     vector_data=VectorTypeConfig(
         mask_regs={"vd"},
-        overlap_constraints={("vs2", "v0")},
+        overlap_constraints={("vs2", "v0"), ("vd", "vs2_not_one")},
     ),
 )
 # Mask = Vector op Immediate op Mask
@@ -76,7 +88,7 @@ mvim_config = InstructionTypeConfig(
     imm_bits=5,
     vector_data=VectorTypeConfig(
         mask_regs={"vd"},
-        overlap_constraints={("vs2", "v0")},
+        overlap_constraints={("vs2", "v0"), ("vd", "vs2_not_one")},
     ),
 )
 # Mask = unary-op(Mask)
@@ -85,6 +97,7 @@ mm_config = InstructionTypeConfig(
     vector_data=VectorTypeConfig(
         mask_regs={"vd", "vs2"},
         overlap_constraints={("vd", "vs2")},
+        require_zero_vstart=True,
     ),
 )
 
@@ -287,6 +300,11 @@ def format_mask_producing_type(
         if mask_reg != 0:
             recover_mask = [f"vmand.mm v0, v{mask_reg}, v{mask_reg}"]
 
+        reload_data = []
+        if params.vd == params.vs1 or params.vd == params.vs2:
+            # Then the loads were overwritten by the mask result
+            reload_data = load_code
+
         if force_full_length_check:
             vlmax_vsetvli = [
                 "# The spec says for mask-logical and vmsbf, vmsif, and vmsof, that the vlmax check is run at LMUL=8, SEW=8",
@@ -302,6 +320,7 @@ def format_mask_producing_type(
             "# clobbered in the sigupd, however, in the case of a masked instruction with vd = v0, v0 was overwritten.",
             "# So, we may have to recover that value.",
             *recover_mask,
+            *reload_data,
             *vlmax_vsetvli,
             test[0],
             "# This sigupd variant saves this result to the signature in non-selfcheck mode, and no-ops in selfcheck mode",

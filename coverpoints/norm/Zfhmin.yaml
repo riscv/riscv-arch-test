@@ -1,51 +1,139 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
-  - name: fcvt-h-s_op
-    # FCVT.S.H or
-    # FCVT.H.S converts a half-precision floating-point number to a
-    # single-precision floating-point number, or vice-versa, respectively
-    # FCVT.S.D rounds according to the RM field; FCVT.D.S will
-    # never round
+  # In the parlance of IEEE 754-2008, tininess is detected after rounding.
+  - name: ieee_std_tininess
+    # fcvt.h.s is the only Zfhmin instruction that rounds; ZicsrF has the directed case
+    coverpoint: ["ZicsrF_cg/cp_underflow_after_rounding_fcvt_h_s"]
+  # When multiple floating-point precisions are supported, then valid values of narrower
+  # n-bit types, n&lt;FLEN, are represented in the lower n bits of an FLEN-bit NaN
+  # value, in a process termed NaN-boxing. The upper bits of a valid NaN-boxed value
+  # must be all 1s. Valid NaN-boxed n-bit values therefore appear as negative quiet NaNs
+  # (qNaNs) when viewed as any wider m-bit value, n &lt; m ≤ FLEN. Any operation that
+  # writes a narrower result to an f register must write all 1s to the uppermost FLEN-n
+  # bits to yield a legal NaN-boxed value.
+  - name: fp_nan_boxing
     coverpoint:
       [
-        "Zfhmin_fcvt_h_s_cg/{cp_fs1, cp_fd, cp_fs1_edges, cp_frm_2, cp_csr_fflags_voun, cp_csr_frm, cp_NaNBox_S_H}",
+        "{Zfhmin_flh_cg, Zfhmin_fmv_h_x_cg, Zfhmin_fcvt_h_s_cg}/cp_NaNBox_S_H",
+        "{ZfhminD_fcvt_h_d_cg, ZfhminD_fcvt_h_s_cg, ZfhminD_flh_cg, ZfhminD_fmv_h_x_cg}/cp_NaNBox_D_H",
       ]
-  - name: fcvt-s-h_op
-    # FCVT.S.H or
-    # FCVT.H.S converts a half-precision floating-point number to a
-    # single-precision floating-point number, or vice-versa, respectively
-    # FCVT.S.D rounds according to the RM field; FCVT.D.S will
-    # never round
+  # A narrower n-bit transfer, n&lt;FLEN, into the f registers will create a valid
+  # NaN-boxed value
+  - name: fp_transfer_instrs_narrow_transfer_in
     coverpoint:
       [
-        "Zfhmin_fcvt_s_h_cg/{cp_fs1, cp_fd, cp_fs1_edges_H, cp_csr_fflags_v, cp_fs1_badNB_S_H}",
+        "{Zfhmin_flh_cg, Zfhmin_fmv_h_x_cg}/cp_NaNBox_S_H",
+        "{ZfhminD_flh_cg, ZfhminD_fmv_h_x_cg}/cp_NaNBox_D_H",
       ]
-  - name: flh_op
-    # New 16-bit variants of LOAD-FP and STORE-FP instructions are added, encoded with a new value for the funct3 width field.
+  # A narrower n-bit transfer out of the floating-point registers will transfer the
+  # lower n bits of the register ignoring the upper FLEN-n bits
+  - name: fp_transfer_instrs_narrow_transfer_out
     coverpoint:
-      ["Zfhmin_flh_cg/{cp_rs1_nx0, cp_imm_edges, cp_fd, cp_NaNBox_S_H}"]
-  - name: fmv-h-x_op
-    # FMV.D.X moves the double-precision value encoded in IEEE 754-2008
-    # standard encoding from the integer register rs1 to the floating-point
-    # register rd
-    # FMV.H.X moves the half-precision value encoded in IEEE 754-2008 standard encoding from the lower 16 bits of integer register rs1 to the floating-point register rd, NaN-boxing the result.
+      [
+        "Zfhmin_fmv_x_h_cg/cp_fs1_badNB_S_H",
+        "Zfhmin_fsh_cg/cp_fs2_badNB_S_H",
+        "ZfhminD_fmv_x_h_cg/cp_fs1_badNB_D_H",
+        "ZfhminD_fsh_cg/cp_fs2_badNB_D_H",
+      ]
+  # Apart from transfer operations described in the previous paragraph, all other
+  # floating-point operations on narrower n-bit operations, n&lt;FLEN, check if the
+  # input operands are correctly NaN-boxed, i.e., all upper FLEN-n bits are 1. If so,
+  # the n least-significant bits of the input are used as the input value, otherwise the
+  # input value is treated as an n-bit canonical NaN.
+  - name: fp_nontransfer_instrs_improper_nan_boxed_input
     coverpoint:
-      ["Zfhmin_fmv_h_x_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_NaNBox_S_H}"]
+      [
+        "Zfhmin_fcvt_s_h_cg/cp_fs1_badNB_S_H",
+        "{ZfhminD_fcvt_d_h_cg, ZfhminD_fcvt_s_h_cg}/cp_fs1_badNB_D_H",
+      ]
+  # For half-precision floating-point, the canonical NaN corresponds to the pattern
+  # 0x7e00.
+  - name: Zfh_canonical_nan
+    # Double NaN inputs to fcvt.h.d also give the half canonical NaN
+    coverpoint:
+      [
+        "Zfhmin_fcvt_h_s_cg/cp_fs1_edges",
+        "ZfhminD_fcvt_h_d_cg/cr_fs1_edges_frm_D",
+      ]
+  # New 16-bit variants of LOAD-FP and STORE-FP instructions are added, encoded with a
+  # new value for the funct3 width field.
+  - name: fsh_flh_op
+    coverpoint: ["{Zfhmin_flh_cg, Zfhmin_fsh_cg}/{cp_rs1_nx0, cp_imm_edges}"]
+  # insn:flh[] and insn:fsh[] are only guaranteed to execute atomically if the effective
+  # address is naturally aligned.
+  - name: fsh_flh_atomic_align
+    coverpoint:
+      ["Not tested: atomicity is not observable in single-hart signature tests"]
+  # insn:flh[] and insn:fsh[] do not modify the bits being transferred; in particular,
+  # the payloads of non-canonical NaNs are preserved. insn:flh[] NaN-boxes the result
+  # written to rd, whereas insn:fsh[] ignores all but the lower 16 bits in rs2.
+  - name: fsh_flh_bits_maintained
+    coverpoint:
+      [
+        "Zfhmin_flh_cg/{cp_memval_fp_half, cp_NaNBox_S_H}",
+        "Zfhmin_fsh_cg/{cp_fs2_edges_H, cp_fs2_badNB_S_H}",
+        "ZfhminD_flh_cg/cp_NaNBox_D_H",
+        "ZfhminD_fsh_cg/cp_fs2_badNB_D_H",
+      ]
+  # insn:fcvt.s.h[] or insn:fcvt.h.s[] converts a half-precision floating-point number
+  # to a single-precision floating-point number, or vice-versa, respectively
+  - name: fcvt-s-h_fcvt-h-s_op
+    coverpoint:
+      [
+        "Zfhmin_fcvt_h_s_cg/{cp_fd, cp_fs1_edges, cp_frm_2}",
+        "Zfhmin_fcvt_s_h_cg/cp_fs1_edges_H",
+        "ZfhminD_fcvt_h_s_cg/cp_NaNBox_D_H",
+        "ZfhminD_fcvt_s_h_cg/cp_fs1_badNB_D_H",
+      ]
+  # If the ext:d[] extension is present, insn:fcvt.d.h[] or insn:fcvt.h.d[] converts a
+  # half-precision floating-point number to a double-precision floating-point number, or
+  # vice-versa, respectively
+  - name: fcvt-d-h_fcvt-h-d_op
+    coverpoint:
+      [
+        "ZfhminD_fcvt_d_h_cg/{cp_fd, cp_fs1_edges_H}",
+        "ZfhminD_fcvt_h_d_cg/{cp_fd, cr_fs1_edges_frm_D}",
+      ]
+  # If the ext:q[] extension is present, insn:fcvt.q.h[] or insn:fcvt.h.q[] converts a
+  # half-precision floating-point number to a quad-precision floating-point number, or
+  # vice-versa, respectively
+  - name: fcvt-q-h_fcvt-h-q_op
+    # TODO: needs a Q test suite
+    coverpoint: [""]
+  # insn:fmv.x.h[] moves the half-precision value in floating-point register rs1 to a
+  # representation in the IEEE 754-2008 encoding in integer register rd, filling the
+  # upper XLEN-16 bits with copies of the floating-point number's sign bit
   - name: fmv-x-h_op
-    # FMV.X.D moves
-    # the double-precision value in floating-point register rs1 to a
-    # representation in IEEE 754-2008 standard encoding in integer register
-    # rd
-    # FMV.X.H moves the half-precision
-    # value in floating-point register rs1 to a representation in IEEE
-    # 754-2008 standard encoding in integer register rd, filling the upper
-    # XLEN-16 bits with copies of the floating-point number's sign bit
-    coverpoint:
-      ["Zfhmin_fmv_x_h_cg/{cp_rd, cp_fs1, cp_fs1_edges_H, cp_fs1_badNB_S_H}"]
-  - name: fsh_op
-    # New 16-bit variants of LOAD-FP and STORE-FP instructions are added, encoded with a new value for the funct3 width field.
     coverpoint:
       [
-        "Zfhmin_fsh_cg/{cp_rs1_nx0, cp_imm_edges, cp_fs2, cp_fs2_edges_H, cp_fs2_badNB_S_H}",
+        "Zfhmin_fmv_x_h_cg/{cp_rd, cp_fs1, cp_fs1_edges_H}",
+        "ZfhminD_fmv_x_h_cg/cp_fs1_badNB_D_H",
+      ]
+  # insn:fmv.h.x[] moves the half-precision value encoded in the IEEE 754-2008 encoding
+  # from the lower 16 bits of integer register rs1 to the floating-point register rd,
+  # NaN-boxing the result.
+  - name: fmv-h-x_op
+    coverpoint:
+      [
+        "Zfhmin_fmv_h_x_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_NaNBox_S_H}",
+        "ZfhminD_fmv_h_x_cg/cp_NaNBox_D_H",
+      ]
+  # insn:fmv.x.h[] and insn:fmv.h.x[] do not modify the bits being transferred; in
+  # particular, the payloads of non-canonical NaNs are preserved.
+  - name: fmv_half_bits_preserved
+    # fmv.x.h moves every half edge; cp_rs1_edges gives fmv.h.x few half NaN and infinity patterns
+    coverpoint:
+      ["Zfhmin_fmv_x_h_cg/cp_fs1_edges_H", "Zfhmin_fmv_h_x_cg/cp_rs1_edges"]
+  # The ext:zfhmin[] extension includes the following instructions from the ext:zfh[]
+  # extension: insn:flh[], insn:fsh[], insn:fmv.x.h[], insn:fmv.h.x[], insn:fcvt.s.h[],
+  # and insn:fcvt.h.s[]. If the ext:d[] extension is present, the insn:fcvt.d.h[] and
+  # insn:fcvt.h.d[] instructions are also included. If the ext:q[] extension is present,
+  # the insn:fcvt.q.h[] and insn:fcvt.h.q[] instructions are additionally included.
+  - name: Zfhmin
+    # Representative coverpoints; also Zfhmin_{fmv_h_x, fcvt_s_h}_cg and ZfhminD_fcvt_{d_h, h_d}_cg.
+    # fcvt.q.h and fcvt.h.q need a Q test suite.
+    coverpoint:
+      [
+        "{Zfhmin_flh_cg, Zfhmin_fsh_cg, Zfhmin_fmv_x_h_cg, Zfhmin_fcvt_h_s_cg}/cp_asm_count",
       ]

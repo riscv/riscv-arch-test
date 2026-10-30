@@ -48,7 +48,6 @@ covergroup Zvfhmin_vfncvt_f_f_w_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
@@ -346,18 +345,21 @@ covergroup Zvfhmin_vfwcvt_f_f_v_cg with function sample(ins_t ins);
 endgroup
 // ---------------------
 function void zvfhmin_sample(int hart, int issue, ins_t ins);
+    string inst_name = traceDataQ[hart][issue][0].inst_name;
+
     // Want to sample only if the SEW matches the target SEW of the file, some tests require
     // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
     // associated sew with these tests
     if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1 ||
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
-        case (traceDataQ[hart][issue][0].inst_name)
+        case (inst_name)
             "vfncvt.f.f.w"     : begin
                 Zvfhmin_vfncvt_f_f_w_cg.sample(ins);
             end
             "vfwcvt.f.f.v"     : begin
                 Zvfhmin_vfwcvt_f_f_v_cg.sample(ins);
             end
+            default: ; // a case needs at least one item, and some configurations select none
         endcase
     end
 endfunction

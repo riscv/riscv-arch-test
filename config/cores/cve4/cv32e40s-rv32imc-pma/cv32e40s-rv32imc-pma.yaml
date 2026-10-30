@@ -26,6 +26,7 @@ implemented_extensions: # VERIFIED against User Manual (Introduction)
   # B_EXT=B_NONE by default → no Zba, Zbb, Zbc, Zbs
 
 params:
+  NON_STANDARD_EXTENSION_IMPLEMENTED: false
   # XLEN parameters (VERIFIED — User Manual, Introduction; RV32I base ISA)
   MXLEN: 32
   PHYS_ADDR_WIDTH: 32 # VERIFIED — 32-bit addressing, no Sv32
@@ -77,6 +78,11 @@ params:
   MTVEC_BASE_ALIGNMENT_DIRECT: 128 # VERIFIED — same mask applies in direct mode
 
   # Sm params
+  WFI_U_MODE: true
+  MEI_INTR_IMPL: false
+  MSI_INTR_IMPL: false
+  MTI_INTR_IMPL: false
+  WFI_FINITE: false
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true # VERIFIED — mepc set to current PC on exception
   MARCHID_IMPLEMENTED: true
   MIMPID_IMPLEMENTED: true

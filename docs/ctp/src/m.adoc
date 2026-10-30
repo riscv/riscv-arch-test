@@ -1,5 +1,5 @@
 
-=== M Multiply Extension
+=== M Extension for Integer Multiplication and Division
 
 <<t-M-coverpoints>> summarizes the coverpoints for the M extension. <<t-M-normative-rules>> summarizes the relevant normative rules.
 

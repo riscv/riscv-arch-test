@@ -30,12 +30,7 @@ def make_custom_lr(instr_name: str, instr_type: str, coverpoint: str, test_data:
 
     for suffix in ["", ".aq", ".aqrl"]:
         params = generate_random_params(test_data, instr_type, exclude_regs=[0])
-        assert (
-            params.rs1 is not None
-            and params.rd is not None
-            and params.temp_val is not None
-            and params.temp_reg is not None
-        )
+        assert params.rs1 is not None and params.rd is not None and params.temp_val is not None
 
         # Add value to load data region
         tc.data_values.append(params.temp_val)

@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 35
+#define SIGUPD_COUNT 52
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -277,6 +277,26 @@ Zca_c_bnez_cg_cp_rs1_edges_0x100000001:
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Zca_c_bnez_cg_cp_rs1_edges_0x100000001, Zca_c_bnez_cg_cp_rs1_edges_0x100000001_str)
 
+# Testcase cp_rs1_edges (Test source rs1 value = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load rs1: x11 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load branch taken value: x13 = 0x060aeaf6091d251b
+Zca_c_bnez_cg_cp_rs1_edges_0x80000000:
+  c.bnez x11, 1f # perform operation
+  LI(x13, 0) # branch not taken, set temp_reg to 0
+1:
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Zca_c_bnez_cg_cp_rs1_edges_0x80000000, Zca_c_bnez_cg_cp_rs1_edges_0x80000000_str)
+
+# Testcase cp_rs1_edges (Test source rs1 value = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load rs1: x11 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load branch taken value: x10 = 0x6002d76a8c9af94a
+Zca_c_bnez_cg_cp_rs1_edges_0x7fffffff:
+  c.bnez x11, 1f # perform operation
+  LI(x10, 0) # branch not taken, set temp_reg to 0
+1:
+  # Check if x10 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x10, Zca_c_bnez_cg_cp_rs1_edges_0x7fffffff, Zca_c_bnez_cg_cp_rs1_edges_0x7fffffff_str)
+
 /////////////////////////////////
 // cp_offset
 /////////////////////////////////
@@ -293,6 +313,213 @@ Zca_c_bnez_cg_cp_offset_neg:
 3:  # done with sequence
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Zca_c_bnez_cg_cp_offset_neg, Zca_c_bnez_cg_cp_offset_neg_str)
+
+/////////////////////////////////
+// cp_imm_edges_c_branch
+/////////////////////////////////
+
+  LI(x13, 1) # branch is taken
+
+# cp_imm_edges_c_branch: forward branch by 2
+  c.li x15, 1 # success code
+Zca_c_bnez_cg_cp_imm_edges_c_branch_b_2:
+  c.bnez x13, cp_imm_edges_c_branch_fwd_b_2
+  # no gap to check
+cp_imm_edges_c_branch_fwd_b_2:
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Zca_c_bnez_cg_cp_imm_edges_c_branch_b_2, Zca_c_bnez_cg_cp_imm_edges_c_branch_b_2_str)
+
+# cp_imm_edges_c_branch: forward branch by 4
+  c.li x15, 1 # success code
+Zca_c_bnez_cg_cp_imm_edges_c_branch_b_4:
+  c.bnez x13, cp_imm_edges_c_branch_fwd_b_4
+  .rept 1
+  c.li x15, 7 # wrong target or not taken
+  .endr
+cp_imm_edges_c_branch_fwd_b_4:
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Zca_c_bnez_cg_cp_imm_edges_c_branch_b_4, Zca_c_bnez_cg_cp_imm_edges_c_branch_b_4_str)
+
+# cp_imm_edges_c_branch: forward branch by 8
+  c.li x15, 1 # success code
+Zca_c_bnez_cg_cp_imm_edges_c_branch_b_8:
+  c.bnez x13, cp_imm_edges_c_branch_fwd_b_8
+  .rept 3
+  c.li x15, 7 # wrong target or not taken
+  .endr
+cp_imm_edges_c_branch_fwd_b_8:
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Zca_c_bnez_cg_cp_imm_edges_c_branch_b_8, Zca_c_bnez_cg_cp_imm_edges_c_branch_b_8_str)
+
+# cp_imm_edges_c_branch: forward branch by 16
+  c.li x15, 1 # success code
+Zca_c_bnez_cg_cp_imm_edges_c_branch_b_16:
+  c.bnez x13, cp_imm_edges_c_branch_fwd_b_16
+  .rept 7
+  c.li x15, 7 # wrong target or not taken
+  .endr
+cp_imm_edges_c_branch_fwd_b_16:
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Zca_c_bnez_cg_cp_imm_edges_c_branch_b_16, Zca_c_bnez_cg_cp_imm_edges_c_branch_b_16_str)
+
+# cp_imm_edges_c_branch: forward branch by 32
+  c.li x15, 1 # success code
+Zca_c_bnez_cg_cp_imm_edges_c_branch_b_32:
+  c.bnez x13, cp_imm_edges_c_branch_fwd_b_32
+  .rept 15
+  c.li x15, 7 # wrong target or not taken
+  .endr
+cp_imm_edges_c_branch_fwd_b_32:
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Zca_c_bnez_cg_cp_imm_edges_c_branch_b_32, Zca_c_bnez_cg_cp_imm_edges_c_branch_b_32_str)
+
+# cp_imm_edges_c_branch: forward branch by 64
+  c.li x15, 1 # success code
+Zca_c_bnez_cg_cp_imm_edges_c_branch_b_64:
+  c.bnez x13, cp_imm_edges_c_branch_fwd_b_64
+  .rept 31
+  c.li x15, 7 # wrong target or not taken
+  .endr
+cp_imm_edges_c_branch_fwd_b_64:
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Zca_c_bnez_cg_cp_imm_edges_c_branch_b_64, Zca_c_bnez_cg_cp_imm_edges_c_branch_b_64_str)
+
+# cp_imm_edges_c_branch: forward branch by 128
+  c.li x15, 1 # success code
+Zca_c_bnez_cg_cp_imm_edges_c_branch_b_128:
+  c.bnez x13, cp_imm_edges_c_branch_fwd_b_128
+  .rept 63
+  c.li x15, 7 # wrong target or not taken
+  .endr
+cp_imm_edges_c_branch_fwd_b_128:
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Zca_c_bnez_cg_cp_imm_edges_c_branch_b_128, Zca_c_bnez_cg_cp_imm_edges_c_branch_b_128_str)
+
+# cp_imm_edges_c_branch: backward branch by -2
+  c.li x15, 1 # success code
+  c.j cp_imm_edges_c_branch_bwd_src_b_m2
+cp_imm_edges_c_branch_bwd_b_m2:
+  c.j cp_imm_edges_c_branch_bwd_done_b_m2 # correct target
+  # no gap to check
+cp_imm_edges_c_branch_bwd_src_b_m2:
+Zca_c_bnez_cg_cp_imm_edges_c_branch_b_m2:
+  c.bnez x13, cp_imm_edges_c_branch_bwd_b_m2
+  c.li x15, 7 # branch not taken
+cp_imm_edges_c_branch_bwd_done_b_m2:
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Zca_c_bnez_cg_cp_imm_edges_c_branch_b_m2, Zca_c_bnez_cg_cp_imm_edges_c_branch_b_m2_str)
+
+# cp_imm_edges_c_branch: backward branch by -4
+  c.li x15, 1 # success code
+  c.j cp_imm_edges_c_branch_bwd_src_b_m4
+cp_imm_edges_c_branch_bwd_b_m4:
+  c.j cp_imm_edges_c_branch_bwd_done_b_m4 # correct target
+  .rept 1
+  c.li x15, 7 # wrong target or not taken
+  .endr
+cp_imm_edges_c_branch_bwd_src_b_m4:
+Zca_c_bnez_cg_cp_imm_edges_c_branch_b_m4:
+  c.bnez x13, cp_imm_edges_c_branch_bwd_b_m4
+  c.li x15, 7 # branch not taken
+cp_imm_edges_c_branch_bwd_done_b_m4:
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Zca_c_bnez_cg_cp_imm_edges_c_branch_b_m4, Zca_c_bnez_cg_cp_imm_edges_c_branch_b_m4_str)
+
+# cp_imm_edges_c_branch: backward branch by -8
+  c.li x15, 1 # success code
+  c.j cp_imm_edges_c_branch_bwd_src_b_m8
+cp_imm_edges_c_branch_bwd_b_m8:
+  c.j cp_imm_edges_c_branch_bwd_done_b_m8 # correct target
+  .rept 3
+  c.li x15, 7 # wrong target or not taken
+  .endr
+cp_imm_edges_c_branch_bwd_src_b_m8:
+Zca_c_bnez_cg_cp_imm_edges_c_branch_b_m8:
+  c.bnez x13, cp_imm_edges_c_branch_bwd_b_m8
+  c.li x15, 7 # branch not taken
+cp_imm_edges_c_branch_bwd_done_b_m8:
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Zca_c_bnez_cg_cp_imm_edges_c_branch_b_m8, Zca_c_bnez_cg_cp_imm_edges_c_branch_b_m8_str)
+
+# cp_imm_edges_c_branch: backward branch by -16
+  c.li x15, 1 # success code
+  c.j cp_imm_edges_c_branch_bwd_src_b_m16
+cp_imm_edges_c_branch_bwd_b_m16:
+  c.j cp_imm_edges_c_branch_bwd_done_b_m16 # correct target
+  .rept 7
+  c.li x15, 7 # wrong target or not taken
+  .endr
+cp_imm_edges_c_branch_bwd_src_b_m16:
+Zca_c_bnez_cg_cp_imm_edges_c_branch_b_m16:
+  c.bnez x13, cp_imm_edges_c_branch_bwd_b_m16
+  c.li x15, 7 # branch not taken
+cp_imm_edges_c_branch_bwd_done_b_m16:
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Zca_c_bnez_cg_cp_imm_edges_c_branch_b_m16, Zca_c_bnez_cg_cp_imm_edges_c_branch_b_m16_str)
+
+# cp_imm_edges_c_branch: backward branch by -32
+  c.li x15, 1 # success code
+  c.j cp_imm_edges_c_branch_bwd_src_b_m32
+cp_imm_edges_c_branch_bwd_b_m32:
+  c.j cp_imm_edges_c_branch_bwd_done_b_m32 # correct target
+  .rept 15
+  c.li x15, 7 # wrong target or not taken
+  .endr
+cp_imm_edges_c_branch_bwd_src_b_m32:
+Zca_c_bnez_cg_cp_imm_edges_c_branch_b_m32:
+  c.bnez x13, cp_imm_edges_c_branch_bwd_b_m32
+  c.li x15, 7 # branch not taken
+cp_imm_edges_c_branch_bwd_done_b_m32:
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Zca_c_bnez_cg_cp_imm_edges_c_branch_b_m32, Zca_c_bnez_cg_cp_imm_edges_c_branch_b_m32_str)
+
+# cp_imm_edges_c_branch: backward branch by -64
+  c.li x15, 1 # success code
+  c.j cp_imm_edges_c_branch_bwd_src_b_m64
+cp_imm_edges_c_branch_bwd_b_m64:
+  c.j cp_imm_edges_c_branch_bwd_done_b_m64 # correct target
+  .rept 31
+  c.li x15, 7 # wrong target or not taken
+  .endr
+cp_imm_edges_c_branch_bwd_src_b_m64:
+Zca_c_bnez_cg_cp_imm_edges_c_branch_b_m64:
+  c.bnez x13, cp_imm_edges_c_branch_bwd_b_m64
+  c.li x15, 7 # branch not taken
+cp_imm_edges_c_branch_bwd_done_b_m64:
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Zca_c_bnez_cg_cp_imm_edges_c_branch_b_m64, Zca_c_bnez_cg_cp_imm_edges_c_branch_b_m64_str)
+
+# cp_imm_edges_c_branch: backward branch by -128
+  c.li x15, 1 # success code
+  c.j cp_imm_edges_c_branch_bwd_src_b_m128
+cp_imm_edges_c_branch_bwd_b_m128:
+  c.j cp_imm_edges_c_branch_bwd_done_b_m128 # correct target
+  .rept 63
+  c.li x15, 7 # wrong target or not taken
+  .endr
+cp_imm_edges_c_branch_bwd_src_b_m128:
+Zca_c_bnez_cg_cp_imm_edges_c_branch_b_m128:
+  c.bnez x13, cp_imm_edges_c_branch_bwd_b_m128
+  c.li x15, 7 # branch not taken
+cp_imm_edges_c_branch_bwd_done_b_m128:
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Zca_c_bnez_cg_cp_imm_edges_c_branch_b_m128, Zca_c_bnez_cg_cp_imm_edges_c_branch_b_m128_str)
+
+# cp_imm_edges_c_branch: backward branch by -256
+  c.li x15, 1 # success code
+  c.j cp_imm_edges_c_branch_bwd_src_b_m256
+cp_imm_edges_c_branch_bwd_b_m256:
+  c.j cp_imm_edges_c_branch_bwd_done_b_m256 # correct target
+  .rept 127
+  c.li x15, 7 # wrong target or not taken
+  .endr
+cp_imm_edges_c_branch_bwd_src_b_m256:
+Zca_c_bnez_cg_cp_imm_edges_c_branch_b_m256:
+  c.bnez x13, cp_imm_edges_c_branch_bwd_b_m256
+  c.li x15, 7 # branch not taken
+cp_imm_edges_c_branch_bwd_done_b_m256:
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Zca_c_bnez_cg_cp_imm_edges_c_branch_b_m256, Zca_c_bnez_cg_cp_imm_edges_c_branch_b_m256_str)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -349,6 +576,10 @@ RVTEST_DATA_BEGIN
 .dword 0x5a645840c265cb29
 .dword 0x0000000100000001
 .dword 0x14e4106b1f8f7386
+.dword 0x0000000080000000
+.dword 0x060aeaf6091d251b
+.dword 0x000000007fffffff
+.dword 0x6002d76a8c9af94a
 .dword 0xa599d1c5426dd777
 
 // Testcase strings
@@ -376,7 +607,24 @@ Zca_c_bnez_cg_cp_rs1_edges_0xffffffff_str: .string "\"test: 21; cg: Zca_c.bnez_c
 Zca_c_bnez_cg_cp_rs1_edges_0xfffffffe_str: .string "\"test: 22; cg: Zca_c.bnez_cg; cp: cp_rs1_edges; bin: 0xfffffffe\""
 Zca_c_bnez_cg_cp_rs1_edges_0x100000000_str: .string "\"test: 23; cg: Zca_c.bnez_cg; cp: cp_rs1_edges; bin: 0x100000000\""
 Zca_c_bnez_cg_cp_rs1_edges_0x100000001_str: .string "\"test: 24; cg: Zca_c.bnez_cg; cp: cp_rs1_edges; bin: 0x100000001\""
-Zca_c_bnez_cg_cp_offset_neg_str: .string "\"test: 25; cg: Zca_c.bnez_cg; cp: cp_offset; bin: neg\""
+Zca_c_bnez_cg_cp_rs1_edges_0x80000000_str: .string "\"test: 25; cg: Zca_c.bnez_cg; cp: cp_rs1_edges; bin: 0x80000000\""
+Zca_c_bnez_cg_cp_rs1_edges_0x7fffffff_str: .string "\"test: 26; cg: Zca_c.bnez_cg; cp: cp_rs1_edges; bin: 0x7fffffff\""
+Zca_c_bnez_cg_cp_offset_neg_str: .string "\"test: 27; cg: Zca_c.bnez_cg; cp: cp_offset; bin: neg\""
+Zca_c_bnez_cg_cp_imm_edges_c_branch_b_2_str: .string "\"test: 28; cg: Zca_c.bnez_cg; cp: cp_imm_edges_c_branch; bin: b_2\""
+Zca_c_bnez_cg_cp_imm_edges_c_branch_b_4_str: .string "\"test: 29; cg: Zca_c.bnez_cg; cp: cp_imm_edges_c_branch; bin: b_4\""
+Zca_c_bnez_cg_cp_imm_edges_c_branch_b_8_str: .string "\"test: 30; cg: Zca_c.bnez_cg; cp: cp_imm_edges_c_branch; bin: b_8\""
+Zca_c_bnez_cg_cp_imm_edges_c_branch_b_16_str: .string "\"test: 31; cg: Zca_c.bnez_cg; cp: cp_imm_edges_c_branch; bin: b_16\""
+Zca_c_bnez_cg_cp_imm_edges_c_branch_b_32_str: .string "\"test: 32; cg: Zca_c.bnez_cg; cp: cp_imm_edges_c_branch; bin: b_32\""
+Zca_c_bnez_cg_cp_imm_edges_c_branch_b_64_str: .string "\"test: 33; cg: Zca_c.bnez_cg; cp: cp_imm_edges_c_branch; bin: b_64\""
+Zca_c_bnez_cg_cp_imm_edges_c_branch_b_128_str: .string "\"test: 34; cg: Zca_c.bnez_cg; cp: cp_imm_edges_c_branch; bin: b_128\""
+Zca_c_bnez_cg_cp_imm_edges_c_branch_b_m2_str: .string "\"test: 35; cg: Zca_c.bnez_cg; cp: cp_imm_edges_c_branch; bin: b_m2\""
+Zca_c_bnez_cg_cp_imm_edges_c_branch_b_m4_str: .string "\"test: 36; cg: Zca_c.bnez_cg; cp: cp_imm_edges_c_branch; bin: b_m4\""
+Zca_c_bnez_cg_cp_imm_edges_c_branch_b_m8_str: .string "\"test: 37; cg: Zca_c.bnez_cg; cp: cp_imm_edges_c_branch; bin: b_m8\""
+Zca_c_bnez_cg_cp_imm_edges_c_branch_b_m16_str: .string "\"test: 38; cg: Zca_c.bnez_cg; cp: cp_imm_edges_c_branch; bin: b_m16\""
+Zca_c_bnez_cg_cp_imm_edges_c_branch_b_m32_str: .string "\"test: 39; cg: Zca_c.bnez_cg; cp: cp_imm_edges_c_branch; bin: b_m32\""
+Zca_c_bnez_cg_cp_imm_edges_c_branch_b_m64_str: .string "\"test: 40; cg: Zca_c.bnez_cg; cp: cp_imm_edges_c_branch; bin: b_m64\""
+Zca_c_bnez_cg_cp_imm_edges_c_branch_b_m128_str: .string "\"test: 41; cg: Zca_c.bnez_cg; cp: cp_imm_edges_c_branch; bin: b_m128\""
+Zca_c_bnez_cg_cp_imm_edges_c_branch_b_m256_str: .string "\"test: 42; cg: Zca_c.bnez_cg; cp: cp_imm_edges_c_branch; bin: b_m256\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

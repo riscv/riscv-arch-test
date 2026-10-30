@@ -1,3 +1,3 @@
-    `ifdef COVER_ARCHUPPER
-        ARCH_sample(hart, issue, ins);
+    `ifdef COVER_@ARCHUPPER@
+        @ARCH@_sample(hart, issue, ins);
     `endif

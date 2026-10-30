@@ -1,0 +1,69 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: ZicsrF
+source: https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=1673314448#gid=1673314448
+coverpoints:
+  - name: cp_fcsr_access
+    goal: |-
+      Writing to the CSR field
+      (WARL)
+    description: "csr read, write all 1s, write all 0s, set all 1s, clear all 1s, write back initial value of each register: fcsr, fflags, frm"
+  - name: cp_fcsr_frm_write
+    goal: |-
+      Writing to the CSR field
+      (WARL)
+    description: Write 0-7 to fcsr.frm and read back fcsr and frm and fflags
+  - name: cp_fcsr_fflags_write
+    goal: |-
+      Writing to the CSR field
+      (WARL)
+    description: Write 0-31 to fcsr.fflags and read back fcsr and frm and fflags
+  - name: cp_fcsr_walk
+    goal: |-
+      Writing to the CSR field
+      (WARL)
+    description: Write walking 1s to fcsr, frm, fflags
+  - name: cp_frm_write
+    goal: |-
+      Writing to the CSR field
+      (WARL)
+    description: Write 0-7 to frm and read back fcsr, frm, fflags
+  - name: cp_fflags_write
+    goal: |-
+      Writing to the CSR field
+      (WARL)
+    description: write 0-31 to fflags and read back fflags, frm, fcsr
+  - name: csr_fflags_set_m_*
+    goal: |-
+      Writing to the CSR field
+      (WARL)
+    description: "Reset fflags to 0, then execute following instructions: 1/0 (DivZero), 1/3 (Inexact), largest + largest (overflow), smallest * smallest (underflow), infinity - infinity (invalid)"
+  - name: cp_underflow_after_rounding
+    description: |-
+      Test each of the following floating-point operations does not set the underflow flag, even though it would if underflow were detected before rounding.  Note that these test cases are obtained from TestFloat.
+
+      fma.s.rdn 3F00FBFF x 80000001 + 807FFFFF = 80800000
+      fmul.s.rup 00800001 x 3F7FFFFE = 00800000
+
+
+      if D supported:
+      fma.d.rup 802FFFFFFFBFFEFF x 000FFFFFFFFFFFFE + 0010000000000000 = 0010000000000000
+      fmul.rdn 0010000000000001 x BFEFFFFFFFFFFFFE = 8010000000000000
+      fcvt.s.d.rne B80FFFFFFFFDFEFF = 80800000
+
+      if Q supported:
+      fma.q.rdn 3F9800000000000001FFFFFFFF7FFFFE x 00000000000000000000000000000001 + 80010000000000000000000000000000 = 80010000000000000000000000000000
+      fmul.q.rne 0000FFFFFFFFFFFFFFFFFFFFFFFFFFFF x 3FFF0000000000000000000000000001 = 00010000000000000000000000000000
+      fcvt.s.q.rup 3F80FFFFFFFE0000000000FFFFFFFFFF = 00800000
+
+      If Zfh supported:
+      fma.h.rne 0BC7 x 03FF + 8400 = 8400
+      fmul.h.rup 0401 x 3BF8 = 0400
+      fcvt.h.s.rne 387FF000 = ***
+
+      Notes:
+      sqrt, add, sub cannot cause underflow so are not tested
+      TODO: Adding division underflow tests would be good
+      No Zfa tests cause underflow
+  - heading: These are unprivileged tests that should never trap.  Suitable for RVI20 and other systems with no machine mode.
+  - heading: Tests run in M mode with mstatus.FS = 11 if Sm is supported, or else mode is not set
+  - heading: fdiv.h.rne 07FF 4000 = 03FF

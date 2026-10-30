@@ -7,7 +7,7 @@ This Certification Test Plan focuses on whether a DUT implements all of the arch
 
 [NOTE]
 ====
-Later phases of certification tests may add ratified architectural features outside the ISA spec, such as IOMMU, debug, or AIA.
+Later certificates may add ratified architectural features outside the ISA spec, such as IOMMU, debug, or AIA.
 ====
 
 _Certification_ differs from _design verification_ in that it does not systematically test microarchitectural features. Design verification must be aware of DUT-specific features such as the pipeline design.  For example, DV should test design-specific interactions of interrupt arrival time, pipeline hazards, multicycle instructions, MMU, and memory system. Design verification also should test tricky implementation issues, such as hard floating-point rounding cases.
@@ -109,7 +109,7 @@ The available fields are given in framework/src/act/fcov/coverage/RISCV_coverage
 
 [NOTE]
 ====
-RVVI and riscvISACOV support the notion of multiple harts that retire multiple instructions per cycle.  The number of instructions retired per cycle is a microarchitectural issue irrelevant to architectural functional verification, so it is set to 1, consistent with simulators that report each instruction retiring individually.  Phase 0-2 testing only involves a single hart.  Later phases may need to generalize to multiple harts to exercise fences and atomic operations that relate to memory consistency.
+RVVI and riscvISACOV support the notion of multiple harts that retire multiple instructions per cycle.  The number of instructions retired per cycle is a microarchitectural issue irrelevant to architectural functional verification, so it is set to 1, consistent with simulators that report each instruction retiring individually.
 ====
 
 [NOTE]

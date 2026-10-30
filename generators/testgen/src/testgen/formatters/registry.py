@@ -50,7 +50,11 @@ class VectorTypeConfig:
         mask_regs: Set of registers used as mask registers
         scalar_regs: Set of registers used as scalar registers
         widened_regs: Set of registers that are widened
+        maskable: Whether the instruction admits the optional v0.t operand
         random_element_generator: Add custom random element generation (used in unordered operations)
+        egs: Element group size (used in vector crypto instructions)
+        index_register: Register used to store index variables (e.g. vs1 for vrgatherei16)
+        require_zero_vstart: Nonzero vstart will trap with an illegal instruction exception
     """
 
     overlap_constraints: set[tuple[str, str]] = field(default_factory=set)
@@ -58,7 +62,11 @@ class VectorTypeConfig:
     mask_regs: set[str] = field(default_factory=set)
     scalar_regs: set[str] = field(default_factory=set)
     widened_regs: set[str] = field(default_factory=set)
-    random_element_generator: Callable[[int, int], list[int]] | None = None
+    maskable: bool = True
+    random_element_generator: Callable[[int, int, str], list[int]] | None = None
+    egs: int = 1
+    index_register: str | None = None
+    require_zero_vstart: bool = False
 
 
 @dataclass
@@ -90,7 +98,9 @@ class InstructionTypeConfig:
     imm_nonzero: bool = False
     pair_regs: set[str] | None = None  # Registers that use register pairs (e.g., {"rd", "rs2"})
     excluded_regs: dict[str, set[int]] = field(default_factory=dict)
-    instruction_class: list[Literal["load", "store", "indexed", "strided", "segmented"]] = field(default_factory=list)
+    instruction_class: list[Literal["load", "store", "indexed", "strided", "segmented", "vector_fp"]] = field(
+        default_factory=list
+    )
     vector_data: VectorTypeConfig | None = None
 
 

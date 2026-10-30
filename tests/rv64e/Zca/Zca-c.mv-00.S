@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 86
+#define SIGUPD_COUNT 88
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -428,6 +428,22 @@ Zca_c_mv_cg_cp_rs2_edges_0x100000001:
   # Check if x4 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x2, x8, x7, x4, Zca_c_mv_cg_cp_rs2_edges_0x100000001, Zca_c_mv_cg_cp_rs2_edges_0x100000001_str)
 
+# Testcase cp_rs2_edges (Test source rs2 value = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rd/rs1: x4 = 0xab97256985152f86
+  RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs2: x12 = 0x0000000080000000
+Zca_c_mv_cg_cp_rs2_edges_0x80000000:
+  c.mv x4, x12 # perform operation
+  # Check if x4 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x4, Zca_c_mv_cg_cp_rs2_edges_0x80000000, Zca_c_mv_cg_cp_rs2_edges_0x80000000_str)
+
+# Testcase cp_rs2_edges (Test source rs2 value = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rd/rs1: x1 = 0x6f6790721c2bffca
+  RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs2: x12 = 0x000000007fffffff
+Zca_c_mv_cg_cp_rs2_edges_0x7fffffff:
+  c.mv x1, x12 # perform operation
+  # Check if x1 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x1, Zca_c_mv_cg_cp_rs2_edges_0x7fffffff, Zca_c_mv_cg_cp_rs2_edges_0x7fffffff_str)
+
 /////////////////////////////////
 // cmp_rs1_rs2_nx0
 /////////////////////////////////
@@ -788,6 +804,10 @@ RVTEST_DATA_BEGIN
 .dword 0x0000000100000000
 .dword 0x30771b540398d43e
 .dword 0x0000000100000001
+.dword 0xab97256985152f86
+.dword 0x0000000080000000
+.dword 0x6f6790721c2bffca
+.dword 0x000000007fffffff
 .dword 0xe5a2539acbc35379
 .dword 0xcde7846359c051d2
 .dword 0x1d279da49d23aa32
@@ -896,36 +916,38 @@ Zca_c_mv_cg_cp_rs2_edges_0xffffffff_str: .string "\"test: 43; cg: Zca_c.mv_cg; c
 Zca_c_mv_cg_cp_rs2_edges_0xfffffffe_str: .string "\"test: 44; cg: Zca_c.mv_cg; cp: cp_rs2_edges; bin: 0xfffffffe\""
 Zca_c_mv_cg_cp_rs2_edges_0x100000000_str: .string "\"test: 45; cg: Zca_c.mv_cg; cp: cp_rs2_edges; bin: 0x100000000\""
 Zca_c_mv_cg_cp_rs2_edges_0x100000001_str: .string "\"test: 46; cg: Zca_c.mv_cg; cp: cp_rs2_edges; bin: 0x100000001\""
-Zca_c_mv_cg_cmp_rs1_rs2_nx0_b1_str: .string "\"test: 47; cg: Zca_c.mv_cg; cp: cmp_rs1_rs2_nx0; bin: b1\""
-Zca_c_mv_cg_cmp_rs1_rs2_nx0_b2_str: .string "\"test: 48; cg: Zca_c.mv_cg; cp: cmp_rs1_rs2_nx0; bin: b2\""
-Zca_c_mv_cg_cmp_rs1_rs2_nx0_b3_str: .string "\"test: 49; cg: Zca_c.mv_cg; cp: cmp_rs1_rs2_nx0; bin: b3\""
-Zca_c_mv_cg_cmp_rs1_rs2_nx0_b4_str: .string "\"test: 50; cg: Zca_c.mv_cg; cp: cmp_rs1_rs2_nx0; bin: b4\""
-Zca_c_mv_cg_cmp_rs1_rs2_nx0_b5_str: .string "\"test: 51; cg: Zca_c.mv_cg; cp: cmp_rs1_rs2_nx0; bin: b5\""
-Zca_c_mv_cg_cmp_rs1_rs2_nx0_b6_str: .string "\"test: 52; cg: Zca_c.mv_cg; cp: cmp_rs1_rs2_nx0; bin: b6\""
-Zca_c_mv_cg_cmp_rs1_rs2_nx0_b7_str: .string "\"test: 53; cg: Zca_c.mv_cg; cp: cmp_rs1_rs2_nx0; bin: b7\""
-Zca_c_mv_cg_cmp_rs1_rs2_nx0_b8_str: .string "\"test: 54; cg: Zca_c.mv_cg; cp: cmp_rs1_rs2_nx0; bin: b8\""
-Zca_c_mv_cg_cmp_rs1_rs2_nx0_b9_str: .string "\"test: 55; cg: Zca_c.mv_cg; cp: cmp_rs1_rs2_nx0; bin: b9\""
-Zca_c_mv_cg_cmp_rs1_rs2_nx0_b10_str: .string "\"test: 56; cg: Zca_c.mv_cg; cp: cmp_rs1_rs2_nx0; bin: b10\""
-Zca_c_mv_cg_cmp_rs1_rs2_nx0_b11_str: .string "\"test: 57; cg: Zca_c.mv_cg; cp: cmp_rs1_rs2_nx0; bin: b11\""
-Zca_c_mv_cg_cmp_rs1_rs2_nx0_b12_str: .string "\"test: 58; cg: Zca_c.mv_cg; cp: cmp_rs1_rs2_nx0; bin: b12\""
-Zca_c_mv_cg_cmp_rs1_rs2_nx0_b13_str: .string "\"test: 59; cg: Zca_c.mv_cg; cp: cmp_rs1_rs2_nx0; bin: b13\""
-Zca_c_mv_cg_cmp_rs1_rs2_nx0_b14_str: .string "\"test: 60; cg: Zca_c.mv_cg; cp: cmp_rs1_rs2_nx0; bin: b14\""
-Zca_c_mv_cg_cmp_rs1_rs2_nx0_b15_str: .string "\"test: 61; cg: Zca_c.mv_cg; cp: cmp_rs1_rs2_nx0; bin: b15\""
-Zca_c_mv_cg_cp_c_hint_mv_rs21_str: .string "\"test: 62; cg: Zca_c.mv_cg; cp: cp_c_hint_mv; bin: rs21\""
-Zca_c_mv_cg_cp_c_hint_mv_rs22_str: .string "\"test: 63; cg: Zca_c.mv_cg; cp: cp_c_hint_mv; bin: rs22\""
-Zca_c_mv_cg_cp_c_hint_mv_rs23_str: .string "\"test: 64; cg: Zca_c.mv_cg; cp: cp_c_hint_mv; bin: rs23\""
-Zca_c_mv_cg_cp_c_hint_mv_rs24_str: .string "\"test: 65; cg: Zca_c.mv_cg; cp: cp_c_hint_mv; bin: rs24\""
-Zca_c_mv_cg_cp_c_hint_mv_rs25_str: .string "\"test: 66; cg: Zca_c.mv_cg; cp: cp_c_hint_mv; bin: rs25\""
-Zca_c_mv_cg_cp_c_hint_mv_rs26_str: .string "\"test: 67; cg: Zca_c.mv_cg; cp: cp_c_hint_mv; bin: rs26\""
-Zca_c_mv_cg_cp_c_hint_mv_rs27_str: .string "\"test: 68; cg: Zca_c.mv_cg; cp: cp_c_hint_mv; bin: rs27\""
-Zca_c_mv_cg_cp_c_hint_mv_rs28_str: .string "\"test: 69; cg: Zca_c.mv_cg; cp: cp_c_hint_mv; bin: rs28\""
-Zca_c_mv_cg_cp_c_hint_mv_rs29_str: .string "\"test: 70; cg: Zca_c.mv_cg; cp: cp_c_hint_mv; bin: rs29\""
-Zca_c_mv_cg_cp_c_hint_mv_rs210_str: .string "\"test: 71; cg: Zca_c.mv_cg; cp: cp_c_hint_mv; bin: rs210\""
-Zca_c_mv_cg_cp_c_hint_mv_rs211_str: .string "\"test: 72; cg: Zca_c.mv_cg; cp: cp_c_hint_mv; bin: rs211\""
-Zca_c_mv_cg_cp_c_hint_mv_rs212_str: .string "\"test: 73; cg: Zca_c.mv_cg; cp: cp_c_hint_mv; bin: rs212\""
-Zca_c_mv_cg_cp_c_hint_mv_rs213_str: .string "\"test: 74; cg: Zca_c.mv_cg; cp: cp_c_hint_mv; bin: rs213\""
-Zca_c_mv_cg_cp_c_hint_mv_rs214_str: .string "\"test: 75; cg: Zca_c.mv_cg; cp: cp_c_hint_mv; bin: rs214\""
-Zca_c_mv_cg_cp_c_hint_mv_rs215_str: .string "\"test: 76; cg: Zca_c.mv_cg; cp: cp_c_hint_mv; bin: rs215\""
+Zca_c_mv_cg_cp_rs2_edges_0x80000000_str: .string "\"test: 47; cg: Zca_c.mv_cg; cp: cp_rs2_edges; bin: 0x80000000\""
+Zca_c_mv_cg_cp_rs2_edges_0x7fffffff_str: .string "\"test: 48; cg: Zca_c.mv_cg; cp: cp_rs2_edges; bin: 0x7fffffff\""
+Zca_c_mv_cg_cmp_rs1_rs2_nx0_b1_str: .string "\"test: 49; cg: Zca_c.mv_cg; cp: cmp_rs1_rs2_nx0; bin: b1\""
+Zca_c_mv_cg_cmp_rs1_rs2_nx0_b2_str: .string "\"test: 50; cg: Zca_c.mv_cg; cp: cmp_rs1_rs2_nx0; bin: b2\""
+Zca_c_mv_cg_cmp_rs1_rs2_nx0_b3_str: .string "\"test: 51; cg: Zca_c.mv_cg; cp: cmp_rs1_rs2_nx0; bin: b3\""
+Zca_c_mv_cg_cmp_rs1_rs2_nx0_b4_str: .string "\"test: 52; cg: Zca_c.mv_cg; cp: cmp_rs1_rs2_nx0; bin: b4\""
+Zca_c_mv_cg_cmp_rs1_rs2_nx0_b5_str: .string "\"test: 53; cg: Zca_c.mv_cg; cp: cmp_rs1_rs2_nx0; bin: b5\""
+Zca_c_mv_cg_cmp_rs1_rs2_nx0_b6_str: .string "\"test: 54; cg: Zca_c.mv_cg; cp: cmp_rs1_rs2_nx0; bin: b6\""
+Zca_c_mv_cg_cmp_rs1_rs2_nx0_b7_str: .string "\"test: 55; cg: Zca_c.mv_cg; cp: cmp_rs1_rs2_nx0; bin: b7\""
+Zca_c_mv_cg_cmp_rs1_rs2_nx0_b8_str: .string "\"test: 56; cg: Zca_c.mv_cg; cp: cmp_rs1_rs2_nx0; bin: b8\""
+Zca_c_mv_cg_cmp_rs1_rs2_nx0_b9_str: .string "\"test: 57; cg: Zca_c.mv_cg; cp: cmp_rs1_rs2_nx0; bin: b9\""
+Zca_c_mv_cg_cmp_rs1_rs2_nx0_b10_str: .string "\"test: 58; cg: Zca_c.mv_cg; cp: cmp_rs1_rs2_nx0; bin: b10\""
+Zca_c_mv_cg_cmp_rs1_rs2_nx0_b11_str: .string "\"test: 59; cg: Zca_c.mv_cg; cp: cmp_rs1_rs2_nx0; bin: b11\""
+Zca_c_mv_cg_cmp_rs1_rs2_nx0_b12_str: .string "\"test: 60; cg: Zca_c.mv_cg; cp: cmp_rs1_rs2_nx0; bin: b12\""
+Zca_c_mv_cg_cmp_rs1_rs2_nx0_b13_str: .string "\"test: 61; cg: Zca_c.mv_cg; cp: cmp_rs1_rs2_nx0; bin: b13\""
+Zca_c_mv_cg_cmp_rs1_rs2_nx0_b14_str: .string "\"test: 62; cg: Zca_c.mv_cg; cp: cmp_rs1_rs2_nx0; bin: b14\""
+Zca_c_mv_cg_cmp_rs1_rs2_nx0_b15_str: .string "\"test: 63; cg: Zca_c.mv_cg; cp: cmp_rs1_rs2_nx0; bin: b15\""
+Zca_c_mv_cg_cp_c_hint_mv_rs21_str: .string "\"test: 64; cg: Zca_c.mv_cg; cp: cp_c_hint_mv; bin: rs21\""
+Zca_c_mv_cg_cp_c_hint_mv_rs22_str: .string "\"test: 65; cg: Zca_c.mv_cg; cp: cp_c_hint_mv; bin: rs22\""
+Zca_c_mv_cg_cp_c_hint_mv_rs23_str: .string "\"test: 66; cg: Zca_c.mv_cg; cp: cp_c_hint_mv; bin: rs23\""
+Zca_c_mv_cg_cp_c_hint_mv_rs24_str: .string "\"test: 67; cg: Zca_c.mv_cg; cp: cp_c_hint_mv; bin: rs24\""
+Zca_c_mv_cg_cp_c_hint_mv_rs25_str: .string "\"test: 68; cg: Zca_c.mv_cg; cp: cp_c_hint_mv; bin: rs25\""
+Zca_c_mv_cg_cp_c_hint_mv_rs26_str: .string "\"test: 69; cg: Zca_c.mv_cg; cp: cp_c_hint_mv; bin: rs26\""
+Zca_c_mv_cg_cp_c_hint_mv_rs27_str: .string "\"test: 70; cg: Zca_c.mv_cg; cp: cp_c_hint_mv; bin: rs27\""
+Zca_c_mv_cg_cp_c_hint_mv_rs28_str: .string "\"test: 71; cg: Zca_c.mv_cg; cp: cp_c_hint_mv; bin: rs28\""
+Zca_c_mv_cg_cp_c_hint_mv_rs29_str: .string "\"test: 72; cg: Zca_c.mv_cg; cp: cp_c_hint_mv; bin: rs29\""
+Zca_c_mv_cg_cp_c_hint_mv_rs210_str: .string "\"test: 73; cg: Zca_c.mv_cg; cp: cp_c_hint_mv; bin: rs210\""
+Zca_c_mv_cg_cp_c_hint_mv_rs211_str: .string "\"test: 74; cg: Zca_c.mv_cg; cp: cp_c_hint_mv; bin: rs211\""
+Zca_c_mv_cg_cp_c_hint_mv_rs212_str: .string "\"test: 75; cg: Zca_c.mv_cg; cp: cp_c_hint_mv; bin: rs212\""
+Zca_c_mv_cg_cp_c_hint_mv_rs213_str: .string "\"test: 76; cg: Zca_c.mv_cg; cp: cp_c_hint_mv; bin: rs213\""
+Zca_c_mv_cg_cp_c_hint_mv_rs214_str: .string "\"test: 77; cg: Zca_c.mv_cg; cp: cp_c_hint_mv; bin: rs214\""
+Zca_c_mv_cg_cp_c_hint_mv_rs215_str: .string "\"test: 78; cg: Zca_c.mv_cg; cp: cp_c_hint_mv; bin: rs215\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

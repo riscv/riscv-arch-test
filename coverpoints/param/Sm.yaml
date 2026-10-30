@@ -3,7 +3,10 @@
 parameter_definitions:
   - name: MXLEN
     coverpoint: ["all tests"]
-    effect: "Implicitly tested by all the XLEN-dependent tests (e.g. add would fail if XLEN is wrong)"
+    effect:
+      [
+        "Implicitly tested by all the XLEN-dependent tests (e.g. add would fail if XLEN is wrong)",
+      ]
   - name: MISA_CSR_IMPLEMENTED
     coverpoint: ["cp_mcsr_access"]
     effect: ["misa bin results depend on parameter"]

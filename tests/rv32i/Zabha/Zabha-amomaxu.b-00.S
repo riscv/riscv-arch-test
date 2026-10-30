@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 490
+#define SIGUPD_COUNT 508
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -3316,6 +3316,131 @@ Zabha_amomaxu_b_cg_cp_align_byte_b7:
   RVTEST_SIGUPD(x6, x8, x7, x17, Zabha_amomaxu_b_cg_cp_align_byte_b7, Zabha_amomaxu_b_cg_cp_align_byte_b7_str)
 
 
+/////////////////////////////////
+// cp_memval_byte
+/////////////////////////////////
+
+# Testcase cp_memval_byte (memory value = 0x0)
+  RVTEST_TESTDATA_LOAD_INT(x2, x10) # load value in memory: x10 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x9) # load rs2: x9 = 0x7eeed790
+  LA(x19, scratch) # load base address into rs1
+  SREG x10, 0(x19) # store value into memory at address in rs1
+Zabha_amomaxu_b_cg_cp_memval_byte_0x0:
+  amomaxu.b x16, x9, (x19) # perform operation
+  # Check if x16 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x16, Zabha_amomaxu_b_cg_cp_memval_byte_0x0, Zabha_amomaxu_b_cg_cp_memval_byte_0x0_str)
+  LREG x19, 0(x19) # Load the updated value from memory
+  # Check if x19 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x19, Zabha_amomaxu_b_cg_cp_memval_byte_0x0, Zabha_amomaxu_b_cg_cp_memval_byte_0x0_str)
+
+# Testcase cp_memval_byte (memory value = 0x1)
+  RVTEST_TESTDATA_LOAD_INT(x2, x26) # load value in memory: x26 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x25) # load rs2: x25 = 0xfc5de68a
+  LA(x5, scratch) # load base address into rs1
+  SREG x26, 0(x5) # store value into memory at address in rs1
+Zabha_amomaxu_b_cg_cp_memval_byte_0x1:
+  amomaxu.b x4, x25, (x5) # perform operation
+  # Check if x4 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x4, Zabha_amomaxu_b_cg_cp_memval_byte_0x1, Zabha_amomaxu_b_cg_cp_memval_byte_0x1_str)
+  LREG x5, 0(x5) # Load the updated value from memory
+  # Check if x5 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x5, Zabha_amomaxu_b_cg_cp_memval_byte_0x1, Zabha_amomaxu_b_cg_cp_memval_byte_0x1_str)
+
+# Testcase cp_memval_byte (memory value = 0x7f)
+  RVTEST_TESTDATA_LOAD_INT(x2, x4) # load value in memory: x4 = 0x0000007f
+  RVTEST_TESTDATA_LOAD_INT(x2, x1) # load rs2: x1 = 0x209adc0a
+  LA(x5, scratch) # load base address into rs1
+  SREG x4, 0(x5) # store value into memory at address in rs1
+Zabha_amomaxu_b_cg_cp_memval_byte_0x7f:
+  amomaxu.b x24, x1, (x5) # perform operation
+  # Check if x24 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x24, Zabha_amomaxu_b_cg_cp_memval_byte_0x7f, Zabha_amomaxu_b_cg_cp_memval_byte_0x7f_str)
+  LREG x5, 0(x5) # Load the updated value from memory
+  # Check if x5 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x5, Zabha_amomaxu_b_cg_cp_memval_byte_0x7f, Zabha_amomaxu_b_cg_cp_memval_byte_0x7f_str)
+
+# Testcase cp_memval_byte (memory value = 0x80)
+  RVTEST_TESTDATA_LOAD_INT(x2, x18) # load value in memory: x18 = 0x00000080
+  RVTEST_TESTDATA_LOAD_INT(x2, x17) # load rs2: x17 = 0xa50c027a
+  LA(x1, scratch) # load base address into rs1
+  SREG x18, 0(x1) # store value into memory at address in rs1
+Zabha_amomaxu_b_cg_cp_memval_byte_0x80:
+  amomaxu.b x10, x17, (x1) # perform operation
+  # Check if x10 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x10, Zabha_amomaxu_b_cg_cp_memval_byte_0x80, Zabha_amomaxu_b_cg_cp_memval_byte_0x80_str)
+  LREG x1, 0(x1) # Load the updated value from memory
+  # Check if x1 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x1, Zabha_amomaxu_b_cg_cp_memval_byte_0x80, Zabha_amomaxu_b_cg_cp_memval_byte_0x80_str)
+
+# Testcase cp_memval_byte (memory value = 0xff)
+  RVTEST_TESTDATA_LOAD_INT(x2, x18) # load value in memory: x18 = 0x000000ff
+  RVTEST_TESTDATA_LOAD_INT(x2, x31) # load rs2: x31 = 0x1b5da8df
+  LA(x9, scratch) # load base address into rs1
+  SREG x18, 0(x9) # store value into memory at address in rs1
+Zabha_amomaxu_b_cg_cp_memval_byte_0xff:
+  amomaxu.b x26, x31, (x9) # perform operation
+  # Check if x26 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x26, Zabha_amomaxu_b_cg_cp_memval_byte_0xff, Zabha_amomaxu_b_cg_cp_memval_byte_0xff_str)
+  LREG x9, 0(x9) # Load the updated value from memory
+  # Check if x9 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x9, Zabha_amomaxu_b_cg_cp_memval_byte_0xff, Zabha_amomaxu_b_cg_cp_memval_byte_0xff_str)
+
+/////////////////////////////////
+// cp_custom_amo_aqrl
+/////////////////////////////////
+
+# Testcase cp_custom_aqrl (ordering suffix = '')
+  RVTEST_TESTDATA_LOAD_INT(x2, x19) # load value in memory: x19 = 0x09419e46
+  RVTEST_TESTDATA_LOAD_INT(x2, x12) # load rs2: x12 = 0x8c257372
+  LA(x22, scratch) # load base address into rs1
+  SREG x19, 0(x22) # store value into memory at address in rs1
+Zabha_amomaxu_b_cg_cp_custom_aqrl:
+  amomaxu.b x11, x12, (x22) # perform operation
+  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x11, Zabha_amomaxu_b_cg_cp_custom_aqrl, Zabha_amomaxu_b_cg_cp_custom_aqrl_str)
+  LREG x22, 0(x22) # Load the updated value from memory
+  # Check if x22 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x22, Zabha_amomaxu_b_cg_cp_custom_aqrl, Zabha_amomaxu_b_cg_cp_custom_aqrl_str)
+
+# Testcase cp_custom_aqrl (ordering suffix = '.aq')
+  RVTEST_TESTDATA_LOAD_INT(x2, x27) # load value in memory: x27 = 0x6391b1f3
+  RVTEST_TESTDATA_LOAD_INT(x2, x23) # load rs2: x23 = 0x39f1a312
+  LA(x9, scratch) # load base address into rs1
+  SREG x27, 0(x9) # store value into memory at address in rs1
+Zabha_amomaxu_b_cg_cp_custom_aqrl_aq:
+  amomaxu.b.aq x16, x23, (x9) # perform operation
+  # Check if x16 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x16, Zabha_amomaxu_b_cg_cp_custom_aqrl_aq, Zabha_amomaxu_b_cg_cp_custom_aqrl_aq_str)
+  LREG x9, 0(x9) # Load the updated value from memory
+  # Check if x9 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x9, Zabha_amomaxu_b_cg_cp_custom_aqrl_aq, Zabha_amomaxu_b_cg_cp_custom_aqrl_aq_str)
+
+# Testcase cp_custom_aqrl (ordering suffix = '.rl')
+  RVTEST_TESTDATA_LOAD_INT(x2, x4) # load value in memory: x4 = 0x13a6253b
+  RVTEST_TESTDATA_LOAD_INT(x2, x27) # load rs2: x27 = 0xdc11ee1b
+  LA(x18, scratch) # load base address into rs1
+  SREG x4, 0(x18) # store value into memory at address in rs1
+Zabha_amomaxu_b_cg_cp_custom_aqrl_rl:
+  amomaxu.b.rl x5, x27, (x18) # perform operation
+  # Check if x5 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x5, Zabha_amomaxu_b_cg_cp_custom_aqrl_rl, Zabha_amomaxu_b_cg_cp_custom_aqrl_rl_str)
+  LREG x18, 0(x18) # Load the updated value from memory
+  # Check if x18 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x18, Zabha_amomaxu_b_cg_cp_custom_aqrl_rl, Zabha_amomaxu_b_cg_cp_custom_aqrl_rl_str)
+
+# Testcase cp_custom_aqrl (ordering suffix = '.aqrl')
+  RVTEST_TESTDATA_LOAD_INT(x2, x28) # load value in memory: x28 = 0xee35fbff
+  RVTEST_TESTDATA_LOAD_INT(x2, x13) # load rs2: x13 = 0x31df10cb
+  LA(x19, scratch) # load base address into rs1
+  SREG x28, 0(x19) # store value into memory at address in rs1
+Zabha_amomaxu_b_cg_cp_custom_aqrl_aqrl:
+  amomaxu.b.aqrl x17, x13, (x19) # perform operation
+  # Check if x17 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x17, Zabha_amomaxu_b_cg_cp_custom_aqrl_aqrl, Zabha_amomaxu_b_cg_cp_custom_aqrl_aqrl_str)
+  LREG x19, 0(x19) # Load the updated value from memory
+  # Check if x19 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x19, Zabha_amomaxu_b_cg_cp_custom_aqrl_aqrl, Zabha_amomaxu_b_cg_cp_custom_aqrl_aqrl_str)
+
   mv x2, x6 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -3805,6 +3930,24 @@ RVTEST_DATA_BEGIN
 .word 0xaad4c001
 .word 0xd1b16b15
 .word 0x6b48208e
+.word 0x00000000
+.word 0x7eeed790
+.word 0x00000001
+.word 0xfc5de68a
+.word 0x0000007f
+.word 0x209adc0a
+.word 0x00000080
+.word 0xa50c027a
+.word 0x000000ff
+.word 0x1b5da8df
+.word 0x09419e46
+.word 0x8c257372
+.word 0x6391b1f3
+.word 0x39f1a312
+.word 0x13a6253b
+.word 0xdc11ee1b
+.word 0xee35fbff
+.word 0x31df10cb
 
 // Testcase strings
 Zabha_amomaxu_b_cg_cp_rs1_nx0_b1_str: .string "\"test: 1; cg: Zabha_amomaxu.b_cg; cp: cp_rs1_nx0; bin: b1\""
@@ -4047,6 +4190,15 @@ Zabha_amomaxu_b_cg_cp_align_byte_b4_str: .string "\"test: 237; cg: Zabha_amomaxu
 Zabha_amomaxu_b_cg_cp_align_byte_b5_str: .string "\"test: 238; cg: Zabha_amomaxu.b_cg; cp: cp_align_byte; bin: b5\""
 Zabha_amomaxu_b_cg_cp_align_byte_b6_str: .string "\"test: 239; cg: Zabha_amomaxu.b_cg; cp: cp_align_byte; bin: b6\""
 Zabha_amomaxu_b_cg_cp_align_byte_b7_str: .string "\"test: 240; cg: Zabha_amomaxu.b_cg; cp: cp_align_byte; bin: b7\""
+Zabha_amomaxu_b_cg_cp_memval_byte_0x0_str: .string "\"test: 241; cg: Zabha_amomaxu.b_cg; cp: cp_memval_byte; bin: 0x0\""
+Zabha_amomaxu_b_cg_cp_memval_byte_0x1_str: .string "\"test: 242; cg: Zabha_amomaxu.b_cg; cp: cp_memval_byte; bin: 0x1\""
+Zabha_amomaxu_b_cg_cp_memval_byte_0x7f_str: .string "\"test: 243; cg: Zabha_amomaxu.b_cg; cp: cp_memval_byte; bin: 0x7f\""
+Zabha_amomaxu_b_cg_cp_memval_byte_0x80_str: .string "\"test: 244; cg: Zabha_amomaxu.b_cg; cp: cp_memval_byte; bin: 0x80\""
+Zabha_amomaxu_b_cg_cp_memval_byte_0xff_str: .string "\"test: 245; cg: Zabha_amomaxu.b_cg; cp: cp_memval_byte; bin: 0xff\""
+Zabha_amomaxu_b_cg_cp_custom_aqrl_str: .string "\"test: 246; cg: Zabha_amomaxu.b_cg; cp: cp_custom_aqrl; bin: \""
+Zabha_amomaxu_b_cg_cp_custom_aqrl_aq_str: .string "\"test: 247; cg: Zabha_amomaxu.b_cg; cp: cp_custom_aqrl; bin: .aq\""
+Zabha_amomaxu_b_cg_cp_custom_aqrl_rl_str: .string "\"test: 248; cg: Zabha_amomaxu.b_cg; cp: cp_custom_aqrl; bin: .rl\""
+Zabha_amomaxu_b_cg_cp_custom_aqrl_aqrl_str: .string "\"test: 249; cg: Zabha_amomaxu.b_cg; cp: cp_custom_aqrl; bin: .aqrl\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

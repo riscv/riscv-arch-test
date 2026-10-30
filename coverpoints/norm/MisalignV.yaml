@@ -15,7 +15,7 @@ normative_rule_definitions:
   # If an element accessed by a vector memory instruction is not naturally aligned to the size of the
   # element, either the element is transferred successfully or an address-misaligned exception is
   # raised on that element.
-  - name: VECTOR_LS_MISALIGNED_EXCEPTION
+  - name: vector_ls_misaligned_exception
     coverpoint:
       [
         "{MisalignV_vle16_v_cg,MisalignV_vle32_v_cg,MisalignV_vle64_v_cg,MisalignV_vle8_v_cg}/{cp_misalignv_ls_element_misaligned}",
@@ -31,7 +31,7 @@ normative_rule_definitions:
   # Implementations are allowed to raise a misaligned address exception on whole register loads and
   # stores if the base address is not naturally aligned to the larger of the size of the encoded EEW in
   # bytes (EEW/8) or the implementation's smallest supported SEW size in bytes (SEWMIN/8).
-  - name: VECTOR_LS_WHOLEREG_MISALIGNED_EXCEPTION
+  - name: vector_ls_wholereg_misaligned_exception
     coverpoint:
       [
         "{MisalignV_vl1re16_v_cg,MisalignV_vl1re32_v_cg,MisalignV_vl1re64_v_cg,MisalignV_vl1re8_v_cg,MisalignV_vl2re16_v_cg,MisalignV_vl2re32_v_cg,MisalignV_vl2re64_v_cg,MisalignV_vl2re8_v_cg,MisalignV_vl4re16_v_cg,MisalignV_vl4re32_v_cg,MisalignV_vl4re64_v_cg,MisalignV_vl4re8_v_cg,MisalignV_vl8re16_v_cg,MisalignV_vl8re32_v_cg,MisalignV_vl8re64_v_cg,MisalignV_vl8re8_v_cg,MisalignV_vs1r_v_cg,MisalignV_vs2r_v_cg,MisalignV_vs4r_v_cg,MisalignV_vs8r_v_cg}/{cp_misalignv_ls_wholereg_misaligned}",
@@ -52,7 +52,7 @@ normative_rule_definitions:
 
   # If the Zicclsm extension is implemented, then misaligned loads and stores to main memory regions
   # with both the coherence and cacheability PMAs must be supported.
-  - name: zicclsm_misaligned_support
+  - name: Zicclsm_misaligned_support
     # The Zicclsm chapter notes that this definition includes vector memory accesses. On a Zicclsm
     # configuration every access in this suite must therefore complete without an exception. The
     # full mapping for this rule, including the scalar suites, is in Zicclsm.yaml.

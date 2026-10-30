@@ -39,23 +39,31 @@ for an example.
 ### Normative Rule - Coverpoint Mapping
 
 Both privileged and unprivileged suites need a mapping between the normative
-rules and coverpoints. This mapping is a YAML file in `coverpoints/norm`
-containing a list of rule names and the coverpoints that exercise them. There
-should be one YAML for each test suite.
+rules and coverpoints. Each `norm:` tag in the ISA manual is one normative rule,
+named by the tag without the `norm:` prefix (e.g. `norm:mstatus_mie_op` is the rule
+`mstatus_mie_op`). The mapping is a YAML file in `coverpoints/norm` containing a
+list of rule names and the coverpoints that exercise them. There should be one
+YAML for each test suite.
 
 Instead of typing this YAML from scratch, it is easier to make an outline
 from the normative rules already in the `riscv-isa-manual` repo. Make sure
 you have a current copy of `riscv-isa-manual` and have run `make` successfully in that repo
-to build the `normative_rule_defs` subdirectory and `build/norm-rules.json`.
+to build `build/norm-rules.json`.
 Then invoke `generators/ctp/generate_norm_rule_coverpoint_templates.py` to
 create one yaml file per ISA manual chapter in `coverpoints/norm/yaml/chapters`.
 (You may need to edit `riscv_isa_manual_dir` in the Python file to point to
 its location in your tree). Then copy the yaml from the chapter related to the
-test suite up two levels (e.g. `cp coverpoints/norm/yaml/chapters/machine.yaml coverpoints/norm/Sm.yaml`) and edit it.
+test suite up two levels (e.g. `cp coverpoints/norm/yaml/chapters/machine-level-isa-version-1-13.yaml coverpoints/norm/Sm.yaml`) and edit it.
 
 When you run `make` in the `ctp` directory, the YAML file is parsed to build an
 ASCIIDoc file (in `ctp/norm`) with a table of normative rule names, definitions, and associated coverpoints. Include this file in the CTP with
 `include::norm/Sm_norm_rules.adoc[]`
+
+Every rule name must be a tag in the ISA manual snapshot's `norm-rules.json`, or
+the CTP build fails. A suite whose rules are not yet tagged in the ISA manual
+says where the tags are pending with a top-level key, such as
+`untagged_upstream: riscv/riscv-isa-manual#3416`. Its unknown names are then
+warnings instead of errors. Remove the key once the tags reach the snapshot.
 
 ### Parameter Lists
 
@@ -82,7 +90,7 @@ test suite
 
 - **Test file**: A complete `.S` assembly file that is compiled into a self-checking ELF. Each test file contains one or more test chunks. When an instruction has many testcases (e.g., hundreds of register/immediate combinations), the framework splits the chunks across multiple test files using `TESTCASES_PER_FILE` as the limit. Test files are named like `I-add-00.S`, `I-add-01.S`, etc., where the suffix indicates the file index. Privileged tests use the same length-based splitting (limit `TESTCASES_PER_PRIV_FILE`) and can additionally be split into named groups — see [Splitting Privileged Tests](#splitting-privileged-tests).
 
-- **Test suite**: All test files in a given directory. Each test suite corresponds to one extension or combination of extensions (e.g., `I`, `Zcb`, `ZcbZbb`, `ExceptionsSm`) and maps to a single coverage file. Unprivileged test suites contain one or more test files per instruction. For privileged tests, a test suite contains one or more test files covering all coverpoints for that feature — a single file unless splitting kicks in.
+- **Test suite**: All test files in a given directory. Each test suite corresponds to one extension or combination of extensions (e.g., `I`, `Zcb`, `Zicclsm`, `ExceptionsSm`) and maps to a single coverage file. Unprivileged test suites contain one or more test files per instruction. For privileged tests, a test suite contains one or more test files covering all coverpoints for that feature — a single file unless splitting kicks in.
 
 ## Test YAML Header
 
@@ -272,6 +280,7 @@ All testplan CSVs must include the following keys:
 - `Instruction`: The instruction mnemonic. For example, `add`, `mul`, `fadd.d`, etc.
 - `Type`: The instruction type. Note that these types are more specific than the ISA manual types and take the kind of register, size of immediate, etc. into account. For example, `R`, `I`, `IS`, `ISW`. TODO: Document the list of instruction types?
 - `RV32`/`RV64`: Which XLENs the instruction exists for. Place an `x` in the relevant columns.
+- `ExtraExtensions` (optional, after `RV64`): Extensions a row needs beyond the testplan's own, separated by colons (e.g. `D` or `Zfh:D`). Leave it empty for ordinary rows. The row's tests go in the testplan's suite directory as `<suite><ext>[<ext>...]-<instr>-NN.S`, with the extensions added to `REQUIRED_EXTENSIONS` in the test header, and its covergroups are named `<suite><ext>[<ext>...]_<instr>_cg` inside an `` `ifdef <EXT>_SUPPORTED `` for each extension. For example, the `D` rows of [`Zfhmin.csv`](../testplans/Zfhmin.csv) produce `ZfhminD-flh-00.S` and `ZfhminD_flh_cg`, which apply only when D is also implemented, and the `Zfh:D` rows of [`Zfa.csv`](../testplans/Zfa.csv) produce `ZfaZfhD-fli.h-00.S` and `ZfaZfhD_fli_h_cg`.
 - coverpoints: Which coverpoints apply to the instruction. Place an `x` in the column corresponding to the relevant coverpoints in each instruction's row.
   - Some coverpoints have multiple variants. To indicate that a variant of the coverpoint should be used for a particular instruction, use the variant's suffix in the CSV instead of an `x`. See the `20bit` variant of the `cp_imm_edges` coverpoint for the `auipc` instruction below.
 
@@ -467,7 +476,7 @@ case statement.
 All instruction sample templates must match the following format:
 
 ```sv
-        "INSTR"     : begin
+        "@INSTR@"     : begin
             ins.add_rd(0);
             ins.add_rs1(1);
             ins.add_rs2(2);
@@ -583,7 +592,7 @@ Each tab should have the following columns:
 - Description: a precise statement of the conditions being checked, suitable for somebody other than the author to turn into coverpoints and tests.
 - Expectation: what will happen (e.g. trap, CSR takes on a value, etc.)
 - Bins: Number of bins, expressed as a product of independent states where possible to help the test writer confirm the intended number of possibilities have been exercised. (e.g. "2 MIE \* 2 TW", where each of these signals has two possibilities, giving 4 bins).
-- Normative Rule: (optional) name of associated normative rule. Not all coverpoints have to be driven by normative rules; some may exercise combinations of features.
+- Normative Rule: (optional) name of associated normative rule (the ISA manual tag name without `norm:`). Not all coverpoints have to be driven by normative rules; some may exercise combinations of features.
 
 ### Adding New Privileged Coverpoints
 
@@ -710,8 +719,8 @@ def make_sm(test_data: TestData) -> list[TestChunk]:
     """Generate tests for Sm machine-mode testsuite."""
     test_chunks: list[TestChunk] = []
     tc = test_data.begin_test_chunk()
-    tc.code.extend(_generate_mcause_tests(test_data))
-    tc.code.extend(_generate_mstatus_sd_tests(test_data))
+    tc.code.extend(xcause_write_tests(test_data, "mcause", "Sm_mcause_cg"))
+    tc.code.extend(xstatus_sd_tests(test_data, "mstatus", "Sm_mstatus_cg", "cp_mstatus_sd_write"))
     tc.code.extend(_generate_priv_inst_tests(test_data))
     tc.code.extend(_generate_mret_tests(test_data))
     tc.code.extend(_generate_sret_tests(test_data))
@@ -727,7 +736,7 @@ There are a few important gotchas to keep in mind when writing privileged tests:
 
 - There should be no loops in the assembly code. Loops make debugging difficult and prevent testcases from being uniquely associated with debug strings. Instead, use loops in the Python generator to emit repetitive assembly.
 
-For examples of how to write the individual coverpoint helper functions for privileged test generators, review [`Sm.py`](../generators/testgen/src/testgen/priv/extensions/Sm.py) and [`ExceptionsZc.py`](../generators/testgen/src/testgen/priv/extensions/ExceptionsZc.py). Here are a few additional notes that apply to all privileged test helper functions:
+For examples of how to write the individual coverpoint helper functions for privileged test generators, review [`Sm.py`](../generators/testgen/src/testgen/priv/extensions/Sm.py) and [`ExceptionsZc.py`](../generators/testgen/src/testgen/priv/extensions/exceptions/ExceptionsZc.py). Here are a few additional notes that apply to all privileged test helper functions:
 
 - Do not hardcode register numbers. Instead use the register allocator described above for unprivileged coverpoints (`test_data.int_regs.get_registers(3)`, etc.).
 - Begin each coverpoint with a call to `comment_banner(coverpoint, "comments")` to add a descriptive marker to the generated test.
@@ -751,9 +760,13 @@ To opt in to named splits, pass a name to `test_data.begin_test_chunk(split_name
 
 Length-based splitting still applies _within_ each named group, so a large named scope can still become `<testsuite>_<split_name>-00.S`, `<testsuite>_<split_name>-01.S`, etc.
 
+A suite can also hold tests that need an extension beyond the suite's own, such as the floating-point tests of Sm. Register their generator under the base suite with its own `required_extensions`, e.g. `add_priv_test_generator("Sm", required_extensions=["Sm", "F"])`, and start its split names with the group, so its tests are `tests/priv/Sm/Sm_F-00.S` or `Sm_V_vcsr-00.S` and run only where the extra extension is supported. Name its covergroup `<suite>_<group>_cg` (`Sm_F_cg`) in the base suite's coverage file under `` `ifdef F_SUPPORTED ``, and put its test plan rows under a heading in the base suite's test plan, `testplans/priv/Sm.yaml`.
+
 ## Debugging Coverage
 
 After writing initial drafts of coverpoints and tests, run them with `make coverage EXTENSIONS=ExceptionsZc`. Omit the `--jobs` flag so they run in order and it is easier to localize which one failed. By giving the name of the test suite (e.g. ExceptionsZc), you only run the new suite of interest, saving runtime.
+
+Set `COVERAGE_SIMULATOR=verilator` to collect coverage with Verilator:
 
 You can expect syntax errors in the tests that are easy to locate based on the compiler messages.
 
@@ -826,7 +839,10 @@ To run a simulator's configs in GitHub Actions CI, create a `ci.yaml` file in th
 
 ```yaml
 ci_enabled: true # Set false to skip in CI
-exclude_extensions: "Ext1,Ext2" # Extensions to skip (optional)
+exclude_extensions: # Extensions to skip (optional), one per line
+  # Why Ext1 fails, with a link to the bug report
+  - Ext1
+  - Ext2
 apt_packages: "libfoo libbar" # apt packages needed at runtime (optional)
 install_script: ".github/scripts/install-<sim>.sh" # Build script, skipped on cache hit (optional)
 setup_script: ".github/scripts/setup-<sim>.sh" # Setup script, always run before running tests
@@ -835,7 +851,7 @@ setup_script: ".github/scripts/setup-<sim>.sh" # Setup script, always run before
 Field details:
 
 - **`ci_enabled`**: Controls whether configs under this group appear in the CI matrix. Defaults to `true` if omitted.
-- **`exclude_extensions`**: Comma-separated list of extensions to exclude when running this simulator's tests in CI. Use for known failures with the simulator so CI passes until bugs are resolved upstream.
+- **`exclude_extensions`**: YAML list of extensions to exclude when running this simulator's tests in CI, one per line, with a comment just above each entry (or group of entries) saying why it fails and linking the bug report. Use for known failures with the simulator so CI passes until bugs are resolved upstream. One entry per line keeps PRs that add or remove different exclusions from conflicting. `.github/scripts/ci_config.py --exclusions config/<sim>/ci.yaml` prints the list as the comma-separated string that `EXCLUDE_EXTENSIONS` takes, e.g. `make EXCLUDE_EXTENSIONS="$(.github/scripts/ci_config.py --exclusions config/qemu/ci.yaml)" qemu`. An entry can also name a group of tests within a suite: it excludes every test whose file name starts with the entry followed by `_` or `-`, so `Sm_mcsr_walk` excludes `Sm_mcsr_walk-00.S` through `Sm_mcsr_walk-11.S` and `I-add` excludes `I-add-00.S`. An entry ending in `-` matches only that group, not longer groups that extend its name: `S_scsr-` excludes `S_scsr-00.S` but not `S_scsr_addr-00.S`, and `S-` excludes the unnamed group `S-00.S` but not `S_F-00.S`. Exclude only the groups that fail, so the rest of the suite still runs.
 - **`apt_packages`**: Space-separated list of apt packages required to run the simulator. These are installed unconditionally (even on cache hit).
 - **`install_script`**: Path to a shell script that builds and installs the simulator. Receives the install directory as its first argument. The built simulator is cached — the script only runs on cache miss. The cache key is derived from the script's content hash, so updating the script (e.g., bumping a version) automatically invalidates the cache.
 - **`setup_script`**: Path to a shell script that sets up the simulator environment. This script is always run before running tests.

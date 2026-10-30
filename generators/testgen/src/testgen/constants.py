@@ -31,11 +31,14 @@ def indent_asm(line: str) -> str:
 TESTCASES_PER_FILE = 1000
 TESTCASES_PER_PRIV_FILE = 512
 
+# Default number of traps allocated for a privileged test that does not specify its own count.
+PRIV_TRAP_SIGUPD_COUNT = 1500
+
 # =============================================================================
 # Extension Configuration
 # =============================================================================
 
-EXPERIMENTAL_EXTENSIONS = frozenset({})
+EXPERIMENTAL_EXTENSIONS = frozenset({"Zibi"})
 
 # Extensions that should generate RV32E/RV64E variants
 # TODO: Add Zcmp and Zcmt when implemented
@@ -51,12 +54,6 @@ E_EXTENSION_TESTS = frozenset(
         "Zbs",
     }
 )
-
-# Testplan to param mapping. These names are removed from the extension list and the corresponding
-# parameter is added to the @PARAMS@ field in the header of the generated test along with the required value.
-EXTENSION_PARAM_MAP = {
-    "Misalign": "MISALIGNED_LDST: true",
-}
 
 # =============================================================================
 # FLEN Mapping

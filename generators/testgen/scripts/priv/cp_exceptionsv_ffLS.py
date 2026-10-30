@@ -35,6 +35,7 @@ def make_exceptionsv_ffLS(instruction: str) -> None:
 
     # Setup: valid vtype, vstart=0, vl=1
     common.writeLine(f"\n# Testcase {CP}")
+    common.writeLine("#ifdef RVMODEL_ACCESS_FAULT_ADDRESS")
     from .cp_exceptionsv_LS import _emit_setup
     _emit_setup(instruction, instruction_data, sew)
 
@@ -88,3 +89,4 @@ def make_exceptionsv_ffLS(instruction: str) -> None:
         test=instruction, rd=rd, vl=1, sig_lmul=sig_lmul,
         sig_whole_register_store=sig_wr, priv=True, skip_sigupd=skip,
     )
+    common.writeLine("#endif")

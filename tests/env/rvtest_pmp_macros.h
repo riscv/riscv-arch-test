@@ -9,9 +9,9 @@
 // (0x80005008 at coverage grain 2). This makes the region's pmpaddr encode a *clean*
 // NAPOT region that matches the coverage model's STANDARD_REGION / PMP_NAPOT_REGION_START
 // and does NOT swallow the return-instruction pad (which would give a 16-byte region and
-// hang execute probes). g_napot = (GRAN>3) ? 2^GRAN : 2^(GRAN+1); words = g_napot/4.
+// hang execute probes). g_napot = (GRAN>2) ? 2^GRAN : 2^(GRAN+1); words = g_napot/4.
 // (GAS .rept cannot evaluate a C ternary, so the branch is done with the preprocessor.)
-#if UDB_PMP_GRANULARITY > 3
+#if UDB_PMP_GRANULARITY > 2
   #define PMP_NAPOT_REGION_PAD_WORDS (1 << (UDB_PMP_GRANULARITY - 2))
 #else
   #define PMP_NAPOT_REGION_PAD_WORDS (1 << (UDB_PMP_GRANULARITY - 1))

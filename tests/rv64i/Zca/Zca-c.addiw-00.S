@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 265
+#define SIGUPD_COUNT 293
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -376,6 +376,20 @@ Zca_c_addiw_cg_cp_rs1_edges_0x100000001:
   c.addiw x10, 12 # perform operation
   # Check if x10 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x19, x5, x4, x10, Zca_c_addiw_cg_cp_rs1_edges_0x100000001, Zca_c_addiw_cg_cp_rs1_edges_0x100000001_str)
+
+# Testcase cp_rs1_edges (Test source rs1 value = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x6, x18) # load rd/rs1: x18 = 0x0000000080000000
+Zca_c_addiw_cg_cp_rs1_edges_0x80000000:
+  c.addiw x18, 19 # perform operation
+  # Check if x18 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x18, Zca_c_addiw_cg_cp_rs1_edges_0x80000000, Zca_c_addiw_cg_cp_rs1_edges_0x80000000_str)
+
+# Testcase cp_rs1_edges (Test source rs1 value = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x6, x26) # load rd/rs1: x26 = 0x000000007fffffff
+Zca_c_addiw_cg_cp_rs1_edges_0x7fffffff:
+  c.addiw x26, 20 # perform operation
+  # Check if x26 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x26, Zca_c_addiw_cg_cp_rs1_edges_0x7fffffff, Zca_c_addiw_cg_cp_rs1_edges_0x7fffffff_str)
 
 /////////////////////////////////
 // cr_rs1_imm_edges_6bit
@@ -1837,6 +1851,188 @@ Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000001_immval_m0x1:
   # Check if x29 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x19, x5, x4, x29, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000001_immval_m0x1, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000001_immval_m0x1_str)
 
+# Testcase cr_rs1_imm_edges_6bit (rs1 = 0x0000000080000000, imm = 0)
+  RVTEST_TESTDATA_LOAD_INT(x6, x22) # load rd/rs1: x22 = 0x0000000080000000
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_0x0:
+  c.addiw x22, 0 # perform operation
+  # Check if x22 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x22, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_0x0, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_0x0_str)
+
+# Testcase cr_rs1_imm_edges_6bit (rs1 = 0x0000000080000000, imm = 1)
+  RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rd/rs1: x14 = 0x0000000080000000
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_0x1:
+  c.addiw x14, 1 # perform operation
+  # Check if x14 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x14, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_0x1, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_0x1_str)
+
+# Testcase cr_rs1_imm_edges_6bit (rs1 = 0x0000000080000000, imm = 2)
+  RVTEST_TESTDATA_LOAD_INT(x6, x28) # load rd/rs1: x28 = 0x0000000080000000
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_0x2:
+  c.addiw x28, 2 # perform operation
+  # Check if x28 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x28, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_0x2, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_0x2_str)
+
+# Testcase cr_rs1_imm_edges_6bit (rs1 = 0x0000000080000000, imm = 3)
+  RVTEST_TESTDATA_LOAD_INT(x6, x18) # load rd/rs1: x18 = 0x0000000080000000
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_0x3:
+  c.addiw x18, 3 # perform operation
+  # Check if x18 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x18, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_0x3, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_0x3_str)
+
+# Testcase cr_rs1_imm_edges_6bit (rs1 = 0x0000000080000000, imm = 4)
+  RVTEST_TESTDATA_LOAD_INT(x6, x27) # load rd/rs1: x27 = 0x0000000080000000
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_0x4:
+  c.addiw x27, 4 # perform operation
+  # Check if x27 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x27, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_0x4, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_0x4_str)
+
+# Testcase cr_rs1_imm_edges_6bit (rs1 = 0x0000000080000000, imm = 8)
+  RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rd/rs1: x10 = 0x0000000080000000
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_0x8:
+  c.addiw x10, 8 # perform operation
+  # Check if x10 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x10, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_0x8, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_0x8_str)
+
+# Testcase cr_rs1_imm_edges_6bit (rs1 = 0x0000000080000000, imm = 16)
+  RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rd/rs1: x11 = 0x0000000080000000
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_0x10:
+  c.addiw x11, 16 # perform operation
+  # Check if x11 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x11, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_0x10, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_0x10_str)
+
+# Testcase cr_rs1_imm_edges_6bit (rs1 = 0x0000000080000000, imm = 30)
+  RVTEST_TESTDATA_LOAD_INT(x6, x17) # load rd/rs1: x17 = 0x0000000080000000
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_0x1e:
+  c.addiw x17, 30 # perform operation
+  # Check if x17 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x17, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_0x1e, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_0x1e_str)
+
+# Testcase cr_rs1_imm_edges_6bit (rs1 = 0x0000000080000000, imm = 31)
+  RVTEST_TESTDATA_LOAD_INT(x6, x25) # load rd/rs1: x25 = 0x0000000080000000
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_0x1f:
+  c.addiw x25, 31 # perform operation
+  # Check if x25 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x25, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_0x1f, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_0x1f_str)
+
+# Testcase cr_rs1_imm_edges_6bit (rs1 = 0x0000000080000000, imm = -32)
+  RVTEST_TESTDATA_LOAD_INT(x6, x28) # load rd/rs1: x28 = 0x0000000080000000
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_m0x20:
+  c.addiw x28, -32 # perform operation
+  # Check if x28 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x28, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_m0x20, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_m0x20_str)
+
+# Testcase cr_rs1_imm_edges_6bit (rs1 = 0x0000000080000000, imm = -31)
+  RVTEST_TESTDATA_LOAD_INT(x6, x26) # load rd/rs1: x26 = 0x0000000080000000
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_m0x1f:
+  c.addiw x26, -31 # perform operation
+  # Check if x26 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x26, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_m0x1f, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_m0x1f_str)
+
+# Testcase cr_rs1_imm_edges_6bit (rs1 = 0x0000000080000000, imm = -2)
+  RVTEST_TESTDATA_LOAD_INT(x6, x20) # load rd/rs1: x20 = 0x0000000080000000
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_m0x2:
+  c.addiw x20, -2 # perform operation
+  # Check if x20 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x20, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_m0x2, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_m0x2_str)
+
+# Testcase cr_rs1_imm_edges_6bit (rs1 = 0x0000000080000000, imm = -1)
+  RVTEST_TESTDATA_LOAD_INT(x6, x24) # load rd/rs1: x24 = 0x0000000080000000
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_m0x1:
+  c.addiw x24, -1 # perform operation
+  # Check if x24 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x24, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_m0x1, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_m0x1_str)
+
+# Testcase cr_rs1_imm_edges_6bit (rs1 = 0x000000007fffffff, imm = 0)
+  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rd/rs1: x8 = 0x000000007fffffff
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_0x0:
+  c.addiw x8, 0 # perform operation
+  # Check if x8 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x8, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_0x0, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_0x0_str)
+
+# Testcase cr_rs1_imm_edges_6bit (rs1 = 0x000000007fffffff, imm = 1)
+  RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rd/rs1: x12 = 0x000000007fffffff
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_0x1:
+  c.addiw x12, 1 # perform operation
+  # Check if x12 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x12, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_0x1, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_0x1_str)
+
+# Testcase cr_rs1_imm_edges_6bit (rs1 = 0x000000007fffffff, imm = 2)
+  RVTEST_TESTDATA_LOAD_INT(x6, x24) # load rd/rs1: x24 = 0x000000007fffffff
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_0x2:
+  c.addiw x24, 2 # perform operation
+  # Check if x24 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x24, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_0x2, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_0x2_str)
+
+# Testcase cr_rs1_imm_edges_6bit (rs1 = 0x000000007fffffff, imm = 3)
+  RVTEST_TESTDATA_LOAD_INT(x6, x17) # load rd/rs1: x17 = 0x000000007fffffff
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_0x3:
+  c.addiw x17, 3 # perform operation
+  # Check if x17 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x17, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_0x3, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_0x3_str)
+
+# Testcase cr_rs1_imm_edges_6bit (rs1 = 0x000000007fffffff, imm = 4)
+  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rd/rs1: x8 = 0x000000007fffffff
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_0x4:
+  c.addiw x8, 4 # perform operation
+  # Check if x8 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x8, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_0x4, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_0x4_str)
+
+# Testcase cr_rs1_imm_edges_6bit (rs1 = 0x000000007fffffff, imm = 8)
+  RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rd/rs1: x1 = 0x000000007fffffff
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_0x8:
+  c.addiw x1, 8 # perform operation
+  # Check if x1 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x1, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_0x8, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_0x8_str)
+
+# Testcase cr_rs1_imm_edges_6bit (rs1 = 0x000000007fffffff, imm = 16)
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rd/rs1: x3 = 0x000000007fffffff
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_0x10:
+  c.addiw x3, 16 # perform operation
+  # Check if x3 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x3, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_0x10, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_0x10_str)
+
+# Testcase cr_rs1_imm_edges_6bit (rs1 = 0x000000007fffffff, imm = 30)
+  RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rd/rs1: x14 = 0x000000007fffffff
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_0x1e:
+  c.addiw x14, 30 # perform operation
+  # Check if x14 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x14, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_0x1e, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_0x1e_str)
+
+# Testcase cr_rs1_imm_edges_6bit (rs1 = 0x000000007fffffff, imm = 31)
+  RVTEST_TESTDATA_LOAD_INT(x6, x24) # load rd/rs1: x24 = 0x000000007fffffff
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_0x1f:
+  c.addiw x24, 31 # perform operation
+  # Check if x24 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x24, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_0x1f, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_0x1f_str)
+
+# Testcase cr_rs1_imm_edges_6bit (rs1 = 0x000000007fffffff, imm = -32)
+  RVTEST_TESTDATA_LOAD_INT(x6, x18) # load rd/rs1: x18 = 0x000000007fffffff
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_m0x20:
+  c.addiw x18, -32 # perform operation
+  # Check if x18 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x18, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_m0x20, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_m0x20_str)
+
+# Testcase cr_rs1_imm_edges_6bit (rs1 = 0x000000007fffffff, imm = -31)
+  RVTEST_TESTDATA_LOAD_INT(x6, x16) # load rd/rs1: x16 = 0x000000007fffffff
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_m0x1f:
+  c.addiw x16, -31 # perform operation
+  # Check if x16 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x16, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_m0x1f, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_m0x1f_str)
+
+# Testcase cr_rs1_imm_edges_6bit (rs1 = 0x000000007fffffff, imm = -2)
+  RVTEST_TESTDATA_LOAD_INT(x6, x27) # load rd/rs1: x27 = 0x000000007fffffff
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_m0x2:
+  c.addiw x27, -2 # perform operation
+  # Check if x27 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x27, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_m0x2, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_m0x2_str)
+
+# Testcase cr_rs1_imm_edges_6bit (rs1 = 0x000000007fffffff, imm = -1)
+  RVTEST_TESTDATA_LOAD_INT(x6, x20) # load rd/rs1: x20 = 0x000000007fffffff
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_m0x1:
+  c.addiw x20, -1 # perform operation
+  # Check if x20 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x20, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_m0x1, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_m0x1_str)
+
   mv x2, x19 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -1893,6 +2089,8 @@ RVTEST_DATA_BEGIN
 .dword 0x00000000fffffffe
 .dword 0x0000000100000000
 .dword 0x0000000100000001
+.dword 0x0000000080000000
+.dword 0x000000007fffffff
 .dword 0x0000000000000000
 .dword 0x0000000000000000
 .dword 0x0000000000000000
@@ -2101,6 +2299,32 @@ RVTEST_DATA_BEGIN
 .dword 0x0000000100000001
 .dword 0x0000000100000001
 .dword 0x0000000100000001
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
 
 // Testcase strings
 Zca_c_addiw_cg_cp_rs1_nx0_b1_str: .string "\"test: 1; cg: Zca_c.addiw_cg; cp: cp_rs1_nx0; bin: b1\""
@@ -2150,214 +2374,242 @@ Zca_c_addiw_cg_cp_rs1_edges_0xffffffff_str: .string "\"test: 44; cg: Zca_c.addiw
 Zca_c_addiw_cg_cp_rs1_edges_0xfffffffe_str: .string "\"test: 45; cg: Zca_c.addiw_cg; cp: cp_rs1_edges; bin: 0xfffffffe\""
 Zca_c_addiw_cg_cp_rs1_edges_0x100000000_str: .string "\"test: 46; cg: Zca_c.addiw_cg; cp: cp_rs1_edges; bin: 0x100000000\""
 Zca_c_addiw_cg_cp_rs1_edges_0x100000001_str: .string "\"test: 47; cg: Zca_c.addiw_cg; cp: cp_rs1_edges; bin: 0x100000001\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x0_immval_0x0_str: .string "\"test: 48; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x0, immval=0x0\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x0_immval_0x1_str: .string "\"test: 49; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x0, immval=0x1\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x0_immval_0x2_str: .string "\"test: 50; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x0, immval=0x2\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x0_immval_0x3_str: .string "\"test: 51; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x0, immval=0x3\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x0_immval_0x4_str: .string "\"test: 52; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x0, immval=0x4\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x0_immval_0x8_str: .string "\"test: 53; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x0, immval=0x8\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x0_immval_0x10_str: .string "\"test: 54; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x0, immval=0x10\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x0_immval_0x1e_str: .string "\"test: 55; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x0, immval=0x1e\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x0_immval_0x1f_str: .string "\"test: 56; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x0, immval=0x1f\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x0_immval_m0x20_str: .string "\"test: 57; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x0, immval=-0x20\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x0_immval_m0x1f_str: .string "\"test: 58; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x0, immval=-0x1f\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x0_immval_m0x2_str: .string "\"test: 59; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x0, immval=-0x2\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x0_immval_m0x1_str: .string "\"test: 60; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x0, immval=-0x1\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x1_immval_0x0_str: .string "\"test: 61; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x1, immval=0x0\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x1_immval_0x1_str: .string "\"test: 62; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x1, immval=0x1\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x1_immval_0x2_str: .string "\"test: 63; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x1, immval=0x2\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x1_immval_0x3_str: .string "\"test: 64; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x1, immval=0x3\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x1_immval_0x4_str: .string "\"test: 65; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x1, immval=0x4\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x1_immval_0x8_str: .string "\"test: 66; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x1, immval=0x8\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x1_immval_0x10_str: .string "\"test: 67; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x1, immval=0x10\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x1_immval_0x1e_str: .string "\"test: 68; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x1, immval=0x1e\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x1_immval_0x1f_str: .string "\"test: 69; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x1, immval=0x1f\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x1_immval_m0x20_str: .string "\"test: 70; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x1, immval=-0x20\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x1_immval_m0x1f_str: .string "\"test: 71; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x1, immval=-0x1f\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x1_immval_m0x2_str: .string "\"test: 72; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x1, immval=-0x2\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x1_immval_m0x1_str: .string "\"test: 73; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x1, immval=-0x1\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x2_immval_0x0_str: .string "\"test: 74; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x2, immval=0x0\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x2_immval_0x1_str: .string "\"test: 75; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x2, immval=0x1\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x2_immval_0x2_str: .string "\"test: 76; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x2, immval=0x2\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x2_immval_0x3_str: .string "\"test: 77; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x2, immval=0x3\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x2_immval_0x4_str: .string "\"test: 78; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x2, immval=0x4\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x2_immval_0x8_str: .string "\"test: 79; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x2, immval=0x8\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x2_immval_0x10_str: .string "\"test: 80; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x2, immval=0x10\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x2_immval_0x1e_str: .string "\"test: 81; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x2, immval=0x1e\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x2_immval_0x1f_str: .string "\"test: 82; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x2, immval=0x1f\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x2_immval_m0x20_str: .string "\"test: 83; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x2, immval=-0x20\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x2_immval_m0x1f_str: .string "\"test: 84; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x2, immval=-0x1f\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x2_immval_m0x2_str: .string "\"test: 85; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x2, immval=-0x2\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x2_immval_m0x1_str: .string "\"test: 86; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x2, immval=-0x1\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000000_immval_0x0_str: .string "\"test: 87; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000000, immval=0x0\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000000_immval_0x1_str: .string "\"test: 88; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000000, immval=0x1\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000000_immval_0x2_str: .string "\"test: 89; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000000, immval=0x2\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000000_immval_0x3_str: .string "\"test: 90; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000000, immval=0x3\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000000_immval_0x4_str: .string "\"test: 91; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000000, immval=0x4\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000000_immval_0x8_str: .string "\"test: 92; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000000, immval=0x8\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000000_immval_0x10_str: .string "\"test: 93; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000000, immval=0x10\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000000_immval_0x1e_str: .string "\"test: 94; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000000, immval=0x1e\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000000_immval_0x1f_str: .string "\"test: 95; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000000, immval=0x1f\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000000_immval_m0x20_str: .string "\"test: 96; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000000, immval=-0x20\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000000_immval_m0x1f_str: .string "\"test: 97; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000000, immval=-0x1f\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000000_immval_m0x2_str: .string "\"test: 98; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000000, immval=-0x2\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000000_immval_m0x1_str: .string "\"test: 99; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000000, immval=-0x1\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000001_immval_0x0_str: .string "\"test: 100; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000001, immval=0x0\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000001_immval_0x1_str: .string "\"test: 101; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000001, immval=0x1\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000001_immval_0x2_str: .string "\"test: 102; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000001, immval=0x2\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000001_immval_0x3_str: .string "\"test: 103; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000001, immval=0x3\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000001_immval_0x4_str: .string "\"test: 104; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000001, immval=0x4\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000001_immval_0x8_str: .string "\"test: 105; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000001, immval=0x8\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000001_immval_0x10_str: .string "\"test: 106; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000001, immval=0x10\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000001_immval_0x1e_str: .string "\"test: 107; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000001, immval=0x1e\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000001_immval_0x1f_str: .string "\"test: 108; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000001, immval=0x1f\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000001_immval_m0x20_str: .string "\"test: 109; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000001, immval=-0x20\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000001_immval_m0x1f_str: .string "\"test: 110; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000001, immval=-0x1f\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000001_immval_m0x2_str: .string "\"test: 111; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000001, immval=-0x2\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000001_immval_m0x1_str: .string "\"test: 112; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000001, immval=-0x1\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffffffffffff_immval_0x0_str: .string "\"test: 113; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7fffffffffffffff, immval=0x0\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffffffffffff_immval_0x1_str: .string "\"test: 114; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7fffffffffffffff, immval=0x1\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffffffffffff_immval_0x2_str: .string "\"test: 115; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7fffffffffffffff, immval=0x2\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffffffffffff_immval_0x3_str: .string "\"test: 116; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7fffffffffffffff, immval=0x3\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffffffffffff_immval_0x4_str: .string "\"test: 117; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7fffffffffffffff, immval=0x4\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffffffffffff_immval_0x8_str: .string "\"test: 118; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7fffffffffffffff, immval=0x8\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffffffffffff_immval_0x10_str: .string "\"test: 119; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7fffffffffffffff, immval=0x10\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffffffffffff_immval_0x1e_str: .string "\"test: 120; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7fffffffffffffff, immval=0x1e\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffffffffffff_immval_0x1f_str: .string "\"test: 121; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7fffffffffffffff, immval=0x1f\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffffffffffff_immval_m0x20_str: .string "\"test: 122; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7fffffffffffffff, immval=-0x20\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffffffffffff_immval_m0x1f_str: .string "\"test: 123; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7fffffffffffffff, immval=-0x1f\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffffffffffff_immval_m0x2_str: .string "\"test: 124; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7fffffffffffffff, immval=-0x2\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffffffffffff_immval_m0x1_str: .string "\"test: 125; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7fffffffffffffff, immval=-0x1\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7ffffffffffffffe_immval_0x0_str: .string "\"test: 126; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7ffffffffffffffe, immval=0x0\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7ffffffffffffffe_immval_0x1_str: .string "\"test: 127; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7ffffffffffffffe, immval=0x1\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7ffffffffffffffe_immval_0x2_str: .string "\"test: 128; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7ffffffffffffffe, immval=0x2\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7ffffffffffffffe_immval_0x3_str: .string "\"test: 129; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7ffffffffffffffe, immval=0x3\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7ffffffffffffffe_immval_0x4_str: .string "\"test: 130; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7ffffffffffffffe, immval=0x4\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7ffffffffffffffe_immval_0x8_str: .string "\"test: 131; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7ffffffffffffffe, immval=0x8\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7ffffffffffffffe_immval_0x10_str: .string "\"test: 132; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7ffffffffffffffe, immval=0x10\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7ffffffffffffffe_immval_0x1e_str: .string "\"test: 133; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7ffffffffffffffe, immval=0x1e\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7ffffffffffffffe_immval_0x1f_str: .string "\"test: 134; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7ffffffffffffffe, immval=0x1f\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7ffffffffffffffe_immval_m0x20_str: .string "\"test: 135; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7ffffffffffffffe, immval=-0x20\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7ffffffffffffffe_immval_m0x1f_str: .string "\"test: 136; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7ffffffffffffffe, immval=-0x1f\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7ffffffffffffffe_immval_m0x2_str: .string "\"test: 137; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7ffffffffffffffe, immval=-0x2\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7ffffffffffffffe_immval_m0x1_str: .string "\"test: 138; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7ffffffffffffffe, immval=-0x1\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffffffffffff_immval_0x0_str: .string "\"test: 139; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffffffffffff, immval=0x0\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffffffffffff_immval_0x1_str: .string "\"test: 140; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffffffffffff, immval=0x1\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffffffffffff_immval_0x2_str: .string "\"test: 141; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffffffffffff, immval=0x2\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffffffffffff_immval_0x3_str: .string "\"test: 142; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffffffffffff, immval=0x3\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffffffffffff_immval_0x4_str: .string "\"test: 143; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffffffffffff, immval=0x4\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffffffffffff_immval_0x8_str: .string "\"test: 144; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffffffffffff, immval=0x8\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffffffffffff_immval_0x10_str: .string "\"test: 145; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffffffffffff, immval=0x10\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffffffffffff_immval_0x1e_str: .string "\"test: 146; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffffffffffff, immval=0x1e\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffffffffffff_immval_0x1f_str: .string "\"test: 147; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffffffffffff, immval=0x1f\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffffffffffff_immval_m0x20_str: .string "\"test: 148; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffffffffffff, immval=-0x20\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffffffffffff_immval_m0x1f_str: .string "\"test: 149; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffffffffffff, immval=-0x1f\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffffffffffff_immval_m0x2_str: .string "\"test: 150; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffffffffffff, immval=-0x2\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffffffffffff_immval_m0x1_str: .string "\"test: 151; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffffffffffff, immval=-0x1\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffffffffffe_immval_0x0_str: .string "\"test: 152; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffffffffffe, immval=0x0\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffffffffffe_immval_0x1_str: .string "\"test: 153; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffffffffffe, immval=0x1\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffffffffffe_immval_0x2_str: .string "\"test: 154; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffffffffffe, immval=0x2\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffffffffffe_immval_0x3_str: .string "\"test: 155; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffffffffffe, immval=0x3\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffffffffffe_immval_0x4_str: .string "\"test: 156; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffffffffffe, immval=0x4\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffffffffffe_immval_0x8_str: .string "\"test: 157; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffffffffffe, immval=0x8\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffffffffffe_immval_0x10_str: .string "\"test: 158; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffffffffffe, immval=0x10\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffffffffffe_immval_0x1e_str: .string "\"test: 159; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffffffffffe, immval=0x1e\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffffffffffe_immval_0x1f_str: .string "\"test: 160; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffffffffffe, immval=0x1f\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffffffffffe_immval_m0x20_str: .string "\"test: 161; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffffffffffe, immval=-0x20\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffffffffffe_immval_m0x1f_str: .string "\"test: 162; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffffffffffe, immval=-0x1f\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffffffffffe_immval_m0x2_str: .string "\"test: 163; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffffffffffe, immval=-0x2\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffffffffffe_immval_m0x1_str: .string "\"test: 164; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffffffffffe, immval=-0x1\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5bbc887763ae86f2_immval_0x0_str: .string "\"test: 165; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5bbc887763ae86f2, immval=0x0\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5bbc887763ae86f2_immval_0x1_str: .string "\"test: 166; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5bbc887763ae86f2, immval=0x1\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5bbc887763ae86f2_immval_0x2_str: .string "\"test: 167; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5bbc887763ae86f2, immval=0x2\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5bbc887763ae86f2_immval_0x3_str: .string "\"test: 168; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5bbc887763ae86f2, immval=0x3\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5bbc887763ae86f2_immval_0x4_str: .string "\"test: 169; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5bbc887763ae86f2, immval=0x4\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5bbc887763ae86f2_immval_0x8_str: .string "\"test: 170; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5bbc887763ae86f2, immval=0x8\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5bbc887763ae86f2_immval_0x10_str: .string "\"test: 171; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5bbc887763ae86f2, immval=0x10\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5bbc887763ae86f2_immval_0x1e_str: .string "\"test: 172; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5bbc887763ae86f2, immval=0x1e\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5bbc887763ae86f2_immval_0x1f_str: .string "\"test: 173; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5bbc887763ae86f2, immval=0x1f\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5bbc887763ae86f2_immval_m0x20_str: .string "\"test: 174; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5bbc887763ae86f2, immval=-0x20\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5bbc887763ae86f2_immval_m0x1f_str: .string "\"test: 175; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5bbc887763ae86f2, immval=-0x1f\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5bbc887763ae86f2_immval_m0x2_str: .string "\"test: 176; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5bbc887763ae86f2, immval=-0x2\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5bbc887763ae86f2_immval_m0x1_str: .string "\"test: 177; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5bbc887763ae86f2, immval=-0x1\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x0_str: .string "\"test: 178; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x0\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x1_str: .string "\"test: 179; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x1\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x2_str: .string "\"test: 180; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x2\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x3_str: .string "\"test: 181; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x3\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x4_str: .string "\"test: 182; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x4\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x8_str: .string "\"test: 183; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x8\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x10_str: .string "\"test: 184; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x10\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x1e_str: .string "\"test: 185; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x1e\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x1f_str: .string "\"test: 186; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x1f\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xaaaaaaaaaaaaaaaa_immval_m0x20_str: .string "\"test: 187; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=-0x20\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xaaaaaaaaaaaaaaaa_immval_m0x1f_str: .string "\"test: 188; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=-0x1f\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xaaaaaaaaaaaaaaaa_immval_m0x2_str: .string "\"test: 189; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=-0x2\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xaaaaaaaaaaaaaaaa_immval_m0x1_str: .string "\"test: 190; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=-0x1\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5555555555555555_immval_0x0_str: .string "\"test: 191; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5555555555555555, immval=0x0\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5555555555555555_immval_0x1_str: .string "\"test: 192; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5555555555555555, immval=0x1\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5555555555555555_immval_0x2_str: .string "\"test: 193; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5555555555555555, immval=0x2\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5555555555555555_immval_0x3_str: .string "\"test: 194; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5555555555555555, immval=0x3\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5555555555555555_immval_0x4_str: .string "\"test: 195; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5555555555555555, immval=0x4\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5555555555555555_immval_0x8_str: .string "\"test: 196; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5555555555555555, immval=0x8\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5555555555555555_immval_0x10_str: .string "\"test: 197; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5555555555555555, immval=0x10\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5555555555555555_immval_0x1e_str: .string "\"test: 198; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5555555555555555, immval=0x1e\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5555555555555555_immval_0x1f_str: .string "\"test: 199; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5555555555555555, immval=0x1f\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5555555555555555_immval_m0x20_str: .string "\"test: 200; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5555555555555555, immval=-0x20\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5555555555555555_immval_m0x1f_str: .string "\"test: 201; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5555555555555555, immval=-0x1f\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5555555555555555_immval_m0x2_str: .string "\"test: 202; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5555555555555555, immval=-0x2\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5555555555555555_immval_m0x1_str: .string "\"test: 203; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5555555555555555, immval=-0x1\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffff_immval_0x0_str: .string "\"test: 204; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffff, immval=0x0\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffff_immval_0x1_str: .string "\"test: 205; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffff, immval=0x1\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffff_immval_0x2_str: .string "\"test: 206; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffff, immval=0x2\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffff_immval_0x3_str: .string "\"test: 207; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffff, immval=0x3\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffff_immval_0x4_str: .string "\"test: 208; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffff, immval=0x4\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffff_immval_0x8_str: .string "\"test: 209; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffff, immval=0x8\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffff_immval_0x10_str: .string "\"test: 210; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffff, immval=0x10\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffff_immval_0x1e_str: .string "\"test: 211; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffff, immval=0x1e\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffff_immval_0x1f_str: .string "\"test: 212; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffff, immval=0x1f\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffff_immval_m0x20_str: .string "\"test: 213; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffff, immval=-0x20\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffff_immval_m0x1f_str: .string "\"test: 214; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffff, immval=-0x1f\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffff_immval_m0x2_str: .string "\"test: 215; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffff, immval=-0x2\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffff_immval_m0x1_str: .string "\"test: 216; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffff, immval=-0x1\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffe_immval_0x0_str: .string "\"test: 217; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffe, immval=0x0\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffe_immval_0x1_str: .string "\"test: 218; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffe, immval=0x1\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffe_immval_0x2_str: .string "\"test: 219; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffe, immval=0x2\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffe_immval_0x3_str: .string "\"test: 220; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffe, immval=0x3\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffe_immval_0x4_str: .string "\"test: 221; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffe, immval=0x4\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffe_immval_0x8_str: .string "\"test: 222; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffe, immval=0x8\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffe_immval_0x10_str: .string "\"test: 223; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffe, immval=0x10\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffe_immval_0x1e_str: .string "\"test: 224; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffe, immval=0x1e\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffe_immval_0x1f_str: .string "\"test: 225; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffe, immval=0x1f\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffe_immval_m0x20_str: .string "\"test: 226; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffe, immval=-0x20\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffe_immval_m0x1f_str: .string "\"test: 227; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffe, immval=-0x1f\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffe_immval_m0x2_str: .string "\"test: 228; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffe, immval=-0x2\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffe_immval_m0x1_str: .string "\"test: 229; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffe, immval=-0x1\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000000_immval_0x0_str: .string "\"test: 230; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000000, immval=0x0\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000000_immval_0x1_str: .string "\"test: 231; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000000, immval=0x1\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000000_immval_0x2_str: .string "\"test: 232; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000000, immval=0x2\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000000_immval_0x3_str: .string "\"test: 233; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000000, immval=0x3\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000000_immval_0x4_str: .string "\"test: 234; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000000, immval=0x4\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000000_immval_0x8_str: .string "\"test: 235; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000000, immval=0x8\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000000_immval_0x10_str: .string "\"test: 236; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000000, immval=0x10\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000000_immval_0x1e_str: .string "\"test: 237; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000000, immval=0x1e\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000000_immval_0x1f_str: .string "\"test: 238; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000000, immval=0x1f\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000000_immval_m0x20_str: .string "\"test: 239; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000000, immval=-0x20\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000000_immval_m0x1f_str: .string "\"test: 240; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000000, immval=-0x1f\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000000_immval_m0x2_str: .string "\"test: 241; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000000, immval=-0x2\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000000_immval_m0x1_str: .string "\"test: 242; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000000, immval=-0x1\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000001_immval_0x0_str: .string "\"test: 243; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000001, immval=0x0\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000001_immval_0x1_str: .string "\"test: 244; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000001, immval=0x1\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000001_immval_0x2_str: .string "\"test: 245; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000001, immval=0x2\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000001_immval_0x3_str: .string "\"test: 246; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000001, immval=0x3\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000001_immval_0x4_str: .string "\"test: 247; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000001, immval=0x4\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000001_immval_0x8_str: .string "\"test: 248; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000001, immval=0x8\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000001_immval_0x10_str: .string "\"test: 249; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000001, immval=0x10\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000001_immval_0x1e_str: .string "\"test: 250; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000001, immval=0x1e\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000001_immval_0x1f_str: .string "\"test: 251; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000001, immval=0x1f\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000001_immval_m0x20_str: .string "\"test: 252; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000001, immval=-0x20\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000001_immval_m0x1f_str: .string "\"test: 253; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000001, immval=-0x1f\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000001_immval_m0x2_str: .string "\"test: 254; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000001, immval=-0x2\""
-Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000001_immval_m0x1_str: .string "\"test: 255; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000001, immval=-0x1\""
+Zca_c_addiw_cg_cp_rs1_edges_0x80000000_str: .string "\"test: 48; cg: Zca_c.addiw_cg; cp: cp_rs1_edges; bin: 0x80000000\""
+Zca_c_addiw_cg_cp_rs1_edges_0x7fffffff_str: .string "\"test: 49; cg: Zca_c.addiw_cg; cp: cp_rs1_edges; bin: 0x7fffffff\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x0_immval_0x0_str: .string "\"test: 50; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x0, immval=0x0\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x0_immval_0x1_str: .string "\"test: 51; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x0, immval=0x1\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x0_immval_0x2_str: .string "\"test: 52; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x0, immval=0x2\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x0_immval_0x3_str: .string "\"test: 53; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x0, immval=0x3\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x0_immval_0x4_str: .string "\"test: 54; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x0, immval=0x4\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x0_immval_0x8_str: .string "\"test: 55; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x0, immval=0x8\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x0_immval_0x10_str: .string "\"test: 56; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x0, immval=0x10\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x0_immval_0x1e_str: .string "\"test: 57; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x0, immval=0x1e\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x0_immval_0x1f_str: .string "\"test: 58; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x0, immval=0x1f\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x0_immval_m0x20_str: .string "\"test: 59; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x0, immval=-0x20\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x0_immval_m0x1f_str: .string "\"test: 60; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x0, immval=-0x1f\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x0_immval_m0x2_str: .string "\"test: 61; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x0, immval=-0x2\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x0_immval_m0x1_str: .string "\"test: 62; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x0, immval=-0x1\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x1_immval_0x0_str: .string "\"test: 63; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x1, immval=0x0\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x1_immval_0x1_str: .string "\"test: 64; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x1, immval=0x1\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x1_immval_0x2_str: .string "\"test: 65; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x1, immval=0x2\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x1_immval_0x3_str: .string "\"test: 66; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x1, immval=0x3\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x1_immval_0x4_str: .string "\"test: 67; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x1, immval=0x4\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x1_immval_0x8_str: .string "\"test: 68; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x1, immval=0x8\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x1_immval_0x10_str: .string "\"test: 69; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x1, immval=0x10\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x1_immval_0x1e_str: .string "\"test: 70; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x1, immval=0x1e\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x1_immval_0x1f_str: .string "\"test: 71; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x1, immval=0x1f\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x1_immval_m0x20_str: .string "\"test: 72; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x1, immval=-0x20\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x1_immval_m0x1f_str: .string "\"test: 73; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x1, immval=-0x1f\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x1_immval_m0x2_str: .string "\"test: 74; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x1, immval=-0x2\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x1_immval_m0x1_str: .string "\"test: 75; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x1, immval=-0x1\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x2_immval_0x0_str: .string "\"test: 76; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x2, immval=0x0\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x2_immval_0x1_str: .string "\"test: 77; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x2, immval=0x1\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x2_immval_0x2_str: .string "\"test: 78; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x2, immval=0x2\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x2_immval_0x3_str: .string "\"test: 79; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x2, immval=0x3\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x2_immval_0x4_str: .string "\"test: 80; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x2, immval=0x4\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x2_immval_0x8_str: .string "\"test: 81; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x2, immval=0x8\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x2_immval_0x10_str: .string "\"test: 82; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x2, immval=0x10\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x2_immval_0x1e_str: .string "\"test: 83; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x2, immval=0x1e\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x2_immval_0x1f_str: .string "\"test: 84; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x2, immval=0x1f\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x2_immval_m0x20_str: .string "\"test: 85; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x2, immval=-0x20\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x2_immval_m0x1f_str: .string "\"test: 86; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x2, immval=-0x1f\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x2_immval_m0x2_str: .string "\"test: 87; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x2, immval=-0x2\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x2_immval_m0x1_str: .string "\"test: 88; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x2, immval=-0x1\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000000_immval_0x0_str: .string "\"test: 89; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000000, immval=0x0\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000000_immval_0x1_str: .string "\"test: 90; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000000, immval=0x1\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000000_immval_0x2_str: .string "\"test: 91; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000000, immval=0x2\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000000_immval_0x3_str: .string "\"test: 92; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000000, immval=0x3\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000000_immval_0x4_str: .string "\"test: 93; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000000, immval=0x4\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000000_immval_0x8_str: .string "\"test: 94; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000000, immval=0x8\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000000_immval_0x10_str: .string "\"test: 95; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000000, immval=0x10\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000000_immval_0x1e_str: .string "\"test: 96; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000000, immval=0x1e\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000000_immval_0x1f_str: .string "\"test: 97; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000000, immval=0x1f\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000000_immval_m0x20_str: .string "\"test: 98; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000000, immval=-0x20\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000000_immval_m0x1f_str: .string "\"test: 99; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000000, immval=-0x1f\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000000_immval_m0x2_str: .string "\"test: 100; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000000, immval=-0x2\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000000_immval_m0x1_str: .string "\"test: 101; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000000, immval=-0x1\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000001_immval_0x0_str: .string "\"test: 102; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000001, immval=0x0\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000001_immval_0x1_str: .string "\"test: 103; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000001, immval=0x1\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000001_immval_0x2_str: .string "\"test: 104; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000001, immval=0x2\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000001_immval_0x3_str: .string "\"test: 105; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000001, immval=0x3\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000001_immval_0x4_str: .string "\"test: 106; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000001, immval=0x4\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000001_immval_0x8_str: .string "\"test: 107; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000001, immval=0x8\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000001_immval_0x10_str: .string "\"test: 108; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000001, immval=0x10\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000001_immval_0x1e_str: .string "\"test: 109; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000001, immval=0x1e\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000001_immval_0x1f_str: .string "\"test: 110; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000001, immval=0x1f\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000001_immval_m0x20_str: .string "\"test: 111; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000001, immval=-0x20\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000001_immval_m0x1f_str: .string "\"test: 112; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000001, immval=-0x1f\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000001_immval_m0x2_str: .string "\"test: 113; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000001, immval=-0x2\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x8000000000000001_immval_m0x1_str: .string "\"test: 114; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x8000000000000001, immval=-0x1\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffffffffffff_immval_0x0_str: .string "\"test: 115; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7fffffffffffffff, immval=0x0\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffffffffffff_immval_0x1_str: .string "\"test: 116; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7fffffffffffffff, immval=0x1\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffffffffffff_immval_0x2_str: .string "\"test: 117; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7fffffffffffffff, immval=0x2\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffffffffffff_immval_0x3_str: .string "\"test: 118; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7fffffffffffffff, immval=0x3\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffffffffffff_immval_0x4_str: .string "\"test: 119; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7fffffffffffffff, immval=0x4\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffffffffffff_immval_0x8_str: .string "\"test: 120; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7fffffffffffffff, immval=0x8\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffffffffffff_immval_0x10_str: .string "\"test: 121; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7fffffffffffffff, immval=0x10\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffffffffffff_immval_0x1e_str: .string "\"test: 122; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7fffffffffffffff, immval=0x1e\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffffffffffff_immval_0x1f_str: .string "\"test: 123; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7fffffffffffffff, immval=0x1f\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffffffffffff_immval_m0x20_str: .string "\"test: 124; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7fffffffffffffff, immval=-0x20\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffffffffffff_immval_m0x1f_str: .string "\"test: 125; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7fffffffffffffff, immval=-0x1f\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffffffffffff_immval_m0x2_str: .string "\"test: 126; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7fffffffffffffff, immval=-0x2\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffffffffffff_immval_m0x1_str: .string "\"test: 127; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7fffffffffffffff, immval=-0x1\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7ffffffffffffffe_immval_0x0_str: .string "\"test: 128; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7ffffffffffffffe, immval=0x0\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7ffffffffffffffe_immval_0x1_str: .string "\"test: 129; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7ffffffffffffffe, immval=0x1\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7ffffffffffffffe_immval_0x2_str: .string "\"test: 130; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7ffffffffffffffe, immval=0x2\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7ffffffffffffffe_immval_0x3_str: .string "\"test: 131; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7ffffffffffffffe, immval=0x3\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7ffffffffffffffe_immval_0x4_str: .string "\"test: 132; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7ffffffffffffffe, immval=0x4\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7ffffffffffffffe_immval_0x8_str: .string "\"test: 133; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7ffffffffffffffe, immval=0x8\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7ffffffffffffffe_immval_0x10_str: .string "\"test: 134; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7ffffffffffffffe, immval=0x10\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7ffffffffffffffe_immval_0x1e_str: .string "\"test: 135; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7ffffffffffffffe, immval=0x1e\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7ffffffffffffffe_immval_0x1f_str: .string "\"test: 136; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7ffffffffffffffe, immval=0x1f\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7ffffffffffffffe_immval_m0x20_str: .string "\"test: 137; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7ffffffffffffffe, immval=-0x20\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7ffffffffffffffe_immval_m0x1f_str: .string "\"test: 138; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7ffffffffffffffe, immval=-0x1f\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7ffffffffffffffe_immval_m0x2_str: .string "\"test: 139; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7ffffffffffffffe, immval=-0x2\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7ffffffffffffffe_immval_m0x1_str: .string "\"test: 140; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7ffffffffffffffe, immval=-0x1\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffffffffffff_immval_0x0_str: .string "\"test: 141; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffffffffffff, immval=0x0\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffffffffffff_immval_0x1_str: .string "\"test: 142; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffffffffffff, immval=0x1\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffffffffffff_immval_0x2_str: .string "\"test: 143; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffffffffffff, immval=0x2\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffffffffffff_immval_0x3_str: .string "\"test: 144; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffffffffffff, immval=0x3\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffffffffffff_immval_0x4_str: .string "\"test: 145; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffffffffffff, immval=0x4\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffffffffffff_immval_0x8_str: .string "\"test: 146; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffffffffffff, immval=0x8\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffffffffffff_immval_0x10_str: .string "\"test: 147; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffffffffffff, immval=0x10\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffffffffffff_immval_0x1e_str: .string "\"test: 148; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffffffffffff, immval=0x1e\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffffffffffff_immval_0x1f_str: .string "\"test: 149; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffffffffffff, immval=0x1f\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffffffffffff_immval_m0x20_str: .string "\"test: 150; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffffffffffff, immval=-0x20\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffffffffffff_immval_m0x1f_str: .string "\"test: 151; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffffffffffff, immval=-0x1f\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffffffffffff_immval_m0x2_str: .string "\"test: 152; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffffffffffff, immval=-0x2\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffffffffffff_immval_m0x1_str: .string "\"test: 153; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffffffffffff, immval=-0x1\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffffffffffe_immval_0x0_str: .string "\"test: 154; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffffffffffe, immval=0x0\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffffffffffe_immval_0x1_str: .string "\"test: 155; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffffffffffe, immval=0x1\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffffffffffe_immval_0x2_str: .string "\"test: 156; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffffffffffe, immval=0x2\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffffffffffe_immval_0x3_str: .string "\"test: 157; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffffffffffe, immval=0x3\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffffffffffe_immval_0x4_str: .string "\"test: 158; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffffffffffe, immval=0x4\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffffffffffe_immval_0x8_str: .string "\"test: 159; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffffffffffe, immval=0x8\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffffffffffe_immval_0x10_str: .string "\"test: 160; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffffffffffe, immval=0x10\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffffffffffe_immval_0x1e_str: .string "\"test: 161; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffffffffffe, immval=0x1e\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffffffffffe_immval_0x1f_str: .string "\"test: 162; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffffffffffe, immval=0x1f\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffffffffffe_immval_m0x20_str: .string "\"test: 163; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffffffffffe, immval=-0x20\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffffffffffe_immval_m0x1f_str: .string "\"test: 164; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffffffffffe, immval=-0x1f\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffffffffffe_immval_m0x2_str: .string "\"test: 165; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffffffffffe, immval=-0x2\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffffffffffe_immval_m0x1_str: .string "\"test: 166; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffffffffffe, immval=-0x1\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5bbc887763ae86f2_immval_0x0_str: .string "\"test: 167; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5bbc887763ae86f2, immval=0x0\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5bbc887763ae86f2_immval_0x1_str: .string "\"test: 168; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5bbc887763ae86f2, immval=0x1\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5bbc887763ae86f2_immval_0x2_str: .string "\"test: 169; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5bbc887763ae86f2, immval=0x2\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5bbc887763ae86f2_immval_0x3_str: .string "\"test: 170; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5bbc887763ae86f2, immval=0x3\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5bbc887763ae86f2_immval_0x4_str: .string "\"test: 171; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5bbc887763ae86f2, immval=0x4\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5bbc887763ae86f2_immval_0x8_str: .string "\"test: 172; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5bbc887763ae86f2, immval=0x8\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5bbc887763ae86f2_immval_0x10_str: .string "\"test: 173; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5bbc887763ae86f2, immval=0x10\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5bbc887763ae86f2_immval_0x1e_str: .string "\"test: 174; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5bbc887763ae86f2, immval=0x1e\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5bbc887763ae86f2_immval_0x1f_str: .string "\"test: 175; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5bbc887763ae86f2, immval=0x1f\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5bbc887763ae86f2_immval_m0x20_str: .string "\"test: 176; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5bbc887763ae86f2, immval=-0x20\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5bbc887763ae86f2_immval_m0x1f_str: .string "\"test: 177; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5bbc887763ae86f2, immval=-0x1f\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5bbc887763ae86f2_immval_m0x2_str: .string "\"test: 178; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5bbc887763ae86f2, immval=-0x2\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5bbc887763ae86f2_immval_m0x1_str: .string "\"test: 179; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5bbc887763ae86f2, immval=-0x1\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x0_str: .string "\"test: 180; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x0\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x1_str: .string "\"test: 181; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x1\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x2_str: .string "\"test: 182; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x2\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x3_str: .string "\"test: 183; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x3\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x4_str: .string "\"test: 184; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x4\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x8_str: .string "\"test: 185; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x8\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x10_str: .string "\"test: 186; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x10\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x1e_str: .string "\"test: 187; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x1e\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xaaaaaaaaaaaaaaaa_immval_0x1f_str: .string "\"test: 188; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=0x1f\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xaaaaaaaaaaaaaaaa_immval_m0x20_str: .string "\"test: 189; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=-0x20\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xaaaaaaaaaaaaaaaa_immval_m0x1f_str: .string "\"test: 190; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=-0x1f\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xaaaaaaaaaaaaaaaa_immval_m0x2_str: .string "\"test: 191; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=-0x2\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xaaaaaaaaaaaaaaaa_immval_m0x1_str: .string "\"test: 192; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xaaaaaaaaaaaaaaaa, immval=-0x1\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5555555555555555_immval_0x0_str: .string "\"test: 193; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5555555555555555, immval=0x0\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5555555555555555_immval_0x1_str: .string "\"test: 194; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5555555555555555, immval=0x1\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5555555555555555_immval_0x2_str: .string "\"test: 195; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5555555555555555, immval=0x2\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5555555555555555_immval_0x3_str: .string "\"test: 196; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5555555555555555, immval=0x3\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5555555555555555_immval_0x4_str: .string "\"test: 197; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5555555555555555, immval=0x4\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5555555555555555_immval_0x8_str: .string "\"test: 198; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5555555555555555, immval=0x8\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5555555555555555_immval_0x10_str: .string "\"test: 199; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5555555555555555, immval=0x10\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5555555555555555_immval_0x1e_str: .string "\"test: 200; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5555555555555555, immval=0x1e\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5555555555555555_immval_0x1f_str: .string "\"test: 201; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5555555555555555, immval=0x1f\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5555555555555555_immval_m0x20_str: .string "\"test: 202; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5555555555555555, immval=-0x20\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5555555555555555_immval_m0x1f_str: .string "\"test: 203; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5555555555555555, immval=-0x1f\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5555555555555555_immval_m0x2_str: .string "\"test: 204; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5555555555555555, immval=-0x2\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x5555555555555555_immval_m0x1_str: .string "\"test: 205; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x5555555555555555, immval=-0x1\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffff_immval_0x0_str: .string "\"test: 206; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffff, immval=0x0\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffff_immval_0x1_str: .string "\"test: 207; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffff, immval=0x1\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffff_immval_0x2_str: .string "\"test: 208; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffff, immval=0x2\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffff_immval_0x3_str: .string "\"test: 209; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffff, immval=0x3\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffff_immval_0x4_str: .string "\"test: 210; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffff, immval=0x4\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffff_immval_0x8_str: .string "\"test: 211; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffff, immval=0x8\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffff_immval_0x10_str: .string "\"test: 212; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffff, immval=0x10\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffff_immval_0x1e_str: .string "\"test: 213; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffff, immval=0x1e\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffff_immval_0x1f_str: .string "\"test: 214; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffff, immval=0x1f\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffff_immval_m0x20_str: .string "\"test: 215; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffff, immval=-0x20\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffff_immval_m0x1f_str: .string "\"test: 216; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffff, immval=-0x1f\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffff_immval_m0x2_str: .string "\"test: 217; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffff, immval=-0x2\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xffffffff_immval_m0x1_str: .string "\"test: 218; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xffffffff, immval=-0x1\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffe_immval_0x0_str: .string "\"test: 219; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffe, immval=0x0\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffe_immval_0x1_str: .string "\"test: 220; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffe, immval=0x1\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffe_immval_0x2_str: .string "\"test: 221; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffe, immval=0x2\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffe_immval_0x3_str: .string "\"test: 222; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffe, immval=0x3\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffe_immval_0x4_str: .string "\"test: 223; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffe, immval=0x4\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffe_immval_0x8_str: .string "\"test: 224; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffe, immval=0x8\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffe_immval_0x10_str: .string "\"test: 225; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffe, immval=0x10\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffe_immval_0x1e_str: .string "\"test: 226; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffe, immval=0x1e\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffe_immval_0x1f_str: .string "\"test: 227; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffe, immval=0x1f\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffe_immval_m0x20_str: .string "\"test: 228; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffe, immval=-0x20\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffe_immval_m0x1f_str: .string "\"test: 229; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffe, immval=-0x1f\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffe_immval_m0x2_str: .string "\"test: 230; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffe, immval=-0x2\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0xfffffffe_immval_m0x1_str: .string "\"test: 231; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0xfffffffe, immval=-0x1\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000000_immval_0x0_str: .string "\"test: 232; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000000, immval=0x0\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000000_immval_0x1_str: .string "\"test: 233; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000000, immval=0x1\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000000_immval_0x2_str: .string "\"test: 234; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000000, immval=0x2\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000000_immval_0x3_str: .string "\"test: 235; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000000, immval=0x3\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000000_immval_0x4_str: .string "\"test: 236; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000000, immval=0x4\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000000_immval_0x8_str: .string "\"test: 237; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000000, immval=0x8\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000000_immval_0x10_str: .string "\"test: 238; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000000, immval=0x10\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000000_immval_0x1e_str: .string "\"test: 239; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000000, immval=0x1e\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000000_immval_0x1f_str: .string "\"test: 240; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000000, immval=0x1f\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000000_immval_m0x20_str: .string "\"test: 241; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000000, immval=-0x20\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000000_immval_m0x1f_str: .string "\"test: 242; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000000, immval=-0x1f\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000000_immval_m0x2_str: .string "\"test: 243; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000000, immval=-0x2\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000000_immval_m0x1_str: .string "\"test: 244; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000000, immval=-0x1\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000001_immval_0x0_str: .string "\"test: 245; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000001, immval=0x0\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000001_immval_0x1_str: .string "\"test: 246; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000001, immval=0x1\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000001_immval_0x2_str: .string "\"test: 247; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000001, immval=0x2\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000001_immval_0x3_str: .string "\"test: 248; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000001, immval=0x3\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000001_immval_0x4_str: .string "\"test: 249; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000001, immval=0x4\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000001_immval_0x8_str: .string "\"test: 250; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000001, immval=0x8\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000001_immval_0x10_str: .string "\"test: 251; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000001, immval=0x10\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000001_immval_0x1e_str: .string "\"test: 252; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000001, immval=0x1e\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000001_immval_0x1f_str: .string "\"test: 253; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000001, immval=0x1f\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000001_immval_m0x20_str: .string "\"test: 254; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000001, immval=-0x20\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000001_immval_m0x1f_str: .string "\"test: 255; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000001, immval=-0x1f\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000001_immval_m0x2_str: .string "\"test: 256; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000001, immval=-0x2\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000001_immval_m0x1_str: .string "\"test: 257; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x100000001, immval=-0x1\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_0x0_str: .string "\"test: 258; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x80000000, immval=0x0\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_0x1_str: .string "\"test: 259; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x80000000, immval=0x1\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_0x2_str: .string "\"test: 260; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x80000000, immval=0x2\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_0x3_str: .string "\"test: 261; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x80000000, immval=0x3\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_0x4_str: .string "\"test: 262; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x80000000, immval=0x4\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_0x8_str: .string "\"test: 263; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x80000000, immval=0x8\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_0x10_str: .string "\"test: 264; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x80000000, immval=0x10\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_0x1e_str: .string "\"test: 265; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x80000000, immval=0x1e\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_0x1f_str: .string "\"test: 266; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x80000000, immval=0x1f\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_m0x20_str: .string "\"test: 267; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x80000000, immval=-0x20\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_m0x1f_str: .string "\"test: 268; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x80000000, immval=-0x1f\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_m0x2_str: .string "\"test: 269; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x80000000, immval=-0x2\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x80000000_immval_m0x1_str: .string "\"test: 270; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x80000000, immval=-0x1\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_0x0_str: .string "\"test: 271; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7fffffff, immval=0x0\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_0x1_str: .string "\"test: 272; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7fffffff, immval=0x1\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_0x2_str: .string "\"test: 273; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7fffffff, immval=0x2\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_0x3_str: .string "\"test: 274; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7fffffff, immval=0x3\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_0x4_str: .string "\"test: 275; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7fffffff, immval=0x4\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_0x8_str: .string "\"test: 276; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7fffffff, immval=0x8\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_0x10_str: .string "\"test: 277; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7fffffff, immval=0x10\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_0x1e_str: .string "\"test: 278; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7fffffff, immval=0x1e\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_0x1f_str: .string "\"test: 279; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7fffffff, immval=0x1f\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_m0x20_str: .string "\"test: 280; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7fffffff, immval=-0x20\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_m0x1f_str: .string "\"test: 281; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7fffffff, immval=-0x1f\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_m0x2_str: .string "\"test: 282; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7fffffff, immval=-0x2\""
+Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x7fffffff_immval_m0x1_str: .string "\"test: 283; cg: Zca_c.addiw_cg; cp: cr_rs1_imm_edges_6bit; bin: rs1val=0x7fffffff, immval=-0x1\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

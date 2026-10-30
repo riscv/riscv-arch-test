@@ -3,7 +3,7 @@
 
 normative_rule_definitions:
   # A core which implements Zks must implement all of the above extensions.
-  - name: zks_impl_all
+  - name: Zks_impl_all
     coverpoint: ["Definition, checked through UDB"]
 
   - name: sm4ed_enc

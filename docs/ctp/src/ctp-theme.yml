@@ -1,0 +1,6 @@
+# CTP PDF theme: the shared RISC-V theme plus shaded table headings.
+extends: ../docs-resources/themes/riscv-pdf.yml
+table:
+  head:
+    background_color: dde6f0
+    font_color: $base_font_color

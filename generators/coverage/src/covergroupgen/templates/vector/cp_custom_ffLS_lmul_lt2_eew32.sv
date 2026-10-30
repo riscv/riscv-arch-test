@@ -30,15 +30,11 @@
                 bins masked = {1'b0};
             }
 
-            ffLS_vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
-                bins one = {0};
-            }
-
             ffLS_vl_ge2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
                 bins ge2 = {[2:$]};
             }
 
-            ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+            ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
                 bins at_fault_addr = {1'b1};
             }
 

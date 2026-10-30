@@ -41,31 +41,31 @@
     // Source EMUL too small: LMUL/N < 1/8
     // vf2: LMUL=mf8(5) -> EMUL=1/16
     `ifdef LMULf8_SUPPORTED
-    lmul_mf8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
-        bins mf8 = {5};
-    }
+        lmul_mf8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+            bins mf8 = {5};
+        }
     `endif
 
     // vf4: LMUL=mf8(5) -> EMUL=1/32, LMUL=mf4(6) -> EMUL=1/16
     lmul_mf8_or_mf4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         `ifdef LMULf8_SUPPORTED
-        bins mf8 = {5};
+            bins mf8 = {5};
         `endif
         `ifdef LMULf4_SUPPORTED
-        bins mf4 = {6};
+            bins mf4 = {6};
         `endif
     }
 
     // vf8: LMUL=mf8(5) -> EMUL=1/64, LMUL=mf4(6) -> EMUL=1/32, LMUL=mf2(7) -> EMUL=1/16
     lmul_mf8_mf4_or_mf2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         `ifdef LMULf8_SUPPORTED
-        bins mf8 = {5};
+            bins mf8 = {5};
         `endif
         `ifdef LMULf4_SUPPORTED
-        bins mf4 = {6};
+            bins mf4 = {6};
         `endif
         `ifdef LMULf2_SUPPORTED
-        bins mf2 = {7};
+            bins mf2 = {7};
         `endif
     }
 
@@ -76,7 +76,7 @@
 
     // Source EMUL below minimum crosses
     `ifdef LMULf8_SUPPORTED
-    cp_ssstrictv_vsext_vf2_src_emul: cross std_trap_vec, vsext_vf2, lmul_mf8;
+        cp_ssstrictv_vsext_vf2_src_emul: cross std_trap_vec, vsext_vf2, lmul_mf8;
     `endif
     cp_ssstrictv_vsext_vf4_src_emul: cross std_trap_vec, vsext_vf4, lmul_mf8_or_mf4;
     cp_ssstrictv_vsext_vf8_src_emul: cross std_trap_vec, vsext_vf8, lmul_mf8_mf4_or_mf2;

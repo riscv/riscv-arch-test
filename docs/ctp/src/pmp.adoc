@@ -1,85 +1,50 @@
 
 === PMP
 
-==== PMPSm
+==== PMP_Sm Machine
 
-[[t-PMPSm-coverpoints]]
-.PMPSm Coverpoints
+include::{testplansdir}/priv/PMP_Sm.adoc[]
 
-,===
-https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=1474055416#gid=1474055416[Google Sheet Testplan]
-,===
+==== PMP_S Supervisor
 
-include::norm/PMPSm_norm_rules.adoc[]
+include::{testplansdir}/priv/PMP_S.adoc[]
 
+==== PMP_U User
 
-==== PMPS
+include::{testplansdir}/priv/PMP_U.adoc[]
 
-[[t-PMPS-coverpoints]]
-.PMPS Coverpoints
+==== PMP_F Float
 
-,===
-https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=1908943019#gid=1908943019[Google Sheet Testplan]
-,===
+include::{testplansdir}/priv/PMP_F.adoc[]
 
+==== PMP_Zca Compressed
 
-==== PMPU
+include::{testplansdir}/priv/PMP_Zca.adoc[]
 
-[[t-PMPU-coverpoints]]
-.PMPU Coverpoints
+==== PMP_Zicbo CBOM/CBOZ
 
-,===
-https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=2072825600#gid=2072825600[Google Sheet Testplan]
-,===
+include::{testplansdir}/priv/PMP_Zicbo.adoc[]
 
-include::norm/PMPU_norm_rules.adoc[]
+==== PMP_Zaamo AMO
 
-==== PMPF
+include::{testplansdir}/priv/PMP_Zaamo.adoc[]
 
-[[t-PMPF-coverpoints]]
-.PMPF Coverpoints
+==== PMP_Zalrsc LR/SC
 
-,===
-https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=1472001893#gid=1472001893[Google Sheet Testplan]
-,===
+include::{testplansdir}/priv/PMP_Zalrsc.adoc[]
 
+==== PMP_Sv Virtual Memory
 
-==== PMPZca
+include::{testplansdir}/priv/PMP_Sv.adoc[]
 
-[[t-PMPZca-coverpoints]]
-.PMPZca Coverpoints
+==== PMP_SvZicbo Virtual Memory + CBOM/CBOZ
 
-,===
-https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=1336315481#gid=1336315481[Google Sheet Testplan]
-,===
+include::{testplansdir}/priv/PMP_SvZicbo.adoc[]
 
+==== PMP_Svadu Page Table Update
 
+include::{testplansdir}/priv/PMP_Svadu.adoc[]
 
-==== PMPZicbo
+==== PMP Normative Rules
 
-[[t-PMPZicbo-coverpoints]]
-.PMPZicbo Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=1958410505#gid=1958410505[Google Sheet Testplan]
-,===
-
-include::norm/PMPZicbo_norm_rules.adoc[]
-
-==== PMPZaamo
-
-[[t-PMPZaamo-coverpoints]]
-.PMPZaamo Coverpoints
-
-,===
-https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=343093009#gid=343093009[Google Sheet Testplan]
-,===
-
-
-==== PMPZalrsc
-
-[[t-PMPZalrsc-coverpoints]]
-.PMPZalrsc Coverpoints
-
-,===
-https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=613653829#gid=613653829[Google Sheet Testplan]
-,===
+include::norm/PMP_norm_rules.adoc[]

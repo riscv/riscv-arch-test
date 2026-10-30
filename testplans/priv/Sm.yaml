@@ -1,0 +1,633 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Sm
+source: https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=1563313604#gid=1563313604
+coverpoints:
+  - name: cp_mcsr_access
+    goal: Access to all M-mode CSRs
+    description: csr read, write all 1s, write all 0s, set all 1s, clear all 1s, write back initial value of each register below plus read-only mvendorid, marchid, mimpid, mhartid, mconfigptr
+    expectation: Traps on writes to read-only registers.  Otherwise writable bits match reference model.
+    bins: (14+5) regs * 6 ops
+    rules:
+      - mcause (WLRL), mstatus/h (WPRI), menvcfg/h (WPRI), mseccfg/h (WPRI) could be weird/hard to model
+  - name: cp_mcsrwalk
+    goal: Walking 1s and 0s in each writeable M-mode CSR
+    description: "Set and clear each bit of each writable M-mode CSR to exercise bitfields: mstatus, medeleg, mideleg, mie, mtvec, mcounteren, mscratch, mepc, mcause, mtval, mip, menvcfg, mseccfg.  For RV32 also mstatush, medelegh, menvcfgh, mseccfgh, mcountinhibit, mhpmevent31:3..  misa is fussy to model and is tested in cp_misa* instead.  Iterations that write a reserved mstatus.MPP, menvcfg.CBIE, or menvcfg/mseccfg.PMM value check the other bits exactly and only check that the field reads back a legal value."
+    expectation: Writable bits match reference model.
+    bins: 14 regs * (64 set + 64 clear)
+  - name: cp_misa_mxl
+    goal: misa.MXL
+    description: Attempt to write all four values to misa.MXL, clear, set..  Read back
+    expectation: matches MXLEN and does not change
+    bins: "7"
+    rules:
+      - Other MISA bits are unpredictable and thus not tested.
+  - name: cp_misa_dependencies
+    description: |-
+      Attempt to write I, E = 1.  E should read 0 if I reads 1
+      Attempt to write I, E = 0.  One should read 1
+      Attempt to write F=0, D=1.  D should read 0 if F reads 0
+      Attempt to write F = 1, D = 0, Q = 1. Q should read 0 if D reads 0
+      Attempt to write S = 1, U = 0.  S should read 0 if U = 0
+      Attempt to write H = 1, S = 0.  H should read 0 if S = 0
+      Attempt to write H = 1, S = 1, U = 0.  H should read 0 if U = 0
+    expectation: See tests
+    bins: "7"
+  - name: cp_misa_clear_c
+    description: Attempt to clear C when subsequent instruction is not a multiple of 2.  C should not change.
+    expectation: C should not change
+    bins: "1"
+  - name: |-
+      cp_mepc_ialign32_read
+      cp_mepc_ialign32_mret
+    goal: mepc[1] is masked on reads, including mret's, while IALIGN = 32
+    description: Only with Zca and a writable misa.C (MUTABLE_MISA_C).  Clear misa.C, write mepc with bit 1 set, execute mret with mstatus.MPP = M, then read mepc; then set misa.C again and read mepc.
+    expectation: While misa.C = 0, mepc reads with bit 1 clear and mret returns to the masked address; after misa.C is set again, mepc reads with bit 1 set.  Match reference model.
+    bins: "2"
+  - name: |-
+      cp_sepc_ialign32_read
+      cp_sepc_ialign32_sret
+    goal: sepc[1] is masked on reads, including sret's, while IALIGN = 32
+    description: Only with Zca, S and a writable misa.C (MUTABLE_MISA_C).  Clear misa.C in M-mode.  Write sepc with bit 1 set and execute sret with sstatus.SPP = S, from M-mode and then from S-mode (entered with T-SBI); write sepc with bit 1 set again and read it, in M-mode and in S-mode.  Then set misa.C again in M-mode and read sepc.
+    expectation: While misa.C = 0, sepc reads with bit 1 clear and sret returns to the masked address; after misa.C is set again, sepc reads with bit 1 set.  Match reference model.
+    bins: 2 modes * 2
+  - name: cp_csrr_insufficient_priv
+    goal: Debug registers should be inaccessible from M-mode
+    description: Read Debug CSRS 7B0-7BF
+    expectation: Illegal Instruction
+    bins: "16"
+  - name: cp_csrw_readonly
+    goal: Read-only registers should trap when written
+    description: Write read-only CSRs (C00-FFF)
+    expectation: Illegal Instruction
+    bins: 1024 CSRs
+  - name: cp_cntr_access
+    goal: Access to all 32 counters
+    description: csr_read, write nonzero, write 0, set nonzero, clear all for each of for mcycle, minstret, mhpmcounter31...3. If RV32 is supported, also do mcycleh, minstreth, mhpmcounterh31...3.  Read back value and check if it is within some threshold of the written value (because counters will continue to increment).
+    expectation: Writable bits match reference model.
+    bins: 32 regs * 6 ops
+  - name: cp_mtime_write
+    goal: Writing memory-mapped MTIME shows up in time CSR
+    description: If Zicntr is supported, Write walking 1s and 0s to memory-mapped mtime, read back from time CSR
+    expectation: Time reflects memory-mapped mtime. Difference should be small.
+    rules:
+      - Presently just writing one value
+  - name: cp_inhibit
+    goal: mcountinhibit prevents counting
+    description: With mcountinhibit[2/0] = {0, 1}, read mcycle and minstret multiple times and check whether they increment.
+    expectation: Count when not inhibited, remain constant when inhibited
+    bins: "2"
+  - name: cp_mcause_write
+    goal: Legal values can be written to mcause
+    description: |-
+      with interrupt = 1: 0-13
+      with interrupt = 0: 0-23
+    expectation: writes mcause
+    bins: 81 values
+  - name: cp_mstatus_sd_write
+    goal: FS/VS/XS combinations can be written and SD is true when any are dirty.
+    description: Write 1 and 0 to SD with FS/VS/XS all 0.  Write cross-product of all bits of SD/ FS/ VS/XS.  128 bins of writes.
+    expectation: FS =1 iff any of FS/VS/XS are dirty.
+    bins: 2 SD * 4 FS * 4 VS * 4 XS = 128
+  - name: cp_mprivinst
+    goal: ecall and ebreak cause traps
+    description: Execute ecall and ebreak in machine mode
+    expectation: ecall and breakpoint exceptions
+    bins: "2"
+  - name: cp_mret
+    goal: mret returns and affects status bits
+    description: Execute mret in machine mode with cross-product of values written to mstatus.MPP/ MPRV/ MPIE/MIE.  Return to machine mode and MIE = 1 after each mret.
+    bins: 2 MPRV * 2 MIPE * 2 MIE = 8
+  - name: cp_sret
+    goal: sret returns and affects status bits
+    description: Execute sret in machine mode with cross-product of mstatus.SPP/MPRV/TSR/SPIE/SIE
+    expectation: Illegal instruction if TSR
+    bins: 2 SPP * 2 MPRV * 2 TSR * 2 SPIE * 2 SIE = 32
+  - name: cp_sret_s
+    description: |-
+      If S_SUPPORTED:
+      Execute sret in supervisor mode with cross-product of all values of sstatus.SPP/SPIE/SIE, mstatus.TSR.  Return to supervisor mode after each sret. This differs from cp_sret_s in S that doesn't turn on mstatus.TSR (which would require illegal instructions not to be delegated in S mode to avoid a sret trap loop).
+    rules:
+      - sepc should be pointing two instructions ahead.
+  - name: cp_scsr_from_m
+    description: "If S supported, read/write/set/clear each S-mode CSR: sstatus, sie, stvec, scounteren, senvcfg, sscratch, sepc, stval, sip.  stvec is WARL with complex legal values, so only MODE[1], which must read 0, is checked.  scause is tested in cp_scause_from_m."
+  - name: cp_scause_from_m
+    description: "If S supported, write scause from M-mode with each Exception Code 0-9, 12, 13 and 15 and read it back.  If Ss1p12 or later is supported, also write codes 10, 11, 14 and 16-31; otherwise also write 18 if Zicfilp or Zicfiss is supported and 10 and 20-23 if H is supported."
+    expectation: The Exception Code is WLRL.  Ss1p12 and later must hold the values 0-31, so each reads back as written.  Ss1p11 need only hold the codes of supported causes, such as software check (18) with Zicfilp or Zicfiss and the H causes (10 and 20-23) with H.
+    bins: 13, plus 1 with Zicfilp or Zicfiss and 5 with H (32 on Ss1p12 or later)
+  - name: cp_satp_from_m
+    description: If S is supported, read satp with mstatus.TVM=0/1
+    expectation: shouldn't trap on either TVM.  Value is not predictable.
+  - name: cp_satp_from_s
+    description: If S is supported, read satp with mstatus.TVM=0/1 from S mode
+  - name: cp_shadow
+    goal: Check subset
+    description: |-
+      If S_supported:
+      Write all zeros and all 1s to mstatus, mie, mip.  Read back sstatus, sie, sip. Write all 0s and all 1s to sstatus, sie, sip.  Read back mstatus/mie/mip.
+  - name: cp_shadow_deleg
+    goal: Delegation affects shadowing
+    description: With delegation on and off, write mip/mie, read back sip/sie.  Write sip/sie, read back mip/mie
+  - name: cp_shadow_deleg_walk
+    description: With walking 1s in mideleg, mip/mie = 1s, read back sip/sie
+  - heading: Sm does not access unsupported lower privilege mode CSRs because they are reserved if not implemented, and their behavior is UNSPECIFIED.
+  - heading: If F is mutable, zeroing it should also zero D and Q and V. Same with D zeroing Q and V. Zeroing U should zero S.
+  - heading: Writing misa may increase IALIGN, e.g., by disabling the "C" extension. If an instruction that would write misa increases IALIGN, and the subsequent instruction’s address is not IALIGN-bit aligned, the write to misa is suppressed, leaving misa unchanged."
+  # Sm_F rows converted from https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=29805079#gid=29805079
+  - heading: "Sm_F tests (Sm_F-NN.S): the floating-point CSRs and mstatus.FS, run when F is also supported."
+  - name: cp_fcsr_access
+    goal: |-
+      Writing to the CSR field
+      (WARL)
+    description: Write 0s and 1s to fcsr, frm, fflags cross with mstatus.FS init/clean/dirty
+  - name: cp_mstatus_FS_transition
+    goal: |-
+      Writing to the CSR field
+      (WARL)
+    description: Each different type of floating-point instruction crossed with four values of FS. Includes integer-result instructions that raise a flag after fflags is cleared (feq.s with a signaling NaN, fcvt.w.s of an inexact value, fcvt.wu.s of an out-of-range value, fcvtmod.w.d of a NaN).
+    rules:
+      - check FS becomes dirty where appropriate
+      - instructions that set fflags must set FS to dirty even if they write no floating-point register
+  - name: cp_mstatus_FS_transition_nondeterministic
+    goal: |-
+      Writing to the CSR field
+      (WARL)
+    description: Floating-point instructions that need not modify floating-point state (fsw, fmv.x.w, fclass.s, csrr of the FP CSRs, fmvh.x.d) crossed with mstatus.FS = Off and Dirty
+    expectation: Illegal-instruction trap when FS = Off; FS stays Dirty when Dirty. Initial and Clean are omitted because these instructions may dirty FS imprecisely.
+  # Sm_V rows converted from https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=416753800#gid=416753800
+  - heading: "Sm_V tests (Sm_V_vcsr-NN.S, Sm_V_vset-NN.S, Sm_V_vl_walk-NN.S): the vector CSRs, vset{i}vl{i}, vstart and mstatus.VS, run when Zve32x is also supported."
+  - name: cp_vcsrrswc
+    goal: Confirm that all vector CSR properties are properly set with regards to read write, clear, and set privileges with the csr instructions
+    description: With each of the vector CSRs conduct a read, write, clear, and set operation on the CSR
+    expectation: Will abide by spec's read and write permissions for each csr
+    bins: 3 csr instructions * 7 CSRs
+    notes: |-
+      test written: yes
+      spec: The vector extension adds 32 vector registers, and seven unprivileged CSRs (vstart, vxsat, vxrm, vcsr, vtype, vl, vlenb) to a base scalar RISC-V ISA.
+      read-only CSR vlenb
+      The XLEN-bit-wide read-only vl CSR can only be updated by the vset{i}vl{i} instructions, and the fault-only-first vector load instruction variants.
+      read-only XLEN-wide vector type CSR, vtype provides the default type used to interpret the contents of the vector register file, and can only be updated by vset{i}vl{i}
+  - name: cp_vcsrs_walking1s
+    goal: Confirm that that all writable vector CSRs have the correct bits writeable
+    description: With each of the vector CSRs that are writable, write all XLEN 1-hot values to the csr
+    expectation: csrs will be updated based on which bits they support to be writable
+    bins: 4 CSRs * XLEN 1-hot values
+    notes: |-
+      test written: yes
+      spec: vstart, vxrm, vxsat, vcsr are all writable
+  - name: cp_mstatus_vs_set_dirty_arithmetic
+    goal: Confirm that after running an arithmetic vector instruction that mstatus.VS is set to dirty when set to "clean" or "initial"
+    description: Run a .vv vector arithmetic instruction with mstatus.VS = {clean, initial}
+    expectation: mstatus.VS is set to dirty
+    bins: 2 mstatus.VS bins
+    notes: |-
+      test written: yes
+      spec: When mstatus.VS is set to Initial or Clean, executing any instruction that changes vector state, including the vector CSRs, will change mstatus.VS to Dirty.
+  - name: cp_mstatus_vs_set_dirty_csr
+    goal: Confirm that after running a vsetvli instruction that mstatus.VS is set to dirty when set to "clean" or "initial"
+    description: Run a vsetvli instruction with mstatus.VS = {clean, initial}
+    expectation: mstatus.VS is set to dirty
+    bins: 2 mstatus.VS bins
+    notes: |-
+      test written: yes
+      spec: When mstatus.VS is set to Initial or Clean, executing any instruction that changes vector state, including the vector CSRs, will change mstatus.VS to Dirty.
+  - description: Analogous to the way in which the floating-point unit is handled, the mstatus.VS field may exist even if misa.V is clear.
+    notes: "feature (coverpoint written): Untestable"
+  - name: cp_mstatus_vs_off_arithmetic
+    goal: Confirm that when misa.V is 1 and mstatus.VS is off, an arithmetic vector instruction raises an illegal instruction exception
+    description: With misa.V = 1 (its reset value), set mstatus.VS = {00} and run a .vv vector instruction
+    expectation: illegal instruction exception
+    bins: "1"
+    notes: |-
+      test written: yes, confirm sig
+      spec: Attempts to execute any vector instruction, or to access the vector CSRs, raise an illegal-instruction exception when mstatus.VS is set to Off.
+  - name: cp_mstatus_vs_off_csr
+    goal: Confirm that when misa.V is 1 and mstatus.VS is off, an csr vector instruction raises an illegal instruction exception
+    description: With misa.V = 1 (its reset value), set mstatus.VS = {00} and run a vsetvli
+    expectation: illegal instruction exception
+    bins: "1"
+    notes: |-
+      test written: yes, confirm sig
+      spec: Attempts to execute any vector instruction, or to access the vector CSRs, raise an illegal-instruction exception when mstatus.VS is set to Off.
+  - description: For implementations with a writable misa.V field, the vsstatus.VS field may exist even if misa.V is clear.
+    notes: "feature (coverpoint written): Untestable"
+  - heading: Vset{i}vl{i}
+  - name: cp_sew_lmul_vset_i_vli
+    goal: Confirm that all combinations of lmul crossed with sew correctly set the vtype register in accordance with the vill field
+    description: Use all vset{i}vli instructions to cross eSEW={8/16/32/64} with mLMUL = {f8/f4/f2/1/2/4/8} rd and uimm can be any nonzero value
+    expectation: vtype.vill becomes 1 and other bits become 0 on illegal combinations, such as sew = 1xx.
+    bins: 2 instructions * 7 lmul bins * 4 sew bins
+    notes: |-
+      test written: yes
+      spec: Implementations must consider all bits of the vtype value to determine if the configuration is supported. An unsupported value in any location within the vtype value must result in vill being set. In particular, all XLEN bits of the register vtype argument to the vsetvl instruction must be checked. Implementations cannot ignore fields they do not implement. All bits must be checked to ensure that new code assuming unsupported vector features in vtype traps instead of executing incorrectly on an older implementation....The supported element width may vary with LMUL
+      The use of vtype encodings with LMUL < SEWMIN/ELEN is reserved, but implementations can set vill if they do not support these configurations.
+  - name: cp_sew_lmul_vsetvl
+    goal: Confirm that all combinations of lmul crossed with sew correctly set the type register in accordance with the vill field
+    description: |-
+      Use vsetvl to cross rs2.sew= [3'b000:3'b011] with rs2.lmul = [000, 001, 010, 011, 101, 110, 111]. rd and uimm can be any nonzero value. Make sure rs2_val[`XLEN-1:8] = 0
+
+      rs2 must be this way to be a legal setting
+    expectation: vtype.vill becomes 1 and other bits become 0 on illegal combinations, such as sew = 1xx.
+    bins: 7 lmul bins * 4 sew bins
+    notes: |-
+      test written: yes
+      spec: Implementations must consider all bits of the vtype value to determine if the configuration is supported. An unsupported value in any location within the vtype value must result in vill being set. In particular, all XLEN bits of the register vtype argument to the vsetvl instruction must be checked. Implementations cannot ignore fields they do not implement. All bits must be checked to ensure that new code assuming unsupported vector features in vtype traps instead of executing incorrectly on an older implementation....The supported element width may vary with LMUL
+      The use of vtype encodings with LMUL < SEWMIN/ELEN is reserved, but implementations can set vill if they do not support these configurations.
+  - name: cp_sew_lmul_vset_i_vli / cp_sew_lmul_vsetvl
+    goal: Confirm on the supported values of lmul are recognized as legal
+    description: Use vsetivli rd, 1, sew={supported}, vlmul={supported(mf8/mf4/mf2/)m1/m2/m4/m8}, tu, mu to attempt to set all values of lmul
+    expectation: Expect vill is set for all values of lmul that aren't legal, otherwise the correct lmul is set
+    bins: "0"
+    notes: |-
+      feature (coverpoint written): Covered by coverpoint above
+      spec: Implementations must support LMUL integer values of 1, 2, 4, and 8....Implementations must provide fractional LMUL settings that allow the narrowest supported type to occupy a fraction of a vector register corresponding to the ratio of the narrowest supported type’s width to that of the largest supported type’s width
+  - name: cp_sew_lmul_vset_i_vli / cp_sew_lmul_vsetvl
+    goal: Check all values of sew to Confirm only correctly supported values are recognized as legal
+    description: Use vsetivli rd, 1, sew={e8/e16/e32/e64}, vlmul={m1}, tu, mu to attempt to set all values of lmul
+    expectation: Expect vill will be set when an attempted unsupported sew values are attempted to be written, otherwise vtype will contain supported sew
+    bins: "0"
+    notes: |-
+      feature (coverpoint written): Covered by coverpoint above
+      spec: Implementations must support LMUL integer values of 1, 2, 4, and 8....Implementations must provide fractional LMUL settings that allow the narrowest supported type to occupy a fraction of a vector register corresponding to the ratio of the narrowest supported type’s width to that of the largest supported type’s width
+  - name: cp_vill_vset_i_vli
+    goal: Check that vset{i}vli instructions properly clear the vill bit when writing a valid vtype configuration
+    description: |-
+      Run vsetvli and vsetivli with eSEW = {8/16/32/64} with mLMUL = {8} and vtype.vill = {1}
+
+      we set lmul to 8 to write a non-zero value to the CSR
+    expectation: expect vill bit is cleared and vtype written when sew is legal
+    bins: 2 instructions * 4 sew bins
+    notes: |-
+      test written: yes
+      spec: If the vill bit is set, then any attempt to execute a vector instruction that depends upon vtype will raise an illegal-instruction exception [except]....vset{i}vl{i} .... [does] not depend upon vtype
+  - name: cp_vill_vsetvl
+    goal: Check that vsetvl instruction properly clears the vill bit when writing a valid vtype configuration
+    description: |-
+      Run vsetvl with rs2.sew = {8/16/32/64} with rs2.lmul = {8} and vtype.vill = {1} making sure rs2_val[`XLEN-1:8] = 0
+
+      we set lmul to 8 to write a non-zero value to the CSR. rs2 must be in this manner to be a legal setting
+    expectation: expect vill bit is cleared and vtype written when sew is legal
+    bins: 4 sew bins
+    notes: |-
+      test written: yes
+      spec: If the vill bit is set, then any attempt to execute a vector instruction that depends upon vtype will raise an illegal-instruction exception [except]....vset{i}vl{i} .... [does] not depend upon vtype
+  - name: cp_vill_vsetvl_rs2_vill
+    goal: Check that when attempting to set a valid configuration but with the rs2.vill bit set, and the vtype.vill bit set, that the register remains all zeros besides the vill bit
+    description: |-
+      Run vsetvl with rs2.sew = {8/16/32/64} with vtype.lmul = {8} and vtype.vill = {1} making sure rs2_val[`XLEN-2:8] = 0 and rs2[XLEN-1] = 1
+
+      we set lmul to 8 to attempt to write a non-zero value to the CSR. rs2 must be in this manner to be a legal setting.
+    expectation: vtype register remains unchanged
+    bins: 4 sew bins
+    notes: |-
+      test written: yes
+      spec: If the vill bit is set, then any attempt to execute a vector instruction that depends upon vtype will raise an illegal-instruction exception [except]....vset{i}vl{i} .... [does] not depend upon vtype
+  - name: cp_vsetvl_rs2_vill
+    goal: Confirm that with vsetvl if rs2 has the vill bit set that it is treated as an unsupported configuration
+    description: |-
+      run a vsetvl with rs2[XLEN-1] = 1, rs2[XLEN-2:8]=0 and rs2.sew = {supported} and rs2.lmul = 1 and vtype.vill = {0}
+
+      sew must be supported and rs2[XLEN-2:8] zero to verify the configuration is illegal due to the vill bit being set
+    expectation: vill bit should be set
+    notes: "spec: A vtype value with vill set is treated as an unsupported configuration."
+  - name: cp_vset_vill
+    goal: Confirm that writing 1 to vill clears other bits of vtype
+    description: Set rs1 nonzero, rs1 = 1 in XLEN-1, 11 in 7:6 (vma/vta). vsetvl rd, rs1, rs2 and vtype.vill = {0}
+    expectation: vtype.vill becomes 1 and other bits become 0
+    bins: "1"
+    notes: |-
+      feature (coverpoint written): covered by coverpoint above
+      spec: When the vill bit is set, the other XLEN-1 bits in vtype shall be zero.
+  - name: cp_vtype_vill_set_vl_0
+    goal: Confirm that if an unsupported configuration is set, that vl is set to zero
+    description: Run vsetvl with rs1 non-zero and rs2 vill bit set and vl =! 0
+    expectation: vl should be set to zero
+    bins: "1"
+    notes: |-
+      test written: yes
+      spec: If the vtype value is not supported by the implementation, then the vill bit is set in vtype, the remaining bits in vtype are set to zero, and the vl register is also set to zero.
+  - name: cp_vsetvl_rd_nx0_rs1_x0
+    goal: Confirm that when running a vsetvl instruction with rd != x0 and rs1 = x0 that vl is set to vlmax
+    description: |-
+      with vl != vlmax, conduct vsetvl with rd != x0 and rs1 = x0. Cross with sew = {8/16/32/64} and respective supported lmul {supported(f8,f4,f2,)1,2,4,8}
+
+      we want vl != vlmax since similar syntax leaves vl unmodified.
+    expectation: vl csr is set to vlmax
+    bins: 4 sew bins * 7 lmul bins
+    notes: |-
+      test written: yes
+      spec: When rs1=x0 but rd≠x0, the maximum unsigned integer value (~0) is used as the AVL, and the resulting VLMAX is written to vl and also to the x register specified by rd.
+  - name: cp_vsetvli_rd_nx0_rs1_x0
+    goal: Confirm that when running a vsetvli instruction with rd != x0 and rs1 = x0 that vl is set to vlmax
+    description: |-
+      with vl != vlmax, conduct vsetvli with rd != x0 and rs1 = x0. Cross with sew = {8/16/32/64} and respective supported lmul {supported(f8,f4,f2,)1,2,4,8}
+
+      we want vl != vlmax since similar syntax leaves vl unmodified.
+    expectation: vl csr is set to vlmax
+    bins: 4 sew bins * 7 lmul bins
+    notes: |-
+      test written: yes
+      spec: When rs1=x0 but rd≠x0, the maximum unsigned integer value (~0) is used as the AVL, and the resulting VLMAX is written to vl and also to the x register specified by rd.
+  - name: cp_vsetvl_rd_x0_rs1_x0
+    goal: Confirm that when running a vsetvl instruction with rd = x0 and rs1 = x0 that vl is unchanged
+    description: |-
+      with vl != 0, conduct vsetvl with rd = x0 and rs1 = x0. sew and lmul must be such that vlmax does not change
+
+      vlmax must not change for the instruction to not be reserved.
+    expectation: vl is unchanged
+    bins: "1"
+    notes: |-
+      test written: yes
+      spec: When rs1=x0 and rd=x0, the instruction operates as if the current vector length in vl is used as the AVL, and the resulting value is written to vl, but not to a destination register. This form can only be used when VLMAX and hence vl is not actually changed by the new SEW/LMUL ratio.
+  - name: cp_vsetvli_rd_x0_rs1_x0
+    goal: Confirm that when running a vsetvli instruction with rd = x0 and rs1 = x0 that vl is unchanged
+    description: |-
+      with vl != 0, conduct vsetvli with rd = x0 and rs1 = x0. sew and lmul must be such that vlmax does not change
+
+      vlmax must not change for the instruction to not be reserved.
+    expectation: vl is unchanged
+    bins: "1"
+    notes: |-
+      test written: yes
+      spec: When rs1=x0 and rd=x0, the instruction operates as if the current vector length in vl is used as the AVL, and the resulting value is written to vl, but not to a destination register. This form can only be used when VLMAX and hence vl is not actually changed by the new SEW/LMUL ratio.
+  - heading: AVL
+  - name: cp_vsetvl_i_avl_eq_zero
+    goal: Confirm that vsetvl{i} instructions follow vl requirements when avl is zero
+    description: Run vsetvli and vsetvl with rs1 = 0
+    expectation: vl = 0
+    bins: "1"
+    notes: |-
+      test written: yes
+      spec: The vset{i}vl{i} instructions first set VLMAX according to their vtype argument, then set vl obeying the following constraints:
+
+      These specific properties follow from the prior rules: vl = 0 if AVL = 0
+  - name: cp_vsetvl_i_avl_eq_vlmax
+    goal: Confirm that vsetvl{i} instructions follow avl requirements when equal to vlmax
+    description: Run vsetvli and vsetvl with rs1 = vlmax
+    expectation: vl = avl
+    bins: "1"
+    notes: |-
+      test written: yes
+      spec: The vset{i}vl{i} instructions first set VLMAX according to their vtype argument, then set vl obeying the following constraints:
+
+      vl = AVL if AVL ≤ VLMAX
+  - name: cp_vsetvl_i_avl_lt_2x_vlmax
+    goal: Confirm that vsetvl{i} instructions follow avl requirements when greater than vlmax and less than equal to 2*vlmax (if avl is less than 2* vlmax)
+    description: Run vsetvli and vsetvl with vlmax < rs1 < 2 *vlmax
+    expectation: ceil(AVL / 2) ≤ vl ≤ VLMAX
+    bins: "1"
+    notes: |-
+      test written: yes, is a chance that sig don't match
+      spec: The vset{i}vl{i} instructions first set VLMAX according to their vtype argument, then set vl obeying the following constraints:
+
+      ceil(AVL / 2) ≤ vl ≤ VLMAX if AVL < (2 * VLMAX)
+  - name: cp_vsetvl_i_avl_eq_2x_vlmax
+    goal: Confirm that vsetvl{i} instructions follow avl requirements when greater than 2 * vlmax (when avl is greater than equal to 2 * vlmax)
+    description: Run vsetvli and vsetvl with rs1 ≥ 2 *vlmax
+    expectation: vl = VLMAX
+    bins: "1"
+    notes: |-
+      test written: yes
+      spec: The vset{i}vl{i} instructions first set VLMAX according to their vtype argument, then set vl obeying the following constraints:
+
+      vl = VLMAX if AVL ≥ (2 * VLMAX)
+  - name: cp_vsetvl_i_avl_gt_2x_vlmax
+    goal: Confirm that vsetvl{i} instructions follow avl requirements when greater than 2 * vlmax (when avl is greater than equal to 2 * vlmax)
+    description: Run vsetvli and vsetvl with rs1 ≥ 2 *vlmax
+    expectation: vl = VLMAX
+    bins: "1"
+    notes: |-
+      test written: yes
+      spec: The vset{i}vl{i} instructions first set VLMAX according to their vtype argument, then set vl obeying the following constraints:
+
+      vl = VLMAX if AVL ≥ (2 * VLMAX)
+  - name: cp_vsetivli_avl_corners
+    goal: Confirm that vsetivli abides by the avl corners
+    description: Run vsetivli with all values of imm = {[0:31]} with sew = {all_supported} and lmul = 1
+    expectation: Abides by avl rules depending on
+    bins: 4 sew bins * 32 imm bins
+    notes: |-
+      test written: yes
+      spec: The vset{i}vl{i} instructions first set VLMAX according to their vtype argument, then set vl obeying the following constraints:
+  - heading: vstart
+  - name: cp_vstart_out_of_bounds
+    goal: Confirm that the vstart CSR only has enough writeable bits to hold the largest element index (2^16-1)
+    description: conduct a csr write with rs1 = 2^16 on the vstart register
+    expectation: Not defined in spec, either vstart takes the bottom bits or sets to vlmax-1
+    bins: "1"
+    notes: |-
+      test written: yes
+      spec: The vstart CSR is defined to have only enough writable bits to hold the largest element index (one less than the maximum VLMAX). Try to write a number greater than what is legal
+  - name: cp_sew_illegal
+    description: Cannot set SEW < 8, all set SEW must be powers of 2 (can accomplish this by looping and setting sew of 2x until vill bit is set and then confirm that vill bit is set whenever setting a non power of 2 sew in that range)
+    notes: "feature (coverpoint written): can't be tested"
+  - name: cp_vl_walking1s_sew_lmul
+    goal: Confirm that all vl CSR bit fields are correctly set for all combinations of sew and lmul (thus all VLMAX)
+    description: |-
+      Running the vsetvli instruction, cross all sew = {8/16/32/64} lmul = {f8, f4,f2, 1, 2, 4, 8} with rs1 ={XLEN 1-hot values}
+
+      This is done by conducting a vsetivli every time followed by a walking one csr write to ensure the target sew and lmul were attempted to be written
+    expectation: vl register will be set in accordance with vlmax
+    bins: 4sew * 7 lmul * XLEN 1-hot values
+  - name: cp_vlen_illegal
+    description: Cannot set VLEN greater than 2^16, can check vl with eew = 8
+    expectation: |-
+      vsetvli rs1={0, 1, 2, 3, 4, 7, 8, 9, 16, 32, 64... 2^16}
+      corners: (rs1 - 1)
+    notes: "feature (coverpoint written): covered by csr writing tests"
+  - description: The vector extension must have a consistent state at reset. In particular, vtype and vl must have values that can be read and then restored with a single vsetvl instruction. (make sure reset is called)
+    notes: "feature (coverpoint written): untestable"
+  # Sm_VF rows converted from https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=1892166886#gid=1892166886
+  - heading: "Sm_VF tests (Sm_VF-NN.S): vector floating-point instructions and mstatus.FS, run when Zve32f is also supported."
+  - heading: It should be understood that for most coverpoints that are based on arithmetic instructions, the coverpoints will check to make sure they're non-trivial, meaning that vl != 0, vstart=0, vill=0, and they do not trap. It may be useful to know that when using vsetvl{i} instructions if rd != x0 and rs1 = x0, vl = vlmax
+  - name: cp_vectorfp_mstatus_fs_state_affecting_register
+    goal: Confirm vector floating point instructions set mstatus.FS to dirty when modifying floating point register state
+    description: Set mstatus.FS = {initial/clean} and run a fd writing instruction
+    expectation: mstatus.FS is set to dirty
+    bins: "1"
+    notes: "spec: Any vector floating-point instruction that modifies any floating-point extension state (i.e., floating-point CSRs or f registers) must set mstatus.FS to Dirty."
+  - name: cp_vectorfp_mstatus_fs_state_affecting_csr
+    goal: Confirm vector floating point instructions set mstatus.FS to dirty when modifying floating point csr state
+    description: Set mstatus.FS = {initial/clean} and run an instruction that would raise a fp flag after clearing the fp flags (vfdiv.vv divide by zero, vfadd.vv inf + -inf, and vmflt.vv with a NaN operand, which writes only a mask register)
+    expectation: mstatus.FS is set to dirty
+    bins: "1"
+    notes: "spec: Any vector floating-point instruction that modifies any floating-point extension state (i.e., floating-point CSRs or f registers) must set mstatus.FS to Dirty."
+  - name: cp_vectorfp_mstatus_fs_state_nonaffecting
+    goal: Confirm vector floating point instructions properly set mstatus.FS when not modifying floating point state
+    description: Set mstatus.FS = {initial/clean} and run a vector fp instruction that does not affect floating point state (chosen situation for coverpoint is a .vv ins where vs1 = vs2 = 0)
+    expectation: mstatus.FS may be set to dirty or not depending on implementation
+    bins: "1"
+    notes: "spec: Any vector floating-point instruction that modifies any floating-point extension state (i.e., floating-point CSRs or f registers) must set mstatus.FS to Dirty."
+  - name: cp_vectorfp_mstatus_fs_off
+    goal: Confirm that vector floating point instructions (even if they dont modify fp state) raise an illegal instruction exception if mstatus.FS is set to off
+    description: Set mstatus.FS = {off} and run a vector fp instruction that does not affect floating point state  (chosen situation for coverpoint is a .vv ins where vs1 = vs2 = 0)
+    expectation: illegal instruction exception
+    bins: "1"
+    notes: "spec: If the floating-point unit status field mstatus.FS is Off then any attempt to execute a vector floating-point instruction will raise an illegal instruction exception."
+  - heading: "Sm_H tests (Sm_H_*-NN.S): the hypervisor CSRs and instructions from M-mode, and the mstatus.TVM tests of HS-mode and VS-mode, whose traps are taken in M-mode because the HS-mode trap handler reads satp and hgatp. They run when H is also supported. The CSR lists are those of the H suite."
+  - heading: Tests executed in M-mode (Sm_H_mcsr_cg)
+  - name: |-
+      cp_hcsr_access
+      cp_hcsr_access_zero
+      cp_hcsr_access_masked
+      cp_hcsr_access_ro
+    goal: All H-extension CSRs are able to read, write, set, and clear
+    description: |-
+      Write all 1s and all 0s, then set all bits, then clear all bits, then read each {Machine/HS/VS} H-Extension CSR.
+      cp_hcsr_access_zero: mtval2, mtinst, htval, htinst, hgatp, vsatp and (RV32, Priv 1.13) hedelegh need only hold zero, so their readback is checked only after writing 0 and after clearing every bit.
+      cp_hcsr_access_masked: hstatus and henvcfg (and henvcfgh on RV32) are written only with their checked fields, because the others are WLRL, WARL with reserved encodings, or change the endianness or XLEN.
+      cp_hcsr_access_ro: hgeip is read-only.
+      With Priv 1.13, writing all 1s to hedeleg also checks that bits 18 and 19 are writable; without Zca (IALIGN = 32), that bit 0 is writable.
+    expectation: All registers are accessible, and checked fields read back as written. Writes to hgeip raise illegal instruction.
+    bins: 5 * (2 + 14-17 + 9-11)
+    rules:
+      - hstatus_sz_acc_op
+      - hedeleg_sz_acc
+      - hideleg_sz_acc
+      - hip_hie_sz_acc
+      - htimedelta_sz_acc_op
+      - hcounteren_sz
+      - hgeie_sz_acc_op
+      - henvcfg_sz_acc_op
+      - htval_sz_acc_op
+      - hvip_sz_op
+      - htinst_sz_acc_op
+      - hgatp_sz_acc_op
+      - hgeip_sz_acc_op
+      - hedelegh_sz_acc_op
+      - htimedeltah_sz_acc_op
+      - henvcfgh_sz_acc_op
+      - vsstatus_sz_acc_op
+      - vsip_vsie_sz_acc_op
+      - vstval_sz_acc_op
+      - vstvec_sz_acc_op
+      - vsscratch_sz_acc_op
+      - vsepc_sz_acc_op
+      - vscause_sz_acc_op
+      - vsatp_sz_acc_op
+      - Zicsr_higher_priv
+      - Zicsr_rw
+  - name: |-
+      cp_hcsrwalk
+      cp_hcsrwalk_masked
+    goal: Exercise each bit of H-extension CSRs
+    description: Set and clear each bit of each {Machine/HS/VS} H-Extension CSR that holds more than zero. hstatus is walked over GVA, SPV, SPVP, HU, VTVM, VTW and VTSR, and henvcfg over FIOM, LPE, SSE, CBIE, CBCFE, CBZE, PMM, ADUE, PBMTE and STCE (cp_hcsrwalk_masked). The CSRs of cp_hcsr_access_zero are not walked, and hgatp and vsatp are walked by cp_atpwalk1/0. vsepc and vstval are not walked, because an invalid address may legally be converted; cp_vsepc_vaddr_* and cp_vstval_vaddr_* write them with valid addresses.
+    expectation: All registers are accessible.  Some fields are WARL and will not change.
+    bins: 64*2*(13-16 + 8-10)
+  - name: |-
+      cp_atpwalk1
+      cp_atpwalk0
+    goal: hgatp and vsatp hold each PPN, VMID and ASID bit
+    description: With MODE = Sv39x4/Sv39 (RV64) or Sv32x4/Sv32 (RV32), write hgatp and vsatp with a walking 1 and a walking 0 through every non-MODE bit. MODE = Bare with nonzero fields is UNSPECIFIED and unsupported MODEs are legalized in an implementation-defined way, so MODE is held at a paged mode.
+    expectation: Each bit reads back as written, except PPN bits at and above the physical address width, which are not checked, VMID and ASID bits above VMIDLEN and ASIDLEN, and hgatp.PPN[1:0], which may be read-only zero.
+    bins: 2 CSRs * (60 (RV64) or 31 (RV32)) each
+  - name: |-
+      cp_vsepc_vaddr_walk1
+      cp_vsepc_vaddr_walk0
+      cp_vsepc_vaddr_pc
+      cp_vsepc_vaddr_scratch
+      cp_vstval_vaddr_walk1
+      cp_vstval_vaddr_walk0
+      cp_vstval_vaddr_pc
+      cp_vstval_vaddr_scratch
+    goal: vsepc and vstval hold every valid address
+    description: csrrw vsepc and vstval with each canonical virtual address with a walking 1 (0s in the msbs) and a walking 0 (1s in the msbs) through bits 0 to VALEN-2 of the largest supported Sv mode, and with two physical addresses, the current pc and the scratch area. Only valid addresses are written, because an invalid address may legally be converted.
+    expectation: Each value reads back as written (vsepc bit 0 reads 0, and bit 1 reads 0 unless 2-byte instruction alignment is allowed).
+    bins: |-
+      walk1, walk0: 2 CSRs * (32 (Sv32), 38 (Sv39), 47 (Sv48) or 56 (Sv57)) each
+      pc, scratch: 2 CSRs * 1 each
+  - name: cp_replica
+    goal: Writing to S/VS-mode CSRs doesn't affect replica
+    description: Write different values into S-mode CSRs and their VS-mode replicas (satp and vsatp only when both support Sv39 (RV64) or Sv32 (RV32)).  Read back both.
+    expectation: Each CSR should have value written.
+    bins: "9"
+    rules:
+      - H_vscsrs_v0
+  - name: cp_replica_vs
+    goal: In VS, writing to S-mode CSRs affects replica instead
+    description: In M-mode, write different values into S-mode CSRs and their VS-mode replicas (satp and vsatp only when vsatp supports Sv39 (RV64) or Sv32 (RV32)).  Switch to VS-mode and write and read back the S CSRs.  VS-mode ecalls go to M-mode, so no trap changes the S CSRs.  Back in M-mode, read both the S CSRs and the VS replicas.  vsatp stays Bare while VS-mode runs; satp holds a paged value.
+    expectation: VS replica should have changed but S CSR does not change.
+    bins: "9"
+    rules:
+      - H_vscsrs_sub
+      - H_vscsrs_v1
+  - name: cp_mtvala
+    goal: mtval must not be read-only zero
+    description: Write 1s to mtval
+    expectation: nonzero
+    bins: "1"
+    rules:
+      - H_mtval_nrz
+  - name: |-
+      cp_vsepc_ialign32_read
+      cp_vsepc_ialign32_vs_read
+      cp_vsepc_ialign32_sret
+    goal: vsepc[1] is masked on reads, including sret's in VS-mode, while IALIGN = 32
+    description: Only with Zca and a writable misa.C (MUTABLE_MISA_C).  Clear misa.C in M-mode.  In VS-mode (entered with T-SBI), write sepc (vsepc) with bit 1 set, execute sret with sstatus.SPP = S, then write and read sepc.  Write and read vsepc in M-mode and in HS-mode.  Then set misa.C again in M-mode and read vsepc.
+    expectation: While misa.C = 0, vsepc reads with bit 1 clear in every mode and sret returns to the masked address; after misa.C is set again, vsepc reads with bit 1 set.  Match reference model.
+    bins: 2 modes + 1 + 1
+  - heading: mstatus.TVM and hstatus.VTVM (Sm_H_tvm_cg)
+  - name: cp_tvm_hs
+    goal: TVM traps access to satp and hgatp, but not vsatp; VTVM does not affect HS-mode
+    description: With mstatus.TVM = {0/1} cross hstatus.VTVM = {0/1}, in HS-mode read and write satp, hgatp and vsatp
+    expectation: Illegal instruction fault for satp and hgatp if TVM = 1.  vsatp accesses never trap.  VTVM has no effect.
+    bins: 3 regs * 2 accesses * 2 TVM * 2 VTVM
+  - name: cp_tvm_vs
+    goal: VTVM traps access to satp
+    description: With mstatus.TVM = {0/1} cross hstatus.VTVM = {0/1}, in VS-mode read and write satp
+    expectation: Virtual instruction fault if VTVM = 1. TVM does not affect VS-mode.
+    bins: 2 TVM * 2 VTVM * 2 accesses
+  - name: cp_hfence
+    goal: Basic fence
+    description: Execute hfence.vvma, hfence.gvma in {M, HS, VS, U, VU mode} cross with mstatus.TVM = {0,1} and with hstatus.VTVM = {0,1}
+    expectation: Executes in M-mode and HS-mode, except illegal instruction for HFENCE.GVMA in HS-mode with mstatus.TVM = 1. Illegal instruction in U-mode and virtual instruction in VS-mode and VU-mode.
+    bins: 5 modes * 2 instr * 2 TVM * 2 VTVM
+  - name: cp_sfence
+    goal: Basic fence
+    description: Execute sfence.vma in {M, HS, VS, U, VU mode} cross with mstatus.TVM = {0,1} and with hstatus.VTVM = {0,1}
+    expectation: Executes in M-mode, in HS-mode when TVM = 0 and in VS-mode when VTVM = 0. Illegal instruction in HS-mode when TVM = 1 and in U-mode; virtual instruction in VS-mode when VTVM = 1 and in VU-mode.
+    bins: 5 modes * 2 TVM * 2 VTVM
+  - heading: Instructions (Sm_H_inst_cg)
+  - name: cp_hlv
+    goal: Basic load
+    description: "Set up non-identity G and VS-stage page tables (Sv39x4 and Sv39, or Sv32x4 and Sv32). In M-mode: Write a value with the sign bit of every access size set to scratch. hlv.b, hlv.bu, hlv.h,  hlv.hu, hlv.w from scratch.  For rv64, also test hlv.wu, hlv.d.  Random source and destination registers."
+    expectation: Read and sign/zero extend
+    bins: 5 instr (7 on RV64)
+  - name: cp_hlvx
+    goal: Basic load
+    description: "Set up non-identity G and VS-stage page tables. In M-mode: Write a value to scratch. hlvx.hu, hlvx.wu from scratch.  Random source and destination registers."
+    expectation: Read and sign/zero extend
+    bins: 2 instr
+  - name: cp_hsv
+    goal: Basic store
+    description: "Set up non-identity G and VS-stage page tables. In M-mode: hsv.b, hsv.h, hsv.w to scratch, and read scratch through its physical address.  For rv64, also test hsv.d.  Random source and destination registers."
+    expectation: Stores the low bytes of the source register
+    bins: 3 instr (4 on RV64)
+  - name: cp_guest_page_fault
+    goal: hlv and hsv guest-page faults record mtval2 and mtinst
+    description: In M-mode with an empty G-stage root table, hlv.w and hsv.w with vsatp = Bare (a fault on the final translation) and with the VS-stage root table at an unmapped guest physical address (a fault on an implicit VS-stage access).
+    expectation: Load or store guest-page fault into M-mode. mtval2 holds zero or the guest physical address >> 2. mtinst holds zero or the transformed instruction on the final translation, and the pseudoinstruction on the implicit access when mtval2 is nonzero.
+    bins: 2 instr * 2 vsatp
+  - name: cp_mret_m
+    goal: mret uses MPV
+    description: Execute mret in machine mode with cross-product of mstatus.MPP = {M, S, U} / MPV / MPIE.  In a lower mode, a read of mscratch traps and the trap record shows the mode reached.  Then record mstatus (and mstatush on RV32).
+    expectation: Goes to appropriate mode. With MPP = M, mret stays in M-mode with V = 0. mret clears MPV.
+    bins: 3 MPP * 2 MPV * 2 MPIE
+  - name: cp_sret_m
+    goal: sret from M mode
+    description: Execute sret in machine mode with cross-product of mstatus.SPP / hstatus.SPV / SPIE.  After the sret, a read of mscratch traps and the trap record shows the mode reached.  Then check mstatus.SPP, SIE, SPIE and hstatus.SPV.
+    expectation: Goes to appropriate mode
+    bins: 2 SPP * 2 SPV * 2 SPIE
+  - heading: Not tested
+  - goal: misa.H enables the hypervisor extension
+    description: With MUTABLE_MISA_H, clear misa.H, check that hypervisor CSRs and instructions raise illegal instruction, and set it again.
+    status: Not tested
+    rules:
+      - misa_H_op
+    notes: |-
+      Blocked on the reference model: Sail's writable_misa makes every misa bit writable, and no sail.json of a config with MUTABLE_MISA_H enables it.
+  - goal: Ssdbltrp requires mtval2
+    status: Not tested
+    rules:
+      - mtval2_Ssdbltrp
+    notes: |-
+      An implementation requirement; with H, cp_hcsr_access_zero accesses mtval2.  A hart with Ssdbltrp and without H belongs to an Ssdbltrp suite.

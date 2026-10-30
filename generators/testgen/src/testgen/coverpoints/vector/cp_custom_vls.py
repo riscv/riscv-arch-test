@@ -74,20 +74,20 @@ def make_cp_custom_ffLS(instr_name: str, instr_type: str, coverpoint: str, test_
     if test_data.config.sew < min_sew:
         return []
 
-    # Use LMUL=2 (while ensuring EMUL does not exceed 8)
-    lmul = 2
-
     info = parse_vector_instruction_info(instr_name, instr_type)
     eew = info.load_store_eew
     assert eew is not None, f"Could not extract eew from fault-only-first instruction {instr_name}"
-    emul = eew * lmul / test_data.config.sew
 
-    # We might need an ifdef if vl=1 is vlmax (on lmul = 1, which could be required (e.g. 8 segments))
-    # But, we only need it if we require a VLEN > max(32, sew) as max(32, sew) is the minimum VLEN
-    ifdef = f"ZVL{eew * 2}B_SUPPORTED" if emul * info.segments > 8 and eew * 2 > max(32, test_data.config.sew) else ""
-    if emul * info.segments > 8:
-        lmul = 1
+    # Use LMUL=2 (while ensuring EMUL does not exceed 8)
+    lmul = 2
+    emul = eew * lmul / test_data.config.sew
+    while emul * info.segments > 8:
+        lmul /= 2
         emul = eew * lmul / test_data.config.sew
+
+    # We might need an ifdef if lmul <= 1 because we require a vl of at least 2. We have small lmuls when
+    # sew < eew, so the constraint is that we can fit 2 eew elements in a vector register
+    ifdef = f"ZVL{eew * 2}B_SUPPORTED" if lmul <= 1 and eew * 2 > max(32, test_data.config.sew) else ""
 
     mask_label = "ffLS_mask"
     mask_elements = [0 for _ in range(math.ceil(VLEN_MAX / test_data.config.sew))]
@@ -120,6 +120,8 @@ def make_cp_custom_ffLS(instr_name: str, instr_type: str, coverpoint: str, test_
     if ifdef != "":
         tc.code.insert(0, f"#ifdef {ifdef}")
         tc.code.append("#endif")
+    tc.code.insert(0, "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS")
+    tc.code.append("#endif")
 
     tc = test_data.end_test_chunk()
 
@@ -322,9 +324,11 @@ def make_cp_custom_ordered_index_overlap(
     Tests a data overlap in the index register for the ordered case.
     """
 
-    assert test_data.config.sew is not None, "SEW must be set for vector instructions"
+    index_eew = parse_vector_instruction_info(instr_name, instr_type).index_eew
+    assert index_eew is not None, f"Could not extract index EEW from {instr_name}"
+    # vs2 is loaded with the index EEW, so the data must be index-EEW wide and aligned
     label = "custom_index_overlap"
-    test_data.register_vector_data(label, test_data.config.sew, elements=[0, 0])
+    test_data.register_vector_data(label, index_eew, elements=[0, 0])
 
     desc = "Data Overlap of Index Elements"
     bin_name = "zeros"

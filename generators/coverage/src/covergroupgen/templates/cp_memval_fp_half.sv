@@ -1,0 +1,29 @@
+    cp_memval_fp_half : coverpoint unsigned'(ins.current.fd_val[15:0])  iff (ins.trap == 0 )  {
+        // Half-precision value loaded from memory
+        bins pos0             = {16'h0000};
+        bins neg0             = {16'h8000};
+        bins pos1             = {16'h3C00};
+        bins neg1             = {16'hBC00};
+        bins pos2p5           = {16'h4100};
+        bins neg2p5           = {16'hC100};
+        bins pos2prec         = {16'h6800};
+        bins neg2prec         = {16'hE800};
+        bins posminnorm       = {16'h0400};
+        bins negminnorm       = {16'h8400};
+        bins posmaxnorm       = {16'h7BFF};
+        bins negmaxnorm       = {16'hFBFF};
+        bins posmax_subnorm   = {16'h03FF};
+        bins negmax_subnorm   = {16'h83FF};
+        bins posmid_subnorm   = {16'h0200};
+        bins negmid_subnorm   = {16'h8200};
+        bins posmin_subnorm   = {16'h0001};
+        bins negmin_subnorm   = {16'h8001};
+        bins posinfinity      = {16'h7C00};
+        bins neginfinity      = {16'hFC00};
+        bins posQNaN          = {[16'h7E00:16'h7FFF]};
+        bins posSNaN          = {[16'h7C01:16'h7DFF]};
+        bins negQNaN          = {[16'hFE00:16'hFFFF]};
+        bins negSNaN          = {[16'hFC01:16'hFDFF]};
+        bins posrandom        = {16'h58B4};
+        bins negrandom        = {16'hC93A};
+    }

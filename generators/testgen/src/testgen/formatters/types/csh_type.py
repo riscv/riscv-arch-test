@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-from testgen.asm.helpers import load_int_reg, write_sigupd
+from testgen.asm.helpers import check_store_target, fill_store_target, load_int_reg
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
@@ -33,27 +33,17 @@ def format_csh_type(
     # Mask off bottom bit to ensure alignment
     params.immval &= ~1
 
-    # Move sig_reg to rs1
+    # rs1 points at the store target itself, so uimm selects the byte within it. The store lands at
+    # offset uimm of the checked area, and a misdecoded offset writes a different byte of it.
+    area_bytes = params.immval + 2
     setup = [
         load_int_reg("rs2", params.rs2, params.rs2val, test_data),
+        f"LA(x{params.rs1}, scratch) # point base at scratch",
+        *fill_store_target(params.rs1, params.temp_reg, test_data, area_bytes=area_bytes),
     ]
-    if params.rs1 != test_data.int_regs.sig_reg:
-        setup.append(
-            test_data.int_regs.move_sig_reg(params.rs1),
-        )
-        params.rs1 = None
 
-    sig_reg = test_data.int_regs.sig_reg
-
-    setup.append(f"addi x{sig_reg}, x{sig_reg}, {-params.immval} # adjust base address for offset")
-
-    test = [f"{instr_name} x{params.rs2}, {params.immval}(x{sig_reg}) # perform store"]
+    test = [f"{instr_name} x{params.rs2}, {params.immval}(x{params.rs1}) # perform store"]
     check = [
-        f"addi x{sig_reg}, x{sig_reg}, {params.immval} # restore base address",
-        f"addi x{sig_reg}, x{sig_reg}, SIG_STRIDE # increment signature pointer",
-        f"LREG x{params.temp_reg}, -SIG_STRIDE(x{sig_reg}) # load stored value for checking",
-        write_sigupd(params.temp_reg, test_data),
+        *check_store_target(params.rs1, params.temp_reg, test_data, area_bytes=area_bytes),
     ]
-    assert test_data.test_chunk is not None
-    test_data.test_chunk.sigupd_count += 1  # Test store writes one extra signature slot
     return (setup, test, check)

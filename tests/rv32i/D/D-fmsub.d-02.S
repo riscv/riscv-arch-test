@@ -275,253 +275,253 @@ D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xbff00000
   # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f6, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xbff0000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xbff0000000000000_frm_rup_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0x3ff8000000000000, frm = dyn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0x4004000000000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f28) # load fs1: f28 = 0x7fefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f26) # load fs2: f26 = 0x3ff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f26) # load fs2: f26 = 0x4004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f27) # load fs3: f27 = 0x56c065f0f1d804ed
   fsflagsi 0b00000 # clear all fflags
   fsrmi 2
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x3ff8000000000000_frm_dyn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4004000000000000_frm_dyn:
   fmsub.d f10, f28, f26, f27, dyn # perform operation
   # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x3ff8000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x3ff8000000000000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4004000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4004000000000000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0x3ff8000000000000, frm = rdn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0x4004000000000000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f21) # load fs1: f21 = 0x7fefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0x3ff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0x4004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f15) # load fs3: f15 = 0xf4300e3de41c00c4
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x3ff8000000000000_frm_rdn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4004000000000000_frm_rdn:
   fmsub.d f5, f21, f13, f15, rdn # perform operation
   # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x3ff8000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x3ff8000000000000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4004000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4004000000000000_frm_rdn_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0x3ff8000000000000, frm = rmm)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0x4004000000000000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f12) # load fs1: f12 = 0x7fefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f29) # load fs2: f29 = 0x3ff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f29) # load fs2: f29 = 0x4004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f21) # load fs3: f21 = 0x321c1e2b56985a44
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x3ff8000000000000_frm_rmm:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4004000000000000_frm_rmm:
   fmsub.d f5, f12, f29, f21, rmm # perform operation
   # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x3ff8000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x3ff8000000000000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4004000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4004000000000000_frm_rmm_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0x3ff8000000000000, frm = rne)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0x4004000000000000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f27) # load fs1: f27 = 0x7fefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f9) # load fs2: f9 = 0x3ff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f9) # load fs2: f9 = 0x4004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f20) # load fs3: f20 = 0x6e7cef308ea5990a
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x3ff8000000000000_frm_rne:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4004000000000000_frm_rne:
   fmsub.d f6, f27, f9, f20, rne # perform operation
   # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f6, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x3ff8000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x3ff8000000000000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f6, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4004000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4004000000000000_frm_rne_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0x3ff8000000000000, frm = rtz)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0x4004000000000000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f29) # load fs1: f29 = 0x7fefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f20) # load fs2: f20 = 0x3ff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f20) # load fs2: f20 = 0x4004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f24) # load fs3: f24 = 0x039ffb0e8f2ee502
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x3ff8000000000000_frm_rtz:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4004000000000000_frm_rtz:
   fmsub.d f31, f29, f20, f24, rtz # perform operation
   # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f31, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x3ff8000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x3ff8000000000000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f31, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4004000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4004000000000000_frm_rtz_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0x3ff8000000000000, frm = rup)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0x4004000000000000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f1) # load fs1: f1 = 0x7fefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f18) # load fs2: f18 = 0x3ff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f18) # load fs2: f18 = 0x4004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f3) # load fs3: f3 = 0x2466f99db965f8fc
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x3ff8000000000000_frm_rup:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4004000000000000_frm_rup:
   fmsub.d f11, f1, f18, f3, rup # perform operation
   # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x3ff8000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x3ff8000000000000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4004000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4004000000000000_frm_rup_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0xbff8000000000000, frm = dyn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0xc004000000000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f23) # load fs1: f23 = 0x7fefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f8) # load fs2: f8 = 0xbff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f8) # load fs2: f8 = 0xc004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f6) # load fs3: f6 = 0xe9edc7346ad0e876
   fsflagsi 0b00000 # clear all fflags
   fsrmi 4
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xbff8000000000000_frm_dyn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc004000000000000_frm_dyn:
   fmsub.d f19, f23, f8, f6, dyn # perform operation
   # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xbff8000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xbff8000000000000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc004000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc004000000000000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0xbff8000000000000, frm = rdn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0xc004000000000000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f31) # load fs1: f31 = 0x7fefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f11) # load fs2: f11 = 0xbff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f11) # load fs2: f11 = 0xc004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f19) # load fs3: f19 = 0xe8ad83945080ee1e
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xbff8000000000000_frm_rdn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc004000000000000_frm_rdn:
   fmsub.d f21, f31, f11, f19, rdn # perform operation
   # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xbff8000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xbff8000000000000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc004000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc004000000000000_frm_rdn_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0xbff8000000000000, frm = rmm)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0xc004000000000000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f9) # load fs1: f9 = 0x7fefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f23) # load fs2: f23 = 0xbff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f23) # load fs2: f23 = 0xc004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f5) # load fs3: f5 = 0xa3e5aa5a2fa86c2b
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xbff8000000000000_frm_rmm:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc004000000000000_frm_rmm:
   fmsub.d f22, f9, f23, f5, rmm # perform operation
   # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xbff8000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xbff8000000000000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc004000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc004000000000000_frm_rmm_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0xbff8000000000000, frm = rne)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0xc004000000000000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f16) # load fs1: f16 = 0x7fefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f5) # load fs2: f5 = 0xbff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f5) # load fs2: f5 = 0xc004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f21) # load fs3: f21 = 0x9b8f706415c90e65
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xbff8000000000000_frm_rne:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc004000000000000_frm_rne:
   fmsub.d f19, f16, f5, f21, rne # perform operation
   # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xbff8000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xbff8000000000000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc004000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc004000000000000_frm_rne_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0xbff8000000000000, frm = rtz)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0xc004000000000000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f31) # load fs1: f31 = 0x7fefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f17) # load fs2: f17 = 0xbff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f17) # load fs2: f17 = 0xc004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f25) # load fs3: f25 = 0xcece6c0ef50a060f
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xbff8000000000000_frm_rtz:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc004000000000000_frm_rtz:
   fmsub.d f21, f31, f17, f25, rtz # perform operation
   # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xbff8000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xbff8000000000000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc004000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc004000000000000_frm_rtz_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0xbff8000000000000, frm = rup)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0xc004000000000000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f7) # load fs1: f7 = 0x7fefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs2: f14 = 0xbff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs2: f14 = 0xc004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f29) # load fs3: f29 = 0x68a033eba2df28ac
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xbff8000000000000_frm_rup:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc004000000000000_frm_rup:
   fmsub.d f23, f7, f14, f29, rup # perform operation
   # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xbff8000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xbff8000000000000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc004000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc004000000000000_frm_rup_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0x4000000000000000, frm = dyn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0x4340000000000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f28) # load fs1: f28 = 0x7fefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0x4000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0x4340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f1) # load fs3: f1 = 0x1605ea6d77cbf34f
   fsflagsi 0b00000 # clear all fflags
   fsrmi 0
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4000000000000000_frm_dyn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4340000000000000_frm_dyn:
   fmsub.d f19, f28, f13, f1, dyn # perform operation
   # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4000000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4000000000000000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4340000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4340000000000000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0x4000000000000000, frm = rdn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0x4340000000000000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f3) # load fs1: f3 = 0x7fefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f15) # load fs2: f15 = 0x4000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f15) # load fs2: f15 = 0x4340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f8) # load fs3: f8 = 0xe87002cc277e56d5
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4000000000000000_frm_rdn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4340000000000000_frm_rdn:
   fmsub.d f11, f3, f15, f8, rdn # perform operation
   # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4000000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4000000000000000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4340000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4340000000000000_frm_rdn_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0x4000000000000000, frm = rmm)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0x4340000000000000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f6) # load fs1: f6 = 0x7fefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f17) # load fs2: f17 = 0x4000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f17) # load fs2: f17 = 0x4340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f8) # load fs3: f8 = 0xf90b4bc0960a9ce9
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4000000000000000_frm_rmm:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4340000000000000_frm_rmm:
   fmsub.d f29, f6, f17, f8, rmm # perform operation
   # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4000000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4000000000000000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4340000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4340000000000000_frm_rmm_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0x4000000000000000, frm = rne)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0x4340000000000000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f17) # load fs1: f17 = 0x7fefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f5) # load fs2: f5 = 0x4000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f5) # load fs2: f5 = 0x4340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f11) # load fs3: f11 = 0xd0e5640074b98385
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4000000000000000_frm_rne:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4340000000000000_frm_rne:
   fmsub.d f2, f17, f5, f11, rne # perform operation
   # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4000000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4000000000000000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4340000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4340000000000000_frm_rne_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0x4000000000000000, frm = rtz)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0x4340000000000000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f25) # load fs1: f25 = 0x7fefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f6) # load fs2: f6 = 0x4000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f6) # load fs2: f6 = 0x4340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f19) # load fs3: f19 = 0xf94ae3baa34facad
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4000000000000000_frm_rtz:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4340000000000000_frm_rtz:
   fmsub.d f26, f25, f6, f19, rtz # perform operation
   # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4000000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4000000000000000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4340000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4340000000000000_frm_rtz_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0x4000000000000000, frm = rup)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0x4340000000000000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs1: f13 = 0x7fefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f29) # load fs2: f29 = 0x4000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f29) # load fs2: f29 = 0x4340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f28) # load fs3: f28 = 0x0169f8da7a5cf83f
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4000000000000000_frm_rup:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4340000000000000_frm_rup:
   fmsub.d f24, f13, f29, f28, rup # perform operation
   # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4000000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4000000000000000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4340000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4340000000000000_frm_rup_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0xc000000000000000, frm = dyn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0xc340000000000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f29) # load fs1: f29 = 0x7fefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f17) # load fs2: f17 = 0xc000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f17) # load fs2: f17 = 0xc340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f19) # load fs3: f19 = 0xd5427191888fccd7
   fsflagsi 0b00000 # clear all fflags
   fsrmi 4
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc000000000000000_frm_dyn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc340000000000000_frm_dyn:
   fmsub.d f9, f29, f17, f19, dyn # perform operation
   # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f9, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc000000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc000000000000000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f9, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc340000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc340000000000000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0xc000000000000000, frm = rdn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0xc340000000000000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f12) # load fs1: f12 = 0x7fefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f6) # load fs2: f6 = 0xc000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f6) # load fs2: f6 = 0xc340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f25) # load fs3: f25 = 0xa2a5af028cab0bb6
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc000000000000000_frm_rdn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc340000000000000_frm_rdn:
   fmsub.d f1, f12, f6, f25, rdn # perform operation
   # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc000000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc000000000000000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc340000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc340000000000000_frm_rdn_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0xc000000000000000, frm = rmm)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0xc340000000000000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f21) # load fs1: f21 = 0x7fefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f30) # load fs2: f30 = 0xc000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f30) # load fs2: f30 = 0xc340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f19) # load fs3: f19 = 0x7c6afe53f7629163
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc000000000000000_frm_rmm:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc340000000000000_frm_rmm:
   fmsub.d f18, f21, f30, f19, rmm # perform operation
   # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc000000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc000000000000000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc340000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc340000000000000_frm_rmm_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0xc000000000000000, frm = rne)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0xc340000000000000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f12) # load fs1: f12 = 0x7fefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f2) # load fs2: f2 = 0xc000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f2) # load fs2: f2 = 0xc340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f1) # load fs3: f1 = 0x39e4316f80b8263b
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc000000000000000_frm_rne:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc340000000000000_frm_rne:
   fmsub.d f5, f12, f2, f1, rne # perform operation
   # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc000000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc000000000000000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc340000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc340000000000000_frm_rne_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0xc000000000000000, frm = rtz)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0xc340000000000000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f11) # load fs1: f11 = 0x7fefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f6) # load fs2: f6 = 0xc000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f6) # load fs2: f6 = 0xc340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f8) # load fs3: f8 = 0x8f10e958950f6f6a
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc000000000000000_frm_rtz:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc340000000000000_frm_rtz:
   fmsub.d f7, f11, f6, f8, rtz # perform operation
   # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc000000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc000000000000000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc340000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc340000000000000_frm_rtz_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0xc000000000000000, frm = rup)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0xc340000000000000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f22) # load fs1: f22 = 0x7fefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f3) # load fs2: f3 = 0xc000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f3) # load fs2: f3 = 0xc340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f19) # load fs3: f19 = 0xb19df7e372d1ee6b
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc000000000000000_frm_rup:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc340000000000000_frm_rup:
   fmsub.d f30, f22, f3, f19, rup # perform operation
   # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f30, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc000000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc000000000000000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f30, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc340000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc340000000000000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x7fefffffffffffff fs2 = 0x0010000000000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f10) # load fs1: f10 = 0x7fefffffffffffff
@@ -2011,253 +2011,253 @@ D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xbff00000
   # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f15, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xbff0000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xbff0000000000000_frm_rup_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0x3ff8000000000000, frm = dyn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0x4004000000000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f8) # load fs1: f8 = 0xffefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f20) # load fs2: f20 = 0x3ff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f20) # load fs2: f20 = 0x4004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f26) # load fs3: f26 = 0x7ac0b9d696feb100
   fsflagsi 0b00000 # clear all fflags
   fsrmi 0
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x3ff8000000000000_frm_dyn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4004000000000000_frm_dyn:
   fmsub.d f27, f8, f20, f26, dyn # perform operation
   # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x3ff8000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x3ff8000000000000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4004000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4004000000000000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0x3ff8000000000000, frm = rdn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0x4004000000000000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f30) # load fs1: f30 = 0xffefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f1) # load fs2: f1 = 0x3ff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f1) # load fs2: f1 = 0x4004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f19) # load fs3: f19 = 0xc3b7553cf4e50645
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x3ff8000000000000_frm_rdn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4004000000000000_frm_rdn:
   fmsub.d f5, f30, f1, f19, rdn # perform operation
   # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x3ff8000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x3ff8000000000000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4004000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4004000000000000_frm_rdn_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0x3ff8000000000000, frm = rmm)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0x4004000000000000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f29) # load fs1: f29 = 0xffefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f25) # load fs2: f25 = 0x3ff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f25) # load fs2: f25 = 0x4004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f7) # load fs3: f7 = 0xbeeb99c4b5f5412a
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x3ff8000000000000_frm_rmm:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4004000000000000_frm_rmm:
   fmsub.d f8, f29, f25, f7, rmm # perform operation
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x3ff8000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x3ff8000000000000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4004000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4004000000000000_frm_rmm_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0x3ff8000000000000, frm = rne)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0x4004000000000000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f20) # load fs1: f20 = 0xffefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f18) # load fs2: f18 = 0x3ff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f18) # load fs2: f18 = 0x4004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f23) # load fs3: f23 = 0xb194538972436df7
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x3ff8000000000000_frm_rne:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4004000000000000_frm_rne:
   fmsub.d f10, f20, f18, f23, rne # perform operation
   # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x3ff8000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x3ff8000000000000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4004000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4004000000000000_frm_rne_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0x3ff8000000000000, frm = rtz)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0x4004000000000000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f21) # load fs1: f21 = 0xffefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f11) # load fs2: f11 = 0x3ff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f11) # load fs2: f11 = 0x4004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f6) # load fs3: f6 = 0x65d3955dd6cdd17b
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x3ff8000000000000_frm_rtz:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4004000000000000_frm_rtz:
   fmsub.d f1, f21, f11, f6, rtz # perform operation
   # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x3ff8000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x3ff8000000000000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4004000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4004000000000000_frm_rtz_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0x3ff8000000000000, frm = rup)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0x4004000000000000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f28) # load fs1: f28 = 0xffefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f17) # load fs2: f17 = 0x3ff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f17) # load fs2: f17 = 0x4004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f26) # load fs3: f26 = 0x979e6dc216a4d1d0
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x3ff8000000000000_frm_rup:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4004000000000000_frm_rup:
   fmsub.d f25, f28, f17, f26, rup # perform operation
   # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f25, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x3ff8000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x3ff8000000000000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f25, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4004000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4004000000000000_frm_rup_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0xbff8000000000000, frm = dyn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0xc004000000000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f6) # load fs1: f6 = 0xffefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f5) # load fs2: f5 = 0xbff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f5) # load fs2: f5 = 0xc004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f9) # load fs3: f9 = 0xce761a955b771275
   fsflagsi 0b00000 # clear all fflags
   fsrmi 0
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xbff8000000000000_frm_dyn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc004000000000000_frm_dyn:
   fmsub.d f10, f6, f5, f9, dyn # perform operation
   # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xbff8000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xbff8000000000000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc004000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc004000000000000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0xbff8000000000000, frm = rdn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0xc004000000000000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f22) # load fs1: f22 = 0xffefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f21) # load fs2: f21 = 0xbff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f21) # load fs2: f21 = 0xc004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f12) # load fs3: f12 = 0xe58a215c6787aa66
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xbff8000000000000_frm_rdn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc004000000000000_frm_rdn:
   fmsub.d f28, f22, f21, f12, rdn # perform operation
   # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xbff8000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xbff8000000000000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc004000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc004000000000000_frm_rdn_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0xbff8000000000000, frm = rmm)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0xc004000000000000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f12) # load fs1: f12 = 0xffefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f28) # load fs2: f28 = 0xbff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f28) # load fs2: f28 = 0xc004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f17) # load fs3: f17 = 0x6592d929b2be00df
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xbff8000000000000_frm_rmm:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc004000000000000_frm_rmm:
   fmsub.d f23, f12, f28, f17, rmm # perform operation
   # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xbff8000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xbff8000000000000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc004000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc004000000000000_frm_rmm_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0xbff8000000000000, frm = rne)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0xc004000000000000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f26) # load fs1: f26 = 0xffefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f25) # load fs2: f25 = 0xbff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f25) # load fs2: f25 = 0xc004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f22) # load fs3: f22 = 0x31f591428f13c753
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xbff8000000000000_frm_rne:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc004000000000000_frm_rne:
   fmsub.d f21, f26, f25, f22, rne # perform operation
   # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xbff8000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xbff8000000000000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc004000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc004000000000000_frm_rne_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0xbff8000000000000, frm = rtz)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0xc004000000000000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f27) # load fs1: f27 = 0xffefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f6) # load fs2: f6 = 0xbff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f6) # load fs2: f6 = 0xc004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f25) # load fs3: f25 = 0x9e6aeea142c7eff8
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xbff8000000000000_frm_rtz:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc004000000000000_frm_rtz:
   fmsub.d f10, f27, f6, f25, rtz # perform operation
   # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xbff8000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xbff8000000000000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc004000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc004000000000000_frm_rtz_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0xbff8000000000000, frm = rup)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0xc004000000000000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f19) # load fs1: f19 = 0xffefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs2: f14 = 0xbff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs2: f14 = 0xc004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f31) # load fs3: f31 = 0xcd0428376cc6f3cb
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xbff8000000000000_frm_rup:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc004000000000000_frm_rup:
   fmsub.d f10, f19, f14, f31, rup # perform operation
   # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xbff8000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xbff8000000000000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc004000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc004000000000000_frm_rup_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0x4000000000000000, frm = dyn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0x4340000000000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f12) # load fs1: f12 = 0xffefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f26) # load fs2: f26 = 0x4000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f26) # load fs2: f26 = 0x4340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f20) # load fs3: f20 = 0x27f1c0b948ac12ba
   fsflagsi 0b00000 # clear all fflags
   fsrmi 3
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4000000000000000_frm_dyn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4340000000000000_frm_dyn:
   fmsub.d f29, f12, f26, f20, dyn # perform operation
   # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4000000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4000000000000000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4340000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4340000000000000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0x4000000000000000, frm = rdn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0x4340000000000000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f11) # load fs1: f11 = 0xffefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f20) # load fs2: f20 = 0x4000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f20) # load fs2: f20 = 0x4340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f29) # load fs3: f29 = 0xdea639a15debf1c2
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4000000000000000_frm_rdn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4340000000000000_frm_rdn:
   fmsub.d f10, f11, f20, f29, rdn # perform operation
   # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4000000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4000000000000000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4340000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4340000000000000_frm_rdn_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0x4000000000000000, frm = rmm)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0x4340000000000000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f29) # load fs1: f29 = 0xffefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f24) # load fs2: f24 = 0x4000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f24) # load fs2: f24 = 0x4340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f7) # load fs3: f7 = 0x83943a9953e6659e
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4000000000000000_frm_rmm:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4340000000000000_frm_rmm:
   fmsub.d f22, f29, f24, f7, rmm # perform operation
   # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4000000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4000000000000000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4340000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4340000000000000_frm_rmm_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0x4000000000000000, frm = rne)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0x4340000000000000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f12) # load fs1: f12 = 0xffefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f21) # load fs2: f21 = 0x4000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f21) # load fs2: f21 = 0x4340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f20) # load fs3: f20 = 0x033aa88cf2982800
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4000000000000000_frm_rne:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4340000000000000_frm_rne:
   fmsub.d f31, f12, f21, f20, rne # perform operation
   # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f31, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4000000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4000000000000000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f31, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4340000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4340000000000000_frm_rne_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0x4000000000000000, frm = rtz)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0x4340000000000000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f22) # load fs1: f22 = 0xffefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f20) # load fs2: f20 = 0x4000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f20) # load fs2: f20 = 0x4340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f16) # load fs3: f16 = 0xdc5ee5770aae12d2
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4000000000000000_frm_rtz:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4340000000000000_frm_rtz:
   fmsub.d f7, f22, f20, f16, rtz # perform operation
   # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4000000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4000000000000000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4340000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4340000000000000_frm_rtz_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0x4000000000000000, frm = rup)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0x4340000000000000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f30) # load fs1: f30 = 0xffefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f16) # load fs2: f16 = 0x4000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f16) # load fs2: f16 = 0x4340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f9) # load fs3: f9 = 0x225dfcf4f8a0b206
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4000000000000000_frm_rup:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4340000000000000_frm_rup:
   fmsub.d f23, f30, f16, f9, rup # perform operation
   # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4000000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4000000000000000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4340000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4340000000000000_frm_rup_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0xc000000000000000, frm = dyn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0xc340000000000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f17) # load fs1: f17 = 0xffefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f29) # load fs2: f29 = 0xc000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f29) # load fs2: f29 = 0xc340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f24) # load fs3: f24 = 0x9e427e08608de421
   fsflagsi 0b00000 # clear all fflags
   fsrmi 3
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc000000000000000_frm_dyn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc340000000000000_frm_dyn:
   fmsub.d f1, f17, f29, f24, dyn # perform operation
   # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc000000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc000000000000000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc340000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc340000000000000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0xc000000000000000, frm = rdn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0xc340000000000000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f21) # load fs1: f21 = 0xffefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f7) # load fs2: f7 = 0xc000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f7) # load fs2: f7 = 0xc340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f30) # load fs3: f30 = 0x7ac58286cdb11a1b
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc000000000000000_frm_rdn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc340000000000000_frm_rdn:
   fmsub.d f10, f21, f7, f30, rdn # perform operation
   # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc000000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc000000000000000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc340000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc340000000000000_frm_rdn_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0xc000000000000000, frm = rmm)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0xc340000000000000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f25) # load fs1: f25 = 0xffefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f30) # load fs2: f30 = 0xc000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f30) # load fs2: f30 = 0xc340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f21) # load fs3: f21 = 0x1c436868590b782e
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc000000000000000_frm_rmm:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc340000000000000_frm_rmm:
   fmsub.d f2, f25, f30, f21, rmm # perform operation
   # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc000000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc000000000000000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc340000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc340000000000000_frm_rmm_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0xc000000000000000, frm = rne)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0xc340000000000000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f17) # load fs1: f17 = 0xffefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f29) # load fs2: f29 = 0xc000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f29) # load fs2: f29 = 0xc340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs3: f14 = 0x326ba7e29e7b09d2
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc000000000000000_frm_rne:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc340000000000000_frm_rne:
   fmsub.d f21, f17, f29, f14, rne # perform operation
   # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc000000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc000000000000000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc340000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc340000000000000_frm_rne_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0xc000000000000000, frm = rtz)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0xc340000000000000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs1: f13 = 0xffefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f24) # load fs2: f24 = 0xc000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f24) # load fs2: f24 = 0xc340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f28) # load fs3: f28 = 0x1bd2b24b57f7ecfc
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc000000000000000_frm_rtz:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc340000000000000_frm_rtz:
   fmsub.d f11, f13, f24, f28, rtz # perform operation
   # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc000000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc000000000000000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc340000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc340000000000000_frm_rtz_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0xc000000000000000, frm = rup)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0xc340000000000000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f21) # load fs1: f21 = 0xffefffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f18) # load fs2: f18 = 0xc000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f18) # load fs2: f18 = 0xc340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f1) # load fs3: f1 = 0x5ddd4e35a8d89a10
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc000000000000000_frm_rup:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc340000000000000_frm_rup:
   fmsub.d f28, f21, f18, f1, rup # perform operation
   # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc000000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc000000000000000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc340000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc340000000000000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0xffefffffffffffff fs2 = 0x0010000000000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f15) # load fs1: f15 = 0xffefffffffffffff
@@ -3747,253 +3747,253 @@ D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xbff00000000
   # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xbff0000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xbff0000000000000_frm_rup_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0x3ff8000000000000, frm = dyn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0x4004000000000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f20) # load fs1: f20 = 0x000fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f5) # load fs2: f5 = 0x3ff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f5) # load fs2: f5 = 0x4004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs3: f14 = 0x3c080e2d259c4234
   fsflagsi 0b00000 # clear all fflags
   fsrmi 3
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x3ff8000000000000_frm_dyn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4004000000000000_frm_dyn:
   fmsub.d f17, f20, f5, f14, dyn # perform operation
   # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f17, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x3ff8000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x3ff8000000000000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f17, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4004000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4004000000000000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0x3ff8000000000000, frm = rdn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0x4004000000000000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f22) # load fs1: f22 = 0x000fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f26) # load fs2: f26 = 0x3ff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f26) # load fs2: f26 = 0x4004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f28) # load fs3: f28 = 0xa9cf8513f7feb5da
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x3ff8000000000000_frm_rdn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4004000000000000_frm_rdn:
   fmsub.d f21, f22, f26, f28, rdn # perform operation
   # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x3ff8000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x3ff8000000000000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4004000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4004000000000000_frm_rdn_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0x3ff8000000000000, frm = rmm)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0x4004000000000000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f29) # load fs1: f29 = 0x000fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f24) # load fs2: f24 = 0x3ff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f24) # load fs2: f24 = 0x4004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f30) # load fs3: f30 = 0xd8ab663f783f633e
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x3ff8000000000000_frm_rmm:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4004000000000000_frm_rmm:
   fmsub.d f25, f29, f24, f30, rmm # perform operation
   # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f25, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x3ff8000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x3ff8000000000000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f25, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4004000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4004000000000000_frm_rmm_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0x3ff8000000000000, frm = rne)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0x4004000000000000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f31) # load fs1: f31 = 0x000fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f29) # load fs2: f29 = 0x3ff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f29) # load fs2: f29 = 0x4004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f25) # load fs3: f25 = 0x170ee8aa65745c57
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x3ff8000000000000_frm_rne:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4004000000000000_frm_rne:
   fmsub.d f14, f31, f29, f25, rne # perform operation
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x3ff8000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x3ff8000000000000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4004000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4004000000000000_frm_rne_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0x3ff8000000000000, frm = rtz)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0x4004000000000000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f30) # load fs1: f30 = 0x000fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f27) # load fs2: f27 = 0x3ff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f27) # load fs2: f27 = 0x4004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f15) # load fs3: f15 = 0x9fc9aa9ececc4d9d
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x3ff8000000000000_frm_rtz:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4004000000000000_frm_rtz:
   fmsub.d f14, f30, f27, f15, rtz # perform operation
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x3ff8000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x3ff8000000000000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4004000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4004000000000000_frm_rtz_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0x3ff8000000000000, frm = rup)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0x4004000000000000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f5) # load fs1: f5 = 0x000fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f17) # load fs2: f17 = 0x3ff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f17) # load fs2: f17 = 0x4004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f23) # load fs3: f23 = 0x76c329e666a95da1
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x3ff8000000000000_frm_rup:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4004000000000000_frm_rup:
   fmsub.d f20, f5, f17, f23, rup # perform operation
   # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x3ff8000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x3ff8000000000000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4004000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4004000000000000_frm_rup_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0xbff8000000000000, frm = dyn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0xc004000000000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f24) # load fs1: f24 = 0x000fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f6) # load fs2: f6 = 0xbff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f6) # load fs2: f6 = 0xc004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f19) # load fs3: f19 = 0x6209b1eb1438c3eb
   fsflagsi 0b00000 # clear all fflags
   fsrmi 2
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xbff8000000000000_frm_dyn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc004000000000000_frm_dyn:
   fmsub.d f9, f24, f6, f19, dyn # perform operation
   # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f9, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xbff8000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xbff8000000000000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f9, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc004000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc004000000000000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0xbff8000000000000, frm = rdn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0xc004000000000000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs1: f14 = 0x000fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f6) # load fs2: f6 = 0xbff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f6) # load fs2: f6 = 0xc004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f19) # load fs3: f19 = 0x53ac0c0825d318d0
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xbff8000000000000_frm_rdn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc004000000000000_frm_rdn:
   fmsub.d f20, f14, f6, f19, rdn # perform operation
   # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xbff8000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xbff8000000000000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc004000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc004000000000000_frm_rdn_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0xbff8000000000000, frm = rmm)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0xc004000000000000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f18) # load fs1: f18 = 0x000fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f24) # load fs2: f24 = 0xbff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f24) # load fs2: f24 = 0xc004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f9) # load fs3: f9 = 0xbfa2822cd511c533
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xbff8000000000000_frm_rmm:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc004000000000000_frm_rmm:
   fmsub.d f5, f18, f24, f9, rmm # perform operation
   # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xbff8000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xbff8000000000000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc004000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc004000000000000_frm_rmm_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0xbff8000000000000, frm = rne)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0xc004000000000000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f16) # load fs1: f16 = 0x000fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f3) # load fs2: f3 = 0xbff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f3) # load fs2: f3 = 0xc004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f22) # load fs3: f22 = 0x1b43bcf1fca69c78
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xbff8000000000000_frm_rne:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc004000000000000_frm_rne:
   fmsub.d f21, f16, f3, f22, rne # perform operation
   # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xbff8000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xbff8000000000000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc004000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc004000000000000_frm_rne_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0xbff8000000000000, frm = rtz)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0xc004000000000000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f8) # load fs1: f8 = 0x000fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f2) # load fs2: f2 = 0xbff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f2) # load fs2: f2 = 0xc004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f17) # load fs3: f17 = 0x38adb3168a0a3682
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xbff8000000000000_frm_rtz:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc004000000000000_frm_rtz:
   fmsub.d f24, f8, f2, f17, rtz # perform operation
   # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xbff8000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xbff8000000000000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc004000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc004000000000000_frm_rtz_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0xbff8000000000000, frm = rup)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0xc004000000000000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f11) # load fs1: f11 = 0x000fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f20) # load fs2: f20 = 0xbff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f20) # load fs2: f20 = 0xc004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f15) # load fs3: f15 = 0xc2a5a321f46798fe
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xbff8000000000000_frm_rup:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc004000000000000_frm_rup:
   fmsub.d f6, f11, f20, f15, rup # perform operation
   # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f6, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xbff8000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xbff8000000000000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f6, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc004000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc004000000000000_frm_rup_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0x4000000000000000, frm = dyn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0x4340000000000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs1: f13 = 0x000fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f2) # load fs2: f2 = 0x4000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f2) # load fs2: f2 = 0x4340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f11) # load fs3: f11 = 0x7e705a890a6af0b6
   fsflagsi 0b00000 # clear all fflags
   fsrmi 0
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4000000000000000_frm_dyn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4340000000000000_frm_dyn:
   fmsub.d f29, f13, f2, f11, dyn # perform operation
   # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4000000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4000000000000000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4340000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4340000000000000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0x4000000000000000, frm = rdn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0x4340000000000000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f19) # load fs1: f19 = 0x000fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f7) # load fs2: f7 = 0x4000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f7) # load fs2: f7 = 0x4340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f6) # load fs3: f6 = 0xd8b162973109bd82
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4000000000000000_frm_rdn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4340000000000000_frm_rdn:
   fmsub.d f17, f19, f7, f6, rdn # perform operation
   # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f17, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4000000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4000000000000000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f17, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4340000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4340000000000000_frm_rdn_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0x4000000000000000, frm = rmm)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0x4340000000000000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f11) # load fs1: f11 = 0x000fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f1) # load fs2: f1 = 0x4000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f1) # load fs2: f1 = 0x4340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f27) # load fs3: f27 = 0x21d6240e3d3fb062
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4000000000000000_frm_rmm:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4340000000000000_frm_rmm:
   fmsub.d f20, f11, f1, f27, rmm # perform operation
   # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4000000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4000000000000000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4340000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4340000000000000_frm_rmm_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0x4000000000000000, frm = rne)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0x4340000000000000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f2) # load fs1: f2 = 0x000fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f23) # load fs2: f23 = 0x4000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f23) # load fs2: f23 = 0x4340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f18) # load fs3: f18 = 0xcb72c32b65fb129d
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4000000000000000_frm_rne:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4340000000000000_frm_rne:
   fmsub.d f3, f2, f23, f18, rne # perform operation
   # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4000000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4000000000000000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4340000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4340000000000000_frm_rne_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0x4000000000000000, frm = rtz)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0x4340000000000000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f25) # load fs1: f25 = 0x000fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f16) # load fs2: f16 = 0x4000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f16) # load fs2: f16 = 0x4340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f19) # load fs3: f19 = 0xcfbbab62060f2f69
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4000000000000000_frm_rtz:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4340000000000000_frm_rtz:
   fmsub.d f6, f25, f16, f19, rtz # perform operation
   # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f6, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4000000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4000000000000000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f6, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4340000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4340000000000000_frm_rtz_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0x4000000000000000, frm = rup)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0x4340000000000000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f30) # load fs1: f30 = 0x000fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0x4000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0x4340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f1) # load fs3: f1 = 0x706116cdf81f49b1
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4000000000000000_frm_rup:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4340000000000000_frm_rup:
   fmsub.d f7, f30, f13, f1, rup # perform operation
   # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4000000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4000000000000000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4340000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4340000000000000_frm_rup_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0xc000000000000000, frm = dyn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0xc340000000000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f1) # load fs1: f1 = 0x000fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f22) # load fs2: f22 = 0xc000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f22) # load fs2: f22 = 0xc340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f15) # load fs3: f15 = 0x68d5fe0d92cd8490
   fsflagsi 0b00000 # clear all fflags
   fsrmi 1
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc000000000000000_frm_dyn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc340000000000000_frm_dyn:
   fmsub.d f3, f1, f22, f15, dyn # perform operation
   # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc000000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc000000000000000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc340000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc340000000000000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0xc000000000000000, frm = rdn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0xc340000000000000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs1: f14 = 0x000fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f26) # load fs2: f26 = 0xc000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f26) # load fs2: f26 = 0xc340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f1) # load fs3: f1 = 0x64d61176375a565d
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc000000000000000_frm_rdn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc340000000000000_frm_rdn:
   fmsub.d f11, f14, f26, f1, rdn # perform operation
   # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc000000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc000000000000000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc340000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc340000000000000_frm_rdn_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0xc000000000000000, frm = rmm)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0xc340000000000000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f3) # load fs1: f3 = 0x000fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f27) # load fs2: f27 = 0xc000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f27) # load fs2: f27 = 0xc340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f6) # load fs3: f6 = 0x2e815a8412d6f760
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc000000000000000_frm_rmm:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc340000000000000_frm_rmm:
   fmsub.d f30, f3, f27, f6, rmm # perform operation
   # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f30, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc000000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc000000000000000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f30, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc340000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc340000000000000_frm_rmm_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0xc000000000000000, frm = rne)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0xc340000000000000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f9) # load fs1: f9 = 0x000fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f29) # load fs2: f29 = 0xc000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f29) # load fs2: f29 = 0xc340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f31) # load fs3: f31 = 0x80e2146df8c00806
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc000000000000000_frm_rne:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc340000000000000_frm_rne:
   fmsub.d f7, f9, f29, f31, rne # perform operation
   # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc000000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc000000000000000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc340000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc340000000000000_frm_rne_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0xc000000000000000, frm = rtz)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0xc340000000000000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f20) # load fs1: f20 = 0x000fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f11) # load fs2: f11 = 0xc000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f11) # load fs2: f11 = 0xc340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f28) # load fs3: f28 = 0xba56d53863b0fbdb
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc000000000000000_frm_rtz:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc340000000000000_frm_rtz:
   fmsub.d f3, f20, f11, f28, rtz # perform operation
   # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc000000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc000000000000000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc340000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc340000000000000_frm_rtz_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0xc000000000000000, frm = rup)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0xc340000000000000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f1) # load fs1: f1 = 0x000fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0xc000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0xc340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f29) # load fs3: f29 = 0xdff5f2c7c183da09
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc000000000000000_frm_rup:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc340000000000000_frm_rup:
   fmsub.d f17, f1, f13, f29, rup # perform operation
   # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f17, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc000000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc000000000000000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f17, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc340000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc340000000000000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x000fffffffffffff fs2 = 0x0010000000000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f9) # load fs1: f9 = 0x000fffffffffffff
@@ -5483,253 +5483,253 @@ D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xbff00000
   # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xbff0000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xbff0000000000000_frm_rup_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0x3ff8000000000000, frm = dyn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0x4004000000000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f30) # load fs1: f30 = 0x800fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f24) # load fs2: f24 = 0x3ff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f24) # load fs2: f24 = 0x4004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f2) # load fs3: f2 = 0x65b82f3e0f80f680
   fsflagsi 0b00000 # clear all fflags
   fsrmi 1
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x3ff8000000000000_frm_dyn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4004000000000000_frm_dyn:
   fmsub.d f25, f30, f24, f2, dyn # perform operation
   # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f25, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x3ff8000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x3ff8000000000000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f25, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4004000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4004000000000000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0x3ff8000000000000, frm = rdn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0x4004000000000000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f1) # load fs1: f1 = 0x800fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f11) # load fs2: f11 = 0x3ff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f11) # load fs2: f11 = 0x4004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f18) # load fs3: f18 = 0xe6f6f64dc30a6d52
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x3ff8000000000000_frm_rdn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4004000000000000_frm_rdn:
   fmsub.d f8, f1, f11, f18, rdn # perform operation
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x3ff8000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x3ff8000000000000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4004000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4004000000000000_frm_rdn_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0x3ff8000000000000, frm = rmm)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0x4004000000000000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f20) # load fs1: f20 = 0x800fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f8) # load fs2: f8 = 0x3ff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f8) # load fs2: f8 = 0x4004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs3: f13 = 0xd1f1b3b5b9f4c04b
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x3ff8000000000000_frm_rmm:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4004000000000000_frm_rmm:
   fmsub.d f5, f20, f8, f13, rmm # perform operation
   # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x3ff8000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x3ff8000000000000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4004000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4004000000000000_frm_rmm_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0x3ff8000000000000, frm = rne)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0x4004000000000000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f8) # load fs1: f8 = 0x800fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs2: f14 = 0x3ff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs2: f14 = 0x4004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f22) # load fs3: f22 = 0xdbd57679ff8ea649
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x3ff8000000000000_frm_rne:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4004000000000000_frm_rne:
   fmsub.d f10, f8, f14, f22, rne # perform operation
   # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x3ff8000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x3ff8000000000000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4004000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4004000000000000_frm_rne_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0x3ff8000000000000, frm = rtz)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0x4004000000000000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f23) # load fs1: f23 = 0x800fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f11) # load fs2: f11 = 0x3ff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f11) # load fs2: f11 = 0x4004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f19) # load fs3: f19 = 0x4e88c03811c2e32a
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x3ff8000000000000_frm_rtz:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4004000000000000_frm_rtz:
   fmsub.d f17, f23, f11, f19, rtz # perform operation
   # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f17, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x3ff8000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x3ff8000000000000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f17, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4004000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4004000000000000_frm_rtz_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0x3ff8000000000000, frm = rup)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0x4004000000000000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f3) # load fs1: f3 = 0x800fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f9) # load fs2: f9 = 0x3ff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f9) # load fs2: f9 = 0x4004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f16) # load fs3: f16 = 0x494bd46eb7d1e16c
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x3ff8000000000000_frm_rup:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4004000000000000_frm_rup:
   fmsub.d f20, f3, f9, f16, rup # perform operation
   # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x3ff8000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x3ff8000000000000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4004000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4004000000000000_frm_rup_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0xbff8000000000000, frm = dyn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0xc004000000000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f23) # load fs1: f23 = 0x800fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f10) # load fs2: f10 = 0xbff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f10) # load fs2: f10 = 0xc004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f5) # load fs3: f5 = 0x18d8dfae9a2b2161
   fsflagsi 0b00000 # clear all fflags
   fsrmi 2
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xbff8000000000000_frm_dyn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc004000000000000_frm_dyn:
   fmsub.d f15, f23, f10, f5, dyn # perform operation
   # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f15, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xbff8000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xbff8000000000000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f15, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc004000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc004000000000000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0xbff8000000000000, frm = rdn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0xc004000000000000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f25) # load fs1: f25 = 0x800fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f11) # load fs2: f11 = 0xbff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f11) # load fs2: f11 = 0xc004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs3: f14 = 0x61d91d2067e153f6
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xbff8000000000000_frm_rdn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc004000000000000_frm_rdn:
   fmsub.d f23, f25, f11, f14, rdn # perform operation
   # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xbff8000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xbff8000000000000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc004000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc004000000000000_frm_rdn_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0xbff8000000000000, frm = rmm)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0xc004000000000000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f17) # load fs1: f17 = 0x800fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f20) # load fs2: f20 = 0xbff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f20) # load fs2: f20 = 0xc004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs3: f14 = 0x76bdf36517014049
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xbff8000000000000_frm_rmm:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc004000000000000_frm_rmm:
   fmsub.d f22, f17, f20, f14, rmm # perform operation
   # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xbff8000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xbff8000000000000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc004000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc004000000000000_frm_rmm_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0xbff8000000000000, frm = rne)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0xc004000000000000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f1) # load fs1: f1 = 0x800fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f30) # load fs2: f30 = 0xbff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f30) # load fs2: f30 = 0xc004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f23) # load fs3: f23 = 0x747f635ef3c0d486
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xbff8000000000000_frm_rne:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc004000000000000_frm_rne:
   fmsub.d f3, f1, f30, f23, rne # perform operation
   # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xbff8000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xbff8000000000000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc004000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc004000000000000_frm_rne_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0xbff8000000000000, frm = rtz)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0xc004000000000000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f17) # load fs1: f17 = 0x800fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f15) # load fs2: f15 = 0xbff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f15) # load fs2: f15 = 0xc004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f3) # load fs3: f3 = 0x32048f9b4b6d2547
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xbff8000000000000_frm_rtz:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc004000000000000_frm_rtz:
   fmsub.d f1, f17, f15, f3, rtz # perform operation
   # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xbff8000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xbff8000000000000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc004000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc004000000000000_frm_rtz_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0xbff8000000000000, frm = rup)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0xc004000000000000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f30) # load fs1: f30 = 0x800fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f17) # load fs2: f17 = 0xbff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f17) # load fs2: f17 = 0xc004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f24) # load fs3: f24 = 0x1c078c9b9001c784
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xbff8000000000000_frm_rup:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc004000000000000_frm_rup:
   fmsub.d f7, f30, f17, f24, rup # perform operation
   # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xbff8000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xbff8000000000000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc004000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc004000000000000_frm_rup_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0x4000000000000000, frm = dyn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0x4340000000000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f19) # load fs1: f19 = 0x800fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f28) # load fs2: f28 = 0x4000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f28) # load fs2: f28 = 0x4340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f22) # load fs3: f22 = 0xc38fe9a1df866ed2
   fsflagsi 0b00000 # clear all fflags
   fsrmi 3
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4000000000000000_frm_dyn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4340000000000000_frm_dyn:
   fmsub.d f24, f19, f28, f22, dyn # perform operation
   # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4000000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4000000000000000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4340000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4340000000000000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0x4000000000000000, frm = rdn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0x4340000000000000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f26) # load fs1: f26 = 0x800fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f18) # load fs2: f18 = 0x4000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f18) # load fs2: f18 = 0x4340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f29) # load fs3: f29 = 0xc2e4dbeda2dbc29d
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4000000000000000_frm_rdn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4340000000000000_frm_rdn:
   fmsub.d f1, f26, f18, f29, rdn # perform operation
   # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4000000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4000000000000000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4340000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4340000000000000_frm_rdn_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0x4000000000000000, frm = rmm)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0x4340000000000000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f22) # load fs1: f22 = 0x800fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f6) # load fs2: f6 = 0x4000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f6) # load fs2: f6 = 0x4340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs3: f13 = 0xe505bdece0e08430
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4000000000000000_frm_rmm:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4340000000000000_frm_rmm:
   fmsub.d f7, f22, f6, f13, rmm # perform operation
   # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4000000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4000000000000000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4340000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4340000000000000_frm_rmm_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0x4000000000000000, frm = rne)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0x4340000000000000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f31) # load fs1: f31 = 0x800fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f12) # load fs2: f12 = 0x4000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f12) # load fs2: f12 = 0x4340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f15) # load fs3: f15 = 0xaced11e3d0f21a6a
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4000000000000000_frm_rne:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4340000000000000_frm_rne:
   fmsub.d f23, f31, f12, f15, rne # perform operation
   # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4000000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4000000000000000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4340000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4340000000000000_frm_rne_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0x4000000000000000, frm = rtz)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0x4340000000000000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f10) # load fs1: f10 = 0x800fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f18) # load fs2: f18 = 0x4000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f18) # load fs2: f18 = 0x4340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f25) # load fs3: f25 = 0x03da7c814e56153f
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4000000000000000_frm_rtz:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4340000000000000_frm_rtz:
   fmsub.d f14, f10, f18, f25, rtz # perform operation
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4000000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4000000000000000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4340000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4340000000000000_frm_rtz_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0x4000000000000000, frm = rup)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0x4340000000000000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f7) # load fs1: f7 = 0x800fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f25) # load fs2: f25 = 0x4000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f25) # load fs2: f25 = 0x4340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f5) # load fs3: f5 = 0x49ca2fac7b591d6c
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4000000000000000_frm_rup:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4340000000000000_frm_rup:
   fmsub.d f10, f7, f25, f5, rup # perform operation
   # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4000000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4000000000000000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4340000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4340000000000000_frm_rup_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0xc000000000000000, frm = dyn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0xc340000000000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f20) # load fs1: f20 = 0x800fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f26) # load fs2: f26 = 0xc000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f26) # load fs2: f26 = 0xc340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f31) # load fs3: f31 = 0x67365dc1d54ff1cb
   fsflagsi 0b00000 # clear all fflags
   fsrmi 4
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc000000000000000_frm_dyn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc340000000000000_frm_dyn:
   fmsub.d f12, f20, f26, f31, dyn # perform operation
   # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f12, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc000000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc000000000000000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f12, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc340000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc340000000000000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0xc000000000000000, frm = rdn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0xc340000000000000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f27) # load fs1: f27 = 0x800fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f19) # load fs2: f19 = 0xc000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f19) # load fs2: f19 = 0xc340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f23) # load fs3: f23 = 0x13b79ceb5f62c179
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc000000000000000_frm_rdn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc340000000000000_frm_rdn:
   fmsub.d f9, f27, f19, f23, rdn # perform operation
   # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f9, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc000000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc000000000000000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f9, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc340000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc340000000000000_frm_rdn_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0xc000000000000000, frm = rmm)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0xc340000000000000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f11) # load fs1: f11 = 0x800fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f8) # load fs2: f8 = 0xc000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f8) # load fs2: f8 = 0xc340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f6) # load fs3: f6 = 0x680c65887c49b159
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc000000000000000_frm_rmm:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc340000000000000_frm_rmm:
   fmsub.d f3, f11, f8, f6, rmm # perform operation
   # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc000000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc000000000000000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc340000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc340000000000000_frm_rmm_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0xc000000000000000, frm = rne)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0xc340000000000000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f15) # load fs1: f15 = 0x800fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f23) # load fs2: f23 = 0xc000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f23) # load fs2: f23 = 0xc340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f6) # load fs3: f6 = 0xc06f0731807dbdad
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc000000000000000_frm_rne:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc340000000000000_frm_rne:
   fmsub.d f19, f15, f23, f6, rne # perform operation
   # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc000000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc000000000000000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc340000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc340000000000000_frm_rne_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0xc000000000000000, frm = rtz)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0xc340000000000000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f8) # load fs1: f8 = 0x800fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f9) # load fs2: f9 = 0xc000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f9) # load fs2: f9 = 0xc340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs3: f13 = 0xe4fd75ebbd0bd9ab
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc000000000000000_frm_rtz:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc340000000000000_frm_rtz:
   fmsub.d f7, f8, f9, f13, rtz # perform operation
   # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc000000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc000000000000000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc340000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc340000000000000_frm_rtz_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0xc000000000000000, frm = rup)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0xc340000000000000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f9) # load fs1: f9 = 0x800fffffffffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f11) # load fs2: f11 = 0xc000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f11) # load fs2: f11 = 0xc340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f17) # load fs3: f17 = 0x7a0041371da54d9d
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc000000000000000_frm_rup:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc340000000000000_frm_rup:
   fmsub.d f28, f9, f11, f17, rup # perform operation
   # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc000000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc000000000000000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc340000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc340000000000000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x800fffffffffffff fs2 = 0x0010000000000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f28) # load fs1: f28 = 0x800fffffffffffff
@@ -7219,253 +7219,253 @@ D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xbff00000000
   # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xbff0000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xbff0000000000000_frm_rup_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0x3ff8000000000000, frm = dyn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0x4004000000000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f20) # load fs1: f20 = 0x0008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f27) # load fs2: f27 = 0x3ff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f27) # load fs2: f27 = 0x4004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f15) # load fs3: f15 = 0x097af1f1dc2d1278
   fsflagsi 0b00000 # clear all fflags
   fsrmi 3
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x3ff8000000000000_frm_dyn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4004000000000000_frm_dyn:
   fmsub.d f2, f20, f27, f15, dyn # perform operation
   # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x3ff8000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x3ff8000000000000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4004000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4004000000000000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0x3ff8000000000000, frm = rdn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0x4004000000000000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f9) # load fs1: f9 = 0x0008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f23) # load fs2: f23 = 0x3ff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f23) # load fs2: f23 = 0x4004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f11) # load fs3: f11 = 0xd6322703b63e9b83
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x3ff8000000000000_frm_rdn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4004000000000000_frm_rdn:
   fmsub.d f24, f9, f23, f11, rdn # perform operation
   # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x3ff8000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x3ff8000000000000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4004000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4004000000000000_frm_rdn_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0x3ff8000000000000, frm = rmm)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0x4004000000000000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f31) # load fs1: f31 = 0x0008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f9) # load fs2: f9 = 0x3ff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f9) # load fs2: f9 = 0x4004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f8) # load fs3: f8 = 0x1990bd7810cdb0f7
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x3ff8000000000000_frm_rmm:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4004000000000000_frm_rmm:
   fmsub.d f6, f31, f9, f8, rmm # perform operation
   # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f6, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x3ff8000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x3ff8000000000000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f6, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4004000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4004000000000000_frm_rmm_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0x3ff8000000000000, frm = rne)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0x4004000000000000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f16) # load fs1: f16 = 0x0008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f3) # load fs2: f3 = 0x3ff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f3) # load fs2: f3 = 0x4004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs3: f14 = 0x524a100ecc434c16
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x3ff8000000000000_frm_rne:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4004000000000000_frm_rne:
   fmsub.d f10, f16, f3, f14, rne # perform operation
   # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x3ff8000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x3ff8000000000000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4004000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4004000000000000_frm_rne_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0x3ff8000000000000, frm = rtz)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0x4004000000000000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f11) # load fs1: f11 = 0x0008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f7) # load fs2: f7 = 0x3ff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f7) # load fs2: f7 = 0x4004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f28) # load fs3: f28 = 0x3d0db1d059ccc7fe
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x3ff8000000000000_frm_rtz:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4004000000000000_frm_rtz:
   fmsub.d f29, f11, f7, f28, rtz # perform operation
   # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x3ff8000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x3ff8000000000000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4004000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4004000000000000_frm_rtz_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0x3ff8000000000000, frm = rup)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0x4004000000000000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f27) # load fs1: f27 = 0x0008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f8) # load fs2: f8 = 0x3ff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f8) # load fs2: f8 = 0x4004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f17) # load fs3: f17 = 0x51172a211dedc4d1
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x3ff8000000000000_frm_rup:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4004000000000000_frm_rup:
   fmsub.d f3, f27, f8, f17, rup # perform operation
   # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x3ff8000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x3ff8000000000000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4004000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4004000000000000_frm_rup_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0xbff8000000000000, frm = dyn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0xc004000000000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f28) # load fs1: f28 = 0x0008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f29) # load fs2: f29 = 0xbff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f29) # load fs2: f29 = 0xc004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f30) # load fs3: f30 = 0x44e794f9fed33881
   fsflagsi 0b00000 # clear all fflags
   fsrmi 1
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xbff8000000000000_frm_dyn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc004000000000000_frm_dyn:
   fmsub.d f14, f28, f29, f30, dyn # perform operation
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xbff8000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xbff8000000000000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc004000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc004000000000000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0xbff8000000000000, frm = rdn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0xc004000000000000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs1: f13 = 0x0008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f17) # load fs2: f17 = 0xbff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f17) # load fs2: f17 = 0xc004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f3) # load fs3: f3 = 0xb4a06c0a7973f534
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xbff8000000000000_frm_rdn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc004000000000000_frm_rdn:
   fmsub.d f19, f13, f17, f3, rdn # perform operation
   # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xbff8000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xbff8000000000000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc004000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc004000000000000_frm_rdn_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0xbff8000000000000, frm = rmm)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0xc004000000000000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f18) # load fs1: f18 = 0x0008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f28) # load fs2: f28 = 0xbff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f28) # load fs2: f28 = 0xc004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f15) # load fs3: f15 = 0x6a5cc21719bd74c3
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xbff8000000000000_frm_rmm:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc004000000000000_frm_rmm:
   fmsub.d f17, f18, f28, f15, rmm # perform operation
   # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f17, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xbff8000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xbff8000000000000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f17, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc004000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc004000000000000_frm_rmm_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0xbff8000000000000, frm = rne)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0xc004000000000000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f8) # load fs1: f8 = 0x0008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0xbff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0xc004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs3: f14 = 0x24e3852739bb0a80
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xbff8000000000000_frm_rne:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc004000000000000_frm_rne:
   fmsub.d f19, f8, f13, f14, rne # perform operation
   # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xbff8000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xbff8000000000000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc004000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc004000000000000_frm_rne_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0xbff8000000000000, frm = rtz)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0xc004000000000000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f18) # load fs1: f18 = 0x0008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f20) # load fs2: f20 = 0xbff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f20) # load fs2: f20 = 0xc004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f5) # load fs3: f5 = 0x11cfbd76649a7a16
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xbff8000000000000_frm_rtz:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc004000000000000_frm_rtz:
   fmsub.d f27, f18, f20, f5, rtz # perform operation
   # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xbff8000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xbff8000000000000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc004000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc004000000000000_frm_rtz_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0xbff8000000000000, frm = rup)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0xc004000000000000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f7) # load fs1: f7 = 0x0008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f12) # load fs2: f12 = 0xbff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f12) # load fs2: f12 = 0xc004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs3: f14 = 0x4b3dbc64fa534b16
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xbff8000000000000_frm_rup:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc004000000000000_frm_rup:
   fmsub.d f10, f7, f12, f14, rup # perform operation
   # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xbff8000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xbff8000000000000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc004000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc004000000000000_frm_rup_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0x4000000000000000, frm = dyn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0x4340000000000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f3) # load fs1: f3 = 0x0008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f8) # load fs2: f8 = 0x4000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f8) # load fs2: f8 = 0x4340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f7) # load fs3: f7 = 0xbfef31bc6f5c6473
   fsflagsi 0b00000 # clear all fflags
   fsrmi 0
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4000000000000000_frm_dyn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4340000000000000_frm_dyn:
   fmsub.d f1, f3, f8, f7, dyn # perform operation
   # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4000000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4000000000000000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4340000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4340000000000000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0x4000000000000000, frm = rdn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0x4340000000000000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f5) # load fs1: f5 = 0x0008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0x4000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0x4340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f1) # load fs3: f1 = 0x200e18b581533b44
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4000000000000000_frm_rdn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4340000000000000_frm_rdn:
   fmsub.d f3, f5, f13, f1, rdn # perform operation
   # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4000000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4000000000000000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4340000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4340000000000000_frm_rdn_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0x4000000000000000, frm = rmm)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0x4340000000000000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f20) # load fs1: f20 = 0x0008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f16) # load fs2: f16 = 0x4000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f16) # load fs2: f16 = 0x4340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f26) # load fs3: f26 = 0xf0e10840edf1c477
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4000000000000000_frm_rmm:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4340000000000000_frm_rmm:
   fmsub.d f2, f20, f16, f26, rmm # perform operation
   # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4000000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4000000000000000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4340000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4340000000000000_frm_rmm_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0x4000000000000000, frm = rne)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0x4340000000000000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs1: f14 = 0x0008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f29) # load fs2: f29 = 0x4000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f29) # load fs2: f29 = 0x4340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f11) # load fs3: f11 = 0xafde7c6d42dcfb49
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4000000000000000_frm_rne:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4340000000000000_frm_rne:
   fmsub.d f31, f14, f29, f11, rne # perform operation
   # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f31, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4000000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4000000000000000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f31, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4340000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4340000000000000_frm_rne_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0x4000000000000000, frm = rtz)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0x4340000000000000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f17) # load fs1: f17 = 0x0008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f12) # load fs2: f12 = 0x4000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f12) # load fs2: f12 = 0x4340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f3) # load fs3: f3 = 0x91d8773dd093e0e1
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4000000000000000_frm_rtz:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4340000000000000_frm_rtz:
   fmsub.d f9, f17, f12, f3, rtz # perform operation
   # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f9, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4000000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4000000000000000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f9, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4340000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4340000000000000_frm_rtz_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0x4000000000000000, frm = rup)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0x4340000000000000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f23) # load fs1: f23 = 0x0008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f2) # load fs2: f2 = 0x4000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f2) # load fs2: f2 = 0x4340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f8) # load fs3: f8 = 0xac0e30018084fbdf
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4000000000000000_frm_rup:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4340000000000000_frm_rup:
   fmsub.d f13, f23, f2, f8, rup # perform operation
   # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4000000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4000000000000000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4340000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4340000000000000_frm_rup_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0xc000000000000000, frm = dyn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0xc340000000000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f10) # load fs1: f10 = 0x0008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f6) # load fs2: f6 = 0xc000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f6) # load fs2: f6 = 0xc340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f20) # load fs3: f20 = 0x21a5593f5615449e
   fsflagsi 0b00000 # clear all fflags
   fsrmi 0
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc000000000000000_frm_dyn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc340000000000000_frm_dyn:
   fmsub.d f8, f10, f6, f20, dyn # perform operation
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc000000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc000000000000000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc340000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc340000000000000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0xc000000000000000, frm = rdn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0xc340000000000000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f29) # load fs1: f29 = 0x0008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f25) # load fs2: f25 = 0xc000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f25) # load fs2: f25 = 0xc340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f15) # load fs3: f15 = 0xaaf28509bb22853a
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc000000000000000_frm_rdn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc340000000000000_frm_rdn:
   fmsub.d f20, f29, f25, f15, rdn # perform operation
   # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc000000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc000000000000000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc340000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc340000000000000_frm_rdn_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0xc000000000000000, frm = rmm)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0xc340000000000000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f8) # load fs1: f8 = 0x0008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f15) # load fs2: f15 = 0xc000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f15) # load fs2: f15 = 0xc340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f3) # load fs3: f3 = 0x49b887d65de365e6
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc000000000000000_frm_rmm:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc340000000000000_frm_rmm:
   fmsub.d f24, f8, f15, f3, rmm # perform operation
   # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc000000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc000000000000000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc340000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc340000000000000_frm_rmm_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0xc000000000000000, frm = rne)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0xc340000000000000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f20) # load fs1: f20 = 0x0008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f12) # load fs2: f12 = 0xc000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f12) # load fs2: f12 = 0xc340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f3) # load fs3: f3 = 0xde27d58cfeed0efe
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc000000000000000_frm_rne:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc340000000000000_frm_rne:
   fmsub.d f13, f20, f12, f3, rne # perform operation
   # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc000000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc000000000000000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc340000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc340000000000000_frm_rne_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0xc000000000000000, frm = rtz)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0xc340000000000000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f6) # load fs1: f6 = 0x0008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f3) # load fs2: f3 = 0xc000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f3) # load fs2: f3 = 0xc340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f21) # load fs3: f21 = 0x27335bd309298823
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc000000000000000_frm_rtz:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc340000000000000_frm_rtz:
   fmsub.d f1, f6, f3, f21, rtz # perform operation
   # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc000000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc000000000000000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc340000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc340000000000000_frm_rtz_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0xc000000000000000, frm = rup)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0xc340000000000000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f2) # load fs1: f2 = 0x0008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f28) # load fs2: f28 = 0xc000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f28) # load fs2: f28 = 0xc340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f23) # load fs3: f23 = 0xa04f1336ab8e6332
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc000000000000000_frm_rup:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc340000000000000_frm_rup:
   fmsub.d f7, f2, f28, f23, rup # perform operation
   # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc000000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc000000000000000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc340000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc340000000000000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x0008000000000000 fs2 = 0x0010000000000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f18) # load fs1: f18 = 0x0008000000000000
@@ -8955,253 +8955,253 @@ D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xbff00000
   # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xbff0000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xbff0000000000000_frm_rup_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0x3ff8000000000000, frm = dyn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0x4004000000000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f1) # load fs1: f1 = 0x8008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f8) # load fs2: f8 = 0x3ff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f8) # load fs2: f8 = 0x4004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f18) # load fs3: f18 = 0x12d83f225f7476bc
   fsflagsi 0b00000 # clear all fflags
   fsrmi 2
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x3ff8000000000000_frm_dyn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4004000000000000_frm_dyn:
   fmsub.d f5, f1, f8, f18, dyn # perform operation
   # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x3ff8000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x3ff8000000000000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4004000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4004000000000000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0x3ff8000000000000, frm = rdn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0x4004000000000000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f31) # load fs1: f31 = 0x8008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f18) # load fs2: f18 = 0x3ff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f18) # load fs2: f18 = 0x4004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f17) # load fs3: f17 = 0xe5ef804ea357acdf
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x3ff8000000000000_frm_rdn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4004000000000000_frm_rdn:
   fmsub.d f13, f31, f18, f17, rdn # perform operation
   # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x3ff8000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x3ff8000000000000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4004000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4004000000000000_frm_rdn_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0x3ff8000000000000, frm = rmm)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0x4004000000000000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f27) # load fs1: f27 = 0x8008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f23) # load fs2: f23 = 0x3ff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f23) # load fs2: f23 = 0x4004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs3: f14 = 0x8725cf1d26b0f7d4
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x3ff8000000000000_frm_rmm:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4004000000000000_frm_rmm:
   fmsub.d f12, f27, f23, f14, rmm # perform operation
   # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f12, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x3ff8000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x3ff8000000000000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f12, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4004000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4004000000000000_frm_rmm_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0x3ff8000000000000, frm = rne)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0x4004000000000000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f20) # load fs1: f20 = 0x8008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f21) # load fs2: f21 = 0x3ff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f21) # load fs2: f21 = 0x4004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f5) # load fs3: f5 = 0x7bba5e15b0555608
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x3ff8000000000000_frm_rne:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4004000000000000_frm_rne:
   fmsub.d f8, f20, f21, f5, rne # perform operation
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x3ff8000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x3ff8000000000000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4004000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4004000000000000_frm_rne_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0x3ff8000000000000, frm = rtz)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0x4004000000000000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f1) # load fs1: f1 = 0x8008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f12) # load fs2: f12 = 0x3ff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f12) # load fs2: f12 = 0x4004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f5) # load fs3: f5 = 0xf34ce94450f7bb93
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x3ff8000000000000_frm_rtz:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4004000000000000_frm_rtz:
   fmsub.d f16, f1, f12, f5, rtz # perform operation
   # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f16, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x3ff8000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x3ff8000000000000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f16, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4004000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4004000000000000_frm_rtz_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0x3ff8000000000000, frm = rup)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0x4004000000000000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs1: f13 = 0x8008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f1) # load fs2: f1 = 0x3ff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f1) # load fs2: f1 = 0x4004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs3: f14 = 0x66bbdaa8f208bed0
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x3ff8000000000000_frm_rup:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4004000000000000_frm_rup:
   fmsub.d f16, f13, f1, f14, rup # perform operation
   # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f16, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x3ff8000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x3ff8000000000000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f16, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4004000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4004000000000000_frm_rup_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0xbff8000000000000, frm = dyn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0xc004000000000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f16) # load fs1: f16 = 0x8008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f31) # load fs2: f31 = 0xbff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f31) # load fs2: f31 = 0xc004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs3: f13 = 0xa0e0bb1ecc1c7add
   fsflagsi 0b00000 # clear all fflags
   fsrmi 4
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xbff8000000000000_frm_dyn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc004000000000000_frm_dyn:
   fmsub.d f20, f16, f31, f13, dyn # perform operation
   # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xbff8000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xbff8000000000000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc004000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc004000000000000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0xbff8000000000000, frm = rdn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0xc004000000000000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f6) # load fs1: f6 = 0x8008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f23) # load fs2: f23 = 0xbff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f23) # load fs2: f23 = 0xc004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f21) # load fs3: f21 = 0x740333d45d2f21cb
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xbff8000000000000_frm_rdn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc004000000000000_frm_rdn:
   fmsub.d f20, f6, f23, f21, rdn # perform operation
   # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xbff8000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xbff8000000000000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc004000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc004000000000000_frm_rdn_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0xbff8000000000000, frm = rmm)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0xc004000000000000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f1) # load fs1: f1 = 0x8008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f30) # load fs2: f30 = 0xbff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f30) # load fs2: f30 = 0xc004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f24) # load fs3: f24 = 0x7c3edc372551f251
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xbff8000000000000_frm_rmm:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc004000000000000_frm_rmm:
   fmsub.d f14, f1, f30, f24, rmm # perform operation
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xbff8000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xbff8000000000000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc004000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc004000000000000_frm_rmm_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0xbff8000000000000, frm = rne)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0xc004000000000000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f22) # load fs1: f22 = 0x8008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f16) # load fs2: f16 = 0xbff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f16) # load fs2: f16 = 0xc004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f15) # load fs3: f15 = 0x80556fd6572ce589
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xbff8000000000000_frm_rne:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc004000000000000_frm_rne:
   fmsub.d f13, f22, f16, f15, rne # perform operation
   # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xbff8000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xbff8000000000000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc004000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc004000000000000_frm_rne_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0xbff8000000000000, frm = rtz)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0xc004000000000000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f10) # load fs1: f10 = 0x8008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f15) # load fs2: f15 = 0xbff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f15) # load fs2: f15 = 0xc004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f2) # load fs3: f2 = 0x2dff8df65cddaf69
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xbff8000000000000_frm_rtz:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc004000000000000_frm_rtz:
   fmsub.d f31, f10, f15, f2, rtz # perform operation
   # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f31, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xbff8000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xbff8000000000000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f31, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc004000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc004000000000000_frm_rtz_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0xbff8000000000000, frm = rup)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0xc004000000000000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f23) # load fs1: f23 = 0x8008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f29) # load fs2: f29 = 0xbff8000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f29) # load fs2: f29 = 0xc004000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f6) # load fs3: f6 = 0xfe380c0bf21cc010
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xbff8000000000000_frm_rup:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc004000000000000_frm_rup:
   fmsub.d f2, f23, f29, f6, rup # perform operation
   # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xbff8000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xbff8000000000000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc004000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc004000000000000_frm_rup_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0x4000000000000000, frm = dyn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0x4340000000000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f12) # load fs1: f12 = 0x8008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f18) # load fs2: f18 = 0x4000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f18) # load fs2: f18 = 0x4340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs3: f14 = 0x6d4b8366cb099923
   fsflagsi 0b00000 # clear all fflags
   fsrmi 1
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4000000000000000_frm_dyn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4340000000000000_frm_dyn:
   fmsub.d f10, f12, f18, f14, dyn # perform operation
   # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4000000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4000000000000000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4340000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4340000000000000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0x4000000000000000, frm = rdn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0x4340000000000000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f11) # load fs1: f11 = 0x8008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f12) # load fs2: f12 = 0x4000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f12) # load fs2: f12 = 0x4340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f2) # load fs3: f2 = 0xe768331535e7e02a
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4000000000000000_frm_rdn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4340000000000000_frm_rdn:
   fmsub.d f25, f11, f12, f2, rdn # perform operation
   # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f25, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4000000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4000000000000000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f25, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4340000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4340000000000000_frm_rdn_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0x4000000000000000, frm = rmm)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0x4340000000000000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f23) # load fs1: f23 = 0x8008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f16) # load fs2: f16 = 0x4000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f16) # load fs2: f16 = 0x4340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f20) # load fs3: f20 = 0x69e72f6e8e66ccf4
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4000000000000000_frm_rmm:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4340000000000000_frm_rmm:
   fmsub.d f15, f23, f16, f20, rmm # perform operation
   # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f15, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4000000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4000000000000000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f15, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4340000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4340000000000000_frm_rmm_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0x4000000000000000, frm = rne)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0x4340000000000000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f9) # load fs1: f9 = 0x8008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f6) # load fs2: f6 = 0x4000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f6) # load fs2: f6 = 0x4340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f17) # load fs3: f17 = 0xf0cb7031bf6952a3
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4000000000000000_frm_rne:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4340000000000000_frm_rne:
   fmsub.d f20, f9, f6, f17, rne # perform operation
   # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4000000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4000000000000000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4340000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4340000000000000_frm_rne_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0x4000000000000000, frm = rtz)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0x4340000000000000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f9) # load fs1: f9 = 0x8008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0x4000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0x4340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f15) # load fs3: f15 = 0x0509fcde73a66deb
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4000000000000000_frm_rtz:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4340000000000000_frm_rtz:
   fmsub.d f5, f9, f13, f15, rtz # perform operation
   # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4000000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4000000000000000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4340000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4340000000000000_frm_rtz_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0x4000000000000000, frm = rup)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0x4340000000000000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f17) # load fs1: f17 = 0x8008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f24) # load fs2: f24 = 0x4000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f24) # load fs2: f24 = 0x4340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f16) # load fs3: f16 = 0xbf78a6d8067f7f3c
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4000000000000000_frm_rup:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4340000000000000_frm_rup:
   fmsub.d f25, f17, f24, f16, rup # perform operation
   # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f25, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4000000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4000000000000000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f25, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4340000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4340000000000000_frm_rup_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0xc000000000000000, frm = dyn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0xc340000000000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f10) # load fs1: f10 = 0x8008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f21) # load fs2: f21 = 0xc000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f21) # load fs2: f21 = 0xc340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f31) # load fs3: f31 = 0x3b00e6b9a6e79975
   fsflagsi 0b00000 # clear all fflags
   fsrmi 1
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc000000000000000_frm_dyn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc340000000000000_frm_dyn:
   fmsub.d f22, f10, f21, f31, dyn # perform operation
   # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc000000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc000000000000000_frm_dyn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc340000000000000_frm_dyn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc340000000000000_frm_dyn_str)
   fsrmi 0x0
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0xc000000000000000, frm = rdn)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0xc340000000000000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f27) # load fs1: f27 = 0x8008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f23) # load fs2: f23 = 0xc000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f23) # load fs2: f23 = 0xc340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f22) # load fs3: f22 = 0xfde90a620e62b671
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc000000000000000_frm_rdn:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc340000000000000_frm_rdn:
   fmsub.d f10, f27, f23, f22, rdn # perform operation
   # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc000000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc000000000000000_frm_rdn_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc340000000000000_frm_rdn, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc340000000000000_frm_rdn_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0xc000000000000000, frm = rmm)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0xc340000000000000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f12) # load fs1: f12 = 0x8008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0xc000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0xc340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f25) # load fs3: f25 = 0xa2cece0bd13b9ea3
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc000000000000000_frm_rmm:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc340000000000000_frm_rmm:
   fmsub.d f2, f12, f13, f25, rmm # perform operation
   # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc000000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc000000000000000_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc340000000000000_frm_rmm, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc340000000000000_frm_rmm_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0xc000000000000000, frm = rne)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0xc340000000000000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f28) # load fs1: f28 = 0x8008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f30) # load fs2: f30 = 0xc000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f30) # load fs2: f30 = 0xc340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs3: f14 = 0x7f40fa109e87b309
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc000000000000000_frm_rne:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc340000000000000_frm_rne:
   fmsub.d f24, f28, f30, f14, rne # perform operation
   # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc000000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc000000000000000_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc340000000000000_frm_rne, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc340000000000000_frm_rne_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0xc000000000000000, frm = rtz)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0xc340000000000000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f27) # load fs1: f27 = 0x8008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f29) # load fs2: f29 = 0xc000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f29) # load fs2: f29 = 0xc340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f8) # load fs3: f8 = 0x8f9aa7907bf894c1
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc000000000000000_frm_rtz:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc340000000000000_frm_rtz:
   fmsub.d f5, f27, f29, f8, rtz # perform operation
   # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc000000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc000000000000000_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc340000000000000_frm_rtz, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc340000000000000_frm_rtz_str)
 
-# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0xc000000000000000, frm = rup)
+# Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0xc340000000000000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs1: f14 = 0x8008000000000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f28) # load fs2: f28 = 0xc000000000000000
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f28) # load fs2: f28 = 0xc340000000000000
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f15) # load fs3: f15 = 0xd912fea1d57aecf4
   fsflagsi 0b00000 # clear all fflags
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc000000000000000_frm_rup:
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc340000000000000_frm_rup:
   fmsub.d f22, f14, f28, f15, rup # perform operation
   # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc000000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc000000000000000_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc340000000000000_frm_rup, D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc340000000000000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4_D (Test source fs1 = 0x8008000000000000 fs2 = 0x0010000000000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f27) # load fs1: f27 = 0x8008000000000000
@@ -10441,76 +10441,76 @@ RVTEST_DATA_BEGIN
 .dword 0xbff0000000000000
 .dword 0x229f70b009a11a49
 .dword 0x7fefffffffffffff
-.dword 0x3ff8000000000000
+.dword 0x4004000000000000
 .dword 0x56c065f0f1d804ed
 .dword 0x7fefffffffffffff
-.dword 0x3ff8000000000000
+.dword 0x4004000000000000
 .dword 0xf4300e3de41c00c4
 .dword 0x7fefffffffffffff
-.dword 0x3ff8000000000000
+.dword 0x4004000000000000
 .dword 0x321c1e2b56985a44
 .dword 0x7fefffffffffffff
-.dword 0x3ff8000000000000
+.dword 0x4004000000000000
 .dword 0x6e7cef308ea5990a
 .dword 0x7fefffffffffffff
-.dword 0x3ff8000000000000
+.dword 0x4004000000000000
 .dword 0x039ffb0e8f2ee502
 .dword 0x7fefffffffffffff
-.dword 0x3ff8000000000000
+.dword 0x4004000000000000
 .dword 0x2466f99db965f8fc
 .dword 0x7fefffffffffffff
-.dword 0xbff8000000000000
+.dword 0xc004000000000000
 .dword 0xe9edc7346ad0e876
 .dword 0x7fefffffffffffff
-.dword 0xbff8000000000000
+.dword 0xc004000000000000
 .dword 0xe8ad83945080ee1e
 .dword 0x7fefffffffffffff
-.dword 0xbff8000000000000
+.dword 0xc004000000000000
 .dword 0xa3e5aa5a2fa86c2b
 .dword 0x7fefffffffffffff
-.dword 0xbff8000000000000
+.dword 0xc004000000000000
 .dword 0x9b8f706415c90e65
 .dword 0x7fefffffffffffff
-.dword 0xbff8000000000000
+.dword 0xc004000000000000
 .dword 0xcece6c0ef50a060f
 .dword 0x7fefffffffffffff
-.dword 0xbff8000000000000
+.dword 0xc004000000000000
 .dword 0x68a033eba2df28ac
 .dword 0x7fefffffffffffff
-.dword 0x4000000000000000
+.dword 0x4340000000000000
 .dword 0x1605ea6d77cbf34f
 .dword 0x7fefffffffffffff
-.dword 0x4000000000000000
+.dword 0x4340000000000000
 .dword 0xe87002cc277e56d5
 .dword 0x7fefffffffffffff
-.dword 0x4000000000000000
+.dword 0x4340000000000000
 .dword 0xf90b4bc0960a9ce9
 .dword 0x7fefffffffffffff
-.dword 0x4000000000000000
+.dword 0x4340000000000000
 .dword 0xd0e5640074b98385
 .dword 0x7fefffffffffffff
-.dword 0x4000000000000000
+.dword 0x4340000000000000
 .dword 0xf94ae3baa34facad
 .dword 0x7fefffffffffffff
-.dword 0x4000000000000000
+.dword 0x4340000000000000
 .dword 0x0169f8da7a5cf83f
 .dword 0x7fefffffffffffff
-.dword 0xc000000000000000
+.dword 0xc340000000000000
 .dword 0xd5427191888fccd7
 .dword 0x7fefffffffffffff
-.dword 0xc000000000000000
+.dword 0xc340000000000000
 .dword 0xa2a5af028cab0bb6
 .dword 0x7fefffffffffffff
-.dword 0xc000000000000000
+.dword 0xc340000000000000
 .dword 0x7c6afe53f7629163
 .dword 0x7fefffffffffffff
-.dword 0xc000000000000000
+.dword 0xc340000000000000
 .dword 0x39e4316f80b8263b
 .dword 0x7fefffffffffffff
-.dword 0xc000000000000000
+.dword 0xc340000000000000
 .dword 0x8f10e958950f6f6a
 .dword 0x7fefffffffffffff
-.dword 0xc000000000000000
+.dword 0xc340000000000000
 .dword 0xb19df7e372d1ee6b
 .dword 0x7fefffffffffffff
 .dword 0x0010000000000000
@@ -10945,76 +10945,76 @@ RVTEST_DATA_BEGIN
 .dword 0xbff0000000000000
 .dword 0x24868dd2277f9dca
 .dword 0xffefffffffffffff
-.dword 0x3ff8000000000000
+.dword 0x4004000000000000
 .dword 0x7ac0b9d696feb100
 .dword 0xffefffffffffffff
-.dword 0x3ff8000000000000
+.dword 0x4004000000000000
 .dword 0xc3b7553cf4e50645
 .dword 0xffefffffffffffff
-.dword 0x3ff8000000000000
+.dword 0x4004000000000000
 .dword 0xbeeb99c4b5f5412a
 .dword 0xffefffffffffffff
-.dword 0x3ff8000000000000
+.dword 0x4004000000000000
 .dword 0xb194538972436df7
 .dword 0xffefffffffffffff
-.dword 0x3ff8000000000000
+.dword 0x4004000000000000
 .dword 0x65d3955dd6cdd17b
 .dword 0xffefffffffffffff
-.dword 0x3ff8000000000000
+.dword 0x4004000000000000
 .dword 0x979e6dc216a4d1d0
 .dword 0xffefffffffffffff
-.dword 0xbff8000000000000
+.dword 0xc004000000000000
 .dword 0xce761a955b771275
 .dword 0xffefffffffffffff
-.dword 0xbff8000000000000
+.dword 0xc004000000000000
 .dword 0xe58a215c6787aa66
 .dword 0xffefffffffffffff
-.dword 0xbff8000000000000
+.dword 0xc004000000000000
 .dword 0x6592d929b2be00df
 .dword 0xffefffffffffffff
-.dword 0xbff8000000000000
+.dword 0xc004000000000000
 .dword 0x31f591428f13c753
 .dword 0xffefffffffffffff
-.dword 0xbff8000000000000
+.dword 0xc004000000000000
 .dword 0x9e6aeea142c7eff8
 .dword 0xffefffffffffffff
-.dword 0xbff8000000000000
+.dword 0xc004000000000000
 .dword 0xcd0428376cc6f3cb
 .dword 0xffefffffffffffff
-.dword 0x4000000000000000
+.dword 0x4340000000000000
 .dword 0x27f1c0b948ac12ba
 .dword 0xffefffffffffffff
-.dword 0x4000000000000000
+.dword 0x4340000000000000
 .dword 0xdea639a15debf1c2
 .dword 0xffefffffffffffff
-.dword 0x4000000000000000
+.dword 0x4340000000000000
 .dword 0x83943a9953e6659e
 .dword 0xffefffffffffffff
-.dword 0x4000000000000000
+.dword 0x4340000000000000
 .dword 0x033aa88cf2982800
 .dword 0xffefffffffffffff
-.dword 0x4000000000000000
+.dword 0x4340000000000000
 .dword 0xdc5ee5770aae12d2
 .dword 0xffefffffffffffff
-.dword 0x4000000000000000
+.dword 0x4340000000000000
 .dword 0x225dfcf4f8a0b206
 .dword 0xffefffffffffffff
-.dword 0xc000000000000000
+.dword 0xc340000000000000
 .dword 0x9e427e08608de421
 .dword 0xffefffffffffffff
-.dword 0xc000000000000000
+.dword 0xc340000000000000
 .dword 0x7ac58286cdb11a1b
 .dword 0xffefffffffffffff
-.dword 0xc000000000000000
+.dword 0xc340000000000000
 .dword 0x1c436868590b782e
 .dword 0xffefffffffffffff
-.dword 0xc000000000000000
+.dword 0xc340000000000000
 .dword 0x326ba7e29e7b09d2
 .dword 0xffefffffffffffff
-.dword 0xc000000000000000
+.dword 0xc340000000000000
 .dword 0x1bd2b24b57f7ecfc
 .dword 0xffefffffffffffff
-.dword 0xc000000000000000
+.dword 0xc340000000000000
 .dword 0x5ddd4e35a8d89a10
 .dword 0xffefffffffffffff
 .dword 0x0010000000000000
@@ -11449,76 +11449,76 @@ RVTEST_DATA_BEGIN
 .dword 0xbff0000000000000
 .dword 0x950be6ca79a502a5
 .dword 0x000fffffffffffff
-.dword 0x3ff8000000000000
+.dword 0x4004000000000000
 .dword 0x3c080e2d259c4234
 .dword 0x000fffffffffffff
-.dword 0x3ff8000000000000
+.dword 0x4004000000000000
 .dword 0xa9cf8513f7feb5da
 .dword 0x000fffffffffffff
-.dword 0x3ff8000000000000
+.dword 0x4004000000000000
 .dword 0xd8ab663f783f633e
 .dword 0x000fffffffffffff
-.dword 0x3ff8000000000000
+.dword 0x4004000000000000
 .dword 0x170ee8aa65745c57
 .dword 0x000fffffffffffff
-.dword 0x3ff8000000000000
+.dword 0x4004000000000000
 .dword 0x9fc9aa9ececc4d9d
 .dword 0x000fffffffffffff
-.dword 0x3ff8000000000000
+.dword 0x4004000000000000
 .dword 0x76c329e666a95da1
 .dword 0x000fffffffffffff
-.dword 0xbff8000000000000
+.dword 0xc004000000000000
 .dword 0x6209b1eb1438c3eb
 .dword 0x000fffffffffffff
-.dword 0xbff8000000000000
+.dword 0xc004000000000000
 .dword 0x53ac0c0825d318d0
 .dword 0x000fffffffffffff
-.dword 0xbff8000000000000
+.dword 0xc004000000000000
 .dword 0xbfa2822cd511c533
 .dword 0x000fffffffffffff
-.dword 0xbff8000000000000
+.dword 0xc004000000000000
 .dword 0x1b43bcf1fca69c78
 .dword 0x000fffffffffffff
-.dword 0xbff8000000000000
+.dword 0xc004000000000000
 .dword 0x38adb3168a0a3682
 .dword 0x000fffffffffffff
-.dword 0xbff8000000000000
+.dword 0xc004000000000000
 .dword 0xc2a5a321f46798fe
 .dword 0x000fffffffffffff
-.dword 0x4000000000000000
+.dword 0x4340000000000000
 .dword 0x7e705a890a6af0b6
 .dword 0x000fffffffffffff
-.dword 0x4000000000000000
+.dword 0x4340000000000000
 .dword 0xd8b162973109bd82
 .dword 0x000fffffffffffff
-.dword 0x4000000000000000
+.dword 0x4340000000000000
 .dword 0x21d6240e3d3fb062
 .dword 0x000fffffffffffff
-.dword 0x4000000000000000
+.dword 0x4340000000000000
 .dword 0xcb72c32b65fb129d
 .dword 0x000fffffffffffff
-.dword 0x4000000000000000
+.dword 0x4340000000000000
 .dword 0xcfbbab62060f2f69
 .dword 0x000fffffffffffff
-.dword 0x4000000000000000
+.dword 0x4340000000000000
 .dword 0x706116cdf81f49b1
 .dword 0x000fffffffffffff
-.dword 0xc000000000000000
+.dword 0xc340000000000000
 .dword 0x68d5fe0d92cd8490
 .dword 0x000fffffffffffff
-.dword 0xc000000000000000
+.dword 0xc340000000000000
 .dword 0x64d61176375a565d
 .dword 0x000fffffffffffff
-.dword 0xc000000000000000
+.dword 0xc340000000000000
 .dword 0x2e815a8412d6f760
 .dword 0x000fffffffffffff
-.dword 0xc000000000000000
+.dword 0xc340000000000000
 .dword 0x80e2146df8c00806
 .dword 0x000fffffffffffff
-.dword 0xc000000000000000
+.dword 0xc340000000000000
 .dword 0xba56d53863b0fbdb
 .dword 0x000fffffffffffff
-.dword 0xc000000000000000
+.dword 0xc340000000000000
 .dword 0xdff5f2c7c183da09
 .dword 0x000fffffffffffff
 .dword 0x0010000000000000
@@ -11953,76 +11953,76 @@ RVTEST_DATA_BEGIN
 .dword 0xbff0000000000000
 .dword 0x1d1a494df194098f
 .dword 0x800fffffffffffff
-.dword 0x3ff8000000000000
+.dword 0x4004000000000000
 .dword 0x65b82f3e0f80f680
 .dword 0x800fffffffffffff
-.dword 0x3ff8000000000000
+.dword 0x4004000000000000
 .dword 0xe6f6f64dc30a6d52
 .dword 0x800fffffffffffff
-.dword 0x3ff8000000000000
+.dword 0x4004000000000000
 .dword 0xd1f1b3b5b9f4c04b
 .dword 0x800fffffffffffff
-.dword 0x3ff8000000000000
+.dword 0x4004000000000000
 .dword 0xdbd57679ff8ea649
 .dword 0x800fffffffffffff
-.dword 0x3ff8000000000000
+.dword 0x4004000000000000
 .dword 0x4e88c03811c2e32a
 .dword 0x800fffffffffffff
-.dword 0x3ff8000000000000
+.dword 0x4004000000000000
 .dword 0x494bd46eb7d1e16c
 .dword 0x800fffffffffffff
-.dword 0xbff8000000000000
+.dword 0xc004000000000000
 .dword 0x18d8dfae9a2b2161
 .dword 0x800fffffffffffff
-.dword 0xbff8000000000000
+.dword 0xc004000000000000
 .dword 0x61d91d2067e153f6
 .dword 0x800fffffffffffff
-.dword 0xbff8000000000000
+.dword 0xc004000000000000
 .dword 0x76bdf36517014049
 .dword 0x800fffffffffffff
-.dword 0xbff8000000000000
+.dword 0xc004000000000000
 .dword 0x747f635ef3c0d486
 .dword 0x800fffffffffffff
-.dword 0xbff8000000000000
+.dword 0xc004000000000000
 .dword 0x32048f9b4b6d2547
 .dword 0x800fffffffffffff
-.dword 0xbff8000000000000
+.dword 0xc004000000000000
 .dword 0x1c078c9b9001c784
 .dword 0x800fffffffffffff
-.dword 0x4000000000000000
+.dword 0x4340000000000000
 .dword 0xc38fe9a1df866ed2
 .dword 0x800fffffffffffff
-.dword 0x4000000000000000
+.dword 0x4340000000000000
 .dword 0xc2e4dbeda2dbc29d
 .dword 0x800fffffffffffff
-.dword 0x4000000000000000
+.dword 0x4340000000000000
 .dword 0xe505bdece0e08430
 .dword 0x800fffffffffffff
-.dword 0x4000000000000000
+.dword 0x4340000000000000
 .dword 0xaced11e3d0f21a6a
 .dword 0x800fffffffffffff
-.dword 0x4000000000000000
+.dword 0x4340000000000000
 .dword 0x03da7c814e56153f
 .dword 0x800fffffffffffff
-.dword 0x4000000000000000
+.dword 0x4340000000000000
 .dword 0x49ca2fac7b591d6c
 .dword 0x800fffffffffffff
-.dword 0xc000000000000000
+.dword 0xc340000000000000
 .dword 0x67365dc1d54ff1cb
 .dword 0x800fffffffffffff
-.dword 0xc000000000000000
+.dword 0xc340000000000000
 .dword 0x13b79ceb5f62c179
 .dword 0x800fffffffffffff
-.dword 0xc000000000000000
+.dword 0xc340000000000000
 .dword 0x680c65887c49b159
 .dword 0x800fffffffffffff
-.dword 0xc000000000000000
+.dword 0xc340000000000000
 .dword 0xc06f0731807dbdad
 .dword 0x800fffffffffffff
-.dword 0xc000000000000000
+.dword 0xc340000000000000
 .dword 0xe4fd75ebbd0bd9ab
 .dword 0x800fffffffffffff
-.dword 0xc000000000000000
+.dword 0xc340000000000000
 .dword 0x7a0041371da54d9d
 .dword 0x800fffffffffffff
 .dword 0x0010000000000000
@@ -12457,76 +12457,76 @@ RVTEST_DATA_BEGIN
 .dword 0xbff0000000000000
 .dword 0xd4965a32607fdb92
 .dword 0x0008000000000000
-.dword 0x3ff8000000000000
+.dword 0x4004000000000000
 .dword 0x097af1f1dc2d1278
 .dword 0x0008000000000000
-.dword 0x3ff8000000000000
+.dword 0x4004000000000000
 .dword 0xd6322703b63e9b83
 .dword 0x0008000000000000
-.dword 0x3ff8000000000000
+.dword 0x4004000000000000
 .dword 0x1990bd7810cdb0f7
 .dword 0x0008000000000000
-.dword 0x3ff8000000000000
+.dword 0x4004000000000000
 .dword 0x524a100ecc434c16
 .dword 0x0008000000000000
-.dword 0x3ff8000000000000
+.dword 0x4004000000000000
 .dword 0x3d0db1d059ccc7fe
 .dword 0x0008000000000000
-.dword 0x3ff8000000000000
+.dword 0x4004000000000000
 .dword 0x51172a211dedc4d1
 .dword 0x0008000000000000
-.dword 0xbff8000000000000
+.dword 0xc004000000000000
 .dword 0x44e794f9fed33881
 .dword 0x0008000000000000
-.dword 0xbff8000000000000
+.dword 0xc004000000000000
 .dword 0xb4a06c0a7973f534
 .dword 0x0008000000000000
-.dword 0xbff8000000000000
+.dword 0xc004000000000000
 .dword 0x6a5cc21719bd74c3
 .dword 0x0008000000000000
-.dword 0xbff8000000000000
+.dword 0xc004000000000000
 .dword 0x24e3852739bb0a80
 .dword 0x0008000000000000
-.dword 0xbff8000000000000
+.dword 0xc004000000000000
 .dword 0x11cfbd76649a7a16
 .dword 0x0008000000000000
-.dword 0xbff8000000000000
+.dword 0xc004000000000000
 .dword 0x4b3dbc64fa534b16
 .dword 0x0008000000000000
-.dword 0x4000000000000000
+.dword 0x4340000000000000
 .dword 0xbfef31bc6f5c6473
 .dword 0x0008000000000000
-.dword 0x4000000000000000
+.dword 0x4340000000000000
 .dword 0x200e18b581533b44
 .dword 0x0008000000000000
-.dword 0x4000000000000000
+.dword 0x4340000000000000
 .dword 0xf0e10840edf1c477
 .dword 0x0008000000000000
-.dword 0x4000000000000000
+.dword 0x4340000000000000
 .dword 0xafde7c6d42dcfb49
 .dword 0x0008000000000000
-.dword 0x4000000000000000
+.dword 0x4340000000000000
 .dword 0x91d8773dd093e0e1
 .dword 0x0008000000000000
-.dword 0x4000000000000000
+.dword 0x4340000000000000
 .dword 0xac0e30018084fbdf
 .dword 0x0008000000000000
-.dword 0xc000000000000000
+.dword 0xc340000000000000
 .dword 0x21a5593f5615449e
 .dword 0x0008000000000000
-.dword 0xc000000000000000
+.dword 0xc340000000000000
 .dword 0xaaf28509bb22853a
 .dword 0x0008000000000000
-.dword 0xc000000000000000
+.dword 0xc340000000000000
 .dword 0x49b887d65de365e6
 .dword 0x0008000000000000
-.dword 0xc000000000000000
+.dword 0xc340000000000000
 .dword 0xde27d58cfeed0efe
 .dword 0x0008000000000000
-.dword 0xc000000000000000
+.dword 0xc340000000000000
 .dword 0x27335bd309298823
 .dword 0x0008000000000000
-.dword 0xc000000000000000
+.dword 0xc340000000000000
 .dword 0xa04f1336ab8e6332
 .dword 0x0008000000000000
 .dword 0x0010000000000000
@@ -12961,76 +12961,76 @@ RVTEST_DATA_BEGIN
 .dword 0xbff0000000000000
 .dword 0x5b9e9428cde63986
 .dword 0x8008000000000000
-.dword 0x3ff8000000000000
+.dword 0x4004000000000000
 .dword 0x12d83f225f7476bc
 .dword 0x8008000000000000
-.dword 0x3ff8000000000000
+.dword 0x4004000000000000
 .dword 0xe5ef804ea357acdf
 .dword 0x8008000000000000
-.dword 0x3ff8000000000000
+.dword 0x4004000000000000
 .dword 0x8725cf1d26b0f7d4
 .dword 0x8008000000000000
-.dword 0x3ff8000000000000
+.dword 0x4004000000000000
 .dword 0x7bba5e15b0555608
 .dword 0x8008000000000000
-.dword 0x3ff8000000000000
+.dword 0x4004000000000000
 .dword 0xf34ce94450f7bb93
 .dword 0x8008000000000000
-.dword 0x3ff8000000000000
+.dword 0x4004000000000000
 .dword 0x66bbdaa8f208bed0
 .dword 0x8008000000000000
-.dword 0xbff8000000000000
+.dword 0xc004000000000000
 .dword 0xa0e0bb1ecc1c7add
 .dword 0x8008000000000000
-.dword 0xbff8000000000000
+.dword 0xc004000000000000
 .dword 0x740333d45d2f21cb
 .dword 0x8008000000000000
-.dword 0xbff8000000000000
+.dword 0xc004000000000000
 .dword 0x7c3edc372551f251
 .dword 0x8008000000000000
-.dword 0xbff8000000000000
+.dword 0xc004000000000000
 .dword 0x80556fd6572ce589
 .dword 0x8008000000000000
-.dword 0xbff8000000000000
+.dword 0xc004000000000000
 .dword 0x2dff8df65cddaf69
 .dword 0x8008000000000000
-.dword 0xbff8000000000000
+.dword 0xc004000000000000
 .dword 0xfe380c0bf21cc010
 .dword 0x8008000000000000
-.dword 0x4000000000000000
+.dword 0x4340000000000000
 .dword 0x6d4b8366cb099923
 .dword 0x8008000000000000
-.dword 0x4000000000000000
+.dword 0x4340000000000000
 .dword 0xe768331535e7e02a
 .dword 0x8008000000000000
-.dword 0x4000000000000000
+.dword 0x4340000000000000
 .dword 0x69e72f6e8e66ccf4
 .dword 0x8008000000000000
-.dword 0x4000000000000000
+.dword 0x4340000000000000
 .dword 0xf0cb7031bf6952a3
 .dword 0x8008000000000000
-.dword 0x4000000000000000
+.dword 0x4340000000000000
 .dword 0x0509fcde73a66deb
 .dword 0x8008000000000000
-.dword 0x4000000000000000
+.dword 0x4340000000000000
 .dword 0xbf78a6d8067f7f3c
 .dword 0x8008000000000000
-.dword 0xc000000000000000
+.dword 0xc340000000000000
 .dword 0x3b00e6b9a6e79975
 .dword 0x8008000000000000
-.dword 0xc000000000000000
+.dword 0xc340000000000000
 .dword 0xfde90a620e62b671
 .dword 0x8008000000000000
-.dword 0xc000000000000000
+.dword 0xc340000000000000
 .dword 0xa2cece0bd13b9ea3
 .dword 0x8008000000000000
-.dword 0xc000000000000000
+.dword 0xc340000000000000
 .dword 0x7f40fa109e87b309
 .dword 0x8008000000000000
-.dword 0xc000000000000000
+.dword 0xc340000000000000
 .dword 0x8f9aa7907bf894c1
 .dword 0x8008000000000000
-.dword 0xc000000000000000
+.dword 0xc340000000000000
 .dword 0xd912fea1d57aecf4
 .dword 0x8008000000000000
 .dword 0x0010000000000000
@@ -13394,30 +13394,30 @@ D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xbff00000
 D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xbff0000000000000_frm_rne_str: .string "\"test: 2022; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0xbff0000000000000, frm=rne\""
 D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xbff0000000000000_frm_rtz_str: .string "\"test: 2023; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0xbff0000000000000, frm=rtz\""
 D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xbff0000000000000_frm_rup_str: .string "\"test: 2024; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0xbff0000000000000, frm=rup\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x3ff8000000000000_frm_dyn_str: .string "\"test: 2025; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0x3ff8000000000000, frm=dyn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x3ff8000000000000_frm_rdn_str: .string "\"test: 2026; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0x3ff8000000000000, frm=rdn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x3ff8000000000000_frm_rmm_str: .string "\"test: 2027; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0x3ff8000000000000, frm=rmm\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x3ff8000000000000_frm_rne_str: .string "\"test: 2028; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0x3ff8000000000000, frm=rne\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x3ff8000000000000_frm_rtz_str: .string "\"test: 2029; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0x3ff8000000000000, frm=rtz\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x3ff8000000000000_frm_rup_str: .string "\"test: 2030; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0x3ff8000000000000, frm=rup\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xbff8000000000000_frm_dyn_str: .string "\"test: 2031; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0xbff8000000000000, frm=dyn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xbff8000000000000_frm_rdn_str: .string "\"test: 2032; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0xbff8000000000000, frm=rdn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xbff8000000000000_frm_rmm_str: .string "\"test: 2033; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0xbff8000000000000, frm=rmm\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xbff8000000000000_frm_rne_str: .string "\"test: 2034; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0xbff8000000000000, frm=rne\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xbff8000000000000_frm_rtz_str: .string "\"test: 2035; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0xbff8000000000000, frm=rtz\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xbff8000000000000_frm_rup_str: .string "\"test: 2036; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0xbff8000000000000, frm=rup\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4000000000000000_frm_dyn_str: .string "\"test: 2037; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0x4000000000000000, frm=dyn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4000000000000000_frm_rdn_str: .string "\"test: 2038; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0x4000000000000000, frm=rdn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4000000000000000_frm_rmm_str: .string "\"test: 2039; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0x4000000000000000, frm=rmm\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4000000000000000_frm_rne_str: .string "\"test: 2040; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0x4000000000000000, frm=rne\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4000000000000000_frm_rtz_str: .string "\"test: 2041; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0x4000000000000000, frm=rtz\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4000000000000000_frm_rup_str: .string "\"test: 2042; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0x4000000000000000, frm=rup\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc000000000000000_frm_dyn_str: .string "\"test: 2043; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0xc000000000000000, frm=dyn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc000000000000000_frm_rdn_str: .string "\"test: 2044; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0xc000000000000000, frm=rdn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc000000000000000_frm_rmm_str: .string "\"test: 2045; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0xc000000000000000, frm=rmm\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc000000000000000_frm_rne_str: .string "\"test: 2046; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0xc000000000000000, frm=rne\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc000000000000000_frm_rtz_str: .string "\"test: 2047; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0xc000000000000000, frm=rtz\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc000000000000000_frm_rup_str: .string "\"test: 2048; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0xc000000000000000, frm=rup\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4004000000000000_frm_dyn_str: .string "\"test: 2025; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0x4004000000000000, frm=dyn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4004000000000000_frm_rdn_str: .string "\"test: 2026; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0x4004000000000000, frm=rdn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4004000000000000_frm_rmm_str: .string "\"test: 2027; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0x4004000000000000, frm=rmm\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4004000000000000_frm_rne_str: .string "\"test: 2028; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0x4004000000000000, frm=rne\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4004000000000000_frm_rtz_str: .string "\"test: 2029; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0x4004000000000000, frm=rtz\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4004000000000000_frm_rup_str: .string "\"test: 2030; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0x4004000000000000, frm=rup\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc004000000000000_frm_dyn_str: .string "\"test: 2031; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0xc004000000000000, frm=dyn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc004000000000000_frm_rdn_str: .string "\"test: 2032; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0xc004000000000000, frm=rdn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc004000000000000_frm_rmm_str: .string "\"test: 2033; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0xc004000000000000, frm=rmm\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc004000000000000_frm_rne_str: .string "\"test: 2034; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0xc004000000000000, frm=rne\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc004000000000000_frm_rtz_str: .string "\"test: 2035; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0xc004000000000000, frm=rtz\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc004000000000000_frm_rup_str: .string "\"test: 2036; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0xc004000000000000, frm=rup\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4340000000000000_frm_dyn_str: .string "\"test: 2037; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0x4340000000000000, frm=dyn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4340000000000000_frm_rdn_str: .string "\"test: 2038; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0x4340000000000000, frm=rdn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4340000000000000_frm_rmm_str: .string "\"test: 2039; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0x4340000000000000, frm=rmm\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4340000000000000_frm_rne_str: .string "\"test: 2040; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0x4340000000000000, frm=rne\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4340000000000000_frm_rtz_str: .string "\"test: 2041; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0x4340000000000000, frm=rtz\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x4340000000000000_frm_rup_str: .string "\"test: 2042; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0x4340000000000000, frm=rup\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc340000000000000_frm_dyn_str: .string "\"test: 2043; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0xc340000000000000, frm=dyn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc340000000000000_frm_rdn_str: .string "\"test: 2044; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0xc340000000000000, frm=rdn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc340000000000000_frm_rmm_str: .string "\"test: 2045; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0xc340000000000000, frm=rmm\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc340000000000000_frm_rne_str: .string "\"test: 2046; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0xc340000000000000, frm=rne\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc340000000000000_frm_rtz_str: .string "\"test: 2047; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0xc340000000000000, frm=rtz\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0xc340000000000000_frm_rup_str: .string "\"test: 2048; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0xc340000000000000, frm=rup\""
 D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x10000000000000_frm_dyn_str: .string "\"test: 2049; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0x10000000000000, frm=dyn\""
 D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x10000000000000_frm_rdn_str: .string "\"test: 2050; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0x10000000000000, frm=rdn\""
 D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x7fefffffffffffff_fs2val_0x10000000000000_frm_rmm_str: .string "\"test: 2051; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x7fefffffffffffff, fs2val=0x10000000000000, frm=rmm\""
@@ -13562,30 +13562,30 @@ D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xbff00000
 D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xbff0000000000000_frm_rne_str: .string "\"test: 2190; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0xbff0000000000000, frm=rne\""
 D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xbff0000000000000_frm_rtz_str: .string "\"test: 2191; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0xbff0000000000000, frm=rtz\""
 D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xbff0000000000000_frm_rup_str: .string "\"test: 2192; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0xbff0000000000000, frm=rup\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x3ff8000000000000_frm_dyn_str: .string "\"test: 2193; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0x3ff8000000000000, frm=dyn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x3ff8000000000000_frm_rdn_str: .string "\"test: 2194; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0x3ff8000000000000, frm=rdn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x3ff8000000000000_frm_rmm_str: .string "\"test: 2195; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0x3ff8000000000000, frm=rmm\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x3ff8000000000000_frm_rne_str: .string "\"test: 2196; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0x3ff8000000000000, frm=rne\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x3ff8000000000000_frm_rtz_str: .string "\"test: 2197; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0x3ff8000000000000, frm=rtz\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x3ff8000000000000_frm_rup_str: .string "\"test: 2198; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0x3ff8000000000000, frm=rup\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xbff8000000000000_frm_dyn_str: .string "\"test: 2199; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0xbff8000000000000, frm=dyn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xbff8000000000000_frm_rdn_str: .string "\"test: 2200; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0xbff8000000000000, frm=rdn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xbff8000000000000_frm_rmm_str: .string "\"test: 2201; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0xbff8000000000000, frm=rmm\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xbff8000000000000_frm_rne_str: .string "\"test: 2202; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0xbff8000000000000, frm=rne\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xbff8000000000000_frm_rtz_str: .string "\"test: 2203; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0xbff8000000000000, frm=rtz\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xbff8000000000000_frm_rup_str: .string "\"test: 2204; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0xbff8000000000000, frm=rup\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4000000000000000_frm_dyn_str: .string "\"test: 2205; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0x4000000000000000, frm=dyn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4000000000000000_frm_rdn_str: .string "\"test: 2206; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0x4000000000000000, frm=rdn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4000000000000000_frm_rmm_str: .string "\"test: 2207; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0x4000000000000000, frm=rmm\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4000000000000000_frm_rne_str: .string "\"test: 2208; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0x4000000000000000, frm=rne\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4000000000000000_frm_rtz_str: .string "\"test: 2209; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0x4000000000000000, frm=rtz\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4000000000000000_frm_rup_str: .string "\"test: 2210; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0x4000000000000000, frm=rup\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc000000000000000_frm_dyn_str: .string "\"test: 2211; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0xc000000000000000, frm=dyn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc000000000000000_frm_rdn_str: .string "\"test: 2212; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0xc000000000000000, frm=rdn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc000000000000000_frm_rmm_str: .string "\"test: 2213; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0xc000000000000000, frm=rmm\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc000000000000000_frm_rne_str: .string "\"test: 2214; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0xc000000000000000, frm=rne\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc000000000000000_frm_rtz_str: .string "\"test: 2215; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0xc000000000000000, frm=rtz\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc000000000000000_frm_rup_str: .string "\"test: 2216; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0xc000000000000000, frm=rup\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4004000000000000_frm_dyn_str: .string "\"test: 2193; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0x4004000000000000, frm=dyn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4004000000000000_frm_rdn_str: .string "\"test: 2194; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0x4004000000000000, frm=rdn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4004000000000000_frm_rmm_str: .string "\"test: 2195; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0x4004000000000000, frm=rmm\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4004000000000000_frm_rne_str: .string "\"test: 2196; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0x4004000000000000, frm=rne\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4004000000000000_frm_rtz_str: .string "\"test: 2197; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0x4004000000000000, frm=rtz\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4004000000000000_frm_rup_str: .string "\"test: 2198; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0x4004000000000000, frm=rup\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc004000000000000_frm_dyn_str: .string "\"test: 2199; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0xc004000000000000, frm=dyn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc004000000000000_frm_rdn_str: .string "\"test: 2200; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0xc004000000000000, frm=rdn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc004000000000000_frm_rmm_str: .string "\"test: 2201; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0xc004000000000000, frm=rmm\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc004000000000000_frm_rne_str: .string "\"test: 2202; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0xc004000000000000, frm=rne\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc004000000000000_frm_rtz_str: .string "\"test: 2203; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0xc004000000000000, frm=rtz\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc004000000000000_frm_rup_str: .string "\"test: 2204; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0xc004000000000000, frm=rup\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4340000000000000_frm_dyn_str: .string "\"test: 2205; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0x4340000000000000, frm=dyn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4340000000000000_frm_rdn_str: .string "\"test: 2206; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0x4340000000000000, frm=rdn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4340000000000000_frm_rmm_str: .string "\"test: 2207; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0x4340000000000000, frm=rmm\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4340000000000000_frm_rne_str: .string "\"test: 2208; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0x4340000000000000, frm=rne\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4340000000000000_frm_rtz_str: .string "\"test: 2209; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0x4340000000000000, frm=rtz\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x4340000000000000_frm_rup_str: .string "\"test: 2210; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0x4340000000000000, frm=rup\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc340000000000000_frm_dyn_str: .string "\"test: 2211; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0xc340000000000000, frm=dyn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc340000000000000_frm_rdn_str: .string "\"test: 2212; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0xc340000000000000, frm=rdn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc340000000000000_frm_rmm_str: .string "\"test: 2213; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0xc340000000000000, frm=rmm\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc340000000000000_frm_rne_str: .string "\"test: 2214; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0xc340000000000000, frm=rne\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc340000000000000_frm_rtz_str: .string "\"test: 2215; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0xc340000000000000, frm=rtz\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0xc340000000000000_frm_rup_str: .string "\"test: 2216; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0xc340000000000000, frm=rup\""
 D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x10000000000000_frm_dyn_str: .string "\"test: 2217; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0x10000000000000, frm=dyn\""
 D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x10000000000000_frm_rdn_str: .string "\"test: 2218; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0x10000000000000, frm=rdn\""
 D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xffefffffffffffff_fs2val_0x10000000000000_frm_rmm_str: .string "\"test: 2219; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xffefffffffffffff, fs2val=0x10000000000000, frm=rmm\""
@@ -13730,30 +13730,30 @@ D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xbff00000000
 D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xbff0000000000000_frm_rne_str: .string "\"test: 2358; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0xbff0000000000000, frm=rne\""
 D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xbff0000000000000_frm_rtz_str: .string "\"test: 2359; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0xbff0000000000000, frm=rtz\""
 D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xbff0000000000000_frm_rup_str: .string "\"test: 2360; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0xbff0000000000000, frm=rup\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x3ff8000000000000_frm_dyn_str: .string "\"test: 2361; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0x3ff8000000000000, frm=dyn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x3ff8000000000000_frm_rdn_str: .string "\"test: 2362; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0x3ff8000000000000, frm=rdn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x3ff8000000000000_frm_rmm_str: .string "\"test: 2363; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0x3ff8000000000000, frm=rmm\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x3ff8000000000000_frm_rne_str: .string "\"test: 2364; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0x3ff8000000000000, frm=rne\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x3ff8000000000000_frm_rtz_str: .string "\"test: 2365; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0x3ff8000000000000, frm=rtz\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x3ff8000000000000_frm_rup_str: .string "\"test: 2366; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0x3ff8000000000000, frm=rup\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xbff8000000000000_frm_dyn_str: .string "\"test: 2367; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0xbff8000000000000, frm=dyn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xbff8000000000000_frm_rdn_str: .string "\"test: 2368; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0xbff8000000000000, frm=rdn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xbff8000000000000_frm_rmm_str: .string "\"test: 2369; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0xbff8000000000000, frm=rmm\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xbff8000000000000_frm_rne_str: .string "\"test: 2370; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0xbff8000000000000, frm=rne\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xbff8000000000000_frm_rtz_str: .string "\"test: 2371; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0xbff8000000000000, frm=rtz\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xbff8000000000000_frm_rup_str: .string "\"test: 2372; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0xbff8000000000000, frm=rup\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4000000000000000_frm_dyn_str: .string "\"test: 2373; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0x4000000000000000, frm=dyn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4000000000000000_frm_rdn_str: .string "\"test: 2374; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0x4000000000000000, frm=rdn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4000000000000000_frm_rmm_str: .string "\"test: 2375; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0x4000000000000000, frm=rmm\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4000000000000000_frm_rne_str: .string "\"test: 2376; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0x4000000000000000, frm=rne\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4000000000000000_frm_rtz_str: .string "\"test: 2377; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0x4000000000000000, frm=rtz\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4000000000000000_frm_rup_str: .string "\"test: 2378; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0x4000000000000000, frm=rup\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc000000000000000_frm_dyn_str: .string "\"test: 2379; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0xc000000000000000, frm=dyn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc000000000000000_frm_rdn_str: .string "\"test: 2380; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0xc000000000000000, frm=rdn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc000000000000000_frm_rmm_str: .string "\"test: 2381; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0xc000000000000000, frm=rmm\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc000000000000000_frm_rne_str: .string "\"test: 2382; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0xc000000000000000, frm=rne\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc000000000000000_frm_rtz_str: .string "\"test: 2383; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0xc000000000000000, frm=rtz\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc000000000000000_frm_rup_str: .string "\"test: 2384; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0xc000000000000000, frm=rup\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4004000000000000_frm_dyn_str: .string "\"test: 2361; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0x4004000000000000, frm=dyn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4004000000000000_frm_rdn_str: .string "\"test: 2362; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0x4004000000000000, frm=rdn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4004000000000000_frm_rmm_str: .string "\"test: 2363; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0x4004000000000000, frm=rmm\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4004000000000000_frm_rne_str: .string "\"test: 2364; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0x4004000000000000, frm=rne\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4004000000000000_frm_rtz_str: .string "\"test: 2365; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0x4004000000000000, frm=rtz\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4004000000000000_frm_rup_str: .string "\"test: 2366; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0x4004000000000000, frm=rup\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc004000000000000_frm_dyn_str: .string "\"test: 2367; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0xc004000000000000, frm=dyn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc004000000000000_frm_rdn_str: .string "\"test: 2368; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0xc004000000000000, frm=rdn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc004000000000000_frm_rmm_str: .string "\"test: 2369; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0xc004000000000000, frm=rmm\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc004000000000000_frm_rne_str: .string "\"test: 2370; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0xc004000000000000, frm=rne\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc004000000000000_frm_rtz_str: .string "\"test: 2371; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0xc004000000000000, frm=rtz\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc004000000000000_frm_rup_str: .string "\"test: 2372; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0xc004000000000000, frm=rup\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4340000000000000_frm_dyn_str: .string "\"test: 2373; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0x4340000000000000, frm=dyn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4340000000000000_frm_rdn_str: .string "\"test: 2374; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0x4340000000000000, frm=rdn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4340000000000000_frm_rmm_str: .string "\"test: 2375; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0x4340000000000000, frm=rmm\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4340000000000000_frm_rne_str: .string "\"test: 2376; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0x4340000000000000, frm=rne\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4340000000000000_frm_rtz_str: .string "\"test: 2377; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0x4340000000000000, frm=rtz\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x4340000000000000_frm_rup_str: .string "\"test: 2378; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0x4340000000000000, frm=rup\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc340000000000000_frm_dyn_str: .string "\"test: 2379; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0xc340000000000000, frm=dyn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc340000000000000_frm_rdn_str: .string "\"test: 2380; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0xc340000000000000, frm=rdn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc340000000000000_frm_rmm_str: .string "\"test: 2381; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0xc340000000000000, frm=rmm\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc340000000000000_frm_rne_str: .string "\"test: 2382; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0xc340000000000000, frm=rne\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc340000000000000_frm_rtz_str: .string "\"test: 2383; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0xc340000000000000, frm=rtz\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0xc340000000000000_frm_rup_str: .string "\"test: 2384; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0xc340000000000000, frm=rup\""
 D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x10000000000000_frm_dyn_str: .string "\"test: 2385; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0x10000000000000, frm=dyn\""
 D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x10000000000000_frm_rdn_str: .string "\"test: 2386; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0x10000000000000, frm=rdn\""
 D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0xfffffffffffff_fs2val_0x10000000000000_frm_rmm_str: .string "\"test: 2387; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0xfffffffffffff, fs2val=0x10000000000000, frm=rmm\""
@@ -13898,30 +13898,30 @@ D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xbff00000
 D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xbff0000000000000_frm_rne_str: .string "\"test: 2526; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0xbff0000000000000, frm=rne\""
 D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xbff0000000000000_frm_rtz_str: .string "\"test: 2527; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0xbff0000000000000, frm=rtz\""
 D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xbff0000000000000_frm_rup_str: .string "\"test: 2528; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0xbff0000000000000, frm=rup\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x3ff8000000000000_frm_dyn_str: .string "\"test: 2529; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0x3ff8000000000000, frm=dyn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x3ff8000000000000_frm_rdn_str: .string "\"test: 2530; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0x3ff8000000000000, frm=rdn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x3ff8000000000000_frm_rmm_str: .string "\"test: 2531; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0x3ff8000000000000, frm=rmm\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x3ff8000000000000_frm_rne_str: .string "\"test: 2532; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0x3ff8000000000000, frm=rne\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x3ff8000000000000_frm_rtz_str: .string "\"test: 2533; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0x3ff8000000000000, frm=rtz\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x3ff8000000000000_frm_rup_str: .string "\"test: 2534; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0x3ff8000000000000, frm=rup\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xbff8000000000000_frm_dyn_str: .string "\"test: 2535; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0xbff8000000000000, frm=dyn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xbff8000000000000_frm_rdn_str: .string "\"test: 2536; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0xbff8000000000000, frm=rdn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xbff8000000000000_frm_rmm_str: .string "\"test: 2537; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0xbff8000000000000, frm=rmm\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xbff8000000000000_frm_rne_str: .string "\"test: 2538; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0xbff8000000000000, frm=rne\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xbff8000000000000_frm_rtz_str: .string "\"test: 2539; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0xbff8000000000000, frm=rtz\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xbff8000000000000_frm_rup_str: .string "\"test: 2540; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0xbff8000000000000, frm=rup\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4000000000000000_frm_dyn_str: .string "\"test: 2541; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0x4000000000000000, frm=dyn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4000000000000000_frm_rdn_str: .string "\"test: 2542; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0x4000000000000000, frm=rdn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4000000000000000_frm_rmm_str: .string "\"test: 2543; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0x4000000000000000, frm=rmm\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4000000000000000_frm_rne_str: .string "\"test: 2544; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0x4000000000000000, frm=rne\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4000000000000000_frm_rtz_str: .string "\"test: 2545; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0x4000000000000000, frm=rtz\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4000000000000000_frm_rup_str: .string "\"test: 2546; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0x4000000000000000, frm=rup\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc000000000000000_frm_dyn_str: .string "\"test: 2547; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0xc000000000000000, frm=dyn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc000000000000000_frm_rdn_str: .string "\"test: 2548; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0xc000000000000000, frm=rdn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc000000000000000_frm_rmm_str: .string "\"test: 2549; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0xc000000000000000, frm=rmm\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc000000000000000_frm_rne_str: .string "\"test: 2550; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0xc000000000000000, frm=rne\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc000000000000000_frm_rtz_str: .string "\"test: 2551; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0xc000000000000000, frm=rtz\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc000000000000000_frm_rup_str: .string "\"test: 2552; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0xc000000000000000, frm=rup\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4004000000000000_frm_dyn_str: .string "\"test: 2529; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0x4004000000000000, frm=dyn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4004000000000000_frm_rdn_str: .string "\"test: 2530; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0x4004000000000000, frm=rdn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4004000000000000_frm_rmm_str: .string "\"test: 2531; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0x4004000000000000, frm=rmm\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4004000000000000_frm_rne_str: .string "\"test: 2532; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0x4004000000000000, frm=rne\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4004000000000000_frm_rtz_str: .string "\"test: 2533; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0x4004000000000000, frm=rtz\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4004000000000000_frm_rup_str: .string "\"test: 2534; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0x4004000000000000, frm=rup\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc004000000000000_frm_dyn_str: .string "\"test: 2535; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0xc004000000000000, frm=dyn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc004000000000000_frm_rdn_str: .string "\"test: 2536; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0xc004000000000000, frm=rdn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc004000000000000_frm_rmm_str: .string "\"test: 2537; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0xc004000000000000, frm=rmm\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc004000000000000_frm_rne_str: .string "\"test: 2538; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0xc004000000000000, frm=rne\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc004000000000000_frm_rtz_str: .string "\"test: 2539; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0xc004000000000000, frm=rtz\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc004000000000000_frm_rup_str: .string "\"test: 2540; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0xc004000000000000, frm=rup\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4340000000000000_frm_dyn_str: .string "\"test: 2541; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0x4340000000000000, frm=dyn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4340000000000000_frm_rdn_str: .string "\"test: 2542; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0x4340000000000000, frm=rdn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4340000000000000_frm_rmm_str: .string "\"test: 2543; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0x4340000000000000, frm=rmm\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4340000000000000_frm_rne_str: .string "\"test: 2544; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0x4340000000000000, frm=rne\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4340000000000000_frm_rtz_str: .string "\"test: 2545; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0x4340000000000000, frm=rtz\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x4340000000000000_frm_rup_str: .string "\"test: 2546; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0x4340000000000000, frm=rup\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc340000000000000_frm_dyn_str: .string "\"test: 2547; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0xc340000000000000, frm=dyn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc340000000000000_frm_rdn_str: .string "\"test: 2548; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0xc340000000000000, frm=rdn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc340000000000000_frm_rmm_str: .string "\"test: 2549; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0xc340000000000000, frm=rmm\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc340000000000000_frm_rne_str: .string "\"test: 2550; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0xc340000000000000, frm=rne\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc340000000000000_frm_rtz_str: .string "\"test: 2551; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0xc340000000000000, frm=rtz\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0xc340000000000000_frm_rup_str: .string "\"test: 2552; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0xc340000000000000, frm=rup\""
 D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x10000000000000_frm_dyn_str: .string "\"test: 2553; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0x10000000000000, frm=dyn\""
 D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x10000000000000_frm_rdn_str: .string "\"test: 2554; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0x10000000000000, frm=rdn\""
 D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x800fffffffffffff_fs2val_0x10000000000000_frm_rmm_str: .string "\"test: 2555; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x800fffffffffffff, fs2val=0x10000000000000, frm=rmm\""
@@ -14066,30 +14066,30 @@ D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xbff00000000
 D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xbff0000000000000_frm_rne_str: .string "\"test: 2694; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0xbff0000000000000, frm=rne\""
 D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xbff0000000000000_frm_rtz_str: .string "\"test: 2695; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0xbff0000000000000, frm=rtz\""
 D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xbff0000000000000_frm_rup_str: .string "\"test: 2696; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0xbff0000000000000, frm=rup\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x3ff8000000000000_frm_dyn_str: .string "\"test: 2697; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0x3ff8000000000000, frm=dyn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x3ff8000000000000_frm_rdn_str: .string "\"test: 2698; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0x3ff8000000000000, frm=rdn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x3ff8000000000000_frm_rmm_str: .string "\"test: 2699; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0x3ff8000000000000, frm=rmm\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x3ff8000000000000_frm_rne_str: .string "\"test: 2700; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0x3ff8000000000000, frm=rne\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x3ff8000000000000_frm_rtz_str: .string "\"test: 2701; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0x3ff8000000000000, frm=rtz\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x3ff8000000000000_frm_rup_str: .string "\"test: 2702; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0x3ff8000000000000, frm=rup\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xbff8000000000000_frm_dyn_str: .string "\"test: 2703; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0xbff8000000000000, frm=dyn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xbff8000000000000_frm_rdn_str: .string "\"test: 2704; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0xbff8000000000000, frm=rdn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xbff8000000000000_frm_rmm_str: .string "\"test: 2705; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0xbff8000000000000, frm=rmm\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xbff8000000000000_frm_rne_str: .string "\"test: 2706; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0xbff8000000000000, frm=rne\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xbff8000000000000_frm_rtz_str: .string "\"test: 2707; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0xbff8000000000000, frm=rtz\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xbff8000000000000_frm_rup_str: .string "\"test: 2708; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0xbff8000000000000, frm=rup\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4000000000000000_frm_dyn_str: .string "\"test: 2709; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0x4000000000000000, frm=dyn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4000000000000000_frm_rdn_str: .string "\"test: 2710; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0x4000000000000000, frm=rdn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4000000000000000_frm_rmm_str: .string "\"test: 2711; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0x4000000000000000, frm=rmm\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4000000000000000_frm_rne_str: .string "\"test: 2712; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0x4000000000000000, frm=rne\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4000000000000000_frm_rtz_str: .string "\"test: 2713; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0x4000000000000000, frm=rtz\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4000000000000000_frm_rup_str: .string "\"test: 2714; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0x4000000000000000, frm=rup\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc000000000000000_frm_dyn_str: .string "\"test: 2715; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0xc000000000000000, frm=dyn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc000000000000000_frm_rdn_str: .string "\"test: 2716; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0xc000000000000000, frm=rdn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc000000000000000_frm_rmm_str: .string "\"test: 2717; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0xc000000000000000, frm=rmm\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc000000000000000_frm_rne_str: .string "\"test: 2718; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0xc000000000000000, frm=rne\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc000000000000000_frm_rtz_str: .string "\"test: 2719; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0xc000000000000000, frm=rtz\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc000000000000000_frm_rup_str: .string "\"test: 2720; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0xc000000000000000, frm=rup\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4004000000000000_frm_dyn_str: .string "\"test: 2697; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0x4004000000000000, frm=dyn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4004000000000000_frm_rdn_str: .string "\"test: 2698; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0x4004000000000000, frm=rdn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4004000000000000_frm_rmm_str: .string "\"test: 2699; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0x4004000000000000, frm=rmm\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4004000000000000_frm_rne_str: .string "\"test: 2700; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0x4004000000000000, frm=rne\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4004000000000000_frm_rtz_str: .string "\"test: 2701; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0x4004000000000000, frm=rtz\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4004000000000000_frm_rup_str: .string "\"test: 2702; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0x4004000000000000, frm=rup\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc004000000000000_frm_dyn_str: .string "\"test: 2703; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0xc004000000000000, frm=dyn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc004000000000000_frm_rdn_str: .string "\"test: 2704; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0xc004000000000000, frm=rdn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc004000000000000_frm_rmm_str: .string "\"test: 2705; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0xc004000000000000, frm=rmm\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc004000000000000_frm_rne_str: .string "\"test: 2706; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0xc004000000000000, frm=rne\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc004000000000000_frm_rtz_str: .string "\"test: 2707; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0xc004000000000000, frm=rtz\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc004000000000000_frm_rup_str: .string "\"test: 2708; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0xc004000000000000, frm=rup\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4340000000000000_frm_dyn_str: .string "\"test: 2709; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0x4340000000000000, frm=dyn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4340000000000000_frm_rdn_str: .string "\"test: 2710; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0x4340000000000000, frm=rdn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4340000000000000_frm_rmm_str: .string "\"test: 2711; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0x4340000000000000, frm=rmm\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4340000000000000_frm_rne_str: .string "\"test: 2712; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0x4340000000000000, frm=rne\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4340000000000000_frm_rtz_str: .string "\"test: 2713; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0x4340000000000000, frm=rtz\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x4340000000000000_frm_rup_str: .string "\"test: 2714; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0x4340000000000000, frm=rup\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc340000000000000_frm_dyn_str: .string "\"test: 2715; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0xc340000000000000, frm=dyn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc340000000000000_frm_rdn_str: .string "\"test: 2716; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0xc340000000000000, frm=rdn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc340000000000000_frm_rmm_str: .string "\"test: 2717; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0xc340000000000000, frm=rmm\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc340000000000000_frm_rne_str: .string "\"test: 2718; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0xc340000000000000, frm=rne\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc340000000000000_frm_rtz_str: .string "\"test: 2719; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0xc340000000000000, frm=rtz\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0xc340000000000000_frm_rup_str: .string "\"test: 2720; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0xc340000000000000, frm=rup\""
 D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x10000000000000_frm_dyn_str: .string "\"test: 2721; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0x10000000000000, frm=dyn\""
 D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x10000000000000_frm_rdn_str: .string "\"test: 2722; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0x10000000000000, frm=rdn\""
 D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8000000000000_fs2val_0x10000000000000_frm_rmm_str: .string "\"test: 2723; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8000000000000, fs2val=0x10000000000000, frm=rmm\""
@@ -14234,30 +14234,30 @@ D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xbff00000
 D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xbff0000000000000_frm_rne_str: .string "\"test: 2862; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0xbff0000000000000, frm=rne\""
 D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xbff0000000000000_frm_rtz_str: .string "\"test: 2863; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0xbff0000000000000, frm=rtz\""
 D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xbff0000000000000_frm_rup_str: .string "\"test: 2864; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0xbff0000000000000, frm=rup\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x3ff8000000000000_frm_dyn_str: .string "\"test: 2865; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0x3ff8000000000000, frm=dyn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x3ff8000000000000_frm_rdn_str: .string "\"test: 2866; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0x3ff8000000000000, frm=rdn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x3ff8000000000000_frm_rmm_str: .string "\"test: 2867; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0x3ff8000000000000, frm=rmm\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x3ff8000000000000_frm_rne_str: .string "\"test: 2868; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0x3ff8000000000000, frm=rne\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x3ff8000000000000_frm_rtz_str: .string "\"test: 2869; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0x3ff8000000000000, frm=rtz\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x3ff8000000000000_frm_rup_str: .string "\"test: 2870; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0x3ff8000000000000, frm=rup\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xbff8000000000000_frm_dyn_str: .string "\"test: 2871; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0xbff8000000000000, frm=dyn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xbff8000000000000_frm_rdn_str: .string "\"test: 2872; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0xbff8000000000000, frm=rdn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xbff8000000000000_frm_rmm_str: .string "\"test: 2873; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0xbff8000000000000, frm=rmm\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xbff8000000000000_frm_rne_str: .string "\"test: 2874; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0xbff8000000000000, frm=rne\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xbff8000000000000_frm_rtz_str: .string "\"test: 2875; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0xbff8000000000000, frm=rtz\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xbff8000000000000_frm_rup_str: .string "\"test: 2876; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0xbff8000000000000, frm=rup\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4000000000000000_frm_dyn_str: .string "\"test: 2877; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0x4000000000000000, frm=dyn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4000000000000000_frm_rdn_str: .string "\"test: 2878; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0x4000000000000000, frm=rdn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4000000000000000_frm_rmm_str: .string "\"test: 2879; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0x4000000000000000, frm=rmm\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4000000000000000_frm_rne_str: .string "\"test: 2880; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0x4000000000000000, frm=rne\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4000000000000000_frm_rtz_str: .string "\"test: 2881; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0x4000000000000000, frm=rtz\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4000000000000000_frm_rup_str: .string "\"test: 2882; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0x4000000000000000, frm=rup\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc000000000000000_frm_dyn_str: .string "\"test: 2883; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0xc000000000000000, frm=dyn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc000000000000000_frm_rdn_str: .string "\"test: 2884; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0xc000000000000000, frm=rdn\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc000000000000000_frm_rmm_str: .string "\"test: 2885; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0xc000000000000000, frm=rmm\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc000000000000000_frm_rne_str: .string "\"test: 2886; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0xc000000000000000, frm=rne\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc000000000000000_frm_rtz_str: .string "\"test: 2887; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0xc000000000000000, frm=rtz\""
-D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc000000000000000_frm_rup_str: .string "\"test: 2888; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0xc000000000000000, frm=rup\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4004000000000000_frm_dyn_str: .string "\"test: 2865; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0x4004000000000000, frm=dyn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4004000000000000_frm_rdn_str: .string "\"test: 2866; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0x4004000000000000, frm=rdn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4004000000000000_frm_rmm_str: .string "\"test: 2867; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0x4004000000000000, frm=rmm\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4004000000000000_frm_rne_str: .string "\"test: 2868; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0x4004000000000000, frm=rne\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4004000000000000_frm_rtz_str: .string "\"test: 2869; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0x4004000000000000, frm=rtz\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4004000000000000_frm_rup_str: .string "\"test: 2870; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0x4004000000000000, frm=rup\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc004000000000000_frm_dyn_str: .string "\"test: 2871; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0xc004000000000000, frm=dyn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc004000000000000_frm_rdn_str: .string "\"test: 2872; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0xc004000000000000, frm=rdn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc004000000000000_frm_rmm_str: .string "\"test: 2873; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0xc004000000000000, frm=rmm\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc004000000000000_frm_rne_str: .string "\"test: 2874; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0xc004000000000000, frm=rne\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc004000000000000_frm_rtz_str: .string "\"test: 2875; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0xc004000000000000, frm=rtz\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc004000000000000_frm_rup_str: .string "\"test: 2876; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0xc004000000000000, frm=rup\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4340000000000000_frm_dyn_str: .string "\"test: 2877; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0x4340000000000000, frm=dyn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4340000000000000_frm_rdn_str: .string "\"test: 2878; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0x4340000000000000, frm=rdn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4340000000000000_frm_rmm_str: .string "\"test: 2879; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0x4340000000000000, frm=rmm\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4340000000000000_frm_rne_str: .string "\"test: 2880; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0x4340000000000000, frm=rne\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4340000000000000_frm_rtz_str: .string "\"test: 2881; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0x4340000000000000, frm=rtz\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x4340000000000000_frm_rup_str: .string "\"test: 2882; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0x4340000000000000, frm=rup\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc340000000000000_frm_dyn_str: .string "\"test: 2883; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0xc340000000000000, frm=dyn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc340000000000000_frm_rdn_str: .string "\"test: 2884; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0xc340000000000000, frm=rdn\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc340000000000000_frm_rmm_str: .string "\"test: 2885; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0xc340000000000000, frm=rmm\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc340000000000000_frm_rne_str: .string "\"test: 2886; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0xc340000000000000, frm=rne\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc340000000000000_frm_rtz_str: .string "\"test: 2887; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0xc340000000000000, frm=rtz\""
+D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0xc340000000000000_frm_rup_str: .string "\"test: 2888; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0xc340000000000000, frm=rup\""
 D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x10000000000000_frm_dyn_str: .string "\"test: 2889; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0x10000000000000, frm=dyn\""
 D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x10000000000000_frm_rdn_str: .string "\"test: 2890; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0x10000000000000, frm=rdn\""
 D_fmsub_d_cg_cr_fs1_fs2_edges_frm4_D_fs1val_0x8008000000000000_fs2val_0x10000000000000_frm_rmm_str: .string "\"test: 2891; cg: D_fmsub.d_cg; cp: cr_fs1_fs2_edges_frm4_D; bin: fs1val=0x8008000000000000, fs2val=0x10000000000000, frm=rmm\""

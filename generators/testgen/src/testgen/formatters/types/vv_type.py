@@ -7,6 +7,7 @@
 
 from testgen.asm.vector_helpers import (
     VectorLoad,
+    compute_egs_vlen,
     handle_parameter_exclusions,
     load_test_vtype,
     load_vec_regs,
@@ -19,7 +20,7 @@ from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig, add_instruction_formatter
 from testgen.instructions.vector import parse_vector_instruction_info
 
-vmvr_config = InstructionTypeConfig(required_params={"vd", "vs2"}, vector_data=VectorTypeConfig())
+vmvr_config = InstructionTypeConfig(required_params={"vd", "vs2"}, vector_data=VectorTypeConfig(maskable=False))
 vext_config = InstructionTypeConfig(
     required_params={"vd", "vs2"},
     vector_data=VectorTypeConfig(overlap_constraints={("vd_bottom", "vs2")}),
@@ -30,7 +31,16 @@ vm_config = InstructionTypeConfig(
         mask_regs={"vs2"},
         overlap_constraints={("vd", "vs2")},
         masked_constraints={("vd", "v0")},
+        require_zero_vstart=True,
     ),
+)
+vv_config = InstructionTypeConfig(required_params={"vd", "vs2"}, vector_data=VectorTypeConfig())
+vv_egs4_config = InstructionTypeConfig(
+    required_params={"vd", "vs2"}, vector_data=VectorTypeConfig(egs=4, maskable=False)
+)
+vs_egs4_config = InstructionTypeConfig(
+    required_params={"vd", "vs2"},
+    vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs2")}, egs=4, maskable=False),
 )
 
 
@@ -58,6 +68,27 @@ def format_vm_type(
     return format_vv_like_type(instr_str, test_data, params, "VM", vs2_mask=True)
 
 
+@add_instruction_formatter("VV", vv_config)
+def format_vv_type(
+    instr_str: str, test_data: TestData, params: InstructionParams
+) -> tuple[list[str], list[str], list[str]]:
+    return format_vv_like_type(instr_str, test_data, params, "VV")
+
+
+@add_instruction_formatter("VV_EGS4", vv_egs4_config)
+def format_vv_egs4_type(
+    instr_str: str, test_data: TestData, params: InstructionParams
+) -> tuple[list[str], list[str], list[str]]:
+    return format_vv_like_type(instr_str, test_data, params, "VV_EGS4", egs=4)
+
+
+@add_instruction_formatter("VS_EGS4", vs_egs4_config)
+def format_vs_egs4_type(
+    instr_str: str, test_data: TestData, params: InstructionParams
+) -> tuple[list[str], list[str], list[str]]:
+    return format_vv_like_type(instr_str, test_data, params, "VS_EGS4", egs=4)
+
+
 def format_vv_like_type(
     instr_str: str,
     test_data: TestData,
@@ -68,6 +99,8 @@ def format_vv_like_type(
     vs2_lmul_multiplier: float = 1,
     vs2_mask: bool = False,
     preload_vs2: bool = False,
+    egs: int = 1,
+    widened_regs: set[str] | None = None,
 ) -> tuple[list[str], list[str], list[str]]:
     assert params.vs2 is not None and params.vs2_val_pointer is not None, (
         f"vs2 and vs2_val_pointer must be provided for {type_name}-type instructions"
@@ -77,10 +110,14 @@ def format_vv_like_type(
     )
     assert params.temp_reg is not None, f"temp_reg must be provided for {type_name}-type instructions"
     assert params.sew is not None, f"sew must be provided for {type_name}-type instructions"
-    assert params.lmul is not None or lmul_override is not None, (
-        f"lmul must be provided for {type_name}-type instructions"
+    assert params.lmul is not None, f"lmul must be provided for {type_name}-type instructions"
+    assert not isinstance(params.vl, int) or params.vl % egs == 0, (
+        f"params.vl must be a multiple of {egs} for EGS={egs} instruction, got: {params.vl}"
     )
     assert test_data.test_chunk is not None, f"format_{type_name.lower()}_type must be used with an active TestChunk"
+
+    if widened_regs is None:
+        widened_regs = set()
 
     test_data.test_chunk.vector_labels.extend(
         [
@@ -96,18 +133,22 @@ def format_vv_like_type(
     if params.maskval:
         setup.extend(prep_mask_v(params.maskval, test_data, params))
 
+    # The register group size: for VMVR it is the register count encoded in the instruction,
+    # otherwise it is the LMUL in vtype
     lmul = lmul_override if lmul_override is not None else params.lmul
-    # This must be true because above we asserted, params.lmul is not None or lmul_override is not None
-    assert lmul is not None
 
     vd_vl = params.vl if params.vector_suite == "base" else "vlmax"
+    vd_lmul = lmul if "vd" not in widened_regs else lmul * 2
     vs2_vl = params.vl if params.vector_suite == "base" or not preload_vs2 else "vlmax"
+    if "vs2" in widened_regs:
+        assert vs2_lmul_multiplier == 1, "Conflicting values for widened_regs and vs2_lmul_multiplier"
+        vs2_lmul_multiplier = 2
     vs2_lmul = max(lmul * vs2_lmul_multiplier, 1) if not vs2_mask else 1
     vs2_sew = int(params.sew * vs2_lmul_multiplier)
 
     to_load = [
-        VectorLoad(reg="vd", vl=vd_vl, lmul=lmul, no_fractional_load=True),
-        VectorLoad(reg="vs2", vl=vs2_vl, lmul=vs2_lmul, sew=vs2_sew),
+        VectorLoad(reg="vd", vl=vd_vl, lmul=vd_lmul, no_fractional_load=True, egs=egs),
+        VectorLoad(reg="vs2", vl=vs2_vl, lmul=vs2_lmul, sew=vs2_sew, egs=egs),
     ]
 
     load_code, random_vl_reg = load_vec_regs(to_load, params, test_data)
@@ -124,14 +165,16 @@ def format_vv_like_type(
         test = [f"{instr_str} v{params.vd}, v{params.vs2}"]
 
     if params.vector_suite == "length":
-        check = [*write_sigupd_v_len(test_data, params, lmul)]
+        check = [*write_sigupd_v_len(test_data, params, vd_lmul, widen_vd="vd" in widened_regs)]
     else:
-        check = [*write_sigupd_v(test_data, params)]
+        check = [*write_sigupd_v(test_data, params, widen_vd="vd" in widened_regs, egs=egs)]
 
     # This can only be released after sigupd
     if params.maskval:
         test_data.vec_regs.return_register(0)
 
-    handle_parameter_exclusions(lmul, setup, check)
+    min_vlen = compute_egs_vlen(params.sew, lmul, egs)
+    # Guard on the LMUL in vtype, which differs from the lmul variable for VMVR
+    handle_parameter_exclusions(params.lmul, setup, check, min_vlen=min_vlen)
 
     return (setup, test, check)

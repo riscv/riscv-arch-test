@@ -13,7 +13,7 @@ from testgen.data.params import PresetMask
 from testgen.data.random import random_range
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
-from testgen.formatters import format_single_testcase
+from testgen.formatters import format_single_testcase, get_instruction_type_config
 from testgen.instructions.vector import get_legal_lmuls
 from testgen.instructions.vector_params import generate_random_vector_params
 
@@ -31,7 +31,9 @@ def make_vl_lmul(instr_name: str, instr_type: str, coverpoint: str, test_data: T
     eew = None
     max_emul = 8
     egs = 1
-    can_mask = True
+    config = get_instruction_type_config(instr_type)
+    assert config.vector_data is not None
+    can_mask = config.vector_data.maskable
     if coverpoint.startswith("cr_vl_lmul_"):
         suffix = coverpoint[len("cr_vl_lmul_") :]
 
@@ -50,9 +52,6 @@ def make_vl_lmul(instr_name: str, instr_type: str, coverpoint: str, test_data: T
         if egs_match:
             egs = int(egs_match.group(1))
 
-        if "nomask" in suffix:
-            can_mask = False
-
     # Determine maximum supported lmul
     if eew is None:
         max_lmul = max_emul
@@ -66,9 +65,6 @@ def make_vl_lmul(instr_name: str, instr_type: str, coverpoint: str, test_data: T
 
     lmul_exponents = list(range(min_lmul, max_lmul + 1))
     vl_options = ["vlmax", egs, "random"]
-
-    if egs != 1:
-        raise NotImplementedError("EGS If Defs are Not in cr_vl_lmul.py")
 
     test_chunks = []
     for l in lmul_exponents:

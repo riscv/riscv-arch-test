@@ -32,7 +32,7 @@ SECTIONS
   . = ALIGN(16);
   .bss . : {
     __bss_start = .;
-    *(.sbss) *(.sbss.*) *(.bss) *(.bss.*) *(COMMON)
+  *(.sbss) *(.sbss.*) *(.bss) *(.bss.*) *(COMMON)
     . = ALIGN(16);
     __bss_end = .;
   } > ram

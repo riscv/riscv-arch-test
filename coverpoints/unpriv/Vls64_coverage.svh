@@ -42,7 +42,7 @@ covergroup Vls64_vl1re16_v_cg with function sample(ins_t ins);
     // Custom coverpoints for Vector whole register load and store operations
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -169,7 +169,7 @@ covergroup Vls64_vl1re32_v_cg with function sample(ins_t ins);
     // Custom coverpoints for Vector whole register load and store operations
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -296,7 +296,7 @@ covergroup Vls64_vl1re64_v_cg with function sample(ins_t ins);
     // Custom coverpoints for Vector whole register load and store operations
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -423,7 +423,7 @@ covergroup Vls64_vl1re8_v_cg with function sample(ins_t ins);
     // Custom coverpoints for Vector whole register load and store operations
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -550,7 +550,7 @@ covergroup Vls64_vl2re16_v_cg with function sample(ins_t ins);
     // Custom coverpoints for Vector whole register load and store operations
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -681,7 +681,7 @@ covergroup Vls64_vl2re32_v_cg with function sample(ins_t ins);
     // Custom coverpoints for Vector whole register load and store operations
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -812,7 +812,7 @@ covergroup Vls64_vl2re64_v_cg with function sample(ins_t ins);
     // Custom coverpoints for Vector whole register load and store operations
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -943,7 +943,7 @@ covergroup Vls64_vl2re8_v_cg with function sample(ins_t ins);
     // Custom coverpoints for Vector whole register load and store operations
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -1074,7 +1074,7 @@ covergroup Vls64_vl4re16_v_cg with function sample(ins_t ins);
     // Custom coverpoints for Vector whole register load and store operations
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -1210,7 +1210,7 @@ covergroup Vls64_vl4re32_v_cg with function sample(ins_t ins);
     // Custom coverpoints for Vector whole register load and store operations
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -1346,7 +1346,7 @@ covergroup Vls64_vl4re64_v_cg with function sample(ins_t ins);
     // Custom coverpoints for Vector whole register load and store operations
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -1482,7 +1482,7 @@ covergroup Vls64_vl4re8_v_cg with function sample(ins_t ins);
     // Custom coverpoints for Vector whole register load and store operations
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -1618,7 +1618,7 @@ covergroup Vls64_vl8re16_v_cg with function sample(ins_t ins);
     // Custom coverpoints for Vector whole register load and store operations
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -1759,7 +1759,7 @@ covergroup Vls64_vl8re32_v_cg with function sample(ins_t ins);
     // Custom coverpoints for Vector whole register load and store operations
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -1900,7 +1900,7 @@ covergroup Vls64_vl8re64_v_cg with function sample(ins_t ins);
     // Custom coverpoints for Vector whole register load and store operations
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -2041,7 +2041,7 @@ covergroup Vls64_vl8re8_v_cg with function sample(ins_t ins);
     // Custom coverpoints for Vector whole register load and store operations
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -2313,11 +2313,11 @@ covergroup Vls64_vle16ff_v_cg with function sample(ins_t ins);
     }
 
     ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -2346,7 +2346,7 @@ covergroup Vls64_vle16ff_v_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -2596,11 +2596,11 @@ covergroup Vls64_vle32ff_v_cg with function sample(ins_t ins);
     }
 
     ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -2629,7 +2629,7 @@ covergroup Vls64_vle32ff_v_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -2880,11 +2880,11 @@ covergroup Vls64_vle64ff_v_cg with function sample(ins_t ins);
     }
 
     ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -2913,7 +2913,7 @@ covergroup Vls64_vle64ff_v_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -3162,11 +3162,11 @@ covergroup Vls64_vle8ff_v_cg with function sample(ins_t ins);
     }
 
     ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -3195,7 +3195,7 @@ covergroup Vls64_vle8ff_v_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -3582,7 +3582,7 @@ covergroup Vls64_vloxei16_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -3808,7 +3808,7 @@ covergroup Vls64_vloxei32_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -4046,7 +4046,7 @@ covergroup Vls64_vloxei64_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -4266,7 +4266,7 @@ covergroup Vls64_vloxei8_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -4428,7 +4428,7 @@ covergroup Vls64_vloxseg2ei16_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -4592,7 +4592,7 @@ covergroup Vls64_vloxseg2ei32_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -4770,7 +4770,7 @@ covergroup Vls64_vloxseg2ei64_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -4934,7 +4934,7 @@ covergroup Vls64_vloxseg2ei8_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -5074,7 +5074,7 @@ covergroup Vls64_vloxseg3ei16_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -5214,7 +5214,7 @@ covergroup Vls64_vloxseg3ei32_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -5369,7 +5369,7 @@ covergroup Vls64_vloxseg3ei64_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -5510,7 +5510,7 @@ covergroup Vls64_vloxseg3ei8_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -5674,7 +5674,7 @@ covergroup Vls64_vloxseg4ei16_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -5839,7 +5839,7 @@ covergroup Vls64_vloxseg4ei32_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -6019,7 +6019,7 @@ covergroup Vls64_vloxseg4ei64_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -6185,7 +6185,7 @@ covergroup Vls64_vloxseg4ei8_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -6326,7 +6326,7 @@ covergroup Vls64_vloxseg5ei16_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -6468,7 +6468,7 @@ covergroup Vls64_vloxseg5ei32_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -6624,7 +6624,7 @@ covergroup Vls64_vloxseg5ei64_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -6766,7 +6766,7 @@ covergroup Vls64_vloxseg5ei8_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -6907,7 +6907,7 @@ covergroup Vls64_vloxseg6ei16_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -7050,7 +7050,7 @@ covergroup Vls64_vloxseg6ei32_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -7207,7 +7207,7 @@ covergroup Vls64_vloxseg6ei64_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -7350,7 +7350,7 @@ covergroup Vls64_vloxseg6ei8_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -7492,7 +7492,7 @@ covergroup Vls64_vloxseg7ei16_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -7636,7 +7636,7 @@ covergroup Vls64_vloxseg7ei32_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -7794,7 +7794,7 @@ covergroup Vls64_vloxseg7ei64_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -7938,7 +7938,7 @@ covergroup Vls64_vloxseg7ei8_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -8105,7 +8105,7 @@ covergroup Vls64_vloxseg8ei16_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -8274,7 +8274,7 @@ covergroup Vls64_vloxseg8ei32_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -8457,7 +8457,7 @@ covergroup Vls64_vloxseg8ei64_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -8626,7 +8626,7 @@ covergroup Vls64_vloxseg8ei8_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -9309,11 +9309,11 @@ covergroup Vls64_vlseg2e16ff_v_cg with function sample(ins_t ins);
     }
 
     ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -9342,7 +9342,7 @@ covergroup Vls64_vlseg2e16ff_v_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -9594,11 +9594,11 @@ covergroup Vls64_vlseg2e32ff_v_cg with function sample(ins_t ins);
     }
 
     ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -9627,7 +9627,7 @@ covergroup Vls64_vlseg2e32ff_v_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -9880,11 +9880,11 @@ covergroup Vls64_vlseg2e64ff_v_cg with function sample(ins_t ins);
     }
 
     ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -9913,7 +9913,7 @@ covergroup Vls64_vlseg2e64ff_v_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -10166,11 +10166,11 @@ covergroup Vls64_vlseg2e8ff_v_cg with function sample(ins_t ins);
     }
 
     ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -10199,7 +10199,7 @@ covergroup Vls64_vlseg2e8ff_v_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -10451,11 +10451,11 @@ covergroup Vls64_vlseg3e16ff_v_cg with function sample(ins_t ins);
     }
 
     ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -10484,7 +10484,7 @@ covergroup Vls64_vlseg3e16ff_v_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -10719,11 +10719,11 @@ covergroup Vls64_vlseg3e32ff_v_cg with function sample(ins_t ins);
     }
 
     ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -10980,11 +10980,11 @@ covergroup Vls64_vlseg3e64ff_v_cg with function sample(ins_t ins);
     }
 
     ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -11013,7 +11013,7 @@ covergroup Vls64_vlseg3e64ff_v_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -11267,11 +11267,11 @@ covergroup Vls64_vlseg3e8ff_v_cg with function sample(ins_t ins);
     }
 
     ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -11300,7 +11300,7 @@ covergroup Vls64_vlseg3e8ff_v_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -11553,11 +11553,11 @@ covergroup Vls64_vlseg4e16ff_v_cg with function sample(ins_t ins);
     }
 
     ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -11586,7 +11586,7 @@ covergroup Vls64_vlseg4e16ff_v_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -11832,11 +11832,11 @@ covergroup Vls64_vlseg4e32ff_v_cg with function sample(ins_t ins);
     }
 
     ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -11865,7 +11865,7 @@ covergroup Vls64_vlseg4e32ff_v_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -12122,11 +12122,11 @@ covergroup Vls64_vlseg4e64ff_v_cg with function sample(ins_t ins);
     }
 
     ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -12155,7 +12155,7 @@ covergroup Vls64_vlseg4e64ff_v_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -12411,11 +12411,11 @@ covergroup Vls64_vlseg4e8ff_v_cg with function sample(ins_t ins);
     }
 
     ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -12444,7 +12444,7 @@ covergroup Vls64_vlseg4e8ff_v_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -12699,11 +12699,11 @@ covergroup Vls64_vlseg5e16ff_v_cg with function sample(ins_t ins);
     }
 
     ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -12732,7 +12732,7 @@ covergroup Vls64_vlseg5e16ff_v_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -12988,11 +12988,11 @@ covergroup Vls64_vlseg5e32ff_v_cg with function sample(ins_t ins);
     }
 
     ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -13021,7 +13021,7 @@ covergroup Vls64_vlseg5e32ff_v_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -13278,7 +13278,7 @@ covergroup Vls64_vlseg5e64ff_v_cg with function sample(ins_t ins);
                 bins ge2 = {[2:$]};
             }
 
-            ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+            ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
                 bins at_fault_addr = {1'b1};
             }
 
@@ -13537,11 +13537,11 @@ covergroup Vls64_vlseg5e8ff_v_cg with function sample(ins_t ins);
     }
 
     ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -13570,7 +13570,7 @@ covergroup Vls64_vlseg5e8ff_v_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -13826,11 +13826,11 @@ covergroup Vls64_vlseg6e16ff_v_cg with function sample(ins_t ins);
     }
 
     ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -13859,7 +13859,7 @@ covergroup Vls64_vlseg6e16ff_v_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -14117,11 +14117,11 @@ covergroup Vls64_vlseg6e32ff_v_cg with function sample(ins_t ins);
     }
 
     ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -14150,7 +14150,7 @@ covergroup Vls64_vlseg6e32ff_v_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -14409,7 +14409,7 @@ covergroup Vls64_vlseg6e64ff_v_cg with function sample(ins_t ins);
                 bins ge2 = {[2:$]};
             }
 
-            ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+            ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
                 bins at_fault_addr = {1'b1};
             }
 
@@ -14670,11 +14670,11 @@ covergroup Vls64_vlseg6e8ff_v_cg with function sample(ins_t ins);
     }
 
     ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -14703,7 +14703,7 @@ covergroup Vls64_vlseg6e8ff_v_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -14961,11 +14961,11 @@ covergroup Vls64_vlseg7e16ff_v_cg with function sample(ins_t ins);
     }
 
     ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -14994,7 +14994,7 @@ covergroup Vls64_vlseg7e16ff_v_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -15254,11 +15254,11 @@ covergroup Vls64_vlseg7e32ff_v_cg with function sample(ins_t ins);
     }
 
     ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -15287,7 +15287,7 @@ covergroup Vls64_vlseg7e32ff_v_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -15548,7 +15548,7 @@ covergroup Vls64_vlseg7e64ff_v_cg with function sample(ins_t ins);
                 bins ge2 = {[2:$]};
             }
 
-            ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+            ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
                 bins at_fault_addr = {1'b1};
             }
 
@@ -15811,11 +15811,11 @@ covergroup Vls64_vlseg7e8ff_v_cg with function sample(ins_t ins);
     }
 
     ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -15844,7 +15844,7 @@ covergroup Vls64_vlseg7e8ff_v_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -16104,11 +16104,11 @@ covergroup Vls64_vlseg8e16ff_v_cg with function sample(ins_t ins);
     }
 
     ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -16137,7 +16137,7 @@ covergroup Vls64_vlseg8e16ff_v_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -16399,11 +16399,11 @@ covergroup Vls64_vlseg8e32ff_v_cg with function sample(ins_t ins);
     }
 
     ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -16432,7 +16432,7 @@ covergroup Vls64_vlseg8e32ff_v_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -16695,7 +16695,7 @@ covergroup Vls64_vlseg8e64ff_v_cg with function sample(ins_t ins);
                 bins ge2 = {[2:$]};
             }
 
-            ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+            ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
                 bins at_fault_addr = {1'b1};
             }
 
@@ -16960,11 +16960,11 @@ covergroup Vls64_vlseg8e8ff_v_cg with function sample(ins_t ins);
     }
 
     ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -16993,7 +16993,7 @@ covergroup Vls64_vlseg8e8ff_v_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -20586,7 +20586,7 @@ covergroup Vls64_vluxei16_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -20799,7 +20799,7 @@ covergroup Vls64_vluxei32_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -21024,7 +21024,7 @@ covergroup Vls64_vluxei64_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -21231,7 +21231,7 @@ covergroup Vls64_vluxei8_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -21380,7 +21380,7 @@ covergroup Vls64_vluxseg2ei16_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -21531,7 +21531,7 @@ covergroup Vls64_vluxseg2ei32_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -21696,7 +21696,7 @@ covergroup Vls64_vluxseg2ei64_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -21847,7 +21847,7 @@ covergroup Vls64_vluxseg2ei8_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -21974,7 +21974,7 @@ covergroup Vls64_vluxseg3ei16_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -22101,7 +22101,7 @@ covergroup Vls64_vluxseg3ei32_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -22243,7 +22243,7 @@ covergroup Vls64_vluxseg3ei64_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -22371,7 +22371,7 @@ covergroup Vls64_vluxseg3ei8_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -22522,7 +22522,7 @@ covergroup Vls64_vluxseg4ei16_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -22674,7 +22674,7 @@ covergroup Vls64_vluxseg4ei32_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -22841,7 +22841,7 @@ covergroup Vls64_vluxseg4ei64_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -22994,7 +22994,7 @@ covergroup Vls64_vluxseg4ei8_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -23122,7 +23122,7 @@ covergroup Vls64_vluxseg5ei16_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -23251,7 +23251,7 @@ covergroup Vls64_vluxseg5ei32_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -23394,7 +23394,7 @@ covergroup Vls64_vluxseg5ei64_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -23523,7 +23523,7 @@ covergroup Vls64_vluxseg5ei8_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -23651,7 +23651,7 @@ covergroup Vls64_vluxseg6ei16_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -23781,7 +23781,7 @@ covergroup Vls64_vluxseg6ei32_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -23925,7 +23925,7 @@ covergroup Vls64_vluxseg6ei64_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -24055,7 +24055,7 @@ covergroup Vls64_vluxseg6ei8_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -24184,7 +24184,7 @@ covergroup Vls64_vluxseg7ei16_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -24315,7 +24315,7 @@ covergroup Vls64_vluxseg7ei32_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -24460,7 +24460,7 @@ covergroup Vls64_vluxseg7ei64_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -24591,7 +24591,7 @@ covergroup Vls64_vluxseg7ei8_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -24745,7 +24745,7 @@ covergroup Vls64_vluxseg8ei16_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -24901,7 +24901,7 @@ covergroup Vls64_vluxseg8ei32_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -25071,7 +25071,7 @@ covergroup Vls64_vluxseg8ei64_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -25227,7 +25227,7 @@ covergroup Vls64_vluxseg8ei8_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -25314,7 +25314,7 @@ covergroup Vls64_vs1r_v_cg with function sample(ins_t ins);
     // Custom coverpoints for Vector whole register load and store operations
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -25441,7 +25441,7 @@ covergroup Vls64_vs2r_v_cg with function sample(ins_t ins);
     // Custom coverpoints for Vector whole register load and store operations
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -25584,7 +25584,7 @@ covergroup Vls64_vs4r_v_cg with function sample(ins_t ins);
     // Custom coverpoints for Vector whole register load and store operations
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -25735,7 +25735,7 @@ covergroup Vls64_vs8r_v_cg with function sample(ins_t ins);
     // Custom coverpoints for Vector whole register load and store operations
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -26470,7 +26470,7 @@ covergroup Vls64_vsoxei16_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -26608,7 +26608,7 @@ covergroup Vls64_vsoxei32_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -26773,7 +26773,7 @@ covergroup Vls64_vsoxei64_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -26911,7 +26911,7 @@ covergroup Vls64_vsoxei8_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -27072,7 +27072,7 @@ covergroup Vls64_vsoxseg2ei16_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -27236,7 +27236,7 @@ covergroup Vls64_vsoxseg2ei32_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -27424,7 +27424,7 @@ covergroup Vls64_vsoxseg2ei64_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -27588,7 +27588,7 @@ covergroup Vls64_vsoxseg2ei8_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -27727,7 +27727,7 @@ covergroup Vls64_vsoxseg3ei16_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -27867,7 +27867,7 @@ covergroup Vls64_vsoxseg3ei32_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -28033,7 +28033,7 @@ covergroup Vls64_vsoxseg3ei64_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -28174,7 +28174,7 @@ covergroup Vls64_vsoxseg3ei8_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -28337,7 +28337,7 @@ covergroup Vls64_vsoxseg4ei16_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -28502,7 +28502,7 @@ covergroup Vls64_vsoxseg4ei32_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -28694,7 +28694,7 @@ covergroup Vls64_vsoxseg4ei64_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -28860,7 +28860,7 @@ covergroup Vls64_vsoxseg4ei8_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -29000,7 +29000,7 @@ covergroup Vls64_vsoxseg5ei16_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -29142,7 +29142,7 @@ covergroup Vls64_vsoxseg5ei32_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -29311,7 +29311,7 @@ covergroup Vls64_vsoxseg5ei64_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -29453,7 +29453,7 @@ covergroup Vls64_vsoxseg5ei8_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -29593,7 +29593,7 @@ covergroup Vls64_vsoxseg6ei16_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -29736,7 +29736,7 @@ covergroup Vls64_vsoxseg6ei32_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -29907,7 +29907,7 @@ covergroup Vls64_vsoxseg6ei64_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -30050,7 +30050,7 @@ covergroup Vls64_vsoxseg6ei8_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -30191,7 +30191,7 @@ covergroup Vls64_vsoxseg7ei16_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -30335,7 +30335,7 @@ covergroup Vls64_vsoxseg7ei32_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -30508,7 +30508,7 @@ covergroup Vls64_vsoxseg7ei64_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -30652,7 +30652,7 @@ covergroup Vls64_vsoxseg7ei8_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -30818,7 +30818,7 @@ covergroup Vls64_vsoxseg8ei16_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -30987,7 +30987,7 @@ covergroup Vls64_vsoxseg8ei32_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -31186,7 +31186,7 @@ covergroup Vls64_vsoxseg8ei64_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -31355,7 +31355,7 @@ covergroup Vls64_vsoxseg8ei8_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -38252,7 +38252,7 @@ covergroup Vls64_vsuxei16_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -38377,7 +38377,7 @@ covergroup Vls64_vsuxei32_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -38529,7 +38529,7 @@ covergroup Vls64_vsuxei64_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -38654,7 +38654,7 @@ covergroup Vls64_vsuxei8_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -38802,7 +38802,7 @@ covergroup Vls64_vsuxseg2ei16_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -38953,7 +38953,7 @@ covergroup Vls64_vsuxseg2ei32_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -39128,7 +39128,7 @@ covergroup Vls64_vsuxseg2ei64_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -39279,7 +39279,7 @@ covergroup Vls64_vsuxseg2ei8_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -39405,7 +39405,7 @@ covergroup Vls64_vsuxseg3ei16_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -39532,7 +39532,7 @@ covergroup Vls64_vsuxseg3ei32_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -39685,7 +39685,7 @@ covergroup Vls64_vsuxseg3ei64_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -39813,7 +39813,7 @@ covergroup Vls64_vsuxseg3ei8_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -39963,7 +39963,7 @@ covergroup Vls64_vsuxseg4ei16_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -40115,7 +40115,7 @@ covergroup Vls64_vsuxseg4ei32_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -40294,7 +40294,7 @@ covergroup Vls64_vsuxseg4ei64_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -40447,7 +40447,7 @@ covergroup Vls64_vsuxseg4ei8_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -40574,7 +40574,7 @@ covergroup Vls64_vsuxseg5ei16_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -40703,7 +40703,7 @@ covergroup Vls64_vsuxseg5ei32_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -40859,7 +40859,7 @@ covergroup Vls64_vsuxseg5ei64_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -40988,7 +40988,7 @@ covergroup Vls64_vsuxseg5ei8_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -41115,7 +41115,7 @@ covergroup Vls64_vsuxseg6ei16_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -41245,7 +41245,7 @@ covergroup Vls64_vsuxseg6ei32_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -41403,7 +41403,7 @@ covergroup Vls64_vsuxseg6ei64_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -41533,7 +41533,7 @@ covergroup Vls64_vsuxseg6ei8_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -41661,7 +41661,7 @@ covergroup Vls64_vsuxseg7ei16_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -41792,7 +41792,7 @@ covergroup Vls64_vsuxseg7ei32_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -41952,7 +41952,7 @@ covergroup Vls64_vsuxseg7ei64_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -42083,7 +42083,7 @@ covergroup Vls64_vsuxseg7ei8_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -42236,7 +42236,7 @@ covergroup Vls64_vsuxseg8ei16_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -42392,7 +42392,7 @@ covergroup Vls64_vsuxseg8ei32_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -42578,7 +42578,7 @@ covergroup Vls64_vsuxseg8ei64_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -42734,7 +42734,7 @@ covergroup Vls64_vsuxseg8ei8_v_cg with function sample(ins_t ins);
     // cp_vs2_edges_ls
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val) {
+    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
         bins zero   = {zero};
         bins random = {random_in_range};
     }
@@ -42816,12 +42816,14 @@ covergroup Vls64_vsuxseg8ei8_v_cg with function sample(ins_t ins);
 endgroup
 // ---------------------
 function void vls64_sample(int hart, int issue, ins_t ins);
+    string inst_name = traceDataQ[hart][issue][0].inst_name;
+
     // Want to sample only if the SEW matches the target SEW of the file, some tests require
     // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
     // associated sew with these tests
     if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 3 ||
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
-        case (traceDataQ[hart][issue][0].inst_name)
+        case (inst_name)
             "vl1re16.v"     : begin
                 Vls64_vl1re16_v_cg.sample(ins);
             end
@@ -43944,6 +43946,7 @@ function void vls64_sample(int hart, int issue, ins_t ins);
             "vsuxseg8ei8.v"     : begin
                 Vls64_vsuxseg8ei8_v_cg.sample(ins);
             end
+            default: ; // a case needs at least one item, and some configurations select none
         endcase
     end
 endfunction

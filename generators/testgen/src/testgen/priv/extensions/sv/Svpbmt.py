@@ -8,35 +8,44 @@
 
 """Generate Svpbmt leaf and non-leaf PTE tests."""
 
+from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.sv.access import add_rwx_test
-from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
+from testgen.priv.extensions.sv.access import Crosses, add_rwx_test, cross_names
+from testgen.priv.extensions.sv.generate import SvRegs, begin_sv_test, end_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import SV39, SV48, SV57, PteFlags, SvMode, create_page_mapping
 from testgen.priv.registry import add_priv_test_generator
 
 _PBMT = (("(1 << 61)", "PBMT=1", False), ("(2 << 61)", "PBMT=2", False), ("(3 << 61)", "PBMT=3", True))
-_MARCH = ["I", "Zicsr", "Zifencei"]
 
 
-def _begin_test(test_data: TestData, sv: SvMode, mode: str, topic: str) -> TestChunk:
+def _crosses(prefix: str, mode: str) -> Crosses:
+    m = mode[0].lower()
+    return Crosses("Svpbmt_cg", f"{prefix}_write_{m}", f"{prefix}_read_{m}", f"{prefix}_exec_{m}")
+
+
+def _begin_test(test_data: TestData, regs: SvRegs, sv: SvMode, mode: str, topic: str, banner: str) -> TestChunk:
     return begin_sv_test(
         test_data,
+        regs,
         sv,
         mode,
         f"{sv.name}_{topic}_{mode}",
-        setup_asm=("LI(t0, MENVCFG_PBMTE)", "csrs menvcfg, t0"),
+        coverpoint=banner,
+        setup_asm=(f"LI(x{regs.scratch}, MENVCFG_PBMTE)", tsbi_call(f"csrs menvcfg, x{regs.scratch}")),
     )
 
 
-def _finish_test(test_data: TestData, sv: SvMode) -> TestChunk:
+def _finish_test(test_data: TestData, sv: SvMode, regs: SvRegs) -> TestChunk:
     assert test_data.test_chunk is not None
-    test_data.test_chunk.raw_data.extend(sv_data(sv))
-    return test_data.end_test_chunk()
+    test_data.test_chunk.raw_data.extend(sv_data(sv, regs))
+    return end_sv_test(test_data, regs)
 
 
 def _make_leaf_tests(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
-    chunk = _begin_test(test_data, sv, mode, "Svpbmt")
+    regs = SvRegs.allocate(test_data)
+    legal, reserved = _crosses("leaf_PTE_pbmt", mode), _crosses("leaf_PTE_pbmt_reserved_enc", mode)
+    chunk = _begin_test(test_data, regs, sv, mode, "Svpbmt", cross_names(legal, reserved))
     umode = mode == "Umode"
     number = 0
     for level in sv.levels_desc:
@@ -51,17 +60,30 @@ def _make_leaf_tests(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                     *create_page_mapping(sv, leaf_level=level, leaf_flags=permissions),
                     "sfence.vma",
                     "",
-                    *add_rwx_test(test_data, sv, mode, "va_data", level, f"test{number}"),
+                    *add_rwx_test(
+                        test_data,
+                        sv,
+                        regs,
+                        mode,
+                        "va_data",
+                        level,
+                        f"test{number}",
+                        driver_mode="Smode",
+                        # The guarded encoding, PBMT = 3, is reserved.
+                        crosses=reserved if guarded else legal,
+                    ),
                 ]
             )
             if guarded:
                 chunk.code.append("#endif")
             chunk.code.append("")
-    return _finish_test(test_data, sv)
+    return _finish_test(test_data, sv, regs)
 
 
 def _make_nonleaf_tests(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
-    chunk = _begin_test(test_data, sv, mode, "Svpbmt_nonleaf")
+    regs = SvRegs.allocate(test_data)
+    crosses = _crosses("nonleaf_PTE_pbmt", mode)
+    chunk = _begin_test(test_data, regs, sv, mode, "Svpbmt_nonleaf", cross_names(crosses))
     chunk.code.append("#ifdef S1P12P0_OR_LATER_SUPPORTED")
     umode = mode == "Umode"
     number = 0
@@ -80,12 +102,22 @@ def _make_nonleaf_tests(test_data: TestData, sv: SvMode, mode: str) -> TestChunk
                     ),
                     "sfence.vma",
                     "",
-                    *add_rwx_test(test_data, sv, mode, "va_data", level, f"test{number}"),
+                    *add_rwx_test(
+                        test_data,
+                        sv,
+                        regs,
+                        mode,
+                        "va_data",
+                        level,
+                        f"test{number}",
+                        driver_mode="Smode",
+                        crosses=crosses,
+                    ),
                     "",
                 ]
             )
     chunk.code.append("#endif")
-    return _finish_test(test_data, sv)
+    return _finish_test(test_data, sv, regs)
 
 
 def _make_svpbmt(test_data: TestData, sv: SvMode) -> list[TestChunk]:
@@ -97,9 +129,9 @@ def _make_svpbmt(test_data: TestData, sv: SvMode) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "Svpbmt",
-    required_extensions=["I", "Sv39", "Svpbmt"],
-    march_extensions=_MARCH,
-    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=["Sv39", "Svpbmt"],
+    march_extensions=["Svpbmt"],
+    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svpbmt_sv39(test_data: TestData) -> list[TestChunk]:
     return _make_svpbmt(test_data, SV39)
@@ -107,9 +139,9 @@ def make_svpbmt_sv39(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "Svpbmt",
-    required_extensions=["I", "Sv48", "Svpbmt"],
-    march_extensions=_MARCH,
-    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=["Sv48", "Svpbmt"],
+    march_extensions=["Svpbmt"],
+    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svpbmt_sv48(test_data: TestData) -> list[TestChunk]:
     return _make_svpbmt(test_data, SV48)
@@ -117,9 +149,9 @@ def make_svpbmt_sv48(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "Svpbmt",
-    required_extensions=["I", "Sv57", "Svpbmt"],
-    march_extensions=_MARCH,
-    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=["Sv57", "Svpbmt"],
+    march_extensions=["Svpbmt"],
+    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svpbmt_sv57(test_data: TestData) -> list[TestChunk]:
     return _make_svpbmt(test_data, SV57)

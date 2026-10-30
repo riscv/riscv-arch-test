@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 122
+#define SIGUPD_COUNT 124
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -618,6 +618,20 @@ Zknh_sha256sig0_cg_cp_rs1_edges_0x100000001:
   # Check if x17 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x17, Zknh_sha256sig0_cg_cp_rs1_edges_0x100000001, Zknh_sha256sig0_cg_cp_rs1_edges_0x100000001_str)
 
+# Testcase cp_rs1_edges (Test source rs1 value = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x16, x13) # load rs1: x13 = 0x0000000080000000
+Zknh_sha256sig0_cg_cp_rs1_edges_0x80000000:
+  sha256sig0 x1, x13 # perform operation
+  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x1, Zknh_sha256sig0_cg_cp_rs1_edges_0x80000000, Zknh_sha256sig0_cg_cp_rs1_edges_0x80000000_str)
+
+# Testcase cp_rs1_edges (Test source rs1 value = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x30) # load rs1: x30 = 0x000000007fffffff
+Zknh_sha256sig0_cg_cp_rs1_edges_0x7fffffff:
+  sha256sig0 x8, x30 # perform operation
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Zknh_sha256sig0_cg_cp_rs1_edges_0x7fffffff, Zknh_sha256sig0_cg_cp_rs1_edges_0x7fffffff_str)
+
 /////////////////////////////////
 // cmp_rd_rs1
 /////////////////////////////////
@@ -944,6 +958,8 @@ RVTEST_DATA_BEGIN
 .dword 0x00000000fffffffe
 .dword 0x0000000100000000
 .dword 0x0000000100000001
+.dword 0x0000000080000000
+.dword 0x000000007fffffff
 .dword 0x38184ca743cdc6f6
 .dword 0xdee54b14c2b107b3
 .dword 0xeabcbb883f09264c
@@ -1058,38 +1074,40 @@ Zknh_sha256sig0_cg_cp_rs1_edges_0xffffffff_str: .string "\"test: 77; cg: Zknh_sh
 Zknh_sha256sig0_cg_cp_rs1_edges_0xfffffffe_str: .string "\"test: 78; cg: Zknh_sha256sig0_cg; cp: cp_rs1_edges; bin: 0xfffffffe\""
 Zknh_sha256sig0_cg_cp_rs1_edges_0x100000000_str: .string "\"test: 79; cg: Zknh_sha256sig0_cg; cp: cp_rs1_edges; bin: 0x100000000\""
 Zknh_sha256sig0_cg_cp_rs1_edges_0x100000001_str: .string "\"test: 80; cg: Zknh_sha256sig0_cg; cp: cp_rs1_edges; bin: 0x100000001\""
-Zknh_sha256sig0_cg_cmp_rd_rs1_b0_str: .string "\"test: 81; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b0\""
-Zknh_sha256sig0_cg_cmp_rd_rs1_b1_str: .string "\"test: 82; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b1\""
-Zknh_sha256sig0_cg_cmp_rd_rs1_b2_str: .string "\"test: 83; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b2\""
-Zknh_sha256sig0_cg_cmp_rd_rs1_b3_str: .string "\"test: 84; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b3\""
-Zknh_sha256sig0_cg_cmp_rd_rs1_b4_str: .string "\"test: 85; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b4\""
-Zknh_sha256sig0_cg_cmp_rd_rs1_b5_str: .string "\"test: 86; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b5\""
-Zknh_sha256sig0_cg_cmp_rd_rs1_b6_str: .string "\"test: 87; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b6\""
-Zknh_sha256sig0_cg_cmp_rd_rs1_b7_str: .string "\"test: 88; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b7\""
-Zknh_sha256sig0_cg_cmp_rd_rs1_b8_str: .string "\"test: 89; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b8\""
-Zknh_sha256sig0_cg_cmp_rd_rs1_b9_str: .string "\"test: 90; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b9\""
-Zknh_sha256sig0_cg_cmp_rd_rs1_b10_str: .string "\"test: 91; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b10\""
-Zknh_sha256sig0_cg_cmp_rd_rs1_b11_str: .string "\"test: 92; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b11\""
-Zknh_sha256sig0_cg_cmp_rd_rs1_b12_str: .string "\"test: 93; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b12\""
-Zknh_sha256sig0_cg_cmp_rd_rs1_b13_str: .string "\"test: 94; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b13\""
-Zknh_sha256sig0_cg_cmp_rd_rs1_b14_str: .string "\"test: 95; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b14\""
-Zknh_sha256sig0_cg_cmp_rd_rs1_b15_str: .string "\"test: 96; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b15\""
-Zknh_sha256sig0_cg_cmp_rd_rs1_b16_str: .string "\"test: 97; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b16\""
-Zknh_sha256sig0_cg_cmp_rd_rs1_b17_str: .string "\"test: 98; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b17\""
-Zknh_sha256sig0_cg_cmp_rd_rs1_b18_str: .string "\"test: 99; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b18\""
-Zknh_sha256sig0_cg_cmp_rd_rs1_b19_str: .string "\"test: 100; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b19\""
-Zknh_sha256sig0_cg_cmp_rd_rs1_b20_str: .string "\"test: 101; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b20\""
-Zknh_sha256sig0_cg_cmp_rd_rs1_b21_str: .string "\"test: 102; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b21\""
-Zknh_sha256sig0_cg_cmp_rd_rs1_b22_str: .string "\"test: 103; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b22\""
-Zknh_sha256sig0_cg_cmp_rd_rs1_b23_str: .string "\"test: 104; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b23\""
-Zknh_sha256sig0_cg_cmp_rd_rs1_b24_str: .string "\"test: 105; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b24\""
-Zknh_sha256sig0_cg_cmp_rd_rs1_b25_str: .string "\"test: 106; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b25\""
-Zknh_sha256sig0_cg_cmp_rd_rs1_b26_str: .string "\"test: 107; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b26\""
-Zknh_sha256sig0_cg_cmp_rd_rs1_b27_str: .string "\"test: 108; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b27\""
-Zknh_sha256sig0_cg_cmp_rd_rs1_b28_str: .string "\"test: 109; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b28\""
-Zknh_sha256sig0_cg_cmp_rd_rs1_b29_str: .string "\"test: 110; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b29\""
-Zknh_sha256sig0_cg_cmp_rd_rs1_b30_str: .string "\"test: 111; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b30\""
-Zknh_sha256sig0_cg_cmp_rd_rs1_b31_str: .string "\"test: 112; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b31\""
+Zknh_sha256sig0_cg_cp_rs1_edges_0x80000000_str: .string "\"test: 81; cg: Zknh_sha256sig0_cg; cp: cp_rs1_edges; bin: 0x80000000\""
+Zknh_sha256sig0_cg_cp_rs1_edges_0x7fffffff_str: .string "\"test: 82; cg: Zknh_sha256sig0_cg; cp: cp_rs1_edges; bin: 0x7fffffff\""
+Zknh_sha256sig0_cg_cmp_rd_rs1_b0_str: .string "\"test: 83; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b0\""
+Zknh_sha256sig0_cg_cmp_rd_rs1_b1_str: .string "\"test: 84; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b1\""
+Zknh_sha256sig0_cg_cmp_rd_rs1_b2_str: .string "\"test: 85; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b2\""
+Zknh_sha256sig0_cg_cmp_rd_rs1_b3_str: .string "\"test: 86; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b3\""
+Zknh_sha256sig0_cg_cmp_rd_rs1_b4_str: .string "\"test: 87; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b4\""
+Zknh_sha256sig0_cg_cmp_rd_rs1_b5_str: .string "\"test: 88; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b5\""
+Zknh_sha256sig0_cg_cmp_rd_rs1_b6_str: .string "\"test: 89; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b6\""
+Zknh_sha256sig0_cg_cmp_rd_rs1_b7_str: .string "\"test: 90; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b7\""
+Zknh_sha256sig0_cg_cmp_rd_rs1_b8_str: .string "\"test: 91; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b8\""
+Zknh_sha256sig0_cg_cmp_rd_rs1_b9_str: .string "\"test: 92; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b9\""
+Zknh_sha256sig0_cg_cmp_rd_rs1_b10_str: .string "\"test: 93; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b10\""
+Zknh_sha256sig0_cg_cmp_rd_rs1_b11_str: .string "\"test: 94; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b11\""
+Zknh_sha256sig0_cg_cmp_rd_rs1_b12_str: .string "\"test: 95; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b12\""
+Zknh_sha256sig0_cg_cmp_rd_rs1_b13_str: .string "\"test: 96; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b13\""
+Zknh_sha256sig0_cg_cmp_rd_rs1_b14_str: .string "\"test: 97; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b14\""
+Zknh_sha256sig0_cg_cmp_rd_rs1_b15_str: .string "\"test: 98; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b15\""
+Zknh_sha256sig0_cg_cmp_rd_rs1_b16_str: .string "\"test: 99; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b16\""
+Zknh_sha256sig0_cg_cmp_rd_rs1_b17_str: .string "\"test: 100; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b17\""
+Zknh_sha256sig0_cg_cmp_rd_rs1_b18_str: .string "\"test: 101; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b18\""
+Zknh_sha256sig0_cg_cmp_rd_rs1_b19_str: .string "\"test: 102; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b19\""
+Zknh_sha256sig0_cg_cmp_rd_rs1_b20_str: .string "\"test: 103; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b20\""
+Zknh_sha256sig0_cg_cmp_rd_rs1_b21_str: .string "\"test: 104; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b21\""
+Zknh_sha256sig0_cg_cmp_rd_rs1_b22_str: .string "\"test: 105; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b22\""
+Zknh_sha256sig0_cg_cmp_rd_rs1_b23_str: .string "\"test: 106; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b23\""
+Zknh_sha256sig0_cg_cmp_rd_rs1_b24_str: .string "\"test: 107; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b24\""
+Zknh_sha256sig0_cg_cmp_rd_rs1_b25_str: .string "\"test: 108; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b25\""
+Zknh_sha256sig0_cg_cmp_rd_rs1_b26_str: .string "\"test: 109; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b26\""
+Zknh_sha256sig0_cg_cmp_rd_rs1_b27_str: .string "\"test: 110; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b27\""
+Zknh_sha256sig0_cg_cmp_rd_rs1_b28_str: .string "\"test: 111; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b28\""
+Zknh_sha256sig0_cg_cmp_rd_rs1_b29_str: .string "\"test: 112; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b29\""
+Zknh_sha256sig0_cg_cmp_rd_rs1_b30_str: .string "\"test: 113; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b30\""
+Zknh_sha256sig0_cg_cmp_rd_rs1_b31_str: .string "\"test: 114; cg: Zknh_sha256sig0_cg; cp: cmp_rd_rs1; bin: b31\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

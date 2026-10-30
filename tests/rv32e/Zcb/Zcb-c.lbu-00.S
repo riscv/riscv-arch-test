@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 34
+#define SIGUPD_COUNT 38
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -34,7 +34,7 @@ RVTEST_BEGIN
 /////////////////////////////////
 
 # Testcase cp_rs1_p (Test source rs1 = x8)
-  addi x8, x3, -3 # adjust base address for load
+  mv x8, x3 # base address is the data slot
 Zcb_c_lbu_cg_cp_rs1_p_b8:
   c.lbu x10, 3(x8) # perform operation
   # Check if x10 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -42,7 +42,7 @@ Zcb_c_lbu_cg_cp_rs1_p_b8:
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rs1_p (Test source rs1 = x9)
-  addi x9, x3, -2 # adjust base address for load
+  mv x9, x3 # base address is the data slot
 Zcb_c_lbu_cg_cp_rs1_p_b9:
   c.lbu x8, 2(x9) # perform operation
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -50,7 +50,7 @@ Zcb_c_lbu_cg_cp_rs1_p_b9:
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rs1_p (Test source rs1 = x10)
-  addi x10, x3, -1 # adjust base address for load
+  mv x10, x3 # base address is the data slot
 Zcb_c_lbu_cg_cp_rs1_p_b10:
   c.lbu x11, 1(x10) # perform operation
   # Check if x11 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -58,7 +58,7 @@ Zcb_c_lbu_cg_cp_rs1_p_b10:
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rs1_p (Test source rs1 = x11)
-  addi x11, x3, -2 # adjust base address for load
+  mv x11, x3 # base address is the data slot
 Zcb_c_lbu_cg_cp_rs1_p_b11:
   c.lbu x12, 2(x11) # perform operation
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -66,7 +66,7 @@ Zcb_c_lbu_cg_cp_rs1_p_b11:
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rs1_p (Test source rs1 = x12)
-  addi x12, x3, -2 # adjust base address for load
+  mv x12, x3 # base address is the data slot
 Zcb_c_lbu_cg_cp_rs1_p_b12:
   c.lbu x13, 2(x12) # perform operation
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -74,7 +74,7 @@ Zcb_c_lbu_cg_cp_rs1_p_b12:
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rs1_p (Test source rs1 = x13)
-  addi x13, x3, -1 # adjust base address for load
+  mv x13, x3 # base address is the data slot
 Zcb_c_lbu_cg_cp_rs1_p_b13:
   c.lbu x10, 1(x13) # perform operation
   # Check if x10 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -82,7 +82,7 @@ Zcb_c_lbu_cg_cp_rs1_p_b13:
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rs1_p (Test source rs1 = x14)
-  addi x14, x3, -2 # adjust base address for load
+  mv x14, x3 # base address is the data slot
 Zcb_c_lbu_cg_cp_rs1_p_b14:
   c.lbu x8, 2(x14) # perform operation
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -90,7 +90,7 @@ Zcb_c_lbu_cg_cp_rs1_p_b14:
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rs1_p (Test source rs1 = x15)
-  addi x15, x3, -1 # adjust base address for load
+  mv x15, x3 # base address is the data slot
 Zcb_c_lbu_cg_cp_rs1_p_b15:
   c.lbu x10, 1(x15) # perform operation
   # Check if x10 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -102,7 +102,7 @@ Zcb_c_lbu_cg_cp_rs1_p_b15:
 /////////////////////////////////
 
 # Testcase cp_rd_p (Test destination rd = x8)
-  addi x14, x3, -1 # adjust base address for load
+  mv x14, x3 # base address is the data slot
 Zcb_c_lbu_cg_cp_rd_p_b8:
   c.lbu x8, 1(x14) # perform operation
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -110,7 +110,7 @@ Zcb_c_lbu_cg_cp_rd_p_b8:
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rd_p (Test destination rd = x9)
-  addi x8, x3, -2 # adjust base address for load
+  mv x8, x3 # base address is the data slot
 Zcb_c_lbu_cg_cp_rd_p_b9:
   c.lbu x9, 2(x8) # perform operation
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -118,7 +118,7 @@ Zcb_c_lbu_cg_cp_rd_p_b9:
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rd_p (Test destination rd = x10)
-  addi x9, x3, -1 # adjust base address for load
+  mv x9, x3 # base address is the data slot
 Zcb_c_lbu_cg_cp_rd_p_b10:
   c.lbu x10, 1(x9) # perform operation
   # Check if x10 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -126,7 +126,7 @@ Zcb_c_lbu_cg_cp_rd_p_b10:
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rd_p (Test destination rd = x11)
-  addi x10, x3, -2 # adjust base address for load
+  mv x10, x3 # base address is the data slot
 Zcb_c_lbu_cg_cp_rd_p_b11:
   c.lbu x11, 2(x10) # perform operation
   # Check if x11 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -134,7 +134,7 @@ Zcb_c_lbu_cg_cp_rd_p_b11:
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rd_p (Test destination rd = x12)
-  addi x11, x3, -2 # adjust base address for load
+  mv x11, x3 # base address is the data slot
 Zcb_c_lbu_cg_cp_rd_p_b12:
   c.lbu x12, 2(x11) # perform operation
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -142,7 +142,7 @@ Zcb_c_lbu_cg_cp_rd_p_b12:
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rd_p (Test destination rd = x13)
-  addi x11, x3, -1 # adjust base address for load
+  mv x11, x3 # base address is the data slot
 Zcb_c_lbu_cg_cp_rd_p_b13:
   c.lbu x13, 1(x11) # perform operation
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -150,7 +150,7 @@ Zcb_c_lbu_cg_cp_rd_p_b13:
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rd_p (Test destination rd = x14)
-  addi x15, x3, 0 # adjust base address for load
+  mv x15, x3 # base address is the data slot
 Zcb_c_lbu_cg_cp_rd_p_b14:
   c.lbu x14, 0(x15) # perform operation
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -158,7 +158,7 @@ Zcb_c_lbu_cg_cp_rd_p_b14:
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rd_p (Test destination rd = x15)
-  addi x14, x3, -1 # adjust base address for load
+  mv x14, x3 # base address is the data slot
 Zcb_c_lbu_cg_cp_rd_p_b15:
   c.lbu x15, 1(x14) # perform operation
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -170,7 +170,7 @@ Zcb_c_lbu_cg_cp_rd_p_b15:
 /////////////////////////////////
 
 # Testcase cmp_rd_rs1_c (Test rd = rs1 = x8)
-  addi x8, x3, -2 # adjust base address for load
+  mv x8, x3 # base address is the data slot
 Zcb_c_lbu_cg_cmp_rd_rs1_c_b8:
   c.lbu x8, 2(x8) # perform operation
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -178,7 +178,7 @@ Zcb_c_lbu_cg_cmp_rd_rs1_c_b8:
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cmp_rd_rs1_c (Test rd = rs1 = x9)
-  addi x9, x3, 0 # adjust base address for load
+  mv x9, x3 # base address is the data slot
 Zcb_c_lbu_cg_cmp_rd_rs1_c_b9:
   c.lbu x9, 0(x9) # perform operation
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -186,7 +186,7 @@ Zcb_c_lbu_cg_cmp_rd_rs1_c_b9:
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cmp_rd_rs1_c (Test rd = rs1 = x10)
-  addi x10, x3, 0 # adjust base address for load
+  mv x10, x3 # base address is the data slot
 Zcb_c_lbu_cg_cmp_rd_rs1_c_b10:
   c.lbu x10, 0(x10) # perform operation
   # Check if x10 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -194,7 +194,7 @@ Zcb_c_lbu_cg_cmp_rd_rs1_c_b10:
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cmp_rd_rs1_c (Test rd = rs1 = x11)
-  addi x11, x3, 0 # adjust base address for load
+  mv x11, x3 # base address is the data slot
 Zcb_c_lbu_cg_cmp_rd_rs1_c_b11:
   c.lbu x11, 0(x11) # perform operation
   # Check if x11 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -202,7 +202,7 @@ Zcb_c_lbu_cg_cmp_rd_rs1_c_b11:
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cmp_rd_rs1_c (Test rd = rs1 = x12)
-  addi x12, x3, -3 # adjust base address for load
+  mv x12, x3 # base address is the data slot
 Zcb_c_lbu_cg_cmp_rd_rs1_c_b12:
   c.lbu x12, 3(x12) # perform operation
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -210,7 +210,7 @@ Zcb_c_lbu_cg_cmp_rd_rs1_c_b12:
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cmp_rd_rs1_c (Test rd = rs1 = x13)
-  addi x13, x3, 0 # adjust base address for load
+  mv x13, x3 # base address is the data slot
 Zcb_c_lbu_cg_cmp_rd_rs1_c_b13:
   c.lbu x13, 0(x13) # perform operation
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -218,7 +218,7 @@ Zcb_c_lbu_cg_cmp_rd_rs1_c_b13:
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cmp_rd_rs1_c (Test rd = rs1 = x14)
-  addi x14, x3, -3 # adjust base address for load
+  mv x14, x3 # base address is the data slot
 Zcb_c_lbu_cg_cmp_rd_rs1_c_b14:
   c.lbu x14, 3(x14) # perform operation
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -226,11 +226,47 @@ Zcb_c_lbu_cg_cmp_rd_rs1_c_b14:
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 # Testcase cmp_rd_rs1_c (Test rd = rs1 = x15)
-  addi x15, x3, -2 # adjust base address for load
+  mv x15, x3 # base address is the data slot
 Zcb_c_lbu_cg_cmp_rd_rs1_c_b15:
   c.lbu x15, 2(x15) # perform operation
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Zcb_c_lbu_cg_cmp_rd_rs1_c_b15, Zcb_c_lbu_cg_cmp_rd_rs1_c_b15_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+/////////////////////////////////
+// cp_uimm_2
+/////////////////////////////////
+
+# Testcase cp_uimm_2: imm=0
+  mv x9, x3 # base address is the data slot
+Zcb_c_lbu_cg_cp_uimm_2_uimm0:
+  c.lbu x11, 0(x9) # perform operation
+  # Check if x11 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x11, Zcb_c_lbu_cg_cp_uimm_2_uimm0, Zcb_c_lbu_cg_cp_uimm_2_uimm0_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_uimm_2: imm=1
+  mv x9, x3 # base address is the data slot
+Zcb_c_lbu_cg_cp_uimm_2_uimm1:
+  c.lbu x15, 1(x9) # perform operation
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Zcb_c_lbu_cg_cp_uimm_2_uimm1, Zcb_c_lbu_cg_cp_uimm_2_uimm1_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_uimm_2: imm=2
+  mv x15, x3 # base address is the data slot
+Zcb_c_lbu_cg_cp_uimm_2_uimm2:
+  c.lbu x8, 2(x15) # perform operation
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Zcb_c_lbu_cg_cp_uimm_2_uimm2, Zcb_c_lbu_cg_cp_uimm_2_uimm2_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_uimm_2: imm=3
+  mv x10, x3 # base address is the data slot
+Zcb_c_lbu_cg_cp_uimm_2_uimm3:
+  c.lbu x11, 3(x10) # perform operation
+  # Check if x11 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x11, Zcb_c_lbu_cg_cp_uimm_2_uimm3, Zcb_c_lbu_cg_cp_uimm_2_uimm3_str)
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -264,6 +300,10 @@ RVTEST_DATA_BEGIN
 .word 0x3a2bf715
 .word 0xe0ad5a64
 .word 0x1cbafcb2
+.word 0x44332211
+.word 0x44332211
+.word 0x44332211
+.word 0x44332211
 
 // Testcase strings
 Zcb_c_lbu_cg_cp_rs1_p_b8_str: .string "\"test: 1; cg: Zcb_c.lbu_cg; cp: cp_rs1_p; bin: b8\""
@@ -290,6 +330,10 @@ Zcb_c_lbu_cg_cmp_rd_rs1_c_b12_str: .string "\"test: 21; cg: Zcb_c.lbu_cg; cp: cm
 Zcb_c_lbu_cg_cmp_rd_rs1_c_b13_str: .string "\"test: 22; cg: Zcb_c.lbu_cg; cp: cmp_rd_rs1_c; bin: b13\""
 Zcb_c_lbu_cg_cmp_rd_rs1_c_b14_str: .string "\"test: 23; cg: Zcb_c.lbu_cg; cp: cmp_rd_rs1_c; bin: b14\""
 Zcb_c_lbu_cg_cmp_rd_rs1_c_b15_str: .string "\"test: 24; cg: Zcb_c.lbu_cg; cp: cmp_rd_rs1_c; bin: b15\""
+Zcb_c_lbu_cg_cp_uimm_2_uimm0_str: .string "\"test: 25; cg: Zcb_c.lbu_cg; cp: cp_uimm_2; bin: uimm0\""
+Zcb_c_lbu_cg_cp_uimm_2_uimm1_str: .string "\"test: 26; cg: Zcb_c.lbu_cg; cp: cp_uimm_2; bin: uimm1\""
+Zcb_c_lbu_cg_cp_uimm_2_uimm2_str: .string "\"test: 27; cg: Zcb_c.lbu_cg; cp: cp_uimm_2; bin: uimm2\""
+Zcb_c_lbu_cg_cp_uimm_2_uimm3_str: .string "\"test: 28; cg: Zcb_c.lbu_cg; cp: cp_uimm_2; bin: uimm3\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

@@ -1,7 +1,7 @@
 ##################################
 # priv/extensions/sv/SvZicbo.py
 #
-# SvZicbo suite: cache-block operations under virtual memory.
+# Sv suite, Zicbo group: cache-block operations under virtual memory.
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: Apache-2.0
 ##################################
@@ -9,10 +9,11 @@
 """Generate cache-block operation tests under virtual memory."""
 
 from testgen.asm.helpers import write_sigupd
+from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.sv.access import virtual_address
-from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
+from testgen.priv.extensions.sv.generate import SvRegs, begin_sv_test, end_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import (
     SV32,
     SV39,
@@ -27,58 +28,63 @@ from testgen.priv.extensions.sv.page_tables import (
 )
 from testgen.priv.registry import add_priv_test_generator
 
-_MARCH = ["I", "Zicsr", "Zifencei"]
 
-
-def _add_operation(test_data: TestData, family: str, mode: str, address: list[str], number: int) -> list[str]:
-    lines = [*address, f"RVTEST_GOTO_LOWER_MODE {mode}"]
+def _add_operation(
+    test_data: TestData, regs: SvRegs, family: str, mode: str, address: list[str], number: int, cross: str
+) -> list[str]:
+    lines = [*address, *([] if mode == "Smode" else [f"RVTEST_TSBI_GOTO_{mode.upper()}"])]
+    value, addr = f"x{regs.value}", f"x{regs.addr}"
     if family == "zicbop":
         for operation in ("prefetch.i", "prefetch.r", "prefetch.w"):
             lines.extend(
                 [
-                    test_data.add_testcase(f"test{number}_{operation.replace('.', '_')}", "cp_prefetch", "SvZicbo_cg"),
-                    f"{operation} 0(a5)",
+                    test_data.add_testcase(f"test{number}_{operation.replace('.', '_')}", cross, "Sv_Zicbo_cg"),
+                    f"{operation} 0({addr})",
                     "nop",
                 ]
             )
     elif family == "zicbom":
         labels = {
-            operation: test_data.add_testcase(f"test{number}_{operation}", "cp_zicbom", "SvZicbo_cg").removesuffix(":")
+            operation: test_data.add_testcase(f"test{number}_{operation}", cross, "Sv_Zicbo_cg").removesuffix(":")
             for operation in ("clean", "flush", "inval")
         }
-        lines.extend(["addi a2, a2, 16"])
-        for operation, register in (("clean", "a2"), ("flush", "a3"), ("inval", "a4")):
-            lines.extend([f"{labels[operation]}:", f"cbo.{operation} (a5)", f"addi {register}, a2, 4"])
+        results = (("clean", regs.value), ("flush", regs.load), ("inval", regs.result))
+        lines.extend([f"addi {value}, {value}, 16"])
+        for operation, register in results:
+            lines.extend([f"{labels[operation]}:", f"cbo.{operation} ({addr})", f"addi x{register}, {value}, 4"])
         lines.extend(
             [
-                "RVTEST_GOTO_MMODE",
-                *(
-                    write_sigupd(reg, test_data, label=labels[op])
-                    for op, reg in (("clean", 12), ("flush", 13), ("inval", 14))
-                ),
+                *([] if mode == "Smode" else ["RVTEST_TSBI_GOTO_SMODE"]),
+                *(write_sigupd(reg, test_data, label=labels[op]) for op, reg in results),
             ]
         )
         return lines
     else:
-        label = test_data.add_testcase(f"test{number}_zero", "cp_zicboz", "SvZicbo_cg").removesuffix(":")
+        label = test_data.add_testcase(f"test{number}_zero", cross, "Sv_Zicbo_cg").removesuffix(":")
         lines.extend(
             [
-                "addi a2, a2, 16",
+                f"addi {value}, {value}, 16",
                 f"{label}:",
-                "cbo.zero (a5)",
-                "addi a4, a2, 4",
-                "RVTEST_GOTO_MMODE",
-                write_sigupd(14, test_data, label=label),
+                f"cbo.zero ({addr})",
+                f"addi x{regs.result}, {value}, 4",
+                *([] if mode == "Smode" else ["RVTEST_TSBI_GOTO_SMODE"]),
+                write_sigupd(regs.result, test_data, label=label),
             ]
         )
         return lines
-    lines.append("RVTEST_GOTO_MMODE")
+    lines.extend([] if mode == "Smode" else ["RVTEST_TSBI_GOTO_SMODE"])
     return lines
 
 
-def _add_exception_cases(test_data: TestData, chunk: TestChunk, sv: SvMode, mode: str, family: str) -> None:
+def _add_exception_cases(
+    test_data: TestData, chunk: TestChunk, sv: SvMode, regs: SvRegs, mode: str, family: str
+) -> None:
     """Add the cache-block exception cases for each page-table level."""
     number = 0
+    m = mode[0].lower()
+    # Zicbom needs read or write permission and ignores PTE.D; Zicboz needs write permission and PTE.D.
+    no_write = f"cp_PTE_r_set_w_unset_zicbom_{m}" if family == "zicbom" else f"cp_PTE_w_unset_zicboz_{m}"
+    dirty_unset = f"cp_Dbit_unset_{family}_{m}"
 
     def leaf(
         permissions: PteExpression,
@@ -99,6 +105,7 @@ def _add_exception_cases(test_data: TestData, chunk: TestChunk, sv: SvMode, mode
         level: int,
         description: str,
         expected: str,
+        cross: str,
         pte_lines: list[str],
         *,
         physical_address: str | None = None,
@@ -113,11 +120,13 @@ def _add_exception_cases(test_data: TestData, chunk: TestChunk, sv: SvMode, mode
                 sv,
                 "va_data",
                 level,
+                destination=regs.addr,
+                scratch=regs.scratch,
                 physical_address=physical_address,
                 physical_address_is_label=False,
             )
             if physical_address is not None
-            else virtual_address(sv, "va_data", level)
+            else virtual_address(sv, "va_data", level, destination=regs.addr, scratch=regs.scratch)
         )
         lines = [
             f"  // Test case {number}: {description} | Test in {mode[0]}-Mode | expected = {expected}",
@@ -125,7 +134,7 @@ def _add_exception_cases(test_data: TestData, chunk: TestChunk, sv: SvMode, mode
             "  sfence.vma",
             *before,
             "",
-            *_add_operation(test_data, family, mode, address, number),
+            *_add_operation(test_data, regs, family, mode, address, number, cross),
             *after,
         ]
         if ifdef:
@@ -137,6 +146,7 @@ def _add_exception_cases(test_data: TestData, chunk: TestChunk, sv: SvMode, mode
         permissions: PteExpression,
         description: str,
         expected: str,
+        cross: str,
         *,
         before: tuple[str, ...] = (),
         after: tuple[str, ...] = (),
@@ -146,6 +156,7 @@ def _add_exception_cases(test_data: TestData, chunk: TestChunk, sv: SvMode, mode
             level,
             description,
             expected,
+            cross,
             [*create_page_walk(sv, leaf_level=level), leaf(permissions, level)],
             before=before,
             after=after,
@@ -158,12 +169,13 @@ def _add_exception_cases(test_data: TestData, chunk: TestChunk, sv: SvMode, mode
         leaf_permissions = PteFlags(user=umode)
         walk_fault_permissions = f"PTE_A | PTE_D | {'PTE_U | ' if umode else ''}PTE_X | PTE_W | PTE_R | PTE_V"
 
-        add_standard(level, PteFlags(user=umode, valid=False), "PTE.V unset", "Store page fault")
+        add_standard(level, PteFlags(user=umode, valid=False), "PTE.V unset", "Store page fault", f"cp_PTE_inv_cbo_{m}")
         add_standard(
             level,
             PteFlags(user=umode, read=False),
             "Reserved W+X without R",
             "Store page fault",
+            f"cp_PTE_res_rwx_cbo_{m}",
             ifdef="S1P12P0_OR_LATER_SUPPORTED",
         )
         add_standard(
@@ -171,30 +183,29 @@ def _add_exception_cases(test_data: TestData, chunk: TestChunk, sv: SvMode, mode
             PteFlags(user=umode, read=False, execute=False),
             "Reserved W without R",
             "Store page fault",
+            f"cp_PTE_res_rwx_cbo_{m}",
             ifdef="S1P12P0_OR_LATER_SUPPORTED",
         )
-        add_standard(level, PteFlags(user=umode, write=False), "RX permissions", "Store page fault")
+        add_standard(level, PteFlags(user=umode, write=False), "RX permissions", "Store page fault", no_write)
         if umode:
-            add_standard(level, PteFlags(), "Supervisor page from U-Mode", "Store page fault")
+            add_standard(level, PteFlags(), "Supervisor page from U-Mode", "Store page fault", "cp_spage_rwx_cbo_u")
         else:
             add_standard(
                 level,
                 PteFlags(write=False),
-                "RX permissions with mstatus.SUM set",
+                "RX permissions with sstatus.SUM set",
                 "Store page fault",
-                before=("  LI(t0, MSTATUS_SUM)", "  csrs mstatus, t0"),
-                after=("  LI(t0, MSTATUS_SUM)", "  csrc mstatus, t0"),
+                no_write,
+                before=(f"  LI(x{regs.scratch}, MSTATUS_SUM)", f"  csrs sstatus, x{regs.scratch}"),
+                after=(f"  LI(x{regs.scratch}, MSTATUS_SUM)", f"  csrc sstatus, x{regs.scratch}"),
             )
-            add_standard(level, PteFlags(user=True), "User page from S-Mode", "Store page fault")
-        if family == "zicbom":
             add_standard(
-                level,
-                PteFlags(user=umode, read=False, write=False),
-                "Execute-only page",
-                "Store page fault",
+                level, PteFlags(user=True), "User page from S-Mode", "Store page fault", "cp_upage_sumunset_cbo_s"
             )
-        add_standard(level, PteFlags(user=umode, accessed=False), "PTE.A unset", "Store page fault")
-        add_standard(level, PteFlags(user=umode, dirty=False), "PTE.D unset", "No fault")
+        add_standard(
+            level, PteFlags(user=umode, accessed=False), "PTE.A unset", "Store page fault", f"cp_Abit_unset_cbo_{m}"
+        )
+        add_standard(level, PteFlags(user=umode, dirty=False), "PTE.D unset", "No fault", dirty_unset)
 
         walk = create_page_walk(sv, leaf_level=level)
         if level > 0:
@@ -202,6 +213,7 @@ def _add_exception_cases(test_data: TestData, chunk: TestChunk, sv: SvMode, mode
                 level,
                 "Misaligned superpage",
                 "Store page fault",
+                f"cp_misaligned_page_cbo_{m}",
                 [*walk, leaf(leaf_permissions, level, superpage=False)],
                 physical_address="0x0",
             )
@@ -210,6 +222,7 @@ def _add_exception_cases(test_data: TestData, chunk: TestChunk, sv: SvMode, mode
                 level,
                 "Pointer encoding (V only) in the leaf",
                 "Store page fault",
+                f"cp_PTE_nonleaf_lvl0_cbo_{m}",
                 [*walk, leaf(PteFlags.nonleaf("PTE_U") if umode else PteFlags.nonleaf(), level)],
             )
 
@@ -218,6 +231,7 @@ def _add_exception_cases(test_data: TestData, chunk: TestChunk, sv: SvMode, mode
                 level,
                 "Access fault on the page-table walk",
                 "Store access fault",
+                "cp_nonleaf_PTE_to_nonexistent_pa_cbo",
                 [
                     *create_page_walk(
                         sv,
@@ -233,6 +247,7 @@ def _add_exception_cases(test_data: TestData, chunk: TestChunk, sv: SvMode, mode
                 level,
                 "Access fault on the page-table walk",
                 "Store access fault",
+                "cp_nonleaf_PTE_to_nonexistent_pa_cbo",
                 [
                     *create_page_walk(
                         sv,
@@ -248,6 +263,7 @@ def _add_exception_cases(test_data: TestData, chunk: TestChunk, sv: SvMode, mode
             level,
             "Leaf PTE points to the access-fault region",
             "Store access fault",
+            f"cp_leaf_PTE_to_nonexistent_pa_cbo_{m}",
             [*walk, leaf(leaf_permissions, level, physical_address="RVMODEL_ACCESS_FAULT_ADDRESS")],
             physical_address="RVMODEL_ACCESS_FAULT_ADDRESS",
             ifdef="RVMODEL_ACCESS_FAULT_ADDRESS",
@@ -261,6 +277,7 @@ def _add_exception_cases(test_data: TestData, chunk: TestChunk, sv: SvMode, mode
                     level,
                     f"Non-leaf PTE with {bit.removeprefix('PTE_')} bit set",
                     "Store page fault",
+                    "cp_PTE_nonleaf_DAU_cbo",
                     [
                         *create_page_walk(sv, leaf_level=level, overrides={level + 1: PteFlags.nonleaf(bit)}),
                         leaf(leaf_permissions, leaf_level),
@@ -269,32 +286,39 @@ def _add_exception_cases(test_data: TestData, chunk: TestChunk, sv: SvMode, mode
                 )
 
 
-def _begin_test(test_data: TestData, sv: SvMode, mode: str, family: str) -> TestChunk:
+def _begin_test(test_data: TestData, regs: SvRegs, sv: SvMode, mode: str, family: str) -> TestChunk:
     envmask = "MENVCFG_CBCFE | MENVCFG_CBIE" if family == "zicbom" else "MENVCFG_CBZE"
-    setup = [f"LI(t0, {envmask})", "csrs menvcfg, t0"]
+    scratch = f"x{regs.scratch}"
+    # T-SBI calls preserve every register but a0-a2, so the mask survives for senvcfg.
+    setup = [f"LI({scratch}, {envmask})", tsbi_call(f"csrs menvcfg, {scratch}")]
     if mode == "Umode":
-        setup.append("csrs senvcfg, t0")
+        setup.append(f"csrs senvcfg, {scratch}")
     qualifier = "_exceptions" if family != "zicbop" else ""
     return begin_sv_test(
         test_data,
+        regs,
         sv,
         mode,
-        f"{sv.name}_{family}{qualifier}_{mode}",
-        coverpoint=f"cp_{family}",
-        sig_init="" if family == "zicbop" else "LI(a2, 0x800) // Test signature initialization",
+        f"Zicbo_{sv.name}_{family}{qualifier}_{mode}",
+        coverpoint=f"cp_zicbop_no_fault_{mode[0].lower()}"
+        if family == "zicbop"
+        else f"Sv_Zicbo {family} exception crosses",
+        sig_init=None if family == "zicbop" else "0x800",
         setup_asm=tuple(setup),
     )
 
 
 def _make_exceptions(test_data: TestData, sv: SvMode, mode: str, family: str) -> TestChunk:
-    chunk = _begin_test(test_data, sv, mode, family)
-    _add_exception_cases(test_data, chunk, sv, mode, family)
-    chunk.raw_data.extend(sv_data(sv))
-    return test_data.end_test_chunk()
+    regs = SvRegs.allocate(test_data)
+    chunk = _begin_test(test_data, regs, sv, mode, family)
+    _add_exception_cases(test_data, chunk, sv, regs, mode, family)
+    chunk.raw_data.extend(sv_data(sv, regs))
+    return end_sv_test(test_data, regs)
 
 
 def _make_prefetch(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
-    chunk = _begin_test(test_data, sv, mode, "zicbop")
+    regs = SvRegs.allocate(test_data)
+    chunk = _begin_test(test_data, regs, sv, mode, "zicbop")
     permissions = PteFlags(user=mode == "Umode")
     for number, level in enumerate(sv.levels_desc, start=1):
         chunk.code.extend(
@@ -306,13 +330,21 @@ def _make_prefetch(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                 ),
                 "sfence.vma",
                 "",
-                *_add_operation(test_data, "zicbop", mode, virtual_address(sv, "va_data", level), number),
+                *_add_operation(
+                    test_data,
+                    regs,
+                    "zicbop",
+                    mode,
+                    virtual_address(sv, "va_data", level, destination=regs.addr, scratch=regs.scratch),
+                    number,
+                    f"cp_zicbop_no_fault_{mode[0].lower()}",
+                ),
                 "",
             ]
         )
-    chunk.raw_data.extend(sv_data(sv))
-    chunk.trap_sigupd_count = 10
-    return test_data.end_test_chunk()
+    chunk.raw_data.extend(sv_data(sv, regs))
+    chunk.trap_sigupd_count = 3
+    return end_sv_test(test_data, regs)
 
 
 def _make_svzicbo(test_data: TestData, sv: SvMode, family: str) -> list[TestChunk]:
@@ -322,120 +354,120 @@ def _make_svzicbo(test_data: TestData, sv: SvMode, family: str) -> list[TestChun
 
 
 @add_priv_test_generator(
-    "SvZicbo",
-    required_extensions=["I", "Sv32", "Zicbom"],
-    march_extensions=_MARCH + ["Zicbom"],
-    extra_defines=["#define BOOT_TO_MMODE"],
+    "Sv",
+    required_extensions=["Sv32", "Zicbom"],
+    march_extensions=["Zicbom"],
+    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svzicbo_sv32_zicbom(test_data: TestData) -> list[TestChunk]:
     return _make_svzicbo(test_data, SV32, "zicbom")
 
 
 @add_priv_test_generator(
-    "SvZicbo",
-    required_extensions=["I", "Sv32", "Zicboz"],
-    march_extensions=_MARCH + ["Zicboz"],
-    extra_defines=["#define BOOT_TO_MMODE"],
+    "Sv",
+    required_extensions=["Sv32", "Zicboz"],
+    march_extensions=["Zicboz"],
+    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svzicbo_sv32_zicboz(test_data: TestData) -> list[TestChunk]:
     return _make_svzicbo(test_data, SV32, "zicboz")
 
 
 @add_priv_test_generator(
-    "SvZicbo",
-    required_extensions=["I", "Sv32", "Zicbop"],
-    march_extensions=_MARCH + ["Zicbop"],
-    extra_defines=["#define BOOT_TO_MMODE"],
+    "Sv",
+    required_extensions=["Sv32", "Zicbop"],
+    march_extensions=["Zicbop"],
+    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svzicbo_sv32_zicbop(test_data: TestData) -> list[TestChunk]:
     return _make_svzicbo(test_data, SV32, "zicbop")
 
 
 @add_priv_test_generator(
-    "SvZicbo",
-    required_extensions=["I", "Sv39", "Zicbom"],
-    march_extensions=_MARCH + ["Zicbom"],
-    extra_defines=["#define BOOT_TO_MMODE"],
+    "Sv",
+    required_extensions=["Sv39", "Zicbom"],
+    march_extensions=["Zicbom"],
+    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svzicbo_sv39_zicbom(test_data: TestData) -> list[TestChunk]:
     return _make_svzicbo(test_data, SV39, "zicbom")
 
 
 @add_priv_test_generator(
-    "SvZicbo",
-    required_extensions=["I", "Sv39", "Zicboz"],
-    march_extensions=_MARCH + ["Zicboz"],
-    extra_defines=["#define BOOT_TO_MMODE"],
+    "Sv",
+    required_extensions=["Sv39", "Zicboz"],
+    march_extensions=["Zicboz"],
+    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svzicbo_sv39_zicboz(test_data: TestData) -> list[TestChunk]:
     return _make_svzicbo(test_data, SV39, "zicboz")
 
 
 @add_priv_test_generator(
-    "SvZicbo",
-    required_extensions=["I", "Sv39", "Zicbop"],
-    march_extensions=_MARCH + ["Zicbop"],
-    extra_defines=["#define BOOT_TO_MMODE"],
+    "Sv",
+    required_extensions=["Sv39", "Zicbop"],
+    march_extensions=["Zicbop"],
+    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svzicbo_sv39_zicbop(test_data: TestData) -> list[TestChunk]:
     return _make_svzicbo(test_data, SV39, "zicbop")
 
 
 @add_priv_test_generator(
-    "SvZicbo",
-    required_extensions=["I", "Sv48", "Zicbom"],
-    march_extensions=_MARCH + ["Zicbom"],
-    extra_defines=["#define BOOT_TO_MMODE"],
+    "Sv",
+    required_extensions=["Sv48", "Zicbom"],
+    march_extensions=["Zicbom"],
+    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svzicbo_sv48_zicbom(test_data: TestData) -> list[TestChunk]:
     return _make_svzicbo(test_data, SV48, "zicbom")
 
 
 @add_priv_test_generator(
-    "SvZicbo",
-    required_extensions=["I", "Sv48", "Zicboz"],
-    march_extensions=_MARCH + ["Zicboz"],
-    extra_defines=["#define BOOT_TO_MMODE"],
+    "Sv",
+    required_extensions=["Sv48", "Zicboz"],
+    march_extensions=["Zicboz"],
+    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svzicbo_sv48_zicboz(test_data: TestData) -> list[TestChunk]:
     return _make_svzicbo(test_data, SV48, "zicboz")
 
 
 @add_priv_test_generator(
-    "SvZicbo",
-    required_extensions=["I", "Sv48", "Zicbop"],
-    march_extensions=_MARCH + ["Zicbop"],
-    extra_defines=["#define BOOT_TO_MMODE"],
+    "Sv",
+    required_extensions=["Sv48", "Zicbop"],
+    march_extensions=["Zicbop"],
+    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svzicbo_sv48_zicbop(test_data: TestData) -> list[TestChunk]:
     return _make_svzicbo(test_data, SV48, "zicbop")
 
 
 @add_priv_test_generator(
-    "SvZicbo",
-    required_extensions=["I", "Sv57", "Zicbom"],
-    march_extensions=_MARCH + ["Zicbom"],
-    extra_defines=["#define BOOT_TO_MMODE"],
+    "Sv",
+    required_extensions=["Sv57", "Zicbom"],
+    march_extensions=["Zicbom"],
+    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svzicbo_sv57_zicbom(test_data: TestData) -> list[TestChunk]:
     return _make_svzicbo(test_data, SV57, "zicbom")
 
 
 @add_priv_test_generator(
-    "SvZicbo",
-    required_extensions=["I", "Sv57", "Zicboz"],
-    march_extensions=_MARCH + ["Zicboz"],
-    extra_defines=["#define BOOT_TO_MMODE"],
+    "Sv",
+    required_extensions=["Sv57", "Zicboz"],
+    march_extensions=["Zicboz"],
+    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svzicbo_sv57_zicboz(test_data: TestData) -> list[TestChunk]:
     return _make_svzicbo(test_data, SV57, "zicboz")
 
 
 @add_priv_test_generator(
-    "SvZicbo",
-    required_extensions=["I", "Sv57", "Zicbop"],
-    march_extensions=_MARCH + ["Zicbop"],
-    extra_defines=["#define BOOT_TO_MMODE"],
+    "Sv",
+    required_extensions=["Sv57", "Zicbop"],
+    march_extensions=["Zicbop"],
+    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svzicbo_sv57_zicbop(test_data: TestData) -> list[TestChunk]:
     return _make_svzicbo(test_data, SV57, "zicbop")

@@ -4,6 +4,7 @@
 ==== Zacas Atomic Compare-and-Swap
 
 <<t-Zacas-coverpoints>> summarizes the coverpoints for the Zacas extension.
+The rows with Zabha in the ExtraExtensions column, amocas.b and amocas.h, apply only when Zabha is also supported.
 
 [[t-Zacas-coverpoints]]
 .Zacas Instruction Coverpoints
@@ -12,6 +13,7 @@ include::{testplansdir}/Zacas.adoc[]
 [[t-Zacas-coverpoint-definitions]]
 .Zacas Coverpoint Definitions
 [cols="2, 1, 4" options=header]
+[%autowidth]
 |===
 |Coverpoint|Bins|Definition
 3+^|Zacas Value Comparison Coverpoints
@@ -30,14 +32,6 @@ include::norm/Zacas_norm_rules.adoc[]
 include::{testplansdir}/Zabha.adoc[]
 
 include::norm/Zabha_norm_rules.adoc[]
-
-==== ZacasZabha Subword Atomic Compare-and-Swap
-
-<<t-ZacasZabha-coverpoints>> summarizes the coverpoints applicable when both Zacas and Zabha are supported.
-
-include::{testplansdir}/ZacasZabha.adoc[]
-
-include::norm/ZacasZabha_norm_rules.adoc[]
 
 ==== Zimop Maybe-Ops
 

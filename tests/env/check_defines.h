@@ -13,8 +13,16 @@
   #error "SIGUPD_COUNT not defined. It should be defined at the beginning of the test file."
 #endif
 
+// TRAP_SIGUPD_COUNT is the number of expected traps. Each trap uses 4 signature
+// words, or 6 when H is supported.
 #ifndef TRAP_SIGUPD_COUNT
-  #define TRAP_SIGUPD_COUNT 15000
+  #define TRAP_SIGUPD_COUNT 0
+#endif
+
+#ifdef H_SUPPORTED
+  #define TRAP_SIGUPD_WORDS ((TRAP_SIGUPD_COUNT)*6)
+#else
+  #define TRAP_SIGUPD_WORDS ((TRAP_SIGUPD_COUNT)*4)
 #endif
 
 ########## GLOBAL XLEN CHECK  ##########
@@ -25,10 +33,6 @@
 ########## rvmodel_macros.h CHECKS ##########
 #if defined(RVMODEL_INVISIBLE_TRAP_HANDLER) || defined(RVTEST_EMULATE_TIME_CSR)
   #define RVTEST_INVISIBLE_TRAP_HANDLER
-#endif
-
-#if defined(RVTEST_INVISIBLE_TRAP_HANDLER) && defined(H_SUPPORTED)
-  #error "Invisible trap emulation does not support traps from VS or VU mode yet."
 #endif
 
 #ifndef RVMODEL_DATA_SECTION
@@ -53,7 +57,6 @@
 // If RVMODEL_ACCESS_FAULT_ADDRESS is not defined, no access faults are tested
 
 ##### MTIME #####
-// If RVMODEL_MTIME_ADDRESS is not defined, no machine timer interrupts are tested
 
 #ifdef RVTEST_EMULATE_TIME_CSR
   #ifndef RVMODEL_MTIME_ADDRESS
@@ -70,6 +73,10 @@
   #endif
 #endif
 
+// Interrupt macros are used only by the trap handler and privileged tests, which need a
+// standard M-mode or S-mode. A DUT with neither need not define them.
+#if defined(STANDARD_SM_SUPPORTED) || defined(S_SUPPORTED)
+
 ##### Interrupt Delays #####
 #ifndef RVMODEL_INTERRUPT_LATENCY
   #error "RVMODEL_INTERRUPT_LATENCY not defined. Make sure to define it in rvmodel_macros.h."
@@ -78,57 +85,72 @@
   #error "RVMODEL_TIMER_INT_SOON_DELAY not defined. Make sure to define it in rvmodel_macros.h."
 #endif
 
-#ifndef RVMODEL_MAX_CYCLES_PER_TIMER_TICK
-  #define RVMODEL_MAX_CYCLES_PER_TIMER_TICK 1
-#endif
-
 ##### Machine Interrupts #####
-// TODO: Gate which interrupts macros need to be defined by whether they are supported
+// UDB_{MEI,MTI,MSI}_INTR_IMPL say which machine interrupts the platform can raise. Each one that
+// is implemented needs a way to raise it, and a platform providing a raise must also provide the
+// matching clear.
 
-// Only external must be defined because software may be handled through MSIP and timer through MTIME
-#ifndef RVMODEL_SET_MEXT_INT
-  #error "RVMODEL_SET_MEXT_INT not defined. Make sure to define it in rvmodel_macros.h."
+#if defined(UDB_MEI_INTR_IMPL) && !defined(RVMODEL_SET_MEXT_INT)
+  #error "UDB_MEI_INTR_IMPL is set but RVMODEL_SET_MEXT_INT is not defined. Define it in rvmodel_macros.h."
 #endif
 
-#ifndef RVMODEL_CLR_MEXT_INT
-  #error "RVMODEL_CLR_MEXT_INT not defined. Make sure to define it in rvmodel_macros.h."
+// Machine timer interrupts are armed by writing mtimecmp relative to mtime, so they need
+// RVMODEL_MTIME_ADDRESS, which in turn requires RVMODEL_MTIMECMP_ADDRESS (checked above).
+#if defined(UDB_MTI_INTR_IMPL) && !defined(RVMODEL_MTIME_ADDRESS)
+  #error "UDB_MTI_INTR_IMPL is set but RVMODEL_MTIME_ADDRESS is not defined. Define it in rvmodel_macros.h."
 #endif
 
-#ifndef RVMODEL_CLR_MEXT_INT_M
-  #ifdef RVMODEL_CLR_MEXT_INT
+#if defined(UDB_MSI_INTR_IMPL) && !defined(RVMODEL_MSIP_ADDRESS) && !defined(RVMODEL_SET_MSW_INT)
+  #error "UDB_MSI_INTR_IMPL is set but neither RVMODEL_MSIP_ADDRESS nor RVMODEL_SET_MSW_INT is defined. Define one of them in rvmodel_macros.h."
+#endif
+
+#ifdef RVMODEL_SET_MEXT_INT
+  #ifndef RVMODEL_CLR_MEXT_INT
+    #error "RVMODEL_SET_MEXT_INT is defined but RVMODEL_CLR_MEXT_INT is not. Define both in rvmodel_macros.h."
+  #endif
+
+  #ifndef RVMODEL_CLR_MEXT_INT_M
     #define RVMODEL_CLR_MEXT_INT_M RVMODEL_CLR_MEXT_INT
   #endif
+
+  #ifndef RVMODEL_SET_MEXT_INT_M
+    #define RVMODEL_SET_MEXT_INT_M RVMODEL_SET_MEXT_INT
+  #endif
 #endif
 
-#ifndef RVMODEL_MSIP_ADDRESS
-  #ifndef RVMODEL_SET_MSW_INT
-    #error "Neither RVMODEL_MSIP_ADDRESS nor RVMODEL_SET_MSW_INT is defined. Define one of them in rvmodel_macros.h."
-  #endif
-
+#ifdef RVMODEL_SET_MSW_INT
   #ifndef RVMODEL_CLR_MSW_INT
-    #error "RVMODEL_CLR_MSW_INT not defined. Make sure to define it in rvmodel_macros.h."
+    #error "RVMODEL_SET_MSW_INT is defined but RVMODEL_CLR_MSW_INT is not. Define both in rvmodel_macros.h."
   #endif
 
   #ifndef RVMODEL_CLR_MSW_INT_M
-    #ifdef RVMODEL_CLR_MSW_INT
-      #define RVMODEL_CLR_MSW_INT_M RVMODEL_CLR_MSW_INT
-    #endif
+    #define RVMODEL_CLR_MSW_INT_M RVMODEL_CLR_MSW_INT
+  #endif
+
+  #ifndef RVMODEL_SET_MSW_INT_M
+    #define RVMODEL_SET_MSW_INT_M RVMODEL_SET_MSW_INT
   #endif
 #endif
 
 ##### Supervisor Interrupts #####
-#ifdef S_SUPPORTED
-  #ifndef RVMODEL_SET_SEXT_INT
-    #error "RVMODEL_SET_SEXT_INT not defined. Make sure to define it in rvmodel_macros.h."
-  #endif
+// Sstc timer interrupts are armed relative to the time CSR (Zicntr), or to mtime without Zicntr.
+#if defined(SSTC_SUPPORTED) && !defined(ZICNTR_SUPPORTED) && !defined(RVMODEL_MTIME_ADDRESS)
+  #error "Sstc is implemented without Zicntr, so RVMODEL_MTIME_ADDRESS is needed to read the time. Define it in rvmodel_macros.h."
+#endif
 
-  #ifndef RVMODEL_CLR_SEXT_INT
-    #error "RVMODEL_CLR_SEXT_INT not defined. Make sure to define it in rvmodel_macros.h."
-  #endif
+#ifdef S_SUPPORTED
+  // RVMODEL_SET_SEXT_INT / RVMODEL_CLR_SEXT_INT are optional: platforms without a supervisor
+  // external interrupt controller leave them undefined and the trap handler uses mip.SEIP.
 
   #ifndef RVMODEL_CLR_SEXT_INT_M
     #ifdef RVMODEL_CLR_SEXT_INT
       #define RVMODEL_CLR_SEXT_INT_M RVMODEL_CLR_SEXT_INT
+    #endif
+  #endif
+
+  #ifndef RVMODEL_SET_SEXT_INT_M
+    #ifdef RVMODEL_SET_SEXT_INT
+      #define RVMODEL_SET_SEXT_INT_M RVMODEL_SET_SEXT_INT
     #endif
   #endif
 
@@ -140,14 +162,73 @@
       #define RVMODEL_CLR_SSW_INT_M RVMODEL_CLR_SSW_INT
     #endif
   #endif
+
+  #ifndef RVMODEL_SET_SSW_INT_M
+    #ifdef RVMODEL_SET_SSW_INT
+      #define RVMODEL_SET_SSW_INT_M RVMODEL_SET_SSW_INT
+    #endif
+  #endif
 #endif
 
+#endif // STANDARD_SM_SUPPORTED || S_SUPPORTED
+
+##### Guest External Interrupts #####
+// RVTEST_SGEI_INTR_IMPL (H with GEILEN > 0, derived_config.h) says guest interrupt files exist.
+// hgeip is read-only, so the platform must provide a way to raise and clear each hgeip bit.
+#if defined(RVTEST_SGEI_INTR_IMPL) && !defined(RVMODEL_SET_GUEST_EXT_INT)
+  #error "H is implemented with NUM_EXTERNAL_GUEST_INTERRUPTS (GEILEN) > 0 but RVMODEL_SET_GUEST_EXT_INT is not defined. Define it in rvmodel_macros.h, or set GEILEN to 0 if the platform has no guest interrupt files."
+#endif
+
+#ifdef RVMODEL_SET_GUEST_EXT_INT
+  #ifndef RVMODEL_CLR_GUEST_EXT_INT
+    #error "RVMODEL_SET_GUEST_EXT_INT is defined but RVMODEL_CLR_GUEST_EXT_INT is not. Define both in rvmodel_macros.h."
+  #endif
+
+  #ifndef RVMODEL_CLR_GUEST_EXT_INT_M
+    #define RVMODEL_CLR_GUEST_EXT_INT_M RVMODEL_CLR_GUEST_EXT_INT
+  #endif
+
+  #ifndef RVMODEL_SET_GUEST_EXT_INT_M
+    #define RVMODEL_SET_GUEST_EXT_INT_M RVMODEL_SET_GUEST_EXT_INT
+  #endif
+#endif
+
+##### Sscofpmf #####
+#ifdef SSCOFPMF_SUPPORTED
+  #if !defined(RVMODEL_HPM_COUNTER) || !defined(RVMODEL_MHPMEVENT_VAL) || !defined(RVMODEL_MHPMEVENT_CODE)
+    #error "Sscofpmf is implemented but RVMODEL_HPM_COUNTER, RVMODEL_MHPMEVENT_VAL or RVMODEL_MHPMEVENT_CODE is not defined. Define them in rvmodel_macros.h."
+  #endif
+  #if (RVMODEL_HPM_COUNTER < 3) || (RVMODEL_HPM_COUNTER > 31)
+    #error "RVMODEL_HPM_COUNTER must be an HPM counter index from 3 to 31."
+  #endif
+
+  // UDB defines UDB_HPM_COUNTER<n>_WIDTH only for implemented counters, and #if reads an undefined
+  // name as 0. RVMODEL_HPM_COUNTER is pasted into that name, so it must be a plain number.
+  #define RVTEST_HPM_WIDTH_(n) UDB_HPM_COUNTER##n##_WIDTH
+  #define RVTEST_HPM_WIDTH(n)  RVTEST_HPM_WIDTH_(n)
+  #if RVTEST_HPM_WIDTH(RVMODEL_HPM_COUNTER) == 0
+    #error "RVMODEL_HPM_COUNTER names an HPM counter that is not implemented (HPM_COUNTER_EN) or has width 0."
+  #endif
+
+  // CSRs of the HPM counter selected by RVMODEL_HPM_COUNTER. The high halves exist only on RV32.
+  #define RVTEST_CSR_MHPMEVENT    (CSR_MHPMEVENT3 + RVMODEL_HPM_COUNTER - 3)
+  #define RVTEST_CSR_MHPMCOUNTER  (CSR_MHPMCOUNTER3 + RVMODEL_HPM_COUNTER - 3)
+  #define RVTEST_CSR_MHPMEVENTH   (CSR_MHPMEVENT3H + RVMODEL_HPM_COUNTER - 3)
+  #define RVTEST_CSR_MHPMCOUNTERH (CSR_MHPMCOUNTER3H + RVMODEL_HPM_COUNTER - 3)
+#endif // SSCOFPMF_SUPPORTED
+
 ##### Configuration Limitations #####
-#if UDB_NUM_PMP_ENTIRES > 0
+#if UDB_NUM_PMP_ENTRIES > 0
   #ifndef UDB_PMP_NAPOT_SUPPORTED
     #error "DUTs with PMP but without NAPOT support are not currently supported by ACTs. Please report this as an issue on the riscv/riscv-arch-test repository."
   #endif
   #if UDB_NUM_USABLE_PMP_ENTRIES < 8
     #error "DUTs with fewer than 8 usable PMP entries are not currently supported by ACTs. Please report this as an issue on the riscv/riscv-arch-test repository."
   #endif
+#endif
+
+// Generated vector tests size their data and signature regions for VLEN <= RVTEST_VLEN_MAX.
+// Larger VLENs are legal but not yet supported.
+#if defined(RVTEST_VLEN_MAX) && (UDB_VLEN > RVTEST_VLEN_MAX)
+    #error "UDB_VLEN exceeds RVTEST_VLEN_MAX, the largest VLEN the vector tests currently support. Please open an issue at https://github.com/riscv/riscv-arch-test/issues with your VLEN so that support can be prioritized."
 #endif

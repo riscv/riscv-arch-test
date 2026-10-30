@@ -8,7 +8,7 @@ The ACT4 Framework requires a UDB configuration file specifying the extensions a
 
 RISC-V is highly configurable, such as whether misaligned accesses are allowed or how many PMP registers are implemented. Therefore, the expected results of the tests differ based on the configuration of the DUT. The ACT4 Framework selects the appropriate tests to compile based on the capabilities of the DUT. It then uses the [RISC-V Sail reference model](https://github.com/riscv/sail-riscv), configured to match the DUT, to compute the expected results of each test. These results are then compiled into the final self-checking ELFs.
 
-The Architectural Certification Tests are described in full detail in the [Certification Test Plan](https://riscv.github.io/riscv-arch-test/ctp.html) (CTP). The ACT4 Framework principles of operation are detailed in [LINK COMING SOON]. For details on adding more tests and coverpoints, see the [ACT Developer's Guide](./docs/DeveloperGuide.md).
+The Architectural Certification Tests are described in full detail in the [Certification Test Plan](https://riscv.github.io/riscv-arch-test/ctp.html) (CTP). The ACT4 Framework principles of operation are detailed in [LINK COMING SOON]. For details on adding more tests and coverpoints, see the [ACT Developer's Guide](./docs/DeveloperGuide.md). Learn more about [RVA23 Certification Testing](./docs/RVA23Cert.md).
 
 ## Table of Contents
 
@@ -142,12 +142,12 @@ For more information or if you have issues installing the RISC-V toolchain, refe
 
 #### 4. RISC-V Sail Reference Model
 
-The ACTs use the RISC-V Sail model to generate expected results. It is currently compatible with version 0.14.1 of the model.
+The ACTs use the RISC-V Sail model to generate expected results. It is currently compatible with version 0.16 of the model.
 
 To install the sail model:
 
 ```bash
-curl --location https://github.com/riscv/sail-riscv/releases/download/0.14.1/sail-riscv-$(uname)-$(arch).tar.gz | sudo tar xvz --directory=/path/to/install --strip-components=1
+curl --location https://github.com/riscv/sail-riscv/releases/download/0.16/sail-riscv-$(uname)-$(arch).tar.gz | sudo tar xvz --directory=/path/to/install --strip-components=1
 ```
 
 > [!NOTE]
@@ -247,32 +247,48 @@ The ACT Framework uses a selection of assembly macros to run DUT-specific code t
 - `RVMODEL_BOOT` (can be omitted if not needed)
 - `RVMODEL_ACCESS_FAULT_ADDRESS` (can be omitted if DUT does not generate some/all access faults)
 - `RVMODEL_INVISIBLE_TRAP_HANDLER(_PC_REG, _INSTRUCTION_REG, _ACTION_REG, _DEST_REG, _VALUE_REG)` (can be omitted if the DUT does not trap and emulate instructions)
+- `RVMODEL_FENCEI` (can be omitted to use `fence.i`, or `nop` without Zifencei)
+- `RVMODEL_BOOT_TO_MMODE` (omit unless the DUT has a custom M-mode that cannot run the default M-mode boot)
 
 **Timer Macros**: Can be left blank if machine mode is not supported.
 
-- `RVMODEL_MTIME_ADDRESS` (can be omitted if MTIME is not implemented)
-- `RVMODEL_MTIMECMP_ADDRESS` (can be omitted if MTIMECMP is not implemented)
+- `RVMODEL_MTIME_ADDRESS` (required if machine timer interrupts are implemented, or if Sstc is implemented without Zicntr; otherwise can be omitted)
+- `RVMODEL_MTIMECMP_ADDRESS` (required if machine timer interrupts are implemented; otherwise can be omitted)
 - `RVMODEL_TIMER_INT_SOON_DELAY`
 
 **MSIP Macro**: Required only for Sm version 1.13 and above. Can be omitted if machine software interrupts are not supported.
 
 - `RVMODEL_MSIP_ADDRESS` (can be omitted if MSIP is not memory-mapped or not tested)
 
-**Interrupt Macros**: Defined if a platform-specific interrupt controller is used to set or clear. MSW and SSW preferably use `msip` and `mip.ssip` rather than a platform-specific controller, but are available to be defined for designs that only support a controller. _M flavors run in machine mode and do not use T-SBI. Others may be invoked from any mode and may need T-SBI if they access memory-mapped I/O that requires machine permissions. If the _M flavor is identical to the regular flavor, it does not need to be defined.
+**Interrupt Macros**: Defined if a platform-specific interrupt controller is used to set or clear. MSW and SSW preferably use `msip` and `mip.ssip` rather than a platform-specific controller, but are available to be defined for designs that only support a controller. \_M flavors run in machine mode and do not use T-SBI. Others may be invoked from any mode and may need T-SBI if they access memory-mapped I/O that requires machine permissions. If the \_M flavor is identical to the regular flavor, it does not need to be defined.
 
 - `RVMODEL_SET_MEXT_INT(_R1, _R2)`
+- `RVMODEL_SET_MEXT_INT_M(_R1, _R2)`
 - `RVMODEL_CLR_MEXT_INT(_R1, _R2)`
 - `RVMODEL_CLR_MEXT_INT_M(_R1, _R2)`
 - `RVMODEL_SET_MSW_INT(_R1, _R2)`
+- `RVMODEL_SET_MSW_INT_M(_R1, _R2)`
 - `RVMODEL_CLR_MSW_INT(_R1, _R2)`
 - `RVMODEL_CLR_MSW_INT_M(_R1, _R2)`
 - `RVMODEL_SET_SEXT_INT(_R1, _R2)`
+- `RVMODEL_SET_SEXT_INT_M(_R1, _R2)`
 - `RVMODEL_CLR_SEXT_INT(_R1, _R2)`
 - `RVMODEL_CLR_SEXT_INT_M(_R1, _R2)`
 - `RVMODEL_SET_SSW_INT(_R1, _R2)`
+- `RVMODEL_SET_SSW_INT_M(_R1, _R2)`
 - `RVMODEL_CLR_SSW_INT(_R1, _R2)`
 - `RVMODEL_CLR_SSW_INT_M(_R1, _R2)`
+- `RVMODEL_SET_GUEST_EXT_INT(_GEI, _R1, _R2)` (sets `hgeip` bit \_GEI, a register; required when H is supported with GEILEN > 0)
+- `RVMODEL_SET_GUEST_EXT_INT_M(_GEI, _R1, _R2)`
+- `RVMODEL_CLR_GUEST_EXT_INT(_GEI, _R1, _R2)` (clears `hgeip` bit \_GEI; required with `RVMODEL_SET_GUEST_EXT_INT`)
+- `RVMODEL_CLR_GUEST_EXT_INT_M(_GEI, _R1, _R2)`
 - `RVMODEL_INTERRUPT_LATENCY`
+
+**Sscofpmf Macros**: Required if Sscofpmf is supported.
+
+- `RVMODEL_HPM_COUNTER`
+- `RVMODEL_MHPMEVENT_VAL`
+- `RVMODEL_MHPMEVENT_CODE(_R1, _R2)`
 
 Complete examples are available for an example DUT ([config/cores/cvw/cvw-rv64gc/rvmodel_macros.h](./config/cores/cvw/cvw-rv64gc/rvmodel_macros.h)) and for the RISC-V Sail reference model ([config/sail/sail-RVA23S64/rvmodel_macros.h](./config/sail/sail-RVA23S64/rvmodel_macros.h)).
 
@@ -289,6 +305,10 @@ A linker script is needed to place the code and data regions in the appropriate 
 - There must be `.rodata`, `.data`, and `.bss` output sections. The `.bss` section must define `__bss_start` and `__bss_end` for C test startup.
 - The linker script must define `__stack_bottom` and `__stack_top`, using `__stack_size * __num_harts` bytes of stack space.
 - There must be a `.text.rvmodel` output section for DUT-specific (RVMODEL) code, with catch-all wildcards for any remaining text sections (i.e. `.text.rvmodel . : { *(.text.rvmodel) *(.text.rvmodel.*) *(.text) *(.text.*) } > ram`). This **must** follow the data and stack sections so that variable-size model-specific code does not affect the addresses of test data symbols (such as `scratch` and `begin_signature`). This ensures the DUT ELF and the reference-model ELF agree on data addresses.
+- On DUTs that support virtual memory, the test image must lie in a range the virtual memory tests leave mapped. 0x8000_0000 works for both RV32 and RV64. The safe ranges are:
+  - RV32: 0x0140_0000–0x03FF_FFFF, 0x0440_0000–0x2FFF_FFFF, 0x3040_0000–0x8FFF_FFFF and 0x90C0_0000–0xFFBF_FFFF.
+  - RV64: 0x4000_0000–0xBFFF_FFFF and 0x2_0000_0000–0x3F_FFFF_FFFF. The image must fit in the Sv39 address space, even on Sv48 or Sv57 harts.
+  - The image must also fit inside one aligned 4 MiB (RV32) or 1 GiB (RV64) superpage. For the reasons, see the Linker Script section of the [CTP](./docs/ctp/src/abstraction.adoc#linker-script).
 
 For an example linker script that should work for most basic implementations, see [config/cores/cvw/cvw-rv64gc/link.ld](./config/cores/cvw/cvw-rv64gc/link.ld). Most users should only need to modify the variables at the top of the sample linker script, before the `/* Most users should not need to modify anything below this line. */` comment:
 
@@ -321,16 +341,16 @@ Once all [dependencies](#prerequisites) are installed and the [configuration fil
 Run the following command to generate test assembly files, compile them, and create self-checking ELFs:
 
 ```bash
-CONFIG_FILES=<your_config_directory>/test_config.yaml make --jobs $(nproc)
+CONFIG_FILES=<your_config_directory>/test_config.yaml make
 ```
 
 This will create all of the ELFs that apply to your DUT (based on the provided UDB configuration) in the `$WORKDIR/<config_name>/elfs` directory. These ELFs have the expected results compiled into them and use the provided macros and linker script.
 
-The following variables can be set on the command line to customize the build (e.g., `DEBUG=True CONFIG_FILES=path/to/test_config.yaml make --jobs`):
+The following variables can be set on the command line to customize the build (e.g., `DEBUG=True CONFIG_FILES=path/to/test_config.yaml make`):
 
 | Variable                         | Default                                         | Description                                                                                                                                                                                                                           |
 | -------------------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `CONFIG_FILES`                   | Spike rv32/rv64 max configs                     | Space-separated list of `test_config.yaml` paths to build ELFs for.                                                                                                                                                                   |
+| `CONFIG_FILES`                   | _(required)_                                    | Space-separated list of `test_config.yaml` paths to build ELFs for. `make coverage` defaults to the Sail rv32/rv64 max configs when unset.                                                                                            |
 | `WORKDIR`                        | `work`                                          | Directory where all build artifacts and ELFs are created.                                                                                                                                                                             |
 | `EXTENSIONS`                     | _(empty — all extensions)_                      | Comma-separated list of extensions to generate tests for. When empty, generates tests for all extensions in the UDB config.                                                                                                           |
 | `EXCLUDE_EXTENSIONS`             | _(see below)_                                   | Comma-separated list of extensions to exclude from test generation. Applied as a negative filter after `EXTENSIONS`.                                                                                                                  |
@@ -381,6 +401,18 @@ A common source of errors is configuration mismatches, so ensure that:
 - The RISC-V Sail config file matches your UDB configuration and DUT
 - Your `rvmodel_macros.h` macros correctly implement the required functionality
 - Your linker script places code/data at the correct memory addresses
+
+AI is particularly helpful for troubleshooting configuration mismatches, but of course review that the configs it produces match your design intent.
+
+Once the configuration files accurately reflect your design, remaining mismatches may come from:
+
+- DUT errors, in which your DUT does not conform to the specification. Fix it, or disable support for the extension in your config file.
+- ACT errors, such as producing uncompilable tests for a certain configuration, or testing a feature whose behavior should be UNSPECIFIED. [Open an ACT issue](https://github.com/riscv/riscv-arch-test/issues/new).
+- Parameter errors, in which the specification permits one of several behaviors. Your design has one behavior and the reference model expects a different behavior, and the configuration file lacks a parameter to choose the behavior. [Open a request for a new UDB parameter](https://github.com/riscv/riscv-unified-db/issues).
+- Reference errors, in which the expected behavior is well-defined by the spec but is not produced by Sail. [Open a Sail issue](https://github.com/riscv/sail-riscv/issues/new).
+- Specification ambiguities, in which it is unclear whether the DUT behavior is legal or not. [Open an ISA Manual clarification issue](https://github.com/riscv/riscv-isa-manual/issues).
+
+Each of these repositories is maintained by volunteers. If you are seeking commercial support, many companies offer paid design verification services.
 
 #### Debug Flag
 

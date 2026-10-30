@@ -34,8 +34,10 @@ def format_clh_type(
     assert test_data.test_chunk is not None
     test_data.test_chunk.data_values.append(params.temp_val)
 
+    # rs1 points at the data slot, so uimm selects the byte within the slot. The slot holds a value
+    # with distinct bytes for cp_uimm tests, so a misdecoded offset loads a different value.
     setup = [
-        f"addi x{params.rs1}, x{test_data.int_regs.data_reg}, {-params.immval} # adjust base address for load",
+        f"mv x{params.rs1}, x{test_data.int_regs.data_reg} # base address is the data slot",
     ]
     test = [
         f"{instr_name} x{params.rd}, {params.immval}(x{params.rs1}) # perform operation",

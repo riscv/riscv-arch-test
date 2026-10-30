@@ -24,10 +24,15 @@
 #define SAIL_MTIMECMP_ADDRESS (SAIL_CLINT_BASE_ADDRESS + 0x4000)
 #define SAIL_MTIME_ADDRESS (SAIL_CLINT_BASE_ADDRESS + 0xBFF8)
 #define SAIL_SIG_ADDRESS (SAIL_SIMPLE_INTERRUPT_GENERATOR_BASE_ADDRESS + 0x4)
+#define SAIL_SIG_GUEST_ADDRESS (SAIL_SIMPLE_INTERRUPT_GENERATOR_BASE_ADDRESS + 0x8)
 
 // Don't use invisible trap emulation for expected result generation
 #undef RVTEST_EMULATE_TIME_CSR
 #undef RVMODEL_INVISIBLE_TRAP_HANDLER
+
+// Sail does not model Smrnmi yet, so the signature build must not write mnstatus at boot.
+// The self-checking build for a DUT with Smrnmi still sets mnstatus.NMIE.
+#undef SMRNMI_SUPPORTED
 
 #undef RVMODEL_DATA_SECTION
 #define RVMODEL_DATA_SECTION \
@@ -129,6 +134,7 @@
 #define RVMODEL_TIMER_INT_SOON_DELAY 5000 // Sail ticks once per instruction; T-SBI round trips in the *_INT_SOON macros cost up to ~1000 ticks
 
 #undef RVMODEL_SET_MEXT_INT
+#undef RVMODEL_SET_MEXT_INT_M
 #define RVMODEL_SET_MEXT_INT(_R1, _R2)        \
   li _R1, (1 << 31) | (1 << 11);               \
   li _R2, SAIL_SIG_ADDRESS;    \
@@ -136,12 +142,14 @@
 
 
 #undef RVMODEL_CLR_MEXT_INT
+#undef RVMODEL_CLR_MEXT_INT_M
 #define RVMODEL_CLR_MEXT_INT(_R1, _R2)        \
   li _R1, (1 << 11);               \
   li _R2, SAIL_SIG_ADDRESS;    \
   sw _R1, 0(_R2)            ; /* Clear MEXT interrupt */ \
 
 #undef RVMODEL_SET_MSW_INT
+#undef RVMODEL_SET_MSW_INT_M
 #define RVMODEL_SET_MSW_INT(_R1, _R2)        \
   li _R1, 1;                 \
   li _R2, SAIL_MSIP_ADDRESS;              \
@@ -149,6 +157,7 @@
 
 
 #undef RVMODEL_CLR_MSW_INT
+#undef RVMODEL_CLR_MSW_INT_M
 #define RVMODEL_CLR_MSW_INT(_R1, _R2)        \
   li _R2, SAIL_MSIP_ADDRESS;              \
   sw zero, 0(_R2);
@@ -157,27 +166,59 @@
 
 ##### Supervisor Interrupts #####
 #undef RVMODEL_SET_SEXT_INT
+#undef RVMODEL_SET_SEXT_INT_M
 #define RVMODEL_SET_SEXT_INT(_R1, _R2)        \
   li _R1, (1 << 31) | (1 << 9);               \
   li _R2, SAIL_SIG_ADDRESS;    \
   sw _R1, 0(_R2)            ; /* Set SEXT interrupt */ \
 
 #undef RVMODEL_CLR_SEXT_INT
+#undef RVMODEL_CLR_SEXT_INT_M
 #define RVMODEL_CLR_SEXT_INT(_R1, _R2)        \
   li _R1, (1 << 9);               \
   li _R2, SAIL_SIG_ADDRESS;    \
   sw _R1, 0(_R2)            ; /* Clear SEXT interrupt */ \
 
 #undef RVMODEL_SET_SSW_INT
+#undef RVMODEL_SET_SSW_INT_M
 #define RVMODEL_SET_SSW_INT(_R1, _R2)        \
   li _R1, (1 << 31) | (1 << 1);               \
   li _R2, SAIL_SIG_ADDRESS;    \
   sw _R1, 0(_R2)            ; /* Set SSW interrupt */ \
 
 #undef RVMODEL_CLR_SSW_INT
+#undef RVMODEL_CLR_SSW_INT_M
 #define RVMODEL_CLR_SSW_INT(_R1, _R2)        \
   li _R1, (1 << 1);               \
   li _R2, SAIL_SIG_ADDRESS;    \
   sw _R1, 0(_R2)            ; /* Clear SSW interrupt */ \
+
+##### Guest External Interrupts #####
+// Replaced only when the DUT defines them, so that check_defines.h still reports a DUT that has
+// GEILEN > 0 without them. The Sail config's extensions.H.geilen must match the DUT's GEILEN.
+#ifdef RVMODEL_SET_GUEST_EXT_INT
+  #undef RVMODEL_SET_GUEST_EXT_INT
+  #undef RVMODEL_SET_GUEST_EXT_INT_M
+  #define RVMODEL_SET_GUEST_EXT_INT(_GEI, _R1, _R2)        \
+    li _R1, (1 << 31);               \
+    or _R1, _R1, _GEI;               \
+    li _R2, SAIL_SIG_GUEST_ADDRESS;    \
+    sw _R1, 0(_R2)            ; /* Set hgeip bit _GEI */ \
+
+  #undef RVMODEL_CLR_GUEST_EXT_INT
+  #undef RVMODEL_CLR_GUEST_EXT_INT_M
+  #define RVMODEL_CLR_GUEST_EXT_INT(_GEI, _R1, _R2)        \
+    li _R2, SAIL_SIG_GUEST_ADDRESS;    \
+    sw _GEI, 0(_R2)            ; /* Clear hgeip bit _GEI */ \
+
+#endif
+
+
+##### Sscofpmf #####
+# The reference build triggers Sail's own event counter instead of the DUT's.
+# The Sail model is configured to count fences.
+#undef RVMODEL_MHPMEVENT_CODE
+#define RVMODEL_MHPMEVENT_CODE(_R1, _R2) \
+  fence
 
 #endif // _SAIL_MACROS_H

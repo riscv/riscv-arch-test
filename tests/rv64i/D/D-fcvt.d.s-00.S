@@ -585,37 +585,37 @@ D_fcvt_d_s_cg_cp_fs1_edges_b0xbf800000:
   # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, D_fcvt_d_s_cg_cp_fs1_edges_b0xbf800000, D_fcvt_d_s_cg_cp_fs1_edges_b0xbf800000_str)
 
-# Testcase cp_fs1_edges (Test source fs1 value = 0x000000003fc00000)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs1: f31 = 0x3fc00000
+# Testcase cp_fs1_edges (Test source fs1 value = 0x0000000040200000)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs1: f31 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
-D_fcvt_d_s_cg_cp_fs1_edges_b0x3fc00000:
+D_fcvt_d_s_cg_cp_fs1_edges_b0x40200000:
   fcvt.d.s f2, f31 # perform operation
   # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, D_fcvt_d_s_cg_cp_fs1_edges_b0x3fc00000, D_fcvt_d_s_cg_cp_fs1_edges_b0x3fc00000_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, D_fcvt_d_s_cg_cp_fs1_edges_b0x40200000, D_fcvt_d_s_cg_cp_fs1_edges_b0x40200000_str)
 
-# Testcase cp_fs1_edges (Test source fs1 value = 0x00000000bfc00000)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs1: f26 = 0xbfc00000
+# Testcase cp_fs1_edges (Test source fs1 value = 0x00000000c0200000)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs1: f26 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
-D_fcvt_d_s_cg_cp_fs1_edges_b0xbfc00000:
+D_fcvt_d_s_cg_cp_fs1_edges_b0xc0200000:
   fcvt.d.s f28, f26 # perform operation
   # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, D_fcvt_d_s_cg_cp_fs1_edges_b0xbfc00000, D_fcvt_d_s_cg_cp_fs1_edges_b0xbfc00000_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, D_fcvt_d_s_cg_cp_fs1_edges_b0xc0200000, D_fcvt_d_s_cg_cp_fs1_edges_b0xc0200000_str)
 
-# Testcase cp_fs1_edges (Test source fs1 value = 0x0000000040000000)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs1: f3 = 0x40000000
+# Testcase cp_fs1_edges (Test source fs1 value = 0x000000004b800000)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs1: f3 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
-D_fcvt_d_s_cg_cp_fs1_edges_b0x40000000:
+D_fcvt_d_s_cg_cp_fs1_edges_b0x4b800000:
   fcvt.d.s f8, f3 # perform operation
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f8, D_fcvt_d_s_cg_cp_fs1_edges_b0x40000000, D_fcvt_d_s_cg_cp_fs1_edges_b0x40000000_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f8, D_fcvt_d_s_cg_cp_fs1_edges_b0x4b800000, D_fcvt_d_s_cg_cp_fs1_edges_b0x4b800000_str)
 
-# Testcase cp_fs1_edges (Test source fs1 value = 0x00000000c0000000)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs1: f31 = 0xc0000000
+# Testcase cp_fs1_edges (Test source fs1 value = 0x00000000cb800000)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs1: f31 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
-D_fcvt_d_s_cg_cp_fs1_edges_b0xc0000000:
+D_fcvt_d_s_cg_cp_fs1_edges_b0xcb800000:
   fcvt.d.s f28, f31 # perform operation
   # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, D_fcvt_d_s_cg_cp_fs1_edges_b0xc0000000, D_fcvt_d_s_cg_cp_fs1_edges_b0xc0000000_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, D_fcvt_d_s_cg_cp_fs1_edges_b0xcb800000, D_fcvt_d_s_cg_cp_fs1_edges_b0xcb800000_str)
 
 # Testcase cp_fs1_edges (Test source fs1 value = 0x0000000000800000)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0x00800000
@@ -1241,10 +1241,10 @@ RVTEST_DATA_BEGIN
 .dword 0x0000000080000000
 .dword 0x000000003f800000
 .dword 0x00000000bf800000
-.dword 0x000000003fc00000
-.dword 0x00000000bfc00000
-.dword 0x0000000040000000
-.dword 0x00000000c0000000
+.dword 0x0000000040200000
+.dword 0x00000000c0200000
+.dword 0x000000004b800000
+.dword 0x00000000cb800000
 .dword 0x0000000000800000
 .dword 0x0000000080800000
 .dword 0x000000007f7fffff
@@ -1382,10 +1382,10 @@ D_fcvt_d_s_cg_cp_fs1_edges_b0x0_str: .string "\"test: 65; cg: D_fcvt.d.s_cg; cp:
 D_fcvt_d_s_cg_cp_fs1_edges_b0x80000000_str: .string "\"test: 66; cg: D_fcvt.d.s_cg; cp: cp_fs1_edges; bin: b0x80000000\""
 D_fcvt_d_s_cg_cp_fs1_edges_b0x3f800000_str: .string "\"test: 67; cg: D_fcvt.d.s_cg; cp: cp_fs1_edges; bin: b0x3f800000\""
 D_fcvt_d_s_cg_cp_fs1_edges_b0xbf800000_str: .string "\"test: 68; cg: D_fcvt.d.s_cg; cp: cp_fs1_edges; bin: b0xbf800000\""
-D_fcvt_d_s_cg_cp_fs1_edges_b0x3fc00000_str: .string "\"test: 69; cg: D_fcvt.d.s_cg; cp: cp_fs1_edges; bin: b0x3fc00000\""
-D_fcvt_d_s_cg_cp_fs1_edges_b0xbfc00000_str: .string "\"test: 70; cg: D_fcvt.d.s_cg; cp: cp_fs1_edges; bin: b0xbfc00000\""
-D_fcvt_d_s_cg_cp_fs1_edges_b0x40000000_str: .string "\"test: 71; cg: D_fcvt.d.s_cg; cp: cp_fs1_edges; bin: b0x40000000\""
-D_fcvt_d_s_cg_cp_fs1_edges_b0xc0000000_str: .string "\"test: 72; cg: D_fcvt.d.s_cg; cp: cp_fs1_edges; bin: b0xc0000000\""
+D_fcvt_d_s_cg_cp_fs1_edges_b0x40200000_str: .string "\"test: 69; cg: D_fcvt.d.s_cg; cp: cp_fs1_edges; bin: b0x40200000\""
+D_fcvt_d_s_cg_cp_fs1_edges_b0xc0200000_str: .string "\"test: 70; cg: D_fcvt.d.s_cg; cp: cp_fs1_edges; bin: b0xc0200000\""
+D_fcvt_d_s_cg_cp_fs1_edges_b0x4b800000_str: .string "\"test: 71; cg: D_fcvt.d.s_cg; cp: cp_fs1_edges; bin: b0x4b800000\""
+D_fcvt_d_s_cg_cp_fs1_edges_b0xcb800000_str: .string "\"test: 72; cg: D_fcvt.d.s_cg; cp: cp_fs1_edges; bin: b0xcb800000\""
 D_fcvt_d_s_cg_cp_fs1_edges_b0x800000_str: .string "\"test: 73; cg: D_fcvt.d.s_cg; cp: cp_fs1_edges; bin: b0x800000\""
 D_fcvt_d_s_cg_cp_fs1_edges_b0x80800000_str: .string "\"test: 74; cg: D_fcvt.d.s_cg; cp: cp_fs1_edges; bin: b0x80800000\""
 D_fcvt_d_s_cg_cp_fs1_edges_b0x7f7fffff_str: .string "\"test: 75; cg: D_fcvt.d.s_cg; cp: cp_fs1_edges; bin: b0x7f7fffff\""

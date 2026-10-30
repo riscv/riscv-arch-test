@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 486
+#define SIGUPD_COUNT 688
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -1511,6 +1511,32 @@ Zaamo_amomax_w_cg_cp_rs2_edges_0x100000001:
   LREG x20, 0(x20) # Load the updated value from memory
   # Check if x20 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x20, Zaamo_amomax_w_cg_cp_rs2_edges_0x100000001, Zaamo_amomax_w_cg_cp_rs2_edges_0x100000001_str)
+
+# Testcase cp_rs2_edges (Test source rs2 value = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x17, x14) # load value in memory: x14 = 0xd19eed2c4d1cedc0
+  RVTEST_TESTDATA_LOAD_INT(x17, x11) # load rs2: x11 = 0x0000000080000000
+  LA(x20, scratch) # load base address into rs1
+  SREG x14, 0(x20) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cp_rs2_edges_0x80000000:
+  amomax.w x12, x11, (x20) # perform operation
+  # Check if x12 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x12, Zaamo_amomax_w_cg_cp_rs2_edges_0x80000000, Zaamo_amomax_w_cg_cp_rs2_edges_0x80000000_str)
+  LREG x20, 0(x20) # Load the updated value from memory
+  # Check if x20 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x20, Zaamo_amomax_w_cg_cp_rs2_edges_0x80000000, Zaamo_amomax_w_cg_cp_rs2_edges_0x80000000_str)
+
+# Testcase cp_rs2_edges (Test source rs2 value = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x17, x15) # load value in memory: x15 = 0x923d70a80c64b935
+  RVTEST_TESTDATA_LOAD_INT(x17, x29) # load rs2: x29 = 0x000000007fffffff
+  LA(x2, scratch) # load base address into rs1
+  SREG x15, 0(x2) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cp_rs2_edges_0x7fffffff:
+  amomax.w x30, x29, (x2) # perform operation
+  # Check if x30 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x30, Zaamo_amomax_w_cg_cp_rs2_edges_0x7fffffff, Zaamo_amomax_w_cg_cp_rs2_edges_0x7fffffff_str)
+  LREG x2, 0(x2) # Load the updated value from memory
+  # Check if x2 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x2, Zaamo_amomax_w_cg_cp_rs2_edges_0x7fffffff, Zaamo_amomax_w_cg_cp_rs2_edges_0x7fffffff_str)
 
 /////////////////////////////////
 // cmp_rs1_rs2_nx0
@@ -3281,6 +3307,1305 @@ Zaamo_amomax_w_cg_cp_align_word_b4:
   RVTEST_SIGUPD(x15, x5, x4, x17, Zaamo_amomax_w_cg_cp_align_word_b4, Zaamo_amomax_w_cg_cp_align_word_b4_str)
 
 
+/////////////////////////////////
+// cp_memval_word
+/////////////////////////////////
+
+# Testcase cp_memval_word (memory value = 0x0)
+  RVTEST_TESTDATA_LOAD_INT(x27, x24) # load value in memory: x24 = 0x0000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x27, x18) # load rs2: x18 = 0xeae8dfbfcb94efa5
+  LA(x6, scratch) # load base address into rs1
+  SREG x24, 0(x6) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cp_memval_word_0x0:
+  amomax.w x19, x18, (x6) # perform operation
+  # Check if x19 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x19, Zaamo_amomax_w_cg_cp_memval_word_0x0, Zaamo_amomax_w_cg_cp_memval_word_0x0_str)
+  LREG x6, 0(x6) # Load the updated value from memory
+  # Check if x6 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x6, Zaamo_amomax_w_cg_cp_memval_word_0x0, Zaamo_amomax_w_cg_cp_memval_word_0x0_str)
+
+# Testcase cp_memval_word (memory value = 0x1)
+  RVTEST_TESTDATA_LOAD_INT(x27, x8) # load value in memory: x8 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x27, x13) # load rs2: x13 = 0x6ff1d438280f5a4b
+  LA(x9, scratch) # load base address into rs1
+  SREG x8, 0(x9) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cp_memval_word_0x1:
+  amomax.w x25, x13, (x9) # perform operation
+  # Check if x25 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x25, Zaamo_amomax_w_cg_cp_memval_word_0x1, Zaamo_amomax_w_cg_cp_memval_word_0x1_str)
+  LREG x9, 0(x9) # Load the updated value from memory
+  # Check if x9 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x9, Zaamo_amomax_w_cg_cp_memval_word_0x1, Zaamo_amomax_w_cg_cp_memval_word_0x1_str)
+
+# Testcase cp_memval_word (memory value = 0x7fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x27, x24) # load value in memory: x24 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x27, x3) # load rs2: x3 = 0x320204d9c720aade
+  LA(x12, scratch) # load base address into rs1
+  SREG x24, 0(x12) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cp_memval_word_0x7fffffff:
+  amomax.w x21, x3, (x12) # perform operation
+  # Check if x21 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x21, Zaamo_amomax_w_cg_cp_memval_word_0x7fffffff, Zaamo_amomax_w_cg_cp_memval_word_0x7fffffff_str)
+  LREG x12, 0(x12) # Load the updated value from memory
+  # Check if x12 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x12, Zaamo_amomax_w_cg_cp_memval_word_0x7fffffff, Zaamo_amomax_w_cg_cp_memval_word_0x7fffffff_str)
+
+# Testcase cp_memval_word (memory value = 0x80000000)
+  RVTEST_TESTDATA_LOAD_INT(x27, x25) # load value in memory: x25 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x27, x8) # load rs2: x8 = 0xd02b83efa8052256
+  LA(x9, scratch) # load base address into rs1
+  SREG x25, 0(x9) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cp_memval_word_0x80000000:
+  amomax.w x30, x8, (x9) # perform operation
+  # Check if x30 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x30, Zaamo_amomax_w_cg_cp_memval_word_0x80000000, Zaamo_amomax_w_cg_cp_memval_word_0x80000000_str)
+  LREG x9, 0(x9) # Load the updated value from memory
+  # Check if x9 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x9, Zaamo_amomax_w_cg_cp_memval_word_0x80000000, Zaamo_amomax_w_cg_cp_memval_word_0x80000000_str)
+
+# Testcase cp_memval_word (memory value = 0xffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x27, x10) # load value in memory: x10 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x27, x17) # load rs2: x17 = 0xfe39a911173b030c
+  LA(x12, scratch) # load base address into rs1
+  SREG x10, 0(x12) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cp_memval_word_0xffffffff:
+  amomax.w x22, x17, (x12) # perform operation
+  # Check if x22 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x22, Zaamo_amomax_w_cg_cp_memval_word_0xffffffff, Zaamo_amomax_w_cg_cp_memval_word_0xffffffff_str)
+  LREG x12, 0(x12) # Load the updated value from memory
+  # Check if x12 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x12, Zaamo_amomax_w_cg_cp_memval_word_0xffffffff, Zaamo_amomax_w_cg_cp_memval_word_0xffffffff_str)
+
+/////////////////////////////////
+// cp_custom_amo_aqrl
+/////////////////////////////////
+
+# Testcase cp_custom_aqrl (ordering suffix = '')
+  RVTEST_TESTDATA_LOAD_INT(x27, x25) # load value in memory: x25 = 0xe67c48cba28a1a2e
+  RVTEST_TESTDATA_LOAD_INT(x27, x24) # load rs2: x24 = 0x9529f8754d53447a
+  LA(x8, scratch) # load base address into rs1
+  SREG x25, 0(x8) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cp_custom_aqrl:
+  amomax.w x19, x24, (x8) # perform operation
+  # Check if x19 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x19, Zaamo_amomax_w_cg_cp_custom_aqrl, Zaamo_amomax_w_cg_cp_custom_aqrl_str)
+  LREG x8, 0(x8) # Load the updated value from memory
+  # Check if x8 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x8, Zaamo_amomax_w_cg_cp_custom_aqrl, Zaamo_amomax_w_cg_cp_custom_aqrl_str)
+
+# Testcase cp_custom_aqrl (ordering suffix = '.aq')
+  RVTEST_TESTDATA_LOAD_INT(x27, x29) # load value in memory: x29 = 0x23479baa70b4d4e8
+  RVTEST_TESTDATA_LOAD_INT(x27, x23) # load rs2: x23 = 0xb467f7cbecbf04a1
+  LA(x31, scratch) # load base address into rs1
+  SREG x29, 0(x31) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cp_custom_aqrl_aq:
+  amomax.w.aq x12, x23, (x31) # perform operation
+  # Check if x12 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x12, Zaamo_amomax_w_cg_cp_custom_aqrl_aq, Zaamo_amomax_w_cg_cp_custom_aqrl_aq_str)
+  LREG x31, 0(x31) # Load the updated value from memory
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zaamo_amomax_w_cg_cp_custom_aqrl_aq, Zaamo_amomax_w_cg_cp_custom_aqrl_aq_str)
+
+# Testcase cp_custom_aqrl (ordering suffix = '.rl')
+  RVTEST_TESTDATA_LOAD_INT(x27, x18) # load value in memory: x18 = 0xe3860bb9aa9eac46
+  RVTEST_TESTDATA_LOAD_INT(x27, x3) # load rs2: x3 = 0xcec45296aebfc257
+  LA(x23, scratch) # load base address into rs1
+  SREG x18, 0(x23) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cp_custom_aqrl_rl:
+  amomax.w.rl x30, x3, (x23) # perform operation
+  # Check if x30 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x30, Zaamo_amomax_w_cg_cp_custom_aqrl_rl, Zaamo_amomax_w_cg_cp_custom_aqrl_rl_str)
+  LREG x23, 0(x23) # Load the updated value from memory
+  # Check if x23 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x23, Zaamo_amomax_w_cg_cp_custom_aqrl_rl, Zaamo_amomax_w_cg_cp_custom_aqrl_rl_str)
+
+# Testcase cp_custom_aqrl (ordering suffix = '.aqrl')
+  RVTEST_TESTDATA_LOAD_INT(x27, x19) # load value in memory: x19 = 0xd1334eccf264eb3e
+  RVTEST_TESTDATA_LOAD_INT(x27, x24) # load rs2: x24 = 0x3ced837f24c69a3e
+  LA(x6, scratch) # load base address into rs1
+  SREG x19, 0(x6) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cp_custom_aqrl_aqrl:
+  amomax.w.aqrl x11, x24, (x6) # perform operation
+  # Check if x11 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x11, Zaamo_amomax_w_cg_cp_custom_aqrl_aqrl, Zaamo_amomax_w_cg_cp_custom_aqrl_aqrl_str)
+  LREG x6, 0(x6) # Load the updated value from memory
+  # Check if x6 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x6, Zaamo_amomax_w_cg_cp_custom_aqrl_aqrl, Zaamo_amomax_w_cg_cp_custom_aqrl_aqrl_str)
+
+/////////////////////////////////
+// cr_memval_rs2_edges_word
+/////////////////////////////////
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x0, rs2 = 0x0000000000000000)
+  RVTEST_TESTDATA_LOAD_INT(x27, x23) # load value in memory: x23 = 0x0000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x27, x28) # load rs2: x28 = 0x0000000000000000
+  LA(x26, scratch) # load base address into rs1
+  SREG x23, 0(x26) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x0:
+  amomax.w x17, x28, (x26) # perform operation
+  # Check if x17 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x17, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x0, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x0_str)
+  LREG x26, 0(x26) # Load the updated value from memory
+  # Check if x26 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x26, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x0, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x0_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x0, rs2 = 0x0000000000000001)
+  RVTEST_TESTDATA_LOAD_INT(x27, x26) # load value in memory: x26 = 0x0000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x27, x11) # load rs2: x11 = 0x0000000000000001
+  LA(x1, scratch) # load base address into rs1
+  SREG x26, 0(x1) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x1:
+  amomax.w x24, x11, (x1) # perform operation
+  # Check if x24 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x24, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x1, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x1_str)
+  LREG x1, 0(x1) # Load the updated value from memory
+  # Check if x1 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x1, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x1, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x1_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x0, rs2 = 0x0000000000000002)
+  RVTEST_TESTDATA_LOAD_INT(x27, x7) # load value in memory: x7 = 0x0000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x27, x23) # load rs2: x23 = 0x0000000000000002
+  LA(x24, scratch) # load base address into rs1
+  SREG x7, 0(x24) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x2:
+  amomax.w x10, x23, (x24) # perform operation
+  # Check if x10 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x10, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x2, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x2_str)
+  LREG x24, 0(x24) # Load the updated value from memory
+  # Check if x24 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x24, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x2, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x2_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x0, rs2 = 0x8000000000000000)
+  RVTEST_TESTDATA_LOAD_INT(x27, x25) # load value in memory: x25 = 0x0000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x27, x3) # load rs2: x3 = 0x8000000000000000
+  LA(x16, scratch) # load base address into rs1
+  SREG x25, 0(x16) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x8000000000000000:
+  amomax.w x29, x3, (x16) # perform operation
+  # Check if x29 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x29, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x8000000000000000, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x8000000000000000_str)
+  LREG x16, 0(x16) # Load the updated value from memory
+  # Check if x16 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x16, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x8000000000000000, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x8000000000000000_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x0, rs2 = 0x8000000000000001)
+  RVTEST_TESTDATA_LOAD_INT(x27, x28) # load value in memory: x28 = 0x0000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x27, x30) # load rs2: x30 = 0x8000000000000001
+  LA(x9, scratch) # load base address into rs1
+  SREG x28, 0(x9) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x8000000000000001:
+  amomax.w x26, x30, (x9) # perform operation
+  # Check if x26 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x26, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x8000000000000001, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x8000000000000001_str)
+  LREG x9, 0(x9) # Load the updated value from memory
+  # Check if x9 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x9, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x8000000000000001, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x8000000000000001_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x0, rs2 = 0x7fffffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x27, x14) # load value in memory: x14 = 0x0000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x27, x28) # load rs2: x28 = 0x7fffffffffffffff
+  LA(x19, scratch) # load base address into rs1
+  SREG x14, 0(x19) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x7fffffffffffffff:
+  amomax.w x24, x28, (x19) # perform operation
+  # Check if x24 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x24, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x7fffffffffffffff, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x7fffffffffffffff_str)
+  LREG x19, 0(x19) # Load the updated value from memory
+  # Check if x19 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x19, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x7fffffffffffffff, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x7fffffffffffffff_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x0, rs2 = 0x7ffffffffffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x27, x25) # load value in memory: x25 = 0x0000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x27, x2) # load rs2: x2 = 0x7ffffffffffffffe
+  LA(x11, scratch) # load base address into rs1
+  SREG x25, 0(x11) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x7ffffffffffffffe:
+  amomax.w x9, x2, (x11) # perform operation
+  # Check if x9 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x9, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x7ffffffffffffffe, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x7ffffffffffffffe_str)
+  LREG x11, 0(x11) # Load the updated value from memory
+  # Check if x11 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x11, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x7ffffffffffffffe, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x7ffffffffffffffe_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x0, rs2 = 0xffffffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x27, x3) # load value in memory: x3 = 0x0000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x27, x29) # load rs2: x29 = 0xffffffffffffffff
+  LA(x6, scratch) # load base address into rs1
+  SREG x3, 0(x6) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0xffffffffffffffff:
+  amomax.w x17, x29, (x6) # perform operation
+  # Check if x17 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x17, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0xffffffffffffffff, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0xffffffffffffffff_str)
+  LREG x6, 0(x6) # Load the updated value from memory
+  # Check if x6 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x6, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0xffffffffffffffff, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0xffffffffffffffff_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x0, rs2 = 0xfffffffffffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x27, x16) # load value in memory: x16 = 0x0000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x27, x31) # load rs2: x31 = 0xfffffffffffffffe
+  LA(x30, scratch) # load base address into rs1
+  SREG x16, 0(x30) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0xfffffffffffffffe:
+  amomax.w x11, x31, (x30) # perform operation
+  # Check if x11 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x11, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0xfffffffffffffffe, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0xfffffffffffffffe_str)
+  LREG x30, 0(x30) # Load the updated value from memory
+  # Check if x30 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x30, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0xfffffffffffffffe, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0xfffffffffffffffe_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x0, rs2 = 0x5bbc887763ae86f2)
+  RVTEST_TESTDATA_LOAD_INT(x27, x19) # load value in memory: x19 = 0x0000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x27, x29) # load rs2: x29 = 0x5bbc887763ae86f2
+  LA(x9, scratch) # load base address into rs1
+  SREG x19, 0(x9) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x5bbc887763ae86f2:
+  amomax.w x12, x29, (x9) # perform operation
+  # Check if x12 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x12, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x5bbc887763ae86f2, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x5bbc887763ae86f2_str)
+  LREG x9, 0(x9) # Load the updated value from memory
+  # Check if x9 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x9, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x5bbc887763ae86f2, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x5bbc887763ae86f2_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x0, rs2 = 0xaaaaaaaaaaaaaaaa)
+  RVTEST_TESTDATA_LOAD_INT(x27, x14) # load value in memory: x14 = 0x0000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x27, x28) # load rs2: x28 = 0xaaaaaaaaaaaaaaaa
+  LA(x10, scratch) # load base address into rs1
+  SREG x14, 0(x10) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0xaaaaaaaaaaaaaaaa:
+  amomax.w x16, x28, (x10) # perform operation
+  # Check if x16 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x16, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0xaaaaaaaaaaaaaaaa, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0xaaaaaaaaaaaaaaaa_str)
+  LREG x10, 0(x10) # Load the updated value from memory
+  # Check if x10 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x10, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0xaaaaaaaaaaaaaaaa, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0xaaaaaaaaaaaaaaaa_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x0, rs2 = 0x5555555555555555)
+  RVTEST_TESTDATA_LOAD_INT(x27, x29) # load value in memory: x29 = 0x0000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x27, x6) # load rs2: x6 = 0x5555555555555555
+  LA(x30, scratch) # load base address into rs1
+  SREG x29, 0(x30) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x5555555555555555:
+  amomax.w x17, x6, (x30) # perform operation
+  # Check if x17 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x17, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x5555555555555555, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x5555555555555555_str)
+  LREG x30, 0(x30) # Load the updated value from memory
+  # Check if x30 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x30, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x5555555555555555, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x5555555555555555_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x0, rs2 = 0x00000000ffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x27, x16) # load value in memory: x16 = 0x0000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x27, x18) # load rs2: x18 = 0x00000000ffffffff
+  LA(x25, scratch) # load base address into rs1
+  SREG x16, 0(x25) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0xffffffff:
+  amomax.w x8, x18, (x25) # perform operation
+  # Check if x8 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x8, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0xffffffff, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0xffffffff_str)
+  LREG x25, 0(x25) # Load the updated value from memory
+  # Check if x25 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x25, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0xffffffff, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0xffffffff_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x0, rs2 = 0x00000000fffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x27, x11) # load value in memory: x11 = 0x0000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x27, x10) # load rs2: x10 = 0x00000000fffffffe
+  LA(x18, scratch) # load base address into rs1
+  SREG x11, 0(x18) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0xfffffffe:
+  amomax.w x25, x10, (x18) # perform operation
+  # Check if x25 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x25, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0xfffffffe, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0xfffffffe_str)
+  LREG x18, 0(x18) # Load the updated value from memory
+  # Check if x18 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x18, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0xfffffffe, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0xfffffffe_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x0, rs2 = 0x0000000100000000)
+  RVTEST_TESTDATA_LOAD_INT(x27, x1) # load value in memory: x1 = 0x0000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x27, x3) # load rs2: x3 = 0x0000000100000000
+  LA(x17, scratch) # load base address into rs1
+  SREG x1, 0(x17) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x100000000:
+  amomax.w x8, x3, (x17) # perform operation
+  # Check if x8 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x8, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x100000000, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x100000000_str)
+  LREG x17, 0(x17) # Load the updated value from memory
+  # Check if x17 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x17, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x100000000, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x100000000_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x0, rs2 = 0x0000000100000001)
+  RVTEST_TESTDATA_LOAD_INT(x27, x25) # load value in memory: x25 = 0x0000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x27, x6) # load rs2: x6 = 0x0000000100000001
+  LA(x8, scratch) # load base address into rs1
+  SREG x25, 0(x8) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x100000001:
+  amomax.w x20, x6, (x8) # perform operation
+  # Check if x20 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x20, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x100000001, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x100000001_str)
+  LREG x8, 0(x8) # Load the updated value from memory
+  # Check if x8 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x8, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x100000001, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x100000001_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x0, rs2 = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x27, x12) # load value in memory: x12 = 0x0000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x27, x22) # load rs2: x22 = 0x0000000080000000
+  LA(x16, scratch) # load base address into rs1
+  SREG x12, 0(x16) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x80000000:
+  amomax.w x23, x22, (x16) # perform operation
+  # Check if x23 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x23, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x80000000, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x80000000_str)
+  LREG x16, 0(x16) # Load the updated value from memory
+  # Check if x16 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x16, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x80000000, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x80000000_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x0, rs2 = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x27, x21) # load value in memory: x21 = 0x0000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x27, x24) # load rs2: x24 = 0x000000007fffffff
+  LA(x6, scratch) # load base address into rs1
+  SREG x21, 0(x6) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x7fffffff:
+  amomax.w x11, x24, (x6) # perform operation
+  # Check if x11 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x11, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x7fffffff, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x7fffffff_str)
+  LREG x6, 0(x6) # Load the updated value from memory
+  # Check if x6 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x6, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x7fffffff, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x7fffffff_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x1, rs2 = 0x0000000000000000)
+  RVTEST_TESTDATA_LOAD_INT(x27, x17) # load value in memory: x17 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x27, x13) # load rs2: x13 = 0x0000000000000000
+  LA(x12, scratch) # load base address into rs1
+  SREG x17, 0(x12) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x0:
+  amomax.w x22, x13, (x12) # perform operation
+  # Check if x22 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x22, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x0, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x0_str)
+  LREG x12, 0(x12) # Load the updated value from memory
+  # Check if x12 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x12, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x0, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x0_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x1, rs2 = 0x0000000000000001)
+  RVTEST_TESTDATA_LOAD_INT(x27, x7) # load value in memory: x7 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x27, x6) # load rs2: x6 = 0x0000000000000001
+  LA(x28, scratch) # load base address into rs1
+  SREG x7, 0(x28) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x1:
+  amomax.w x31, x6, (x28) # perform operation
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x1, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x1_str)
+  LREG x28, 0(x28) # Load the updated value from memory
+  # Check if x28 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x28, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x1, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x1_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x1, rs2 = 0x0000000000000002)
+  RVTEST_TESTDATA_LOAD_INT(x27, x10) # load value in memory: x10 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x27, x3) # load rs2: x3 = 0x0000000000000002
+  LA(x30, scratch) # load base address into rs1
+  SREG x10, 0(x30) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x2:
+  amomax.w x14, x3, (x30) # perform operation
+  # Check if x14 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x14, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x2, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x2_str)
+  LREG x30, 0(x30) # Load the updated value from memory
+  # Check if x30 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x30, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x2, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x2_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x1, rs2 = 0x8000000000000000)
+  RVTEST_TESTDATA_LOAD_INT(x27, x26) # load value in memory: x26 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x27, x12) # load rs2: x12 = 0x8000000000000000
+  LA(x8, scratch) # load base address into rs1
+  SREG x26, 0(x8) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x8000000000000000:
+  amomax.w x2, x12, (x8) # perform operation
+  # Check if x2 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x2, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x8000000000000000, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x8000000000000000_str)
+  LREG x8, 0(x8) # Load the updated value from memory
+  # Check if x8 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x8, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x8000000000000000, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x8000000000000000_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x1, rs2 = 0x8000000000000001)
+  RVTEST_TESTDATA_LOAD_INT(x27, x25) # load value in memory: x25 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x27, x3) # load rs2: x3 = 0x8000000000000001
+  LA(x29, scratch) # load base address into rs1
+  SREG x25, 0(x29) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x8000000000000001:
+  amomax.w x6, x3, (x29) # perform operation
+  # Check if x6 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x6, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x8000000000000001, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x8000000000000001_str)
+  LREG x29, 0(x29) # Load the updated value from memory
+  # Check if x29 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x29, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x8000000000000001, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x8000000000000001_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x1, rs2 = 0x7fffffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x27, x13) # load value in memory: x13 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x27, x28) # load rs2: x28 = 0x7fffffffffffffff
+  LA(x2, scratch) # load base address into rs1
+  SREG x13, 0(x2) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x7fffffffffffffff:
+  amomax.w x17, x28, (x2) # perform operation
+  # Check if x17 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x17, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x7fffffffffffffff, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x7fffffffffffffff_str)
+  LREG x2, 0(x2) # Load the updated value from memory
+  # Check if x2 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x2, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x7fffffffffffffff, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x7fffffffffffffff_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x1, rs2 = 0x7ffffffffffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x27, x1) # load value in memory: x1 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x27, x19) # load rs2: x19 = 0x7ffffffffffffffe
+  LA(x31, scratch) # load base address into rs1
+  SREG x1, 0(x31) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x7ffffffffffffffe:
+  amomax.w x22, x19, (x31) # perform operation
+  # Check if x22 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x22, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x7ffffffffffffffe, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x7ffffffffffffffe_str)
+  LREG x31, 0(x31) # Load the updated value from memory
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x7ffffffffffffffe, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x7ffffffffffffffe_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x1, rs2 = 0xffffffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x27, x30) # load value in memory: x30 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x27, x8) # load rs2: x8 = 0xffffffffffffffff
+  LA(x19, scratch) # load base address into rs1
+  SREG x30, 0(x19) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0xffffffffffffffff:
+  amomax.w x12, x8, (x19) # perform operation
+  # Check if x12 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x12, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0xffffffffffffffff, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0xffffffffffffffff_str)
+  LREG x19, 0(x19) # Load the updated value from memory
+  # Check if x19 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x19, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0xffffffffffffffff, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0xffffffffffffffff_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x1, rs2 = 0xfffffffffffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x27, x12) # load value in memory: x12 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x27, x23) # load rs2: x23 = 0xfffffffffffffffe
+  LA(x20, scratch) # load base address into rs1
+  SREG x12, 0(x20) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0xfffffffffffffffe:
+  amomax.w x8, x23, (x20) # perform operation
+  # Check if x8 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x8, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0xfffffffffffffffe, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0xfffffffffffffffe_str)
+  LREG x20, 0(x20) # Load the updated value from memory
+  # Check if x20 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x20, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0xfffffffffffffffe, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0xfffffffffffffffe_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x1, rs2 = 0x5bbc887763ae86f2)
+  RVTEST_TESTDATA_LOAD_INT(x27, x13) # load value in memory: x13 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x27, x3) # load rs2: x3 = 0x5bbc887763ae86f2
+  LA(x22, scratch) # load base address into rs1
+  SREG x13, 0(x22) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x5bbc887763ae86f2:
+  amomax.w x2, x3, (x22) # perform operation
+  # Check if x2 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x2, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x5bbc887763ae86f2, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x5bbc887763ae86f2_str)
+  LREG x22, 0(x22) # Load the updated value from memory
+  # Check if x22 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x22, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x5bbc887763ae86f2, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x5bbc887763ae86f2_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x1, rs2 = 0xaaaaaaaaaaaaaaaa)
+  RVTEST_TESTDATA_LOAD_INT(x27, x26) # load value in memory: x26 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x27, x3) # load rs2: x3 = 0xaaaaaaaaaaaaaaaa
+  LA(x10, scratch) # load base address into rs1
+  SREG x26, 0(x10) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0xaaaaaaaaaaaaaaaa:
+  amomax.w x13, x3, (x10) # perform operation
+  # Check if x13 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x13, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0xaaaaaaaaaaaaaaaa, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0xaaaaaaaaaaaaaaaa_str)
+  LREG x10, 0(x10) # Load the updated value from memory
+  # Check if x10 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x10, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0xaaaaaaaaaaaaaaaa, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0xaaaaaaaaaaaaaaaa_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x1, rs2 = 0x5555555555555555)
+  RVTEST_TESTDATA_LOAD_INT(x27, x12) # load value in memory: x12 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x27, x22) # load rs2: x22 = 0x5555555555555555
+  LA(x6, scratch) # load base address into rs1
+  SREG x12, 0(x6) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x5555555555555555:
+  amomax.w x8, x22, (x6) # perform operation
+  # Check if x8 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x8, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x5555555555555555, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x5555555555555555_str)
+  LREG x6, 0(x6) # Load the updated value from memory
+  # Check if x6 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x6, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x5555555555555555, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x5555555555555555_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x1, rs2 = 0x00000000ffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x27, x22) # load value in memory: x22 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x27, x20) # load rs2: x20 = 0x00000000ffffffff
+  LA(x1, scratch) # load base address into rs1
+  SREG x22, 0(x1) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0xffffffff:
+  amomax.w x13, x20, (x1) # perform operation
+  # Check if x13 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x13, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0xffffffff, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0xffffffff_str)
+  LREG x1, 0(x1) # Load the updated value from memory
+  # Check if x1 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x1, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0xffffffff, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0xffffffff_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x1, rs2 = 0x00000000fffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x27, x10) # load value in memory: x10 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x27, x14) # load rs2: x14 = 0x00000000fffffffe
+  LA(x12, scratch) # load base address into rs1
+  SREG x10, 0(x12) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0xfffffffe:
+  amomax.w x2, x14, (x12) # perform operation
+  # Check if x2 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x2, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0xfffffffe, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0xfffffffe_str)
+  LREG x12, 0(x12) # Load the updated value from memory
+  # Check if x12 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x12, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0xfffffffe, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0xfffffffe_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x1, rs2 = 0x0000000100000000)
+  RVTEST_TESTDATA_LOAD_INT(x27, x23) # load value in memory: x23 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x27, x3) # load rs2: x3 = 0x0000000100000000
+  LA(x7, scratch) # load base address into rs1
+  SREG x23, 0(x7) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x100000000:
+  amomax.w x1, x3, (x7) # perform operation
+  # Check if x1 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x1, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x100000000, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x100000000_str)
+  LREG x7, 0(x7) # Load the updated value from memory
+  # Check if x7 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x7, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x100000000, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x100000000_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x1, rs2 = 0x0000000100000001)
+  RVTEST_TESTDATA_LOAD_INT(x27, x20) # load value in memory: x20 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x27, x7) # load rs2: x7 = 0x0000000100000001
+  LA(x6, scratch) # load base address into rs1
+  SREG x20, 0(x6) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x100000001:
+  amomax.w x9, x7, (x6) # perform operation
+  # Check if x9 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x9, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x100000001, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x100000001_str)
+  LREG x6, 0(x6) # Load the updated value from memory
+  # Check if x6 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x6, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x100000001, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x100000001_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x1, rs2 = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x27, x26) # load value in memory: x26 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x27, x8) # load rs2: x8 = 0x0000000080000000
+  LA(x12, scratch) # load base address into rs1
+  SREG x26, 0(x12) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x80000000:
+  amomax.w x17, x8, (x12) # perform operation
+  # Check if x17 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x17, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x80000000, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x80000000_str)
+  LREG x12, 0(x12) # Load the updated value from memory
+  # Check if x12 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x12, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x80000000, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x80000000_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x1, rs2 = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x27, x10) # load value in memory: x10 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x27, x22) # load rs2: x22 = 0x000000007fffffff
+  LA(x24, scratch) # load base address into rs1
+  SREG x10, 0(x24) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x7fffffff:
+  amomax.w x9, x22, (x24) # perform operation
+  # Check if x9 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x9, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x7fffffff, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x7fffffff_str)
+  LREG x24, 0(x24) # Load the updated value from memory
+  # Check if x24 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x24, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x7fffffff, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x7fffffff_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x7fffffff, rs2 = 0x0000000000000000)
+  RVTEST_TESTDATA_LOAD_INT(x27, x17) # load value in memory: x17 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x27, x2) # load rs2: x2 = 0x0000000000000000
+  LA(x9, scratch) # load base address into rs1
+  SREG x17, 0(x9) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x0:
+  amomax.w x7, x2, (x9) # perform operation
+  # Check if x7 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x7, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x0, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x0_str)
+  LREG x9, 0(x9) # Load the updated value from memory
+  # Check if x9 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x9, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x0, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x0_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x7fffffff, rs2 = 0x0000000000000001)
+  RVTEST_TESTDATA_LOAD_INT(x27, x28) # load value in memory: x28 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x27, x9) # load rs2: x9 = 0x0000000000000001
+  LA(x6, scratch) # load base address into rs1
+  SREG x28, 0(x6) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x1:
+  amomax.w x24, x9, (x6) # perform operation
+  # Check if x24 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x24, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x1, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x1_str)
+  LREG x6, 0(x6) # Load the updated value from memory
+  # Check if x6 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x6, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x1, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x1_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x7fffffff, rs2 = 0x0000000000000002)
+  RVTEST_TESTDATA_LOAD_INT(x27, x24) # load value in memory: x24 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x27, x20) # load rs2: x20 = 0x0000000000000002
+  LA(x31, scratch) # load base address into rs1
+  SREG x24, 0(x31) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x2:
+  amomax.w x29, x20, (x31) # perform operation
+  # Check if x29 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x29, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x2, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x2_str)
+  LREG x31, 0(x31) # Load the updated value from memory
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x2, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x2_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x7fffffff, rs2 = 0x8000000000000000)
+  RVTEST_TESTDATA_LOAD_INT(x27, x17) # load value in memory: x17 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x27, x2) # load rs2: x2 = 0x8000000000000000
+  LA(x6, scratch) # load base address into rs1
+  SREG x17, 0(x6) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x8000000000000000:
+  amomax.w x25, x2, (x6) # perform operation
+  # Check if x25 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x25, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x8000000000000000, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x8000000000000000_str)
+  LREG x6, 0(x6) # Load the updated value from memory
+  # Check if x6 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x6, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x8000000000000000, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x8000000000000000_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x7fffffff, rs2 = 0x8000000000000001)
+  RVTEST_TESTDATA_LOAD_INT(x27, x17) # load value in memory: x17 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x27, x26) # load rs2: x26 = 0x8000000000000001
+  LA(x3, scratch) # load base address into rs1
+  SREG x17, 0(x3) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x8000000000000001:
+  amomax.w x16, x26, (x3) # perform operation
+  # Check if x16 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x16, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x8000000000000001, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x8000000000000001_str)
+  LREG x3, 0(x3) # Load the updated value from memory
+  # Check if x3 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x3, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x8000000000000001, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x8000000000000001_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x7fffffff, rs2 = 0x7fffffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x27, x19) # load value in memory: x19 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x27, x28) # load rs2: x28 = 0x7fffffffffffffff
+  LA(x20, scratch) # load base address into rs1
+  SREG x19, 0(x20) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x7fffffffffffffff:
+  amomax.w x1, x28, (x20) # perform operation
+  # Check if x1 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x1, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x7fffffffffffffff, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x7fffffffffffffff_str)
+  LREG x20, 0(x20) # Load the updated value from memory
+  # Check if x20 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x20, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x7fffffffffffffff, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x7fffffffffffffff_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x7fffffff, rs2 = 0x7ffffffffffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x27, x29) # load value in memory: x29 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x27, x1) # load rs2: x1 = 0x7ffffffffffffffe
+  LA(x31, scratch) # load base address into rs1
+  SREG x29, 0(x31) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x7ffffffffffffffe:
+  amomax.w x20, x1, (x31) # perform operation
+  # Check if x20 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x20, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x7ffffffffffffffe, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x7ffffffffffffffe_str)
+  LREG x31, 0(x31) # Load the updated value from memory
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x7ffffffffffffffe, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x7ffffffffffffffe_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x7fffffff, rs2 = 0xffffffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x27, x3) # load value in memory: x3 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x27, x17) # load rs2: x17 = 0xffffffffffffffff
+  LA(x29, scratch) # load base address into rs1
+  SREG x3, 0(x29) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0xffffffffffffffff:
+  amomax.w x13, x17, (x29) # perform operation
+  # Check if x13 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x13, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0xffffffffffffffff, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0xffffffffffffffff_str)
+  LREG x29, 0(x29) # Load the updated value from memory
+  # Check if x29 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x29, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0xffffffffffffffff, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0xffffffffffffffff_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x7fffffff, rs2 = 0xfffffffffffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x27, x23) # load value in memory: x23 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x27, x30) # load rs2: x30 = 0xfffffffffffffffe
+  LA(x3, scratch) # load base address into rs1
+  SREG x23, 0(x3) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0xfffffffffffffffe:
+  amomax.w x31, x30, (x3) # perform operation
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0xfffffffffffffffe, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0xfffffffffffffffe_str)
+  LREG x3, 0(x3) # Load the updated value from memory
+  # Check if x3 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x3, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0xfffffffffffffffe, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0xfffffffffffffffe_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x7fffffff, rs2 = 0x5bbc887763ae86f2)
+  RVTEST_TESTDATA_LOAD_INT(x27, x7) # load value in memory: x7 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x27, x2) # load rs2: x2 = 0x5bbc887763ae86f2
+  LA(x23, scratch) # load base address into rs1
+  SREG x7, 0(x23) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x5bbc887763ae86f2:
+  amomax.w x22, x2, (x23) # perform operation
+  # Check if x22 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x22, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x5bbc887763ae86f2, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x5bbc887763ae86f2_str)
+  LREG x23, 0(x23) # Load the updated value from memory
+  # Check if x23 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x23, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x5bbc887763ae86f2, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x5bbc887763ae86f2_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x7fffffff, rs2 = 0xaaaaaaaaaaaaaaaa)
+  RVTEST_TESTDATA_LOAD_INT(x27, x17) # load value in memory: x17 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x27, x18) # load rs2: x18 = 0xaaaaaaaaaaaaaaaa
+  LA(x9, scratch) # load base address into rs1
+  SREG x17, 0(x9) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0xaaaaaaaaaaaaaaaa:
+  amomax.w x14, x18, (x9) # perform operation
+  # Check if x14 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x14, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0xaaaaaaaaaaaaaaaa, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0xaaaaaaaaaaaaaaaa_str)
+  LREG x9, 0(x9) # Load the updated value from memory
+  # Check if x9 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x9, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0xaaaaaaaaaaaaaaaa, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0xaaaaaaaaaaaaaaaa_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x7fffffff, rs2 = 0x5555555555555555)
+  RVTEST_TESTDATA_LOAD_INT(x27, x10) # load value in memory: x10 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x27, x22) # load rs2: x22 = 0x5555555555555555
+  LA(x7, scratch) # load base address into rs1
+  SREG x10, 0(x7) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x5555555555555555:
+  amomax.w x3, x22, (x7) # perform operation
+  # Check if x3 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x3, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x5555555555555555, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x5555555555555555_str)
+  LREG x7, 0(x7) # Load the updated value from memory
+  # Check if x7 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x7, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x5555555555555555, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x5555555555555555_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x7fffffff, rs2 = 0x00000000ffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x27, x18) # load value in memory: x18 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x27, x9) # load rs2: x9 = 0x00000000ffffffff
+  LA(x1, scratch) # load base address into rs1
+  SREG x18, 0(x1) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0xffffffff:
+  amomax.w x19, x9, (x1) # perform operation
+  # Check if x19 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x19, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0xffffffff, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0xffffffff_str)
+  LREG x1, 0(x1) # Load the updated value from memory
+  # Check if x1 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x1, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0xffffffff, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0xffffffff_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x7fffffff, rs2 = 0x00000000fffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x27, x16) # load value in memory: x16 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x27, x14) # load rs2: x14 = 0x00000000fffffffe
+  LA(x26, scratch) # load base address into rs1
+  SREG x16, 0(x26) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0xfffffffe:
+  amomax.w x29, x14, (x26) # perform operation
+  # Check if x29 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x29, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0xfffffffe, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0xfffffffe_str)
+  LREG x26, 0(x26) # Load the updated value from memory
+  # Check if x26 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x26, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0xfffffffe, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0xfffffffe_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x7fffffff, rs2 = 0x0000000100000000)
+  RVTEST_TESTDATA_LOAD_INT(x27, x26) # load value in memory: x26 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x27, x16) # load rs2: x16 = 0x0000000100000000
+  LA(x25, scratch) # load base address into rs1
+  SREG x26, 0(x25) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x100000000:
+  amomax.w x20, x16, (x25) # perform operation
+  # Check if x20 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x20, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x100000000, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x100000000_str)
+  LREG x25, 0(x25) # Load the updated value from memory
+  # Check if x25 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x25, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x100000000, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x100000000_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x7fffffff, rs2 = 0x0000000100000001)
+  RVTEST_TESTDATA_LOAD_INT(x27, x6) # load value in memory: x6 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x27, x29) # load rs2: x29 = 0x0000000100000001
+  LA(x31, scratch) # load base address into rs1
+  SREG x6, 0(x31) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x100000001:
+  amomax.w x3, x29, (x31) # perform operation
+  # Check if x3 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x3, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x100000001, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x100000001_str)
+  LREG x31, 0(x31) # Load the updated value from memory
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x100000001, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x100000001_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x7fffffff, rs2 = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x27, x1) # load value in memory: x1 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x27, x6) # load rs2: x6 = 0x0000000080000000
+  LA(x17, scratch) # load base address into rs1
+  SREG x1, 0(x17) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x80000000:
+  amomax.w x8, x6, (x17) # perform operation
+  # Check if x8 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x8, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x80000000, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x80000000_str)
+  LREG x17, 0(x17) # Load the updated value from memory
+  # Check if x17 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x17, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x80000000, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x80000000_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x7fffffff, rs2 = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x27, x21) # load value in memory: x21 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x27, x13) # load rs2: x13 = 0x000000007fffffff
+  LA(x12, scratch) # load base address into rs1
+  SREG x21, 0(x12) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x7fffffff:
+  amomax.w x29, x13, (x12) # perform operation
+  # Check if x29 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x29, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x7fffffff, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x7fffffff_str)
+  LREG x12, 0(x12) # Load the updated value from memory
+  # Check if x12 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x12, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x7fffffff, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x7fffffff_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x80000000, rs2 = 0x0000000000000000)
+  RVTEST_TESTDATA_LOAD_INT(x27, x22) # load value in memory: x22 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x27, x26) # load rs2: x26 = 0x0000000000000000
+  LA(x30, scratch) # load base address into rs1
+  SREG x22, 0(x30) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x0:
+  amomax.w x28, x26, (x30) # perform operation
+  # Check if x28 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x28, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x0, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x0_str)
+  LREG x30, 0(x30) # Load the updated value from memory
+  # Check if x30 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x30, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x0, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x0_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x80000000, rs2 = 0x0000000000000001)
+  RVTEST_TESTDATA_LOAD_INT(x27, x19) # load value in memory: x19 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x27, x3) # load rs2: x3 = 0x0000000000000001
+  LA(x17, scratch) # load base address into rs1
+  SREG x19, 0(x17) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x1:
+  amomax.w x7, x3, (x17) # perform operation
+  # Check if x7 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x7, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x1, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x1_str)
+  LREG x17, 0(x17) # Load the updated value from memory
+  # Check if x17 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x17, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x1, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x1_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x80000000, rs2 = 0x0000000000000002)
+  RVTEST_TESTDATA_LOAD_INT(x27, x10) # load value in memory: x10 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x27, x28) # load rs2: x28 = 0x0000000000000002
+  LA(x11, scratch) # load base address into rs1
+  SREG x10, 0(x11) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x2:
+  amomax.w x9, x28, (x11) # perform operation
+  # Check if x9 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x9, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x2, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x2_str)
+  LREG x11, 0(x11) # Load the updated value from memory
+  # Check if x11 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x11, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x2, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x2_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x80000000, rs2 = 0x8000000000000000)
+  RVTEST_TESTDATA_LOAD_INT(x27, x17) # load value in memory: x17 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x27, x18) # load rs2: x18 = 0x8000000000000000
+  LA(x10, scratch) # load base address into rs1
+  SREG x17, 0(x10) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x8000000000000000:
+  amomax.w x23, x18, (x10) # perform operation
+  # Check if x23 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x23, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x8000000000000000, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x8000000000000000_str)
+  LREG x10, 0(x10) # Load the updated value from memory
+  # Check if x10 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x10, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x8000000000000000, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x8000000000000000_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x80000000, rs2 = 0x8000000000000001)
+  RVTEST_TESTDATA_LOAD_INT(x27, x26) # load value in memory: x26 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x27, x8) # load rs2: x8 = 0x8000000000000001
+  LA(x9, scratch) # load base address into rs1
+  SREG x26, 0(x9) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x8000000000000001:
+  amomax.w x23, x8, (x9) # perform operation
+  # Check if x23 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x23, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x8000000000000001, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x8000000000000001_str)
+  LREG x9, 0(x9) # Load the updated value from memory
+  # Check if x9 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x9, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x8000000000000001, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x8000000000000001_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x80000000, rs2 = 0x7fffffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x27, x30) # load value in memory: x30 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x27, x28) # load rs2: x28 = 0x7fffffffffffffff
+  LA(x3, scratch) # load base address into rs1
+  SREG x30, 0(x3) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x7fffffffffffffff:
+  amomax.w x1, x28, (x3) # perform operation
+  # Check if x1 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x1, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x7fffffffffffffff, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x7fffffffffffffff_str)
+  LREG x3, 0(x3) # Load the updated value from memory
+  # Check if x3 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x3, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x7fffffffffffffff, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x7fffffffffffffff_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x80000000, rs2 = 0x7ffffffffffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x27, x29) # load value in memory: x29 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x27, x21) # load rs2: x21 = 0x7ffffffffffffffe
+  LA(x10, scratch) # load base address into rs1
+  SREG x29, 0(x10) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x7ffffffffffffffe:
+  amomax.w x26, x21, (x10) # perform operation
+  # Check if x26 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x26, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x7ffffffffffffffe, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x7ffffffffffffffe_str)
+  LREG x10, 0(x10) # Load the updated value from memory
+  # Check if x10 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x10, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x7ffffffffffffffe, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x7ffffffffffffffe_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x80000000, rs2 = 0xffffffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x27, x3) # load value in memory: x3 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x27, x16) # load rs2: x16 = 0xffffffffffffffff
+  LA(x9, scratch) # load base address into rs1
+  SREG x3, 0(x9) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0xffffffffffffffff:
+  amomax.w x23, x16, (x9) # perform operation
+  # Check if x23 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x23, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0xffffffffffffffff, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0xffffffffffffffff_str)
+  LREG x9, 0(x9) # Load the updated value from memory
+  # Check if x9 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x9, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0xffffffffffffffff, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0xffffffffffffffff_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x80000000, rs2 = 0xfffffffffffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x27, x29) # load value in memory: x29 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x27, x11) # load rs2: x11 = 0xfffffffffffffffe
+  LA(x6, scratch) # load base address into rs1
+  SREG x29, 0(x6) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0xfffffffffffffffe:
+  amomax.w x12, x11, (x6) # perform operation
+  # Check if x12 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x12, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0xfffffffffffffffe, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0xfffffffffffffffe_str)
+  LREG x6, 0(x6) # Load the updated value from memory
+  # Check if x6 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x6, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0xfffffffffffffffe, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0xfffffffffffffffe_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x80000000, rs2 = 0x5bbc887763ae86f2)
+  RVTEST_TESTDATA_LOAD_INT(x27, x9) # load value in memory: x9 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x27, x2) # load rs2: x2 = 0x5bbc887763ae86f2
+  LA(x10, scratch) # load base address into rs1
+  SREG x9, 0(x10) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x5bbc887763ae86f2:
+  amomax.w x22, x2, (x10) # perform operation
+  # Check if x22 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x22, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x5bbc887763ae86f2, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x5bbc887763ae86f2_str)
+  LREG x10, 0(x10) # Load the updated value from memory
+  # Check if x10 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x10, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x5bbc887763ae86f2, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x5bbc887763ae86f2_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x80000000, rs2 = 0xaaaaaaaaaaaaaaaa)
+  RVTEST_TESTDATA_LOAD_INT(x27, x13) # load value in memory: x13 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x27, x3) # load rs2: x3 = 0xaaaaaaaaaaaaaaaa
+  LA(x31, scratch) # load base address into rs1
+  SREG x13, 0(x31) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0xaaaaaaaaaaaaaaaa:
+  amomax.w x18, x3, (x31) # perform operation
+  # Check if x18 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x18, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0xaaaaaaaaaaaaaaaa, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0xaaaaaaaaaaaaaaaa_str)
+  LREG x31, 0(x31) # Load the updated value from memory
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0xaaaaaaaaaaaaaaaa, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0xaaaaaaaaaaaaaaaa_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x80000000, rs2 = 0x5555555555555555)
+  RVTEST_TESTDATA_LOAD_INT(x27, x29) # load value in memory: x29 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x27, x3) # load rs2: x3 = 0x5555555555555555
+  LA(x26, scratch) # load base address into rs1
+  SREG x29, 0(x26) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x5555555555555555:
+  amomax.w x7, x3, (x26) # perform operation
+  # Check if x7 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x7, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x5555555555555555, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x5555555555555555_str)
+  LREG x26, 0(x26) # Load the updated value from memory
+  # Check if x26 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x26, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x5555555555555555, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x5555555555555555_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x80000000, rs2 = 0x00000000ffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x27, x1) # load value in memory: x1 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x27, x17) # load rs2: x17 = 0x00000000ffffffff
+  LA(x31, scratch) # load base address into rs1
+  SREG x1, 0(x31) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0xffffffff:
+  amomax.w x10, x17, (x31) # perform operation
+  # Check if x10 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x10, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0xffffffff, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0xffffffff_str)
+  LREG x31, 0(x31) # Load the updated value from memory
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0xffffffff, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0xffffffff_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x80000000, rs2 = 0x00000000fffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x27, x20) # load value in memory: x20 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x27, x19) # load rs2: x19 = 0x00000000fffffffe
+  LA(x26, scratch) # load base address into rs1
+  SREG x20, 0(x26) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0xfffffffe:
+  amomax.w x29, x19, (x26) # perform operation
+  # Check if x29 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x29, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0xfffffffe, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0xfffffffe_str)
+  LREG x26, 0(x26) # Load the updated value from memory
+  # Check if x26 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x26, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0xfffffffe, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0xfffffffe_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x80000000, rs2 = 0x0000000100000000)
+  RVTEST_TESTDATA_LOAD_INT(x27, x23) # load value in memory: x23 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x27, x19) # load rs2: x19 = 0x0000000100000000
+  LA(x29, scratch) # load base address into rs1
+  SREG x23, 0(x29) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x100000000:
+  amomax.w x24, x19, (x29) # perform operation
+  # Check if x24 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x24, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x100000000, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x100000000_str)
+  LREG x29, 0(x29) # Load the updated value from memory
+  # Check if x29 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x29, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x100000000, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x100000000_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x80000000, rs2 = 0x0000000100000001)
+  RVTEST_TESTDATA_LOAD_INT(x27, x20) # load value in memory: x20 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x27, x16) # load rs2: x16 = 0x0000000100000001
+  LA(x17, scratch) # load base address into rs1
+  SREG x20, 0(x17) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x100000001:
+  amomax.w x2, x16, (x17) # perform operation
+  # Check if x2 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x2, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x100000001, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x100000001_str)
+  LREG x17, 0(x17) # Load the updated value from memory
+  # Check if x17 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x17, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x100000001, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x100000001_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x80000000, rs2 = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x27, x30) # load value in memory: x30 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x27, x14) # load rs2: x14 = 0x0000000080000000
+  LA(x18, scratch) # load base address into rs1
+  SREG x30, 0(x18) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x80000000:
+  amomax.w x20, x14, (x18) # perform operation
+  # Check if x20 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x20, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x80000000, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x80000000_str)
+  LREG x18, 0(x18) # Load the updated value from memory
+  # Check if x18 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x18, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x80000000, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x80000000_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0x80000000, rs2 = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x27, x7) # load value in memory: x7 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x27, x13) # load rs2: x13 = 0x000000007fffffff
+  LA(x22, scratch) # load base address into rs1
+  SREG x7, 0(x22) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x7fffffff:
+  amomax.w x1, x13, (x22) # perform operation
+  # Check if x1 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x1, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x7fffffff, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x7fffffff_str)
+  LREG x22, 0(x22) # Load the updated value from memory
+  # Check if x22 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x22, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x7fffffff, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x7fffffff_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0xffffffff, rs2 = 0x0000000000000000)
+  RVTEST_TESTDATA_LOAD_INT(x27, x13) # load value in memory: x13 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x27, x11) # load rs2: x11 = 0x0000000000000000
+  LA(x9, scratch) # load base address into rs1
+  SREG x13, 0(x9) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x0:
+  amomax.w x19, x11, (x9) # perform operation
+  # Check if x19 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x19, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x0, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x0_str)
+  LREG x9, 0(x9) # Load the updated value from memory
+  # Check if x9 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x9, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x0, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x0_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0xffffffff, rs2 = 0x0000000000000001)
+  RVTEST_TESTDATA_LOAD_INT(x27, x6) # load value in memory: x6 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x27, x25) # load rs2: x25 = 0x0000000000000001
+  LA(x9, scratch) # load base address into rs1
+  SREG x6, 0(x9) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x1:
+  amomax.w x14, x25, (x9) # perform operation
+  # Check if x14 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x14, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x1, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x1_str)
+  LREG x9, 0(x9) # Load the updated value from memory
+  # Check if x9 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x9, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x1, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x1_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0xffffffff, rs2 = 0x0000000000000002)
+  RVTEST_TESTDATA_LOAD_INT(x27, x12) # load value in memory: x12 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x27, x16) # load rs2: x16 = 0x0000000000000002
+  LA(x7, scratch) # load base address into rs1
+  SREG x12, 0(x7) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x2:
+  amomax.w x29, x16, (x7) # perform operation
+  # Check if x29 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x29, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x2, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x2_str)
+  LREG x7, 0(x7) # Load the updated value from memory
+  # Check if x7 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x7, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x2, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x2_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0xffffffff, rs2 = 0x8000000000000000)
+  RVTEST_TESTDATA_LOAD_INT(x27, x23) # load value in memory: x23 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x27, x12) # load rs2: x12 = 0x8000000000000000
+  LA(x22, scratch) # load base address into rs1
+  SREG x23, 0(x22) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x8000000000000000:
+  amomax.w x3, x12, (x22) # perform operation
+  # Check if x3 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x3, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x8000000000000000, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x8000000000000000_str)
+  LREG x22, 0(x22) # Load the updated value from memory
+  # Check if x22 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x22, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x8000000000000000, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x8000000000000000_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0xffffffff, rs2 = 0x8000000000000001)
+  RVTEST_TESTDATA_LOAD_INT(x27, x8) # load value in memory: x8 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x27, x20) # load rs2: x20 = 0x8000000000000001
+  LA(x1, scratch) # load base address into rs1
+  SREG x8, 0(x1) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x8000000000000001:
+  amomax.w x30, x20, (x1) # perform operation
+  # Check if x30 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x30, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x8000000000000001, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x8000000000000001_str)
+  LREG x1, 0(x1) # Load the updated value from memory
+  # Check if x1 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x1, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x8000000000000001, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x8000000000000001_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0xffffffff, rs2 = 0x7fffffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x27, x7) # load value in memory: x7 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x27, x2) # load rs2: x2 = 0x7fffffffffffffff
+  LA(x18, scratch) # load base address into rs1
+  SREG x7, 0(x18) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x7fffffffffffffff:
+  amomax.w x6, x2, (x18) # perform operation
+  # Check if x6 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x6, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x7fffffffffffffff, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x7fffffffffffffff_str)
+  LREG x18, 0(x18) # Load the updated value from memory
+  # Check if x18 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x18, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x7fffffffffffffff, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x7fffffffffffffff_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0xffffffff, rs2 = 0x7ffffffffffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x27, x9) # load value in memory: x9 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x27, x7) # load rs2: x7 = 0x7ffffffffffffffe
+  LA(x29, scratch) # load base address into rs1
+  SREG x9, 0(x29) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x7ffffffffffffffe:
+  amomax.w x8, x7, (x29) # perform operation
+  # Check if x8 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x8, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x7ffffffffffffffe, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x7ffffffffffffffe_str)
+  LREG x29, 0(x29) # Load the updated value from memory
+  # Check if x29 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x29, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x7ffffffffffffffe, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x7ffffffffffffffe_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0xffffffff, rs2 = 0xffffffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x27, x11) # load value in memory: x11 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x27, x26) # load rs2: x26 = 0xffffffffffffffff
+  LA(x21, scratch) # load base address into rs1
+  SREG x11, 0(x21) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0xffffffffffffffff:
+  amomax.w x16, x26, (x21) # perform operation
+  # Check if x16 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x16, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0xffffffffffffffff, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0xffffffffffffffff_str)
+  LREG x21, 0(x21) # Load the updated value from memory
+  # Check if x21 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x21, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0xffffffffffffffff, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0xffffffffffffffff_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0xffffffff, rs2 = 0xfffffffffffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x27, x19) # load value in memory: x19 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x27, x7) # load rs2: x7 = 0xfffffffffffffffe
+  LA(x17, scratch) # load base address into rs1
+  SREG x19, 0(x17) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0xfffffffffffffffe:
+  amomax.w x18, x7, (x17) # perform operation
+  # Check if x18 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x18, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0xfffffffffffffffe, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0xfffffffffffffffe_str)
+  LREG x17, 0(x17) # Load the updated value from memory
+  # Check if x17 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x17, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0xfffffffffffffffe, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0xfffffffffffffffe_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0xffffffff, rs2 = 0x5bbc887763ae86f2)
+  RVTEST_TESTDATA_LOAD_INT(x27, x1) # load value in memory: x1 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x27, x23) # load rs2: x23 = 0x5bbc887763ae86f2
+  LA(x14, scratch) # load base address into rs1
+  SREG x1, 0(x14) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x5bbc887763ae86f2:
+  amomax.w x20, x23, (x14) # perform operation
+  # Check if x20 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x20, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x5bbc887763ae86f2, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x5bbc887763ae86f2_str)
+  LREG x14, 0(x14) # Load the updated value from memory
+  # Check if x14 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x14, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x5bbc887763ae86f2, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x5bbc887763ae86f2_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0xffffffff, rs2 = 0xaaaaaaaaaaaaaaaa)
+  RVTEST_TESTDATA_LOAD_INT(x27, x21) # load value in memory: x21 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x27, x10) # load rs2: x10 = 0xaaaaaaaaaaaaaaaa
+  LA(x22, scratch) # load base address into rs1
+  SREG x21, 0(x22) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0xaaaaaaaaaaaaaaaa:
+  amomax.w x7, x10, (x22) # perform operation
+  # Check if x7 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x7, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0xaaaaaaaaaaaaaaaa, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0xaaaaaaaaaaaaaaaa_str)
+  LREG x22, 0(x22) # Load the updated value from memory
+  # Check if x22 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x22, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0xaaaaaaaaaaaaaaaa, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0xaaaaaaaaaaaaaaaa_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0xffffffff, rs2 = 0x5555555555555555)
+  RVTEST_TESTDATA_LOAD_INT(x27, x17) # load value in memory: x17 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x27, x18) # load rs2: x18 = 0x5555555555555555
+  LA(x7, scratch) # load base address into rs1
+  SREG x17, 0(x7) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x5555555555555555:
+  amomax.w x8, x18, (x7) # perform operation
+  # Check if x8 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x8, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x5555555555555555, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x5555555555555555_str)
+  LREG x7, 0(x7) # Load the updated value from memory
+  # Check if x7 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x7, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x5555555555555555, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x5555555555555555_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0xffffffff, rs2 = 0x00000000ffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x27, x13) # load value in memory: x13 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x27, x28) # load rs2: x28 = 0x00000000ffffffff
+  LA(x16, scratch) # load base address into rs1
+  SREG x13, 0(x16) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0xffffffff:
+  amomax.w x29, x28, (x16) # perform operation
+  # Check if x29 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x29, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0xffffffff, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0xffffffff_str)
+  LREG x16, 0(x16) # Load the updated value from memory
+  # Check if x16 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x16, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0xffffffff, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0xffffffff_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0xffffffff, rs2 = 0x00000000fffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x27, x11) # load value in memory: x11 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x27, x24) # load rs2: x24 = 0x00000000fffffffe
+  LA(x26, scratch) # load base address into rs1
+  SREG x11, 0(x26) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0xfffffffe:
+  amomax.w x29, x24, (x26) # perform operation
+  # Check if x29 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x29, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0xfffffffe, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0xfffffffe_str)
+  LREG x26, 0(x26) # Load the updated value from memory
+  # Check if x26 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x26, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0xfffffffe, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0xfffffffe_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0xffffffff, rs2 = 0x0000000100000000)
+  RVTEST_TESTDATA_LOAD_INT(x27, x20) # load value in memory: x20 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x27, x9) # load rs2: x9 = 0x0000000100000000
+  LA(x30, scratch) # load base address into rs1
+  SREG x20, 0(x30) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x100000000:
+  amomax.w x24, x9, (x30) # perform operation
+  # Check if x24 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x24, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x100000000, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x100000000_str)
+  LREG x30, 0(x30) # Load the updated value from memory
+  # Check if x30 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x30, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x100000000, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x100000000_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0xffffffff, rs2 = 0x0000000100000001)
+  RVTEST_TESTDATA_LOAD_INT(x27, x18) # load value in memory: x18 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x27, x9) # load rs2: x9 = 0x0000000100000001
+  LA(x25, scratch) # load base address into rs1
+  SREG x18, 0(x25) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x100000001:
+  amomax.w x21, x9, (x25) # perform operation
+  # Check if x21 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x21, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x100000001, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x100000001_str)
+  LREG x25, 0(x25) # Load the updated value from memory
+  # Check if x25 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x25, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x100000001, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x100000001_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0xffffffff, rs2 = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x27, x16) # load value in memory: x16 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x27, x20) # load rs2: x20 = 0x0000000080000000
+  LA(x19, scratch) # load base address into rs1
+  SREG x16, 0(x19) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x80000000:
+  amomax.w x3, x20, (x19) # perform operation
+  # Check if x3 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x3, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x80000000, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x80000000_str)
+  LREG x19, 0(x19) # Load the updated value from memory
+  # Check if x19 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x19, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x80000000, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x80000000_str)
+
+# Testcase cr_memval_rs2_edges_word (memory value = 0xffffffff, rs2 = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x27, x28) # load value in memory: x28 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x27, x12) # load rs2: x12 = 0x000000007fffffff
+  LA(x8, scratch) # load base address into rs1
+  SREG x28, 0(x8) # store value into memory at address in rs1
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x7fffffff:
+  amomax.w x1, x12, (x8) # perform operation
+  # Check if x1 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x1, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x7fffffff, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x7fffffff_str)
+  LREG x8, 0(x8) # Load the updated value from memory
+  # Check if x8 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x8, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x7fffffff, Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x7fffffff_str)
+
   mv x2, x15 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -3512,6 +4837,10 @@ RVTEST_DATA_BEGIN
 .dword 0x0000000100000000
 .dword 0xefd9ba97dd6aec57
 .dword 0x0000000100000001
+.dword 0xd19eed2c4d1cedc0
+.dword 0x0000000080000000
+.dword 0x923d70a80c64b935
+.dword 0x000000007fffffff
 .dword 0x7f9d98a9b93fa399
 .dword 0x0497c37c0614a36b
 .dword 0x56cb6c218ecce6f5
@@ -3766,6 +5095,204 @@ RVTEST_DATA_BEGIN
 .dword 0xe542007212c2c601
 .dword 0x19c548e114931203
 .dword 0xd45363e39af2372d
+.dword 0x0000000000000000
+.dword 0xeae8dfbfcb94efa5
+.dword 0x0000000000000001
+.dword 0x6ff1d438280f5a4b
+.dword 0x000000007fffffff
+.dword 0x320204d9c720aade
+.dword 0x0000000080000000
+.dword 0xd02b83efa8052256
+.dword 0x00000000ffffffff
+.dword 0xfe39a911173b030c
+.dword 0xe67c48cba28a1a2e
+.dword 0x9529f8754d53447a
+.dword 0x23479baa70b4d4e8
+.dword 0xb467f7cbecbf04a1
+.dword 0xe3860bb9aa9eac46
+.dword 0xcec45296aebfc257
+.dword 0xd1334eccf264eb3e
+.dword 0x3ced837f24c69a3e
+.dword 0x0000000000000000
+.dword 0x0000000000000000
+.dword 0x0000000000000000
+.dword 0x0000000000000001
+.dword 0x0000000000000000
+.dword 0x0000000000000002
+.dword 0x0000000000000000
+.dword 0x8000000000000000
+.dword 0x0000000000000000
+.dword 0x8000000000000001
+.dword 0x0000000000000000
+.dword 0x7fffffffffffffff
+.dword 0x0000000000000000
+.dword 0x7ffffffffffffffe
+.dword 0x0000000000000000
+.dword 0xffffffffffffffff
+.dword 0x0000000000000000
+.dword 0xfffffffffffffffe
+.dword 0x0000000000000000
+.dword 0x5bbc887763ae86f2
+.dword 0x0000000000000000
+.dword 0xaaaaaaaaaaaaaaaa
+.dword 0x0000000000000000
+.dword 0x5555555555555555
+.dword 0x0000000000000000
+.dword 0x00000000ffffffff
+.dword 0x0000000000000000
+.dword 0x00000000fffffffe
+.dword 0x0000000000000000
+.dword 0x0000000100000000
+.dword 0x0000000000000000
+.dword 0x0000000100000001
+.dword 0x0000000000000000
+.dword 0x0000000080000000
+.dword 0x0000000000000000
+.dword 0x000000007fffffff
+.dword 0x0000000000000001
+.dword 0x0000000000000000
+.dword 0x0000000000000001
+.dword 0x0000000000000001
+.dword 0x0000000000000001
+.dword 0x0000000000000002
+.dword 0x0000000000000001
+.dword 0x8000000000000000
+.dword 0x0000000000000001
+.dword 0x8000000000000001
+.dword 0x0000000000000001
+.dword 0x7fffffffffffffff
+.dword 0x0000000000000001
+.dword 0x7ffffffffffffffe
+.dword 0x0000000000000001
+.dword 0xffffffffffffffff
+.dword 0x0000000000000001
+.dword 0xfffffffffffffffe
+.dword 0x0000000000000001
+.dword 0x5bbc887763ae86f2
+.dword 0x0000000000000001
+.dword 0xaaaaaaaaaaaaaaaa
+.dword 0x0000000000000001
+.dword 0x5555555555555555
+.dword 0x0000000000000001
+.dword 0x00000000ffffffff
+.dword 0x0000000000000001
+.dword 0x00000000fffffffe
+.dword 0x0000000000000001
+.dword 0x0000000100000000
+.dword 0x0000000000000001
+.dword 0x0000000100000001
+.dword 0x0000000000000001
+.dword 0x0000000080000000
+.dword 0x0000000000000001
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x0000000000000000
+.dword 0x000000007fffffff
+.dword 0x0000000000000001
+.dword 0x000000007fffffff
+.dword 0x0000000000000002
+.dword 0x000000007fffffff
+.dword 0x8000000000000000
+.dword 0x000000007fffffff
+.dword 0x8000000000000001
+.dword 0x000000007fffffff
+.dword 0x7fffffffffffffff
+.dword 0x000000007fffffff
+.dword 0x7ffffffffffffffe
+.dword 0x000000007fffffff
+.dword 0xffffffffffffffff
+.dword 0x000000007fffffff
+.dword 0xfffffffffffffffe
+.dword 0x000000007fffffff
+.dword 0x5bbc887763ae86f2
+.dword 0x000000007fffffff
+.dword 0xaaaaaaaaaaaaaaaa
+.dword 0x000000007fffffff
+.dword 0x5555555555555555
+.dword 0x000000007fffffff
+.dword 0x00000000ffffffff
+.dword 0x000000007fffffff
+.dword 0x00000000fffffffe
+.dword 0x000000007fffffff
+.dword 0x0000000100000000
+.dword 0x000000007fffffff
+.dword 0x0000000100000001
+.dword 0x000000007fffffff
+.dword 0x0000000080000000
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x0000000080000000
+.dword 0x0000000000000000
+.dword 0x0000000080000000
+.dword 0x0000000000000001
+.dword 0x0000000080000000
+.dword 0x0000000000000002
+.dword 0x0000000080000000
+.dword 0x8000000000000000
+.dword 0x0000000080000000
+.dword 0x8000000000000001
+.dword 0x0000000080000000
+.dword 0x7fffffffffffffff
+.dword 0x0000000080000000
+.dword 0x7ffffffffffffffe
+.dword 0x0000000080000000
+.dword 0xffffffffffffffff
+.dword 0x0000000080000000
+.dword 0xfffffffffffffffe
+.dword 0x0000000080000000
+.dword 0x5bbc887763ae86f2
+.dword 0x0000000080000000
+.dword 0xaaaaaaaaaaaaaaaa
+.dword 0x0000000080000000
+.dword 0x5555555555555555
+.dword 0x0000000080000000
+.dword 0x00000000ffffffff
+.dword 0x0000000080000000
+.dword 0x00000000fffffffe
+.dword 0x0000000080000000
+.dword 0x0000000100000000
+.dword 0x0000000080000000
+.dword 0x0000000100000001
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x000000007fffffff
+.dword 0x00000000ffffffff
+.dword 0x0000000000000000
+.dword 0x00000000ffffffff
+.dword 0x0000000000000001
+.dword 0x00000000ffffffff
+.dword 0x0000000000000002
+.dword 0x00000000ffffffff
+.dword 0x8000000000000000
+.dword 0x00000000ffffffff
+.dword 0x8000000000000001
+.dword 0x00000000ffffffff
+.dword 0x7fffffffffffffff
+.dword 0x00000000ffffffff
+.dword 0x7ffffffffffffffe
+.dword 0x00000000ffffffff
+.dword 0xffffffffffffffff
+.dword 0x00000000ffffffff
+.dword 0xfffffffffffffffe
+.dword 0x00000000ffffffff
+.dword 0x5bbc887763ae86f2
+.dword 0x00000000ffffffff
+.dword 0xaaaaaaaaaaaaaaaa
+.dword 0x00000000ffffffff
+.dword 0x5555555555555555
+.dword 0x00000000ffffffff
+.dword 0x00000000ffffffff
+.dword 0x00000000ffffffff
+.dword 0x00000000fffffffe
+.dword 0x00000000ffffffff
+.dword 0x0000000100000000
+.dword 0x00000000ffffffff
+.dword 0x0000000100000001
+.dword 0x00000000ffffffff
+.dword 0x0000000080000000
+.dword 0x00000000ffffffff
+.dword 0x000000007fffffff
 
 // Testcase strings
 Zaamo_amomax_w_cg_cp_rs1_nx0_b1_str: .string "\"test: 1; cg: Zaamo_amomax.w_cg; cp: cp_rs1_nx0; bin: b1\""
@@ -3879,133 +5406,234 @@ Zaamo_amomax_w_cg_cp_rs2_edges_0xffffffff_str: .string "\"test: 108; cg: Zaamo_a
 Zaamo_amomax_w_cg_cp_rs2_edges_0xfffffffe_str: .string "\"test: 109; cg: Zaamo_amomax.w_cg; cp: cp_rs2_edges; bin: 0xfffffffe\""
 Zaamo_amomax_w_cg_cp_rs2_edges_0x100000000_str: .string "\"test: 110; cg: Zaamo_amomax.w_cg; cp: cp_rs2_edges; bin: 0x100000000\""
 Zaamo_amomax_w_cg_cp_rs2_edges_0x100000001_str: .string "\"test: 111; cg: Zaamo_amomax.w_cg; cp: cp_rs2_edges; bin: 0x100000001\""
-Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b1_str: .string "\"test: 112; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b1\""
-Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b2_str: .string "\"test: 113; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b2\""
-Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b3_str: .string "\"test: 114; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b3\""
-Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b4_str: .string "\"test: 115; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b4\""
-Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b5_str: .string "\"test: 116; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b5\""
-Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b6_str: .string "\"test: 117; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b6\""
-Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b7_str: .string "\"test: 118; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b7\""
-Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b8_str: .string "\"test: 119; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b8\""
-Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b9_str: .string "\"test: 120; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b9\""
-Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b10_str: .string "\"test: 121; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b10\""
-Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b11_str: .string "\"test: 122; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b11\""
-Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b12_str: .string "\"test: 123; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b12\""
-Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b13_str: .string "\"test: 124; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b13\""
-Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b14_str: .string "\"test: 125; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b14\""
-Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b15_str: .string "\"test: 126; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b15\""
-Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b16_str: .string "\"test: 127; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b16\""
-Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b17_str: .string "\"test: 128; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b17\""
-Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b18_str: .string "\"test: 129; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b18\""
-Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b19_str: .string "\"test: 130; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b19\""
-Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b20_str: .string "\"test: 131; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b20\""
-Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b21_str: .string "\"test: 132; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b21\""
-Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b22_str: .string "\"test: 133; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b22\""
-Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b23_str: .string "\"test: 134; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b23\""
-Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b24_str: .string "\"test: 135; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b24\""
-Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b25_str: .string "\"test: 136; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b25\""
-Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b26_str: .string "\"test: 137; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b26\""
-Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b27_str: .string "\"test: 138; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b27\""
-Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b28_str: .string "\"test: 139; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b28\""
-Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b29_str: .string "\"test: 140; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b29\""
-Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b30_str: .string "\"test: 141; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b30\""
-Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b31_str: .string "\"test: 142; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b31\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b1_str: .string "\"test: 143; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b1\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b2_str: .string "\"test: 144; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b2\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b3_str: .string "\"test: 145; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b3\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b4_str: .string "\"test: 146; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b4\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b5_str: .string "\"test: 147; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b5\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b6_str: .string "\"test: 148; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b6\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b7_str: .string "\"test: 149; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b7\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b8_str: .string "\"test: 150; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b8\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b9_str: .string "\"test: 151; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b9\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b10_str: .string "\"test: 152; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b10\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b11_str: .string "\"test: 153; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b11\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b12_str: .string "\"test: 154; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b12\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b13_str: .string "\"test: 155; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b13\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b14_str: .string "\"test: 156; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b14\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b15_str: .string "\"test: 157; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b15\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b16_str: .string "\"test: 158; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b16\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b17_str: .string "\"test: 159; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b17\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b18_str: .string "\"test: 160; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b18\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b19_str: .string "\"test: 161; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b19\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b20_str: .string "\"test: 162; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b20\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b21_str: .string "\"test: 163; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b21\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b22_str: .string "\"test: 164; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b22\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b23_str: .string "\"test: 165; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b23\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b24_str: .string "\"test: 166; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b24\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b25_str: .string "\"test: 167; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b25\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b26_str: .string "\"test: 168; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b26\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b27_str: .string "\"test: 169; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b27\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b28_str: .string "\"test: 170; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b28\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b29_str: .string "\"test: 171; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b29\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b30_str: .string "\"test: 172; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b30\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b31_str: .string "\"test: 173; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b31\""
-Zaamo_amomax_w_cg_cmp_rd_rs2_b0_str: .string "\"test: 174; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b0\""
-Zaamo_amomax_w_cg_cmp_rd_rs2_b1_str: .string "\"test: 175; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b1\""
-Zaamo_amomax_w_cg_cmp_rd_rs2_b2_str: .string "\"test: 176; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b2\""
-Zaamo_amomax_w_cg_cmp_rd_rs2_b3_str: .string "\"test: 177; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b3\""
-Zaamo_amomax_w_cg_cmp_rd_rs2_b4_str: .string "\"test: 178; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b4\""
-Zaamo_amomax_w_cg_cmp_rd_rs2_b5_str: .string "\"test: 179; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b5\""
-Zaamo_amomax_w_cg_cmp_rd_rs2_b6_str: .string "\"test: 180; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b6\""
-Zaamo_amomax_w_cg_cmp_rd_rs2_b7_str: .string "\"test: 181; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b7\""
-Zaamo_amomax_w_cg_cmp_rd_rs2_b8_str: .string "\"test: 182; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b8\""
-Zaamo_amomax_w_cg_cmp_rd_rs2_b9_str: .string "\"test: 183; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b9\""
-Zaamo_amomax_w_cg_cmp_rd_rs2_b10_str: .string "\"test: 184; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b10\""
-Zaamo_amomax_w_cg_cmp_rd_rs2_b11_str: .string "\"test: 185; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b11\""
-Zaamo_amomax_w_cg_cmp_rd_rs2_b12_str: .string "\"test: 186; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b12\""
-Zaamo_amomax_w_cg_cmp_rd_rs2_b13_str: .string "\"test: 187; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b13\""
-Zaamo_amomax_w_cg_cmp_rd_rs2_b14_str: .string "\"test: 188; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b14\""
-Zaamo_amomax_w_cg_cmp_rd_rs2_b15_str: .string "\"test: 189; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b15\""
-Zaamo_amomax_w_cg_cmp_rd_rs2_b16_str: .string "\"test: 190; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b16\""
-Zaamo_amomax_w_cg_cmp_rd_rs2_b17_str: .string "\"test: 191; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b17\""
-Zaamo_amomax_w_cg_cmp_rd_rs2_b18_str: .string "\"test: 192; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b18\""
-Zaamo_amomax_w_cg_cmp_rd_rs2_b19_str: .string "\"test: 193; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b19\""
-Zaamo_amomax_w_cg_cmp_rd_rs2_b20_str: .string "\"test: 194; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b20\""
-Zaamo_amomax_w_cg_cmp_rd_rs2_b21_str: .string "\"test: 195; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b21\""
-Zaamo_amomax_w_cg_cmp_rd_rs2_b22_str: .string "\"test: 196; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b22\""
-Zaamo_amomax_w_cg_cmp_rd_rs2_b23_str: .string "\"test: 197; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b23\""
-Zaamo_amomax_w_cg_cmp_rd_rs2_b24_str: .string "\"test: 198; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b24\""
-Zaamo_amomax_w_cg_cmp_rd_rs2_b25_str: .string "\"test: 199; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b25\""
-Zaamo_amomax_w_cg_cmp_rd_rs2_b26_str: .string "\"test: 200; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b26\""
-Zaamo_amomax_w_cg_cmp_rd_rs2_b27_str: .string "\"test: 201; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b27\""
-Zaamo_amomax_w_cg_cmp_rd_rs2_b28_str: .string "\"test: 202; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b28\""
-Zaamo_amomax_w_cg_cmp_rd_rs2_b29_str: .string "\"test: 203; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b29\""
-Zaamo_amomax_w_cg_cmp_rd_rs2_b30_str: .string "\"test: 204; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b30\""
-Zaamo_amomax_w_cg_cmp_rd_rs2_b31_str: .string "\"test: 205; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b31\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b1_str: .string "\"test: 206; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b1\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b2_str: .string "\"test: 207; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b2\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b3_str: .string "\"test: 208; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b3\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b4_str: .string "\"test: 209; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b4\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b5_str: .string "\"test: 210; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b5\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b6_str: .string "\"test: 211; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b6\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b7_str: .string "\"test: 212; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b7\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b8_str: .string "\"test: 213; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b8\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b9_str: .string "\"test: 214; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b9\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b10_str: .string "\"test: 215; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b10\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b11_str: .string "\"test: 216; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b11\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b12_str: .string "\"test: 217; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b12\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b13_str: .string "\"test: 218; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b13\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b14_str: .string "\"test: 219; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b14\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b15_str: .string "\"test: 220; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b15\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b16_str: .string "\"test: 221; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b16\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b17_str: .string "\"test: 222; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b17\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b18_str: .string "\"test: 223; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b18\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b19_str: .string "\"test: 224; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b19\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b20_str: .string "\"test: 225; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b20\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b21_str: .string "\"test: 226; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b21\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b22_str: .string "\"test: 227; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b22\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b23_str: .string "\"test: 228; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b23\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b24_str: .string "\"test: 229; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b24\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b25_str: .string "\"test: 230; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b25\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b26_str: .string "\"test: 231; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b26\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b27_str: .string "\"test: 232; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b27\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b28_str: .string "\"test: 233; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b28\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b29_str: .string "\"test: 234; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b29\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b30_str: .string "\"test: 235; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b30\""
-Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b31_str: .string "\"test: 236; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b31\""
-Zaamo_amomax_w_cg_cp_align_word_b0_str: .string "\"test: 237; cg: Zaamo_amomax.w_cg; cp: cp_align_word; bin: b0\""
-Zaamo_amomax_w_cg_cp_align_word_b4_str: .string "\"test: 238; cg: Zaamo_amomax.w_cg; cp: cp_align_word; bin: b4\""
+Zaamo_amomax_w_cg_cp_rs2_edges_0x80000000_str: .string "\"test: 112; cg: Zaamo_amomax.w_cg; cp: cp_rs2_edges; bin: 0x80000000\""
+Zaamo_amomax_w_cg_cp_rs2_edges_0x7fffffff_str: .string "\"test: 113; cg: Zaamo_amomax.w_cg; cp: cp_rs2_edges; bin: 0x7fffffff\""
+Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b1_str: .string "\"test: 114; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b1\""
+Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b2_str: .string "\"test: 115; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b2\""
+Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b3_str: .string "\"test: 116; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b3\""
+Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b4_str: .string "\"test: 117; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b4\""
+Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b5_str: .string "\"test: 118; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b5\""
+Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b6_str: .string "\"test: 119; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b6\""
+Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b7_str: .string "\"test: 120; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b7\""
+Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b8_str: .string "\"test: 121; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b8\""
+Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b9_str: .string "\"test: 122; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b9\""
+Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b10_str: .string "\"test: 123; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b10\""
+Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b11_str: .string "\"test: 124; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b11\""
+Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b12_str: .string "\"test: 125; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b12\""
+Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b13_str: .string "\"test: 126; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b13\""
+Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b14_str: .string "\"test: 127; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b14\""
+Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b15_str: .string "\"test: 128; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b15\""
+Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b16_str: .string "\"test: 129; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b16\""
+Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b17_str: .string "\"test: 130; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b17\""
+Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b18_str: .string "\"test: 131; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b18\""
+Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b19_str: .string "\"test: 132; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b19\""
+Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b20_str: .string "\"test: 133; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b20\""
+Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b21_str: .string "\"test: 134; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b21\""
+Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b22_str: .string "\"test: 135; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b22\""
+Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b23_str: .string "\"test: 136; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b23\""
+Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b24_str: .string "\"test: 137; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b24\""
+Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b25_str: .string "\"test: 138; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b25\""
+Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b26_str: .string "\"test: 139; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b26\""
+Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b27_str: .string "\"test: 140; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b27\""
+Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b28_str: .string "\"test: 141; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b28\""
+Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b29_str: .string "\"test: 142; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b29\""
+Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b30_str: .string "\"test: 143; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b30\""
+Zaamo_amomax_w_cg_cmp_rs1_rs2_nx0_b31_str: .string "\"test: 144; cg: Zaamo_amomax.w_cg; cp: cmp_rs1_rs2_nx0; bin: b31\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b1_str: .string "\"test: 145; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b1\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b2_str: .string "\"test: 146; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b2\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b3_str: .string "\"test: 147; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b3\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b4_str: .string "\"test: 148; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b4\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b5_str: .string "\"test: 149; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b5\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b6_str: .string "\"test: 150; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b6\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b7_str: .string "\"test: 151; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b7\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b8_str: .string "\"test: 152; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b8\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b9_str: .string "\"test: 153; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b9\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b10_str: .string "\"test: 154; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b10\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b11_str: .string "\"test: 155; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b11\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b12_str: .string "\"test: 156; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b12\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b13_str: .string "\"test: 157; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b13\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b14_str: .string "\"test: 158; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b14\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b15_str: .string "\"test: 159; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b15\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b16_str: .string "\"test: 160; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b16\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b17_str: .string "\"test: 161; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b17\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b18_str: .string "\"test: 162; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b18\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b19_str: .string "\"test: 163; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b19\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b20_str: .string "\"test: 164; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b20\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b21_str: .string "\"test: 165; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b21\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b22_str: .string "\"test: 166; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b22\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b23_str: .string "\"test: 167; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b23\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b24_str: .string "\"test: 168; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b24\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b25_str: .string "\"test: 169; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b25\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b26_str: .string "\"test: 170; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b26\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b27_str: .string "\"test: 171; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b27\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b28_str: .string "\"test: 172; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b28\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b29_str: .string "\"test: 173; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b29\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b30_str: .string "\"test: 174; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b30\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_nx0_b31_str: .string "\"test: 175; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_nx0; bin: b31\""
+Zaamo_amomax_w_cg_cmp_rd_rs2_b0_str: .string "\"test: 176; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b0\""
+Zaamo_amomax_w_cg_cmp_rd_rs2_b1_str: .string "\"test: 177; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b1\""
+Zaamo_amomax_w_cg_cmp_rd_rs2_b2_str: .string "\"test: 178; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b2\""
+Zaamo_amomax_w_cg_cmp_rd_rs2_b3_str: .string "\"test: 179; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b3\""
+Zaamo_amomax_w_cg_cmp_rd_rs2_b4_str: .string "\"test: 180; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b4\""
+Zaamo_amomax_w_cg_cmp_rd_rs2_b5_str: .string "\"test: 181; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b5\""
+Zaamo_amomax_w_cg_cmp_rd_rs2_b6_str: .string "\"test: 182; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b6\""
+Zaamo_amomax_w_cg_cmp_rd_rs2_b7_str: .string "\"test: 183; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b7\""
+Zaamo_amomax_w_cg_cmp_rd_rs2_b8_str: .string "\"test: 184; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b8\""
+Zaamo_amomax_w_cg_cmp_rd_rs2_b9_str: .string "\"test: 185; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b9\""
+Zaamo_amomax_w_cg_cmp_rd_rs2_b10_str: .string "\"test: 186; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b10\""
+Zaamo_amomax_w_cg_cmp_rd_rs2_b11_str: .string "\"test: 187; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b11\""
+Zaamo_amomax_w_cg_cmp_rd_rs2_b12_str: .string "\"test: 188; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b12\""
+Zaamo_amomax_w_cg_cmp_rd_rs2_b13_str: .string "\"test: 189; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b13\""
+Zaamo_amomax_w_cg_cmp_rd_rs2_b14_str: .string "\"test: 190; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b14\""
+Zaamo_amomax_w_cg_cmp_rd_rs2_b15_str: .string "\"test: 191; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b15\""
+Zaamo_amomax_w_cg_cmp_rd_rs2_b16_str: .string "\"test: 192; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b16\""
+Zaamo_amomax_w_cg_cmp_rd_rs2_b17_str: .string "\"test: 193; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b17\""
+Zaamo_amomax_w_cg_cmp_rd_rs2_b18_str: .string "\"test: 194; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b18\""
+Zaamo_amomax_w_cg_cmp_rd_rs2_b19_str: .string "\"test: 195; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b19\""
+Zaamo_amomax_w_cg_cmp_rd_rs2_b20_str: .string "\"test: 196; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b20\""
+Zaamo_amomax_w_cg_cmp_rd_rs2_b21_str: .string "\"test: 197; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b21\""
+Zaamo_amomax_w_cg_cmp_rd_rs2_b22_str: .string "\"test: 198; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b22\""
+Zaamo_amomax_w_cg_cmp_rd_rs2_b23_str: .string "\"test: 199; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b23\""
+Zaamo_amomax_w_cg_cmp_rd_rs2_b24_str: .string "\"test: 200; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b24\""
+Zaamo_amomax_w_cg_cmp_rd_rs2_b25_str: .string "\"test: 201; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b25\""
+Zaamo_amomax_w_cg_cmp_rd_rs2_b26_str: .string "\"test: 202; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b26\""
+Zaamo_amomax_w_cg_cmp_rd_rs2_b27_str: .string "\"test: 203; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b27\""
+Zaamo_amomax_w_cg_cmp_rd_rs2_b28_str: .string "\"test: 204; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b28\""
+Zaamo_amomax_w_cg_cmp_rd_rs2_b29_str: .string "\"test: 205; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b29\""
+Zaamo_amomax_w_cg_cmp_rd_rs2_b30_str: .string "\"test: 206; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b30\""
+Zaamo_amomax_w_cg_cmp_rd_rs2_b31_str: .string "\"test: 207; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs2; bin: b31\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b1_str: .string "\"test: 208; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b1\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b2_str: .string "\"test: 209; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b2\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b3_str: .string "\"test: 210; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b3\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b4_str: .string "\"test: 211; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b4\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b5_str: .string "\"test: 212; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b5\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b6_str: .string "\"test: 213; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b6\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b7_str: .string "\"test: 214; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b7\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b8_str: .string "\"test: 215; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b8\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b9_str: .string "\"test: 216; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b9\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b10_str: .string "\"test: 217; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b10\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b11_str: .string "\"test: 218; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b11\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b12_str: .string "\"test: 219; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b12\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b13_str: .string "\"test: 220; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b13\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b14_str: .string "\"test: 221; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b14\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b15_str: .string "\"test: 222; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b15\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b16_str: .string "\"test: 223; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b16\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b17_str: .string "\"test: 224; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b17\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b18_str: .string "\"test: 225; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b18\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b19_str: .string "\"test: 226; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b19\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b20_str: .string "\"test: 227; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b20\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b21_str: .string "\"test: 228; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b21\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b22_str: .string "\"test: 229; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b22\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b23_str: .string "\"test: 230; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b23\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b24_str: .string "\"test: 231; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b24\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b25_str: .string "\"test: 232; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b25\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b26_str: .string "\"test: 233; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b26\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b27_str: .string "\"test: 234; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b27\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b28_str: .string "\"test: 235; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b28\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b29_str: .string "\"test: 236; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b29\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b30_str: .string "\"test: 237; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b30\""
+Zaamo_amomax_w_cg_cmp_rd_rs1_rs2_nx0_b31_str: .string "\"test: 238; cg: Zaamo_amomax.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b31\""
+Zaamo_amomax_w_cg_cp_align_word_b0_str: .string "\"test: 239; cg: Zaamo_amomax.w_cg; cp: cp_align_word; bin: b0\""
+Zaamo_amomax_w_cg_cp_align_word_b4_str: .string "\"test: 240; cg: Zaamo_amomax.w_cg; cp: cp_align_word; bin: b4\""
+Zaamo_amomax_w_cg_cp_memval_word_0x0_str: .string "\"test: 241; cg: Zaamo_amomax.w_cg; cp: cp_memval_word; bin: 0x0\""
+Zaamo_amomax_w_cg_cp_memval_word_0x1_str: .string "\"test: 242; cg: Zaamo_amomax.w_cg; cp: cp_memval_word; bin: 0x1\""
+Zaamo_amomax_w_cg_cp_memval_word_0x7fffffff_str: .string "\"test: 243; cg: Zaamo_amomax.w_cg; cp: cp_memval_word; bin: 0x7fffffff\""
+Zaamo_amomax_w_cg_cp_memval_word_0x80000000_str: .string "\"test: 244; cg: Zaamo_amomax.w_cg; cp: cp_memval_word; bin: 0x80000000\""
+Zaamo_amomax_w_cg_cp_memval_word_0xffffffff_str: .string "\"test: 245; cg: Zaamo_amomax.w_cg; cp: cp_memval_word; bin: 0xffffffff\""
+Zaamo_amomax_w_cg_cp_custom_aqrl_str: .string "\"test: 246; cg: Zaamo_amomax.w_cg; cp: cp_custom_aqrl; bin: \""
+Zaamo_amomax_w_cg_cp_custom_aqrl_aq_str: .string "\"test: 247; cg: Zaamo_amomax.w_cg; cp: cp_custom_aqrl; bin: .aq\""
+Zaamo_amomax_w_cg_cp_custom_aqrl_rl_str: .string "\"test: 248; cg: Zaamo_amomax.w_cg; cp: cp_custom_aqrl; bin: .rl\""
+Zaamo_amomax_w_cg_cp_custom_aqrl_aqrl_str: .string "\"test: 249; cg: Zaamo_amomax.w_cg; cp: cp_custom_aqrl; bin: .aqrl\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x0_str: .string "\"test: 250; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x0, rs2val=0x0\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x1_str: .string "\"test: 251; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x0, rs2val=0x1\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x2_str: .string "\"test: 252; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x0, rs2val=0x2\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x8000000000000000_str: .string "\"test: 253; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x0, rs2val=0x8000000000000000\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x8000000000000001_str: .string "\"test: 254; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x0, rs2val=0x8000000000000001\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x7fffffffffffffff_str: .string "\"test: 255; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x0, rs2val=0x7fffffffffffffff\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x7ffffffffffffffe_str: .string "\"test: 256; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x0, rs2val=0x7ffffffffffffffe\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0xffffffffffffffff_str: .string "\"test: 257; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x0, rs2val=0xffffffffffffffff\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0xfffffffffffffffe_str: .string "\"test: 258; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x0, rs2val=0xfffffffffffffffe\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x5bbc887763ae86f2_str: .string "\"test: 259; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x0, rs2val=0x5bbc887763ae86f2\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 260; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x0, rs2val=0xaaaaaaaaaaaaaaaa\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x5555555555555555_str: .string "\"test: 261; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x0, rs2val=0x5555555555555555\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0xffffffff_str: .string "\"test: 262; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x0, rs2val=0xffffffff\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0xfffffffe_str: .string "\"test: 263; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x0, rs2val=0xfffffffe\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x100000000_str: .string "\"test: 264; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x0, rs2val=0x100000000\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x100000001_str: .string "\"test: 265; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x0, rs2val=0x100000001\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x80000000_str: .string "\"test: 266; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x0, rs2val=0x80000000\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x0_rs2val_0x7fffffff_str: .string "\"test: 267; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x0, rs2val=0x7fffffff\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x0_str: .string "\"test: 268; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x1, rs2val=0x0\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x1_str: .string "\"test: 269; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x1, rs2val=0x1\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x2_str: .string "\"test: 270; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x1, rs2val=0x2\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x8000000000000000_str: .string "\"test: 271; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x1, rs2val=0x8000000000000000\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x8000000000000001_str: .string "\"test: 272; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x1, rs2val=0x8000000000000001\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x7fffffffffffffff_str: .string "\"test: 273; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x1, rs2val=0x7fffffffffffffff\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x7ffffffffffffffe_str: .string "\"test: 274; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x1, rs2val=0x7ffffffffffffffe\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0xffffffffffffffff_str: .string "\"test: 275; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x1, rs2val=0xffffffffffffffff\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0xfffffffffffffffe_str: .string "\"test: 276; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x1, rs2val=0xfffffffffffffffe\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x5bbc887763ae86f2_str: .string "\"test: 277; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x1, rs2val=0x5bbc887763ae86f2\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 278; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x1, rs2val=0xaaaaaaaaaaaaaaaa\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x5555555555555555_str: .string "\"test: 279; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x1, rs2val=0x5555555555555555\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0xffffffff_str: .string "\"test: 280; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x1, rs2val=0xffffffff\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0xfffffffe_str: .string "\"test: 281; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x1, rs2val=0xfffffffe\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x100000000_str: .string "\"test: 282; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x1, rs2val=0x100000000\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x100000001_str: .string "\"test: 283; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x1, rs2val=0x100000001\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x80000000_str: .string "\"test: 284; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x1, rs2val=0x80000000\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x1_rs2val_0x7fffffff_str: .string "\"test: 285; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x1, rs2val=0x7fffffff\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x0_str: .string "\"test: 286; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x7fffffff, rs2val=0x0\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x1_str: .string "\"test: 287; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x7fffffff, rs2val=0x1\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x2_str: .string "\"test: 288; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x7fffffff, rs2val=0x2\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x8000000000000000_str: .string "\"test: 289; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x7fffffff, rs2val=0x8000000000000000\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x8000000000000001_str: .string "\"test: 290; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x7fffffff, rs2val=0x8000000000000001\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x7fffffffffffffff_str: .string "\"test: 291; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x7fffffff, rs2val=0x7fffffffffffffff\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x7ffffffffffffffe_str: .string "\"test: 292; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x7fffffff, rs2val=0x7ffffffffffffffe\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0xffffffffffffffff_str: .string "\"test: 293; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x7fffffff, rs2val=0xffffffffffffffff\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0xfffffffffffffffe_str: .string "\"test: 294; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x7fffffff, rs2val=0xfffffffffffffffe\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x5bbc887763ae86f2_str: .string "\"test: 295; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x7fffffff, rs2val=0x5bbc887763ae86f2\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 296; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x7fffffff, rs2val=0xaaaaaaaaaaaaaaaa\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x5555555555555555_str: .string "\"test: 297; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x7fffffff, rs2val=0x5555555555555555\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0xffffffff_str: .string "\"test: 298; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x7fffffff, rs2val=0xffffffff\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0xfffffffe_str: .string "\"test: 299; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x7fffffff, rs2val=0xfffffffe\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x100000000_str: .string "\"test: 300; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x7fffffff, rs2val=0x100000000\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x100000001_str: .string "\"test: 301; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x7fffffff, rs2val=0x100000001\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x80000000_str: .string "\"test: 302; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x7fffffff, rs2val=0x80000000\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x7fffffff_rs2val_0x7fffffff_str: .string "\"test: 303; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x7fffffff, rs2val=0x7fffffff\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x0_str: .string "\"test: 304; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x80000000, rs2val=0x0\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x1_str: .string "\"test: 305; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x80000000, rs2val=0x1\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x2_str: .string "\"test: 306; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x80000000, rs2val=0x2\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x8000000000000000_str: .string "\"test: 307; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x80000000, rs2val=0x8000000000000000\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x8000000000000001_str: .string "\"test: 308; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x80000000, rs2val=0x8000000000000001\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x7fffffffffffffff_str: .string "\"test: 309; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x80000000, rs2val=0x7fffffffffffffff\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x7ffffffffffffffe_str: .string "\"test: 310; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x80000000, rs2val=0x7ffffffffffffffe\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0xffffffffffffffff_str: .string "\"test: 311; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x80000000, rs2val=0xffffffffffffffff\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0xfffffffffffffffe_str: .string "\"test: 312; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x80000000, rs2val=0xfffffffffffffffe\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x5bbc887763ae86f2_str: .string "\"test: 313; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x80000000, rs2val=0x5bbc887763ae86f2\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 314; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x80000000, rs2val=0xaaaaaaaaaaaaaaaa\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x5555555555555555_str: .string "\"test: 315; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x80000000, rs2val=0x5555555555555555\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0xffffffff_str: .string "\"test: 316; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x80000000, rs2val=0xffffffff\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0xfffffffe_str: .string "\"test: 317; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x80000000, rs2val=0xfffffffe\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x100000000_str: .string "\"test: 318; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x80000000, rs2val=0x100000000\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x100000001_str: .string "\"test: 319; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x80000000, rs2val=0x100000001\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x80000000_str: .string "\"test: 320; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x80000000, rs2val=0x80000000\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0x80000000_rs2val_0x7fffffff_str: .string "\"test: 321; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0x80000000, rs2val=0x7fffffff\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x0_str: .string "\"test: 322; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0xffffffff, rs2val=0x0\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x1_str: .string "\"test: 323; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0xffffffff, rs2val=0x1\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x2_str: .string "\"test: 324; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0xffffffff, rs2val=0x2\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x8000000000000000_str: .string "\"test: 325; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0xffffffff, rs2val=0x8000000000000000\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x8000000000000001_str: .string "\"test: 326; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0xffffffff, rs2val=0x8000000000000001\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x7fffffffffffffff_str: .string "\"test: 327; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0xffffffff, rs2val=0x7fffffffffffffff\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x7ffffffffffffffe_str: .string "\"test: 328; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0xffffffff, rs2val=0x7ffffffffffffffe\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0xffffffffffffffff_str: .string "\"test: 329; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0xffffffff, rs2val=0xffffffffffffffff\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0xfffffffffffffffe_str: .string "\"test: 330; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0xffffffff, rs2val=0xfffffffffffffffe\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x5bbc887763ae86f2_str: .string "\"test: 331; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0xffffffff, rs2val=0x5bbc887763ae86f2\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 332; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0xffffffff, rs2val=0xaaaaaaaaaaaaaaaa\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x5555555555555555_str: .string "\"test: 333; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0xffffffff, rs2val=0x5555555555555555\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0xffffffff_str: .string "\"test: 334; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0xffffffff, rs2val=0xffffffff\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0xfffffffe_str: .string "\"test: 335; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0xffffffff, rs2val=0xfffffffe\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x100000000_str: .string "\"test: 336; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0xffffffff, rs2val=0x100000000\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x100000001_str: .string "\"test: 337; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0xffffffff, rs2val=0x100000001\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x80000000_str: .string "\"test: 338; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0xffffffff, rs2val=0x80000000\""
+Zaamo_amomax_w_cg_cr_memval_rs2_edges_word_memval_0xffffffff_rs2val_0x7fffffff_str: .string "\"test: 339; cg: Zaamo_amomax.w_cg; cp: cr_memval_rs2_edges_word; bin: memval=0xffffffff, rs2val=0x7fffffff\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

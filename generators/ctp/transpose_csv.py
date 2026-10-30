@@ -8,6 +8,7 @@
 # requires-python = ">=3.10"
 # ///
 
+import argparse
 import csv
 import sys
 from datetime import datetime, timezone
@@ -26,7 +27,9 @@ def is_blank_row_excluding_first(row: list[str]) -> bool:
     return all(cell.strip() == "" for cell in row[1:])
 
 
-def split_columns_with_blanks(transposed: list[list[str]], max_columns: int) -> list[list[list[str]]]:
+def split_columns_with_blanks(transposed: list[list[str]], instructions_per_table: int) -> list[list[list[str]]]:
+    """Split the transposed table into tables of at most instructions_per_table instruction columns,
+    each keeping the coverpoint-name column first.  A blank column in the source also ends a table."""
     if not transposed:
         return []
 
@@ -38,9 +41,9 @@ def split_columns_with_blanks(transposed: list[list[str]], max_columns: int) -> 
 
     while start_col < total_cols:
         end_col = start_col
-        col_count = 1  # count first col
+        col_count = 0  # instruction columns in this table; the name column is not counted
 
-        while end_col < total_cols and col_count < max_columns:
+        while end_col < total_cols and col_count < instructions_per_table:
             current_col = [row[end_col] for row in transposed]
             if is_blank_column(current_col):
                 break
@@ -81,8 +84,12 @@ def write_asciidoc(filepath: Path, tables: list[list[list[str]]], suite_name: st
         f.write(f".{suite_name} Instruction Coverpoints\n")
 
         for table in tables:
+            # The first column holds the coverpoint names, which are longer than the instruction
+            # names, so give it 1.5 times the width of an instruction column
+            instruction_columns = len(table[0]) - 1 if table else 0
             f.write("[options=header]\n")
             f.write("[%autofit]\n")
+            f.write('[cols="' + ",".join(["3", *(["2"] * instruction_columns)]) + '"]\n')
             f.write(",===\n")
             for row in table:
                 if row and row[0].strip().lower() == "type":
@@ -92,50 +99,26 @@ def write_asciidoc(filepath: Path, tables: list[list[list[str]]], suite_name: st
             f.write(",===\n\n")
 
 
-def process_csv_file_to_adoc(source_path: Path, dest_dir: Path, max_columns: int) -> None:
-    base_name = source_path.stem
-
+def process_csv_file_to_adoc(source_path: Path, dest_dir: Path, instructions_per_table: int) -> None:
     with source_path.open(newline="", encoding="utf-8") as infile:
-        reader = csv.reader(infile)
-        rows = list(reader)
+        rows = list(csv.reader(infile))
 
-    transposed = transpose_csv(rows)
-    chunks = split_columns_with_blanks(transposed, max_columns)
-
-    adoc_path = dest_dir / f"{base_name}.adoc"
-    write_asciidoc(adoc_path, chunks, base_name)
+    chunks = split_columns_with_blanks(transpose_csv(rows), instructions_per_table)
+    write_asciidoc(dest_dir / f"{source_path.stem}.adoc", chunks, source_path.stem)
 
 
 def main() -> None:
-    if len(sys.argv) != 4:
-        print(f"Usage: {sys.argv[0]} <source_directory> <destination_directory> <max_columns>")
-        sys.exit(1)
+    ap = argparse.ArgumentParser(description="Convert CSV test plans into AsciiDoc tables")
+    ap.add_argument("--out", required=True, type=Path, help="output directory")
+    ap.add_argument("--per-table", default=12, type=int, help="maximum instructions per table")
+    ap.add_argument("csvs", nargs="+", type=Path, help="CSV test plans")
+    a = ap.parse_args()
+    if a.per_table < 1:
+        ap.error("--per-table must be at least 1")
 
-    source_dir = Path(sys.argv[1])
-    dest_dir = Path(sys.argv[2])
-    try:
-        max_columns = int(sys.argv[3])
-        if max_columns < 2:
-            raise ValueError
-    except ValueError:
-        print("Error: max_columns must be an integer >= 2.")
-        sys.exit(1)
-
-    if not source_dir.is_dir():
-        print(f"Error: source directory '{source_dir}' does not exist.")
-        sys.exit(1)
-
-    dest_dir.mkdir(parents=True, exist_ok=True)
-
-    for entry in sorted(source_dir.iterdir()):
-        if entry.suffix.lower() == ".csv":
-            print(f"Processing {entry.name}...")
-            try:
-                process_csv_file_to_adoc(entry, dest_dir, max_columns)
-            except (OSError, csv.Error) as e:
-                print(f"Error processing {entry.name}: {e}")
-
-    print("Done.")
+    a.out.mkdir(parents=True, exist_ok=True)
+    for csv_path in a.csvs:
+        process_csv_file_to_adoc(csv_path, a.out, a.per_table)
 
 
 if __name__ == "__main__":

@@ -4,5 +4,5 @@
 normative_rule_definitions:
   # If the Sscounterenw extension is implemented, then for any hpmcounter that is
   # not read-only zero, the corresponding bit in scounteren must be writable.
-  - name: sscounterenw_hpmcounter_scounteren
+  - name: Sscounterenw_hpmcounter_scounteren
     coverpoint: ["Sscounterenw_cg/cp_scounteren_writable"]

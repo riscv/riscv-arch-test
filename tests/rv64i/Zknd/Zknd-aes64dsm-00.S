@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 778
+#define SIGUPD_COUNT 850
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -966,6 +966,22 @@ Zknd_aes64dsm_cg_cp_rs1_edges_0x100000001:
   # Check if x2 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x12, x8, x7, x2, Zknd_aes64dsm_cg_cp_rs1_edges_0x100000001, Zknd_aes64dsm_cg_cp_rs1_edges_0x100000001_str)
 
+# Testcase cp_rs1_edges (Test source rs1 value = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x1) # load rs1: x1 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x2) # load rs2: x2 = 0x4981af210b999e85
+Zknd_aes64dsm_cg_cp_rs1_edges_0x80000000:
+  aes64dsm x23, x1, x2 # perform operation
+  # Check if x23 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x23, Zknd_aes64dsm_cg_cp_rs1_edges_0x80000000, Zknd_aes64dsm_cg_cp_rs1_edges_0x80000000_str)
+
+# Testcase cp_rs1_edges (Test source rs1 value = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x17) # load rs1: x17 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs2: x4 = 0xbd12c363dd5d324a
+Zknd_aes64dsm_cg_cp_rs1_edges_0x7fffffff:
+  aes64dsm x11, x17, x4 # perform operation
+  # Check if x11 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x11, Zknd_aes64dsm_cg_cp_rs1_edges_0x7fffffff, Zknd_aes64dsm_cg_cp_rs1_edges_0x7fffffff_str)
+
 /////////////////////////////////
 // cp_rs2_edges
 /////////////////////////////////
@@ -1097,6 +1113,22 @@ Zknd_aes64dsm_cg_cp_rs2_edges_0x100000001:
   aes64dsm x20, x27, x25 # perform operation
   # Check if x20 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x12, x8, x7, x20, Zknd_aes64dsm_cg_cp_rs2_edges_0x100000001, Zknd_aes64dsm_cg_cp_rs2_edges_0x100000001_str)
+
+# Testcase cp_rs2_edges (Test source rs2 value = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs1: x20 = 0xb0835cfea29ee962
+  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs2: x6 = 0x0000000080000000
+Zknd_aes64dsm_cg_cp_rs2_edges_0x80000000:
+  aes64dsm x31, x20, x6 # perform operation
+  # Check if x31 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x31, Zknd_aes64dsm_cg_cp_rs2_edges_0x80000000, Zknd_aes64dsm_cg_cp_rs2_edges_0x80000000_str)
+
+# Testcase cp_rs2_edges (Test source rs2 value = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs1: x18 = 0xf14e729483e235f7
+  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs2: x22 = 0x000000007fffffff
+Zknd_aes64dsm_cg_cp_rs2_edges_0x7fffffff:
+  aes64dsm x16, x18, x22 # perform operation
+  # Check if x16 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x16, Zknd_aes64dsm_cg_cp_rs2_edges_0x7fffffff, Zknd_aes64dsm_cg_cp_rs2_edges_0x7fffffff_str)
 
 /////////////////////////////////
 // cr_rs1_rs2_edges
@@ -1230,1925 +1262,2469 @@ Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x100000001:
   # Check if x13 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x12, x8, x7, x13, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x100000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x100000001_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x0000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x24, x26) # load rs1: x26 = 0x0000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs2: x15 = 0x0000000000000000
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x0:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000000 rs2 = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x26) # load rs1: x26 = 0x0000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs2: x15 = 0x0000000080000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x80000000:
   aes64dsm x20, x26, x15 # perform operation
+  # Check if x20 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x20, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x80000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x80000000_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000000 rs2 = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs1: x30 = 0x0000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x1) # load rs2: x1 = 0x000000007fffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x7fffffff:
+  aes64dsm x11, x30, x1 # perform operation
+  # Check if x11 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x11, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x7fffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x7fffffff_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x0000000000000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs1: x4 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x1) # load rs2: x1 = 0x0000000000000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x0:
+  aes64dsm x20, x4, x1 # perform operation
   # Check if x20 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x12, x8, x7, x20, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x0, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x0_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x0000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs1: x30 = 0x0000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x1) # load rs2: x1 = 0x0000000000000001
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x1:
-  aes64dsm x11, x30, x1 # perform operation
-  # Check if x11 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x11, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x1_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x0000000000000002)
-  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs1: x4 = 0x0000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x1) # load rs2: x1 = 0x0000000000000002
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x2:
-  aes64dsm x20, x4, x1 # perform operation
-  # Check if x20 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x20, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x2_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x8000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x24, x2) # load rs1: x2 = 0x0000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x14) # load rs2: x14 = 0x8000000000000000
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x8000000000000000:
+  RVTEST_TESTDATA_LOAD_INT(x24, x14) # load rs2: x14 = 0x0000000000000001
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x1:
   aes64dsm x22, x2, x14 # perform operation
   # Check if x22 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x22, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x8000000000000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x8000000000000000_str)
+  RVTEST_SIGUPD(x12, x8, x7, x22, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x1_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x8000000000000001)
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x0000000000000002)
   RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs1: x11 = 0x0000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x2) # load rs2: x2 = 0x8000000000000001
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x8000000000000001:
+  RVTEST_TESTDATA_LOAD_INT(x24, x2) # load rs2: x2 = 0x0000000000000002
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x2:
   aes64dsm x26, x11, x2 # perform operation
   # Check if x26 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x26, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x8000000000000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x8000000000000001_str)
+  RVTEST_SIGUPD(x12, x8, x7, x26, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x2_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x7fffffffffffffff)
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x8000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x24, x1) # load rs1: x1 = 0x0000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs2: x21 = 0x7fffffffffffffff
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7fffffffffffffff:
+  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs2: x21 = 0x8000000000000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x8000000000000000:
   aes64dsm x31, x1, x21 # perform operation
   # Check if x31 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x31, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7fffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7fffffffffffffff_str)
+  RVTEST_SIGUPD(x12, x8, x7, x31, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x8000000000000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x8000000000000000_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x7ffffffffffffffe)
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x8000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs1: x13 = 0x0000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs2: x5 = 0x7ffffffffffffffe
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7ffffffffffffffe:
+  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs2: x5 = 0x8000000000000001
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x8000000000000001:
   aes64dsm x25, x13, x5 # perform operation
   # Check if x25 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x25, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7ffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7ffffffffffffffe_str)
+  RVTEST_SIGUPD(x12, x8, x7, x25, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x8000000000000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x8000000000000001_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x7fffffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs1: x19 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs2: x13 = 0x7fffffffffffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7fffffffffffffff:
+  aes64dsm x25, x19, x13 # perform operation
+  # Check if x25 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x25, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7fffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7fffffffffffffff_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x7ffffffffffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x24, x3) # load rs1: x3 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x10) # load rs2: x10 = 0x7ffffffffffffffe
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7ffffffffffffffe:
+  aes64dsm x19, x3, x10 # perform operation
+  # Check if x19 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x19, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7ffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7ffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0xffffffffffffffff)
   RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs1: x19 = 0x0000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs2: x13 = 0xffffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x9) # load rs2: x9 = 0xffffffffffffffff
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xffffffffffffffff:
-  aes64dsm x25, x19, x13 # perform operation
-  # Check if x25 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x25, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xffffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xffffffffffffffff_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0xfffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x24, x3) # load rs1: x3 = 0x0000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x10) # load rs2: x10 = 0xfffffffffffffffe
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xfffffffffffffffe:
-  aes64dsm x19, x3, x10 # perform operation
-  # Check if x19 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x19, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xfffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xfffffffffffffffe_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x5bbc887763ae86f2)
-  RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs1: x19 = 0x0000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x9) # load rs2: x9 = 0x5bbc887763ae86f2
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x5bbc887763ae86f2:
   aes64dsm x31, x19, x9 # perform operation
   # Check if x31 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x31, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x5bbc887763ae86f2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x5bbc887763ae86f2_str)
+  RVTEST_SIGUPD(x12, x8, x7, x31, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xffffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xffffffffffffffff_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0xaaaaaaaaaaaaaaaa)
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0xfffffffffffffffe)
   RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs1: x27 = 0x0000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs2: x6 = 0xaaaaaaaaaaaaaaaa
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xaaaaaaaaaaaaaaaa:
+  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs2: x6 = 0xfffffffffffffffe
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xfffffffffffffffe:
   aes64dsm x29, x27, x6 # perform operation
   # Check if x29 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x29, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xaaaaaaaaaaaaaaaa, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xaaaaaaaaaaaaaaaa_str)
+  RVTEST_SIGUPD(x12, x8, x7, x29, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xfffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xfffffffffffffffe_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x5555555555555555)
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x5bbc887763ae86f2)
   RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs1: x15 = 0x0000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs2: x20 = 0x5555555555555555
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x5555555555555555:
+  RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs2: x20 = 0x5bbc887763ae86f2
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x5bbc887763ae86f2:
   aes64dsm x21, x15, x20 # perform operation
   # Check if x21 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x21, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x5555555555555555, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x5555555555555555_str)
+  RVTEST_SIGUPD(x12, x8, x7, x21, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x5bbc887763ae86f2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x5bbc887763ae86f2_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x00000000ffffffff)
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0xaaaaaaaaaaaaaaaa)
   RVTEST_TESTDATA_LOAD_INT(x24, x25) # load rs1: x25 = 0x0000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs2: x18 = 0x00000000ffffffff
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xffffffff:
+  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs2: x18 = 0xaaaaaaaaaaaaaaaa
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xaaaaaaaaaaaaaaaa:
   aes64dsm x17, x25, x18 # perform operation
   # Check if x17 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x17, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xffffffff_str)
+  RVTEST_SIGUPD(x12, x8, x7, x17, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xaaaaaaaaaaaaaaaa, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xaaaaaaaaaaaaaaaa_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x00000000fffffffe)
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x5555555555555555)
   RVTEST_TESTDATA_LOAD_INT(x24, x26) # load rs1: x26 = 0x0000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs2: x5 = 0x00000000fffffffe
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xfffffffe:
+  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs2: x5 = 0x5555555555555555
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x5555555555555555:
   aes64dsm x11, x26, x5 # perform operation
   # Check if x11 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x11, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xfffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xfffffffe_str)
+  RVTEST_SIGUPD(x12, x8, x7, x11, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x5555555555555555, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x5555555555555555_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x0000000100000000)
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x00000000ffffffff)
   RVTEST_TESTDATA_LOAD_INT(x24, x14) # load rs1: x14 = 0x0000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs2: x19 = 0x0000000100000000
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x100000000:
+  RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs2: x19 = 0x00000000ffffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xffffffff:
   aes64dsm x1, x14, x19 # perform operation
   # Check if x1 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x100000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x100000000_str)
+  RVTEST_SIGUPD(x12, x8, x7, x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xffffffff_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x0000000100000001)
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x00000000fffffffe)
   RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rs1: x31 = 0x0000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs2: x15 = 0x0000000100000001
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x100000001:
+  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs2: x15 = 0x00000000fffffffe
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xfffffffe:
   aes64dsm x10, x31, x15 # perform operation
   # Check if x10 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x10, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x100000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x100000001_str)
+  RVTEST_SIGUPD(x12, x8, x7, x10, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xfffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xfffffffe_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0x0000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs1: x4 = 0x0000000000000002
-  RVTEST_TESTDATA_LOAD_INT(x24, x1) # load rs2: x1 = 0x0000000000000000
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x0:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x0000000100000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs1: x4 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x1) # load rs2: x1 = 0x0000000100000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x100000000:
   aes64dsm x10, x4, x1 # perform operation
   # Check if x10 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x10, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x0, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x0_str)
+  RVTEST_SIGUPD(x12, x8, x7, x10, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x100000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x100000000_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0x0000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs1: x22 = 0x0000000000000002
-  RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs2: x19 = 0x0000000000000001
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x1:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x0000000100000001)
+  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs1: x22 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs2: x19 = 0x0000000100000001
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x100000001:
   aes64dsm x27, x22, x19 # perform operation
   # Check if x27 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x27, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x1_str)
+  RVTEST_SIGUPD(x12, x8, x7, x27, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x100000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x100000001_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0x0000000000000002)
-  RVTEST_TESTDATA_LOAD_INT(x24, x28) # load rs1: x28 = 0x0000000000000002
-  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0x0000000000000002
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x2:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x28) # load rs1: x28 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0x0000000080000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x80000000:
   aes64dsm x22, x28, x27 # perform operation
   # Check if x22 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x22, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x2_str)
+  RVTEST_SIGUPD(x12, x8, x7, x22, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x80000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x80000000_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0x8000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs1: x30 = 0x0000000000000002
-  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs2: x15 = 0x8000000000000000
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x8000000000000000:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs1: x30 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs2: x15 = 0x000000007fffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7fffffff:
   aes64dsm x5, x30, x15 # perform operation
   # Check if x5 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x5, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x8000000000000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x8000000000000000_str)
+  RVTEST_SIGUPD(x12, x8, x7, x5, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7fffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7fffffff_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0x8000000000000001)
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0x0000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs1: x16 = 0x0000000000000002
-  RVTEST_TESTDATA_LOAD_INT(x24, x3) # load rs2: x3 = 0x8000000000000001
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x8000000000000001:
+  RVTEST_TESTDATA_LOAD_INT(x24, x3) # load rs2: x3 = 0x0000000000000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x0:
   aes64dsm x9, x16, x3 # perform operation
   # Check if x9 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x9, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x8000000000000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x8000000000000001_str)
+  RVTEST_SIGUPD(x12, x8, x7, x9, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x0, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x0_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0x7fffffffffffffff)
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0x0000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x24, x2) # load rs1: x2 = 0x0000000000000002
-  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs2: x16 = 0x7fffffffffffffff
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7fffffffffffffff:
+  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs2: x16 = 0x0000000000000001
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x1:
   aes64dsm x20, x2, x16 # perform operation
   # Check if x20 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x20, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7fffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7fffffffffffffff_str)
+  RVTEST_SIGUPD(x12, x8, x7, x20, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x1_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0x7ffffffffffffffe)
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0x0000000000000002)
   RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs1: x30 = 0x0000000000000002
-  RVTEST_TESTDATA_LOAD_INT(x24, x25) # load rs2: x25 = 0x7ffffffffffffffe
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7ffffffffffffffe:
+  RVTEST_TESTDATA_LOAD_INT(x24, x25) # load rs2: x25 = 0x0000000000000002
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x2:
   aes64dsm x28, x30, x25 # perform operation
   # Check if x28 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x28, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7ffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7ffffffffffffffe_str)
+  RVTEST_SIGUPD(x12, x8, x7, x28, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x2_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0xffffffffffffffff)
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0x8000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs1: x6 = 0x0000000000000002
-  RVTEST_TESTDATA_LOAD_INT(x24, x10) # load rs2: x10 = 0xffffffffffffffff
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xffffffffffffffff:
+  RVTEST_TESTDATA_LOAD_INT(x24, x10) # load rs2: x10 = 0x8000000000000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x8000000000000000:
   aes64dsm x19, x6, x10 # perform operation
   # Check if x19 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x19, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xffffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xffffffffffffffff_str)
+  RVTEST_SIGUPD(x12, x8, x7, x19, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x8000000000000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x8000000000000000_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0xfffffffffffffffe)
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0x8000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs1: x20 = 0x0000000000000002
-  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs2: x22 = 0xfffffffffffffffe
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xfffffffffffffffe:
+  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs2: x22 = 0x8000000000000001
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x8000000000000001:
   aes64dsm x27, x20, x22 # perform operation
   # Check if x27 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x27, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xfffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xfffffffffffffffe_str)
+  RVTEST_SIGUPD(x12, x8, x7, x27, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x8000000000000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x8000000000000001_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0x5bbc887763ae86f2)
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0x7fffffffffffffff)
   RVTEST_TESTDATA_LOAD_INT(x24, x14) # load rs1: x14 = 0x0000000000000002
-  RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs2: x20 = 0x5bbc887763ae86f2
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x5bbc887763ae86f2:
+  RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs2: x20 = 0x7fffffffffffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7fffffffffffffff:
   aes64dsm x21, x14, x20 # perform operation
   # Check if x21 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x21, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x5bbc887763ae86f2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x5bbc887763ae86f2_str)
+  RVTEST_SIGUPD(x12, x8, x7, x21, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7fffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7fffffffffffffff_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0xaaaaaaaaaaaaaaaa)
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0x7ffffffffffffffe)
   RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rs1: x31 = 0x0000000000000002
-  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs2: x22 = 0xaaaaaaaaaaaaaaaa
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xaaaaaaaaaaaaaaaa:
+  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs2: x22 = 0x7ffffffffffffffe
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7ffffffffffffffe:
   aes64dsm x6, x31, x22 # perform operation
   # Check if x6 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x6, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xaaaaaaaaaaaaaaaa, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xaaaaaaaaaaaaaaaa_str)
+  RVTEST_SIGUPD(x12, x8, x7, x6, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7ffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7ffffffffffffffe_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0xffffffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs1: x29 = 0x0000000000000002
+  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs2: x13 = 0xffffffffffffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xffffffffffffffff:
+  aes64dsm x22, x29, x13 # perform operation
+  # Check if x22 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x22, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xffffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xffffffffffffffff_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0xfffffffffffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs1: x22 = 0x0000000000000002
+  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0xfffffffffffffffe
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xfffffffffffffffe:
+  aes64dsm x1, x22, x27 # perform operation
+  # Check if x1 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xfffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xfffffffffffffffe_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0x5bbc887763ae86f2)
+  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs1: x5 = 0x0000000000000002
+  RVTEST_TESTDATA_LOAD_INT(x24, x28) # load rs2: x28 = 0x5bbc887763ae86f2
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x5bbc887763ae86f2:
+  aes64dsm x18, x5, x28 # perform operation
+  # Check if x18 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x18, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x5bbc887763ae86f2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x5bbc887763ae86f2_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0xaaaaaaaaaaaaaaaa)
+  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs1: x6 = 0x0000000000000002
+  RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs2: x20 = 0xaaaaaaaaaaaaaaaa
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xaaaaaaaaaaaaaaaa:
+  aes64dsm x31, x6, x20 # perform operation
+  # Check if x31 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x31, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xaaaaaaaaaaaaaaaa, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xaaaaaaaaaaaaaaaa_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0x5555555555555555)
   RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs1: x29 = 0x0000000000000002
-  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs2: x13 = 0x5555555555555555
+  RVTEST_TESTDATA_LOAD_INT(x24, x26) # load rs2: x26 = 0x5555555555555555
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x5555555555555555:
-  aes64dsm x22, x29, x13 # perform operation
-  # Check if x22 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x22, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x5555555555555555, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x5555555555555555_str)
+  aes64dsm x23, x29, x26 # perform operation
+  # Check if x23 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x23, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x5555555555555555, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x5555555555555555_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0x00000000ffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs1: x22 = 0x0000000000000002
-  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs1: x18 = 0x0000000000000002
+  RVTEST_TESTDATA_LOAD_INT(x24, x26) # load rs2: x26 = 0x00000000ffffffff
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xffffffff:
-  aes64dsm x1, x22, x27 # perform operation
-  # Check if x1 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xffffffff_str)
+  aes64dsm x5, x18, x26 # perform operation
+  # Check if x5 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x5, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0x00000000fffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs1: x5 = 0x0000000000000002
-  RVTEST_TESTDATA_LOAD_INT(x24, x28) # load rs2: x28 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x26) # load rs1: x26 = 0x0000000000000002
+  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs2: x29 = 0x00000000fffffffe
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xfffffffe:
-  aes64dsm x18, x5, x28 # perform operation
-  # Check if x18 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x18, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xfffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xfffffffe_str)
+  aes64dsm x20, x26, x29 # perform operation
+  # Check if x20 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x20, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xfffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xfffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0x0000000100000000)
-  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs1: x6 = 0x0000000000000002
-  RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs2: x20 = 0x0000000100000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x26) # load rs1: x26 = 0x0000000000000002
+  RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rs2: x31 = 0x0000000100000000
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x100000000:
-  aes64dsm x31, x6, x20 # perform operation
-  # Check if x31 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x31, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x100000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x100000000_str)
+  aes64dsm x29, x26, x31 # perform operation
+  # Check if x29 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x29, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x100000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x100000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0x0000000100000001)
   RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs1: x29 = 0x0000000000000002
-  RVTEST_TESTDATA_LOAD_INT(x24, x26) # load rs2: x26 = 0x0000000100000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs2: x21 = 0x0000000100000001
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x100000001:
-  aes64dsm x23, x29, x26 # perform operation
-  # Check if x23 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x23, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x100000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x100000001_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0x0000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs1: x18 = 0x8000000000000000
-  RVTEST_TESTDATA_LOAD_INT(x24, x26) # load rs2: x26 = 0x0000000000000000
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x0:
-  aes64dsm x5, x18, x26 # perform operation
-  # Check if x5 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x5, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x0, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x0_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0x0000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x24, x26) # load rs1: x26 = 0x8000000000000000
-  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs2: x29 = 0x0000000000000001
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x1:
-  aes64dsm x20, x26, x29 # perform operation
-  # Check if x20 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x20, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x1_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0x0000000000000002)
-  RVTEST_TESTDATA_LOAD_INT(x24, x26) # load rs1: x26 = 0x8000000000000000
-  RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rs2: x31 = 0x0000000000000002
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x2:
-  aes64dsm x29, x26, x31 # perform operation
-  # Check if x29 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x29, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x2_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0x8000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs1: x29 = 0x8000000000000000
-  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs2: x21 = 0x8000000000000000
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x8000000000000000:
   aes64dsm x15, x29, x21 # perform operation
   # Check if x15 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x15, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x8000000000000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x8000000000000000_str)
+  RVTEST_SIGUPD(x12, x8, x7, x15, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x100000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x100000001_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs1: x5 = 0x0000000000000002
+  RVTEST_TESTDATA_LOAD_INT(x24, x17) # load rs2: x17 = 0x0000000080000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x80000000:
+  aes64dsm x13, x5, x17 # perform operation
+  # Check if x13 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x13, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x80000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x80000000_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x28) # load rs1: x28 = 0x0000000000000002
+  RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs2: x30 = 0x000000007fffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7fffffff:
+  aes64dsm x26, x28, x30 # perform operation
+  # Check if x26 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x26, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7fffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7fffffff_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0x0000000000000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs1: x13 = 0x8000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs2: x11 = 0x0000000000000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x0:
+  aes64dsm x29, x13, x11 # perform operation
+  # Check if x29 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x29, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x0, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x0_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0x0000000000000001)
+  RVTEST_TESTDATA_LOAD_INT(x24, x17) # load rs1: x17 = 0x8000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs2: x22 = 0x0000000000000001
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x1:
+  aes64dsm x16, x17, x22 # perform operation
+  # Check if x16 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x16, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x1_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0x0000000000000002)
+  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs1: x27 = 0x8000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs2: x21 = 0x0000000000000002
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x2:
+  aes64dsm x6, x27, x21 # perform operation
+  # Check if x6 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x6, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x2_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0x8000000000000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs1: x30 = 0x8000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs2: x16 = 0x8000000000000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x8000000000000000:
+  aes64dsm x2, x30, x16 # perform operation
+  # Check if x2 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x8000000000000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x8000000000000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0x8000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs1: x5 = 0x8000000000000000
-  RVTEST_TESTDATA_LOAD_INT(x24, x17) # load rs2: x17 = 0x8000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs1: x15 = 0x8000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs2: x22 = 0x8000000000000001
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x8000000000000001:
-  aes64dsm x13, x5, x17 # perform operation
+  aes64dsm x13, x15, x22 # perform operation
   # Check if x13 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x12, x8, x7, x13, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x8000000000000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x8000000000000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0x7fffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x24, x28) # load rs1: x28 = 0x8000000000000000
-  RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs2: x30 = 0x7fffffffffffffff
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x7fffffffffffffff:
-  aes64dsm x26, x28, x30 # perform operation
-  # Check if x26 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x26, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x7fffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x7fffffffffffffff_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0x7ffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs1: x13 = 0x8000000000000000
-  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs2: x11 = 0x7ffffffffffffffe
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x7ffffffffffffffe:
-  aes64dsm x29, x13, x11 # perform operation
-  # Check if x29 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x29, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x7ffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x7ffffffffffffffe_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0xffffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x24, x17) # load rs1: x17 = 0x8000000000000000
-  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs2: x22 = 0xffffffffffffffff
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xffffffffffffffff:
-  aes64dsm x16, x17, x22 # perform operation
-  # Check if x16 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x16, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xffffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xffffffffffffffff_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0xfffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs1: x27 = 0x8000000000000000
-  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs2: x21 = 0xfffffffffffffffe
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xfffffffffffffffe:
-  aes64dsm x6, x27, x21 # perform operation
-  # Check if x6 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x6, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xfffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xfffffffffffffffe_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0x5bbc887763ae86f2)
-  RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs1: x30 = 0x8000000000000000
-  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs2: x16 = 0x5bbc887763ae86f2
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x5bbc887763ae86f2:
-  aes64dsm x2, x30, x16 # perform operation
-  # Check if x2 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x5bbc887763ae86f2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x5bbc887763ae86f2_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0xaaaaaaaaaaaaaaaa)
-  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs1: x15 = 0x8000000000000000
-  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs2: x22 = 0xaaaaaaaaaaaaaaaa
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xaaaaaaaaaaaaaaaa:
-  aes64dsm x13, x15, x22 # perform operation
-  # Check if x13 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x13, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xaaaaaaaaaaaaaaaa, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xaaaaaaaaaaaaaaaa_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0x5555555555555555)
   RVTEST_TESTDATA_LOAD_INT(x24, x14) # load rs1: x14 = 0x8000000000000000
-  RVTEST_TESTDATA_LOAD_INT(x24, x25) # load rs2: x25 = 0x5555555555555555
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x5555555555555555:
+  RVTEST_TESTDATA_LOAD_INT(x24, x25) # load rs2: x25 = 0x7fffffffffffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x7fffffffffffffff:
   aes64dsm x17, x14, x25 # perform operation
   # Check if x17 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x17, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x5555555555555555, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x5555555555555555_str)
+  RVTEST_SIGUPD(x12, x8, x7, x17, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x7fffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x7fffffffffffffff_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0x00000000ffffffff)
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0x7ffffffffffffffe)
   RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs1: x18 = 0x8000000000000000
-  RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs2: x30 = 0x00000000ffffffff
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xffffffff:
+  RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs2: x30 = 0x7ffffffffffffffe
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x7ffffffffffffffe:
   aes64dsm x6, x18, x30 # perform operation
   # Check if x6 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x6, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xffffffff_str)
+  RVTEST_SIGUPD(x12, x8, x7, x6, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x7ffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x7ffffffffffffffe_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0x00000000fffffffe)
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0xffffffffffffffff)
   RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs1: x16 = 0x8000000000000000
-  RVTEST_TESTDATA_LOAD_INT(x24, x14) # load rs2: x14 = 0x00000000fffffffe
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xfffffffe:
+  RVTEST_TESTDATA_LOAD_INT(x24, x14) # load rs2: x14 = 0xffffffffffffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xffffffffffffffff:
   aes64dsm x17, x16, x14 # perform operation
   # Check if x17 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x17, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xfffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xfffffffe_str)
+  RVTEST_SIGUPD(x12, x8, x7, x17, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xffffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xffffffffffffffff_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0x0000000100000000)
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0xfffffffffffffffe)
   RVTEST_TESTDATA_LOAD_INT(x24, x9) # load rs1: x9 = 0x8000000000000000
-  RVTEST_TESTDATA_LOAD_INT(x24, x23) # load rs2: x23 = 0x0000000100000000
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x100000000:
+  RVTEST_TESTDATA_LOAD_INT(x24, x23) # load rs2: x23 = 0xfffffffffffffffe
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xfffffffffffffffe:
   aes64dsm x20, x9, x23 # perform operation
   # Check if x20 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x20, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x100000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x100000000_str)
+  RVTEST_SIGUPD(x12, x8, x7, x20, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xfffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xfffffffffffffffe_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0x0000000100000001)
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0x5bbc887763ae86f2)
   RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs1: x16 = 0x8000000000000000
-  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs2: x13 = 0x0000000100000001
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x100000001:
+  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs2: x13 = 0x5bbc887763ae86f2
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x5bbc887763ae86f2:
   aes64dsm x17, x16, x13 # perform operation
   # Check if x17 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x17, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x100000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x100000001_str)
+  RVTEST_SIGUPD(x12, x8, x7, x17, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x5bbc887763ae86f2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x5bbc887763ae86f2_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x0000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs1: x27 = 0x8000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs2: x30 = 0x0000000000000000
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x0:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0xaaaaaaaaaaaaaaaa)
+  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs1: x27 = 0x8000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs2: x30 = 0xaaaaaaaaaaaaaaaa
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xaaaaaaaaaaaaaaaa:
   aes64dsm x3, x27, x30 # perform operation
   # Check if x3 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x3, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x0, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x0_str)
+  RVTEST_SIGUPD(x12, x8, x7, x3, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xaaaaaaaaaaaaaaaa, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xaaaaaaaaaaaaaaaa_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x0000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rs1: x31 = 0x8000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x23) # load rs2: x23 = 0x0000000000000001
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x1:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0x5555555555555555)
+  RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rs1: x31 = 0x8000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x23) # load rs2: x23 = 0x5555555555555555
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x5555555555555555:
   aes64dsm x28, x31, x23 # perform operation
   # Check if x28 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x28, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x1_str)
+  RVTEST_SIGUPD(x12, x8, x7, x28, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x5555555555555555, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x5555555555555555_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x0000000000000002)
-  RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs1: x30 = 0x8000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs2: x18 = 0x0000000000000002
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x2:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0x00000000ffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs1: x30 = 0x8000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs2: x18 = 0x00000000ffffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xffffffff:
   aes64dsm x31, x30, x18 # perform operation
   # Check if x31 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x31, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x2_str)
+  RVTEST_SIGUPD(x12, x8, x7, x31, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xffffffff_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x8000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rs1: x31 = 0x8000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs2: x29 = 0x8000000000000000
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x8000000000000000:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0x00000000fffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rs1: x31 = 0x8000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs2: x29 = 0x00000000fffffffe
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xfffffffe:
   aes64dsm x14, x31, x29 # perform operation
   # Check if x14 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x14, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x8000000000000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x8000000000000000_str)
+  RVTEST_SIGUPD(x12, x8, x7, x14, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xfffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xfffffffe_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x8000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rs1: x31 = 0x8000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs2: x6 = 0x8000000000000001
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x8000000000000001:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0x0000000100000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rs1: x31 = 0x8000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs2: x6 = 0x0000000100000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x100000000:
   aes64dsm x15, x31, x6 # perform operation
   # Check if x15 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x15, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x8000000000000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x8000000000000001_str)
+  RVTEST_SIGUPD(x12, x8, x7, x15, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x100000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x100000000_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x7fffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x24, x2) # load rs1: x2 = 0x8000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0x7fffffffffffffff
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x7fffffffffffffff:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0x0000000100000001)
+  RVTEST_TESTDATA_LOAD_INT(x24, x2) # load rs1: x2 = 0x8000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0x0000000100000001
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x100000001:
   aes64dsm x22, x2, x27 # perform operation
   # Check if x22 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x22, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x7fffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x7fffffffffffffff_str)
+  RVTEST_SIGUPD(x12, x8, x7, x22, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x100000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x100000001_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x7ffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x24, x26) # load rs1: x26 = 0x8000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs2: x18 = 0x7ffffffffffffffe
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x7ffffffffffffffe:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x26) # load rs1: x26 = 0x8000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs2: x18 = 0x0000000080000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x80000000:
   aes64dsm x11, x26, x18 # perform operation
   # Check if x11 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x11, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x7ffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x7ffffffffffffffe_str)
+  RVTEST_SIGUPD(x12, x8, x7, x11, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x80000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x80000000_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0xffffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs1: x11 = 0x8000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0xffffffffffffffff
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xffffffffffffffff:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs1: x11 = 0x8000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0x000000007fffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x7fffffff:
   aes64dsm x16, x11, x27 # perform operation
   # Check if x16 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x16, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xffffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xffffffffffffffff_str)
+  RVTEST_SIGUPD(x12, x8, x7, x16, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x7fffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x7fffffff_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0xfffffffffffffffe)
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x0000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x24, x3) # load rs1: x3 = 0x8000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs2: x21 = 0xfffffffffffffffe
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xfffffffffffffffe:
+  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs2: x21 = 0x0000000000000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x0:
   aes64dsm x23, x3, x21 # perform operation
   # Check if x23 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x23, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xfffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xfffffffffffffffe_str)
+  RVTEST_SIGUPD(x12, x8, x7, x23, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x0, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x0_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x5bbc887763ae86f2)
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x0000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x24, x26) # load rs1: x26 = 0x8000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x9) # load rs2: x9 = 0x5bbc887763ae86f2
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x5bbc887763ae86f2:
+  RVTEST_TESTDATA_LOAD_INT(x24, x9) # load rs2: x9 = 0x0000000000000001
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x1:
   aes64dsm x10, x26, x9 # perform operation
   # Check if x10 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x10, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x5bbc887763ae86f2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x5bbc887763ae86f2_str)
+  RVTEST_SIGUPD(x12, x8, x7, x10, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x1_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0xaaaaaaaaaaaaaaaa)
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x0000000000000002)
   RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs1: x6 = 0x8000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs2: x18 = 0xaaaaaaaaaaaaaaaa
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xaaaaaaaaaaaaaaaa:
+  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs2: x18 = 0x0000000000000002
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x2:
   aes64dsm x14, x6, x18 # perform operation
   # Check if x14 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x14, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xaaaaaaaaaaaaaaaa, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xaaaaaaaaaaaaaaaa_str)
+  RVTEST_SIGUPD(x12, x8, x7, x14, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x2_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x5555555555555555)
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x8000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs1: x6 = 0x8000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs2: x15 = 0x5555555555555555
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x5555555555555555:
+  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs2: x15 = 0x8000000000000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x8000000000000000:
   aes64dsm x1, x6, x15 # perform operation
   # Check if x1 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x5555555555555555, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x5555555555555555_str)
+  RVTEST_SIGUPD(x12, x8, x7, x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x8000000000000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x8000000000000000_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x00000000ffffffff)
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x8000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x24, x10) # load rs1: x10 = 0x8000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs2: x29 = 0x00000000ffffffff
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xffffffff:
+  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs2: x29 = 0x8000000000000001
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x8000000000000001:
   aes64dsm x2, x10, x29 # perform operation
   # Check if x2 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xffffffff_str)
+  RVTEST_SIGUPD(x12, x8, x7, x2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x8000000000000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x8000000000000001_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x00000000fffffffe)
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x7fffffffffffffff)
   RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs1: x30 = 0x8000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs2: x22 = 0x00000000fffffffe
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xfffffffe:
+  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs2: x22 = 0x7fffffffffffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x7fffffffffffffff:
   aes64dsm x14, x30, x22 # perform operation
   # Check if x14 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x14, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xfffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xfffffffe_str)
+  RVTEST_SIGUPD(x12, x8, x7, x14, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x7fffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x7fffffffffffffff_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x0000000100000000)
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x7ffffffffffffffe)
   RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs1: x6 = 0x8000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs2: x20 = 0x0000000100000000
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x100000000:
+  RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs2: x20 = 0x7ffffffffffffffe
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x7ffffffffffffffe:
   aes64dsm x14, x6, x20 # perform operation
   # Check if x14 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x14, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x100000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x100000000_str)
+  RVTEST_SIGUPD(x12, x8, x7, x14, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x7ffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x7ffffffffffffffe_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x0000000100000001)
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0xffffffffffffffff)
   RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs1: x21 = 0x8000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x28) # load rs2: x28 = 0x0000000100000001
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x100000001:
+  RVTEST_TESTDATA_LOAD_INT(x24, x28) # load rs2: x28 = 0xffffffffffffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xffffffffffffffff:
   aes64dsm x30, x21, x28 # perform operation
   # Check if x30 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x30, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x100000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x100000001_str)
+  RVTEST_SIGUPD(x12, x8, x7, x30, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xffffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xffffffffffffffff_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x0000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x24, x9) # load rs1: x9 = 0x7fffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs2: x15 = 0x0000000000000000
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x0:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0xfffffffffffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x24, x9) # load rs1: x9 = 0x8000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs2: x15 = 0xfffffffffffffffe
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xfffffffffffffffe:
   aes64dsm x26, x9, x15 # perform operation
   # Check if x26 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x26, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x0, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x0_str)
+  RVTEST_SIGUPD(x12, x8, x7, x26, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xfffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xfffffffffffffffe_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x0000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x24, x3) # load rs1: x3 = 0x7fffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs2: x21 = 0x0000000000000001
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x1:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x5bbc887763ae86f2)
+  RVTEST_TESTDATA_LOAD_INT(x24, x3) # load rs1: x3 = 0x8000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs2: x21 = 0x5bbc887763ae86f2
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x5bbc887763ae86f2:
   aes64dsm x16, x3, x21 # perform operation
   # Check if x16 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x16, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x1_str)
+  RVTEST_SIGUPD(x12, x8, x7, x16, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x5bbc887763ae86f2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x5bbc887763ae86f2_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x0000000000000002)
-  RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs1: x20 = 0x7fffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs2: x6 = 0x0000000000000002
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x2:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0xaaaaaaaaaaaaaaaa)
+  RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs1: x20 = 0x8000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs2: x6 = 0xaaaaaaaaaaaaaaaa
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xaaaaaaaaaaaaaaaa:
   aes64dsm x26, x20, x6 # perform operation
   # Check if x26 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x26, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x2_str)
+  RVTEST_SIGUPD(x12, x8, x7, x26, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xaaaaaaaaaaaaaaaa, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xaaaaaaaaaaaaaaaa_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x8000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x24, x10) # load rs1: x10 = 0x7fffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs2: x15 = 0x8000000000000000
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x8000000000000000:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x5555555555555555)
+  RVTEST_TESTDATA_LOAD_INT(x24, x10) # load rs1: x10 = 0x8000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs2: x15 = 0x5555555555555555
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x5555555555555555:
   aes64dsm x27, x10, x15 # perform operation
   # Check if x27 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x27, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x8000000000000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x8000000000000000_str)
+  RVTEST_SIGUPD(x12, x8, x7, x27, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x5555555555555555, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x5555555555555555_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x8000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs1: x29 = 0x7fffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs2: x21 = 0x8000000000000001
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x8000000000000001:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x00000000ffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs1: x29 = 0x8000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs2: x21 = 0x00000000ffffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xffffffff:
   aes64dsm x11, x29, x21 # perform operation
   # Check if x11 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x11, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x8000000000000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x8000000000000001_str)
+  RVTEST_SIGUPD(x12, x8, x7, x11, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xffffffff_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x7fffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x24, x14) # load rs1: x14 = 0x7fffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs2: x5 = 0x7fffffffffffffff
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x7fffffffffffffff:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x00000000fffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x24, x14) # load rs1: x14 = 0x8000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs2: x5 = 0x00000000fffffffe
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xfffffffe:
   aes64dsm x30, x14, x5 # perform operation
   # Check if x30 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x30, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x7fffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x7fffffffffffffff_str)
+  RVTEST_SIGUPD(x12, x8, x7, x30, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xfffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xfffffffe_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x7ffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rs1: x31 = 0x7fffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x2) # load rs2: x2 = 0x7ffffffffffffffe
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x7ffffffffffffffe:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x0000000100000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rs1: x31 = 0x8000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x2) # load rs2: x2 = 0x0000000100000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x100000000:
   aes64dsm x3, x31, x2 # perform operation
   # Check if x3 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x3, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x7ffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x7ffffffffffffffe_str)
+  RVTEST_SIGUPD(x12, x8, x7, x3, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x100000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x100000000_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0xffffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x24, x28) # load rs1: x28 = 0x7fffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x3) # load rs2: x3 = 0xffffffffffffffff
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xffffffffffffffff:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x0000000100000001)
+  RVTEST_TESTDATA_LOAD_INT(x24, x28) # load rs1: x28 = 0x8000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x3) # load rs2: x3 = 0x0000000100000001
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x100000001:
   aes64dsm x4, x28, x3 # perform operation
   # Check if x4 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x4, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xffffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xffffffffffffffff_str)
+  RVTEST_SIGUPD(x12, x8, x7, x4, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x100000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x100000001_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0xfffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x24, x17) # load rs1: x17 = 0x7fffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs2: x21 = 0xfffffffffffffffe
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xfffffffffffffffe:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x17) # load rs1: x17 = 0x8000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs2: x21 = 0x0000000080000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x80000000:
   aes64dsm x13, x17, x21 # perform operation
   # Check if x13 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x13, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xfffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xfffffffffffffffe_str)
+  RVTEST_SIGUPD(x12, x8, x7, x13, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x80000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x80000000_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x5bbc887763ae86f2)
-  RVTEST_TESTDATA_LOAD_INT(x24, x2) # load rs1: x2 = 0x7fffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0x5bbc887763ae86f2
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x5bbc887763ae86f2:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x2) # load rs1: x2 = 0x8000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0x000000007fffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x7fffffff:
   aes64dsm x22, x2, x27 # perform operation
   # Check if x22 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x22, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x5bbc887763ae86f2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x5bbc887763ae86f2_str)
+  RVTEST_SIGUPD(x12, x8, x7, x22, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x7fffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x7fffffff_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0xaaaaaaaaaaaaaaaa)
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x0000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x24, x1) # load rs1: x1 = 0x7fffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs2: x15 = 0xaaaaaaaaaaaaaaaa
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xaaaaaaaaaaaaaaaa:
+  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs2: x15 = 0x0000000000000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x0:
   aes64dsm x27, x1, x15 # perform operation
   # Check if x27 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x27, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xaaaaaaaaaaaaaaaa, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xaaaaaaaaaaaaaaaa_str)
+  RVTEST_SIGUPD(x12, x8, x7, x27, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x0, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x0_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x5555555555555555)
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x0000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x24, x2) # load rs1: x2 = 0x7fffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs2: x6 = 0x5555555555555555
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x5555555555555555:
+  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs2: x6 = 0x0000000000000001
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x1:
   aes64dsm x18, x2, x6 # perform operation
   # Check if x18 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x18, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x5555555555555555, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x5555555555555555_str)
+  RVTEST_SIGUPD(x12, x8, x7, x18, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x1_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x00000000ffffffff)
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x0000000000000002)
   RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs1: x29 = 0x7fffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs2: x15 = 0x00000000ffffffff
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xffffffff:
+  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs2: x15 = 0x0000000000000002
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x2:
   aes64dsm x11, x29, x15 # perform operation
   # Check if x11 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x11, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xffffffff_str)
+  RVTEST_SIGUPD(x12, x8, x7, x11, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x2_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x00000000fffffffe)
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x8000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs1: x20 = 0x7fffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs2: x21 = 0x00000000fffffffe
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xfffffffe:
+  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs2: x21 = 0x8000000000000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x8000000000000000:
   aes64dsm x14, x20, x21 # perform operation
   # Check if x14 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x14, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xfffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xfffffffe_str)
+  RVTEST_SIGUPD(x12, x8, x7, x14, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x8000000000000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x8000000000000000_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x0000000100000000)
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x8000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x24, x17) # load rs1: x17 = 0x7fffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x3) # load rs2: x3 = 0x0000000100000000
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x100000000:
+  RVTEST_TESTDATA_LOAD_INT(x24, x3) # load rs2: x3 = 0x8000000000000001
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x8000000000000001:
   aes64dsm x18, x17, x3 # perform operation
   # Check if x18 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x18, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x100000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x100000000_str)
+  RVTEST_SIGUPD(x12, x8, x7, x18, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x8000000000000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x8000000000000001_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x0000000100000001)
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x7fffffffffffffff)
   RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs1: x29 = 0x7fffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs2: x4 = 0x0000000100000001
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x100000001:
+  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs2: x4 = 0x7fffffffffffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x7fffffffffffffff:
   aes64dsm x13, x29, x4 # perform operation
   # Check if x13 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x13, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x100000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x100000001_str)
+  RVTEST_SIGUPD(x12, x8, x7, x13, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x7fffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x7fffffffffffffff_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x0000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x24, x14) # load rs1: x14 = 0x7ffffffffffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs2: x29 = 0x0000000000000000
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x0:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x7ffffffffffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x24, x14) # load rs1: x14 = 0x7fffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs2: x29 = 0x7ffffffffffffffe
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x7ffffffffffffffe:
   aes64dsm x1, x14, x29 # perform operation
   # Check if x1 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x0, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x0_str)
+  RVTEST_SIGUPD(x12, x8, x7, x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x7ffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x7ffffffffffffffe_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0xffffffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs1: x13 = 0x7fffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x17) # load rs2: x17 = 0xffffffffffffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xffffffffffffffff:
+  aes64dsm x20, x13, x17 # perform operation
+  # Check if x20 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x20, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xffffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xffffffffffffffff_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0xfffffffffffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x24, x2) # load rs1: x2 = 0x7fffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs2: x15 = 0xfffffffffffffffe
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xfffffffffffffffe:
+  aes64dsm x29, x2, x15 # perform operation
+  # Check if x29 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x29, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xfffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xfffffffffffffffe_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x5bbc887763ae86f2)
+  RVTEST_TESTDATA_LOAD_INT(x24, x9) # load rs1: x9 = 0x7fffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rs2: x31 = 0x5bbc887763ae86f2
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x5bbc887763ae86f2:
+  aes64dsm x18, x9, x31 # perform operation
+  # Check if x18 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x18, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x5bbc887763ae86f2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x5bbc887763ae86f2_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0xaaaaaaaaaaaaaaaa)
+  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs1: x5 = 0x7fffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x17) # load rs2: x17 = 0xaaaaaaaaaaaaaaaa
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xaaaaaaaaaaaaaaaa:
+  aes64dsm x26, x5, x17 # perform operation
+  # Check if x26 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x26, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xaaaaaaaaaaaaaaaa, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xaaaaaaaaaaaaaaaa_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x5555555555555555)
+  RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs1: x19 = 0x7fffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs2: x18 = 0x5555555555555555
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x5555555555555555:
+  aes64dsm x20, x19, x18 # perform operation
+  # Check if x20 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x20, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x5555555555555555, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x5555555555555555_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x00000000ffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs1: x13 = 0x7fffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs2: x15 = 0x00000000ffffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xffffffff:
+  aes64dsm x29, x13, x15 # perform operation
+  # Check if x29 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x29, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xffffffff_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x00000000fffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs1: x11 = 0x7fffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs2: x6 = 0x00000000fffffffe
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xfffffffe:
+  aes64dsm x29, x11, x6 # perform operation
+  # Check if x29 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x29, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xfffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xfffffffe_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x0000000100000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs1: x5 = 0x7fffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x25) # load rs2: x25 = 0x0000000100000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x100000000:
+  aes64dsm x31, x5, x25 # perform operation
+  # Check if x31 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x31, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x100000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x100000000_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x0000000100000001)
+  RVTEST_TESTDATA_LOAD_INT(x24, x9) # load rs1: x9 = 0x7fffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x3) # load rs2: x3 = 0x0000000100000001
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x100000001:
+  aes64dsm x10, x9, x3 # perform operation
+  # Check if x10 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x10, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x100000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x100000001_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x3) # load rs1: x3 = 0x7fffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs2: x11 = 0x0000000080000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x80000000:
+  aes64dsm x26, x3, x11 # perform operation
+  # Check if x26 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x26, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x80000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x80000000_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x23) # load rs1: x23 = 0x7fffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs2: x30 = 0x000000007fffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x7fffffff:
+  aes64dsm x4, x23, x30 # perform operation
+  # Check if x4 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x4, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x7fffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x7fffffff_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x0000000000000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs1: x11 = 0x7ffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs2: x5 = 0x0000000000000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x0:
+  aes64dsm x4, x11, x5 # perform operation
+  # Check if x4 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x4, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x0, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x0_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x0000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs1: x13 = 0x7ffffffffffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x17) # load rs2: x17 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x1) # load rs2: x1 = 0x0000000000000001
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x1:
-  aes64dsm x20, x13, x17 # perform operation
-  # Check if x20 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x20, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x1_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x0000000000000002)
-  RVTEST_TESTDATA_LOAD_INT(x24, x2) # load rs1: x2 = 0x7ffffffffffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs2: x15 = 0x0000000000000002
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x2:
-  aes64dsm x29, x2, x15 # perform operation
-  # Check if x29 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x29, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x2_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x8000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x24, x9) # load rs1: x9 = 0x7ffffffffffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rs2: x31 = 0x8000000000000000
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x8000000000000000:
-  aes64dsm x18, x9, x31 # perform operation
-  # Check if x18 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x18, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x8000000000000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x8000000000000000_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x8000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs1: x5 = 0x7ffffffffffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x17) # load rs2: x17 = 0x8000000000000001
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x8000000000000001:
-  aes64dsm x26, x5, x17 # perform operation
-  # Check if x26 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x26, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x8000000000000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x8000000000000001_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x7fffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs1: x19 = 0x7ffffffffffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs2: x18 = 0x7fffffffffffffff
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x7fffffffffffffff:
-  aes64dsm x20, x19, x18 # perform operation
-  # Check if x20 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x20, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x7fffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x7fffffffffffffff_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x7ffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs1: x13 = 0x7ffffffffffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs2: x15 = 0x7ffffffffffffffe
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x7ffffffffffffffe:
-  aes64dsm x29, x13, x15 # perform operation
-  # Check if x29 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x29, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x7ffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x7ffffffffffffffe_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0xffffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs1: x11 = 0x7ffffffffffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs2: x6 = 0xffffffffffffffff
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xffffffffffffffff:
-  aes64dsm x29, x11, x6 # perform operation
-  # Check if x29 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x29, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xffffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xffffffffffffffff_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0xfffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs1: x5 = 0x7ffffffffffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x25) # load rs2: x25 = 0xfffffffffffffffe
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xfffffffffffffffe:
-  aes64dsm x31, x5, x25 # perform operation
-  # Check if x31 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x31, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xfffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xfffffffffffffffe_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x5bbc887763ae86f2)
-  RVTEST_TESTDATA_LOAD_INT(x24, x9) # load rs1: x9 = 0x7ffffffffffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x3) # load rs2: x3 = 0x5bbc887763ae86f2
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x5bbc887763ae86f2:
-  aes64dsm x10, x9, x3 # perform operation
-  # Check if x10 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x10, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x5bbc887763ae86f2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x5bbc887763ae86f2_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0xaaaaaaaaaaaaaaaa)
-  RVTEST_TESTDATA_LOAD_INT(x24, x3) # load rs1: x3 = 0x7ffffffffffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs2: x11 = 0xaaaaaaaaaaaaaaaa
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xaaaaaaaaaaaaaaaa:
-  aes64dsm x26, x3, x11 # perform operation
-  # Check if x26 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x26, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xaaaaaaaaaaaaaaaa, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xaaaaaaaaaaaaaaaa_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x5555555555555555)
-  RVTEST_TESTDATA_LOAD_INT(x24, x23) # load rs1: x23 = 0x7ffffffffffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs2: x30 = 0x5555555555555555
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x5555555555555555:
-  aes64dsm x4, x23, x30 # perform operation
-  # Check if x4 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x4, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x5555555555555555, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x5555555555555555_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x00000000ffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs1: x11 = 0x7ffffffffffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs2: x5 = 0x00000000ffffffff
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xffffffff:
-  aes64dsm x4, x11, x5 # perform operation
-  # Check if x4 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x4, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xffffffff_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x00000000fffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs1: x13 = 0x7ffffffffffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x1) # load rs2: x1 = 0x00000000fffffffe
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xfffffffe:
   aes64dsm x2, x13, x1 # perform operation
   # Check if x2 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xfffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xfffffffe_str)
+  RVTEST_SIGUPD(x12, x8, x7, x2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x1_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x0000000100000000)
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x0000000000000002)
   RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs1: x21 = 0x7ffffffffffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0x0000000100000000
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x100000000:
+  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0x0000000000000002
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x2:
   aes64dsm x18, x21, x27 # perform operation
   # Check if x18 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x18, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x100000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x100000000_str)
+  RVTEST_SIGUPD(x12, x8, x7, x18, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x2_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x0000000100000001)
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x8000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs1: x4 = 0x7ffffffffffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs2: x15 = 0x0000000100000001
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x100000001:
+  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs2: x15 = 0x8000000000000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x8000000000000000:
   aes64dsm x13, x4, x15 # perform operation
   # Check if x13 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x13, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x100000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x100000001_str)
+  RVTEST_SIGUPD(x12, x8, x7, x13, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x8000000000000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x8000000000000000_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0x0000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs1: x4 = 0xffffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs2: x29 = 0x0000000000000000
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x0:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x8000000000000001)
+  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs1: x4 = 0x7ffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs2: x29 = 0x8000000000000001
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x8000000000000001:
   aes64dsm x16, x4, x29 # perform operation
   # Check if x16 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x16, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x0, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x0_str)
+  RVTEST_SIGUPD(x12, x8, x7, x16, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x8000000000000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x8000000000000001_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0x0000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs1: x4 = 0xffffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs2: x5 = 0x0000000000000001
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x1:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x7fffffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs1: x4 = 0x7ffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs2: x5 = 0x7fffffffffffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x7fffffffffffffff:
   aes64dsm x18, x4, x5 # perform operation
   # Check if x18 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x18, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x1_str)
+  RVTEST_SIGUPD(x12, x8, x7, x18, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x7fffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x7fffffffffffffff_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0x0000000000000002)
-  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs1: x29 = 0xffffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs2: x13 = 0x0000000000000002
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x2:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x7ffffffffffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs1: x29 = 0x7ffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs2: x13 = 0x7ffffffffffffffe
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x7ffffffffffffffe:
   aes64dsm x9, x29, x13 # perform operation
   # Check if x9 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x9, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x2_str)
+  RVTEST_SIGUPD(x12, x8, x7, x9, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x7ffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x7ffffffffffffffe_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0x8000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x24, x17) # load rs1: x17 = 0xffffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs2: x5 = 0x8000000000000000
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x8000000000000000:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0xffffffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x17) # load rs1: x17 = 0x7ffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs2: x5 = 0xffffffffffffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xffffffffffffffff:
   aes64dsm x4, x17, x5 # perform operation
   # Check if x4 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x4, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x8000000000000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x8000000000000000_str)
+  RVTEST_SIGUPD(x12, x8, x7, x4, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xffffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xffffffffffffffff_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0x8000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs1: x4 = 0xffffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs2: x29 = 0x8000000000000001
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x8000000000000001:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0xfffffffffffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs1: x4 = 0x7ffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs2: x29 = 0xfffffffffffffffe
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xfffffffffffffffe:
   aes64dsm x20, x4, x29 # perform operation
   # Check if x20 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x20, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x8000000000000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x8000000000000001_str)
+  RVTEST_SIGUPD(x12, x8, x7, x20, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xfffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xfffffffffffffffe_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0x7fffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs1: x29 = 0xffffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x25) # load rs2: x25 = 0x7fffffffffffffff
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x7fffffffffffffff:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x5bbc887763ae86f2)
+  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs1: x29 = 0x7ffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x25) # load rs2: x25 = 0x5bbc887763ae86f2
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x5bbc887763ae86f2:
   aes64dsm x6, x29, x25 # perform operation
   # Check if x6 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x6, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x7fffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x7fffffffffffffff_str)
+  RVTEST_SIGUPD(x12, x8, x7, x6, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x5bbc887763ae86f2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x5bbc887763ae86f2_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0x7ffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs1: x6 = 0xffffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x23) # load rs2: x23 = 0x7ffffffffffffffe
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x7ffffffffffffffe:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0xaaaaaaaaaaaaaaaa)
+  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs1: x6 = 0x7ffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x23) # load rs2: x23 = 0xaaaaaaaaaaaaaaaa
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xaaaaaaaaaaaaaaaa:
   aes64dsm x18, x6, x23 # perform operation
   # Check if x18 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x18, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x7ffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x7ffffffffffffffe_str)
+  RVTEST_SIGUPD(x12, x8, x7, x18, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xaaaaaaaaaaaaaaaa, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xaaaaaaaaaaaaaaaa_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0xffffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs1: x18 = 0xffffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs2: x15 = 0xffffffffffffffff
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xffffffffffffffff:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x5555555555555555)
+  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs1: x18 = 0x7ffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs2: x15 = 0x5555555555555555
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x5555555555555555:
   aes64dsm x21, x18, x15 # perform operation
   # Check if x21 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x21, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xffffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xffffffffffffffff_str)
+  RVTEST_SIGUPD(x12, x8, x7, x21, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x5555555555555555, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x5555555555555555_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0xfffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rs1: x31 = 0xffffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs2: x19 = 0xfffffffffffffffe
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xfffffffffffffffe:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x00000000ffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rs1: x31 = 0x7ffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs2: x19 = 0x00000000ffffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xffffffff:
   aes64dsm x13, x31, x19 # perform operation
   # Check if x13 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x13, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xfffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xfffffffffffffffe_str)
+  RVTEST_SIGUPD(x12, x8, x7, x13, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xffffffff_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0x5bbc887763ae86f2)
-  RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs1: x20 = 0xffffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x10) # load rs2: x10 = 0x5bbc887763ae86f2
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x5bbc887763ae86f2:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x00000000fffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs1: x20 = 0x7ffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x10) # load rs2: x10 = 0x00000000fffffffe
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xfffffffe:
   aes64dsm x28, x20, x10 # perform operation
   # Check if x28 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x28, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x5bbc887763ae86f2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x5bbc887763ae86f2_str)
+  RVTEST_SIGUPD(x12, x8, x7, x28, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xfffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xfffffffe_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0xaaaaaaaaaaaaaaaa)
-  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs1: x27 = 0xffffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs2: x20 = 0xaaaaaaaaaaaaaaaa
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xaaaaaaaaaaaaaaaa:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x0000000100000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs1: x27 = 0x7ffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs2: x20 = 0x0000000100000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x100000000:
   aes64dsm x13, x27, x20 # perform operation
   # Check if x13 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x13, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xaaaaaaaaaaaaaaaa, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xaaaaaaaaaaaaaaaa_str)
+  RVTEST_SIGUPD(x12, x8, x7, x13, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x100000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x100000000_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0x5555555555555555)
-  RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs1: x19 = 0xffffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0x5555555555555555
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x5555555555555555:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x0000000100000001)
+  RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs1: x19 = 0x7ffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0x0000000100000001
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x100000001:
   aes64dsm x5, x19, x27 # perform operation
   # Check if x5 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x5, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x5555555555555555, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x5555555555555555_str)
+  RVTEST_SIGUPD(x12, x8, x7, x5, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x100000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x100000001_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs1: x4 = 0x7ffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x26) # load rs2: x26 = 0x0000000080000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x80000000:
+  aes64dsm x16, x4, x26 # perform operation
+  # Check if x16 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x16, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x80000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x80000000_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs1: x19 = 0x7ffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs2: x15 = 0x000000007fffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x7fffffff:
+  aes64dsm x20, x19, x15 # perform operation
+  # Check if x20 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x20, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x7fffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x7fffffff_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0x0000000000000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs1: x18 = 0xffffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs2: x29 = 0x0000000000000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x0:
+  aes64dsm x4, x18, x29 # perform operation
+  # Check if x4 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x4, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x0, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x0_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0x0000000000000001)
+  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs1: x29 = 0xffffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x26) # load rs2: x26 = 0x0000000000000001
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x1:
+  aes64dsm x13, x29, x26 # perform operation
+  # Check if x13 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x13, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x1_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0x0000000000000002)
+  RVTEST_TESTDATA_LOAD_INT(x24, x14) # load rs1: x14 = 0xffffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x9) # load rs2: x9 = 0x0000000000000002
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x2:
+  aes64dsm x27, x14, x9 # perform operation
+  # Check if x27 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x27, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x2_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0x8000000000000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rs1: x31 = 0xffffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x25) # load rs2: x25 = 0x8000000000000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x8000000000000000:
+  aes64dsm x23, x31, x25 # perform operation
+  # Check if x23 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x23, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x8000000000000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x8000000000000000_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0x8000000000000001)
+  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs1: x27 = 0xffffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs2: x15 = 0x8000000000000001
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x8000000000000001:
+  aes64dsm x28, x27, x15 # perform operation
+  # Check if x28 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x28, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x8000000000000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x8000000000000001_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0x7fffffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs1: x27 = 0xffffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs2: x20 = 0x7fffffffffffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x7fffffffffffffff:
+  aes64dsm x31, x27, x20 # perform operation
+  # Check if x31 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x31, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x7fffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x7fffffffffffffff_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0x7ffffffffffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x24, x17) # load rs1: x17 = 0xffffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x3) # load rs2: x3 = 0x7ffffffffffffffe
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x7ffffffffffffffe:
+  aes64dsm x27, x17, x3 # perform operation
+  # Check if x27 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x27, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x7ffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x7ffffffffffffffe_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0xffffffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x1) # load rs1: x1 = 0xffffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs2: x16 = 0xffffffffffffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xffffffffffffffff:
+  aes64dsm x10, x1, x16 # perform operation
+  # Check if x10 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x10, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xffffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xffffffffffffffff_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0xfffffffffffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs1: x11 = 0xffffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs2: x13 = 0xfffffffffffffffe
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xfffffffffffffffe:
+  aes64dsm x10, x11, x13 # perform operation
+  # Check if x10 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x10, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xfffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xfffffffffffffffe_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0x5bbc887763ae86f2)
+  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs1: x15 = 0xffffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs2: x16 = 0x5bbc887763ae86f2
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x5bbc887763ae86f2:
+  aes64dsm x13, x15, x16 # perform operation
+  # Check if x13 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x13, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x5bbc887763ae86f2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x5bbc887763ae86f2_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0xaaaaaaaaaaaaaaaa)
+  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs1: x22 = 0xffffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs2: x4 = 0xaaaaaaaaaaaaaaaa
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xaaaaaaaaaaaaaaaa:
+  aes64dsm x25, x22, x4 # perform operation
+  # Check if x25 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x25, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xaaaaaaaaaaaaaaaa, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xaaaaaaaaaaaaaaaa_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0x5555555555555555)
+  RVTEST_TESTDATA_LOAD_INT(x24, x2) # load rs1: x2 = 0xffffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs2: x6 = 0x5555555555555555
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x5555555555555555:
+  aes64dsm x29, x2, x6 # perform operation
+  # Check if x29 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x29, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x5555555555555555, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x5555555555555555_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0x00000000ffffffff)
   RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs1: x4 = 0xffffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x26) # load rs2: x26 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0x00000000ffffffff
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xffffffff:
-  aes64dsm x16, x4, x26 # perform operation
-  # Check if x16 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x16, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xffffffff_str)
+  aes64dsm x1, x4, x27 # perform operation
+  # Check if x1 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0x00000000fffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs1: x19 = 0xffffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs2: x15 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs1: x18 = 0xffffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs2: x16 = 0x00000000fffffffe
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xfffffffe:
-  aes64dsm x20, x19, x15 # perform operation
-  # Check if x20 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x20, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xfffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xfffffffe_str)
+  aes64dsm x22, x18, x16 # perform operation
+  # Check if x22 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x22, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xfffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xfffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0x0000000100000000)
-  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs1: x18 = 0xffffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs2: x29 = 0x0000000100000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs1: x15 = 0xffffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs2: x13 = 0x0000000100000000
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x100000000:
-  aes64dsm x4, x18, x29 # perform operation
-  # Check if x4 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x4, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x100000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x100000000_str)
+  aes64dsm x18, x15, x13 # perform operation
+  # Check if x18 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x18, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x100000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x100000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0x0000000100000001)
-  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs1: x29 = 0xffffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x26) # load rs2: x26 = 0x0000000100000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs1: x5 = 0xffffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs2: x21 = 0x0000000100000001
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x100000001:
-  aes64dsm x13, x29, x26 # perform operation
-  # Check if x13 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x13, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x100000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x100000001_str)
+  aes64dsm x6, x5, x21 # perform operation
+  # Check if x6 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x6, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x100000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x100000001_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs1: x11 = 0xffffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs2: x6 = 0x0000000080000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x80000000:
+  aes64dsm x16, x11, x6 # perform operation
+  # Check if x16 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x16, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x80000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x80000000_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs1: x29 = 0xffffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x26) # load rs2: x26 = 0x000000007fffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x7fffffff:
+  aes64dsm x5, x29, x26 # perform operation
+  # Check if x5 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x5, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x7fffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x7fffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffffffffffe rs2 = 0x0000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x24, x14) # load rs1: x14 = 0xfffffffffffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x9) # load rs2: x9 = 0x0000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x3) # load rs1: x3 = 0xfffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs2: x20 = 0x0000000000000000
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x0:
-  aes64dsm x27, x14, x9 # perform operation
-  # Check if x27 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x27, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x0, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x0_str)
+  aes64dsm x21, x3, x20 # perform operation
+  # Check if x21 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x21, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x0, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x0_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffffffffffe rs2 = 0x0000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rs1: x31 = 0xfffffffffffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x25) # load rs2: x25 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs2: x29 = 0x0000000000000001
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x1:
-  aes64dsm x23, x31, x25 # perform operation
-  # Check if x23 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x23, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x1_str)
+  aes64dsm x19, x31, x29 # perform operation
+  # Check if x19 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x19, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x1_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffffffffffe rs2 = 0x0000000000000002)
-  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs1: x27 = 0xfffffffffffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs2: x15 = 0x0000000000000002
+  RVTEST_TESTDATA_LOAD_INT(x24, x28) # load rs1: x28 = 0xfffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x23) # load rs2: x23 = 0x0000000000000002
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x2:
-  aes64dsm x28, x27, x15 # perform operation
-  # Check if x28 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x28, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x2_str)
+  aes64dsm x31, x28, x23 # perform operation
+  # Check if x31 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x31, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffffffffffe rs2 = 0x8000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs1: x27 = 0xfffffffffffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs2: x20 = 0x8000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x14) # load rs1: x14 = 0xfffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0x8000000000000000
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x8000000000000000:
-  aes64dsm x31, x27, x20 # perform operation
-  # Check if x31 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x31, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x8000000000000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x8000000000000000_str)
+  aes64dsm x4, x14, x27 # perform operation
+  # Check if x4 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x4, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x8000000000000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x8000000000000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffffffffffe rs2 = 0x8000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x24, x17) # load rs1: x17 = 0xfffffffffffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x3) # load rs2: x3 = 0x8000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs1: x16 = 0xfffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0x8000000000000001
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x8000000000000001:
-  aes64dsm x27, x17, x3 # perform operation
-  # Check if x27 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x27, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x8000000000000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x8000000000000001_str)
+  aes64dsm x22, x16, x27 # perform operation
+  # Check if x22 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x22, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x8000000000000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x8000000000000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffffffffffe rs2 = 0x7fffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x24, x1) # load rs1: x1 = 0xfffffffffffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs2: x16 = 0x7fffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs1: x30 = 0xfffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x10) # load rs2: x10 = 0x7fffffffffffffff
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x7fffffffffffffff:
-  aes64dsm x10, x1, x16 # perform operation
-  # Check if x10 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x10, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x7fffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x7fffffffffffffff_str)
+  aes64dsm x14, x30, x10 # perform operation
+  # Check if x14 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x14, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x7fffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x7fffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffffffffffe rs2 = 0x7ffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs1: x11 = 0xfffffffffffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs2: x13 = 0x7ffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs1: x27 = 0xfffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs2: x20 = 0x7ffffffffffffffe
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x7ffffffffffffffe:
-  aes64dsm x10, x11, x13 # perform operation
-  # Check if x10 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x10, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x7ffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x7ffffffffffffffe_str)
+  aes64dsm x28, x27, x20 # perform operation
+  # Check if x28 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x28, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x7ffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x7ffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffffffffffe rs2 = 0xffffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs1: x15 = 0xfffffffffffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs2: x16 = 0xffffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs1: x30 = 0xfffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x23) # load rs2: x23 = 0xffffffffffffffff
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xffffffffffffffff:
-  aes64dsm x13, x15, x16 # perform operation
-  # Check if x13 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x13, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xffffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xffffffffffffffff_str)
+  aes64dsm x22, x30, x23 # perform operation
+  # Check if x22 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x22, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xffffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xffffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffffffffffe rs2 = 0xfffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs1: x22 = 0xfffffffffffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs2: x4 = 0xfffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x10) # load rs1: x10 = 0xfffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs2: x18 = 0xfffffffffffffffe
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xfffffffffffffffe:
-  aes64dsm x25, x22, x4 # perform operation
-  # Check if x25 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x25, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xfffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xfffffffffffffffe_str)
+  aes64dsm x6, x10, x18 # perform operation
+  # Check if x6 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x6, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xfffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xfffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffffffffffe rs2 = 0x5bbc887763ae86f2)
-  RVTEST_TESTDATA_LOAD_INT(x24, x2) # load rs1: x2 = 0xfffffffffffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs2: x6 = 0x5bbc887763ae86f2
+  RVTEST_TESTDATA_LOAD_INT(x24, x25) # load rs1: x25 = 0xfffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0x5bbc887763ae86f2
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x5bbc887763ae86f2:
-  aes64dsm x29, x2, x6 # perform operation
+  aes64dsm x29, x25, x27 # perform operation
   # Check if x29 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x12, x8, x7, x29, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x5bbc887763ae86f2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x5bbc887763ae86f2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffffffffffe rs2 = 0xaaaaaaaaaaaaaaaa)
-  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs1: x4 = 0xfffffffffffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0xaaaaaaaaaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs1: x27 = 0xfffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs2: x13 = 0xaaaaaaaaaaaaaaaa
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xaaaaaaaaaaaaaaaa:
-  aes64dsm x1, x4, x27 # perform operation
-  # Check if x1 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xaaaaaaaaaaaaaaaa, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xaaaaaaaaaaaaaaaa_str)
+  aes64dsm x15, x27, x13 # perform operation
+  # Check if x15 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x15, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xaaaaaaaaaaaaaaaa, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xaaaaaaaaaaaaaaaa_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffffffffffe rs2 = 0x5555555555555555)
-  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs1: x18 = 0xfffffffffffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs2: x16 = 0x5555555555555555
+  RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs1: x19 = 0xfffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x25) # load rs2: x25 = 0x5555555555555555
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x5555555555555555:
-  aes64dsm x22, x18, x16 # perform operation
-  # Check if x22 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x22, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x5555555555555555, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x5555555555555555_str)
+  aes64dsm x3, x19, x25 # perform operation
+  # Check if x3 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x3, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x5555555555555555, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x5555555555555555_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffffffffffe rs2 = 0x00000000ffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs1: x15 = 0xfffffffffffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs2: x13 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x28) # load rs1: x28 = 0xfffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs2: x4 = 0x00000000ffffffff
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xffffffff:
-  aes64dsm x18, x15, x13 # perform operation
-  # Check if x18 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x18, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xffffffff_str)
+  aes64dsm x16, x28, x4 # perform operation
+  # Check if x16 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x16, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffffffffffe rs2 = 0x00000000fffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs1: x5 = 0xfffffffffffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs2: x21 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs1: x27 = 0xfffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x14) # load rs2: x14 = 0x00000000fffffffe
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xfffffffe:
-  aes64dsm x6, x5, x21 # perform operation
-  # Check if x6 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x6, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xfffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xfffffffe_str)
+  aes64dsm x1, x27, x14 # perform operation
+  # Check if x1 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xfffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xfffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffffffffffe rs2 = 0x0000000100000000)
-  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs1: x11 = 0xfffffffffffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs2: x6 = 0x0000000100000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs1: x4 = 0xfffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0x0000000100000000
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x100000000:
-  aes64dsm x16, x11, x6 # perform operation
-  # Check if x16 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x16, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x100000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x100000000_str)
+  aes64dsm x23, x4, x27 # perform operation
+  # Check if x23 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x23, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x100000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x100000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffffffffffe rs2 = 0x0000000100000001)
-  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs1: x29 = 0xfffffffffffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x26) # load rs2: x26 = 0x0000000100000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs1: x11 = 0xfffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x1) # load rs2: x1 = 0x0000000100000001
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x100000001:
-  aes64dsm x5, x29, x26 # perform operation
-  # Check if x5 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x5, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x100000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x100000001_str)
+  aes64dsm x19, x11, x1 # perform operation
+  # Check if x19 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x19, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x100000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x100000001_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffffffffffe rs2 = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x2) # load rs1: x2 = 0xfffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x26) # load rs2: x26 = 0x0000000080000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x80000000:
+  aes64dsm x27, x2, x26 # perform operation
+  # Check if x27 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x27, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x80000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x80000000_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffffffffffe rs2 = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs1: x20 = 0xfffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs2: x15 = 0x000000007fffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x7fffffff:
+  aes64dsm x1, x20, x15 # perform operation
+  # Check if x1 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x7fffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x7fffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x0000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x24, x3) # load rs1: x3 = 0x5bbc887763ae86f2
-  RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs2: x20 = 0x0000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x1) # load rs2: x1 = 0x0000000000000000
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x0:
-  aes64dsm x21, x3, x20 # perform operation
-  # Check if x21 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x21, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x0, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x0_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x0000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rs1: x31 = 0x5bbc887763ae86f2
-  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs2: x29 = 0x0000000000000001
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x1:
-  aes64dsm x19, x31, x29 # perform operation
-  # Check if x19 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x19, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x1_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x0000000000000002)
-  RVTEST_TESTDATA_LOAD_INT(x24, x28) # load rs1: x28 = 0x5bbc887763ae86f2
-  RVTEST_TESTDATA_LOAD_INT(x24, x23) # load rs2: x23 = 0x0000000000000002
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x2:
-  aes64dsm x31, x28, x23 # perform operation
-  # Check if x31 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x31, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x2_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x8000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x24, x14) # load rs1: x14 = 0x5bbc887763ae86f2
-  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0x8000000000000000
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x8000000000000000:
-  aes64dsm x4, x14, x27 # perform operation
-  # Check if x4 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x4, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x8000000000000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x8000000000000000_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x8000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs1: x16 = 0x5bbc887763ae86f2
-  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0x8000000000000001
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x8000000000000001:
-  aes64dsm x22, x16, x27 # perform operation
-  # Check if x22 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x22, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x8000000000000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x8000000000000001_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x7fffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs1: x30 = 0x5bbc887763ae86f2
-  RVTEST_TESTDATA_LOAD_INT(x24, x10) # load rs2: x10 = 0x7fffffffffffffff
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x7fffffffffffffff:
-  aes64dsm x14, x30, x10 # perform operation
-  # Check if x14 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x14, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x7fffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x7fffffffffffffff_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x7ffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs1: x27 = 0x5bbc887763ae86f2
-  RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs2: x20 = 0x7ffffffffffffffe
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x7ffffffffffffffe:
-  aes64dsm x28, x27, x20 # perform operation
-  # Check if x28 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x28, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x7ffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x7ffffffffffffffe_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0xffffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs1: x30 = 0x5bbc887763ae86f2
-  RVTEST_TESTDATA_LOAD_INT(x24, x23) # load rs2: x23 = 0xffffffffffffffff
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xffffffffffffffff:
-  aes64dsm x22, x30, x23 # perform operation
-  # Check if x22 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x22, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xffffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xffffffffffffffff_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0xfffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x24, x10) # load rs1: x10 = 0x5bbc887763ae86f2
-  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs2: x18 = 0xfffffffffffffffe
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xfffffffffffffffe:
-  aes64dsm x6, x10, x18 # perform operation
-  # Check if x6 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x6, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xfffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xfffffffffffffffe_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x5bbc887763ae86f2)
-  RVTEST_TESTDATA_LOAD_INT(x24, x25) # load rs1: x25 = 0x5bbc887763ae86f2
-  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0x5bbc887763ae86f2
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x5bbc887763ae86f2:
-  aes64dsm x29, x25, x27 # perform operation
-  # Check if x29 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x29, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x5bbc887763ae86f2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x5bbc887763ae86f2_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0xaaaaaaaaaaaaaaaa)
-  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs1: x27 = 0x5bbc887763ae86f2
-  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs2: x13 = 0xaaaaaaaaaaaaaaaa
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xaaaaaaaaaaaaaaaa:
-  aes64dsm x15, x27, x13 # perform operation
-  # Check if x15 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x15, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xaaaaaaaaaaaaaaaa, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xaaaaaaaaaaaaaaaa_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x5555555555555555)
-  RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs1: x19 = 0x5bbc887763ae86f2
-  RVTEST_TESTDATA_LOAD_INT(x24, x25) # load rs2: x25 = 0x5555555555555555
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x5555555555555555:
-  aes64dsm x3, x19, x25 # perform operation
-  # Check if x3 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x3, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x5555555555555555, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x5555555555555555_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x00000000ffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x24, x28) # load rs1: x28 = 0x5bbc887763ae86f2
-  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs2: x4 = 0x00000000ffffffff
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xffffffff:
-  aes64dsm x16, x28, x4 # perform operation
-  # Check if x16 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x16, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xffffffff_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x00000000fffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs1: x27 = 0x5bbc887763ae86f2
-  RVTEST_TESTDATA_LOAD_INT(x24, x14) # load rs2: x14 = 0x00000000fffffffe
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xfffffffe:
-  aes64dsm x1, x27, x14 # perform operation
-  # Check if x1 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xfffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xfffffffe_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x0000000100000000)
-  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs1: x4 = 0x5bbc887763ae86f2
-  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0x0000000100000000
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x100000000:
-  aes64dsm x23, x4, x27 # perform operation
-  # Check if x23 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x23, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x100000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x100000000_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x0000000100000001)
-  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs1: x11 = 0x5bbc887763ae86f2
-  RVTEST_TESTDATA_LOAD_INT(x24, x1) # load rs2: x1 = 0x0000000100000001
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x100000001:
-  aes64dsm x19, x11, x1 # perform operation
-  # Check if x19 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x19, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x100000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x100000001_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x0000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x24, x2) # load rs1: x2 = 0xaaaaaaaaaaaaaaaa
-  RVTEST_TESTDATA_LOAD_INT(x24, x26) # load rs2: x26 = 0x0000000000000000
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x0:
-  aes64dsm x27, x2, x26 # perform operation
-  # Check if x27 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x27, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x0, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x0_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x0000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs1: x20 = 0xaaaaaaaaaaaaaaaa
-  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs2: x15 = 0x0000000000000001
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x1:
-  aes64dsm x1, x20, x15 # perform operation
-  # Check if x1 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x1_str)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x0000000000000002)
-  RVTEST_TESTDATA_LOAD_INT(x24, x3) # load rs1: x3 = 0xaaaaaaaaaaaaaaaa
-  RVTEST_TESTDATA_LOAD_INT(x24, x1) # load rs2: x1 = 0x0000000000000002
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x2:
   aes64dsm x20, x3, x1 # perform operation
   # Check if x20 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x20, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x2_str)
+  RVTEST_SIGUPD(x12, x8, x7, x20, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x0, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x0_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x8000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x24, x1) # load rs1: x1 = 0xaaaaaaaaaaaaaaaa
-  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs2: x16 = 0x8000000000000000
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x8000000000000000:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x0000000000000001)
+  RVTEST_TESTDATA_LOAD_INT(x24, x1) # load rs1: x1 = 0x5bbc887763ae86f2
+  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs2: x16 = 0x0000000000000001
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x1:
   aes64dsm x13, x1, x16 # perform operation
   # Check if x13 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x13, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x8000000000000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x8000000000000000_str)
+  RVTEST_SIGUPD(x12, x8, x7, x13, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x1_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x8000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs1: x29 = 0xaaaaaaaaaaaaaaaa
-  RVTEST_TESTDATA_LOAD_INT(x24, x9) # load rs2: x9 = 0x8000000000000001
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x8000000000000001:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x0000000000000002)
+  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs1: x29 = 0x5bbc887763ae86f2
+  RVTEST_TESTDATA_LOAD_INT(x24, x9) # load rs2: x9 = 0x0000000000000002
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x2:
   aes64dsm x6, x29, x9 # perform operation
   # Check if x6 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x6, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x8000000000000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x8000000000000001_str)
+  RVTEST_SIGUPD(x12, x8, x7, x6, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x2_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x7fffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs1: x6 = 0xaaaaaaaaaaaaaaaa
-  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs2: x22 = 0x7fffffffffffffff
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x7fffffffffffffff:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x8000000000000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs1: x6 = 0x5bbc887763ae86f2
+  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs2: x22 = 0x8000000000000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x8000000000000000:
   aes64dsm x26, x6, x22 # perform operation
   # Check if x26 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x26, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x7fffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x7fffffffffffffff_str)
+  RVTEST_SIGUPD(x12, x8, x7, x26, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x8000000000000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x8000000000000000_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x7ffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs1: x4 = 0xaaaaaaaaaaaaaaaa
-  RVTEST_TESTDATA_LOAD_INT(x24, x17) # load rs2: x17 = 0x7ffffffffffffffe
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x7ffffffffffffffe:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x8000000000000001)
+  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs1: x4 = 0x5bbc887763ae86f2
+  RVTEST_TESTDATA_LOAD_INT(x24, x17) # load rs2: x17 = 0x8000000000000001
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x8000000000000001:
   aes64dsm x6, x4, x17 # perform operation
   # Check if x6 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x6, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x7ffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x7ffffffffffffffe_str)
+  RVTEST_SIGUPD(x12, x8, x7, x6, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x8000000000000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x8000000000000001_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0xffffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs1: x16 = 0xaaaaaaaaaaaaaaaa
-  RVTEST_TESTDATA_LOAD_INT(x24, x23) # load rs2: x23 = 0xffffffffffffffff
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xffffffffffffffff:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x7fffffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs1: x16 = 0x5bbc887763ae86f2
+  RVTEST_TESTDATA_LOAD_INT(x24, x23) # load rs2: x23 = 0x7fffffffffffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x7fffffffffffffff:
   aes64dsm x28, x16, x23 # perform operation
   # Check if x28 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x28, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xffffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xffffffffffffffff_str)
+  RVTEST_SIGUPD(x12, x8, x7, x28, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x7fffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x7fffffffffffffff_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0xfffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs1: x6 = 0xaaaaaaaaaaaaaaaa
-  RVTEST_TESTDATA_LOAD_INT(x24, x17) # load rs2: x17 = 0xfffffffffffffffe
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xfffffffffffffffe:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x7ffffffffffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs1: x6 = 0x5bbc887763ae86f2
+  RVTEST_TESTDATA_LOAD_INT(x24, x17) # load rs2: x17 = 0x7ffffffffffffffe
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x7ffffffffffffffe:
   aes64dsm x19, x6, x17 # perform operation
   # Check if x19 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x19, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xfffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xfffffffffffffffe_str)
+  RVTEST_SIGUPD(x12, x8, x7, x19, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x7ffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x7ffffffffffffffe_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x5bbc887763ae86f2)
-  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs1: x22 = 0xaaaaaaaaaaaaaaaa
-  RVTEST_TESTDATA_LOAD_INT(x24, x1) # load rs2: x1 = 0x5bbc887763ae86f2
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x5bbc887763ae86f2:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0xffffffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs1: x22 = 0x5bbc887763ae86f2
+  RVTEST_TESTDATA_LOAD_INT(x24, x1) # load rs2: x1 = 0xffffffffffffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xffffffffffffffff:
   aes64dsm x4, x22, x1 # perform operation
   # Check if x4 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x4, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x5bbc887763ae86f2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x5bbc887763ae86f2_str)
+  RVTEST_SIGUPD(x12, x8, x7, x4, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xffffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xffffffffffffffff_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0xaaaaaaaaaaaaaaaa)
-  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs1: x6 = 0xaaaaaaaaaaaaaaaa
-  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs2: x15 = 0xaaaaaaaaaaaaaaaa
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xaaaaaaaaaaaaaaaa:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0xfffffffffffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs1: x6 = 0x5bbc887763ae86f2
+  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs2: x15 = 0xfffffffffffffffe
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xfffffffffffffffe:
   aes64dsm x27, x6, x15 # perform operation
   # Check if x27 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x27, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xaaaaaaaaaaaaaaaa, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xaaaaaaaaaaaaaaaa_str)
+  RVTEST_SIGUPD(x12, x8, x7, x27, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xfffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xfffffffffffffffe_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x5555555555555555)
-  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs1: x11 = 0xaaaaaaaaaaaaaaaa
-  RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs2: x19 = 0x5555555555555555
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x5555555555555555:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x5bbc887763ae86f2)
+  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs1: x11 = 0x5bbc887763ae86f2
+  RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs2: x19 = 0x5bbc887763ae86f2
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x5bbc887763ae86f2:
   aes64dsm x2, x11, x19 # perform operation
   # Check if x2 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x5555555555555555, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x5555555555555555_str)
+  RVTEST_SIGUPD(x12, x8, x7, x2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x5bbc887763ae86f2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x5bbc887763ae86f2_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x00000000ffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs1: x13 = 0xaaaaaaaaaaaaaaaa
-  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs2: x22 = 0x00000000ffffffff
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xffffffff:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0xaaaaaaaaaaaaaaaa)
+  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs1: x13 = 0x5bbc887763ae86f2
+  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs2: x22 = 0xaaaaaaaaaaaaaaaa
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xaaaaaaaaaaaaaaaa:
   aes64dsm x4, x13, x22 # perform operation
   # Check if x4 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x4, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xffffffff_str)
+  RVTEST_SIGUPD(x12, x8, x7, x4, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xaaaaaaaaaaaaaaaa, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xaaaaaaaaaaaaaaaa_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x00000000fffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs1: x6 = 0xaaaaaaaaaaaaaaaa
-  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs2: x15 = 0x00000000fffffffe
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xfffffffe:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x5555555555555555)
+  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs1: x6 = 0x5bbc887763ae86f2
+  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs2: x15 = 0x5555555555555555
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x5555555555555555:
   aes64dsm x23, x6, x15 # perform operation
   # Check if x23 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x23, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xfffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xfffffffe_str)
+  RVTEST_SIGUPD(x12, x8, x7, x23, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x5555555555555555, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x5555555555555555_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x0000000100000000)
-  RVTEST_TESTDATA_LOAD_INT(x24, x9) # load rs1: x9 = 0xaaaaaaaaaaaaaaaa
-  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs2: x11 = 0x0000000100000000
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x100000000:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x00000000ffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x9) # load rs1: x9 = 0x5bbc887763ae86f2
+  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs2: x11 = 0x00000000ffffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xffffffff:
   aes64dsm x19, x9, x11 # perform operation
   # Check if x19 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x19, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x100000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x100000000_str)
+  RVTEST_SIGUPD(x12, x8, x7, x19, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xffffffff_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x0000000100000001)
-  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs1: x6 = 0xaaaaaaaaaaaaaaaa
-  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs2: x11 = 0x0000000100000001
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x100000001:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x00000000fffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs1: x6 = 0x5bbc887763ae86f2
+  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs2: x11 = 0x00000000fffffffe
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xfffffffe:
   aes64dsm x17, x6, x11 # perform operation
   # Check if x17 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x17, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x100000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x100000001_str)
+  RVTEST_SIGUPD(x12, x8, x7, x17, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xfffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xfffffffe_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0x0000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x24, x23) # load rs1: x23 = 0x5555555555555555
-  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs2: x29 = 0x0000000000000000
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x0:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x0000000100000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x23) # load rs1: x23 = 0x5bbc887763ae86f2
+  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs2: x29 = 0x0000000100000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x100000000:
   aes64dsm x1, x23, x29 # perform operation
   # Check if x1 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x0, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x0_str)
+  RVTEST_SIGUPD(x12, x8, x7, x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x100000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x100000000_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0x0000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x24, x2) # load rs1: x2 = 0x5555555555555555
-  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs2: x5 = 0x0000000000000001
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x1:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x0000000100000001)
+  RVTEST_TESTDATA_LOAD_INT(x24, x2) # load rs1: x2 = 0x5bbc887763ae86f2
+  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs2: x5 = 0x0000000100000001
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x100000001:
   aes64dsm x20, x2, x5 # perform operation
   # Check if x20 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x20, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x1_str)
+  RVTEST_SIGUPD(x12, x8, x7, x20, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x100000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x100000001_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0x0000000000000002)
-  RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs1: x20 = 0x5555555555555555
-  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0x0000000000000002
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x2:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs1: x20 = 0x5bbc887763ae86f2
+  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0x0000000080000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x80000000:
   aes64dsm x1, x20, x27 # perform operation
   # Check if x1 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x2_str)
+  RVTEST_SIGUPD(x12, x8, x7, x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x80000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x80000000_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0x8000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x24, x9) # load rs1: x9 = 0x5555555555555555
-  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs2: x4 = 0x8000000000000000
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x8000000000000000:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x9) # load rs1: x9 = 0x5bbc887763ae86f2
+  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs2: x4 = 0x000000007fffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x7fffffff:
   aes64dsm x6, x9, x4 # perform operation
   # Check if x6 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x6, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x8000000000000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x8000000000000000_str)
+  RVTEST_SIGUPD(x12, x8, x7, x6, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x7fffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x7fffffff_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0x8000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs1: x13 = 0x5555555555555555
-  RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs2: x30 = 0x8000000000000001
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x8000000000000001:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x0000000000000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs1: x13 = 0xaaaaaaaaaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs2: x30 = 0x0000000000000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x0:
   aes64dsm x14, x13, x30 # perform operation
   # Check if x14 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x14, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x8000000000000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x8000000000000001_str)
+  RVTEST_SIGUPD(x12, x8, x7, x14, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x0, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x0_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0x7fffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x24, x28) # load rs1: x28 = 0x5555555555555555
-  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs2: x6 = 0x7fffffffffffffff
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x7fffffffffffffff:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x0000000000000001)
+  RVTEST_TESTDATA_LOAD_INT(x24, x28) # load rs1: x28 = 0xaaaaaaaaaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs2: x6 = 0x0000000000000001
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x1:
   aes64dsm x20, x28, x6 # perform operation
   # Check if x20 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x20, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x7fffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x7fffffffffffffff_str)
+  RVTEST_SIGUPD(x12, x8, x7, x20, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x1_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0x7ffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs1: x11 = 0x5555555555555555
-  RVTEST_TESTDATA_LOAD_INT(x24, x17) # load rs2: x17 = 0x7ffffffffffffffe
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x7ffffffffffffffe:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x0000000000000002)
+  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs1: x11 = 0xaaaaaaaaaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x24, x17) # load rs2: x17 = 0x0000000000000002
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x2:
   aes64dsm x15, x11, x17 # perform operation
   # Check if x15 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x15, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x7ffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x7ffffffffffffffe_str)
+  RVTEST_SIGUPD(x12, x8, x7, x15, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x2_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0xffffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x24, x17) # load rs1: x17 = 0x5555555555555555
-  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs2: x16 = 0xffffffffffffffff
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xffffffffffffffff:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x8000000000000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x17) # load rs1: x17 = 0xaaaaaaaaaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs2: x16 = 0x8000000000000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x8000000000000000:
   aes64dsm x18, x17, x16 # perform operation
   # Check if x18 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x18, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xffffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xffffffffffffffff_str)
+  RVTEST_SIGUPD(x12, x8, x7, x18, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x8000000000000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x8000000000000000_str)
 
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0xfffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs1: x22 = 0x5555555555555555
-  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs2: x16 = 0xfffffffffffffffe
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xfffffffffffffffe:
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x8000000000000001)
+  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs1: x22 = 0xaaaaaaaaaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs2: x16 = 0x8000000000000001
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x8000000000000001:
   aes64dsm x15, x22, x16 # perform operation
   # Check if x15 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x15, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xfffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xfffffffffffffffe_str)
+  RVTEST_SIGUPD(x12, x8, x7, x15, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x8000000000000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x8000000000000001_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x7fffffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rs1: x31 = 0xaaaaaaaaaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs2: x21 = 0x7fffffffffffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x7fffffffffffffff:
+  aes64dsm x6, x31, x21 # perform operation
+  # Check if x6 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x6, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x7fffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x7fffffffffffffff_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x7ffffffffffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x24, x1) # load rs1: x1 = 0xaaaaaaaaaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs2: x19 = 0x7ffffffffffffffe
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x7ffffffffffffffe:
+  aes64dsm x25, x1, x19 # perform operation
+  # Check if x25 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x25, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x7ffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x7ffffffffffffffe_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0xffffffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs1: x15 = 0xaaaaaaaaaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x24, x1) # load rs2: x1 = 0xffffffffffffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xffffffffffffffff:
+  aes64dsm x31, x15, x1 # perform operation
+  # Check if x31 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x31, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xffffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xffffffffffffffff_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0xfffffffffffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs1: x18 = 0xaaaaaaaaaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x24, x17) # load rs2: x17 = 0xfffffffffffffffe
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xfffffffffffffffe:
+  aes64dsm x26, x18, x17 # perform operation
+  # Check if x26 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x26, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xfffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xfffffffffffffffe_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x5bbc887763ae86f2)
+  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs1: x16 = 0xaaaaaaaaaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs2: x29 = 0x5bbc887763ae86f2
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x5bbc887763ae86f2:
+  aes64dsm x25, x16, x29 # perform operation
+  # Check if x25 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x25, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x5bbc887763ae86f2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x5bbc887763ae86f2_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0xaaaaaaaaaaaaaaaa)
+  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs1: x18 = 0xaaaaaaaaaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs2: x13 = 0xaaaaaaaaaaaaaaaa
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xaaaaaaaaaaaaaaaa:
+  aes64dsm x28, x18, x13 # perform operation
+  # Check if x28 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x28, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xaaaaaaaaaaaaaaaa, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xaaaaaaaaaaaaaaaa_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x5555555555555555)
+  RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rs1: x31 = 0xaaaaaaaaaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs2: x22 = 0x5555555555555555
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x5555555555555555:
+  aes64dsm x14, x31, x22 # perform operation
+  # Check if x14 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x14, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x5555555555555555, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x5555555555555555_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x00000000ffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs1: x21 = 0xaaaaaaaaaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x24, x14) # load rs2: x14 = 0x00000000ffffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xffffffff:
+  aes64dsm x16, x21, x14 # perform operation
+  # Check if x16 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x16, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xffffffff_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x00000000fffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x24, x14) # load rs1: x14 = 0xaaaaaaaaaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs2: x11 = 0x00000000fffffffe
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xfffffffe:
+  aes64dsm x31, x14, x11 # perform operation
+  # Check if x31 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x31, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xfffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xfffffffe_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x0000000100000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x14) # load rs1: x14 = 0xaaaaaaaaaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x24, x2) # load rs2: x2 = 0x0000000100000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x100000000:
+  aes64dsm x21, x14, x2 # perform operation
+  # Check if x21 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x21, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x100000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x100000000_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x0000000100000001)
+  RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rs1: x31 = 0xaaaaaaaaaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x24, x3) # load rs2: x3 = 0x0000000100000001
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x100000001:
+  aes64dsm x4, x31, x3 # perform operation
+  # Check if x4 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x4, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x100000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x100000001_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs1: x30 = 0xaaaaaaaaaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs2: x4 = 0x0000000080000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x80000000:
+  aes64dsm x23, x30, x4 # perform operation
+  # Check if x23 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x23, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x80000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x80000000_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs1: x20 = 0xaaaaaaaaaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs2: x6 = 0x000000007fffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x7fffffff:
+  aes64dsm x16, x20, x6 # perform operation
+  # Check if x16 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x16, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x7fffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x7fffffff_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0x0000000000000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs1: x18 = 0x5555555555555555
+  RVTEST_TESTDATA_LOAD_INT(x24, x9) # load rs2: x9 = 0x0000000000000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x0:
+  aes64dsm x17, x18, x9 # perform operation
+  # Check if x17 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x17, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x0, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x0_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0x0000000000000001)
+  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs1: x11 = 0x5555555555555555
+  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs2: x15 = 0x0000000000000001
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x1:
+  aes64dsm x23, x11, x15 # perform operation
+  # Check if x23 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x23, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x1_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0x0000000000000002)
+  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs1: x18 = 0x5555555555555555
+  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0x0000000000000002
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x2:
+  aes64dsm x16, x18, x27 # perform operation
+  # Check if x16 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x16, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x2_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0x8000000000000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs1: x29 = 0x5555555555555555
+  RVTEST_TESTDATA_LOAD_INT(x24, x9) # load rs2: x9 = 0x8000000000000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x8000000000000000:
+  aes64dsm x31, x29, x9 # perform operation
+  # Check if x31 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x31, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x8000000000000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x8000000000000000_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0x8000000000000001)
+  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs1: x4 = 0x5555555555555555
+  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs2: x21 = 0x8000000000000001
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x8000000000000001:
+  aes64dsm x28, x4, x21 # perform operation
+  # Check if x28 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x28, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x8000000000000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x8000000000000001_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0x7fffffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs1: x19 = 0x5555555555555555
+  RVTEST_TESTDATA_LOAD_INT(x24, x14) # load rs2: x14 = 0x7fffffffffffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x7fffffffffffffff:
+  aes64dsm x3, x19, x14 # perform operation
+  # Check if x3 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x3, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x7fffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x7fffffffffffffff_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0x7ffffffffffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x24, x9) # load rs1: x9 = 0x5555555555555555
+  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs2: x29 = 0x7ffffffffffffffe
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x7ffffffffffffffe:
+  aes64dsm x19, x9, x29 # perform operation
+  # Check if x19 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x19, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x7ffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x7ffffffffffffffe_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0xffffffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs1: x6 = 0x5555555555555555
+  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs2: x11 = 0xffffffffffffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xffffffffffffffff:
+  aes64dsm x27, x6, x11 # perform operation
+  # Check if x27 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x27, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xffffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xffffffffffffffff_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0xfffffffffffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs1: x21 = 0x5555555555555555
+  RVTEST_TESTDATA_LOAD_INT(x24, x17) # load rs2: x17 = 0xfffffffffffffffe
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xfffffffffffffffe:
+  aes64dsm x4, x21, x17 # perform operation
+  # Check if x4 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x4, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xfffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xfffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0x5bbc887763ae86f2)
-  RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rs1: x31 = 0x5555555555555555
-  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs2: x21 = 0x5bbc887763ae86f2
+  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs1: x5 = 0x5555555555555555
+  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs2: x13 = 0x5bbc887763ae86f2
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x5bbc887763ae86f2:
-  aes64dsm x6, x31, x21 # perform operation
+  aes64dsm x6, x5, x13 # perform operation
   # Check if x6 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x12, x8, x7, x6, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x5bbc887763ae86f2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x5bbc887763ae86f2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0xaaaaaaaaaaaaaaaa)
-  RVTEST_TESTDATA_LOAD_INT(x24, x1) # load rs1: x1 = 0x5555555555555555
-  RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs2: x19 = 0xaaaaaaaaaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x24, x14) # load rs1: x14 = 0x5555555555555555
+  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0xaaaaaaaaaaaaaaaa
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xaaaaaaaaaaaaaaaa:
-  aes64dsm x25, x1, x19 # perform operation
-  # Check if x25 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x25, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xaaaaaaaaaaaaaaaa, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xaaaaaaaaaaaaaaaa_str)
+  aes64dsm x20, x14, x27 # perform operation
+  # Check if x20 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x20, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xaaaaaaaaaaaaaaaa, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xaaaaaaaaaaaaaaaa_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0x5555555555555555)
-  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs1: x15 = 0x5555555555555555
-  RVTEST_TESTDATA_LOAD_INT(x24, x1) # load rs2: x1 = 0x5555555555555555
+  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs1: x11 = 0x5555555555555555
+  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs2: x5 = 0x5555555555555555
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x5555555555555555:
-  aes64dsm x31, x15, x1 # perform operation
+  aes64dsm x31, x11, x5 # perform operation
   # Check if x31 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x12, x8, x7, x31, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x5555555555555555, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x5555555555555555_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0x00000000ffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs1: x18 = 0x5555555555555555
-  RVTEST_TESTDATA_LOAD_INT(x24, x17) # load rs2: x17 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs1: x13 = 0x5555555555555555
+  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0x00000000ffffffff
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xffffffff:
-  aes64dsm x26, x18, x17 # perform operation
-  # Check if x26 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x26, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xffffffff_str)
+  aes64dsm x23, x13, x27 # perform operation
+  # Check if x23 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x23, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0x00000000fffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs1: x16 = 0x5555555555555555
-  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs2: x29 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x9) # load rs1: x9 = 0x5555555555555555
+  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0x00000000fffffffe
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xfffffffe:
-  aes64dsm x25, x16, x29 # perform operation
-  # Check if x25 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x25, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xfffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xfffffffe_str)
+  aes64dsm x19, x9, x27 # perform operation
+  # Check if x19 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x19, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xfffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xfffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0x0000000100000000)
-  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs1: x18 = 0x5555555555555555
+  RVTEST_TESTDATA_LOAD_INT(x24, x26) # load rs1: x26 = 0x5555555555555555
   RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs2: x13 = 0x0000000100000000
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x100000000:
-  aes64dsm x28, x18, x13 # perform operation
-  # Check if x28 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x28, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x100000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x100000000_str)
+  aes64dsm x27, x26, x13 # perform operation
+  # Check if x27 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x27, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x100000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x100000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0x0000000100000001)
-  RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rs1: x31 = 0x5555555555555555
-  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs2: x22 = 0x0000000100000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs1: x22 = 0x5555555555555555
+  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs2: x18 = 0x0000000100000001
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x100000001:
-  aes64dsm x14, x31, x22 # perform operation
-  # Check if x14 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x14, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x100000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x100000001_str)
+  aes64dsm x16, x22, x18 # perform operation
+  # Check if x16 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x16, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x100000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x100000001_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x3) # load rs1: x3 = 0x5555555555555555
+  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs2: x5 = 0x0000000080000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x80000000:
+  aes64dsm x23, x3, x5 # perform operation
+  # Check if x23 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x23, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x80000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x80000000_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs1: x21 = 0x5555555555555555
+  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs2: x5 = 0x000000007fffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x7fffffff:
+  aes64dsm x31, x21, x5 # perform operation
+  # Check if x31 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x31, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x7fffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x7fffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000ffffffff rs2 = 0x0000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs1: x21 = 0x00000000ffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x14) # load rs2: x14 = 0x0000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x2) # load rs1: x2 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x1) # load rs2: x1 = 0x0000000000000000
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x0:
-  aes64dsm x16, x21, x14 # perform operation
-  # Check if x16 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x16, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x0, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x0_str)
+  aes64dsm x23, x2, x1 # perform operation
+  # Check if x23 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x23, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x0, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x0_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000ffffffff rs2 = 0x0000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x24, x14) # load rs1: x14 = 0x00000000ffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs2: x11 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs1: x16 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x26) # load rs2: x26 = 0x0000000000000001
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x1:
-  aes64dsm x31, x14, x11 # perform operation
-  # Check if x31 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x31, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x1_str)
+  aes64dsm x6, x16, x26 # perform operation
+  # Check if x6 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x6, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x1_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000ffffffff rs2 = 0x0000000000000002)
-  RVTEST_TESTDATA_LOAD_INT(x24, x14) # load rs1: x14 = 0x00000000ffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x2) # load rs2: x2 = 0x0000000000000002
+  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs1: x11 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs2: x16 = 0x0000000000000002
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x2:
-  aes64dsm x21, x14, x2 # perform operation
-  # Check if x21 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x21, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x2_str)
+  aes64dsm x28, x11, x16 # perform operation
+  # Check if x28 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x28, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000ffffffff rs2 = 0x8000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rs1: x31 = 0x00000000ffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x3) # load rs2: x3 = 0x8000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs1: x27 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs2: x4 = 0x8000000000000000
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x8000000000000000:
-  aes64dsm x4, x31, x3 # perform operation
-  # Check if x4 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x4, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x8000000000000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x8000000000000000_str)
+  aes64dsm x6, x27, x4 # perform operation
+  # Check if x6 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x6, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x8000000000000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x8000000000000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000ffffffff rs2 = 0x8000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs1: x30 = 0x00000000ffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs2: x4 = 0x8000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs1: x15 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x23) # load rs2: x23 = 0x8000000000000001
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x8000000000000001:
-  aes64dsm x23, x30, x4 # perform operation
-  # Check if x23 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x23, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x8000000000000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x8000000000000001_str)
+  aes64dsm x14, x15, x23 # perform operation
+  # Check if x14 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x14, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x8000000000000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x8000000000000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000ffffffff rs2 = 0x7fffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs1: x20 = 0x00000000ffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs2: x6 = 0x7fffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs1: x30 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x1) # load rs2: x1 = 0x7fffffffffffffff
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7fffffffffffffff:
-  aes64dsm x16, x20, x6 # perform operation
-  # Check if x16 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x16, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7fffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7fffffffffffffff_str)
+  aes64dsm x19, x30, x1 # perform operation
+  # Check if x19 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x19, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7fffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7fffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000ffffffff rs2 = 0x7ffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs1: x18 = 0x00000000ffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x9) # load rs2: x9 = 0x7ffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs1: x27 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rs2: x31 = 0x7ffffffffffffffe
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7ffffffffffffffe:
-  aes64dsm x17, x18, x9 # perform operation
-  # Check if x17 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x17, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7ffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7ffffffffffffffe_str)
+  aes64dsm x9, x27, x31 # perform operation
+  # Check if x9 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x9, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7ffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7ffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000ffffffff rs2 = 0xffffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs1: x11 = 0x00000000ffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs2: x15 = 0xffffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs1: x4 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs2: x13 = 0xffffffffffffffff
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xffffffffffffffff:
-  aes64dsm x23, x11, x15 # perform operation
-  # Check if x23 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x23, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xffffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xffffffffffffffff_str)
+  aes64dsm x25, x4, x13 # perform operation
+  # Check if x25 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x25, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xffffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xffffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000ffffffff rs2 = 0xfffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs1: x18 = 0x00000000ffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0xfffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs1: x13 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x25) # load rs2: x25 = 0xfffffffffffffffe
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xfffffffffffffffe:
-  aes64dsm x16, x18, x27 # perform operation
-  # Check if x16 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x16, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xfffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xfffffffffffffffe_str)
+  aes64dsm x5, x13, x25 # perform operation
+  # Check if x5 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x5, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xfffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xfffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000ffffffff rs2 = 0x5bbc887763ae86f2)
-  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs1: x29 = 0x00000000ffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x9) # load rs2: x9 = 0x5bbc887763ae86f2
+  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs1: x5 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x26) # load rs2: x26 = 0x5bbc887763ae86f2
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x5bbc887763ae86f2:
-  aes64dsm x31, x29, x9 # perform operation
-  # Check if x31 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x31, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x5bbc887763ae86f2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x5bbc887763ae86f2_str)
+  aes64dsm x30, x5, x26 # perform operation
+  # Check if x30 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x30, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x5bbc887763ae86f2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x5bbc887763ae86f2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000ffffffff rs2 = 0xaaaaaaaaaaaaaaaa)
-  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs1: x4 = 0x00000000ffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs2: x21 = 0xaaaaaaaaaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs1: x6 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x17) # load rs2: x17 = 0xaaaaaaaaaaaaaaaa
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xaaaaaaaaaaaaaaaa:
-  aes64dsm x28, x4, x21 # perform operation
-  # Check if x28 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x28, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xaaaaaaaaaaaaaaaa, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xaaaaaaaaaaaaaaaa_str)
+  aes64dsm x14, x6, x17 # perform operation
+  # Check if x14 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x14, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xaaaaaaaaaaaaaaaa, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xaaaaaaaaaaaaaaaa_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000ffffffff rs2 = 0x5555555555555555)
-  RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs1: x19 = 0x00000000ffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x14) # load rs2: x14 = 0x5555555555555555
+  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs1: x13 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x9) # load rs2: x9 = 0x5555555555555555
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x5555555555555555:
-  aes64dsm x3, x19, x14 # perform operation
-  # Check if x3 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x3, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x5555555555555555, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x5555555555555555_str)
+  aes64dsm x26, x13, x9 # perform operation
+  # Check if x26 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x26, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x5555555555555555, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x5555555555555555_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000ffffffff rs2 = 0x00000000ffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x24, x9) # load rs1: x9 = 0x00000000ffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs2: x29 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs1: x4 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs2: x19 = 0x00000000ffffffff
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xffffffff:
-  aes64dsm x19, x9, x29 # perform operation
-  # Check if x19 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x19, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xffffffff_str)
+  aes64dsm x23, x4, x19 # perform operation
+  # Check if x23 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x23, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000ffffffff rs2 = 0x00000000fffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs1: x6 = 0x00000000ffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs2: x11 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs1: x29 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs2: x6 = 0x00000000fffffffe
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xfffffffe:
-  aes64dsm x27, x6, x11 # perform operation
-  # Check if x27 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x27, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xfffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xfffffffe_str)
+  aes64dsm x20, x29, x6 # perform operation
+  # Check if x20 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x20, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xfffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xfffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000ffffffff rs2 = 0x0000000100000000)
-  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs1: x21 = 0x00000000ffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x17) # load rs2: x17 = 0x0000000100000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs1: x6 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x3) # load rs2: x3 = 0x0000000100000000
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x100000000:
-  aes64dsm x4, x21, x17 # perform operation
+  aes64dsm x4, x6, x3 # perform operation
   # Check if x4 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x12, x8, x7, x4, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x100000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x100000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000ffffffff rs2 = 0x0000000100000001)
-  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs1: x5 = 0x00000000ffffffff
-  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs2: x13 = 0x0000000100000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs1: x16 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x26) # load rs2: x26 = 0x0000000100000001
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x100000001:
-  aes64dsm x6, x5, x13 # perform operation
-  # Check if x6 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x6, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x100000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x100000001_str)
+  aes64dsm x1, x16, x26 # perform operation
+  # Check if x1 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x100000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x100000001_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000ffffffff rs2 = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs1: x5 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs2: x29 = 0x0000000080000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x80000000:
+  aes64dsm x18, x5, x29 # perform operation
+  # Check if x18 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x18, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x80000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x80000000_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000ffffffff rs2 = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs1: x30 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x25) # load rs2: x25 = 0x000000007fffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7fffffff:
+  aes64dsm x28, x30, x25 # perform operation
+  # Check if x28 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x28, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7fffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7fffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000fffffffe rs2 = 0x0000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x24, x14) # load rs1: x14 = 0x00000000fffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0x0000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rs1: x31 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x9) # load rs2: x9 = 0x0000000000000000
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x0:
-  aes64dsm x20, x14, x27 # perform operation
-  # Check if x20 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x20, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x0, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x0_str)
+  aes64dsm x14, x31, x9 # perform operation
+  # Check if x14 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x14, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x0, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x0_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000fffffffe rs2 = 0x0000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs1: x11 = 0x00000000fffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs2: x5 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs1: x29 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs2: x30 = 0x0000000000000001
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x1:
-  aes64dsm x31, x11, x5 # perform operation
-  # Check if x31 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x31, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x1_str)
+  aes64dsm x20, x29, x30 # perform operation
+  # Check if x20 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x20, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x1_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000fffffffe rs2 = 0x0000000000000002)
-  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs1: x13 = 0x00000000fffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0x0000000000000002
+  RVTEST_TESTDATA_LOAD_INT(x24, x3) # load rs1: x3 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs2: x5 = 0x0000000000000002
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x2:
-  aes64dsm x23, x13, x27 # perform operation
-  # Check if x23 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x23, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x2_str)
+  aes64dsm x16, x3, x5 # perform operation
+  # Check if x16 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x16, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000fffffffe rs2 = 0x8000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x24, x9) # load rs1: x9 = 0x00000000fffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0x8000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs1: x4 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rs2: x31 = 0x8000000000000000
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x8000000000000000:
-  aes64dsm x19, x9, x27 # perform operation
-  # Check if x19 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x19, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x8000000000000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x8000000000000000_str)
+  aes64dsm x21, x4, x31 # perform operation
+  # Check if x21 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x21, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x8000000000000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x8000000000000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000fffffffe rs2 = 0x8000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x24, x26) # load rs1: x26 = 0x00000000fffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs2: x13 = 0x8000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs1: x4 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0x8000000000000001
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x8000000000000001:
-  aes64dsm x27, x26, x13 # perform operation
-  # Check if x27 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x27, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x8000000000000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x8000000000000001_str)
+  aes64dsm x5, x4, x27 # perform operation
+  # Check if x5 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x5, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x8000000000000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x8000000000000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000fffffffe rs2 = 0x7fffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs1: x22 = 0x00000000fffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs2: x18 = 0x7fffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x28) # load rs1: x28 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x3) # load rs2: x3 = 0x7fffffffffffffff
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7fffffffffffffff:
-  aes64dsm x16, x22, x18 # perform operation
-  # Check if x16 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x16, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7fffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7fffffffffffffff_str)
+  aes64dsm x21, x28, x3 # perform operation
+  # Check if x21 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x21, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7fffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7fffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000fffffffe rs2 = 0x7ffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x24, x3) # load rs1: x3 = 0x00000000fffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs2: x5 = 0x7ffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs1: x15 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x28) # load rs2: x28 = 0x7ffffffffffffffe
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7ffffffffffffffe:
-  aes64dsm x23, x3, x5 # perform operation
-  # Check if x23 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x23, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7ffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7ffffffffffffffe_str)
+  aes64dsm x29, x15, x28 # perform operation
+  # Check if x29 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x29, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7ffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7ffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000fffffffe rs2 = 0xffffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs1: x21 = 0x00000000fffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs2: x5 = 0xffffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs1: x15 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs2: x22 = 0xffffffffffffffff
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xffffffffffffffff:
-  aes64dsm x31, x21, x5 # perform operation
-  # Check if x31 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x31, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xffffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xffffffffffffffff_str)
+  aes64dsm x27, x15, x22 # perform operation
+  # Check if x27 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x27, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xffffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xffffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000fffffffe rs2 = 0xfffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x24, x2) # load rs1: x2 = 0x00000000fffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x1) # load rs2: x1 = 0xfffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rs1: x31 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0xfffffffffffffffe
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xfffffffffffffffe:
-  aes64dsm x23, x2, x1 # perform operation
-  # Check if x23 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x23, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xfffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xfffffffffffffffe_str)
+  aes64dsm x18, x31, x27 # perform operation
+  # Check if x18 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x18, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xfffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xfffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000fffffffe rs2 = 0x5bbc887763ae86f2)
-  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs1: x16 = 0x00000000fffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x26) # load rs2: x26 = 0x5bbc887763ae86f2
+  RVTEST_TESTDATA_LOAD_INT(x24, x14) # load rs1: x14 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs2: x18 = 0x5bbc887763ae86f2
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x5bbc887763ae86f2:
-  aes64dsm x6, x16, x26 # perform operation
+  aes64dsm x6, x14, x18 # perform operation
   # Check if x6 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x12, x8, x7, x6, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x5bbc887763ae86f2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x5bbc887763ae86f2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000fffffffe rs2 = 0xaaaaaaaaaaaaaaaa)
-  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs1: x11 = 0x00000000fffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs2: x16 = 0xaaaaaaaaaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs1: x18 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs2: x21 = 0xaaaaaaaaaaaaaaaa
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xaaaaaaaaaaaaaaaa:
-  aes64dsm x28, x11, x16 # perform operation
-  # Check if x28 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x28, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xaaaaaaaaaaaaaaaa, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xaaaaaaaaaaaaaaaa_str)
+  aes64dsm x13, x18, x21 # perform operation
+  # Check if x13 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x13, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xaaaaaaaaaaaaaaaa, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xaaaaaaaaaaaaaaaa_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000fffffffe rs2 = 0x5555555555555555)
-  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs1: x27 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rs1: x31 = 0x00000000fffffffe
   RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs2: x4 = 0x5555555555555555
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x5555555555555555:
-  aes64dsm x6, x27, x4 # perform operation
-  # Check if x6 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x6, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x5555555555555555, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x5555555555555555_str)
+  aes64dsm x25, x31, x4 # perform operation
+  # Check if x25 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x25, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x5555555555555555, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x5555555555555555_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000fffffffe rs2 = 0x00000000ffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs1: x15 = 0x00000000fffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x23) # load rs2: x23 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs1: x30 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs2: x5 = 0x00000000ffffffff
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xffffffff:
-  aes64dsm x14, x15, x23 # perform operation
-  # Check if x14 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x14, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xffffffff_str)
+  aes64dsm x6, x30, x5 # perform operation
+  # Check if x6 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x6, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000fffffffe rs2 = 0x00000000fffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs1: x30 = 0x00000000fffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x1) # load rs2: x1 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x9) # load rs1: x9 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs2: x11 = 0x00000000fffffffe
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xfffffffe:
-  aes64dsm x19, x30, x1 # perform operation
-  # Check if x19 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x19, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xfffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xfffffffe_str)
+  aes64dsm x1, x9, x11 # perform operation
+  # Check if x1 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xfffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xfffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000fffffffe rs2 = 0x0000000100000000)
-  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs1: x27 = 0x00000000fffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rs2: x31 = 0x0000000100000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs1: x4 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs2: x15 = 0x0000000100000000
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x100000000:
-  aes64dsm x9, x27, x31 # perform operation
-  # Check if x9 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x9, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x100000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x100000000_str)
+  aes64dsm x17, x4, x15 # perform operation
+  # Check if x17 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x17, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x100000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x100000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000fffffffe rs2 = 0x0000000100000001)
-  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs1: x4 = 0x00000000fffffffe
-  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs2: x13 = 0x0000000100000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x14) # load rs1: x14 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs2: x29 = 0x0000000100000001
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x100000001:
-  aes64dsm x25, x4, x13 # perform operation
-  # Check if x25 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x25, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x100000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x100000001_str)
+  aes64dsm x15, x14, x29 # perform operation
+  # Check if x15 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x15, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x100000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x100000001_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000fffffffe rs2 = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x1) # load rs1: x1 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x9) # load rs2: x9 = 0x0000000080000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x80000000:
+  aes64dsm x5, x1, x9 # perform operation
+  # Check if x5 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x5, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x80000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x80000000_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000fffffffe rs2 = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs1: x19 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x23) # load rs2: x23 = 0x000000007fffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7fffffff:
+  aes64dsm x28, x19, x23 # perform operation
+  # Check if x28 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x28, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7fffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7fffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000000 rs2 = 0x0000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs1: x13 = 0x0000000100000000
-  RVTEST_TESTDATA_LOAD_INT(x24, x25) # load rs2: x25 = 0x0000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x2) # load rs1: x2 = 0x0000000100000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs2: x5 = 0x0000000000000000
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x0:
-  aes64dsm x5, x13, x25 # perform operation
-  # Check if x5 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x5, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x0, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x0_str)
+  aes64dsm x25, x2, x5 # perform operation
+  # Check if x25 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x25, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x0, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x0_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000000 rs2 = 0x0000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs1: x5 = 0x0000000100000000
-  RVTEST_TESTDATA_LOAD_INT(x24, x26) # load rs2: x26 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs1: x30 = 0x0000000100000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs2: x6 = 0x0000000000000001
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x1:
-  aes64dsm x30, x5, x26 # perform operation
-  # Check if x30 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x30, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x1_str)
+  aes64dsm x11, x30, x6 # perform operation
+  # Check if x11 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x11, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x1_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000000 rs2 = 0x0000000000000002)
-  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs1: x6 = 0x0000000100000000
-  RVTEST_TESTDATA_LOAD_INT(x24, x17) # load rs2: x17 = 0x0000000000000002
+  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs1: x21 = 0x0000000100000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs2: x16 = 0x0000000000000002
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x2:
-  aes64dsm x14, x6, x17 # perform operation
-  # Check if x14 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x14, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x2_str)
+  aes64dsm x5, x21, x16 # perform operation
+  # Check if x5 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x5, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000000 rs2 = 0x8000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs1: x13 = 0x0000000100000000
-  RVTEST_TESTDATA_LOAD_INT(x24, x9) # load rs2: x9 = 0x8000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs1: x19 = 0x0000000100000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs2: x21 = 0x8000000000000000
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x8000000000000000:
-  aes64dsm x26, x13, x9 # perform operation
-  # Check if x26 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x26, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x8000000000000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x8000000000000000_str)
+  aes64dsm x18, x19, x21 # perform operation
+  # Check if x18 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x18, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x8000000000000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x8000000000000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000000 rs2 = 0x8000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs1: x4 = 0x0000000100000000
-  RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs2: x19 = 0x8000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs2: x16 = 0x8000000000000001
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x8000000000000001:
-  aes64dsm x23, x4, x19 # perform operation
-  # Check if x23 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x23, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x8000000000000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x8000000000000001_str)
+  aes64dsm x21, x4, x16 # perform operation
+  # Check if x21 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x21, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x8000000000000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x8000000000000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000000 rs2 = 0x7fffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs1: x29 = 0x0000000100000000
-  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs2: x6 = 0x7fffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs1: x6 = 0x0000000100000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs2: x19 = 0x7fffffffffffffff
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x7fffffffffffffff:
-  aes64dsm x20, x29, x6 # perform operation
-  # Check if x20 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x20, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x7fffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x7fffffffffffffff_str)
+  aes64dsm x25, x6, x19 # perform operation
+  # Check if x25 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x25, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x7fffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x7fffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000000 rs2 = 0x7ffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs1: x6 = 0x0000000100000000
-  RVTEST_TESTDATA_LOAD_INT(x24, x3) # load rs2: x3 = 0x7ffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs1: x13 = 0x0000000100000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x2) # load rs2: x2 = 0x7ffffffffffffffe
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x7ffffffffffffffe:
-  aes64dsm x4, x6, x3 # perform operation
-  # Check if x4 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x4, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x7ffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x7ffffffffffffffe_str)
+  aes64dsm x1, x13, x2 # perform operation
+  # Check if x1 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x7ffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x7ffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000000 rs2 = 0xffffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs1: x16 = 0x0000000100000000
-  RVTEST_TESTDATA_LOAD_INT(x24, x26) # load rs2: x26 = 0xffffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x25) # load rs1: x25 = 0x0000000100000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs2: x13 = 0xffffffffffffffff
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xffffffffffffffff:
-  aes64dsm x1, x16, x26 # perform operation
-  # Check if x1 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xffffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xffffffffffffffff_str)
+  aes64dsm x28, x25, x13 # perform operation
+  # Check if x28 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x28, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xffffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xffffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000000 rs2 = 0xfffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs1: x5 = 0x0000000100000000
-  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs2: x29 = 0xfffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs1: x18 = 0x0000000100000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs2: x16 = 0xfffffffffffffffe
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xfffffffffffffffe:
-  aes64dsm x18, x5, x29 # perform operation
-  # Check if x18 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x18, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xfffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xfffffffffffffffe_str)
+  aes64dsm x1, x18, x16 # perform operation
+  # Check if x1 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xfffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xfffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000000 rs2 = 0x5bbc887763ae86f2)
-  RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs1: x30 = 0x0000000100000000
-  RVTEST_TESTDATA_LOAD_INT(x24, x25) # load rs2: x25 = 0x5bbc887763ae86f2
+  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs1: x13 = 0x0000000100000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs2: x18 = 0x5bbc887763ae86f2
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x5bbc887763ae86f2:
-  aes64dsm x28, x30, x25 # perform operation
-  # Check if x28 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x28, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x5bbc887763ae86f2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x5bbc887763ae86f2_str)
+  aes64dsm x15, x13, x18 # perform operation
+  # Check if x15 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x15, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x5bbc887763ae86f2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x5bbc887763ae86f2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000000 rs2 = 0xaaaaaaaaaaaaaaaa)
-  RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rs1: x31 = 0x0000000100000000
-  RVTEST_TESTDATA_LOAD_INT(x24, x9) # load rs2: x9 = 0xaaaaaaaaaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x24, x14) # load rs1: x14 = 0x0000000100000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0xaaaaaaaaaaaaaaaa
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xaaaaaaaaaaaaaaaa:
-  aes64dsm x14, x31, x9 # perform operation
-  # Check if x14 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x14, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xaaaaaaaaaaaaaaaa, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xaaaaaaaaaaaaaaaa_str)
+  aes64dsm x23, x14, x27 # perform operation
+  # Check if x23 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x23, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xaaaaaaaaaaaaaaaa, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xaaaaaaaaaaaaaaaa_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000000 rs2 = 0x5555555555555555)
-  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs1: x29 = 0x0000000100000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs1: x18 = 0x0000000100000000
   RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs2: x30 = 0x5555555555555555
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x5555555555555555:
-  aes64dsm x20, x29, x30 # perform operation
-  # Check if x20 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x20, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x5555555555555555, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x5555555555555555_str)
+  aes64dsm x22, x18, x30 # perform operation
+  # Check if x22 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x22, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x5555555555555555, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x5555555555555555_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000000 rs2 = 0x00000000ffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x24, x3) # load rs1: x3 = 0x0000000100000000
-  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs2: x5 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs1: x5 = 0x0000000100000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs2: x22 = 0x00000000ffffffff
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xffffffff:
-  aes64dsm x16, x3, x5 # perform operation
-  # Check if x16 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x16, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xffffffff_str)
+  aes64dsm x6, x5, x22 # perform operation
+  # Check if x6 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x6, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000000 rs2 = 0x00000000fffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs1: x4 = 0x0000000100000000
-  RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rs2: x31 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs1: x13 = 0x0000000100000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs2: x22 = 0x00000000fffffffe
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xfffffffe:
-  aes64dsm x21, x4, x31 # perform operation
-  # Check if x21 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x21, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xfffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xfffffffe_str)
+  aes64dsm x26, x13, x22 # perform operation
+  # Check if x26 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x26, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xfffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xfffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000000 rs2 = 0x0000000100000000)
-  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs1: x4 = 0x0000000100000000
-  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0x0000000100000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs1: x11 = 0x0000000100000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x10) # load rs2: x10 = 0x0000000100000000
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x100000000:
-  aes64dsm x5, x4, x27 # perform operation
-  # Check if x5 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x5, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x100000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x100000000_str)
+  aes64dsm x17, x11, x10 # perform operation
+  # Check if x17 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x17, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x100000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x100000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000000 rs2 = 0x0000000100000001)
-  RVTEST_TESTDATA_LOAD_INT(x24, x28) # load rs1: x28 = 0x0000000100000000
-  RVTEST_TESTDATA_LOAD_INT(x24, x3) # load rs2: x3 = 0x0000000100000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs1: x20 = 0x0000000100000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs2: x30 = 0x0000000100000001
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x100000001:
-  aes64dsm x21, x28, x3 # perform operation
-  # Check if x21 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x21, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x100000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x100000001_str)
+  aes64dsm x6, x20, x30 # perform operation
+  # Check if x6 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x6, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x100000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x100000001_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000000 rs2 = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs1: x16 = 0x0000000100000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x10) # load rs2: x10 = 0x0000000080000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x80000000:
+  aes64dsm x26, x16, x10 # perform operation
+  # Check if x26 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x26, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x80000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x80000000_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000000 rs2 = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x23) # load rs1: x23 = 0x0000000100000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs2: x18 = 0x000000007fffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x7fffffff:
+  aes64dsm x14, x23, x18 # perform operation
+  # Check if x14 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x14, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x7fffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x7fffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000001 rs2 = 0x0000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs1: x15 = 0x0000000100000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x28) # load rs2: x28 = 0x0000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs1: x19 = 0x0000000100000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs2: x6 = 0x0000000000000000
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x0:
-  aes64dsm x29, x15, x28 # perform operation
-  # Check if x29 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x29, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x0, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x0_str)
+  aes64dsm x18, x19, x6 # perform operation
+  # Check if x18 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x18, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x0, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x0_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000001 rs2 = 0x0000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs1: x15 = 0x0000000100000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs2: x22 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs1: x13 = 0x0000000100000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x1) # load rs2: x1 = 0x0000000000000001
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x1:
-  aes64dsm x27, x15, x22 # perform operation
-  # Check if x27 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x27, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x1_str)
+  aes64dsm x22, x13, x1 # perform operation
+  # Check if x22 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x22, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x1_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000001 rs2 = 0x0000000000000002)
-  RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rs1: x31 = 0x0000000100000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0x0000000000000002
+  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs1: x21 = 0x0000000100000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x9) # load rs2: x9 = 0x0000000000000002
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x2:
-  aes64dsm x18, x31, x27 # perform operation
-  # Check if x18 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x18, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x2_str)
+  aes64dsm x29, x21, x9 # perform operation
+  # Check if x29 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x29, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000001 rs2 = 0x8000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x24, x14) # load rs1: x14 = 0x0000000100000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs2: x18 = 0x8000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rs2: x31 = 0x8000000000000000
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x8000000000000000:
-  aes64dsm x6, x14, x18 # perform operation
-  # Check if x6 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x6, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x8000000000000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x8000000000000000_str)
+  aes64dsm x13, x14, x31 # perform operation
+  # Check if x13 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x13, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x8000000000000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x8000000000000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000001 rs2 = 0x8000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs1: x18 = 0x0000000100000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs2: x21 = 0x8000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs1: x21 = 0x0000000100000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs2: x19 = 0x8000000000000001
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x8000000000000001:
-  aes64dsm x13, x18, x21 # perform operation
-  # Check if x13 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x13, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x8000000000000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x8000000000000001_str)
+  aes64dsm x9, x21, x19 # perform operation
+  # Check if x9 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x9, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x8000000000000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x8000000000000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000001 rs2 = 0x7fffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rs1: x31 = 0x0000000100000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs2: x4 = 0x7fffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs1: x13 = 0x0000000100000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x25) # load rs2: x25 = 0x7fffffffffffffff
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x7fffffffffffffff:
-  aes64dsm x25, x31, x4 # perform operation
-  # Check if x25 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x25, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x7fffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x7fffffffffffffff_str)
+  aes64dsm x29, x13, x25 # perform operation
+  # Check if x29 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x29, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x7fffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x7fffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000001 rs2 = 0x7ffffffffffffffe)
   RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs1: x30 = 0x0000000100000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs2: x5 = 0x7ffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs2: x20 = 0x7ffffffffffffffe
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x7ffffffffffffffe:
-  aes64dsm x6, x30, x5 # perform operation
-  # Check if x6 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x6, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x7ffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x7ffffffffffffffe_str)
+  aes64dsm x21, x30, x20 # perform operation
+  # Check if x21 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x21, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x7ffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x7ffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000001 rs2 = 0xffffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x24, x9) # load rs1: x9 = 0x0000000100000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs2: x11 = 0xffffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs1: x4 = 0x0000000100000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs2: x21 = 0xffffffffffffffff
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xffffffffffffffff:
-  aes64dsm x1, x9, x11 # perform operation
-  # Check if x1 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xffffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xffffffffffffffff_str)
+  aes64dsm x14, x4, x21 # perform operation
+  # Check if x14 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x14, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xffffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xffffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000001 rs2 = 0xfffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs1: x4 = 0x0000000100000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs2: x15 = 0xfffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x23) # load rs1: x23 = 0x0000000100000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x3) # load rs2: x3 = 0xfffffffffffffffe
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xfffffffffffffffe:
-  aes64dsm x17, x4, x15 # perform operation
-  # Check if x17 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x17, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xfffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xfffffffffffffffe_str)
+  aes64dsm x18, x23, x3 # perform operation
+  # Check if x18 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x18, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xfffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xfffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000001 rs2 = 0x5bbc887763ae86f2)
-  RVTEST_TESTDATA_LOAD_INT(x24, x14) # load rs1: x14 = 0x0000000100000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs2: x29 = 0x5bbc887763ae86f2
+  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs1: x6 = 0x0000000100000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs2: x5 = 0x5bbc887763ae86f2
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x5bbc887763ae86f2:
-  aes64dsm x15, x14, x29 # perform operation
-  # Check if x15 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x15, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x5bbc887763ae86f2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x5bbc887763ae86f2_str)
+  aes64dsm x21, x6, x5 # perform operation
+  # Check if x21 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x21, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x5bbc887763ae86f2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x5bbc887763ae86f2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000001 rs2 = 0xaaaaaaaaaaaaaaaa)
-  RVTEST_TESTDATA_LOAD_INT(x24, x1) # load rs1: x1 = 0x0000000100000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x9) # load rs2: x9 = 0xaaaaaaaaaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs1: x27 = 0x0000000100000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x23) # load rs2: x23 = 0xaaaaaaaaaaaaaaaa
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xaaaaaaaaaaaaaaaa:
-  aes64dsm x5, x1, x9 # perform operation
-  # Check if x5 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x5, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xaaaaaaaaaaaaaaaa, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xaaaaaaaaaaaaaaaa_str)
+  aes64dsm x30, x27, x23 # perform operation
+  # Check if x30 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x30, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xaaaaaaaaaaaaaaaa, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xaaaaaaaaaaaaaaaa_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000001 rs2 = 0x5555555555555555)
-  RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs1: x19 = 0x0000000100000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x23) # load rs2: x23 = 0x5555555555555555
+  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs1: x16 = 0x0000000100000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs2: x21 = 0x5555555555555555
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x5555555555555555:
-  aes64dsm x28, x19, x23 # perform operation
-  # Check if x28 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x28, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x5555555555555555, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x5555555555555555_str)
+  aes64dsm x30, x16, x21 # perform operation
+  # Check if x30 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x30, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x5555555555555555, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x5555555555555555_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000001 rs2 = 0x00000000ffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x24, x2) # load rs1: x2 = 0x0000000100000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs2: x5 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs1: x21 = 0x0000000100000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs2: x15 = 0x00000000ffffffff
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xffffffff:
-  aes64dsm x25, x2, x5 # perform operation
-  # Check if x25 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x25, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xffffffff_str)
+  aes64dsm x18, x21, x15 # perform operation
+  # Check if x18 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x18, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000001 rs2 = 0x00000000fffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs1: x30 = 0x0000000100000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs2: x6 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x24, x10) # load rs1: x10 = 0x0000000100000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0x00000000fffffffe
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xfffffffe:
-  aes64dsm x11, x30, x6 # perform operation
-  # Check if x11 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x11, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xfffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xfffffffe_str)
+  aes64dsm x5, x10, x27 # perform operation
+  # Check if x5 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x5, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xfffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xfffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000001 rs2 = 0x0000000100000000)
-  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs1: x21 = 0x0000000100000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs2: x16 = 0x0000000100000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs1: x6 = 0x0000000100000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x10) # load rs2: x10 = 0x0000000100000000
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x100000000:
-  aes64dsm x5, x21, x16 # perform operation
-  # Check if x5 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x5, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x100000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x100000000_str)
+  aes64dsm x15, x6, x10 # perform operation
+  # Check if x15 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x15, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x100000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x100000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000001 rs2 = 0x0000000100000001)
-  RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs1: x19 = 0x0000000100000001
-  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs2: x21 = 0x0000000100000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x23) # load rs1: x23 = 0x0000000100000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rs2: x31 = 0x0000000100000001
 Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x100000001:
-  aes64dsm x18, x19, x21 # perform operation
+  aes64dsm x13, x23, x31 # perform operation
+  # Check if x13 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x13, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x100000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x100000001_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000001 rs2 = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs1: x4 = 0x0000000100000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x28) # load rs2: x28 = 0x0000000080000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x80000000:
+  aes64dsm x27, x4, x28 # perform operation
+  # Check if x27 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x27, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x80000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x80000000_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000001 rs2 = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs1: x19 = 0x0000000100000001
+  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0x000000007fffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x7fffffff:
+  aes64dsm x16, x19, x27 # perform operation
+  # Check if x16 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x16, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x7fffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x7fffffff_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000080000000 rs2 = 0x0000000000000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs1: x21 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs2: x29 = 0x0000000000000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x0:
+  aes64dsm x14, x21, x29 # perform operation
+  # Check if x14 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x14, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x0, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x0_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000080000000 rs2 = 0x0000000000000001)
+  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs1: x6 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x9) # load rs2: x9 = 0x0000000000000001
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x1:
+  aes64dsm x1, x6, x9 # perform operation
+  # Check if x1 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x1_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000080000000 rs2 = 0x0000000000000002)
+  RVTEST_TESTDATA_LOAD_INT(x24, x26) # load rs1: x26 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x28) # load rs2: x28 = 0x0000000000000002
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x2:
+  aes64dsm x22, x26, x28 # perform operation
+  # Check if x22 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x22, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x2_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000080000000 rs2 = 0x8000000000000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x25) # load rs1: x25 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs2: x16 = 0x8000000000000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x8000000000000000:
+  aes64dsm x21, x25, x16 # perform operation
+  # Check if x21 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x21, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x8000000000000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x8000000000000000_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000080000000 rs2 = 0x8000000000000001)
+  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs1: x18 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x23) # load rs2: x23 = 0x8000000000000001
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x8000000000000001:
+  aes64dsm x1, x18, x23 # perform operation
+  # Check if x1 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x8000000000000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x8000000000000001_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000080000000 rs2 = 0x7fffffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs1: x16 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs2: x20 = 0x7fffffffffffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x7fffffffffffffff:
+  aes64dsm x23, x16, x20 # perform operation
+  # Check if x23 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x23, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x7fffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x7fffffffffffffff_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000080000000 rs2 = 0x7ffffffffffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs1: x21 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs2: x18 = 0x7ffffffffffffffe
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x7ffffffffffffffe:
+  aes64dsm x17, x21, x18 # perform operation
+  # Check if x17 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x17, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x7ffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x7ffffffffffffffe_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000080000000 rs2 = 0xffffffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs1: x4 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs2: x5 = 0xffffffffffffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xffffffffffffffff:
+  aes64dsm x15, x4, x5 # perform operation
+  # Check if x15 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x15, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xffffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xffffffffffffffff_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000080000000 rs2 = 0xfffffffffffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs1: x27 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs2: x20 = 0xfffffffffffffffe
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xfffffffffffffffe:
+  aes64dsm x23, x27, x20 # perform operation
+  # Check if x23 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x23, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xfffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xfffffffffffffffe_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000080000000 rs2 = 0x5bbc887763ae86f2)
+  RVTEST_TESTDATA_LOAD_INT(x24, x25) # load rs1: x25 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs2: x13 = 0x5bbc887763ae86f2
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x5bbc887763ae86f2:
+  aes64dsm x27, x25, x13 # perform operation
+  # Check if x27 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x27, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x5bbc887763ae86f2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x5bbc887763ae86f2_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000080000000 rs2 = 0xaaaaaaaaaaaaaaaa)
+  RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs1: x19 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs2: x18 = 0xaaaaaaaaaaaaaaaa
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xaaaaaaaaaaaaaaaa:
+  aes64dsm x10, x19, x18 # perform operation
+  # Check if x10 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x10, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xaaaaaaaaaaaaaaaa, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xaaaaaaaaaaaaaaaa_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000080000000 rs2 = 0x5555555555555555)
+  RVTEST_TESTDATA_LOAD_INT(x24, x28) # load rs1: x28 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0x5555555555555555
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x5555555555555555:
+  aes64dsm x5, x28, x27 # perform operation
+  # Check if x5 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x5, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x5555555555555555, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x5555555555555555_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000080000000 rs2 = 0x00000000ffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs1: x19 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x3) # load rs2: x3 = 0x00000000ffffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xffffffff:
+  aes64dsm x16, x19, x3 # perform operation
+  # Check if x16 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x16, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xffffffff_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000080000000 rs2 = 0x00000000fffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x24, x10) # load rs1: x10 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs2: x30 = 0x00000000fffffffe
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xfffffffe:
+  aes64dsm x13, x10, x30 # perform operation
+  # Check if x13 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x13, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xfffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xfffffffe_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000080000000 rs2 = 0x0000000100000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs1: x15 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs2: x4 = 0x0000000100000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x100000000:
+  aes64dsm x9, x15, x4 # perform operation
+  # Check if x9 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x9, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x100000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x100000000_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000080000000 rs2 = 0x0000000100000001)
+  RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs1: x30 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x3) # load rs2: x3 = 0x0000000100000001
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x100000001:
+  aes64dsm x25, x30, x3 # perform operation
+  # Check if x25 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x25, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x100000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x100000001_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000080000000 rs2 = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x26) # load rs1: x26 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs2: x11 = 0x0000000080000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x80000000:
+  aes64dsm x17, x26, x11 # perform operation
+  # Check if x17 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x17, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x80000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x80000000_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000080000000 rs2 = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs1: x15 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs2: x13 = 0x000000007fffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x7fffffff:
+  aes64dsm x22, x15, x13 # perform operation
+  # Check if x22 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x22, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x7fffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x7fffffff_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x000000007fffffff rs2 = 0x0000000000000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs1: x22 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs2: x4 = 0x0000000000000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x0:
+  aes64dsm x23, x22, x4 # perform operation
+  # Check if x23 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x23, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x0, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x0_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x000000007fffffff rs2 = 0x0000000000000001)
+  RVTEST_TESTDATA_LOAD_INT(x24, x10) # load rs1: x10 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs2: x21 = 0x0000000000000001
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x1:
+  aes64dsm x23, x10, x21 # perform operation
+  # Check if x23 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x23, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x1_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x000000007fffffff rs2 = 0x0000000000000002)
+  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs1: x22 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0x0000000000000002
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x2:
+  aes64dsm x16, x22, x27 # perform operation
+  # Check if x16 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x16, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x2_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x000000007fffffff rs2 = 0x8000000000000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x2) # load rs1: x2 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs2: x20 = 0x8000000000000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x8000000000000000:
+  aes64dsm x18, x2, x20 # perform operation
   # Check if x18 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x18, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x100000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x100000001_str)
+  RVTEST_SIGUPD(x12, x8, x7, x18, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x8000000000000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x8000000000000000_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x000000007fffffff rs2 = 0x8000000000000001)
+  RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rs1: x31 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs2: x21 = 0x8000000000000001
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x8000000000000001:
+  aes64dsm x3, x31, x21 # perform operation
+  # Check if x3 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x3, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x8000000000000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x8000000000000001_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x000000007fffffff rs2 = 0x7fffffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs1: x30 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs2: x16 = 0x7fffffffffffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x7fffffffffffffff:
+  aes64dsm x18, x30, x16 # perform operation
+  # Check if x18 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x18, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x7fffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x7fffffffffffffff_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x000000007fffffff rs2 = 0x7ffffffffffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs1: x27 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs2: x11 = 0x7ffffffffffffffe
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x7ffffffffffffffe:
+  aes64dsm x17, x27, x11 # perform operation
+  # Check if x17 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x17, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x7ffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x7ffffffffffffffe_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x000000007fffffff rs2 = 0xffffffffffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs1: x16 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x25) # load rs2: x25 = 0xffffffffffffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xffffffffffffffff:
+  aes64dsm x1, x16, x25 # perform operation
+  # Check if x1 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x1, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xffffffffffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xffffffffffffffff_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x000000007fffffff rs2 = 0xfffffffffffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x24, x3) # load rs1: x3 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs2: x6 = 0xfffffffffffffffe
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xfffffffffffffffe:
+  aes64dsm x14, x3, x6 # perform operation
+  # Check if x14 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x14, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xfffffffffffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xfffffffffffffffe_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x000000007fffffff rs2 = 0x5bbc887763ae86f2)
+  RVTEST_TESTDATA_LOAD_INT(x24, x17) # load rs1: x17 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs2: x20 = 0x5bbc887763ae86f2
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x5bbc887763ae86f2:
+  aes64dsm x21, x17, x20 # perform operation
+  # Check if x21 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x21, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x5bbc887763ae86f2, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x5bbc887763ae86f2_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x000000007fffffff rs2 = 0xaaaaaaaaaaaaaaaa)
+  RVTEST_TESTDATA_LOAD_INT(x24, x28) # load rs1: x28 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs2: x4 = 0xaaaaaaaaaaaaaaaa
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xaaaaaaaaaaaaaaaa:
+  aes64dsm x14, x28, x4 # perform operation
+  # Check if x14 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x14, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xaaaaaaaaaaaaaaaa, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xaaaaaaaaaaaaaaaa_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x000000007fffffff rs2 = 0x5555555555555555)
+  RVTEST_TESTDATA_LOAD_INT(x24, x1) # load rs1: x1 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs2: x19 = 0x5555555555555555
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x5555555555555555:
+  aes64dsm x5, x1, x19 # perform operation
+  # Check if x5 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x5, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x5555555555555555, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x5555555555555555_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x000000007fffffff rs2 = 0x00000000ffffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs1: x11 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs2: x20 = 0x00000000ffffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xffffffff:
+  aes64dsm x19, x11, x20 # perform operation
+  # Check if x19 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x19, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xffffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xffffffff_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x000000007fffffff rs2 = 0x00000000fffffffe)
+  RVTEST_TESTDATA_LOAD_INT(x24, x5) # load rs1: x5 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs2: x19 = 0x00000000fffffffe
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xfffffffe:
+  aes64dsm x10, x5, x19 # perform operation
+  # Check if x10 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x10, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xfffffffe, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xfffffffe_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x000000007fffffff rs2 = 0x0000000100000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs1: x29 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs2: x20 = 0x0000000100000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x100000000:
+  aes64dsm x9, x29, x20 # perform operation
+  # Check if x9 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x9, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x100000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x100000000_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x000000007fffffff rs2 = 0x0000000100000001)
+  RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs1: x30 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs2: x18 = 0x0000000100000001
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x100000001:
+  aes64dsm x3, x30, x18 # perform operation
+  # Check if x3 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x3, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x100000001, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x100000001_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x000000007fffffff rs2 = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs1: x19 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x26) # load rs2: x26 = 0x0000000080000000
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x80000000:
+  aes64dsm x3, x19, x26 # perform operation
+  # Check if x3 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x3, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x80000000, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x80000000_str)
+
+# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x000000007fffffff rs2 = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x24, x3) # load rs1: x3 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs2: x22 = 0x000000007fffffff
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x7fffffff:
+  aes64dsm x18, x3, x22 # perform operation
+  # Check if x18 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x18, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x7fffffff, Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x7fffffff_str)
 
 /////////////////////////////////
 // cmp_rs1_rs2
@@ -6502,6 +7078,10 @@ RVTEST_DATA_BEGIN
 .dword 0x9d624b979fbbaedf
 .dword 0x0000000100000001
 .dword 0x7b98066380442d86
+.dword 0x0000000080000000
+.dword 0x4981af210b999e85
+.dword 0x000000007fffffff
+.dword 0xbd12c363dd5d324a
 .dword 0x37e488b4e12ca715
 .dword 0x0000000000000000
 .dword 0xfe4d71b508a388d4
@@ -6534,6 +7114,10 @@ RVTEST_DATA_BEGIN
 .dword 0x0000000100000000
 .dword 0xd201b4be1a10c3f5
 .dword 0x0000000100000001
+.dword 0xb0835cfea29ee962
+.dword 0x0000000080000000
+.dword 0xf14e729483e235f7
+.dword 0x000000007fffffff
 .dword 0x0000000000000000
 .dword 0x0000000000000000
 .dword 0x0000000000000000
@@ -6566,6 +7150,10 @@ RVTEST_DATA_BEGIN
 .dword 0x0000000100000000
 .dword 0x0000000000000000
 .dword 0x0000000100000001
+.dword 0x0000000000000000
+.dword 0x0000000080000000
+.dword 0x0000000000000000
+.dword 0x000000007fffffff
 .dword 0x0000000000000001
 .dword 0x0000000000000000
 .dword 0x0000000000000001
@@ -6598,6 +7186,10 @@ RVTEST_DATA_BEGIN
 .dword 0x0000000100000000
 .dword 0x0000000000000001
 .dword 0x0000000100000001
+.dword 0x0000000000000001
+.dword 0x0000000080000000
+.dword 0x0000000000000001
+.dword 0x000000007fffffff
 .dword 0x0000000000000002
 .dword 0x0000000000000000
 .dword 0x0000000000000002
@@ -6630,6 +7222,10 @@ RVTEST_DATA_BEGIN
 .dword 0x0000000100000000
 .dword 0x0000000000000002
 .dword 0x0000000100000001
+.dword 0x0000000000000002
+.dword 0x0000000080000000
+.dword 0x0000000000000002
+.dword 0x000000007fffffff
 .dword 0x8000000000000000
 .dword 0x0000000000000000
 .dword 0x8000000000000000
@@ -6662,6 +7258,10 @@ RVTEST_DATA_BEGIN
 .dword 0x0000000100000000
 .dword 0x8000000000000000
 .dword 0x0000000100000001
+.dword 0x8000000000000000
+.dword 0x0000000080000000
+.dword 0x8000000000000000
+.dword 0x000000007fffffff
 .dword 0x8000000000000001
 .dword 0x0000000000000000
 .dword 0x8000000000000001
@@ -6694,6 +7294,10 @@ RVTEST_DATA_BEGIN
 .dword 0x0000000100000000
 .dword 0x8000000000000001
 .dword 0x0000000100000001
+.dword 0x8000000000000001
+.dword 0x0000000080000000
+.dword 0x8000000000000001
+.dword 0x000000007fffffff
 .dword 0x7fffffffffffffff
 .dword 0x0000000000000000
 .dword 0x7fffffffffffffff
@@ -6726,6 +7330,10 @@ RVTEST_DATA_BEGIN
 .dword 0x0000000100000000
 .dword 0x7fffffffffffffff
 .dword 0x0000000100000001
+.dword 0x7fffffffffffffff
+.dword 0x0000000080000000
+.dword 0x7fffffffffffffff
+.dword 0x000000007fffffff
 .dword 0x7ffffffffffffffe
 .dword 0x0000000000000000
 .dword 0x7ffffffffffffffe
@@ -6758,6 +7366,10 @@ RVTEST_DATA_BEGIN
 .dword 0x0000000100000000
 .dword 0x7ffffffffffffffe
 .dword 0x0000000100000001
+.dword 0x7ffffffffffffffe
+.dword 0x0000000080000000
+.dword 0x7ffffffffffffffe
+.dword 0x000000007fffffff
 .dword 0xffffffffffffffff
 .dword 0x0000000000000000
 .dword 0xffffffffffffffff
@@ -6790,6 +7402,10 @@ RVTEST_DATA_BEGIN
 .dword 0x0000000100000000
 .dword 0xffffffffffffffff
 .dword 0x0000000100000001
+.dword 0xffffffffffffffff
+.dword 0x0000000080000000
+.dword 0xffffffffffffffff
+.dword 0x000000007fffffff
 .dword 0xfffffffffffffffe
 .dword 0x0000000000000000
 .dword 0xfffffffffffffffe
@@ -6822,6 +7438,10 @@ RVTEST_DATA_BEGIN
 .dword 0x0000000100000000
 .dword 0xfffffffffffffffe
 .dword 0x0000000100000001
+.dword 0xfffffffffffffffe
+.dword 0x0000000080000000
+.dword 0xfffffffffffffffe
+.dword 0x000000007fffffff
 .dword 0x5bbc887763ae86f2
 .dword 0x0000000000000000
 .dword 0x5bbc887763ae86f2
@@ -6854,6 +7474,10 @@ RVTEST_DATA_BEGIN
 .dword 0x0000000100000000
 .dword 0x5bbc887763ae86f2
 .dword 0x0000000100000001
+.dword 0x5bbc887763ae86f2
+.dword 0x0000000080000000
+.dword 0x5bbc887763ae86f2
+.dword 0x000000007fffffff
 .dword 0xaaaaaaaaaaaaaaaa
 .dword 0x0000000000000000
 .dword 0xaaaaaaaaaaaaaaaa
@@ -6886,6 +7510,10 @@ RVTEST_DATA_BEGIN
 .dword 0x0000000100000000
 .dword 0xaaaaaaaaaaaaaaaa
 .dword 0x0000000100000001
+.dword 0xaaaaaaaaaaaaaaaa
+.dword 0x0000000080000000
+.dword 0xaaaaaaaaaaaaaaaa
+.dword 0x000000007fffffff
 .dword 0x5555555555555555
 .dword 0x0000000000000000
 .dword 0x5555555555555555
@@ -6918,6 +7546,10 @@ RVTEST_DATA_BEGIN
 .dword 0x0000000100000000
 .dword 0x5555555555555555
 .dword 0x0000000100000001
+.dword 0x5555555555555555
+.dword 0x0000000080000000
+.dword 0x5555555555555555
+.dword 0x000000007fffffff
 .dword 0x00000000ffffffff
 .dword 0x0000000000000000
 .dword 0x00000000ffffffff
@@ -6950,6 +7582,10 @@ RVTEST_DATA_BEGIN
 .dword 0x0000000100000000
 .dword 0x00000000ffffffff
 .dword 0x0000000100000001
+.dword 0x00000000ffffffff
+.dword 0x0000000080000000
+.dword 0x00000000ffffffff
+.dword 0x000000007fffffff
 .dword 0x00000000fffffffe
 .dword 0x0000000000000000
 .dword 0x00000000fffffffe
@@ -6982,6 +7618,10 @@ RVTEST_DATA_BEGIN
 .dword 0x0000000100000000
 .dword 0x00000000fffffffe
 .dword 0x0000000100000001
+.dword 0x00000000fffffffe
+.dword 0x0000000080000000
+.dword 0x00000000fffffffe
+.dword 0x000000007fffffff
 .dword 0x0000000100000000
 .dword 0x0000000000000000
 .dword 0x0000000100000000
@@ -7014,6 +7654,10 @@ RVTEST_DATA_BEGIN
 .dword 0x0000000100000000
 .dword 0x0000000100000000
 .dword 0x0000000100000001
+.dword 0x0000000100000000
+.dword 0x0000000080000000
+.dword 0x0000000100000000
+.dword 0x000000007fffffff
 .dword 0x0000000100000001
 .dword 0x0000000000000000
 .dword 0x0000000100000001
@@ -7046,6 +7690,82 @@ RVTEST_DATA_BEGIN
 .dword 0x0000000100000000
 .dword 0x0000000100000001
 .dword 0x0000000100000001
+.dword 0x0000000100000001
+.dword 0x0000000080000000
+.dword 0x0000000100000001
+.dword 0x000000007fffffff
+.dword 0x0000000080000000
+.dword 0x0000000000000000
+.dword 0x0000000080000000
+.dword 0x0000000000000001
+.dword 0x0000000080000000
+.dword 0x0000000000000002
+.dword 0x0000000080000000
+.dword 0x8000000000000000
+.dword 0x0000000080000000
+.dword 0x8000000000000001
+.dword 0x0000000080000000
+.dword 0x7fffffffffffffff
+.dword 0x0000000080000000
+.dword 0x7ffffffffffffffe
+.dword 0x0000000080000000
+.dword 0xffffffffffffffff
+.dword 0x0000000080000000
+.dword 0xfffffffffffffffe
+.dword 0x0000000080000000
+.dword 0x5bbc887763ae86f2
+.dword 0x0000000080000000
+.dword 0xaaaaaaaaaaaaaaaa
+.dword 0x0000000080000000
+.dword 0x5555555555555555
+.dword 0x0000000080000000
+.dword 0x00000000ffffffff
+.dword 0x0000000080000000
+.dword 0x00000000fffffffe
+.dword 0x0000000080000000
+.dword 0x0000000100000000
+.dword 0x0000000080000000
+.dword 0x0000000100000001
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x0000000080000000
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
+.dword 0x0000000000000000
+.dword 0x000000007fffffff
+.dword 0x0000000000000001
+.dword 0x000000007fffffff
+.dword 0x0000000000000002
+.dword 0x000000007fffffff
+.dword 0x8000000000000000
+.dword 0x000000007fffffff
+.dword 0x8000000000000001
+.dword 0x000000007fffffff
+.dword 0x7fffffffffffffff
+.dword 0x000000007fffffff
+.dword 0x7ffffffffffffffe
+.dword 0x000000007fffffff
+.dword 0xffffffffffffffff
+.dword 0x000000007fffffff
+.dword 0xfffffffffffffffe
+.dword 0x000000007fffffff
+.dword 0x5bbc887763ae86f2
+.dword 0x000000007fffffff
+.dword 0xaaaaaaaaaaaaaaaa
+.dword 0x000000007fffffff
+.dword 0x5555555555555555
+.dword 0x000000007fffffff
+.dword 0x00000000ffffffff
+.dword 0x000000007fffffff
+.dword 0x00000000fffffffe
+.dword 0x000000007fffffff
+.dword 0x0000000100000000
+.dword 0x000000007fffffff
+.dword 0x0000000100000001
+.dword 0x000000007fffffff
+.dword 0x0000000080000000
+.dword 0x000000007fffffff
+.dword 0x000000007fffffff
 .dword 0x803717ef5f3ca766
 .dword 0x557712abe371a7e8
 .dword 0x990f929dff2ea507
@@ -7928,662 +8648,734 @@ Zknd_aes64dsm_cg_cp_rs1_edges_0xffffffff_str: .string "\"test: 109; cg: Zknd_aes
 Zknd_aes64dsm_cg_cp_rs1_edges_0xfffffffe_str: .string "\"test: 110; cg: Zknd_aes64dsm_cg; cp: cp_rs1_edges; bin: 0xfffffffe\""
 Zknd_aes64dsm_cg_cp_rs1_edges_0x100000000_str: .string "\"test: 111; cg: Zknd_aes64dsm_cg; cp: cp_rs1_edges; bin: 0x100000000\""
 Zknd_aes64dsm_cg_cp_rs1_edges_0x100000001_str: .string "\"test: 112; cg: Zknd_aes64dsm_cg; cp: cp_rs1_edges; bin: 0x100000001\""
-Zknd_aes64dsm_cg_cp_rs2_edges_0x0_str: .string "\"test: 113; cg: Zknd_aes64dsm_cg; cp: cp_rs2_edges; bin: 0x0\""
-Zknd_aes64dsm_cg_cp_rs2_edges_0x1_str: .string "\"test: 114; cg: Zknd_aes64dsm_cg; cp: cp_rs2_edges; bin: 0x1\""
-Zknd_aes64dsm_cg_cp_rs2_edges_0x2_str: .string "\"test: 115; cg: Zknd_aes64dsm_cg; cp: cp_rs2_edges; bin: 0x2\""
-Zknd_aes64dsm_cg_cp_rs2_edges_0x8000000000000000_str: .string "\"test: 116; cg: Zknd_aes64dsm_cg; cp: cp_rs2_edges; bin: 0x8000000000000000\""
-Zknd_aes64dsm_cg_cp_rs2_edges_0x8000000000000001_str: .string "\"test: 117; cg: Zknd_aes64dsm_cg; cp: cp_rs2_edges; bin: 0x8000000000000001\""
-Zknd_aes64dsm_cg_cp_rs2_edges_0x7fffffffffffffff_str: .string "\"test: 118; cg: Zknd_aes64dsm_cg; cp: cp_rs2_edges; bin: 0x7fffffffffffffff\""
-Zknd_aes64dsm_cg_cp_rs2_edges_0x7ffffffffffffffe_str: .string "\"test: 119; cg: Zknd_aes64dsm_cg; cp: cp_rs2_edges; bin: 0x7ffffffffffffffe\""
-Zknd_aes64dsm_cg_cp_rs2_edges_0xffffffffffffffff_str: .string "\"test: 120; cg: Zknd_aes64dsm_cg; cp: cp_rs2_edges; bin: 0xffffffffffffffff\""
-Zknd_aes64dsm_cg_cp_rs2_edges_0xfffffffffffffffe_str: .string "\"test: 121; cg: Zknd_aes64dsm_cg; cp: cp_rs2_edges; bin: 0xfffffffffffffffe\""
-Zknd_aes64dsm_cg_cp_rs2_edges_0x5bbc887763ae86f2_str: .string "\"test: 122; cg: Zknd_aes64dsm_cg; cp: cp_rs2_edges; bin: 0x5bbc887763ae86f2\""
-Zknd_aes64dsm_cg_cp_rs2_edges_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 123; cg: Zknd_aes64dsm_cg; cp: cp_rs2_edges; bin: 0xaaaaaaaaaaaaaaaa\""
-Zknd_aes64dsm_cg_cp_rs2_edges_0x5555555555555555_str: .string "\"test: 124; cg: Zknd_aes64dsm_cg; cp: cp_rs2_edges; bin: 0x5555555555555555\""
-Zknd_aes64dsm_cg_cp_rs2_edges_0xffffffff_str: .string "\"test: 125; cg: Zknd_aes64dsm_cg; cp: cp_rs2_edges; bin: 0xffffffff\""
-Zknd_aes64dsm_cg_cp_rs2_edges_0xfffffffe_str: .string "\"test: 126; cg: Zknd_aes64dsm_cg; cp: cp_rs2_edges; bin: 0xfffffffe\""
-Zknd_aes64dsm_cg_cp_rs2_edges_0x100000000_str: .string "\"test: 127; cg: Zknd_aes64dsm_cg; cp: cp_rs2_edges; bin: 0x100000000\""
-Zknd_aes64dsm_cg_cp_rs2_edges_0x100000001_str: .string "\"test: 128; cg: Zknd_aes64dsm_cg; cp: cp_rs2_edges; bin: 0x100000001\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x0_str: .string "\"test: 129; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x0, rs2val=0x0\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x1_str: .string "\"test: 130; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x0, rs2val=0x1\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x2_str: .string "\"test: 131; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x0, rs2val=0x2\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x8000000000000000_str: .string "\"test: 132; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x0, rs2val=0x8000000000000000\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x8000000000000001_str: .string "\"test: 133; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x0, rs2val=0x8000000000000001\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x7fffffffffffffff_str: .string "\"test: 134; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x0, rs2val=0x7fffffffffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x7ffffffffffffffe_str: .string "\"test: 135; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x0, rs2val=0x7ffffffffffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xffffffffffffffff_str: .string "\"test: 136; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x0, rs2val=0xffffffffffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xfffffffffffffffe_str: .string "\"test: 137; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x0, rs2val=0xfffffffffffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x5bbc887763ae86f2_str: .string "\"test: 138; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x0, rs2val=0x5bbc887763ae86f2\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 139; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x0, rs2val=0xaaaaaaaaaaaaaaaa\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x5555555555555555_str: .string "\"test: 140; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x0, rs2val=0x5555555555555555\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xffffffff_str: .string "\"test: 141; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x0, rs2val=0xffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xfffffffe_str: .string "\"test: 142; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x0, rs2val=0xfffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x100000000_str: .string "\"test: 143; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x0, rs2val=0x100000000\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x100000001_str: .string "\"test: 144; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x0, rs2val=0x100000001\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x0_str: .string "\"test: 145; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x1, rs2val=0x0\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x1_str: .string "\"test: 146; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x1, rs2val=0x1\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x2_str: .string "\"test: 147; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x1, rs2val=0x2\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x8000000000000000_str: .string "\"test: 148; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x1, rs2val=0x8000000000000000\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x8000000000000001_str: .string "\"test: 149; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x1, rs2val=0x8000000000000001\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7fffffffffffffff_str: .string "\"test: 150; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x1, rs2val=0x7fffffffffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7ffffffffffffffe_str: .string "\"test: 151; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x1, rs2val=0x7ffffffffffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xffffffffffffffff_str: .string "\"test: 152; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x1, rs2val=0xffffffffffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xfffffffffffffffe_str: .string "\"test: 153; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x1, rs2val=0xfffffffffffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x5bbc887763ae86f2_str: .string "\"test: 154; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x1, rs2val=0x5bbc887763ae86f2\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 155; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x1, rs2val=0xaaaaaaaaaaaaaaaa\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x5555555555555555_str: .string "\"test: 156; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x1, rs2val=0x5555555555555555\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xffffffff_str: .string "\"test: 157; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x1, rs2val=0xffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xfffffffe_str: .string "\"test: 158; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x1, rs2val=0xfffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x100000000_str: .string "\"test: 159; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x1, rs2val=0x100000000\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x100000001_str: .string "\"test: 160; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x1, rs2val=0x100000001\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x0_str: .string "\"test: 161; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x2, rs2val=0x0\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x1_str: .string "\"test: 162; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x2, rs2val=0x1\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x2_str: .string "\"test: 163; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x2, rs2val=0x2\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x8000000000000000_str: .string "\"test: 164; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x2, rs2val=0x8000000000000000\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x8000000000000001_str: .string "\"test: 165; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x2, rs2val=0x8000000000000001\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7fffffffffffffff_str: .string "\"test: 166; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x2, rs2val=0x7fffffffffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7ffffffffffffffe_str: .string "\"test: 167; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x2, rs2val=0x7ffffffffffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xffffffffffffffff_str: .string "\"test: 168; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x2, rs2val=0xffffffffffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xfffffffffffffffe_str: .string "\"test: 169; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x2, rs2val=0xfffffffffffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x5bbc887763ae86f2_str: .string "\"test: 170; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x2, rs2val=0x5bbc887763ae86f2\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 171; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x2, rs2val=0xaaaaaaaaaaaaaaaa\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x5555555555555555_str: .string "\"test: 172; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x2, rs2val=0x5555555555555555\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xffffffff_str: .string "\"test: 173; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x2, rs2val=0xffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xfffffffe_str: .string "\"test: 174; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x2, rs2val=0xfffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x100000000_str: .string "\"test: 175; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x2, rs2val=0x100000000\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x100000001_str: .string "\"test: 176; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x2, rs2val=0x100000001\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x0_str: .string "\"test: 177; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000000, rs2val=0x0\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x1_str: .string "\"test: 178; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000000, rs2val=0x1\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x2_str: .string "\"test: 179; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000000, rs2val=0x2\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x8000000000000000_str: .string "\"test: 180; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000000, rs2val=0x8000000000000000\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x8000000000000001_str: .string "\"test: 181; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000000, rs2val=0x8000000000000001\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x7fffffffffffffff_str: .string "\"test: 182; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000000, rs2val=0x7fffffffffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x7ffffffffffffffe_str: .string "\"test: 183; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000000, rs2val=0x7ffffffffffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xffffffffffffffff_str: .string "\"test: 184; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000000, rs2val=0xffffffffffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xfffffffffffffffe_str: .string "\"test: 185; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000000, rs2val=0xfffffffffffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x5bbc887763ae86f2_str: .string "\"test: 186; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000000, rs2val=0x5bbc887763ae86f2\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 187; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000000, rs2val=0xaaaaaaaaaaaaaaaa\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x5555555555555555_str: .string "\"test: 188; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000000, rs2val=0x5555555555555555\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xffffffff_str: .string "\"test: 189; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000000, rs2val=0xffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xfffffffe_str: .string "\"test: 190; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000000, rs2val=0xfffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x100000000_str: .string "\"test: 191; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000000, rs2val=0x100000000\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x100000001_str: .string "\"test: 192; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000000, rs2val=0x100000001\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x0_str: .string "\"test: 193; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000001, rs2val=0x0\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x1_str: .string "\"test: 194; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000001, rs2val=0x1\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x2_str: .string "\"test: 195; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000001, rs2val=0x2\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x8000000000000000_str: .string "\"test: 196; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000001, rs2val=0x8000000000000000\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x8000000000000001_str: .string "\"test: 197; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000001, rs2val=0x8000000000000001\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x7fffffffffffffff_str: .string "\"test: 198; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000001, rs2val=0x7fffffffffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x7ffffffffffffffe_str: .string "\"test: 199; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000001, rs2val=0x7ffffffffffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xffffffffffffffff_str: .string "\"test: 200; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000001, rs2val=0xffffffffffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xfffffffffffffffe_str: .string "\"test: 201; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000001, rs2val=0xfffffffffffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x5bbc887763ae86f2_str: .string "\"test: 202; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000001, rs2val=0x5bbc887763ae86f2\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 203; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000001, rs2val=0xaaaaaaaaaaaaaaaa\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x5555555555555555_str: .string "\"test: 204; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000001, rs2val=0x5555555555555555\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xffffffff_str: .string "\"test: 205; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000001, rs2val=0xffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xfffffffe_str: .string "\"test: 206; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000001, rs2val=0xfffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x100000000_str: .string "\"test: 207; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000001, rs2val=0x100000000\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x100000001_str: .string "\"test: 208; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000001, rs2val=0x100000001\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x0_str: .string "\"test: 209; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffffffffffff, rs2val=0x0\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x1_str: .string "\"test: 210; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffffffffffff, rs2val=0x1\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x2_str: .string "\"test: 211; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffffffffffff, rs2val=0x2\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x8000000000000000_str: .string "\"test: 212; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffffffffffff, rs2val=0x8000000000000000\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x8000000000000001_str: .string "\"test: 213; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffffffffffff, rs2val=0x8000000000000001\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x7fffffffffffffff_str: .string "\"test: 214; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffffffffffff, rs2val=0x7fffffffffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x7ffffffffffffffe_str: .string "\"test: 215; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffffffffffff, rs2val=0x7ffffffffffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xffffffffffffffff_str: .string "\"test: 216; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffffffffffff, rs2val=0xffffffffffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xfffffffffffffffe_str: .string "\"test: 217; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffffffffffff, rs2val=0xfffffffffffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x5bbc887763ae86f2_str: .string "\"test: 218; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffffffffffff, rs2val=0x5bbc887763ae86f2\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 219; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffffffffffff, rs2val=0xaaaaaaaaaaaaaaaa\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x5555555555555555_str: .string "\"test: 220; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffffffffffff, rs2val=0x5555555555555555\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xffffffff_str: .string "\"test: 221; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffffffffffff, rs2val=0xffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xfffffffe_str: .string "\"test: 222; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffffffffffff, rs2val=0xfffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x100000000_str: .string "\"test: 223; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffffffffffff, rs2val=0x100000000\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x100000001_str: .string "\"test: 224; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffffffffffff, rs2val=0x100000001\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x0_str: .string "\"test: 225; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7ffffffffffffffe, rs2val=0x0\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x1_str: .string "\"test: 226; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7ffffffffffffffe, rs2val=0x1\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x2_str: .string "\"test: 227; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7ffffffffffffffe, rs2val=0x2\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x8000000000000000_str: .string "\"test: 228; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7ffffffffffffffe, rs2val=0x8000000000000000\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x8000000000000001_str: .string "\"test: 229; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7ffffffffffffffe, rs2val=0x8000000000000001\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x7fffffffffffffff_str: .string "\"test: 230; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7ffffffffffffffe, rs2val=0x7fffffffffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x7ffffffffffffffe_str: .string "\"test: 231; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7ffffffffffffffe, rs2val=0x7ffffffffffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xffffffffffffffff_str: .string "\"test: 232; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7ffffffffffffffe, rs2val=0xffffffffffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xfffffffffffffffe_str: .string "\"test: 233; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7ffffffffffffffe, rs2val=0xfffffffffffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x5bbc887763ae86f2_str: .string "\"test: 234; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7ffffffffffffffe, rs2val=0x5bbc887763ae86f2\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 235; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7ffffffffffffffe, rs2val=0xaaaaaaaaaaaaaaaa\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x5555555555555555_str: .string "\"test: 236; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7ffffffffffffffe, rs2val=0x5555555555555555\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xffffffff_str: .string "\"test: 237; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7ffffffffffffffe, rs2val=0xffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xfffffffe_str: .string "\"test: 238; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7ffffffffffffffe, rs2val=0xfffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x100000000_str: .string "\"test: 239; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7ffffffffffffffe, rs2val=0x100000000\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x100000001_str: .string "\"test: 240; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7ffffffffffffffe, rs2val=0x100000001\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x0_str: .string "\"test: 241; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffffffffffff, rs2val=0x0\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x1_str: .string "\"test: 242; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffffffffffff, rs2val=0x1\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x2_str: .string "\"test: 243; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffffffffffff, rs2val=0x2\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x8000000000000000_str: .string "\"test: 244; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffffffffffff, rs2val=0x8000000000000000\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x8000000000000001_str: .string "\"test: 245; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffffffffffff, rs2val=0x8000000000000001\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x7fffffffffffffff_str: .string "\"test: 246; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffffffffffff, rs2val=0x7fffffffffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x7ffffffffffffffe_str: .string "\"test: 247; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffffffffffff, rs2val=0x7ffffffffffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xffffffffffffffff_str: .string "\"test: 248; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffffffffffff, rs2val=0xffffffffffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xfffffffffffffffe_str: .string "\"test: 249; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffffffffffff, rs2val=0xfffffffffffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x5bbc887763ae86f2_str: .string "\"test: 250; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffffffffffff, rs2val=0x5bbc887763ae86f2\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 251; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffffffffffff, rs2val=0xaaaaaaaaaaaaaaaa\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x5555555555555555_str: .string "\"test: 252; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffffffffffff, rs2val=0x5555555555555555\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xffffffff_str: .string "\"test: 253; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffffffffffff, rs2val=0xffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xfffffffe_str: .string "\"test: 254; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffffffffffff, rs2val=0xfffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x100000000_str: .string "\"test: 255; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffffffffffff, rs2val=0x100000000\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x100000001_str: .string "\"test: 256; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffffffffffff, rs2val=0x100000001\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x0_str: .string "\"test: 257; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffffffffffe, rs2val=0x0\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x1_str: .string "\"test: 258; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffffffffffe, rs2val=0x1\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x2_str: .string "\"test: 259; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffffffffffe, rs2val=0x2\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x8000000000000000_str: .string "\"test: 260; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffffffffffe, rs2val=0x8000000000000000\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x8000000000000001_str: .string "\"test: 261; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffffffffffe, rs2val=0x8000000000000001\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x7fffffffffffffff_str: .string "\"test: 262; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffffffffffe, rs2val=0x7fffffffffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x7ffffffffffffffe_str: .string "\"test: 263; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffffffffffe, rs2val=0x7ffffffffffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xffffffffffffffff_str: .string "\"test: 264; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffffffffffe, rs2val=0xffffffffffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xfffffffffffffffe_str: .string "\"test: 265; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffffffffffe, rs2val=0xfffffffffffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x5bbc887763ae86f2_str: .string "\"test: 266; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffffffffffe, rs2val=0x5bbc887763ae86f2\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 267; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffffffffffe, rs2val=0xaaaaaaaaaaaaaaaa\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x5555555555555555_str: .string "\"test: 268; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffffffffffe, rs2val=0x5555555555555555\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xffffffff_str: .string "\"test: 269; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffffffffffe, rs2val=0xffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xfffffffe_str: .string "\"test: 270; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffffffffffe, rs2val=0xfffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x100000000_str: .string "\"test: 271; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffffffffffe, rs2val=0x100000000\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x100000001_str: .string "\"test: 272; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffffffffffe, rs2val=0x100000001\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x0_str: .string "\"test: 273; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5bbc887763ae86f2, rs2val=0x0\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x1_str: .string "\"test: 274; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5bbc887763ae86f2, rs2val=0x1\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x2_str: .string "\"test: 275; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5bbc887763ae86f2, rs2val=0x2\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x8000000000000000_str: .string "\"test: 276; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5bbc887763ae86f2, rs2val=0x8000000000000000\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x8000000000000001_str: .string "\"test: 277; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5bbc887763ae86f2, rs2val=0x8000000000000001\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x7fffffffffffffff_str: .string "\"test: 278; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5bbc887763ae86f2, rs2val=0x7fffffffffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x7ffffffffffffffe_str: .string "\"test: 279; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5bbc887763ae86f2, rs2val=0x7ffffffffffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xffffffffffffffff_str: .string "\"test: 280; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5bbc887763ae86f2, rs2val=0xffffffffffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xfffffffffffffffe_str: .string "\"test: 281; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5bbc887763ae86f2, rs2val=0xfffffffffffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x5bbc887763ae86f2_str: .string "\"test: 282; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5bbc887763ae86f2, rs2val=0x5bbc887763ae86f2\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 283; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5bbc887763ae86f2, rs2val=0xaaaaaaaaaaaaaaaa\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x5555555555555555_str: .string "\"test: 284; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5bbc887763ae86f2, rs2val=0x5555555555555555\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xffffffff_str: .string "\"test: 285; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5bbc887763ae86f2, rs2val=0xffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xfffffffe_str: .string "\"test: 286; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5bbc887763ae86f2, rs2val=0xfffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x100000000_str: .string "\"test: 287; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5bbc887763ae86f2, rs2val=0x100000000\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x100000001_str: .string "\"test: 288; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5bbc887763ae86f2, rs2val=0x100000001\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x0_str: .string "\"test: 289; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xaaaaaaaaaaaaaaaa, rs2val=0x0\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x1_str: .string "\"test: 290; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xaaaaaaaaaaaaaaaa, rs2val=0x1\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x2_str: .string "\"test: 291; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xaaaaaaaaaaaaaaaa, rs2val=0x2\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x8000000000000000_str: .string "\"test: 292; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xaaaaaaaaaaaaaaaa, rs2val=0x8000000000000000\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x8000000000000001_str: .string "\"test: 293; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xaaaaaaaaaaaaaaaa, rs2val=0x8000000000000001\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x7fffffffffffffff_str: .string "\"test: 294; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xaaaaaaaaaaaaaaaa, rs2val=0x7fffffffffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x7ffffffffffffffe_str: .string "\"test: 295; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xaaaaaaaaaaaaaaaa, rs2val=0x7ffffffffffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xffffffffffffffff_str: .string "\"test: 296; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xaaaaaaaaaaaaaaaa, rs2val=0xffffffffffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xfffffffffffffffe_str: .string "\"test: 297; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xaaaaaaaaaaaaaaaa, rs2val=0xfffffffffffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x5bbc887763ae86f2_str: .string "\"test: 298; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xaaaaaaaaaaaaaaaa, rs2val=0x5bbc887763ae86f2\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 299; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xaaaaaaaaaaaaaaaa, rs2val=0xaaaaaaaaaaaaaaaa\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x5555555555555555_str: .string "\"test: 300; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xaaaaaaaaaaaaaaaa, rs2val=0x5555555555555555\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xffffffff_str: .string "\"test: 301; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xaaaaaaaaaaaaaaaa, rs2val=0xffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xfffffffe_str: .string "\"test: 302; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xaaaaaaaaaaaaaaaa, rs2val=0xfffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x100000000_str: .string "\"test: 303; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xaaaaaaaaaaaaaaaa, rs2val=0x100000000\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x100000001_str: .string "\"test: 304; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xaaaaaaaaaaaaaaaa, rs2val=0x100000001\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x0_str: .string "\"test: 305; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5555555555555555, rs2val=0x0\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x1_str: .string "\"test: 306; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5555555555555555, rs2val=0x1\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x2_str: .string "\"test: 307; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5555555555555555, rs2val=0x2\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x8000000000000000_str: .string "\"test: 308; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5555555555555555, rs2val=0x8000000000000000\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x8000000000000001_str: .string "\"test: 309; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5555555555555555, rs2val=0x8000000000000001\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x7fffffffffffffff_str: .string "\"test: 310; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5555555555555555, rs2val=0x7fffffffffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x7ffffffffffffffe_str: .string "\"test: 311; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5555555555555555, rs2val=0x7ffffffffffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xffffffffffffffff_str: .string "\"test: 312; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5555555555555555, rs2val=0xffffffffffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xfffffffffffffffe_str: .string "\"test: 313; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5555555555555555, rs2val=0xfffffffffffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x5bbc887763ae86f2_str: .string "\"test: 314; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5555555555555555, rs2val=0x5bbc887763ae86f2\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 315; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5555555555555555, rs2val=0xaaaaaaaaaaaaaaaa\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x5555555555555555_str: .string "\"test: 316; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5555555555555555, rs2val=0x5555555555555555\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xffffffff_str: .string "\"test: 317; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5555555555555555, rs2val=0xffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xfffffffe_str: .string "\"test: 318; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5555555555555555, rs2val=0xfffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x100000000_str: .string "\"test: 319; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5555555555555555, rs2val=0x100000000\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x100000001_str: .string "\"test: 320; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5555555555555555, rs2val=0x100000001\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x0_str: .string "\"test: 321; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffff, rs2val=0x0\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x1_str: .string "\"test: 322; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffff, rs2val=0x1\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x2_str: .string "\"test: 323; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffff, rs2val=0x2\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x8000000000000000_str: .string "\"test: 324; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffff, rs2val=0x8000000000000000\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x8000000000000001_str: .string "\"test: 325; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffff, rs2val=0x8000000000000001\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7fffffffffffffff_str: .string "\"test: 326; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffff, rs2val=0x7fffffffffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7ffffffffffffffe_str: .string "\"test: 327; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffff, rs2val=0x7ffffffffffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xffffffffffffffff_str: .string "\"test: 328; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffff, rs2val=0xffffffffffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xfffffffffffffffe_str: .string "\"test: 329; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffff, rs2val=0xfffffffffffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x5bbc887763ae86f2_str: .string "\"test: 330; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffff, rs2val=0x5bbc887763ae86f2\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 331; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffff, rs2val=0xaaaaaaaaaaaaaaaa\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x5555555555555555_str: .string "\"test: 332; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffff, rs2val=0x5555555555555555\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xffffffff_str: .string "\"test: 333; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffff, rs2val=0xffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xfffffffe_str: .string "\"test: 334; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffff, rs2val=0xfffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x100000000_str: .string "\"test: 335; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffff, rs2val=0x100000000\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x100000001_str: .string "\"test: 336; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffff, rs2val=0x100000001\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x0_str: .string "\"test: 337; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffe, rs2val=0x0\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x1_str: .string "\"test: 338; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffe, rs2val=0x1\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x2_str: .string "\"test: 339; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffe, rs2val=0x2\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x8000000000000000_str: .string "\"test: 340; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffe, rs2val=0x8000000000000000\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x8000000000000001_str: .string "\"test: 341; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffe, rs2val=0x8000000000000001\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7fffffffffffffff_str: .string "\"test: 342; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffe, rs2val=0x7fffffffffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7ffffffffffffffe_str: .string "\"test: 343; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffe, rs2val=0x7ffffffffffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xffffffffffffffff_str: .string "\"test: 344; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffe, rs2val=0xffffffffffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xfffffffffffffffe_str: .string "\"test: 345; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffe, rs2val=0xfffffffffffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x5bbc887763ae86f2_str: .string "\"test: 346; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffe, rs2val=0x5bbc887763ae86f2\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 347; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffe, rs2val=0xaaaaaaaaaaaaaaaa\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x5555555555555555_str: .string "\"test: 348; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffe, rs2val=0x5555555555555555\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xffffffff_str: .string "\"test: 349; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffe, rs2val=0xffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xfffffffe_str: .string "\"test: 350; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffe, rs2val=0xfffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x100000000_str: .string "\"test: 351; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffe, rs2val=0x100000000\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x100000001_str: .string "\"test: 352; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffe, rs2val=0x100000001\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x0_str: .string "\"test: 353; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000000, rs2val=0x0\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x1_str: .string "\"test: 354; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000000, rs2val=0x1\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x2_str: .string "\"test: 355; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000000, rs2val=0x2\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x8000000000000000_str: .string "\"test: 356; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000000, rs2val=0x8000000000000000\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x8000000000000001_str: .string "\"test: 357; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000000, rs2val=0x8000000000000001\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x7fffffffffffffff_str: .string "\"test: 358; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000000, rs2val=0x7fffffffffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x7ffffffffffffffe_str: .string "\"test: 359; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000000, rs2val=0x7ffffffffffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xffffffffffffffff_str: .string "\"test: 360; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000000, rs2val=0xffffffffffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xfffffffffffffffe_str: .string "\"test: 361; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000000, rs2val=0xfffffffffffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x5bbc887763ae86f2_str: .string "\"test: 362; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000000, rs2val=0x5bbc887763ae86f2\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 363; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000000, rs2val=0xaaaaaaaaaaaaaaaa\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x5555555555555555_str: .string "\"test: 364; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000000, rs2val=0x5555555555555555\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xffffffff_str: .string "\"test: 365; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000000, rs2val=0xffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xfffffffe_str: .string "\"test: 366; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000000, rs2val=0xfffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x100000000_str: .string "\"test: 367; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000000, rs2val=0x100000000\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x100000001_str: .string "\"test: 368; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000000, rs2val=0x100000001\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x0_str: .string "\"test: 369; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000001, rs2val=0x0\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x1_str: .string "\"test: 370; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000001, rs2val=0x1\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x2_str: .string "\"test: 371; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000001, rs2val=0x2\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x8000000000000000_str: .string "\"test: 372; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000001, rs2val=0x8000000000000000\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x8000000000000001_str: .string "\"test: 373; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000001, rs2val=0x8000000000000001\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x7fffffffffffffff_str: .string "\"test: 374; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000001, rs2val=0x7fffffffffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x7ffffffffffffffe_str: .string "\"test: 375; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000001, rs2val=0x7ffffffffffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xffffffffffffffff_str: .string "\"test: 376; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000001, rs2val=0xffffffffffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xfffffffffffffffe_str: .string "\"test: 377; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000001, rs2val=0xfffffffffffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x5bbc887763ae86f2_str: .string "\"test: 378; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000001, rs2val=0x5bbc887763ae86f2\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 379; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000001, rs2val=0xaaaaaaaaaaaaaaaa\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x5555555555555555_str: .string "\"test: 380; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000001, rs2val=0x5555555555555555\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xffffffff_str: .string "\"test: 381; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000001, rs2val=0xffffffff\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xfffffffe_str: .string "\"test: 382; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000001, rs2val=0xfffffffe\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x100000000_str: .string "\"test: 383; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000001, rs2val=0x100000000\""
-Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x100000001_str: .string "\"test: 384; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000001, rs2val=0x100000001\""
-Zknd_aes64dsm_cg_cmp_rs1_rs2_b0_str: .string "\"test: 385; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b0\""
-Zknd_aes64dsm_cg_cmp_rs1_rs2_b1_str: .string "\"test: 386; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b1\""
-Zknd_aes64dsm_cg_cmp_rs1_rs2_b2_str: .string "\"test: 387; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b2\""
-Zknd_aes64dsm_cg_cmp_rs1_rs2_b3_str: .string "\"test: 388; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b3\""
-Zknd_aes64dsm_cg_cmp_rs1_rs2_b4_str: .string "\"test: 389; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b4\""
-Zknd_aes64dsm_cg_cmp_rs1_rs2_b5_str: .string "\"test: 390; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b5\""
-Zknd_aes64dsm_cg_cmp_rs1_rs2_b6_str: .string "\"test: 391; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b6\""
-Zknd_aes64dsm_cg_cmp_rs1_rs2_b7_str: .string "\"test: 392; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b7\""
-Zknd_aes64dsm_cg_cmp_rs1_rs2_b8_str: .string "\"test: 393; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b8\""
-Zknd_aes64dsm_cg_cmp_rs1_rs2_b9_str: .string "\"test: 394; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b9\""
-Zknd_aes64dsm_cg_cmp_rs1_rs2_b10_str: .string "\"test: 395; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b10\""
-Zknd_aes64dsm_cg_cmp_rs1_rs2_b11_str: .string "\"test: 396; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b11\""
-Zknd_aes64dsm_cg_cmp_rs1_rs2_b12_str: .string "\"test: 397; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b12\""
-Zknd_aes64dsm_cg_cmp_rs1_rs2_b13_str: .string "\"test: 398; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b13\""
-Zknd_aes64dsm_cg_cmp_rs1_rs2_b14_str: .string "\"test: 399; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b14\""
-Zknd_aes64dsm_cg_cmp_rs1_rs2_b15_str: .string "\"test: 400; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b15\""
-Zknd_aes64dsm_cg_cmp_rs1_rs2_b16_str: .string "\"test: 401; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b16\""
-Zknd_aes64dsm_cg_cmp_rs1_rs2_b17_str: .string "\"test: 402; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b17\""
-Zknd_aes64dsm_cg_cmp_rs1_rs2_b18_str: .string "\"test: 403; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b18\""
-Zknd_aes64dsm_cg_cmp_rs1_rs2_b19_str: .string "\"test: 404; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b19\""
-Zknd_aes64dsm_cg_cmp_rs1_rs2_b20_str: .string "\"test: 405; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b20\""
-Zknd_aes64dsm_cg_cmp_rs1_rs2_b21_str: .string "\"test: 406; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b21\""
-Zknd_aes64dsm_cg_cmp_rs1_rs2_b22_str: .string "\"test: 407; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b22\""
-Zknd_aes64dsm_cg_cmp_rs1_rs2_b23_str: .string "\"test: 408; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b23\""
-Zknd_aes64dsm_cg_cmp_rs1_rs2_b24_str: .string "\"test: 409; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b24\""
-Zknd_aes64dsm_cg_cmp_rs1_rs2_b25_str: .string "\"test: 410; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b25\""
-Zknd_aes64dsm_cg_cmp_rs1_rs2_b26_str: .string "\"test: 411; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b26\""
-Zknd_aes64dsm_cg_cmp_rs1_rs2_b27_str: .string "\"test: 412; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b27\""
-Zknd_aes64dsm_cg_cmp_rs1_rs2_b28_str: .string "\"test: 413; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b28\""
-Zknd_aes64dsm_cg_cmp_rs1_rs2_b29_str: .string "\"test: 414; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b29\""
-Zknd_aes64dsm_cg_cmp_rs1_rs2_b30_str: .string "\"test: 415; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b30\""
-Zknd_aes64dsm_cg_cmp_rs1_rs2_b31_str: .string "\"test: 416; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b31\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_b0_str: .string "\"test: 417; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b0\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_b1_str: .string "\"test: 418; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b1\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_b2_str: .string "\"test: 419; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b2\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_b3_str: .string "\"test: 420; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b3\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_b4_str: .string "\"test: 421; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b4\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_b5_str: .string "\"test: 422; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b5\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_b6_str: .string "\"test: 423; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b6\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_b7_str: .string "\"test: 424; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b7\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_b8_str: .string "\"test: 425; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b8\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_b9_str: .string "\"test: 426; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b9\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_b10_str: .string "\"test: 427; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b10\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_b11_str: .string "\"test: 428; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b11\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_b12_str: .string "\"test: 429; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b12\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_b13_str: .string "\"test: 430; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b13\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_b14_str: .string "\"test: 431; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b14\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_b15_str: .string "\"test: 432; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b15\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_b16_str: .string "\"test: 433; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b16\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_b17_str: .string "\"test: 434; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b17\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_b18_str: .string "\"test: 435; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b18\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_b19_str: .string "\"test: 436; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b19\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_b20_str: .string "\"test: 437; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b20\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_b21_str: .string "\"test: 438; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b21\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_b22_str: .string "\"test: 439; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b22\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_b23_str: .string "\"test: 440; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b23\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_b24_str: .string "\"test: 441; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b24\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_b25_str: .string "\"test: 442; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b25\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_b26_str: .string "\"test: 443; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b26\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_b27_str: .string "\"test: 444; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b27\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_b28_str: .string "\"test: 445; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b28\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_b29_str: .string "\"test: 446; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b29\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_b30_str: .string "\"test: 447; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b30\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_b31_str: .string "\"test: 448; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b31\""
-Zknd_aes64dsm_cg_cmp_rd_rs2_b0_str: .string "\"test: 449; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b0\""
-Zknd_aes64dsm_cg_cmp_rd_rs2_b1_str: .string "\"test: 450; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b1\""
-Zknd_aes64dsm_cg_cmp_rd_rs2_b2_str: .string "\"test: 451; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b2\""
-Zknd_aes64dsm_cg_cmp_rd_rs2_b3_str: .string "\"test: 452; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b3\""
-Zknd_aes64dsm_cg_cmp_rd_rs2_b4_str: .string "\"test: 453; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b4\""
-Zknd_aes64dsm_cg_cmp_rd_rs2_b5_str: .string "\"test: 454; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b5\""
-Zknd_aes64dsm_cg_cmp_rd_rs2_b6_str: .string "\"test: 455; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b6\""
-Zknd_aes64dsm_cg_cmp_rd_rs2_b7_str: .string "\"test: 456; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b7\""
-Zknd_aes64dsm_cg_cmp_rd_rs2_b8_str: .string "\"test: 457; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b8\""
-Zknd_aes64dsm_cg_cmp_rd_rs2_b9_str: .string "\"test: 458; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b9\""
-Zknd_aes64dsm_cg_cmp_rd_rs2_b10_str: .string "\"test: 459; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b10\""
-Zknd_aes64dsm_cg_cmp_rd_rs2_b11_str: .string "\"test: 460; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b11\""
-Zknd_aes64dsm_cg_cmp_rd_rs2_b12_str: .string "\"test: 461; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b12\""
-Zknd_aes64dsm_cg_cmp_rd_rs2_b13_str: .string "\"test: 462; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b13\""
-Zknd_aes64dsm_cg_cmp_rd_rs2_b14_str: .string "\"test: 463; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b14\""
-Zknd_aes64dsm_cg_cmp_rd_rs2_b15_str: .string "\"test: 464; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b15\""
-Zknd_aes64dsm_cg_cmp_rd_rs2_b16_str: .string "\"test: 465; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b16\""
-Zknd_aes64dsm_cg_cmp_rd_rs2_b17_str: .string "\"test: 466; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b17\""
-Zknd_aes64dsm_cg_cmp_rd_rs2_b18_str: .string "\"test: 467; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b18\""
-Zknd_aes64dsm_cg_cmp_rd_rs2_b19_str: .string "\"test: 468; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b19\""
-Zknd_aes64dsm_cg_cmp_rd_rs2_b20_str: .string "\"test: 469; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b20\""
-Zknd_aes64dsm_cg_cmp_rd_rs2_b21_str: .string "\"test: 470; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b21\""
-Zknd_aes64dsm_cg_cmp_rd_rs2_b22_str: .string "\"test: 471; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b22\""
-Zknd_aes64dsm_cg_cmp_rd_rs2_b23_str: .string "\"test: 472; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b23\""
-Zknd_aes64dsm_cg_cmp_rd_rs2_b24_str: .string "\"test: 473; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b24\""
-Zknd_aes64dsm_cg_cmp_rd_rs2_b25_str: .string "\"test: 474; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b25\""
-Zknd_aes64dsm_cg_cmp_rd_rs2_b26_str: .string "\"test: 475; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b26\""
-Zknd_aes64dsm_cg_cmp_rd_rs2_b27_str: .string "\"test: 476; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b27\""
-Zknd_aes64dsm_cg_cmp_rd_rs2_b28_str: .string "\"test: 477; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b28\""
-Zknd_aes64dsm_cg_cmp_rd_rs2_b29_str: .string "\"test: 478; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b29\""
-Zknd_aes64dsm_cg_cmp_rd_rs2_b30_str: .string "\"test: 479; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b30\""
-Zknd_aes64dsm_cg_cmp_rd_rs2_b31_str: .string "\"test: 480; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b31\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b0_str: .string "\"test: 481; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b0\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b1_str: .string "\"test: 482; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b1\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b2_str: .string "\"test: 483; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b2\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b3_str: .string "\"test: 484; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b3\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b4_str: .string "\"test: 485; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b4\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b5_str: .string "\"test: 486; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b5\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b6_str: .string "\"test: 487; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b6\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b7_str: .string "\"test: 488; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b7\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b8_str: .string "\"test: 489; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b8\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b9_str: .string "\"test: 490; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b9\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b10_str: .string "\"test: 491; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b10\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b11_str: .string "\"test: 492; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b11\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b12_str: .string "\"test: 493; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b12\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b13_str: .string "\"test: 494; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b13\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b14_str: .string "\"test: 495; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b14\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b15_str: .string "\"test: 496; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b15\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b16_str: .string "\"test: 497; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b16\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b17_str: .string "\"test: 498; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b17\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b18_str: .string "\"test: 499; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b18\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b19_str: .string "\"test: 500; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b19\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b20_str: .string "\"test: 501; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b20\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b21_str: .string "\"test: 502; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b21\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b22_str: .string "\"test: 503; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b22\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b23_str: .string "\"test: 504; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b23\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b24_str: .string "\"test: 505; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b24\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b25_str: .string "\"test: 506; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b25\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b26_str: .string "\"test: 507; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b26\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b27_str: .string "\"test: 508; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b27\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b28_str: .string "\"test: 509; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b28\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b29_str: .string "\"test: 510; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b29\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b30_str: .string "\"test: 511; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b30\""
-Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b31_str: .string "\"test: 512; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b31\""
-Zknd_aes64dsm_cg_cp_sbox_b0_str: .string "\"test: 513; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b0\""
-Zknd_aes64dsm_cg_cp_sbox_b1_str: .string "\"test: 514; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b1\""
-Zknd_aes64dsm_cg_cp_sbox_b2_str: .string "\"test: 515; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b2\""
-Zknd_aes64dsm_cg_cp_sbox_b3_str: .string "\"test: 516; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b3\""
-Zknd_aes64dsm_cg_cp_sbox_b4_str: .string "\"test: 517; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b4\""
-Zknd_aes64dsm_cg_cp_sbox_b5_str: .string "\"test: 518; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b5\""
-Zknd_aes64dsm_cg_cp_sbox_b6_str: .string "\"test: 519; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b6\""
-Zknd_aes64dsm_cg_cp_sbox_b7_str: .string "\"test: 520; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b7\""
-Zknd_aes64dsm_cg_cp_sbox_b8_str: .string "\"test: 521; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b8\""
-Zknd_aes64dsm_cg_cp_sbox_b9_str: .string "\"test: 522; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b9\""
-Zknd_aes64dsm_cg_cp_sbox_b10_str: .string "\"test: 523; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b10\""
-Zknd_aes64dsm_cg_cp_sbox_b11_str: .string "\"test: 524; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b11\""
-Zknd_aes64dsm_cg_cp_sbox_b12_str: .string "\"test: 525; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b12\""
-Zknd_aes64dsm_cg_cp_sbox_b13_str: .string "\"test: 526; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b13\""
-Zknd_aes64dsm_cg_cp_sbox_b14_str: .string "\"test: 527; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b14\""
-Zknd_aes64dsm_cg_cp_sbox_b15_str: .string "\"test: 528; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b15\""
-Zknd_aes64dsm_cg_cp_sbox_b16_str: .string "\"test: 529; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b16\""
-Zknd_aes64dsm_cg_cp_sbox_b17_str: .string "\"test: 530; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b17\""
-Zknd_aes64dsm_cg_cp_sbox_b18_str: .string "\"test: 531; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b18\""
-Zknd_aes64dsm_cg_cp_sbox_b19_str: .string "\"test: 532; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b19\""
-Zknd_aes64dsm_cg_cp_sbox_b20_str: .string "\"test: 533; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b20\""
-Zknd_aes64dsm_cg_cp_sbox_b21_str: .string "\"test: 534; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b21\""
-Zknd_aes64dsm_cg_cp_sbox_b22_str: .string "\"test: 535; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b22\""
-Zknd_aes64dsm_cg_cp_sbox_b23_str: .string "\"test: 536; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b23\""
-Zknd_aes64dsm_cg_cp_sbox_b24_str: .string "\"test: 537; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b24\""
-Zknd_aes64dsm_cg_cp_sbox_b25_str: .string "\"test: 538; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b25\""
-Zknd_aes64dsm_cg_cp_sbox_b26_str: .string "\"test: 539; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b26\""
-Zknd_aes64dsm_cg_cp_sbox_b27_str: .string "\"test: 540; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b27\""
-Zknd_aes64dsm_cg_cp_sbox_b28_str: .string "\"test: 541; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b28\""
-Zknd_aes64dsm_cg_cp_sbox_b29_str: .string "\"test: 542; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b29\""
-Zknd_aes64dsm_cg_cp_sbox_b30_str: .string "\"test: 543; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b30\""
-Zknd_aes64dsm_cg_cp_sbox_b31_str: .string "\"test: 544; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b31\""
-Zknd_aes64dsm_cg_cp_sbox_b32_str: .string "\"test: 545; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b32\""
-Zknd_aes64dsm_cg_cp_sbox_b33_str: .string "\"test: 546; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b33\""
-Zknd_aes64dsm_cg_cp_sbox_b34_str: .string "\"test: 547; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b34\""
-Zknd_aes64dsm_cg_cp_sbox_b35_str: .string "\"test: 548; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b35\""
-Zknd_aes64dsm_cg_cp_sbox_b36_str: .string "\"test: 549; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b36\""
-Zknd_aes64dsm_cg_cp_sbox_b37_str: .string "\"test: 550; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b37\""
-Zknd_aes64dsm_cg_cp_sbox_b38_str: .string "\"test: 551; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b38\""
-Zknd_aes64dsm_cg_cp_sbox_b39_str: .string "\"test: 552; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b39\""
-Zknd_aes64dsm_cg_cp_sbox_b40_str: .string "\"test: 553; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b40\""
-Zknd_aes64dsm_cg_cp_sbox_b41_str: .string "\"test: 554; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b41\""
-Zknd_aes64dsm_cg_cp_sbox_b42_str: .string "\"test: 555; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b42\""
-Zknd_aes64dsm_cg_cp_sbox_b43_str: .string "\"test: 556; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b43\""
-Zknd_aes64dsm_cg_cp_sbox_b44_str: .string "\"test: 557; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b44\""
-Zknd_aes64dsm_cg_cp_sbox_b45_str: .string "\"test: 558; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b45\""
-Zknd_aes64dsm_cg_cp_sbox_b46_str: .string "\"test: 559; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b46\""
-Zknd_aes64dsm_cg_cp_sbox_b47_str: .string "\"test: 560; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b47\""
-Zknd_aes64dsm_cg_cp_sbox_b48_str: .string "\"test: 561; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b48\""
-Zknd_aes64dsm_cg_cp_sbox_b49_str: .string "\"test: 562; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b49\""
-Zknd_aes64dsm_cg_cp_sbox_b50_str: .string "\"test: 563; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b50\""
-Zknd_aes64dsm_cg_cp_sbox_b51_str: .string "\"test: 564; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b51\""
-Zknd_aes64dsm_cg_cp_sbox_b52_str: .string "\"test: 565; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b52\""
-Zknd_aes64dsm_cg_cp_sbox_b53_str: .string "\"test: 566; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b53\""
-Zknd_aes64dsm_cg_cp_sbox_b54_str: .string "\"test: 567; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b54\""
-Zknd_aes64dsm_cg_cp_sbox_b55_str: .string "\"test: 568; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b55\""
-Zknd_aes64dsm_cg_cp_sbox_b56_str: .string "\"test: 569; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b56\""
-Zknd_aes64dsm_cg_cp_sbox_b57_str: .string "\"test: 570; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b57\""
-Zknd_aes64dsm_cg_cp_sbox_b58_str: .string "\"test: 571; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b58\""
-Zknd_aes64dsm_cg_cp_sbox_b59_str: .string "\"test: 572; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b59\""
-Zknd_aes64dsm_cg_cp_sbox_b60_str: .string "\"test: 573; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b60\""
-Zknd_aes64dsm_cg_cp_sbox_b61_str: .string "\"test: 574; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b61\""
-Zknd_aes64dsm_cg_cp_sbox_b62_str: .string "\"test: 575; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b62\""
-Zknd_aes64dsm_cg_cp_sbox_b63_str: .string "\"test: 576; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b63\""
-Zknd_aes64dsm_cg_cp_sbox_b64_str: .string "\"test: 577; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b64\""
-Zknd_aes64dsm_cg_cp_sbox_b65_str: .string "\"test: 578; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b65\""
-Zknd_aes64dsm_cg_cp_sbox_b66_str: .string "\"test: 579; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b66\""
-Zknd_aes64dsm_cg_cp_sbox_b67_str: .string "\"test: 580; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b67\""
-Zknd_aes64dsm_cg_cp_sbox_b68_str: .string "\"test: 581; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b68\""
-Zknd_aes64dsm_cg_cp_sbox_b69_str: .string "\"test: 582; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b69\""
-Zknd_aes64dsm_cg_cp_sbox_b70_str: .string "\"test: 583; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b70\""
-Zknd_aes64dsm_cg_cp_sbox_b71_str: .string "\"test: 584; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b71\""
-Zknd_aes64dsm_cg_cp_sbox_b72_str: .string "\"test: 585; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b72\""
-Zknd_aes64dsm_cg_cp_sbox_b73_str: .string "\"test: 586; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b73\""
-Zknd_aes64dsm_cg_cp_sbox_b74_str: .string "\"test: 587; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b74\""
-Zknd_aes64dsm_cg_cp_sbox_b75_str: .string "\"test: 588; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b75\""
-Zknd_aes64dsm_cg_cp_sbox_b76_str: .string "\"test: 589; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b76\""
-Zknd_aes64dsm_cg_cp_sbox_b77_str: .string "\"test: 590; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b77\""
-Zknd_aes64dsm_cg_cp_sbox_b78_str: .string "\"test: 591; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b78\""
-Zknd_aes64dsm_cg_cp_sbox_b79_str: .string "\"test: 592; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b79\""
-Zknd_aes64dsm_cg_cp_sbox_b80_str: .string "\"test: 593; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b80\""
-Zknd_aes64dsm_cg_cp_sbox_b81_str: .string "\"test: 594; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b81\""
-Zknd_aes64dsm_cg_cp_sbox_b82_str: .string "\"test: 595; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b82\""
-Zknd_aes64dsm_cg_cp_sbox_b83_str: .string "\"test: 596; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b83\""
-Zknd_aes64dsm_cg_cp_sbox_b84_str: .string "\"test: 597; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b84\""
-Zknd_aes64dsm_cg_cp_sbox_b85_str: .string "\"test: 598; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b85\""
-Zknd_aes64dsm_cg_cp_sbox_b86_str: .string "\"test: 599; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b86\""
-Zknd_aes64dsm_cg_cp_sbox_b87_str: .string "\"test: 600; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b87\""
-Zknd_aes64dsm_cg_cp_sbox_b88_str: .string "\"test: 601; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b88\""
-Zknd_aes64dsm_cg_cp_sbox_b89_str: .string "\"test: 602; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b89\""
-Zknd_aes64dsm_cg_cp_sbox_b90_str: .string "\"test: 603; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b90\""
-Zknd_aes64dsm_cg_cp_sbox_b91_str: .string "\"test: 604; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b91\""
-Zknd_aes64dsm_cg_cp_sbox_b92_str: .string "\"test: 605; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b92\""
-Zknd_aes64dsm_cg_cp_sbox_b93_str: .string "\"test: 606; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b93\""
-Zknd_aes64dsm_cg_cp_sbox_b94_str: .string "\"test: 607; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b94\""
-Zknd_aes64dsm_cg_cp_sbox_b95_str: .string "\"test: 608; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b95\""
-Zknd_aes64dsm_cg_cp_sbox_b96_str: .string "\"test: 609; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b96\""
-Zknd_aes64dsm_cg_cp_sbox_b97_str: .string "\"test: 610; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b97\""
-Zknd_aes64dsm_cg_cp_sbox_b98_str: .string "\"test: 611; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b98\""
-Zknd_aes64dsm_cg_cp_sbox_b99_str: .string "\"test: 612; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b99\""
-Zknd_aes64dsm_cg_cp_sbox_b100_str: .string "\"test: 613; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b100\""
-Zknd_aes64dsm_cg_cp_sbox_b101_str: .string "\"test: 614; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b101\""
-Zknd_aes64dsm_cg_cp_sbox_b102_str: .string "\"test: 615; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b102\""
-Zknd_aes64dsm_cg_cp_sbox_b103_str: .string "\"test: 616; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b103\""
-Zknd_aes64dsm_cg_cp_sbox_b104_str: .string "\"test: 617; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b104\""
-Zknd_aes64dsm_cg_cp_sbox_b105_str: .string "\"test: 618; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b105\""
-Zknd_aes64dsm_cg_cp_sbox_b106_str: .string "\"test: 619; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b106\""
-Zknd_aes64dsm_cg_cp_sbox_b107_str: .string "\"test: 620; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b107\""
-Zknd_aes64dsm_cg_cp_sbox_b108_str: .string "\"test: 621; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b108\""
-Zknd_aes64dsm_cg_cp_sbox_b109_str: .string "\"test: 622; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b109\""
-Zknd_aes64dsm_cg_cp_sbox_b110_str: .string "\"test: 623; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b110\""
-Zknd_aes64dsm_cg_cp_sbox_b111_str: .string "\"test: 624; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b111\""
-Zknd_aes64dsm_cg_cp_sbox_b112_str: .string "\"test: 625; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b112\""
-Zknd_aes64dsm_cg_cp_sbox_b113_str: .string "\"test: 626; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b113\""
-Zknd_aes64dsm_cg_cp_sbox_b114_str: .string "\"test: 627; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b114\""
-Zknd_aes64dsm_cg_cp_sbox_b115_str: .string "\"test: 628; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b115\""
-Zknd_aes64dsm_cg_cp_sbox_b116_str: .string "\"test: 629; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b116\""
-Zknd_aes64dsm_cg_cp_sbox_b117_str: .string "\"test: 630; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b117\""
-Zknd_aes64dsm_cg_cp_sbox_b118_str: .string "\"test: 631; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b118\""
-Zknd_aes64dsm_cg_cp_sbox_b119_str: .string "\"test: 632; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b119\""
-Zknd_aes64dsm_cg_cp_sbox_b120_str: .string "\"test: 633; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b120\""
-Zknd_aes64dsm_cg_cp_sbox_b121_str: .string "\"test: 634; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b121\""
-Zknd_aes64dsm_cg_cp_sbox_b122_str: .string "\"test: 635; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b122\""
-Zknd_aes64dsm_cg_cp_sbox_b123_str: .string "\"test: 636; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b123\""
-Zknd_aes64dsm_cg_cp_sbox_b124_str: .string "\"test: 637; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b124\""
-Zknd_aes64dsm_cg_cp_sbox_b125_str: .string "\"test: 638; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b125\""
-Zknd_aes64dsm_cg_cp_sbox_b126_str: .string "\"test: 639; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b126\""
-Zknd_aes64dsm_cg_cp_sbox_b127_str: .string "\"test: 640; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b127\""
-Zknd_aes64dsm_cg_cp_sbox_b128_str: .string "\"test: 641; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b128\""
-Zknd_aes64dsm_cg_cp_sbox_b129_str: .string "\"test: 642; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b129\""
-Zknd_aes64dsm_cg_cp_sbox_b130_str: .string "\"test: 643; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b130\""
-Zknd_aes64dsm_cg_cp_sbox_b131_str: .string "\"test: 644; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b131\""
-Zknd_aes64dsm_cg_cp_sbox_b132_str: .string "\"test: 645; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b132\""
-Zknd_aes64dsm_cg_cp_sbox_b133_str: .string "\"test: 646; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b133\""
-Zknd_aes64dsm_cg_cp_sbox_b134_str: .string "\"test: 647; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b134\""
-Zknd_aes64dsm_cg_cp_sbox_b135_str: .string "\"test: 648; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b135\""
-Zknd_aes64dsm_cg_cp_sbox_b136_str: .string "\"test: 649; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b136\""
-Zknd_aes64dsm_cg_cp_sbox_b137_str: .string "\"test: 650; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b137\""
-Zknd_aes64dsm_cg_cp_sbox_b138_str: .string "\"test: 651; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b138\""
-Zknd_aes64dsm_cg_cp_sbox_b139_str: .string "\"test: 652; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b139\""
-Zknd_aes64dsm_cg_cp_sbox_b140_str: .string "\"test: 653; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b140\""
-Zknd_aes64dsm_cg_cp_sbox_b141_str: .string "\"test: 654; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b141\""
-Zknd_aes64dsm_cg_cp_sbox_b142_str: .string "\"test: 655; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b142\""
-Zknd_aes64dsm_cg_cp_sbox_b143_str: .string "\"test: 656; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b143\""
-Zknd_aes64dsm_cg_cp_sbox_b144_str: .string "\"test: 657; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b144\""
-Zknd_aes64dsm_cg_cp_sbox_b145_str: .string "\"test: 658; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b145\""
-Zknd_aes64dsm_cg_cp_sbox_b146_str: .string "\"test: 659; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b146\""
-Zknd_aes64dsm_cg_cp_sbox_b147_str: .string "\"test: 660; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b147\""
-Zknd_aes64dsm_cg_cp_sbox_b148_str: .string "\"test: 661; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b148\""
-Zknd_aes64dsm_cg_cp_sbox_b149_str: .string "\"test: 662; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b149\""
-Zknd_aes64dsm_cg_cp_sbox_b150_str: .string "\"test: 663; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b150\""
-Zknd_aes64dsm_cg_cp_sbox_b151_str: .string "\"test: 664; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b151\""
-Zknd_aes64dsm_cg_cp_sbox_b152_str: .string "\"test: 665; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b152\""
-Zknd_aes64dsm_cg_cp_sbox_b153_str: .string "\"test: 666; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b153\""
-Zknd_aes64dsm_cg_cp_sbox_b154_str: .string "\"test: 667; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b154\""
-Zknd_aes64dsm_cg_cp_sbox_b155_str: .string "\"test: 668; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b155\""
-Zknd_aes64dsm_cg_cp_sbox_b156_str: .string "\"test: 669; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b156\""
-Zknd_aes64dsm_cg_cp_sbox_b157_str: .string "\"test: 670; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b157\""
-Zknd_aes64dsm_cg_cp_sbox_b158_str: .string "\"test: 671; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b158\""
-Zknd_aes64dsm_cg_cp_sbox_b159_str: .string "\"test: 672; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b159\""
-Zknd_aes64dsm_cg_cp_sbox_b160_str: .string "\"test: 673; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b160\""
-Zknd_aes64dsm_cg_cp_sbox_b161_str: .string "\"test: 674; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b161\""
-Zknd_aes64dsm_cg_cp_sbox_b162_str: .string "\"test: 675; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b162\""
-Zknd_aes64dsm_cg_cp_sbox_b163_str: .string "\"test: 676; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b163\""
-Zknd_aes64dsm_cg_cp_sbox_b164_str: .string "\"test: 677; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b164\""
-Zknd_aes64dsm_cg_cp_sbox_b165_str: .string "\"test: 678; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b165\""
-Zknd_aes64dsm_cg_cp_sbox_b166_str: .string "\"test: 679; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b166\""
-Zknd_aes64dsm_cg_cp_sbox_b167_str: .string "\"test: 680; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b167\""
-Zknd_aes64dsm_cg_cp_sbox_b168_str: .string "\"test: 681; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b168\""
-Zknd_aes64dsm_cg_cp_sbox_b169_str: .string "\"test: 682; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b169\""
-Zknd_aes64dsm_cg_cp_sbox_b170_str: .string "\"test: 683; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b170\""
-Zknd_aes64dsm_cg_cp_sbox_b171_str: .string "\"test: 684; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b171\""
-Zknd_aes64dsm_cg_cp_sbox_b172_str: .string "\"test: 685; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b172\""
-Zknd_aes64dsm_cg_cp_sbox_b173_str: .string "\"test: 686; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b173\""
-Zknd_aes64dsm_cg_cp_sbox_b174_str: .string "\"test: 687; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b174\""
-Zknd_aes64dsm_cg_cp_sbox_b175_str: .string "\"test: 688; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b175\""
-Zknd_aes64dsm_cg_cp_sbox_b176_str: .string "\"test: 689; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b176\""
-Zknd_aes64dsm_cg_cp_sbox_b177_str: .string "\"test: 690; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b177\""
-Zknd_aes64dsm_cg_cp_sbox_b178_str: .string "\"test: 691; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b178\""
-Zknd_aes64dsm_cg_cp_sbox_b179_str: .string "\"test: 692; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b179\""
-Zknd_aes64dsm_cg_cp_sbox_b180_str: .string "\"test: 693; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b180\""
-Zknd_aes64dsm_cg_cp_sbox_b181_str: .string "\"test: 694; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b181\""
-Zknd_aes64dsm_cg_cp_sbox_b182_str: .string "\"test: 695; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b182\""
-Zknd_aes64dsm_cg_cp_sbox_b183_str: .string "\"test: 696; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b183\""
-Zknd_aes64dsm_cg_cp_sbox_b184_str: .string "\"test: 697; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b184\""
-Zknd_aes64dsm_cg_cp_sbox_b185_str: .string "\"test: 698; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b185\""
-Zknd_aes64dsm_cg_cp_sbox_b186_str: .string "\"test: 699; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b186\""
-Zknd_aes64dsm_cg_cp_sbox_b187_str: .string "\"test: 700; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b187\""
-Zknd_aes64dsm_cg_cp_sbox_b188_str: .string "\"test: 701; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b188\""
-Zknd_aes64dsm_cg_cp_sbox_b189_str: .string "\"test: 702; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b189\""
-Zknd_aes64dsm_cg_cp_sbox_b190_str: .string "\"test: 703; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b190\""
-Zknd_aes64dsm_cg_cp_sbox_b191_str: .string "\"test: 704; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b191\""
-Zknd_aes64dsm_cg_cp_sbox_b192_str: .string "\"test: 705; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b192\""
-Zknd_aes64dsm_cg_cp_sbox_b193_str: .string "\"test: 706; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b193\""
-Zknd_aes64dsm_cg_cp_sbox_b194_str: .string "\"test: 707; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b194\""
-Zknd_aes64dsm_cg_cp_sbox_b195_str: .string "\"test: 708; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b195\""
-Zknd_aes64dsm_cg_cp_sbox_b196_str: .string "\"test: 709; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b196\""
-Zknd_aes64dsm_cg_cp_sbox_b197_str: .string "\"test: 710; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b197\""
-Zknd_aes64dsm_cg_cp_sbox_b198_str: .string "\"test: 711; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b198\""
-Zknd_aes64dsm_cg_cp_sbox_b199_str: .string "\"test: 712; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b199\""
-Zknd_aes64dsm_cg_cp_sbox_b200_str: .string "\"test: 713; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b200\""
-Zknd_aes64dsm_cg_cp_sbox_b201_str: .string "\"test: 714; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b201\""
-Zknd_aes64dsm_cg_cp_sbox_b202_str: .string "\"test: 715; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b202\""
-Zknd_aes64dsm_cg_cp_sbox_b203_str: .string "\"test: 716; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b203\""
-Zknd_aes64dsm_cg_cp_sbox_b204_str: .string "\"test: 717; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b204\""
-Zknd_aes64dsm_cg_cp_sbox_b205_str: .string "\"test: 718; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b205\""
-Zknd_aes64dsm_cg_cp_sbox_b206_str: .string "\"test: 719; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b206\""
-Zknd_aes64dsm_cg_cp_sbox_b207_str: .string "\"test: 720; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b207\""
-Zknd_aes64dsm_cg_cp_sbox_b208_str: .string "\"test: 721; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b208\""
-Zknd_aes64dsm_cg_cp_sbox_b209_str: .string "\"test: 722; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b209\""
-Zknd_aes64dsm_cg_cp_sbox_b210_str: .string "\"test: 723; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b210\""
-Zknd_aes64dsm_cg_cp_sbox_b211_str: .string "\"test: 724; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b211\""
-Zknd_aes64dsm_cg_cp_sbox_b212_str: .string "\"test: 725; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b212\""
-Zknd_aes64dsm_cg_cp_sbox_b213_str: .string "\"test: 726; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b213\""
-Zknd_aes64dsm_cg_cp_sbox_b214_str: .string "\"test: 727; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b214\""
-Zknd_aes64dsm_cg_cp_sbox_b215_str: .string "\"test: 728; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b215\""
-Zknd_aes64dsm_cg_cp_sbox_b216_str: .string "\"test: 729; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b216\""
-Zknd_aes64dsm_cg_cp_sbox_b217_str: .string "\"test: 730; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b217\""
-Zknd_aes64dsm_cg_cp_sbox_b218_str: .string "\"test: 731; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b218\""
-Zknd_aes64dsm_cg_cp_sbox_b219_str: .string "\"test: 732; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b219\""
-Zknd_aes64dsm_cg_cp_sbox_b220_str: .string "\"test: 733; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b220\""
-Zknd_aes64dsm_cg_cp_sbox_b221_str: .string "\"test: 734; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b221\""
-Zknd_aes64dsm_cg_cp_sbox_b222_str: .string "\"test: 735; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b222\""
-Zknd_aes64dsm_cg_cp_sbox_b223_str: .string "\"test: 736; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b223\""
-Zknd_aes64dsm_cg_cp_sbox_b224_str: .string "\"test: 737; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b224\""
-Zknd_aes64dsm_cg_cp_sbox_b225_str: .string "\"test: 738; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b225\""
-Zknd_aes64dsm_cg_cp_sbox_b226_str: .string "\"test: 739; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b226\""
-Zknd_aes64dsm_cg_cp_sbox_b227_str: .string "\"test: 740; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b227\""
-Zknd_aes64dsm_cg_cp_sbox_b228_str: .string "\"test: 741; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b228\""
-Zknd_aes64dsm_cg_cp_sbox_b229_str: .string "\"test: 742; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b229\""
-Zknd_aes64dsm_cg_cp_sbox_b230_str: .string "\"test: 743; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b230\""
-Zknd_aes64dsm_cg_cp_sbox_b231_str: .string "\"test: 744; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b231\""
-Zknd_aes64dsm_cg_cp_sbox_b232_str: .string "\"test: 745; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b232\""
-Zknd_aes64dsm_cg_cp_sbox_b233_str: .string "\"test: 746; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b233\""
-Zknd_aes64dsm_cg_cp_sbox_b234_str: .string "\"test: 747; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b234\""
-Zknd_aes64dsm_cg_cp_sbox_b235_str: .string "\"test: 748; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b235\""
-Zknd_aes64dsm_cg_cp_sbox_b236_str: .string "\"test: 749; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b236\""
-Zknd_aes64dsm_cg_cp_sbox_b237_str: .string "\"test: 750; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b237\""
-Zknd_aes64dsm_cg_cp_sbox_b238_str: .string "\"test: 751; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b238\""
-Zknd_aes64dsm_cg_cp_sbox_b239_str: .string "\"test: 752; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b239\""
-Zknd_aes64dsm_cg_cp_sbox_b240_str: .string "\"test: 753; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b240\""
-Zknd_aes64dsm_cg_cp_sbox_b241_str: .string "\"test: 754; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b241\""
-Zknd_aes64dsm_cg_cp_sbox_b242_str: .string "\"test: 755; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b242\""
-Zknd_aes64dsm_cg_cp_sbox_b243_str: .string "\"test: 756; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b243\""
-Zknd_aes64dsm_cg_cp_sbox_b244_str: .string "\"test: 757; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b244\""
-Zknd_aes64dsm_cg_cp_sbox_b245_str: .string "\"test: 758; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b245\""
-Zknd_aes64dsm_cg_cp_sbox_b246_str: .string "\"test: 759; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b246\""
-Zknd_aes64dsm_cg_cp_sbox_b247_str: .string "\"test: 760; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b247\""
-Zknd_aes64dsm_cg_cp_sbox_b248_str: .string "\"test: 761; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b248\""
-Zknd_aes64dsm_cg_cp_sbox_b249_str: .string "\"test: 762; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b249\""
-Zknd_aes64dsm_cg_cp_sbox_b250_str: .string "\"test: 763; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b250\""
-Zknd_aes64dsm_cg_cp_sbox_b251_str: .string "\"test: 764; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b251\""
-Zknd_aes64dsm_cg_cp_sbox_b252_str: .string "\"test: 765; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b252\""
-Zknd_aes64dsm_cg_cp_sbox_b253_str: .string "\"test: 766; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b253\""
-Zknd_aes64dsm_cg_cp_sbox_b254_str: .string "\"test: 767; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b254\""
-Zknd_aes64dsm_cg_cp_sbox_b255_str: .string "\"test: 768; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b255\""
+Zknd_aes64dsm_cg_cp_rs1_edges_0x80000000_str: .string "\"test: 113; cg: Zknd_aes64dsm_cg; cp: cp_rs1_edges; bin: 0x80000000\""
+Zknd_aes64dsm_cg_cp_rs1_edges_0x7fffffff_str: .string "\"test: 114; cg: Zknd_aes64dsm_cg; cp: cp_rs1_edges; bin: 0x7fffffff\""
+Zknd_aes64dsm_cg_cp_rs2_edges_0x0_str: .string "\"test: 115; cg: Zknd_aes64dsm_cg; cp: cp_rs2_edges; bin: 0x0\""
+Zknd_aes64dsm_cg_cp_rs2_edges_0x1_str: .string "\"test: 116; cg: Zknd_aes64dsm_cg; cp: cp_rs2_edges; bin: 0x1\""
+Zknd_aes64dsm_cg_cp_rs2_edges_0x2_str: .string "\"test: 117; cg: Zknd_aes64dsm_cg; cp: cp_rs2_edges; bin: 0x2\""
+Zknd_aes64dsm_cg_cp_rs2_edges_0x8000000000000000_str: .string "\"test: 118; cg: Zknd_aes64dsm_cg; cp: cp_rs2_edges; bin: 0x8000000000000000\""
+Zknd_aes64dsm_cg_cp_rs2_edges_0x8000000000000001_str: .string "\"test: 119; cg: Zknd_aes64dsm_cg; cp: cp_rs2_edges; bin: 0x8000000000000001\""
+Zknd_aes64dsm_cg_cp_rs2_edges_0x7fffffffffffffff_str: .string "\"test: 120; cg: Zknd_aes64dsm_cg; cp: cp_rs2_edges; bin: 0x7fffffffffffffff\""
+Zknd_aes64dsm_cg_cp_rs2_edges_0x7ffffffffffffffe_str: .string "\"test: 121; cg: Zknd_aes64dsm_cg; cp: cp_rs2_edges; bin: 0x7ffffffffffffffe\""
+Zknd_aes64dsm_cg_cp_rs2_edges_0xffffffffffffffff_str: .string "\"test: 122; cg: Zknd_aes64dsm_cg; cp: cp_rs2_edges; bin: 0xffffffffffffffff\""
+Zknd_aes64dsm_cg_cp_rs2_edges_0xfffffffffffffffe_str: .string "\"test: 123; cg: Zknd_aes64dsm_cg; cp: cp_rs2_edges; bin: 0xfffffffffffffffe\""
+Zknd_aes64dsm_cg_cp_rs2_edges_0x5bbc887763ae86f2_str: .string "\"test: 124; cg: Zknd_aes64dsm_cg; cp: cp_rs2_edges; bin: 0x5bbc887763ae86f2\""
+Zknd_aes64dsm_cg_cp_rs2_edges_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 125; cg: Zknd_aes64dsm_cg; cp: cp_rs2_edges; bin: 0xaaaaaaaaaaaaaaaa\""
+Zknd_aes64dsm_cg_cp_rs2_edges_0x5555555555555555_str: .string "\"test: 126; cg: Zknd_aes64dsm_cg; cp: cp_rs2_edges; bin: 0x5555555555555555\""
+Zknd_aes64dsm_cg_cp_rs2_edges_0xffffffff_str: .string "\"test: 127; cg: Zknd_aes64dsm_cg; cp: cp_rs2_edges; bin: 0xffffffff\""
+Zknd_aes64dsm_cg_cp_rs2_edges_0xfffffffe_str: .string "\"test: 128; cg: Zknd_aes64dsm_cg; cp: cp_rs2_edges; bin: 0xfffffffe\""
+Zknd_aes64dsm_cg_cp_rs2_edges_0x100000000_str: .string "\"test: 129; cg: Zknd_aes64dsm_cg; cp: cp_rs2_edges; bin: 0x100000000\""
+Zknd_aes64dsm_cg_cp_rs2_edges_0x100000001_str: .string "\"test: 130; cg: Zknd_aes64dsm_cg; cp: cp_rs2_edges; bin: 0x100000001\""
+Zknd_aes64dsm_cg_cp_rs2_edges_0x80000000_str: .string "\"test: 131; cg: Zknd_aes64dsm_cg; cp: cp_rs2_edges; bin: 0x80000000\""
+Zknd_aes64dsm_cg_cp_rs2_edges_0x7fffffff_str: .string "\"test: 132; cg: Zknd_aes64dsm_cg; cp: cp_rs2_edges; bin: 0x7fffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x0_str: .string "\"test: 133; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x0, rs2val=0x0\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x1_str: .string "\"test: 134; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x0, rs2val=0x1\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x2_str: .string "\"test: 135; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x0, rs2val=0x2\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x8000000000000000_str: .string "\"test: 136; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x0, rs2val=0x8000000000000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x8000000000000001_str: .string "\"test: 137; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x0, rs2val=0x8000000000000001\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x7fffffffffffffff_str: .string "\"test: 138; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x0, rs2val=0x7fffffffffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x7ffffffffffffffe_str: .string "\"test: 139; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x0, rs2val=0x7ffffffffffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xffffffffffffffff_str: .string "\"test: 140; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x0, rs2val=0xffffffffffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xfffffffffffffffe_str: .string "\"test: 141; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x0, rs2val=0xfffffffffffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x5bbc887763ae86f2_str: .string "\"test: 142; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x0, rs2val=0x5bbc887763ae86f2\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 143; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x0, rs2val=0xaaaaaaaaaaaaaaaa\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x5555555555555555_str: .string "\"test: 144; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x0, rs2val=0x5555555555555555\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xffffffff_str: .string "\"test: 145; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x0, rs2val=0xffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xfffffffe_str: .string "\"test: 146; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x0, rs2val=0xfffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x100000000_str: .string "\"test: 147; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x0, rs2val=0x100000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x100000001_str: .string "\"test: 148; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x0, rs2val=0x100000001\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x80000000_str: .string "\"test: 149; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x0, rs2val=0x80000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x7fffffff_str: .string "\"test: 150; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x0, rs2val=0x7fffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x0_str: .string "\"test: 151; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x1, rs2val=0x0\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x1_str: .string "\"test: 152; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x1, rs2val=0x1\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x2_str: .string "\"test: 153; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x1, rs2val=0x2\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x8000000000000000_str: .string "\"test: 154; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x1, rs2val=0x8000000000000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x8000000000000001_str: .string "\"test: 155; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x1, rs2val=0x8000000000000001\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7fffffffffffffff_str: .string "\"test: 156; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x1, rs2val=0x7fffffffffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7ffffffffffffffe_str: .string "\"test: 157; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x1, rs2val=0x7ffffffffffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xffffffffffffffff_str: .string "\"test: 158; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x1, rs2val=0xffffffffffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xfffffffffffffffe_str: .string "\"test: 159; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x1, rs2val=0xfffffffffffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x5bbc887763ae86f2_str: .string "\"test: 160; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x1, rs2val=0x5bbc887763ae86f2\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 161; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x1, rs2val=0xaaaaaaaaaaaaaaaa\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x5555555555555555_str: .string "\"test: 162; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x1, rs2val=0x5555555555555555\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xffffffff_str: .string "\"test: 163; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x1, rs2val=0xffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xfffffffe_str: .string "\"test: 164; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x1, rs2val=0xfffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x100000000_str: .string "\"test: 165; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x1, rs2val=0x100000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x100000001_str: .string "\"test: 166; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x1, rs2val=0x100000001\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x80000000_str: .string "\"test: 167; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x1, rs2val=0x80000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7fffffff_str: .string "\"test: 168; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x1, rs2val=0x7fffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x0_str: .string "\"test: 169; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x2, rs2val=0x0\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x1_str: .string "\"test: 170; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x2, rs2val=0x1\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x2_str: .string "\"test: 171; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x2, rs2val=0x2\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x8000000000000000_str: .string "\"test: 172; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x2, rs2val=0x8000000000000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x8000000000000001_str: .string "\"test: 173; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x2, rs2val=0x8000000000000001\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7fffffffffffffff_str: .string "\"test: 174; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x2, rs2val=0x7fffffffffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7ffffffffffffffe_str: .string "\"test: 175; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x2, rs2val=0x7ffffffffffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xffffffffffffffff_str: .string "\"test: 176; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x2, rs2val=0xffffffffffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xfffffffffffffffe_str: .string "\"test: 177; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x2, rs2val=0xfffffffffffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x5bbc887763ae86f2_str: .string "\"test: 178; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x2, rs2val=0x5bbc887763ae86f2\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 179; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x2, rs2val=0xaaaaaaaaaaaaaaaa\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x5555555555555555_str: .string "\"test: 180; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x2, rs2val=0x5555555555555555\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xffffffff_str: .string "\"test: 181; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x2, rs2val=0xffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xfffffffe_str: .string "\"test: 182; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x2, rs2val=0xfffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x100000000_str: .string "\"test: 183; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x2, rs2val=0x100000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x100000001_str: .string "\"test: 184; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x2, rs2val=0x100000001\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x80000000_str: .string "\"test: 185; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x2, rs2val=0x80000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7fffffff_str: .string "\"test: 186; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x2, rs2val=0x7fffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x0_str: .string "\"test: 187; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000000, rs2val=0x0\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x1_str: .string "\"test: 188; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000000, rs2val=0x1\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x2_str: .string "\"test: 189; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000000, rs2val=0x2\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x8000000000000000_str: .string "\"test: 190; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000000, rs2val=0x8000000000000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x8000000000000001_str: .string "\"test: 191; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000000, rs2val=0x8000000000000001\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x7fffffffffffffff_str: .string "\"test: 192; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000000, rs2val=0x7fffffffffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x7ffffffffffffffe_str: .string "\"test: 193; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000000, rs2val=0x7ffffffffffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xffffffffffffffff_str: .string "\"test: 194; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000000, rs2val=0xffffffffffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xfffffffffffffffe_str: .string "\"test: 195; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000000, rs2val=0xfffffffffffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x5bbc887763ae86f2_str: .string "\"test: 196; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000000, rs2val=0x5bbc887763ae86f2\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 197; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000000, rs2val=0xaaaaaaaaaaaaaaaa\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x5555555555555555_str: .string "\"test: 198; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000000, rs2val=0x5555555555555555\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xffffffff_str: .string "\"test: 199; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000000, rs2val=0xffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xfffffffe_str: .string "\"test: 200; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000000, rs2val=0xfffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x100000000_str: .string "\"test: 201; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000000, rs2val=0x100000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x100000001_str: .string "\"test: 202; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000000, rs2val=0x100000001\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x80000000_str: .string "\"test: 203; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000000, rs2val=0x80000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x7fffffff_str: .string "\"test: 204; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000000, rs2val=0x7fffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x0_str: .string "\"test: 205; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000001, rs2val=0x0\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x1_str: .string "\"test: 206; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000001, rs2val=0x1\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x2_str: .string "\"test: 207; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000001, rs2val=0x2\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x8000000000000000_str: .string "\"test: 208; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000001, rs2val=0x8000000000000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x8000000000000001_str: .string "\"test: 209; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000001, rs2val=0x8000000000000001\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x7fffffffffffffff_str: .string "\"test: 210; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000001, rs2val=0x7fffffffffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x7ffffffffffffffe_str: .string "\"test: 211; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000001, rs2val=0x7ffffffffffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xffffffffffffffff_str: .string "\"test: 212; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000001, rs2val=0xffffffffffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xfffffffffffffffe_str: .string "\"test: 213; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000001, rs2val=0xfffffffffffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x5bbc887763ae86f2_str: .string "\"test: 214; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000001, rs2val=0x5bbc887763ae86f2\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 215; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000001, rs2val=0xaaaaaaaaaaaaaaaa\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x5555555555555555_str: .string "\"test: 216; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000001, rs2val=0x5555555555555555\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xffffffff_str: .string "\"test: 217; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000001, rs2val=0xffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xfffffffe_str: .string "\"test: 218; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000001, rs2val=0xfffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x100000000_str: .string "\"test: 219; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000001, rs2val=0x100000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x100000001_str: .string "\"test: 220; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000001, rs2val=0x100000001\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x80000000_str: .string "\"test: 221; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000001, rs2val=0x80000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x7fffffff_str: .string "\"test: 222; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x8000000000000001, rs2val=0x7fffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x0_str: .string "\"test: 223; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffffffffffff, rs2val=0x0\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x1_str: .string "\"test: 224; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffffffffffff, rs2val=0x1\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x2_str: .string "\"test: 225; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffffffffffff, rs2val=0x2\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x8000000000000000_str: .string "\"test: 226; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffffffffffff, rs2val=0x8000000000000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x8000000000000001_str: .string "\"test: 227; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffffffffffff, rs2val=0x8000000000000001\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x7fffffffffffffff_str: .string "\"test: 228; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffffffffffff, rs2val=0x7fffffffffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x7ffffffffffffffe_str: .string "\"test: 229; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffffffffffff, rs2val=0x7ffffffffffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xffffffffffffffff_str: .string "\"test: 230; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffffffffffff, rs2val=0xffffffffffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xfffffffffffffffe_str: .string "\"test: 231; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffffffffffff, rs2val=0xfffffffffffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x5bbc887763ae86f2_str: .string "\"test: 232; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffffffffffff, rs2val=0x5bbc887763ae86f2\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 233; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffffffffffff, rs2val=0xaaaaaaaaaaaaaaaa\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x5555555555555555_str: .string "\"test: 234; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffffffffffff, rs2val=0x5555555555555555\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xffffffff_str: .string "\"test: 235; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffffffffffff, rs2val=0xffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xfffffffe_str: .string "\"test: 236; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffffffffffff, rs2val=0xfffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x100000000_str: .string "\"test: 237; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffffffffffff, rs2val=0x100000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x100000001_str: .string "\"test: 238; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffffffffffff, rs2val=0x100000001\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x80000000_str: .string "\"test: 239; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffffffffffff, rs2val=0x80000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x7fffffff_str: .string "\"test: 240; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffffffffffff, rs2val=0x7fffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x0_str: .string "\"test: 241; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7ffffffffffffffe, rs2val=0x0\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x1_str: .string "\"test: 242; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7ffffffffffffffe, rs2val=0x1\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x2_str: .string "\"test: 243; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7ffffffffffffffe, rs2val=0x2\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x8000000000000000_str: .string "\"test: 244; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7ffffffffffffffe, rs2val=0x8000000000000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x8000000000000001_str: .string "\"test: 245; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7ffffffffffffffe, rs2val=0x8000000000000001\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x7fffffffffffffff_str: .string "\"test: 246; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7ffffffffffffffe, rs2val=0x7fffffffffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x7ffffffffffffffe_str: .string "\"test: 247; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7ffffffffffffffe, rs2val=0x7ffffffffffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xffffffffffffffff_str: .string "\"test: 248; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7ffffffffffffffe, rs2val=0xffffffffffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xfffffffffffffffe_str: .string "\"test: 249; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7ffffffffffffffe, rs2val=0xfffffffffffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x5bbc887763ae86f2_str: .string "\"test: 250; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7ffffffffffffffe, rs2val=0x5bbc887763ae86f2\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 251; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7ffffffffffffffe, rs2val=0xaaaaaaaaaaaaaaaa\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x5555555555555555_str: .string "\"test: 252; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7ffffffffffffffe, rs2val=0x5555555555555555\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xffffffff_str: .string "\"test: 253; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7ffffffffffffffe, rs2val=0xffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xfffffffe_str: .string "\"test: 254; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7ffffffffffffffe, rs2val=0xfffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x100000000_str: .string "\"test: 255; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7ffffffffffffffe, rs2val=0x100000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x100000001_str: .string "\"test: 256; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7ffffffffffffffe, rs2val=0x100000001\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x80000000_str: .string "\"test: 257; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7ffffffffffffffe, rs2val=0x80000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x7fffffff_str: .string "\"test: 258; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7ffffffffffffffe, rs2val=0x7fffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x0_str: .string "\"test: 259; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffffffffffff, rs2val=0x0\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x1_str: .string "\"test: 260; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffffffffffff, rs2val=0x1\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x2_str: .string "\"test: 261; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffffffffffff, rs2val=0x2\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x8000000000000000_str: .string "\"test: 262; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffffffffffff, rs2val=0x8000000000000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x8000000000000001_str: .string "\"test: 263; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffffffffffff, rs2val=0x8000000000000001\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x7fffffffffffffff_str: .string "\"test: 264; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffffffffffff, rs2val=0x7fffffffffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x7ffffffffffffffe_str: .string "\"test: 265; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffffffffffff, rs2val=0x7ffffffffffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xffffffffffffffff_str: .string "\"test: 266; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffffffffffff, rs2val=0xffffffffffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xfffffffffffffffe_str: .string "\"test: 267; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffffffffffff, rs2val=0xfffffffffffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x5bbc887763ae86f2_str: .string "\"test: 268; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffffffffffff, rs2val=0x5bbc887763ae86f2\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 269; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffffffffffff, rs2val=0xaaaaaaaaaaaaaaaa\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x5555555555555555_str: .string "\"test: 270; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffffffffffff, rs2val=0x5555555555555555\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xffffffff_str: .string "\"test: 271; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffffffffffff, rs2val=0xffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xfffffffe_str: .string "\"test: 272; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffffffffffff, rs2val=0xfffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x100000000_str: .string "\"test: 273; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffffffffffff, rs2val=0x100000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x100000001_str: .string "\"test: 274; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffffffffffff, rs2val=0x100000001\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x80000000_str: .string "\"test: 275; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffffffffffff, rs2val=0x80000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x7fffffff_str: .string "\"test: 276; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffffffffffff, rs2val=0x7fffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x0_str: .string "\"test: 277; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffffffffffe, rs2val=0x0\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x1_str: .string "\"test: 278; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffffffffffe, rs2val=0x1\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x2_str: .string "\"test: 279; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffffffffffe, rs2val=0x2\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x8000000000000000_str: .string "\"test: 280; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffffffffffe, rs2val=0x8000000000000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x8000000000000001_str: .string "\"test: 281; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffffffffffe, rs2val=0x8000000000000001\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x7fffffffffffffff_str: .string "\"test: 282; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffffffffffe, rs2val=0x7fffffffffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x7ffffffffffffffe_str: .string "\"test: 283; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffffffffffe, rs2val=0x7ffffffffffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xffffffffffffffff_str: .string "\"test: 284; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffffffffffe, rs2val=0xffffffffffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xfffffffffffffffe_str: .string "\"test: 285; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffffffffffe, rs2val=0xfffffffffffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x5bbc887763ae86f2_str: .string "\"test: 286; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffffffffffe, rs2val=0x5bbc887763ae86f2\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 287; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffffffffffe, rs2val=0xaaaaaaaaaaaaaaaa\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x5555555555555555_str: .string "\"test: 288; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffffffffffe, rs2val=0x5555555555555555\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xffffffff_str: .string "\"test: 289; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffffffffffe, rs2val=0xffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xfffffffe_str: .string "\"test: 290; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffffffffffe, rs2val=0xfffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x100000000_str: .string "\"test: 291; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffffffffffe, rs2val=0x100000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x100000001_str: .string "\"test: 292; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffffffffffe, rs2val=0x100000001\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x80000000_str: .string "\"test: 293; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffffffffffe, rs2val=0x80000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x7fffffff_str: .string "\"test: 294; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffffffffffe, rs2val=0x7fffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x0_str: .string "\"test: 295; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5bbc887763ae86f2, rs2val=0x0\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x1_str: .string "\"test: 296; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5bbc887763ae86f2, rs2val=0x1\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x2_str: .string "\"test: 297; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5bbc887763ae86f2, rs2val=0x2\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x8000000000000000_str: .string "\"test: 298; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5bbc887763ae86f2, rs2val=0x8000000000000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x8000000000000001_str: .string "\"test: 299; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5bbc887763ae86f2, rs2val=0x8000000000000001\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x7fffffffffffffff_str: .string "\"test: 300; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5bbc887763ae86f2, rs2val=0x7fffffffffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x7ffffffffffffffe_str: .string "\"test: 301; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5bbc887763ae86f2, rs2val=0x7ffffffffffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xffffffffffffffff_str: .string "\"test: 302; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5bbc887763ae86f2, rs2val=0xffffffffffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xfffffffffffffffe_str: .string "\"test: 303; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5bbc887763ae86f2, rs2val=0xfffffffffffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x5bbc887763ae86f2_str: .string "\"test: 304; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5bbc887763ae86f2, rs2val=0x5bbc887763ae86f2\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 305; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5bbc887763ae86f2, rs2val=0xaaaaaaaaaaaaaaaa\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x5555555555555555_str: .string "\"test: 306; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5bbc887763ae86f2, rs2val=0x5555555555555555\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xffffffff_str: .string "\"test: 307; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5bbc887763ae86f2, rs2val=0xffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xfffffffe_str: .string "\"test: 308; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5bbc887763ae86f2, rs2val=0xfffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x100000000_str: .string "\"test: 309; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5bbc887763ae86f2, rs2val=0x100000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x100000001_str: .string "\"test: 310; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5bbc887763ae86f2, rs2val=0x100000001\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x80000000_str: .string "\"test: 311; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5bbc887763ae86f2, rs2val=0x80000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x7fffffff_str: .string "\"test: 312; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5bbc887763ae86f2, rs2val=0x7fffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x0_str: .string "\"test: 313; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xaaaaaaaaaaaaaaaa, rs2val=0x0\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x1_str: .string "\"test: 314; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xaaaaaaaaaaaaaaaa, rs2val=0x1\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x2_str: .string "\"test: 315; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xaaaaaaaaaaaaaaaa, rs2val=0x2\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x8000000000000000_str: .string "\"test: 316; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xaaaaaaaaaaaaaaaa, rs2val=0x8000000000000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x8000000000000001_str: .string "\"test: 317; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xaaaaaaaaaaaaaaaa, rs2val=0x8000000000000001\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x7fffffffffffffff_str: .string "\"test: 318; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xaaaaaaaaaaaaaaaa, rs2val=0x7fffffffffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x7ffffffffffffffe_str: .string "\"test: 319; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xaaaaaaaaaaaaaaaa, rs2val=0x7ffffffffffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xffffffffffffffff_str: .string "\"test: 320; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xaaaaaaaaaaaaaaaa, rs2val=0xffffffffffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xfffffffffffffffe_str: .string "\"test: 321; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xaaaaaaaaaaaaaaaa, rs2val=0xfffffffffffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x5bbc887763ae86f2_str: .string "\"test: 322; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xaaaaaaaaaaaaaaaa, rs2val=0x5bbc887763ae86f2\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 323; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xaaaaaaaaaaaaaaaa, rs2val=0xaaaaaaaaaaaaaaaa\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x5555555555555555_str: .string "\"test: 324; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xaaaaaaaaaaaaaaaa, rs2val=0x5555555555555555\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xffffffff_str: .string "\"test: 325; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xaaaaaaaaaaaaaaaa, rs2val=0xffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xfffffffe_str: .string "\"test: 326; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xaaaaaaaaaaaaaaaa, rs2val=0xfffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x100000000_str: .string "\"test: 327; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xaaaaaaaaaaaaaaaa, rs2val=0x100000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x100000001_str: .string "\"test: 328; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xaaaaaaaaaaaaaaaa, rs2val=0x100000001\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x80000000_str: .string "\"test: 329; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xaaaaaaaaaaaaaaaa, rs2val=0x80000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x7fffffff_str: .string "\"test: 330; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xaaaaaaaaaaaaaaaa, rs2val=0x7fffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x0_str: .string "\"test: 331; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5555555555555555, rs2val=0x0\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x1_str: .string "\"test: 332; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5555555555555555, rs2val=0x1\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x2_str: .string "\"test: 333; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5555555555555555, rs2val=0x2\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x8000000000000000_str: .string "\"test: 334; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5555555555555555, rs2val=0x8000000000000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x8000000000000001_str: .string "\"test: 335; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5555555555555555, rs2val=0x8000000000000001\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x7fffffffffffffff_str: .string "\"test: 336; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5555555555555555, rs2val=0x7fffffffffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x7ffffffffffffffe_str: .string "\"test: 337; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5555555555555555, rs2val=0x7ffffffffffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xffffffffffffffff_str: .string "\"test: 338; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5555555555555555, rs2val=0xffffffffffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xfffffffffffffffe_str: .string "\"test: 339; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5555555555555555, rs2val=0xfffffffffffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x5bbc887763ae86f2_str: .string "\"test: 340; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5555555555555555, rs2val=0x5bbc887763ae86f2\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 341; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5555555555555555, rs2val=0xaaaaaaaaaaaaaaaa\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x5555555555555555_str: .string "\"test: 342; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5555555555555555, rs2val=0x5555555555555555\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xffffffff_str: .string "\"test: 343; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5555555555555555, rs2val=0xffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xfffffffe_str: .string "\"test: 344; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5555555555555555, rs2val=0xfffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x100000000_str: .string "\"test: 345; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5555555555555555, rs2val=0x100000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x100000001_str: .string "\"test: 346; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5555555555555555, rs2val=0x100000001\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x80000000_str: .string "\"test: 347; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5555555555555555, rs2val=0x80000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x7fffffff_str: .string "\"test: 348; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x5555555555555555, rs2val=0x7fffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x0_str: .string "\"test: 349; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffff, rs2val=0x0\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x1_str: .string "\"test: 350; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffff, rs2val=0x1\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x2_str: .string "\"test: 351; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffff, rs2val=0x2\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x8000000000000000_str: .string "\"test: 352; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffff, rs2val=0x8000000000000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x8000000000000001_str: .string "\"test: 353; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffff, rs2val=0x8000000000000001\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7fffffffffffffff_str: .string "\"test: 354; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffff, rs2val=0x7fffffffffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7ffffffffffffffe_str: .string "\"test: 355; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffff, rs2val=0x7ffffffffffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xffffffffffffffff_str: .string "\"test: 356; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffff, rs2val=0xffffffffffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xfffffffffffffffe_str: .string "\"test: 357; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffff, rs2val=0xfffffffffffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x5bbc887763ae86f2_str: .string "\"test: 358; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffff, rs2val=0x5bbc887763ae86f2\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 359; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffff, rs2val=0xaaaaaaaaaaaaaaaa\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x5555555555555555_str: .string "\"test: 360; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffff, rs2val=0x5555555555555555\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xffffffff_str: .string "\"test: 361; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffff, rs2val=0xffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xfffffffe_str: .string "\"test: 362; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffff, rs2val=0xfffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x100000000_str: .string "\"test: 363; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffff, rs2val=0x100000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x100000001_str: .string "\"test: 364; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffff, rs2val=0x100000001\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x80000000_str: .string "\"test: 365; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffff, rs2val=0x80000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7fffffff_str: .string "\"test: 366; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xffffffff, rs2val=0x7fffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x0_str: .string "\"test: 367; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffe, rs2val=0x0\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x1_str: .string "\"test: 368; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffe, rs2val=0x1\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x2_str: .string "\"test: 369; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffe, rs2val=0x2\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x8000000000000000_str: .string "\"test: 370; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffe, rs2val=0x8000000000000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x8000000000000001_str: .string "\"test: 371; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffe, rs2val=0x8000000000000001\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7fffffffffffffff_str: .string "\"test: 372; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffe, rs2val=0x7fffffffffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7ffffffffffffffe_str: .string "\"test: 373; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffe, rs2val=0x7ffffffffffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xffffffffffffffff_str: .string "\"test: 374; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffe, rs2val=0xffffffffffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xfffffffffffffffe_str: .string "\"test: 375; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffe, rs2val=0xfffffffffffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x5bbc887763ae86f2_str: .string "\"test: 376; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffe, rs2val=0x5bbc887763ae86f2\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 377; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffe, rs2val=0xaaaaaaaaaaaaaaaa\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x5555555555555555_str: .string "\"test: 378; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffe, rs2val=0x5555555555555555\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xffffffff_str: .string "\"test: 379; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffe, rs2val=0xffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xfffffffe_str: .string "\"test: 380; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffe, rs2val=0xfffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x100000000_str: .string "\"test: 381; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffe, rs2val=0x100000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x100000001_str: .string "\"test: 382; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffe, rs2val=0x100000001\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x80000000_str: .string "\"test: 383; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffe, rs2val=0x80000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7fffffff_str: .string "\"test: 384; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0xfffffffe, rs2val=0x7fffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x0_str: .string "\"test: 385; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000000, rs2val=0x0\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x1_str: .string "\"test: 386; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000000, rs2val=0x1\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x2_str: .string "\"test: 387; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000000, rs2val=0x2\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x8000000000000000_str: .string "\"test: 388; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000000, rs2val=0x8000000000000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x8000000000000001_str: .string "\"test: 389; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000000, rs2val=0x8000000000000001\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x7fffffffffffffff_str: .string "\"test: 390; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000000, rs2val=0x7fffffffffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x7ffffffffffffffe_str: .string "\"test: 391; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000000, rs2val=0x7ffffffffffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xffffffffffffffff_str: .string "\"test: 392; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000000, rs2val=0xffffffffffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xfffffffffffffffe_str: .string "\"test: 393; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000000, rs2val=0xfffffffffffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x5bbc887763ae86f2_str: .string "\"test: 394; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000000, rs2val=0x5bbc887763ae86f2\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 395; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000000, rs2val=0xaaaaaaaaaaaaaaaa\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x5555555555555555_str: .string "\"test: 396; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000000, rs2val=0x5555555555555555\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xffffffff_str: .string "\"test: 397; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000000, rs2val=0xffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xfffffffe_str: .string "\"test: 398; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000000, rs2val=0xfffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x100000000_str: .string "\"test: 399; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000000, rs2val=0x100000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x100000001_str: .string "\"test: 400; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000000, rs2val=0x100000001\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x80000000_str: .string "\"test: 401; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000000, rs2val=0x80000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x7fffffff_str: .string "\"test: 402; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000000, rs2val=0x7fffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x0_str: .string "\"test: 403; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000001, rs2val=0x0\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x1_str: .string "\"test: 404; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000001, rs2val=0x1\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x2_str: .string "\"test: 405; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000001, rs2val=0x2\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x8000000000000000_str: .string "\"test: 406; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000001, rs2val=0x8000000000000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x8000000000000001_str: .string "\"test: 407; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000001, rs2val=0x8000000000000001\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x7fffffffffffffff_str: .string "\"test: 408; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000001, rs2val=0x7fffffffffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x7ffffffffffffffe_str: .string "\"test: 409; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000001, rs2val=0x7ffffffffffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xffffffffffffffff_str: .string "\"test: 410; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000001, rs2val=0xffffffffffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xfffffffffffffffe_str: .string "\"test: 411; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000001, rs2val=0xfffffffffffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x5bbc887763ae86f2_str: .string "\"test: 412; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000001, rs2val=0x5bbc887763ae86f2\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 413; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000001, rs2val=0xaaaaaaaaaaaaaaaa\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x5555555555555555_str: .string "\"test: 414; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000001, rs2val=0x5555555555555555\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xffffffff_str: .string "\"test: 415; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000001, rs2val=0xffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xfffffffe_str: .string "\"test: 416; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000001, rs2val=0xfffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x100000000_str: .string "\"test: 417; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000001, rs2val=0x100000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x100000001_str: .string "\"test: 418; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000001, rs2val=0x100000001\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x80000000_str: .string "\"test: 419; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000001, rs2val=0x80000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x7fffffff_str: .string "\"test: 420; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x100000001, rs2val=0x7fffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x0_str: .string "\"test: 421; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x80000000, rs2val=0x0\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x1_str: .string "\"test: 422; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x80000000, rs2val=0x1\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x2_str: .string "\"test: 423; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x80000000, rs2val=0x2\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x8000000000000000_str: .string "\"test: 424; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x80000000, rs2val=0x8000000000000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x8000000000000001_str: .string "\"test: 425; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x80000000, rs2val=0x8000000000000001\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x7fffffffffffffff_str: .string "\"test: 426; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x80000000, rs2val=0x7fffffffffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x7ffffffffffffffe_str: .string "\"test: 427; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x80000000, rs2val=0x7ffffffffffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xffffffffffffffff_str: .string "\"test: 428; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x80000000, rs2val=0xffffffffffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xfffffffffffffffe_str: .string "\"test: 429; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x80000000, rs2val=0xfffffffffffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x5bbc887763ae86f2_str: .string "\"test: 430; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x80000000, rs2val=0x5bbc887763ae86f2\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 431; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x80000000, rs2val=0xaaaaaaaaaaaaaaaa\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x5555555555555555_str: .string "\"test: 432; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x80000000, rs2val=0x5555555555555555\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xffffffff_str: .string "\"test: 433; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x80000000, rs2val=0xffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xfffffffe_str: .string "\"test: 434; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x80000000, rs2val=0xfffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x100000000_str: .string "\"test: 435; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x80000000, rs2val=0x100000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x100000001_str: .string "\"test: 436; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x80000000, rs2val=0x100000001\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x80000000_str: .string "\"test: 437; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x80000000, rs2val=0x80000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x7fffffff_str: .string "\"test: 438; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x80000000, rs2val=0x7fffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x0_str: .string "\"test: 439; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffff, rs2val=0x0\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x1_str: .string "\"test: 440; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffff, rs2val=0x1\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x2_str: .string "\"test: 441; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffff, rs2val=0x2\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x8000000000000000_str: .string "\"test: 442; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffff, rs2val=0x8000000000000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x8000000000000001_str: .string "\"test: 443; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffff, rs2val=0x8000000000000001\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x7fffffffffffffff_str: .string "\"test: 444; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffff, rs2val=0x7fffffffffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x7ffffffffffffffe_str: .string "\"test: 445; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffff, rs2val=0x7ffffffffffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xffffffffffffffff_str: .string "\"test: 446; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffff, rs2val=0xffffffffffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xfffffffffffffffe_str: .string "\"test: 447; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffff, rs2val=0xfffffffffffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x5bbc887763ae86f2_str: .string "\"test: 448; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffff, rs2val=0x5bbc887763ae86f2\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xaaaaaaaaaaaaaaaa_str: .string "\"test: 449; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffff, rs2val=0xaaaaaaaaaaaaaaaa\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x5555555555555555_str: .string "\"test: 450; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffff, rs2val=0x5555555555555555\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xffffffff_str: .string "\"test: 451; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffff, rs2val=0xffffffff\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xfffffffe_str: .string "\"test: 452; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffff, rs2val=0xfffffffe\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x100000000_str: .string "\"test: 453; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffff, rs2val=0x100000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x100000001_str: .string "\"test: 454; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffff, rs2val=0x100000001\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x80000000_str: .string "\"test: 455; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffff, rs2val=0x80000000\""
+Zknd_aes64dsm_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x7fffffff_str: .string "\"test: 456; cg: Zknd_aes64dsm_cg; cp: cr_rs1_rs2_edges; bin: rs1val=0x7fffffff, rs2val=0x7fffffff\""
+Zknd_aes64dsm_cg_cmp_rs1_rs2_b0_str: .string "\"test: 457; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b0\""
+Zknd_aes64dsm_cg_cmp_rs1_rs2_b1_str: .string "\"test: 458; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b1\""
+Zknd_aes64dsm_cg_cmp_rs1_rs2_b2_str: .string "\"test: 459; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b2\""
+Zknd_aes64dsm_cg_cmp_rs1_rs2_b3_str: .string "\"test: 460; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b3\""
+Zknd_aes64dsm_cg_cmp_rs1_rs2_b4_str: .string "\"test: 461; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b4\""
+Zknd_aes64dsm_cg_cmp_rs1_rs2_b5_str: .string "\"test: 462; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b5\""
+Zknd_aes64dsm_cg_cmp_rs1_rs2_b6_str: .string "\"test: 463; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b6\""
+Zknd_aes64dsm_cg_cmp_rs1_rs2_b7_str: .string "\"test: 464; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b7\""
+Zknd_aes64dsm_cg_cmp_rs1_rs2_b8_str: .string "\"test: 465; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b8\""
+Zknd_aes64dsm_cg_cmp_rs1_rs2_b9_str: .string "\"test: 466; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b9\""
+Zknd_aes64dsm_cg_cmp_rs1_rs2_b10_str: .string "\"test: 467; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b10\""
+Zknd_aes64dsm_cg_cmp_rs1_rs2_b11_str: .string "\"test: 468; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b11\""
+Zknd_aes64dsm_cg_cmp_rs1_rs2_b12_str: .string "\"test: 469; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b12\""
+Zknd_aes64dsm_cg_cmp_rs1_rs2_b13_str: .string "\"test: 470; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b13\""
+Zknd_aes64dsm_cg_cmp_rs1_rs2_b14_str: .string "\"test: 471; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b14\""
+Zknd_aes64dsm_cg_cmp_rs1_rs2_b15_str: .string "\"test: 472; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b15\""
+Zknd_aes64dsm_cg_cmp_rs1_rs2_b16_str: .string "\"test: 473; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b16\""
+Zknd_aes64dsm_cg_cmp_rs1_rs2_b17_str: .string "\"test: 474; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b17\""
+Zknd_aes64dsm_cg_cmp_rs1_rs2_b18_str: .string "\"test: 475; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b18\""
+Zknd_aes64dsm_cg_cmp_rs1_rs2_b19_str: .string "\"test: 476; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b19\""
+Zknd_aes64dsm_cg_cmp_rs1_rs2_b20_str: .string "\"test: 477; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b20\""
+Zknd_aes64dsm_cg_cmp_rs1_rs2_b21_str: .string "\"test: 478; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b21\""
+Zknd_aes64dsm_cg_cmp_rs1_rs2_b22_str: .string "\"test: 479; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b22\""
+Zknd_aes64dsm_cg_cmp_rs1_rs2_b23_str: .string "\"test: 480; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b23\""
+Zknd_aes64dsm_cg_cmp_rs1_rs2_b24_str: .string "\"test: 481; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b24\""
+Zknd_aes64dsm_cg_cmp_rs1_rs2_b25_str: .string "\"test: 482; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b25\""
+Zknd_aes64dsm_cg_cmp_rs1_rs2_b26_str: .string "\"test: 483; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b26\""
+Zknd_aes64dsm_cg_cmp_rs1_rs2_b27_str: .string "\"test: 484; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b27\""
+Zknd_aes64dsm_cg_cmp_rs1_rs2_b28_str: .string "\"test: 485; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b28\""
+Zknd_aes64dsm_cg_cmp_rs1_rs2_b29_str: .string "\"test: 486; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b29\""
+Zknd_aes64dsm_cg_cmp_rs1_rs2_b30_str: .string "\"test: 487; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b30\""
+Zknd_aes64dsm_cg_cmp_rs1_rs2_b31_str: .string "\"test: 488; cg: Zknd_aes64dsm_cg; cp: cmp_rs1_rs2; bin: b31\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_b0_str: .string "\"test: 489; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b0\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_b1_str: .string "\"test: 490; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b1\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_b2_str: .string "\"test: 491; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b2\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_b3_str: .string "\"test: 492; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b3\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_b4_str: .string "\"test: 493; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b4\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_b5_str: .string "\"test: 494; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b5\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_b6_str: .string "\"test: 495; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b6\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_b7_str: .string "\"test: 496; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b7\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_b8_str: .string "\"test: 497; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b8\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_b9_str: .string "\"test: 498; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b9\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_b10_str: .string "\"test: 499; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b10\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_b11_str: .string "\"test: 500; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b11\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_b12_str: .string "\"test: 501; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b12\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_b13_str: .string "\"test: 502; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b13\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_b14_str: .string "\"test: 503; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b14\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_b15_str: .string "\"test: 504; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b15\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_b16_str: .string "\"test: 505; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b16\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_b17_str: .string "\"test: 506; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b17\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_b18_str: .string "\"test: 507; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b18\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_b19_str: .string "\"test: 508; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b19\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_b20_str: .string "\"test: 509; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b20\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_b21_str: .string "\"test: 510; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b21\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_b22_str: .string "\"test: 511; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b22\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_b23_str: .string "\"test: 512; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b23\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_b24_str: .string "\"test: 513; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b24\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_b25_str: .string "\"test: 514; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b25\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_b26_str: .string "\"test: 515; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b26\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_b27_str: .string "\"test: 516; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b27\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_b28_str: .string "\"test: 517; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b28\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_b29_str: .string "\"test: 518; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b29\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_b30_str: .string "\"test: 519; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b30\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_b31_str: .string "\"test: 520; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1; bin: b31\""
+Zknd_aes64dsm_cg_cmp_rd_rs2_b0_str: .string "\"test: 521; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b0\""
+Zknd_aes64dsm_cg_cmp_rd_rs2_b1_str: .string "\"test: 522; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b1\""
+Zknd_aes64dsm_cg_cmp_rd_rs2_b2_str: .string "\"test: 523; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b2\""
+Zknd_aes64dsm_cg_cmp_rd_rs2_b3_str: .string "\"test: 524; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b3\""
+Zknd_aes64dsm_cg_cmp_rd_rs2_b4_str: .string "\"test: 525; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b4\""
+Zknd_aes64dsm_cg_cmp_rd_rs2_b5_str: .string "\"test: 526; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b5\""
+Zknd_aes64dsm_cg_cmp_rd_rs2_b6_str: .string "\"test: 527; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b6\""
+Zknd_aes64dsm_cg_cmp_rd_rs2_b7_str: .string "\"test: 528; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b7\""
+Zknd_aes64dsm_cg_cmp_rd_rs2_b8_str: .string "\"test: 529; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b8\""
+Zknd_aes64dsm_cg_cmp_rd_rs2_b9_str: .string "\"test: 530; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b9\""
+Zknd_aes64dsm_cg_cmp_rd_rs2_b10_str: .string "\"test: 531; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b10\""
+Zknd_aes64dsm_cg_cmp_rd_rs2_b11_str: .string "\"test: 532; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b11\""
+Zknd_aes64dsm_cg_cmp_rd_rs2_b12_str: .string "\"test: 533; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b12\""
+Zknd_aes64dsm_cg_cmp_rd_rs2_b13_str: .string "\"test: 534; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b13\""
+Zknd_aes64dsm_cg_cmp_rd_rs2_b14_str: .string "\"test: 535; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b14\""
+Zknd_aes64dsm_cg_cmp_rd_rs2_b15_str: .string "\"test: 536; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b15\""
+Zknd_aes64dsm_cg_cmp_rd_rs2_b16_str: .string "\"test: 537; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b16\""
+Zknd_aes64dsm_cg_cmp_rd_rs2_b17_str: .string "\"test: 538; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b17\""
+Zknd_aes64dsm_cg_cmp_rd_rs2_b18_str: .string "\"test: 539; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b18\""
+Zknd_aes64dsm_cg_cmp_rd_rs2_b19_str: .string "\"test: 540; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b19\""
+Zknd_aes64dsm_cg_cmp_rd_rs2_b20_str: .string "\"test: 541; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b20\""
+Zknd_aes64dsm_cg_cmp_rd_rs2_b21_str: .string "\"test: 542; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b21\""
+Zknd_aes64dsm_cg_cmp_rd_rs2_b22_str: .string "\"test: 543; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b22\""
+Zknd_aes64dsm_cg_cmp_rd_rs2_b23_str: .string "\"test: 544; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b23\""
+Zknd_aes64dsm_cg_cmp_rd_rs2_b24_str: .string "\"test: 545; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b24\""
+Zknd_aes64dsm_cg_cmp_rd_rs2_b25_str: .string "\"test: 546; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b25\""
+Zknd_aes64dsm_cg_cmp_rd_rs2_b26_str: .string "\"test: 547; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b26\""
+Zknd_aes64dsm_cg_cmp_rd_rs2_b27_str: .string "\"test: 548; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b27\""
+Zknd_aes64dsm_cg_cmp_rd_rs2_b28_str: .string "\"test: 549; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b28\""
+Zknd_aes64dsm_cg_cmp_rd_rs2_b29_str: .string "\"test: 550; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b29\""
+Zknd_aes64dsm_cg_cmp_rd_rs2_b30_str: .string "\"test: 551; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b30\""
+Zknd_aes64dsm_cg_cmp_rd_rs2_b31_str: .string "\"test: 552; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs2; bin: b31\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b0_str: .string "\"test: 553; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b0\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b1_str: .string "\"test: 554; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b1\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b2_str: .string "\"test: 555; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b2\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b3_str: .string "\"test: 556; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b3\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b4_str: .string "\"test: 557; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b4\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b5_str: .string "\"test: 558; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b5\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b6_str: .string "\"test: 559; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b6\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b7_str: .string "\"test: 560; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b7\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b8_str: .string "\"test: 561; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b8\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b9_str: .string "\"test: 562; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b9\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b10_str: .string "\"test: 563; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b10\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b11_str: .string "\"test: 564; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b11\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b12_str: .string "\"test: 565; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b12\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b13_str: .string "\"test: 566; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b13\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b14_str: .string "\"test: 567; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b14\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b15_str: .string "\"test: 568; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b15\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b16_str: .string "\"test: 569; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b16\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b17_str: .string "\"test: 570; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b17\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b18_str: .string "\"test: 571; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b18\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b19_str: .string "\"test: 572; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b19\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b20_str: .string "\"test: 573; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b20\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b21_str: .string "\"test: 574; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b21\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b22_str: .string "\"test: 575; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b22\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b23_str: .string "\"test: 576; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b23\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b24_str: .string "\"test: 577; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b24\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b25_str: .string "\"test: 578; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b25\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b26_str: .string "\"test: 579; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b26\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b27_str: .string "\"test: 580; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b27\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b28_str: .string "\"test: 581; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b28\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b29_str: .string "\"test: 582; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b29\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b30_str: .string "\"test: 583; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b30\""
+Zknd_aes64dsm_cg_cmp_rd_rs1_rs2_b31_str: .string "\"test: 584; cg: Zknd_aes64dsm_cg; cp: cmp_rd_rs1_rs2; bin: b31\""
+Zknd_aes64dsm_cg_cp_sbox_b0_str: .string "\"test: 585; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b0\""
+Zknd_aes64dsm_cg_cp_sbox_b1_str: .string "\"test: 586; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b1\""
+Zknd_aes64dsm_cg_cp_sbox_b2_str: .string "\"test: 587; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b2\""
+Zknd_aes64dsm_cg_cp_sbox_b3_str: .string "\"test: 588; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b3\""
+Zknd_aes64dsm_cg_cp_sbox_b4_str: .string "\"test: 589; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b4\""
+Zknd_aes64dsm_cg_cp_sbox_b5_str: .string "\"test: 590; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b5\""
+Zknd_aes64dsm_cg_cp_sbox_b6_str: .string "\"test: 591; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b6\""
+Zknd_aes64dsm_cg_cp_sbox_b7_str: .string "\"test: 592; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b7\""
+Zknd_aes64dsm_cg_cp_sbox_b8_str: .string "\"test: 593; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b8\""
+Zknd_aes64dsm_cg_cp_sbox_b9_str: .string "\"test: 594; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b9\""
+Zknd_aes64dsm_cg_cp_sbox_b10_str: .string "\"test: 595; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b10\""
+Zknd_aes64dsm_cg_cp_sbox_b11_str: .string "\"test: 596; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b11\""
+Zknd_aes64dsm_cg_cp_sbox_b12_str: .string "\"test: 597; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b12\""
+Zknd_aes64dsm_cg_cp_sbox_b13_str: .string "\"test: 598; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b13\""
+Zknd_aes64dsm_cg_cp_sbox_b14_str: .string "\"test: 599; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b14\""
+Zknd_aes64dsm_cg_cp_sbox_b15_str: .string "\"test: 600; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b15\""
+Zknd_aes64dsm_cg_cp_sbox_b16_str: .string "\"test: 601; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b16\""
+Zknd_aes64dsm_cg_cp_sbox_b17_str: .string "\"test: 602; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b17\""
+Zknd_aes64dsm_cg_cp_sbox_b18_str: .string "\"test: 603; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b18\""
+Zknd_aes64dsm_cg_cp_sbox_b19_str: .string "\"test: 604; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b19\""
+Zknd_aes64dsm_cg_cp_sbox_b20_str: .string "\"test: 605; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b20\""
+Zknd_aes64dsm_cg_cp_sbox_b21_str: .string "\"test: 606; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b21\""
+Zknd_aes64dsm_cg_cp_sbox_b22_str: .string "\"test: 607; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b22\""
+Zknd_aes64dsm_cg_cp_sbox_b23_str: .string "\"test: 608; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b23\""
+Zknd_aes64dsm_cg_cp_sbox_b24_str: .string "\"test: 609; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b24\""
+Zknd_aes64dsm_cg_cp_sbox_b25_str: .string "\"test: 610; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b25\""
+Zknd_aes64dsm_cg_cp_sbox_b26_str: .string "\"test: 611; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b26\""
+Zknd_aes64dsm_cg_cp_sbox_b27_str: .string "\"test: 612; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b27\""
+Zknd_aes64dsm_cg_cp_sbox_b28_str: .string "\"test: 613; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b28\""
+Zknd_aes64dsm_cg_cp_sbox_b29_str: .string "\"test: 614; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b29\""
+Zknd_aes64dsm_cg_cp_sbox_b30_str: .string "\"test: 615; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b30\""
+Zknd_aes64dsm_cg_cp_sbox_b31_str: .string "\"test: 616; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b31\""
+Zknd_aes64dsm_cg_cp_sbox_b32_str: .string "\"test: 617; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b32\""
+Zknd_aes64dsm_cg_cp_sbox_b33_str: .string "\"test: 618; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b33\""
+Zknd_aes64dsm_cg_cp_sbox_b34_str: .string "\"test: 619; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b34\""
+Zknd_aes64dsm_cg_cp_sbox_b35_str: .string "\"test: 620; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b35\""
+Zknd_aes64dsm_cg_cp_sbox_b36_str: .string "\"test: 621; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b36\""
+Zknd_aes64dsm_cg_cp_sbox_b37_str: .string "\"test: 622; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b37\""
+Zknd_aes64dsm_cg_cp_sbox_b38_str: .string "\"test: 623; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b38\""
+Zknd_aes64dsm_cg_cp_sbox_b39_str: .string "\"test: 624; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b39\""
+Zknd_aes64dsm_cg_cp_sbox_b40_str: .string "\"test: 625; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b40\""
+Zknd_aes64dsm_cg_cp_sbox_b41_str: .string "\"test: 626; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b41\""
+Zknd_aes64dsm_cg_cp_sbox_b42_str: .string "\"test: 627; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b42\""
+Zknd_aes64dsm_cg_cp_sbox_b43_str: .string "\"test: 628; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b43\""
+Zknd_aes64dsm_cg_cp_sbox_b44_str: .string "\"test: 629; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b44\""
+Zknd_aes64dsm_cg_cp_sbox_b45_str: .string "\"test: 630; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b45\""
+Zknd_aes64dsm_cg_cp_sbox_b46_str: .string "\"test: 631; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b46\""
+Zknd_aes64dsm_cg_cp_sbox_b47_str: .string "\"test: 632; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b47\""
+Zknd_aes64dsm_cg_cp_sbox_b48_str: .string "\"test: 633; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b48\""
+Zknd_aes64dsm_cg_cp_sbox_b49_str: .string "\"test: 634; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b49\""
+Zknd_aes64dsm_cg_cp_sbox_b50_str: .string "\"test: 635; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b50\""
+Zknd_aes64dsm_cg_cp_sbox_b51_str: .string "\"test: 636; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b51\""
+Zknd_aes64dsm_cg_cp_sbox_b52_str: .string "\"test: 637; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b52\""
+Zknd_aes64dsm_cg_cp_sbox_b53_str: .string "\"test: 638; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b53\""
+Zknd_aes64dsm_cg_cp_sbox_b54_str: .string "\"test: 639; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b54\""
+Zknd_aes64dsm_cg_cp_sbox_b55_str: .string "\"test: 640; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b55\""
+Zknd_aes64dsm_cg_cp_sbox_b56_str: .string "\"test: 641; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b56\""
+Zknd_aes64dsm_cg_cp_sbox_b57_str: .string "\"test: 642; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b57\""
+Zknd_aes64dsm_cg_cp_sbox_b58_str: .string "\"test: 643; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b58\""
+Zknd_aes64dsm_cg_cp_sbox_b59_str: .string "\"test: 644; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b59\""
+Zknd_aes64dsm_cg_cp_sbox_b60_str: .string "\"test: 645; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b60\""
+Zknd_aes64dsm_cg_cp_sbox_b61_str: .string "\"test: 646; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b61\""
+Zknd_aes64dsm_cg_cp_sbox_b62_str: .string "\"test: 647; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b62\""
+Zknd_aes64dsm_cg_cp_sbox_b63_str: .string "\"test: 648; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b63\""
+Zknd_aes64dsm_cg_cp_sbox_b64_str: .string "\"test: 649; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b64\""
+Zknd_aes64dsm_cg_cp_sbox_b65_str: .string "\"test: 650; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b65\""
+Zknd_aes64dsm_cg_cp_sbox_b66_str: .string "\"test: 651; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b66\""
+Zknd_aes64dsm_cg_cp_sbox_b67_str: .string "\"test: 652; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b67\""
+Zknd_aes64dsm_cg_cp_sbox_b68_str: .string "\"test: 653; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b68\""
+Zknd_aes64dsm_cg_cp_sbox_b69_str: .string "\"test: 654; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b69\""
+Zknd_aes64dsm_cg_cp_sbox_b70_str: .string "\"test: 655; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b70\""
+Zknd_aes64dsm_cg_cp_sbox_b71_str: .string "\"test: 656; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b71\""
+Zknd_aes64dsm_cg_cp_sbox_b72_str: .string "\"test: 657; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b72\""
+Zknd_aes64dsm_cg_cp_sbox_b73_str: .string "\"test: 658; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b73\""
+Zknd_aes64dsm_cg_cp_sbox_b74_str: .string "\"test: 659; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b74\""
+Zknd_aes64dsm_cg_cp_sbox_b75_str: .string "\"test: 660; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b75\""
+Zknd_aes64dsm_cg_cp_sbox_b76_str: .string "\"test: 661; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b76\""
+Zknd_aes64dsm_cg_cp_sbox_b77_str: .string "\"test: 662; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b77\""
+Zknd_aes64dsm_cg_cp_sbox_b78_str: .string "\"test: 663; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b78\""
+Zknd_aes64dsm_cg_cp_sbox_b79_str: .string "\"test: 664; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b79\""
+Zknd_aes64dsm_cg_cp_sbox_b80_str: .string "\"test: 665; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b80\""
+Zknd_aes64dsm_cg_cp_sbox_b81_str: .string "\"test: 666; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b81\""
+Zknd_aes64dsm_cg_cp_sbox_b82_str: .string "\"test: 667; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b82\""
+Zknd_aes64dsm_cg_cp_sbox_b83_str: .string "\"test: 668; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b83\""
+Zknd_aes64dsm_cg_cp_sbox_b84_str: .string "\"test: 669; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b84\""
+Zknd_aes64dsm_cg_cp_sbox_b85_str: .string "\"test: 670; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b85\""
+Zknd_aes64dsm_cg_cp_sbox_b86_str: .string "\"test: 671; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b86\""
+Zknd_aes64dsm_cg_cp_sbox_b87_str: .string "\"test: 672; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b87\""
+Zknd_aes64dsm_cg_cp_sbox_b88_str: .string "\"test: 673; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b88\""
+Zknd_aes64dsm_cg_cp_sbox_b89_str: .string "\"test: 674; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b89\""
+Zknd_aes64dsm_cg_cp_sbox_b90_str: .string "\"test: 675; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b90\""
+Zknd_aes64dsm_cg_cp_sbox_b91_str: .string "\"test: 676; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b91\""
+Zknd_aes64dsm_cg_cp_sbox_b92_str: .string "\"test: 677; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b92\""
+Zknd_aes64dsm_cg_cp_sbox_b93_str: .string "\"test: 678; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b93\""
+Zknd_aes64dsm_cg_cp_sbox_b94_str: .string "\"test: 679; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b94\""
+Zknd_aes64dsm_cg_cp_sbox_b95_str: .string "\"test: 680; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b95\""
+Zknd_aes64dsm_cg_cp_sbox_b96_str: .string "\"test: 681; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b96\""
+Zknd_aes64dsm_cg_cp_sbox_b97_str: .string "\"test: 682; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b97\""
+Zknd_aes64dsm_cg_cp_sbox_b98_str: .string "\"test: 683; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b98\""
+Zknd_aes64dsm_cg_cp_sbox_b99_str: .string "\"test: 684; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b99\""
+Zknd_aes64dsm_cg_cp_sbox_b100_str: .string "\"test: 685; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b100\""
+Zknd_aes64dsm_cg_cp_sbox_b101_str: .string "\"test: 686; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b101\""
+Zknd_aes64dsm_cg_cp_sbox_b102_str: .string "\"test: 687; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b102\""
+Zknd_aes64dsm_cg_cp_sbox_b103_str: .string "\"test: 688; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b103\""
+Zknd_aes64dsm_cg_cp_sbox_b104_str: .string "\"test: 689; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b104\""
+Zknd_aes64dsm_cg_cp_sbox_b105_str: .string "\"test: 690; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b105\""
+Zknd_aes64dsm_cg_cp_sbox_b106_str: .string "\"test: 691; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b106\""
+Zknd_aes64dsm_cg_cp_sbox_b107_str: .string "\"test: 692; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b107\""
+Zknd_aes64dsm_cg_cp_sbox_b108_str: .string "\"test: 693; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b108\""
+Zknd_aes64dsm_cg_cp_sbox_b109_str: .string "\"test: 694; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b109\""
+Zknd_aes64dsm_cg_cp_sbox_b110_str: .string "\"test: 695; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b110\""
+Zknd_aes64dsm_cg_cp_sbox_b111_str: .string "\"test: 696; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b111\""
+Zknd_aes64dsm_cg_cp_sbox_b112_str: .string "\"test: 697; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b112\""
+Zknd_aes64dsm_cg_cp_sbox_b113_str: .string "\"test: 698; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b113\""
+Zknd_aes64dsm_cg_cp_sbox_b114_str: .string "\"test: 699; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b114\""
+Zknd_aes64dsm_cg_cp_sbox_b115_str: .string "\"test: 700; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b115\""
+Zknd_aes64dsm_cg_cp_sbox_b116_str: .string "\"test: 701; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b116\""
+Zknd_aes64dsm_cg_cp_sbox_b117_str: .string "\"test: 702; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b117\""
+Zknd_aes64dsm_cg_cp_sbox_b118_str: .string "\"test: 703; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b118\""
+Zknd_aes64dsm_cg_cp_sbox_b119_str: .string "\"test: 704; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b119\""
+Zknd_aes64dsm_cg_cp_sbox_b120_str: .string "\"test: 705; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b120\""
+Zknd_aes64dsm_cg_cp_sbox_b121_str: .string "\"test: 706; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b121\""
+Zknd_aes64dsm_cg_cp_sbox_b122_str: .string "\"test: 707; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b122\""
+Zknd_aes64dsm_cg_cp_sbox_b123_str: .string "\"test: 708; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b123\""
+Zknd_aes64dsm_cg_cp_sbox_b124_str: .string "\"test: 709; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b124\""
+Zknd_aes64dsm_cg_cp_sbox_b125_str: .string "\"test: 710; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b125\""
+Zknd_aes64dsm_cg_cp_sbox_b126_str: .string "\"test: 711; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b126\""
+Zknd_aes64dsm_cg_cp_sbox_b127_str: .string "\"test: 712; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b127\""
+Zknd_aes64dsm_cg_cp_sbox_b128_str: .string "\"test: 713; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b128\""
+Zknd_aes64dsm_cg_cp_sbox_b129_str: .string "\"test: 714; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b129\""
+Zknd_aes64dsm_cg_cp_sbox_b130_str: .string "\"test: 715; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b130\""
+Zknd_aes64dsm_cg_cp_sbox_b131_str: .string "\"test: 716; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b131\""
+Zknd_aes64dsm_cg_cp_sbox_b132_str: .string "\"test: 717; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b132\""
+Zknd_aes64dsm_cg_cp_sbox_b133_str: .string "\"test: 718; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b133\""
+Zknd_aes64dsm_cg_cp_sbox_b134_str: .string "\"test: 719; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b134\""
+Zknd_aes64dsm_cg_cp_sbox_b135_str: .string "\"test: 720; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b135\""
+Zknd_aes64dsm_cg_cp_sbox_b136_str: .string "\"test: 721; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b136\""
+Zknd_aes64dsm_cg_cp_sbox_b137_str: .string "\"test: 722; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b137\""
+Zknd_aes64dsm_cg_cp_sbox_b138_str: .string "\"test: 723; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b138\""
+Zknd_aes64dsm_cg_cp_sbox_b139_str: .string "\"test: 724; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b139\""
+Zknd_aes64dsm_cg_cp_sbox_b140_str: .string "\"test: 725; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b140\""
+Zknd_aes64dsm_cg_cp_sbox_b141_str: .string "\"test: 726; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b141\""
+Zknd_aes64dsm_cg_cp_sbox_b142_str: .string "\"test: 727; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b142\""
+Zknd_aes64dsm_cg_cp_sbox_b143_str: .string "\"test: 728; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b143\""
+Zknd_aes64dsm_cg_cp_sbox_b144_str: .string "\"test: 729; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b144\""
+Zknd_aes64dsm_cg_cp_sbox_b145_str: .string "\"test: 730; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b145\""
+Zknd_aes64dsm_cg_cp_sbox_b146_str: .string "\"test: 731; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b146\""
+Zknd_aes64dsm_cg_cp_sbox_b147_str: .string "\"test: 732; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b147\""
+Zknd_aes64dsm_cg_cp_sbox_b148_str: .string "\"test: 733; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b148\""
+Zknd_aes64dsm_cg_cp_sbox_b149_str: .string "\"test: 734; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b149\""
+Zknd_aes64dsm_cg_cp_sbox_b150_str: .string "\"test: 735; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b150\""
+Zknd_aes64dsm_cg_cp_sbox_b151_str: .string "\"test: 736; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b151\""
+Zknd_aes64dsm_cg_cp_sbox_b152_str: .string "\"test: 737; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b152\""
+Zknd_aes64dsm_cg_cp_sbox_b153_str: .string "\"test: 738; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b153\""
+Zknd_aes64dsm_cg_cp_sbox_b154_str: .string "\"test: 739; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b154\""
+Zknd_aes64dsm_cg_cp_sbox_b155_str: .string "\"test: 740; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b155\""
+Zknd_aes64dsm_cg_cp_sbox_b156_str: .string "\"test: 741; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b156\""
+Zknd_aes64dsm_cg_cp_sbox_b157_str: .string "\"test: 742; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b157\""
+Zknd_aes64dsm_cg_cp_sbox_b158_str: .string "\"test: 743; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b158\""
+Zknd_aes64dsm_cg_cp_sbox_b159_str: .string "\"test: 744; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b159\""
+Zknd_aes64dsm_cg_cp_sbox_b160_str: .string "\"test: 745; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b160\""
+Zknd_aes64dsm_cg_cp_sbox_b161_str: .string "\"test: 746; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b161\""
+Zknd_aes64dsm_cg_cp_sbox_b162_str: .string "\"test: 747; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b162\""
+Zknd_aes64dsm_cg_cp_sbox_b163_str: .string "\"test: 748; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b163\""
+Zknd_aes64dsm_cg_cp_sbox_b164_str: .string "\"test: 749; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b164\""
+Zknd_aes64dsm_cg_cp_sbox_b165_str: .string "\"test: 750; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b165\""
+Zknd_aes64dsm_cg_cp_sbox_b166_str: .string "\"test: 751; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b166\""
+Zknd_aes64dsm_cg_cp_sbox_b167_str: .string "\"test: 752; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b167\""
+Zknd_aes64dsm_cg_cp_sbox_b168_str: .string "\"test: 753; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b168\""
+Zknd_aes64dsm_cg_cp_sbox_b169_str: .string "\"test: 754; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b169\""
+Zknd_aes64dsm_cg_cp_sbox_b170_str: .string "\"test: 755; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b170\""
+Zknd_aes64dsm_cg_cp_sbox_b171_str: .string "\"test: 756; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b171\""
+Zknd_aes64dsm_cg_cp_sbox_b172_str: .string "\"test: 757; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b172\""
+Zknd_aes64dsm_cg_cp_sbox_b173_str: .string "\"test: 758; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b173\""
+Zknd_aes64dsm_cg_cp_sbox_b174_str: .string "\"test: 759; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b174\""
+Zknd_aes64dsm_cg_cp_sbox_b175_str: .string "\"test: 760; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b175\""
+Zknd_aes64dsm_cg_cp_sbox_b176_str: .string "\"test: 761; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b176\""
+Zknd_aes64dsm_cg_cp_sbox_b177_str: .string "\"test: 762; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b177\""
+Zknd_aes64dsm_cg_cp_sbox_b178_str: .string "\"test: 763; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b178\""
+Zknd_aes64dsm_cg_cp_sbox_b179_str: .string "\"test: 764; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b179\""
+Zknd_aes64dsm_cg_cp_sbox_b180_str: .string "\"test: 765; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b180\""
+Zknd_aes64dsm_cg_cp_sbox_b181_str: .string "\"test: 766; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b181\""
+Zknd_aes64dsm_cg_cp_sbox_b182_str: .string "\"test: 767; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b182\""
+Zknd_aes64dsm_cg_cp_sbox_b183_str: .string "\"test: 768; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b183\""
+Zknd_aes64dsm_cg_cp_sbox_b184_str: .string "\"test: 769; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b184\""
+Zknd_aes64dsm_cg_cp_sbox_b185_str: .string "\"test: 770; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b185\""
+Zknd_aes64dsm_cg_cp_sbox_b186_str: .string "\"test: 771; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b186\""
+Zknd_aes64dsm_cg_cp_sbox_b187_str: .string "\"test: 772; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b187\""
+Zknd_aes64dsm_cg_cp_sbox_b188_str: .string "\"test: 773; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b188\""
+Zknd_aes64dsm_cg_cp_sbox_b189_str: .string "\"test: 774; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b189\""
+Zknd_aes64dsm_cg_cp_sbox_b190_str: .string "\"test: 775; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b190\""
+Zknd_aes64dsm_cg_cp_sbox_b191_str: .string "\"test: 776; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b191\""
+Zknd_aes64dsm_cg_cp_sbox_b192_str: .string "\"test: 777; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b192\""
+Zknd_aes64dsm_cg_cp_sbox_b193_str: .string "\"test: 778; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b193\""
+Zknd_aes64dsm_cg_cp_sbox_b194_str: .string "\"test: 779; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b194\""
+Zknd_aes64dsm_cg_cp_sbox_b195_str: .string "\"test: 780; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b195\""
+Zknd_aes64dsm_cg_cp_sbox_b196_str: .string "\"test: 781; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b196\""
+Zknd_aes64dsm_cg_cp_sbox_b197_str: .string "\"test: 782; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b197\""
+Zknd_aes64dsm_cg_cp_sbox_b198_str: .string "\"test: 783; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b198\""
+Zknd_aes64dsm_cg_cp_sbox_b199_str: .string "\"test: 784; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b199\""
+Zknd_aes64dsm_cg_cp_sbox_b200_str: .string "\"test: 785; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b200\""
+Zknd_aes64dsm_cg_cp_sbox_b201_str: .string "\"test: 786; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b201\""
+Zknd_aes64dsm_cg_cp_sbox_b202_str: .string "\"test: 787; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b202\""
+Zknd_aes64dsm_cg_cp_sbox_b203_str: .string "\"test: 788; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b203\""
+Zknd_aes64dsm_cg_cp_sbox_b204_str: .string "\"test: 789; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b204\""
+Zknd_aes64dsm_cg_cp_sbox_b205_str: .string "\"test: 790; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b205\""
+Zknd_aes64dsm_cg_cp_sbox_b206_str: .string "\"test: 791; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b206\""
+Zknd_aes64dsm_cg_cp_sbox_b207_str: .string "\"test: 792; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b207\""
+Zknd_aes64dsm_cg_cp_sbox_b208_str: .string "\"test: 793; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b208\""
+Zknd_aes64dsm_cg_cp_sbox_b209_str: .string "\"test: 794; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b209\""
+Zknd_aes64dsm_cg_cp_sbox_b210_str: .string "\"test: 795; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b210\""
+Zknd_aes64dsm_cg_cp_sbox_b211_str: .string "\"test: 796; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b211\""
+Zknd_aes64dsm_cg_cp_sbox_b212_str: .string "\"test: 797; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b212\""
+Zknd_aes64dsm_cg_cp_sbox_b213_str: .string "\"test: 798; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b213\""
+Zknd_aes64dsm_cg_cp_sbox_b214_str: .string "\"test: 799; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b214\""
+Zknd_aes64dsm_cg_cp_sbox_b215_str: .string "\"test: 800; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b215\""
+Zknd_aes64dsm_cg_cp_sbox_b216_str: .string "\"test: 801; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b216\""
+Zknd_aes64dsm_cg_cp_sbox_b217_str: .string "\"test: 802; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b217\""
+Zknd_aes64dsm_cg_cp_sbox_b218_str: .string "\"test: 803; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b218\""
+Zknd_aes64dsm_cg_cp_sbox_b219_str: .string "\"test: 804; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b219\""
+Zknd_aes64dsm_cg_cp_sbox_b220_str: .string "\"test: 805; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b220\""
+Zknd_aes64dsm_cg_cp_sbox_b221_str: .string "\"test: 806; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b221\""
+Zknd_aes64dsm_cg_cp_sbox_b222_str: .string "\"test: 807; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b222\""
+Zknd_aes64dsm_cg_cp_sbox_b223_str: .string "\"test: 808; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b223\""
+Zknd_aes64dsm_cg_cp_sbox_b224_str: .string "\"test: 809; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b224\""
+Zknd_aes64dsm_cg_cp_sbox_b225_str: .string "\"test: 810; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b225\""
+Zknd_aes64dsm_cg_cp_sbox_b226_str: .string "\"test: 811; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b226\""
+Zknd_aes64dsm_cg_cp_sbox_b227_str: .string "\"test: 812; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b227\""
+Zknd_aes64dsm_cg_cp_sbox_b228_str: .string "\"test: 813; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b228\""
+Zknd_aes64dsm_cg_cp_sbox_b229_str: .string "\"test: 814; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b229\""
+Zknd_aes64dsm_cg_cp_sbox_b230_str: .string "\"test: 815; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b230\""
+Zknd_aes64dsm_cg_cp_sbox_b231_str: .string "\"test: 816; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b231\""
+Zknd_aes64dsm_cg_cp_sbox_b232_str: .string "\"test: 817; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b232\""
+Zknd_aes64dsm_cg_cp_sbox_b233_str: .string "\"test: 818; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b233\""
+Zknd_aes64dsm_cg_cp_sbox_b234_str: .string "\"test: 819; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b234\""
+Zknd_aes64dsm_cg_cp_sbox_b235_str: .string "\"test: 820; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b235\""
+Zknd_aes64dsm_cg_cp_sbox_b236_str: .string "\"test: 821; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b236\""
+Zknd_aes64dsm_cg_cp_sbox_b237_str: .string "\"test: 822; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b237\""
+Zknd_aes64dsm_cg_cp_sbox_b238_str: .string "\"test: 823; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b238\""
+Zknd_aes64dsm_cg_cp_sbox_b239_str: .string "\"test: 824; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b239\""
+Zknd_aes64dsm_cg_cp_sbox_b240_str: .string "\"test: 825; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b240\""
+Zknd_aes64dsm_cg_cp_sbox_b241_str: .string "\"test: 826; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b241\""
+Zknd_aes64dsm_cg_cp_sbox_b242_str: .string "\"test: 827; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b242\""
+Zknd_aes64dsm_cg_cp_sbox_b243_str: .string "\"test: 828; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b243\""
+Zknd_aes64dsm_cg_cp_sbox_b244_str: .string "\"test: 829; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b244\""
+Zknd_aes64dsm_cg_cp_sbox_b245_str: .string "\"test: 830; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b245\""
+Zknd_aes64dsm_cg_cp_sbox_b246_str: .string "\"test: 831; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b246\""
+Zknd_aes64dsm_cg_cp_sbox_b247_str: .string "\"test: 832; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b247\""
+Zknd_aes64dsm_cg_cp_sbox_b248_str: .string "\"test: 833; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b248\""
+Zknd_aes64dsm_cg_cp_sbox_b249_str: .string "\"test: 834; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b249\""
+Zknd_aes64dsm_cg_cp_sbox_b250_str: .string "\"test: 835; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b250\""
+Zknd_aes64dsm_cg_cp_sbox_b251_str: .string "\"test: 836; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b251\""
+Zknd_aes64dsm_cg_cp_sbox_b252_str: .string "\"test: 837; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b252\""
+Zknd_aes64dsm_cg_cp_sbox_b253_str: .string "\"test: 838; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b253\""
+Zknd_aes64dsm_cg_cp_sbox_b254_str: .string "\"test: 839; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b254\""
+Zknd_aes64dsm_cg_cp_sbox_b255_str: .string "\"test: 840; cg: Zknd_aes64dsm_cg; cp: cp_sbox; bin: b255\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

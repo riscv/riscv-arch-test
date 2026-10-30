@@ -14,8 +14,8 @@
 
 // Custom RVMODEL_BOOT_TO_MMODE overrides default RVTEST_BOOT_TO_MMODE
 // if defined.  For most DUTs, the default should work and this macro
-// should not be defined.  If no M-mode or CSRs are implemented, define this
-// macro as blank to bypass the boot process.  If a nonconforming
+// should not be defined.  If the DUT has no standard M-mode CSRs, do not
+// define STANDARD_SM_SUPPORTED.  If a nonconforming
 // M-mode is implemented, define this macro to set up the necessary
 // state in a fashion similar to RVTEST_BOOT_TO_MMODE.
 //#define RVMODEL_BOOT_TO_MMODE
@@ -71,7 +71,6 @@
 #define RVMODEL_MTVEC_ALIGN 7
 
 ##### Machine Timer #####
-#define RVMODEL_MAX_CYCLES_PER_TIMER_TICK 1
 
 #define RVMODEL_TIMER_INT_SOON_DELAY 10000
 // CLINT machine timer in mm_ram at Sail's CLINT base (matches sail.json).

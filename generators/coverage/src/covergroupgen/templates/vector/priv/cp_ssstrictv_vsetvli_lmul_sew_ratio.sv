@@ -20,7 +20,7 @@
         bins e16 = {3'b001};
         bins e32 = {3'b010};
         bins e64 = {3'b011};
-        ignore_bins reserved[] = {[4:7]};
+        ignore_bins reserved = {[4:7]};
     }
 
     // vill must be set after execution (unsupported ratio)

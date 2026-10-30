@@ -65,7 +65,6 @@ covergroup Vf64_vfadd_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -408,7 +407,6 @@ covergroup Vf64_vfadd_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -921,38 +919,7 @@ covergroup Vf64_vfcvt_f_x_v_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_NaN_input
-    //////////////////////////////////////////////////////////////////////////////////
-
-`ifndef COVER_VFCUSTOM64
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        `ifdef COVER_VFCUSTOM16
-            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
-            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
-        `endif
-        `ifdef COVER_VFCUSTOM32
-            bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
-            bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
-        `endif
-    }
-
-    cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-`else
-    `ifdef D_SUPPORTED
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
-            bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
-    }
-
-    cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-    `endif
-`endif
-
-    //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_vfp_flags_nx
@@ -1023,34 +990,26 @@ covergroup Vf64_vfcvt_f_x_v_cg with function sample(ins_t ins);
     //// end cp_vs2////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_vs2_edges_f_sew64
+    // cp_vs2_edges
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_f_sew64 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val)[63:0]  iff (ins.trap == 0 )  {
-        // (Double Precision)
-        bins pos0                   = {64'h0000000000000000};
-        bins neg0                   = {64'h8000000000000000};
-        bins pos1                   = {64'h3FF0000000000000};
-        bins neg1                   = {64'hBFF0000000000000};
-        bins posminnorm             = {64'h0010000000000000};
-        bins negmaxnorm             = {64'hFFEFFFFFFFFFFFFF};
-        bins posinfinity            = {64'h7FF0000000000000};
-        bins neginfinity            = {64'hFFF0000000000000};
-        bins pos0p5                 = {64'h3FE0000000000000};
-        bins pos1p5                 = {64'h3FF8000000000000};
-        bins neg2                   = {64'hC000000000000000};
-        bins pi                     = {64'h400921FB54442D18};
-        bins twoToEmax              = {64'h7FE0000000000000};   // 2^1023
-        bins onePulp                = {64'h3FF0000000000001};   // 1 + ULP
-        bins largestsubnorm         = {64'h000FFFFFFFFFFFFF};
-        bins negSubnormLeadingOne   = {64'h8008000000000000};
-        bins min_subnorm            = {64'h0000000000000001};
-        bins canonicalQNaN          = {64'h7FF8000000000000};   // quiet NaN, canonical payload
-        bins negNoncanonicalQNaN    = {[64'hFFF8000000000001:64'hFFFFFFFFFFFFFFFF]}; // other quiet NaNs
-        bins sNaN_payload1          = {64'h7FF0000000000001};   // signaling NaN with payload 1
+    cp_vs2_edges : coverpoint vs_edges_check(ins.hart, ins.issue, ins.current.vs2_val, "1")  iff (ins.trap == 0 )  {
+        // Edges values of vs2, assuming vl = 1
+        bins zero       = {vs_zero      };   //  = {(`SEW){1'b0}},
+        bins one        = {vs_one       };   //  = {(`SEW-1){1'b0}, {1'b1}},
+        bins two        = {vs_two       };   //  = {(`SEW-2){1'b0}, {2'b10}},
+        bins min        = {vs_min       };   //  = {{1'b1}, (`SEW-1){1'b0}},
+        bins minp1      = {vs_minp1     };   //  = {{1'b1}, (`SEW-2){1'b0}, {1'b1}},
+        bins max        = {vs_max       };   //  = {{1'b0}, (`SEW-1){1'b1}},
+        bins maxm1      = {vs_maxm1     };   //  = {{1'b0}, (`SEW-2){1'b1}, {1'b0}},
+        bins ones       = {vs_ones      };   //  = {(`SEW){1'b1}},
+        bins onesm1     = {vs_onesm1    };   //  = {(`SEW-1){1'b1}, {1'b0}},
+        bins walkodd    = {vs_walkodd   };   //  = {(`SEW/2){2'b10}},
+        bins walkeven   = {vs_walkeven  };   //  = {(`SEW/2){2'b01}},
+        bins random     = {vs_random    };   //  = {(SEW){random}}
     }
 
-    //// end cp_vs2_edges_f_sew64////////////////////////////////////////////////
+    //// end cp_vs2_edges////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew64
@@ -1149,38 +1108,7 @@ covergroup Vf64_vfcvt_f_xu_v_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_NaN_input
-    //////////////////////////////////////////////////////////////////////////////////
-
-`ifndef COVER_VFCUSTOM64
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        `ifdef COVER_VFCUSTOM16
-            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
-            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
-        `endif
-        `ifdef COVER_VFCUSTOM32
-            bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
-            bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
-        `endif
-    }
-
-    cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-`else
-    `ifdef D_SUPPORTED
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
-            bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
-    }
-
-    cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-    `endif
-`endif
-
-    //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_vfp_flags_nx
@@ -1251,34 +1179,26 @@ covergroup Vf64_vfcvt_f_xu_v_cg with function sample(ins_t ins);
     //// end cp_vs2////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_vs2_edges_f_sew64
+    // cp_vs2_edges
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_f_sew64 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val)[63:0]  iff (ins.trap == 0 )  {
-        // (Double Precision)
-        bins pos0                   = {64'h0000000000000000};
-        bins neg0                   = {64'h8000000000000000};
-        bins pos1                   = {64'h3FF0000000000000};
-        bins neg1                   = {64'hBFF0000000000000};
-        bins posminnorm             = {64'h0010000000000000};
-        bins negmaxnorm             = {64'hFFEFFFFFFFFFFFFF};
-        bins posinfinity            = {64'h7FF0000000000000};
-        bins neginfinity            = {64'hFFF0000000000000};
-        bins pos0p5                 = {64'h3FE0000000000000};
-        bins pos1p5                 = {64'h3FF8000000000000};
-        bins neg2                   = {64'hC000000000000000};
-        bins pi                     = {64'h400921FB54442D18};
-        bins twoToEmax              = {64'h7FE0000000000000};   // 2^1023
-        bins onePulp                = {64'h3FF0000000000001};   // 1 + ULP
-        bins largestsubnorm         = {64'h000FFFFFFFFFFFFF};
-        bins negSubnormLeadingOne   = {64'h8008000000000000};
-        bins min_subnorm            = {64'h0000000000000001};
-        bins canonicalQNaN          = {64'h7FF8000000000000};   // quiet NaN, canonical payload
-        bins negNoncanonicalQNaN    = {[64'hFFF8000000000001:64'hFFFFFFFFFFFFFFFF]}; // other quiet NaNs
-        bins sNaN_payload1          = {64'h7FF0000000000001};   // signaling NaN with payload 1
+    cp_vs2_edges : coverpoint vs_edges_check(ins.hart, ins.issue, ins.current.vs2_val, "1")  iff (ins.trap == 0 )  {
+        // Edges values of vs2, assuming vl = 1
+        bins zero       = {vs_zero      };   //  = {(`SEW){1'b0}},
+        bins one        = {vs_one       };   //  = {(`SEW-1){1'b0}, {1'b1}},
+        bins two        = {vs_two       };   //  = {(`SEW-2){1'b0}, {2'b10}},
+        bins min        = {vs_min       };   //  = {{1'b1}, (`SEW-1){1'b0}},
+        bins minp1      = {vs_minp1     };   //  = {{1'b1}, (`SEW-2){1'b0}, {1'b1}},
+        bins max        = {vs_max       };   //  = {{1'b0}, (`SEW-1){1'b1}},
+        bins maxm1      = {vs_maxm1     };   //  = {{1'b0}, (`SEW-2){1'b1}, {1'b0}},
+        bins ones       = {vs_ones      };   //  = {(`SEW){1'b1}},
+        bins onesm1     = {vs_onesm1    };   //  = {(`SEW-1){1'b1}, {1'b0}},
+        bins walkodd    = {vs_walkodd   };   //  = {(`SEW/2){2'b10}},
+        bins walkeven   = {vs_walkeven  };   //  = {(`SEW/2){2'b01}},
+        bins random     = {vs_random    };   //  = {(SEW){random}}
     }
 
-    //// end cp_vs2_edges_f_sew64////////////////////////////////////////////////
+    //// end cp_vs2_edges////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew64
@@ -1885,7 +1805,6 @@ covergroup Vf64_vfcvt_x_f_v_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -2148,7 +2067,6 @@ covergroup Vf64_vfcvt_xu_f_v_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -2423,7 +2341,6 @@ covergroup Vf64_vfdiv_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -2776,7 +2693,6 @@ covergroup Vf64_vfdiv_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -3097,7 +3013,6 @@ covergroup Vf64_vfmacc_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -3438,7 +3353,6 @@ covergroup Vf64_vfmacc_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -3755,7 +3669,6 @@ covergroup Vf64_vfmadd_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -4096,7 +4009,6 @@ covergroup Vf64_vfmadd_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -5874,7 +5786,6 @@ covergroup Vf64_vfmsac_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -6215,7 +6126,6 @@ covergroup Vf64_vfmsac_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -6532,7 +6442,6 @@ covergroup Vf64_vfmsub_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -6873,7 +6782,6 @@ covergroup Vf64_vfmsub_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -7190,7 +7098,6 @@ covergroup Vf64_vfmul_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -7539,7 +7446,6 @@ covergroup Vf64_vfmul_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -8001,7 +7907,7 @@ covergroup Vf64_vfmv_f_s_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew64 : cross cp_csr_vtype_lmul_all_sew64_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 3)  {
+    cr_vl_lmul_sew64 : cross cp_csr_vtype_lmul_all_sew64_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
     }
 
@@ -8166,7 +8072,7 @@ covergroup Vf64_vfmv_s_f_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew64 : cross cp_csr_vtype_lmul_all_sew64_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 3)  {
+    cr_vl_lmul_sew64 : cross cp_csr_vtype_lmul_all_sew64_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
     }
 
@@ -8286,7 +8192,7 @@ covergroup Vf64_vfmv_v_f_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew64 : cross cp_csr_vtype_lmul_all_sew64_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 3)  {
+    cr_vl_lmul_sew64 : cross cp_csr_vtype_lmul_all_sew64_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
     }
 
@@ -8371,7 +8277,6 @@ covergroup Vf64_vfnmacc_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -8712,7 +8617,6 @@ covergroup Vf64_vfnmacc_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -9029,7 +8933,6 @@ covergroup Vf64_vfnmadd_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -9370,7 +9273,6 @@ covergroup Vf64_vfnmadd_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -9687,7 +9589,6 @@ covergroup Vf64_vfnmsac_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -10028,7 +9929,6 @@ covergroup Vf64_vfnmsac_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -10345,7 +10245,6 @@ covergroup Vf64_vfnmsub_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -10686,7 +10585,6 @@ covergroup Vf64_vfnmsub_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -11011,7 +10909,6 @@ covergroup Vf64_vfrdiv_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -11332,7 +11229,6 @@ covergroup Vf64_vfrec7_v_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -12407,7 +12303,6 @@ covergroup Vf64_vfredosum_vs_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -12554,9 +12449,8 @@ covergroup Vf64_vfredosum_vs_cg with function sample(ins_t ins);
 `else
         `ifdef D_SUPPORTED
         vs1_0_qNAN : coverpoint
-                (get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val) inside {
-                        [64'h7FF8_0000_0000_0000:64'h7FFF_FFFF_FFFF_FFFF]
-                })
+                (get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val) >= 64'h7FF8_0000_0000_0000
+                 && get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val) <= 64'h7FFF_FFFF_FFFF_FFFF)
         {
                 bins posQNaN = {1};
         }
@@ -12881,7 +12775,6 @@ covergroup Vf64_vfredusum_vs_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -13200,7 +13093,6 @@ covergroup Vf64_vfrsqrt7_v_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -13640,7 +13532,6 @@ covergroup Vf64_vfrsub_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -15789,7 +15680,6 @@ covergroup Vf64_vfsqrt_v_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -16054,7 +15944,6 @@ covergroup Vf64_vfsub_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -16393,7 +16282,6 @@ covergroup Vf64_vfsub_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -19547,12 +19435,14 @@ covergroup Vf64_vmfne_vv_cg with function sample(ins_t ins);
 endgroup
 // ---------------------
 function void vf64_sample(int hart, int issue, ins_t ins);
+    string inst_name = traceDataQ[hart][issue][0].inst_name;
+
     // Want to sample only if the SEW matches the target SEW of the file, some tests require
     // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
     // associated sew with these tests
     if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 3 ||
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
-        case (traceDataQ[hart][issue][0].inst_name)
+        case (inst_name)
             "vfadd.vf"     : begin
                 Vf64_vfadd_vf_cg.sample(ins);
             end
@@ -19751,6 +19641,7 @@ function void vf64_sample(int hart, int issue, ins_t ins);
             "vmfne.vv"     : begin
                 Vf64_vmfne_vv_cg.sample(ins);
             end
+            default: ; // a case needs at least one item, and some configurations select none
         endcase
     end
 endfunction

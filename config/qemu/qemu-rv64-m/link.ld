@@ -1,0 +1,1 @@
+../qemu-rv64-max/link.ld

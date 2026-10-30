@@ -1,13 +1,66 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
-  - name: fcvt-bf16-s_op
-    coverpoint:
-      ["Zfbfmin_fcvt_bf16_s_cg/{cp_fs1, cp_fd, cp_fs1_edges, cp_NaNBox_S_H}"]
-      # Narrowing convert FP32 value to a BF16 value. Round according to the RM field.
-  - name: fcvt-s-bf16_op
+  # When multiple floating-point precisions are supported, then valid values of narrower
+  # n-bit types, n&lt;FLEN, are represented in the lower n bits of an FLEN-bit NaN
+  # value, in a process termed NaN-boxing. The upper bits of a valid NaN-boxed value
+  # must be all 1s. Valid NaN-boxed n-bit values therefore appear as negative quiet NaNs
+  # (qNaNs) when viewed as any wider m-bit value, n &lt; m ≤ FLEN. Any operation that
+  # writes a narrower result to an f register must write all 1s to the uppermost FLEN-n
+  # bits to yield a legal NaN-boxed value.
+  - name: fp_nan_boxing
     coverpoint:
       [
-        "Zfbfmin_fcvt_bf16_s_cg/{cp_fs1, cp_fd, cp_fs1_edges_H, cp_fs1_badNB_S_H}",
+        "{Zfbfmin_fcvt_bf16_s_cg, Zfbfmin_flh_cg, Zfbfmin_fmv_h_x_cg}/cp_NaNBox_S_H",
       ]
-      # Converts a BF16 value to an FP32 value. The conversion is exact.
+  # A narrower n-bit transfer, n&lt;FLEN, into the f registers will create a valid
+  # NaN-boxed value
+  - name: fp_transfer_instrs_narrow_transfer_in
+    coverpoint: ["{Zfbfmin_flh_cg, Zfbfmin_fmv_h_x_cg}/cp_NaNBox_S_H"]
+  # A narrower n-bit transfer out of the floating-point registers will transfer the
+  # lower n bits of the register ignoring the upper FLEN-n bits
+  - name: fp_transfer_instrs_narrow_transfer_out
+    coverpoint:
+      ["Zfbfmin_fmv_x_h_cg/cp_fs1_badNB_S_H", "Zfbfmin_fsh_cg/cp_fs2_badNB_S_H"]
+  # Apart from transfer operations described in the previous paragraph, all other
+  # floating-point operations on narrower n-bit operations, n&lt;FLEN, check if the
+  # input operands are correctly NaN-boxed, i.e., all upper FLEN-n bits are 1. If so,
+  # the n least-significant bits of the input are used as the input value, otherwise the
+  # input value is treated as an n-bit canonical NaN.
+  - name: fp_nontransfer_instrs_improper_nan_boxed_input
+    coverpoint: ["Zfbfmin_fcvt_s_bf16_cg/cp_fs1_badNB_S_H"]
+  # New 16-bit variants of LOAD-FP and STORE-FP instructions are added, encoded with a
+  # new value for the funct3 width field.
+  - name: fsh_flh_op
+    # Zfbfmin includes flh, fsh, fmv.x.h and fmv.h.x
+    coverpoint: ["{Zfbfmin_flh_cg, Zfbfmin_fsh_cg}/{cp_rs1_nx0, cp_imm_edges}"]
+  # insn:fmv.x.h[] moves the half-precision value in floating-point register rs1 to a
+  # representation in the IEEE 754-2008 encoding in integer register rd, filling the
+  # upper XLEN-16 bits with copies of the floating-point number's sign bit
+  - name: fmv-x-h_op
+    coverpoint: ["Zfbfmin_fmv_x_h_cg/{cp_rd, cp_fs1, cp_fs1_edges_H}"]
+  # insn:fmv.h.x[] moves the half-precision value encoded in the IEEE 754-2008 encoding
+  # from the lower 16 bits of integer register rs1 to the floating-point register rd,
+  # NaN-boxing the result.
+  - name: fmv-h-x_op
+    coverpoint:
+      ["Zfbfmin_fmv_h_x_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_NaNBox_S_H}"]
+  # BF16 computational instructions defined in this chapter support all IEEE 754-2008
+  # features, including all rounding modes, subnormal inputs and outputs, overflow and
+  # underflow, and default exception handling. Tininess is detected after rounding.
+  - name: bf16_subnorm
+    # fcvt.bf16.s is the only scalar BF16 instruction that rounds; its edges include a subnormal that is
+    # tiny before but not after rounding
+    coverpoint:
+      ["Zfbfmin_fcvt_bf16_s_cg/{cp_fs1_edges, cp_frm_2, cp_csr_fflags_voun}"]
+  # For BF16, the canonical NaN corresponds to the pattern 0x7fc0.
+  - name: bf16_canonical_nan
+    coverpoint: ["Zfbfmin_fcvt_bf16_s_cg/cp_fs1_edges"]
+  # Narrowing convert FP32 value to a BF16 value. Round according to the RM field.
+  - name: fcvt-bf16-s_op
+    coverpoint:
+      ["Zfbfmin_fcvt_bf16_s_cg/{cp_fd, cp_fs1_edges, cp_frm_2, cp_csr_frm}"]
+  # Converts a BF16 value to an FP32 value. The conversion is exact.
+  - name: fcvt-s-bf16_op
+    coverpoint:
+      ["Zfbfmin_fcvt_s_bf16_cg/{cp_fd, cp_fs1_edges_BF16, cp_csr_fflags_v}"]

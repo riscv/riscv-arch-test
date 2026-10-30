@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 688
+#define SIGUPD_COUNT 700
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -2747,6 +2747,32 @@ Zacas_amocas_d_cg_cp_rs2_edges_0x100000001:
   # Check if x27 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x27, Zacas_amocas_d_cg_cp_rs2_edges_0x100000001, Zacas_amocas_d_cg_cp_rs2_edges_0x100000001_str)
 
+# Testcase cp_rs2_edges (Test source rs2 value = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x3, x7) # load value in memory: x7 = 0xc3ad9715ad3d8f6a
+  RVTEST_TESTDATA_LOAD_INT(x3, x21) # load rs2: x21 = 0x0000000080000000
+  LA(x8, scratch) # load base address into rs1
+  SREG x7, 0(x8) # store value into memory at address in rs1
+Zacas_amocas_d_cg_cp_rs2_edges_0x80000000:
+  amocas.d x15, x21, (x8) # perform operation
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Zacas_amocas_d_cg_cp_rs2_edges_0x80000000, Zacas_amocas_d_cg_cp_rs2_edges_0x80000000_str)
+  LREG x8, 0(x8) # Load the updated value from memory
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Zacas_amocas_d_cg_cp_rs2_edges_0x80000000, Zacas_amocas_d_cg_cp_rs2_edges_0x80000000_str)
+
+# Testcase cp_rs2_edges (Test source rs2 value = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load value in memory: x13 = 0xe332aace713028f7
+  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load rs2: x15 = 0x000000007fffffff
+  LA(x28, scratch) # load base address into rs1
+  SREG x13, 0(x28) # store value into memory at address in rs1
+Zacas_amocas_d_cg_cp_rs2_edges_0x7fffffff:
+  amocas.d x18, x15, (x28) # perform operation
+  # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x18, Zacas_amocas_d_cg_cp_rs2_edges_0x7fffffff, Zacas_amocas_d_cg_cp_rs2_edges_0x7fffffff_str)
+  LREG x28, 0(x28) # Load the updated value from memory
+  # Check if x28 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x28, Zacas_amocas_d_cg_cp_rs2_edges_0x7fffffff, Zacas_amocas_d_cg_cp_rs2_edges_0x7fffffff_str)
+
 /////////////////////////////////
 // cmp_rs1_rs2_nx0
 /////////////////////////////////
@@ -4609,6 +4635,62 @@ Zacas_amocas_d_cg_cmp_rd_rs1_val_w_not_equal:
   # Check if x25 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x1, x5, x4, x25, Zacas_amocas_d_cg_cmp_rd_rs1_val_w_not_equal, Zacas_amocas_d_cg_cmp_rd_rs1_val_w_not_equal_str)
 
+/////////////////////////////////
+// cp_custom_amo_aqrl
+/////////////////////////////////
+
+# Testcase cp_custom_aqrl (ordering suffix = '')
+  RVTEST_TESTDATA_LOAD_INT(x3, x16) # load value in memory: x16 = 0x6ce728059f23c5dc
+  RVTEST_TESTDATA_LOAD_INT(x3, x18) # load rs2: x18 = 0x0f4138b68c3cd8ed
+  LA(x24, scratch) # load base address into rs1
+  SREG x16, 0(x24) # store value into memory at address in rs1
+Zacas_amocas_d_cg_cp_custom_aqrl:
+  amocas.d x26, x18, (x24) # perform operation
+  # Check if x26 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x1, x5, x4, x26, Zacas_amocas_d_cg_cp_custom_aqrl, Zacas_amocas_d_cg_cp_custom_aqrl_str)
+  LREG x24, 0(x24) # Load the updated value from memory
+  # Check if x24 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x1, x5, x4, x24, Zacas_amocas_d_cg_cp_custom_aqrl, Zacas_amocas_d_cg_cp_custom_aqrl_str)
+
+# Testcase cp_custom_aqrl (ordering suffix = '.aq')
+  RVTEST_TESTDATA_LOAD_INT(x3, x25) # load value in memory: x25 = 0xd52be96c3a4eb1e4
+  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load rs2: x9 = 0x36d38f4475adf852
+  LA(x14, scratch) # load base address into rs1
+  SREG x25, 0(x14) # store value into memory at address in rs1
+Zacas_amocas_d_cg_cp_custom_aqrl_aq:
+  amocas.d.aq x29, x9, (x14) # perform operation
+  # Check if x29 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x1, x5, x4, x29, Zacas_amocas_d_cg_cp_custom_aqrl_aq, Zacas_amocas_d_cg_cp_custom_aqrl_aq_str)
+  LREG x14, 0(x14) # Load the updated value from memory
+  # Check if x14 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x1, x5, x4, x14, Zacas_amocas_d_cg_cp_custom_aqrl_aq, Zacas_amocas_d_cg_cp_custom_aqrl_aq_str)
+
+# Testcase cp_custom_aqrl (ordering suffix = '.rl')
+  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load value in memory: x14 = 0xd54a83477c110f3b
+  RVTEST_TESTDATA_LOAD_INT(x3, x29) # load rs2: x29 = 0x5d033d76aa618ef1
+  LA(x8, scratch) # load base address into rs1
+  SREG x14, 0(x8) # store value into memory at address in rs1
+Zacas_amocas_d_cg_cp_custom_aqrl_rl:
+  amocas.d.rl x25, x29, (x8) # perform operation
+  # Check if x25 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x1, x5, x4, x25, Zacas_amocas_d_cg_cp_custom_aqrl_rl, Zacas_amocas_d_cg_cp_custom_aqrl_rl_str)
+  LREG x8, 0(x8) # Load the updated value from memory
+  # Check if x8 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x1, x5, x4, x8, Zacas_amocas_d_cg_cp_custom_aqrl_rl, Zacas_amocas_d_cg_cp_custom_aqrl_rl_str)
+
+# Testcase cp_custom_aqrl (ordering suffix = '.aqrl')
+  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load value in memory: x9 = 0x5647b8429c2347be
+  RVTEST_TESTDATA_LOAD_INT(x3, x18) # load rs2: x18 = 0xb95c5ba2b31e02c1
+  LA(x19, scratch) # load base address into rs1
+  SREG x9, 0(x19) # store value into memory at address in rs1
+Zacas_amocas_d_cg_cp_custom_aqrl_aqrl:
+  amocas.d.aqrl x11, x18, (x19) # perform operation
+  # Check if x11 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x1, x5, x4, x11, Zacas_amocas_d_cg_cp_custom_aqrl_aqrl, Zacas_amocas_d_cg_cp_custom_aqrl_aqrl_str)
+  LREG x19, 0(x19) # Load the updated value from memory
+  # Check if x19 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x1, x5, x4, x19, Zacas_amocas_d_cg_cp_custom_aqrl_aqrl, Zacas_amocas_d_cg_cp_custom_aqrl_aqrl_str)
+
   mv x2, x1 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -5030,6 +5112,10 @@ RVTEST_DATA_BEGIN
 .dword 0x0000000100000000
 .dword 0x69c01446b51790ce
 .dword 0x0000000100000001
+.dword 0xc3ad9715ad3d8f6a
+.dword 0x0000000080000000
+.dword 0xe332aace713028f7
+.dword 0x000000007fffffff
 .dword 0xaeaef1417d6e2103
 .dword 0x0d49cbba56d4b0fc
 .dword 0xa84ffa3e9914c6a8
@@ -5304,6 +5390,14 @@ RVTEST_DATA_BEGIN
 .dword 0xc70fa268e404a4c6
 .dword 0xc70fa268774c93ef
 .dword 0xc3d8070738635803
+.dword 0x6ce728059f23c5dc
+.dword 0x0f4138b68c3cd8ed
+.dword 0xd52be96c3a4eb1e4
+.dword 0x36d38f4475adf852
+.dword 0xd54a83477c110f3b
+.dword 0x5d033d76aa618ef1
+.dword 0x5647b8429c2347be
+.dword 0xb95c5ba2b31e02c1
 
 // Testcase strings
 Zacas_amocas_d_cg_cp_rs1_nx0_b1_equal_str: .string "\"test: 1; cg: Zacas_amocas.d_cg; cp: cp_rs1_nx0; bin: b1_equal\""
@@ -5512,139 +5606,145 @@ Zacas_amocas_d_cg_cp_rs2_edges_0xffffffff_str: .string "\"test: 203; cg: Zacas_a
 Zacas_amocas_d_cg_cp_rs2_edges_0xfffffffe_str: .string "\"test: 204; cg: Zacas_amocas.d_cg; cp: cp_rs2_edges; bin: 0xfffffffe\""
 Zacas_amocas_d_cg_cp_rs2_edges_0x100000000_str: .string "\"test: 205; cg: Zacas_amocas.d_cg; cp: cp_rs2_edges; bin: 0x100000000\""
 Zacas_amocas_d_cg_cp_rs2_edges_0x100000001_str: .string "\"test: 206; cg: Zacas_amocas.d_cg; cp: cp_rs2_edges; bin: 0x100000001\""
-Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b1_str: .string "\"test: 207; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b1\""
-Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b2_str: .string "\"test: 208; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b2\""
-Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b3_str: .string "\"test: 209; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b3\""
-Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b4_str: .string "\"test: 210; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b4\""
-Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b5_str: .string "\"test: 211; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b5\""
-Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b6_str: .string "\"test: 212; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b6\""
-Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b7_str: .string "\"test: 213; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b7\""
-Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b8_str: .string "\"test: 214; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b8\""
-Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b9_str: .string "\"test: 215; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b9\""
-Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b10_str: .string "\"test: 216; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b10\""
-Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b11_str: .string "\"test: 217; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b11\""
-Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b12_str: .string "\"test: 218; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b12\""
-Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b13_str: .string "\"test: 219; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b13\""
-Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b14_str: .string "\"test: 220; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b14\""
-Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b15_str: .string "\"test: 221; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b15\""
-Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b16_str: .string "\"test: 222; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b16\""
-Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b17_str: .string "\"test: 223; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b17\""
-Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b18_str: .string "\"test: 224; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b18\""
-Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b19_str: .string "\"test: 225; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b19\""
-Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b20_str: .string "\"test: 226; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b20\""
-Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b21_str: .string "\"test: 227; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b21\""
-Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b22_str: .string "\"test: 228; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b22\""
-Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b23_str: .string "\"test: 229; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b23\""
-Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b24_str: .string "\"test: 230; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b24\""
-Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b25_str: .string "\"test: 231; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b25\""
-Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b26_str: .string "\"test: 232; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b26\""
-Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b27_str: .string "\"test: 233; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b27\""
-Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b28_str: .string "\"test: 234; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b28\""
-Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b29_str: .string "\"test: 235; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b29\""
-Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b30_str: .string "\"test: 236; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b30\""
-Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b31_str: .string "\"test: 237; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b31\""
-Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b1_str: .string "\"test: 238; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b1\""
-Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b2_str: .string "\"test: 239; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b2\""
-Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b3_str: .string "\"test: 240; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b3\""
-Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b4_str: .string "\"test: 241; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b4\""
-Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b5_str: .string "\"test: 242; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b5\""
-Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b6_str: .string "\"test: 243; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b6\""
-Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b7_str: .string "\"test: 244; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b7\""
-Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b8_str: .string "\"test: 245; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b8\""
-Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b9_str: .string "\"test: 246; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b9\""
-Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b10_str: .string "\"test: 247; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b10\""
-Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b11_str: .string "\"test: 248; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b11\""
-Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b12_str: .string "\"test: 249; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b12\""
-Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b13_str: .string "\"test: 250; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b13\""
-Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b14_str: .string "\"test: 251; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b14\""
-Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b15_str: .string "\"test: 252; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b15\""
-Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b16_str: .string "\"test: 253; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b16\""
-Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b17_str: .string "\"test: 254; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b17\""
-Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b18_str: .string "\"test: 255; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b18\""
-Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b19_str: .string "\"test: 256; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b19\""
-Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b20_str: .string "\"test: 257; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b20\""
-Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b21_str: .string "\"test: 258; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b21\""
-Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b22_str: .string "\"test: 259; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b22\""
-Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b23_str: .string "\"test: 260; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b23\""
-Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b24_str: .string "\"test: 261; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b24\""
-Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b25_str: .string "\"test: 262; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b25\""
-Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b26_str: .string "\"test: 263; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b26\""
-Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b27_str: .string "\"test: 264; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b27\""
-Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b28_str: .string "\"test: 265; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b28\""
-Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b29_str: .string "\"test: 266; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b29\""
-Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b30_str: .string "\"test: 267; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b30\""
-Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b31_str: .string "\"test: 268; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b31\""
-Zacas_amocas_d_cg_cmp_rd_rs2_b0_str: .string "\"test: 269; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b0\""
-Zacas_amocas_d_cg_cmp_rd_rs2_b1_str: .string "\"test: 270; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b1\""
-Zacas_amocas_d_cg_cmp_rd_rs2_b2_str: .string "\"test: 271; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b2\""
-Zacas_amocas_d_cg_cmp_rd_rs2_b3_str: .string "\"test: 272; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b3\""
-Zacas_amocas_d_cg_cmp_rd_rs2_b4_str: .string "\"test: 273; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b4\""
-Zacas_amocas_d_cg_cmp_rd_rs2_b5_str: .string "\"test: 274; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b5\""
-Zacas_amocas_d_cg_cmp_rd_rs2_b6_str: .string "\"test: 275; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b6\""
-Zacas_amocas_d_cg_cmp_rd_rs2_b7_str: .string "\"test: 276; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b7\""
-Zacas_amocas_d_cg_cmp_rd_rs2_b8_str: .string "\"test: 277; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b8\""
-Zacas_amocas_d_cg_cmp_rd_rs2_b9_str: .string "\"test: 278; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b9\""
-Zacas_amocas_d_cg_cmp_rd_rs2_b10_str: .string "\"test: 279; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b10\""
-Zacas_amocas_d_cg_cmp_rd_rs2_b11_str: .string "\"test: 280; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b11\""
-Zacas_amocas_d_cg_cmp_rd_rs2_b12_str: .string "\"test: 281; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b12\""
-Zacas_amocas_d_cg_cmp_rd_rs2_b13_str: .string "\"test: 282; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b13\""
-Zacas_amocas_d_cg_cmp_rd_rs2_b14_str: .string "\"test: 283; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b14\""
-Zacas_amocas_d_cg_cmp_rd_rs2_b15_str: .string "\"test: 284; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b15\""
-Zacas_amocas_d_cg_cmp_rd_rs2_b16_str: .string "\"test: 285; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b16\""
-Zacas_amocas_d_cg_cmp_rd_rs2_b17_str: .string "\"test: 286; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b17\""
-Zacas_amocas_d_cg_cmp_rd_rs2_b18_str: .string "\"test: 287; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b18\""
-Zacas_amocas_d_cg_cmp_rd_rs2_b19_str: .string "\"test: 288; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b19\""
-Zacas_amocas_d_cg_cmp_rd_rs2_b20_str: .string "\"test: 289; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b20\""
-Zacas_amocas_d_cg_cmp_rd_rs2_b21_str: .string "\"test: 290; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b21\""
-Zacas_amocas_d_cg_cmp_rd_rs2_b22_str: .string "\"test: 291; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b22\""
-Zacas_amocas_d_cg_cmp_rd_rs2_b23_str: .string "\"test: 292; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b23\""
-Zacas_amocas_d_cg_cmp_rd_rs2_b24_str: .string "\"test: 293; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b24\""
-Zacas_amocas_d_cg_cmp_rd_rs2_b25_str: .string "\"test: 294; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b25\""
-Zacas_amocas_d_cg_cmp_rd_rs2_b26_str: .string "\"test: 295; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b26\""
-Zacas_amocas_d_cg_cmp_rd_rs2_b27_str: .string "\"test: 296; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b27\""
-Zacas_amocas_d_cg_cmp_rd_rs2_b28_str: .string "\"test: 297; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b28\""
-Zacas_amocas_d_cg_cmp_rd_rs2_b29_str: .string "\"test: 298; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b29\""
-Zacas_amocas_d_cg_cmp_rd_rs2_b30_str: .string "\"test: 299; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b30\""
-Zacas_amocas_d_cg_cmp_rd_rs2_b31_str: .string "\"test: 300; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b31\""
-Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b1_str: .string "\"test: 301; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b1\""
-Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b2_str: .string "\"test: 302; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b2\""
-Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b3_str: .string "\"test: 303; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b3\""
-Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b4_str: .string "\"test: 304; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b4\""
-Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b5_str: .string "\"test: 305; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b5\""
-Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b6_str: .string "\"test: 306; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b6\""
-Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b7_str: .string "\"test: 307; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b7\""
-Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b8_str: .string "\"test: 308; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b8\""
-Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b9_str: .string "\"test: 309; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b9\""
-Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b10_str: .string "\"test: 310; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b10\""
-Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b11_str: .string "\"test: 311; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b11\""
-Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b12_str: .string "\"test: 312; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b12\""
-Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b13_str: .string "\"test: 313; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b13\""
-Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b14_str: .string "\"test: 314; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b14\""
-Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b15_str: .string "\"test: 315; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b15\""
-Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b16_str: .string "\"test: 316; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b16\""
-Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b17_str: .string "\"test: 317; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b17\""
-Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b18_str: .string "\"test: 318; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b18\""
-Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b19_str: .string "\"test: 319; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b19\""
-Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b20_str: .string "\"test: 320; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b20\""
-Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b21_str: .string "\"test: 321; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b21\""
-Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b22_str: .string "\"test: 322; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b22\""
-Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b23_str: .string "\"test: 323; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b23\""
-Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b24_str: .string "\"test: 324; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b24\""
-Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b25_str: .string "\"test: 325; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b25\""
-Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b26_str: .string "\"test: 326; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b26\""
-Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b27_str: .string "\"test: 327; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b27\""
-Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b28_str: .string "\"test: 328; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b28\""
-Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b29_str: .string "\"test: 329; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b29\""
-Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b30_str: .string "\"test: 330; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b30\""
-Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b31_str: .string "\"test: 331; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b31\""
-Zacas_amocas_d_cg_cmp_rd_rs1_val_eq_equal_str: .string "\"test: 332; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_val_eq; bin: equal\""
-Zacas_amocas_d_cg_cmp_rd_rs1_val_eq_not_equal_str: .string "\"test: 333; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_val_eq; bin: not_equal\""
-Zacas_amocas_d_cg_cmp_rd_rs1_val_lsb_equal_str: .string "\"test: 334; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_val_lsb; bin: equal\""
-Zacas_amocas_d_cg_cmp_rd_rs1_val_lsb_not_equal_str: .string "\"test: 335; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_val_lsb; bin: not_equal\""
-Zacas_amocas_d_cg_cmp_rd_rs1_val_hw_equal_str: .string "\"test: 336; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_val_hw; bin: equal\""
-Zacas_amocas_d_cg_cmp_rd_rs1_val_hw_not_equal_str: .string "\"test: 337; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_val_hw; bin: not_equal\""
-Zacas_amocas_d_cg_cmp_rd_rs1_val_w_equal_str: .string "\"test: 338; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_val_w; bin: equal\""
-Zacas_amocas_d_cg_cmp_rd_rs1_val_w_not_equal_str: .string "\"test: 339; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_val_w; bin: not_equal\""
+Zacas_amocas_d_cg_cp_rs2_edges_0x80000000_str: .string "\"test: 207; cg: Zacas_amocas.d_cg; cp: cp_rs2_edges; bin: 0x80000000\""
+Zacas_amocas_d_cg_cp_rs2_edges_0x7fffffff_str: .string "\"test: 208; cg: Zacas_amocas.d_cg; cp: cp_rs2_edges; bin: 0x7fffffff\""
+Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b1_str: .string "\"test: 209; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b1\""
+Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b2_str: .string "\"test: 210; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b2\""
+Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b3_str: .string "\"test: 211; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b3\""
+Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b4_str: .string "\"test: 212; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b4\""
+Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b5_str: .string "\"test: 213; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b5\""
+Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b6_str: .string "\"test: 214; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b6\""
+Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b7_str: .string "\"test: 215; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b7\""
+Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b8_str: .string "\"test: 216; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b8\""
+Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b9_str: .string "\"test: 217; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b9\""
+Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b10_str: .string "\"test: 218; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b10\""
+Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b11_str: .string "\"test: 219; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b11\""
+Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b12_str: .string "\"test: 220; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b12\""
+Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b13_str: .string "\"test: 221; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b13\""
+Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b14_str: .string "\"test: 222; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b14\""
+Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b15_str: .string "\"test: 223; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b15\""
+Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b16_str: .string "\"test: 224; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b16\""
+Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b17_str: .string "\"test: 225; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b17\""
+Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b18_str: .string "\"test: 226; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b18\""
+Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b19_str: .string "\"test: 227; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b19\""
+Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b20_str: .string "\"test: 228; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b20\""
+Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b21_str: .string "\"test: 229; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b21\""
+Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b22_str: .string "\"test: 230; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b22\""
+Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b23_str: .string "\"test: 231; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b23\""
+Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b24_str: .string "\"test: 232; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b24\""
+Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b25_str: .string "\"test: 233; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b25\""
+Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b26_str: .string "\"test: 234; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b26\""
+Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b27_str: .string "\"test: 235; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b27\""
+Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b28_str: .string "\"test: 236; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b28\""
+Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b29_str: .string "\"test: 237; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b29\""
+Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b30_str: .string "\"test: 238; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b30\""
+Zacas_amocas_d_cg_cmp_rs1_rs2_nx0_b31_str: .string "\"test: 239; cg: Zacas_amocas.d_cg; cp: cmp_rs1_rs2_nx0; bin: b31\""
+Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b1_str: .string "\"test: 240; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b1\""
+Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b2_str: .string "\"test: 241; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b2\""
+Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b3_str: .string "\"test: 242; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b3\""
+Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b4_str: .string "\"test: 243; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b4\""
+Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b5_str: .string "\"test: 244; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b5\""
+Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b6_str: .string "\"test: 245; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b6\""
+Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b7_str: .string "\"test: 246; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b7\""
+Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b8_str: .string "\"test: 247; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b8\""
+Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b9_str: .string "\"test: 248; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b9\""
+Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b10_str: .string "\"test: 249; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b10\""
+Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b11_str: .string "\"test: 250; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b11\""
+Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b12_str: .string "\"test: 251; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b12\""
+Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b13_str: .string "\"test: 252; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b13\""
+Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b14_str: .string "\"test: 253; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b14\""
+Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b15_str: .string "\"test: 254; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b15\""
+Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b16_str: .string "\"test: 255; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b16\""
+Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b17_str: .string "\"test: 256; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b17\""
+Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b18_str: .string "\"test: 257; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b18\""
+Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b19_str: .string "\"test: 258; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b19\""
+Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b20_str: .string "\"test: 259; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b20\""
+Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b21_str: .string "\"test: 260; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b21\""
+Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b22_str: .string "\"test: 261; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b22\""
+Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b23_str: .string "\"test: 262; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b23\""
+Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b24_str: .string "\"test: 263; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b24\""
+Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b25_str: .string "\"test: 264; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b25\""
+Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b26_str: .string "\"test: 265; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b26\""
+Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b27_str: .string "\"test: 266; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b27\""
+Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b28_str: .string "\"test: 267; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b28\""
+Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b29_str: .string "\"test: 268; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b29\""
+Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b30_str: .string "\"test: 269; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b30\""
+Zacas_amocas_d_cg_cmp_rd_rs1_nx0_b31_str: .string "\"test: 270; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_nx0; bin: b31\""
+Zacas_amocas_d_cg_cmp_rd_rs2_b0_str: .string "\"test: 271; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b0\""
+Zacas_amocas_d_cg_cmp_rd_rs2_b1_str: .string "\"test: 272; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b1\""
+Zacas_amocas_d_cg_cmp_rd_rs2_b2_str: .string "\"test: 273; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b2\""
+Zacas_amocas_d_cg_cmp_rd_rs2_b3_str: .string "\"test: 274; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b3\""
+Zacas_amocas_d_cg_cmp_rd_rs2_b4_str: .string "\"test: 275; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b4\""
+Zacas_amocas_d_cg_cmp_rd_rs2_b5_str: .string "\"test: 276; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b5\""
+Zacas_amocas_d_cg_cmp_rd_rs2_b6_str: .string "\"test: 277; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b6\""
+Zacas_amocas_d_cg_cmp_rd_rs2_b7_str: .string "\"test: 278; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b7\""
+Zacas_amocas_d_cg_cmp_rd_rs2_b8_str: .string "\"test: 279; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b8\""
+Zacas_amocas_d_cg_cmp_rd_rs2_b9_str: .string "\"test: 280; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b9\""
+Zacas_amocas_d_cg_cmp_rd_rs2_b10_str: .string "\"test: 281; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b10\""
+Zacas_amocas_d_cg_cmp_rd_rs2_b11_str: .string "\"test: 282; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b11\""
+Zacas_amocas_d_cg_cmp_rd_rs2_b12_str: .string "\"test: 283; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b12\""
+Zacas_amocas_d_cg_cmp_rd_rs2_b13_str: .string "\"test: 284; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b13\""
+Zacas_amocas_d_cg_cmp_rd_rs2_b14_str: .string "\"test: 285; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b14\""
+Zacas_amocas_d_cg_cmp_rd_rs2_b15_str: .string "\"test: 286; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b15\""
+Zacas_amocas_d_cg_cmp_rd_rs2_b16_str: .string "\"test: 287; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b16\""
+Zacas_amocas_d_cg_cmp_rd_rs2_b17_str: .string "\"test: 288; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b17\""
+Zacas_amocas_d_cg_cmp_rd_rs2_b18_str: .string "\"test: 289; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b18\""
+Zacas_amocas_d_cg_cmp_rd_rs2_b19_str: .string "\"test: 290; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b19\""
+Zacas_amocas_d_cg_cmp_rd_rs2_b20_str: .string "\"test: 291; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b20\""
+Zacas_amocas_d_cg_cmp_rd_rs2_b21_str: .string "\"test: 292; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b21\""
+Zacas_amocas_d_cg_cmp_rd_rs2_b22_str: .string "\"test: 293; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b22\""
+Zacas_amocas_d_cg_cmp_rd_rs2_b23_str: .string "\"test: 294; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b23\""
+Zacas_amocas_d_cg_cmp_rd_rs2_b24_str: .string "\"test: 295; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b24\""
+Zacas_amocas_d_cg_cmp_rd_rs2_b25_str: .string "\"test: 296; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b25\""
+Zacas_amocas_d_cg_cmp_rd_rs2_b26_str: .string "\"test: 297; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b26\""
+Zacas_amocas_d_cg_cmp_rd_rs2_b27_str: .string "\"test: 298; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b27\""
+Zacas_amocas_d_cg_cmp_rd_rs2_b28_str: .string "\"test: 299; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b28\""
+Zacas_amocas_d_cg_cmp_rd_rs2_b29_str: .string "\"test: 300; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b29\""
+Zacas_amocas_d_cg_cmp_rd_rs2_b30_str: .string "\"test: 301; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b30\""
+Zacas_amocas_d_cg_cmp_rd_rs2_b31_str: .string "\"test: 302; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs2; bin: b31\""
+Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b1_str: .string "\"test: 303; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b1\""
+Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b2_str: .string "\"test: 304; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b2\""
+Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b3_str: .string "\"test: 305; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b3\""
+Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b4_str: .string "\"test: 306; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b4\""
+Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b5_str: .string "\"test: 307; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b5\""
+Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b6_str: .string "\"test: 308; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b6\""
+Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b7_str: .string "\"test: 309; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b7\""
+Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b8_str: .string "\"test: 310; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b8\""
+Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b9_str: .string "\"test: 311; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b9\""
+Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b10_str: .string "\"test: 312; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b10\""
+Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b11_str: .string "\"test: 313; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b11\""
+Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b12_str: .string "\"test: 314; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b12\""
+Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b13_str: .string "\"test: 315; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b13\""
+Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b14_str: .string "\"test: 316; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b14\""
+Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b15_str: .string "\"test: 317; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b15\""
+Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b16_str: .string "\"test: 318; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b16\""
+Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b17_str: .string "\"test: 319; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b17\""
+Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b18_str: .string "\"test: 320; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b18\""
+Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b19_str: .string "\"test: 321; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b19\""
+Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b20_str: .string "\"test: 322; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b20\""
+Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b21_str: .string "\"test: 323; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b21\""
+Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b22_str: .string "\"test: 324; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b22\""
+Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b23_str: .string "\"test: 325; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b23\""
+Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b24_str: .string "\"test: 326; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b24\""
+Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b25_str: .string "\"test: 327; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b25\""
+Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b26_str: .string "\"test: 328; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b26\""
+Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b27_str: .string "\"test: 329; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b27\""
+Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b28_str: .string "\"test: 330; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b28\""
+Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b29_str: .string "\"test: 331; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b29\""
+Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b30_str: .string "\"test: 332; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b30\""
+Zacas_amocas_d_cg_cmp_rd_rs1_rs2_nx0_b31_str: .string "\"test: 333; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b31\""
+Zacas_amocas_d_cg_cmp_rd_rs1_val_eq_equal_str: .string "\"test: 334; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_val_eq; bin: equal\""
+Zacas_amocas_d_cg_cmp_rd_rs1_val_eq_not_equal_str: .string "\"test: 335; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_val_eq; bin: not_equal\""
+Zacas_amocas_d_cg_cmp_rd_rs1_val_lsb_equal_str: .string "\"test: 336; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_val_lsb; bin: equal\""
+Zacas_amocas_d_cg_cmp_rd_rs1_val_lsb_not_equal_str: .string "\"test: 337; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_val_lsb; bin: not_equal\""
+Zacas_amocas_d_cg_cmp_rd_rs1_val_hw_equal_str: .string "\"test: 338; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_val_hw; bin: equal\""
+Zacas_amocas_d_cg_cmp_rd_rs1_val_hw_not_equal_str: .string "\"test: 339; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_val_hw; bin: not_equal\""
+Zacas_amocas_d_cg_cmp_rd_rs1_val_w_equal_str: .string "\"test: 340; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_val_w; bin: equal\""
+Zacas_amocas_d_cg_cmp_rd_rs1_val_w_not_equal_str: .string "\"test: 341; cg: Zacas_amocas.d_cg; cp: cmp_rd_rs1_val_w; bin: not_equal\""
+Zacas_amocas_d_cg_cp_custom_aqrl_str: .string "\"test: 342; cg: Zacas_amocas.d_cg; cp: cp_custom_aqrl; bin: \""
+Zacas_amocas_d_cg_cp_custom_aqrl_aq_str: .string "\"test: 343; cg: Zacas_amocas.d_cg; cp: cp_custom_aqrl; bin: .aq\""
+Zacas_amocas_d_cg_cp_custom_aqrl_rl_str: .string "\"test: 344; cg: Zacas_amocas.d_cg; cp: cp_custom_aqrl; bin: .rl\""
+Zacas_amocas_d_cg_cp_custom_aqrl_aqrl_str: .string "\"test: 345; cg: Zacas_amocas.d_cg; cp: cp_custom_aqrl; bin: .aqrl\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

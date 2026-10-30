@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 498
+#define SIGUPD_COUNT 520
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -1514,6 +1514,32 @@ Zabha_amoor_b_cg_cp_rs2_edges_0x100000001:
   LREG x31, 0(x31) # Load the updated value from memory
   # Check if x31 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x9, x8, x7, x31, Zabha_amoor_b_cg_cp_rs2_edges_0x100000001, Zabha_amoor_b_cg_cp_rs2_edges_0x100000001_str)
+
+# Testcase cp_rs2_edges (Test source rs2 value = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x16, x4) # load value in memory: x4 = 0xa6979c6973d19eae
+  RVTEST_TESTDATA_LOAD_INT(x16, x23) # load rs2: x23 = 0x0000000080000000
+  LA(x2, scratch) # load base address into rs1
+  SREG x4, 0(x2) # store value into memory at address in rs1
+Zabha_amoor_b_cg_cp_rs2_edges_0x80000000:
+  amoor.b x20, x23, (x2) # perform operation
+  # Check if x20 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x20, Zabha_amoor_b_cg_cp_rs2_edges_0x80000000, Zabha_amoor_b_cg_cp_rs2_edges_0x80000000_str)
+  LREG x2, 0(x2) # Load the updated value from memory
+  # Check if x2 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x2, Zabha_amoor_b_cg_cp_rs2_edges_0x80000000, Zabha_amoor_b_cg_cp_rs2_edges_0x80000000_str)
+
+# Testcase cp_rs2_edges (Test source rs2 value = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x16, x31) # load value in memory: x31 = 0xdec2d2c230c5e78f
+  RVTEST_TESTDATA_LOAD_INT(x16, x3) # load rs2: x3 = 0x000000007fffffff
+  LA(x22, scratch) # load base address into rs1
+  SREG x31, 0(x22) # store value into memory at address in rs1
+Zabha_amoor_b_cg_cp_rs2_edges_0x7fffffff:
+  amoor.b x11, x3, (x22) # perform operation
+  # Check if x11 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x11, Zabha_amoor_b_cg_cp_rs2_edges_0x7fffffff, Zabha_amoor_b_cg_cp_rs2_edges_0x7fffffff_str)
+  LREG x22, 0(x22) # Load the updated value from memory
+  # Check if x22 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x22, Zabha_amoor_b_cg_cp_rs2_edges_0x7fffffff, Zabha_amoor_b_cg_cp_rs2_edges_0x7fffffff_str)
 
 /////////////////////////////////
 // cmp_rs1_rs2_nx0
@@ -3369,6 +3395,131 @@ Zabha_amoor_b_cg_cp_align_byte_b7:
   RVTEST_SIGUPD(x18, x5, x4, x9, Zabha_amoor_b_cg_cp_align_byte_b7, Zabha_amoor_b_cg_cp_align_byte_b7_str)
 
 
+/////////////////////////////////
+// cp_memval_byte
+/////////////////////////////////
+
+# Testcase cp_memval_byte (memory value = 0x0)
+  RVTEST_TESTDATA_LOAD_INT(x27, x14) # load value in memory: x14 = 0x0000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x27, x16) # load rs2: x16 = 0xc9456335817bc50d
+  LA(x12, scratch) # load base address into rs1
+  SREG x14, 0(x12) # store value into memory at address in rs1
+Zabha_amoor_b_cg_cp_memval_byte_0x0:
+  amoor.b x9, x16, (x12) # perform operation
+  # Check if x9 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x9, Zabha_amoor_b_cg_cp_memval_byte_0x0, Zabha_amoor_b_cg_cp_memval_byte_0x0_str)
+  LREG x12, 0(x12) # Load the updated value from memory
+  # Check if x12 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x12, Zabha_amoor_b_cg_cp_memval_byte_0x0, Zabha_amoor_b_cg_cp_memval_byte_0x0_str)
+
+# Testcase cp_memval_byte (memory value = 0x1)
+  RVTEST_TESTDATA_LOAD_INT(x27, x19) # load value in memory: x19 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x27, x10) # load rs2: x10 = 0xf15be28df70f251a
+  LA(x6, scratch) # load base address into rs1
+  SREG x19, 0(x6) # store value into memory at address in rs1
+Zabha_amoor_b_cg_cp_memval_byte_0x1:
+  amoor.b x7, x10, (x6) # perform operation
+  # Check if x7 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x7, Zabha_amoor_b_cg_cp_memval_byte_0x1, Zabha_amoor_b_cg_cp_memval_byte_0x1_str)
+  LREG x6, 0(x6) # Load the updated value from memory
+  # Check if x6 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x6, Zabha_amoor_b_cg_cp_memval_byte_0x1, Zabha_amoor_b_cg_cp_memval_byte_0x1_str)
+
+# Testcase cp_memval_byte (memory value = 0x7f)
+  RVTEST_TESTDATA_LOAD_INT(x27, x8) # load value in memory: x8 = 0x000000000000007f
+  RVTEST_TESTDATA_LOAD_INT(x27, x7) # load rs2: x7 = 0x5a153f104d53567d
+  LA(x9, scratch) # load base address into rs1
+  SREG x8, 0(x9) # store value into memory at address in rs1
+Zabha_amoor_b_cg_cp_memval_byte_0x7f:
+  amoor.b x23, x7, (x9) # perform operation
+  # Check if x23 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x23, Zabha_amoor_b_cg_cp_memval_byte_0x7f, Zabha_amoor_b_cg_cp_memval_byte_0x7f_str)
+  LREG x9, 0(x9) # Load the updated value from memory
+  # Check if x9 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x9, Zabha_amoor_b_cg_cp_memval_byte_0x7f, Zabha_amoor_b_cg_cp_memval_byte_0x7f_str)
+
+# Testcase cp_memval_byte (memory value = 0x80)
+  RVTEST_TESTDATA_LOAD_INT(x27, x7) # load value in memory: x7 = 0x0000000000000080
+  RVTEST_TESTDATA_LOAD_INT(x27, x9) # load rs2: x9 = 0xb14ca267c47f7fa6
+  LA(x6, scratch) # load base address into rs1
+  SREG x7, 0(x6) # store value into memory at address in rs1
+Zabha_amoor_b_cg_cp_memval_byte_0x80:
+  amoor.b x2, x9, (x6) # perform operation
+  # Check if x2 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x2, Zabha_amoor_b_cg_cp_memval_byte_0x80, Zabha_amoor_b_cg_cp_memval_byte_0x80_str)
+  LREG x6, 0(x6) # Load the updated value from memory
+  # Check if x6 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x6, Zabha_amoor_b_cg_cp_memval_byte_0x80, Zabha_amoor_b_cg_cp_memval_byte_0x80_str)
+
+# Testcase cp_memval_byte (memory value = 0xff)
+  RVTEST_TESTDATA_LOAD_INT(x27, x30) # load value in memory: x30 = 0x00000000000000ff
+  RVTEST_TESTDATA_LOAD_INT(x27, x22) # load rs2: x22 = 0xec6219d5b259c4ce
+  LA(x25, scratch) # load base address into rs1
+  SREG x30, 0(x25) # store value into memory at address in rs1
+Zabha_amoor_b_cg_cp_memval_byte_0xff:
+  amoor.b x6, x22, (x25) # perform operation
+  # Check if x6 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x6, Zabha_amoor_b_cg_cp_memval_byte_0xff, Zabha_amoor_b_cg_cp_memval_byte_0xff_str)
+  LREG x25, 0(x25) # Load the updated value from memory
+  # Check if x25 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x25, Zabha_amoor_b_cg_cp_memval_byte_0xff, Zabha_amoor_b_cg_cp_memval_byte_0xff_str)
+
+/////////////////////////////////
+// cp_custom_amo_aqrl
+/////////////////////////////////
+
+# Testcase cp_custom_aqrl (ordering suffix = '')
+  RVTEST_TESTDATA_LOAD_INT(x27, x26) # load value in memory: x26 = 0x1377c029b79ab9b0
+  RVTEST_TESTDATA_LOAD_INT(x27, x8) # load rs2: x8 = 0xb424f09b5afda3f6
+  LA(x29, scratch) # load base address into rs1
+  SREG x26, 0(x29) # store value into memory at address in rs1
+Zabha_amoor_b_cg_cp_custom_aqrl:
+  amoor.b x30, x8, (x29) # perform operation
+  # Check if x30 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x30, Zabha_amoor_b_cg_cp_custom_aqrl, Zabha_amoor_b_cg_cp_custom_aqrl_str)
+  LREG x29, 0(x29) # Load the updated value from memory
+  # Check if x29 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x29, Zabha_amoor_b_cg_cp_custom_aqrl, Zabha_amoor_b_cg_cp_custom_aqrl_str)
+
+# Testcase cp_custom_aqrl (ordering suffix = '.aq')
+  RVTEST_TESTDATA_LOAD_INT(x27, x7) # load value in memory: x7 = 0x75e55c696918dfca
+  RVTEST_TESTDATA_LOAD_INT(x27, x25) # load rs2: x25 = 0x86e65eeb0084ae16
+  LA(x1, scratch) # load base address into rs1
+  SREG x7, 0(x1) # store value into memory at address in rs1
+Zabha_amoor_b_cg_cp_custom_aqrl_aq:
+  amoor.b.aq x29, x25, (x1) # perform operation
+  # Check if x29 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x29, Zabha_amoor_b_cg_cp_custom_aqrl_aq, Zabha_amoor_b_cg_cp_custom_aqrl_aq_str)
+  LREG x1, 0(x1) # Load the updated value from memory
+  # Check if x1 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x1, Zabha_amoor_b_cg_cp_custom_aqrl_aq, Zabha_amoor_b_cg_cp_custom_aqrl_aq_str)
+
+# Testcase cp_custom_aqrl (ordering suffix = '.rl')
+  RVTEST_TESTDATA_LOAD_INT(x27, x1) # load value in memory: x1 = 0x031f17aae544e4d9
+  RVTEST_TESTDATA_LOAD_INT(x27, x25) # load rs2: x25 = 0x65407a073e4e2ba2
+  LA(x20, scratch) # load base address into rs1
+  SREG x1, 0(x20) # store value into memory at address in rs1
+Zabha_amoor_b_cg_cp_custom_aqrl_rl:
+  amoor.b.rl x13, x25, (x20) # perform operation
+  # Check if x13 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x13, Zabha_amoor_b_cg_cp_custom_aqrl_rl, Zabha_amoor_b_cg_cp_custom_aqrl_rl_str)
+  LREG x20, 0(x20) # Load the updated value from memory
+  # Check if x20 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x20, Zabha_amoor_b_cg_cp_custom_aqrl_rl, Zabha_amoor_b_cg_cp_custom_aqrl_rl_str)
+
+# Testcase cp_custom_aqrl (ordering suffix = '.aqrl')
+  RVTEST_TESTDATA_LOAD_INT(x27, x19) # load value in memory: x19 = 0x1c845cdd6e1d13bb
+  RVTEST_TESTDATA_LOAD_INT(x27, x31) # load rs2: x31 = 0xfed4822a6f79eca3
+  LA(x1, scratch) # load base address into rs1
+  SREG x19, 0(x1) # store value into memory at address in rs1
+Zabha_amoor_b_cg_cp_custom_aqrl_aqrl:
+  amoor.b.aqrl x28, x31, (x1) # perform operation
+  # Check if x28 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x28, Zabha_amoor_b_cg_cp_custom_aqrl_aqrl, Zabha_amoor_b_cg_cp_custom_aqrl_aqrl_str)
+  LREG x1, 0(x1) # Load the updated value from memory
+  # Check if x1 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x1, Zabha_amoor_b_cg_cp_custom_aqrl_aqrl, Zabha_amoor_b_cg_cp_custom_aqrl_aqrl_str)
+
   mv x2, x18 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -3600,6 +3751,10 @@ RVTEST_DATA_BEGIN
 .dword 0x0000000100000000
 .dword 0x57169278a938a820
 .dword 0x0000000100000001
+.dword 0xa6979c6973d19eae
+.dword 0x0000000080000000
+.dword 0xdec2d2c230c5e78f
+.dword 0x000000007fffffff
 .dword 0xa79b4866a245e452
 .dword 0x912a94bae3cc8e4e
 .dword 0x089c702444d63796
@@ -3866,6 +4021,24 @@ RVTEST_DATA_BEGIN
 .dword 0x2052f729fa6dfe08
 .dword 0x0bdb33f5ec171390
 .dword 0x624ee89a1aa27ceb
+.dword 0x0000000000000000
+.dword 0xc9456335817bc50d
+.dword 0x0000000000000001
+.dword 0xf15be28df70f251a
+.dword 0x000000000000007f
+.dword 0x5a153f104d53567d
+.dword 0x0000000000000080
+.dword 0xb14ca267c47f7fa6
+.dword 0x00000000000000ff
+.dword 0xec6219d5b259c4ce
+.dword 0x1377c029b79ab9b0
+.dword 0xb424f09b5afda3f6
+.dword 0x75e55c696918dfca
+.dword 0x86e65eeb0084ae16
+.dword 0x031f17aae544e4d9
+.dword 0x65407a073e4e2ba2
+.dword 0x1c845cdd6e1d13bb
+.dword 0xfed4822a6f79eca3
 
 // Testcase strings
 Zabha_amoor_b_cg_cp_rs1_nx0_b1_str: .string "\"test: 1; cg: Zabha_amoor.b_cg; cp: cp_rs1_nx0; bin: b1\""
@@ -3979,139 +4152,150 @@ Zabha_amoor_b_cg_cp_rs2_edges_0xffffffff_str: .string "\"test: 108; cg: Zabha_am
 Zabha_amoor_b_cg_cp_rs2_edges_0xfffffffe_str: .string "\"test: 109; cg: Zabha_amoor.b_cg; cp: cp_rs2_edges; bin: 0xfffffffe\""
 Zabha_amoor_b_cg_cp_rs2_edges_0x100000000_str: .string "\"test: 110; cg: Zabha_amoor.b_cg; cp: cp_rs2_edges; bin: 0x100000000\""
 Zabha_amoor_b_cg_cp_rs2_edges_0x100000001_str: .string "\"test: 111; cg: Zabha_amoor.b_cg; cp: cp_rs2_edges; bin: 0x100000001\""
-Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b1_str: .string "\"test: 112; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b1\""
-Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b2_str: .string "\"test: 113; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b2\""
-Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b3_str: .string "\"test: 114; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b3\""
-Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b4_str: .string "\"test: 115; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b4\""
-Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b5_str: .string "\"test: 116; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b5\""
-Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b6_str: .string "\"test: 117; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b6\""
-Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b7_str: .string "\"test: 118; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b7\""
-Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b8_str: .string "\"test: 119; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b8\""
-Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b9_str: .string "\"test: 120; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b9\""
-Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b10_str: .string "\"test: 121; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b10\""
-Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b11_str: .string "\"test: 122; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b11\""
-Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b12_str: .string "\"test: 123; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b12\""
-Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b13_str: .string "\"test: 124; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b13\""
-Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b14_str: .string "\"test: 125; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b14\""
-Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b15_str: .string "\"test: 126; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b15\""
-Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b16_str: .string "\"test: 127; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b16\""
-Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b17_str: .string "\"test: 128; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b17\""
-Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b18_str: .string "\"test: 129; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b18\""
-Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b19_str: .string "\"test: 130; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b19\""
-Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b20_str: .string "\"test: 131; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b20\""
-Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b21_str: .string "\"test: 132; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b21\""
-Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b22_str: .string "\"test: 133; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b22\""
-Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b23_str: .string "\"test: 134; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b23\""
-Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b24_str: .string "\"test: 135; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b24\""
-Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b25_str: .string "\"test: 136; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b25\""
-Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b26_str: .string "\"test: 137; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b26\""
-Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b27_str: .string "\"test: 138; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b27\""
-Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b28_str: .string "\"test: 139; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b28\""
-Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b29_str: .string "\"test: 140; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b29\""
-Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b30_str: .string "\"test: 141; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b30\""
-Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b31_str: .string "\"test: 142; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b31\""
-Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b1_str: .string "\"test: 143; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b1\""
-Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b2_str: .string "\"test: 144; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b2\""
-Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b3_str: .string "\"test: 145; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b3\""
-Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b4_str: .string "\"test: 146; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b4\""
-Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b5_str: .string "\"test: 147; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b5\""
-Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b6_str: .string "\"test: 148; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b6\""
-Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b7_str: .string "\"test: 149; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b7\""
-Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b8_str: .string "\"test: 150; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b8\""
-Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b9_str: .string "\"test: 151; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b9\""
-Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b10_str: .string "\"test: 152; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b10\""
-Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b11_str: .string "\"test: 153; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b11\""
-Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b12_str: .string "\"test: 154; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b12\""
-Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b13_str: .string "\"test: 155; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b13\""
-Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b14_str: .string "\"test: 156; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b14\""
-Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b15_str: .string "\"test: 157; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b15\""
-Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b16_str: .string "\"test: 158; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b16\""
-Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b17_str: .string "\"test: 159; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b17\""
-Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b18_str: .string "\"test: 160; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b18\""
-Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b19_str: .string "\"test: 161; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b19\""
-Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b20_str: .string "\"test: 162; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b20\""
-Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b21_str: .string "\"test: 163; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b21\""
-Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b22_str: .string "\"test: 164; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b22\""
-Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b23_str: .string "\"test: 165; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b23\""
-Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b24_str: .string "\"test: 166; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b24\""
-Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b25_str: .string "\"test: 167; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b25\""
-Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b26_str: .string "\"test: 168; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b26\""
-Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b27_str: .string "\"test: 169; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b27\""
-Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b28_str: .string "\"test: 170; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b28\""
-Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b29_str: .string "\"test: 171; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b29\""
-Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b30_str: .string "\"test: 172; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b30\""
-Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b31_str: .string "\"test: 173; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b31\""
-Zabha_amoor_b_cg_cmp_rd_rs2_b0_str: .string "\"test: 174; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b0\""
-Zabha_amoor_b_cg_cmp_rd_rs2_b1_str: .string "\"test: 175; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b1\""
-Zabha_amoor_b_cg_cmp_rd_rs2_b2_str: .string "\"test: 176; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b2\""
-Zabha_amoor_b_cg_cmp_rd_rs2_b3_str: .string "\"test: 177; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b3\""
-Zabha_amoor_b_cg_cmp_rd_rs2_b4_str: .string "\"test: 178; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b4\""
-Zabha_amoor_b_cg_cmp_rd_rs2_b5_str: .string "\"test: 179; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b5\""
-Zabha_amoor_b_cg_cmp_rd_rs2_b6_str: .string "\"test: 180; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b6\""
-Zabha_amoor_b_cg_cmp_rd_rs2_b7_str: .string "\"test: 181; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b7\""
-Zabha_amoor_b_cg_cmp_rd_rs2_b8_str: .string "\"test: 182; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b8\""
-Zabha_amoor_b_cg_cmp_rd_rs2_b9_str: .string "\"test: 183; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b9\""
-Zabha_amoor_b_cg_cmp_rd_rs2_b10_str: .string "\"test: 184; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b10\""
-Zabha_amoor_b_cg_cmp_rd_rs2_b11_str: .string "\"test: 185; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b11\""
-Zabha_amoor_b_cg_cmp_rd_rs2_b12_str: .string "\"test: 186; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b12\""
-Zabha_amoor_b_cg_cmp_rd_rs2_b13_str: .string "\"test: 187; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b13\""
-Zabha_amoor_b_cg_cmp_rd_rs2_b14_str: .string "\"test: 188; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b14\""
-Zabha_amoor_b_cg_cmp_rd_rs2_b15_str: .string "\"test: 189; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b15\""
-Zabha_amoor_b_cg_cmp_rd_rs2_b16_str: .string "\"test: 190; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b16\""
-Zabha_amoor_b_cg_cmp_rd_rs2_b17_str: .string "\"test: 191; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b17\""
-Zabha_amoor_b_cg_cmp_rd_rs2_b18_str: .string "\"test: 192; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b18\""
-Zabha_amoor_b_cg_cmp_rd_rs2_b19_str: .string "\"test: 193; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b19\""
-Zabha_amoor_b_cg_cmp_rd_rs2_b20_str: .string "\"test: 194; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b20\""
-Zabha_amoor_b_cg_cmp_rd_rs2_b21_str: .string "\"test: 195; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b21\""
-Zabha_amoor_b_cg_cmp_rd_rs2_b22_str: .string "\"test: 196; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b22\""
-Zabha_amoor_b_cg_cmp_rd_rs2_b23_str: .string "\"test: 197; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b23\""
-Zabha_amoor_b_cg_cmp_rd_rs2_b24_str: .string "\"test: 198; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b24\""
-Zabha_amoor_b_cg_cmp_rd_rs2_b25_str: .string "\"test: 199; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b25\""
-Zabha_amoor_b_cg_cmp_rd_rs2_b26_str: .string "\"test: 200; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b26\""
-Zabha_amoor_b_cg_cmp_rd_rs2_b27_str: .string "\"test: 201; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b27\""
-Zabha_amoor_b_cg_cmp_rd_rs2_b28_str: .string "\"test: 202; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b28\""
-Zabha_amoor_b_cg_cmp_rd_rs2_b29_str: .string "\"test: 203; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b29\""
-Zabha_amoor_b_cg_cmp_rd_rs2_b30_str: .string "\"test: 204; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b30\""
-Zabha_amoor_b_cg_cmp_rd_rs2_b31_str: .string "\"test: 205; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b31\""
-Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b1_str: .string "\"test: 206; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b1\""
-Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b2_str: .string "\"test: 207; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b2\""
-Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b3_str: .string "\"test: 208; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b3\""
-Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b4_str: .string "\"test: 209; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b4\""
-Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b5_str: .string "\"test: 210; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b5\""
-Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b6_str: .string "\"test: 211; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b6\""
-Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b7_str: .string "\"test: 212; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b7\""
-Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b8_str: .string "\"test: 213; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b8\""
-Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b9_str: .string "\"test: 214; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b9\""
-Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b10_str: .string "\"test: 215; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b10\""
-Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b11_str: .string "\"test: 216; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b11\""
-Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b12_str: .string "\"test: 217; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b12\""
-Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b13_str: .string "\"test: 218; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b13\""
-Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b14_str: .string "\"test: 219; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b14\""
-Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b15_str: .string "\"test: 220; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b15\""
-Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b16_str: .string "\"test: 221; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b16\""
-Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b17_str: .string "\"test: 222; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b17\""
-Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b18_str: .string "\"test: 223; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b18\""
-Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b19_str: .string "\"test: 224; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b19\""
-Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b20_str: .string "\"test: 225; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b20\""
-Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b21_str: .string "\"test: 226; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b21\""
-Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b22_str: .string "\"test: 227; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b22\""
-Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b23_str: .string "\"test: 228; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b23\""
-Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b24_str: .string "\"test: 229; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b24\""
-Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b25_str: .string "\"test: 230; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b25\""
-Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b26_str: .string "\"test: 231; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b26\""
-Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b27_str: .string "\"test: 232; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b27\""
-Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b28_str: .string "\"test: 233; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b28\""
-Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b29_str: .string "\"test: 234; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b29\""
-Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b30_str: .string "\"test: 235; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b30\""
-Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b31_str: .string "\"test: 236; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b31\""
-Zabha_amoor_b_cg_cp_align_byte_b0_str: .string "\"test: 237; cg: Zabha_amoor.b_cg; cp: cp_align_byte; bin: b0\""
-Zabha_amoor_b_cg_cp_align_byte_b1_str: .string "\"test: 238; cg: Zabha_amoor.b_cg; cp: cp_align_byte; bin: b1\""
-Zabha_amoor_b_cg_cp_align_byte_b2_str: .string "\"test: 239; cg: Zabha_amoor.b_cg; cp: cp_align_byte; bin: b2\""
-Zabha_amoor_b_cg_cp_align_byte_b3_str: .string "\"test: 240; cg: Zabha_amoor.b_cg; cp: cp_align_byte; bin: b3\""
-Zabha_amoor_b_cg_cp_align_byte_b4_str: .string "\"test: 241; cg: Zabha_amoor.b_cg; cp: cp_align_byte; bin: b4\""
-Zabha_amoor_b_cg_cp_align_byte_b5_str: .string "\"test: 242; cg: Zabha_amoor.b_cg; cp: cp_align_byte; bin: b5\""
-Zabha_amoor_b_cg_cp_align_byte_b6_str: .string "\"test: 243; cg: Zabha_amoor.b_cg; cp: cp_align_byte; bin: b6\""
-Zabha_amoor_b_cg_cp_align_byte_b7_str: .string "\"test: 244; cg: Zabha_amoor.b_cg; cp: cp_align_byte; bin: b7\""
+Zabha_amoor_b_cg_cp_rs2_edges_0x80000000_str: .string "\"test: 112; cg: Zabha_amoor.b_cg; cp: cp_rs2_edges; bin: 0x80000000\""
+Zabha_amoor_b_cg_cp_rs2_edges_0x7fffffff_str: .string "\"test: 113; cg: Zabha_amoor.b_cg; cp: cp_rs2_edges; bin: 0x7fffffff\""
+Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b1_str: .string "\"test: 114; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b1\""
+Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b2_str: .string "\"test: 115; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b2\""
+Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b3_str: .string "\"test: 116; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b3\""
+Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b4_str: .string "\"test: 117; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b4\""
+Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b5_str: .string "\"test: 118; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b5\""
+Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b6_str: .string "\"test: 119; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b6\""
+Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b7_str: .string "\"test: 120; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b7\""
+Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b8_str: .string "\"test: 121; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b8\""
+Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b9_str: .string "\"test: 122; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b9\""
+Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b10_str: .string "\"test: 123; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b10\""
+Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b11_str: .string "\"test: 124; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b11\""
+Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b12_str: .string "\"test: 125; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b12\""
+Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b13_str: .string "\"test: 126; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b13\""
+Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b14_str: .string "\"test: 127; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b14\""
+Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b15_str: .string "\"test: 128; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b15\""
+Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b16_str: .string "\"test: 129; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b16\""
+Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b17_str: .string "\"test: 130; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b17\""
+Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b18_str: .string "\"test: 131; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b18\""
+Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b19_str: .string "\"test: 132; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b19\""
+Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b20_str: .string "\"test: 133; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b20\""
+Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b21_str: .string "\"test: 134; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b21\""
+Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b22_str: .string "\"test: 135; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b22\""
+Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b23_str: .string "\"test: 136; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b23\""
+Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b24_str: .string "\"test: 137; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b24\""
+Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b25_str: .string "\"test: 138; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b25\""
+Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b26_str: .string "\"test: 139; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b26\""
+Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b27_str: .string "\"test: 140; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b27\""
+Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b28_str: .string "\"test: 141; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b28\""
+Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b29_str: .string "\"test: 142; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b29\""
+Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b30_str: .string "\"test: 143; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b30\""
+Zabha_amoor_b_cg_cmp_rs1_rs2_nx0_b31_str: .string "\"test: 144; cg: Zabha_amoor.b_cg; cp: cmp_rs1_rs2_nx0; bin: b31\""
+Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b1_str: .string "\"test: 145; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b1\""
+Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b2_str: .string "\"test: 146; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b2\""
+Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b3_str: .string "\"test: 147; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b3\""
+Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b4_str: .string "\"test: 148; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b4\""
+Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b5_str: .string "\"test: 149; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b5\""
+Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b6_str: .string "\"test: 150; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b6\""
+Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b7_str: .string "\"test: 151; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b7\""
+Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b8_str: .string "\"test: 152; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b8\""
+Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b9_str: .string "\"test: 153; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b9\""
+Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b10_str: .string "\"test: 154; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b10\""
+Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b11_str: .string "\"test: 155; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b11\""
+Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b12_str: .string "\"test: 156; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b12\""
+Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b13_str: .string "\"test: 157; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b13\""
+Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b14_str: .string "\"test: 158; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b14\""
+Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b15_str: .string "\"test: 159; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b15\""
+Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b16_str: .string "\"test: 160; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b16\""
+Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b17_str: .string "\"test: 161; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b17\""
+Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b18_str: .string "\"test: 162; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b18\""
+Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b19_str: .string "\"test: 163; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b19\""
+Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b20_str: .string "\"test: 164; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b20\""
+Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b21_str: .string "\"test: 165; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b21\""
+Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b22_str: .string "\"test: 166; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b22\""
+Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b23_str: .string "\"test: 167; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b23\""
+Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b24_str: .string "\"test: 168; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b24\""
+Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b25_str: .string "\"test: 169; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b25\""
+Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b26_str: .string "\"test: 170; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b26\""
+Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b27_str: .string "\"test: 171; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b27\""
+Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b28_str: .string "\"test: 172; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b28\""
+Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b29_str: .string "\"test: 173; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b29\""
+Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b30_str: .string "\"test: 174; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b30\""
+Zabha_amoor_b_cg_cmp_rd_rs1_nx0_b31_str: .string "\"test: 175; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_nx0; bin: b31\""
+Zabha_amoor_b_cg_cmp_rd_rs2_b0_str: .string "\"test: 176; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b0\""
+Zabha_amoor_b_cg_cmp_rd_rs2_b1_str: .string "\"test: 177; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b1\""
+Zabha_amoor_b_cg_cmp_rd_rs2_b2_str: .string "\"test: 178; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b2\""
+Zabha_amoor_b_cg_cmp_rd_rs2_b3_str: .string "\"test: 179; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b3\""
+Zabha_amoor_b_cg_cmp_rd_rs2_b4_str: .string "\"test: 180; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b4\""
+Zabha_amoor_b_cg_cmp_rd_rs2_b5_str: .string "\"test: 181; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b5\""
+Zabha_amoor_b_cg_cmp_rd_rs2_b6_str: .string "\"test: 182; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b6\""
+Zabha_amoor_b_cg_cmp_rd_rs2_b7_str: .string "\"test: 183; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b7\""
+Zabha_amoor_b_cg_cmp_rd_rs2_b8_str: .string "\"test: 184; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b8\""
+Zabha_amoor_b_cg_cmp_rd_rs2_b9_str: .string "\"test: 185; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b9\""
+Zabha_amoor_b_cg_cmp_rd_rs2_b10_str: .string "\"test: 186; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b10\""
+Zabha_amoor_b_cg_cmp_rd_rs2_b11_str: .string "\"test: 187; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b11\""
+Zabha_amoor_b_cg_cmp_rd_rs2_b12_str: .string "\"test: 188; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b12\""
+Zabha_amoor_b_cg_cmp_rd_rs2_b13_str: .string "\"test: 189; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b13\""
+Zabha_amoor_b_cg_cmp_rd_rs2_b14_str: .string "\"test: 190; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b14\""
+Zabha_amoor_b_cg_cmp_rd_rs2_b15_str: .string "\"test: 191; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b15\""
+Zabha_amoor_b_cg_cmp_rd_rs2_b16_str: .string "\"test: 192; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b16\""
+Zabha_amoor_b_cg_cmp_rd_rs2_b17_str: .string "\"test: 193; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b17\""
+Zabha_amoor_b_cg_cmp_rd_rs2_b18_str: .string "\"test: 194; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b18\""
+Zabha_amoor_b_cg_cmp_rd_rs2_b19_str: .string "\"test: 195; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b19\""
+Zabha_amoor_b_cg_cmp_rd_rs2_b20_str: .string "\"test: 196; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b20\""
+Zabha_amoor_b_cg_cmp_rd_rs2_b21_str: .string "\"test: 197; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b21\""
+Zabha_amoor_b_cg_cmp_rd_rs2_b22_str: .string "\"test: 198; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b22\""
+Zabha_amoor_b_cg_cmp_rd_rs2_b23_str: .string "\"test: 199; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b23\""
+Zabha_amoor_b_cg_cmp_rd_rs2_b24_str: .string "\"test: 200; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b24\""
+Zabha_amoor_b_cg_cmp_rd_rs2_b25_str: .string "\"test: 201; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b25\""
+Zabha_amoor_b_cg_cmp_rd_rs2_b26_str: .string "\"test: 202; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b26\""
+Zabha_amoor_b_cg_cmp_rd_rs2_b27_str: .string "\"test: 203; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b27\""
+Zabha_amoor_b_cg_cmp_rd_rs2_b28_str: .string "\"test: 204; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b28\""
+Zabha_amoor_b_cg_cmp_rd_rs2_b29_str: .string "\"test: 205; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b29\""
+Zabha_amoor_b_cg_cmp_rd_rs2_b30_str: .string "\"test: 206; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b30\""
+Zabha_amoor_b_cg_cmp_rd_rs2_b31_str: .string "\"test: 207; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs2; bin: b31\""
+Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b1_str: .string "\"test: 208; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b1\""
+Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b2_str: .string "\"test: 209; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b2\""
+Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b3_str: .string "\"test: 210; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b3\""
+Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b4_str: .string "\"test: 211; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b4\""
+Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b5_str: .string "\"test: 212; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b5\""
+Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b6_str: .string "\"test: 213; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b6\""
+Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b7_str: .string "\"test: 214; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b7\""
+Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b8_str: .string "\"test: 215; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b8\""
+Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b9_str: .string "\"test: 216; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b9\""
+Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b10_str: .string "\"test: 217; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b10\""
+Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b11_str: .string "\"test: 218; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b11\""
+Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b12_str: .string "\"test: 219; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b12\""
+Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b13_str: .string "\"test: 220; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b13\""
+Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b14_str: .string "\"test: 221; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b14\""
+Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b15_str: .string "\"test: 222; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b15\""
+Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b16_str: .string "\"test: 223; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b16\""
+Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b17_str: .string "\"test: 224; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b17\""
+Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b18_str: .string "\"test: 225; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b18\""
+Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b19_str: .string "\"test: 226; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b19\""
+Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b20_str: .string "\"test: 227; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b20\""
+Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b21_str: .string "\"test: 228; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b21\""
+Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b22_str: .string "\"test: 229; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b22\""
+Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b23_str: .string "\"test: 230; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b23\""
+Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b24_str: .string "\"test: 231; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b24\""
+Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b25_str: .string "\"test: 232; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b25\""
+Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b26_str: .string "\"test: 233; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b26\""
+Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b27_str: .string "\"test: 234; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b27\""
+Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b28_str: .string "\"test: 235; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b28\""
+Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b29_str: .string "\"test: 236; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b29\""
+Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b30_str: .string "\"test: 237; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b30\""
+Zabha_amoor_b_cg_cmp_rd_rs1_rs2_nx0_b31_str: .string "\"test: 238; cg: Zabha_amoor.b_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b31\""
+Zabha_amoor_b_cg_cp_align_byte_b0_str: .string "\"test: 239; cg: Zabha_amoor.b_cg; cp: cp_align_byte; bin: b0\""
+Zabha_amoor_b_cg_cp_align_byte_b1_str: .string "\"test: 240; cg: Zabha_amoor.b_cg; cp: cp_align_byte; bin: b1\""
+Zabha_amoor_b_cg_cp_align_byte_b2_str: .string "\"test: 241; cg: Zabha_amoor.b_cg; cp: cp_align_byte; bin: b2\""
+Zabha_amoor_b_cg_cp_align_byte_b3_str: .string "\"test: 242; cg: Zabha_amoor.b_cg; cp: cp_align_byte; bin: b3\""
+Zabha_amoor_b_cg_cp_align_byte_b4_str: .string "\"test: 243; cg: Zabha_amoor.b_cg; cp: cp_align_byte; bin: b4\""
+Zabha_amoor_b_cg_cp_align_byte_b5_str: .string "\"test: 244; cg: Zabha_amoor.b_cg; cp: cp_align_byte; bin: b5\""
+Zabha_amoor_b_cg_cp_align_byte_b6_str: .string "\"test: 245; cg: Zabha_amoor.b_cg; cp: cp_align_byte; bin: b6\""
+Zabha_amoor_b_cg_cp_align_byte_b7_str: .string "\"test: 246; cg: Zabha_amoor.b_cg; cp: cp_align_byte; bin: b7\""
+Zabha_amoor_b_cg_cp_memval_byte_0x0_str: .string "\"test: 247; cg: Zabha_amoor.b_cg; cp: cp_memval_byte; bin: 0x0\""
+Zabha_amoor_b_cg_cp_memval_byte_0x1_str: .string "\"test: 248; cg: Zabha_amoor.b_cg; cp: cp_memval_byte; bin: 0x1\""
+Zabha_amoor_b_cg_cp_memval_byte_0x7f_str: .string "\"test: 249; cg: Zabha_amoor.b_cg; cp: cp_memval_byte; bin: 0x7f\""
+Zabha_amoor_b_cg_cp_memval_byte_0x80_str: .string "\"test: 250; cg: Zabha_amoor.b_cg; cp: cp_memval_byte; bin: 0x80\""
+Zabha_amoor_b_cg_cp_memval_byte_0xff_str: .string "\"test: 251; cg: Zabha_amoor.b_cg; cp: cp_memval_byte; bin: 0xff\""
+Zabha_amoor_b_cg_cp_custom_aqrl_str: .string "\"test: 252; cg: Zabha_amoor.b_cg; cp: cp_custom_aqrl; bin: \""
+Zabha_amoor_b_cg_cp_custom_aqrl_aq_str: .string "\"test: 253; cg: Zabha_amoor.b_cg; cp: cp_custom_aqrl; bin: .aq\""
+Zabha_amoor_b_cg_cp_custom_aqrl_rl_str: .string "\"test: 254; cg: Zabha_amoor.b_cg; cp: cp_custom_aqrl; bin: .rl\""
+Zabha_amoor_b_cg_cp_custom_aqrl_aqrl_str: .string "\"test: 255; cg: Zabha_amoor.b_cg; cp: cp_custom_aqrl; bin: .aqrl\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

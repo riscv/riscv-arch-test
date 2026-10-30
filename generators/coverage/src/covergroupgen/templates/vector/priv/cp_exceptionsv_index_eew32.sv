@@ -8,10 +8,10 @@
     // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
 
     `ifndef MAXINDEXEEW_GE32
-    index_eew32 : coverpoint ins.current.insn[14:12] {
-        bins e32 = {3'b110};
-    }
-    cp_exceptionsv_index_eew32 : cross std_trap_vec, index_eew32;
+        index_eew32 : coverpoint ins.current.insn[14:12] {
+            bins e32 = {3'b110};
+        }
+        cp_exceptionsv_index_eew32 : cross std_trap_vec, index_eew32;
     `endif
 
     //// end cp_exceptionsv_index_eew32//////////////////////////////////////////////

@@ -24,3 +24,9 @@
     Zbkb_unzip_cg = new(); Zbkb_unzip_cg.set_inst_name("obj_Zbkb_unzip");
     Zbkb_zip_cg = new(); Zbkb_zip_cg.set_inst_name("obj_Zbkb_zip");
 `endif
+`ifdef UDB_MXLEN_64
+    Zbkb_packw_cg = new(); Zbkb_packw_cg.set_inst_name("obj_Zbkb_packw");
+    Zbkb_rolw_cg = new(); Zbkb_rolw_cg.set_inst_name("obj_Zbkb_rolw");
+    Zbkb_roriw_cg = new(); Zbkb_roriw_cg.set_inst_name("obj_Zbkb_roriw");
+    Zbkb_rorw_cg = new(); Zbkb_rorw_cg.set_inst_name("obj_Zbkb_rorw");
+`endif

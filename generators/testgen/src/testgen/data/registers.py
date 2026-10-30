@@ -56,8 +56,12 @@ class RegisterFile:
             raise ValueError(
                 f"Not enough registers available to select from. Requested {num_regs}, but only {len(available_regs)} available."
             )
+        if num_regs == 1:
+            selected_reg = random.choice(sorted(available_regs))
+            self.reg_list.remove(selected_reg)
+            return [selected_reg]
         selected_regs = random.sample(sorted(available_regs), num_regs)
-        self.reg_list -= set(selected_regs)
+        self.reg_list.difference_update(selected_regs)
         return selected_regs
 
     def get_register(self, *, exclude_regs: list[int] | None = None, reg_range: list[int] | None = None) -> int:
@@ -74,6 +78,12 @@ class RegisterFile:
 
     def consume_registers(self, regs: list[int]) -> str | None:
         """Mark registers as used/unavailable."""
+        if len(regs) == 1:
+            reg = regs[0]
+            if reg not in self.reg_list:
+                raise ValueError(f"Registers {[reg]} are already in use or not available.")
+            self.reg_list.remove(reg)
+            return None
         regs_set = set(regs)
         unavailable = regs_set - self.reg_list
         if unavailable:
@@ -87,6 +97,7 @@ class IntegerRegisterFile(RegisterFile):
     Class to represent an integer register file.
 
     Automatically handles special registers like signature pointer and link register.
+    Privileged tests reserve more registers, including a0-a2 for T-SBI, in `generate/priv.py`.
     """
 
     default_sig_reg = 2
@@ -409,11 +420,7 @@ class VectorRegisterFile(RegisterFile):
             exclude_regs: A list of registers not to use
             reg_range: A list of registers specifically to use
         """
-        registers_available_to_lmul = set()
-        for register in range(0, 32, lmul):
-            group = set(range(register, register + (lmul * segments)))
-            if len(self.reg_list & group) == len(group):
-                registers_available_to_lmul.add(register)
+        registers_available_to_lmul = set(self.free_registers(lmul, segments))
 
         reg_range_set = set(reg_range) if reg_range is not None else set(self.reg_list)
         reg_range_set &= registers_available_to_lmul
@@ -445,17 +452,17 @@ class VectorRegisterFile(RegisterFile):
         """
         return self.get_registers(1, lmul=lmul, segments=segments, exclude_regs=exclude_regs, reg_range=reg_range)[0]
 
-    def free_registers(self, lmul: int, segments: int) -> set[int]:
-        """
-        Returns a set of free registers available to a given lmul and number of segments.
-        """
-        registers_available_to_lmul = set()
-        for register in range(0, 32, lmul):
-            group = set(range(register, register + (lmul * segments)))
-            if len(self.reg_list & group) == len(group):
-                registers_available_to_lmul.add(register)
-
-        return self.reg_list & registers_available_to_lmul
+    def free_registers(self, lmul: int, segments: int) -> list[int]:
+        """Return free registers for the given LMUL and segment count."""
+        width = lmul * segments
+        candidates = range(0, self.reg_count - width + 1, lmul)
+        if len(self.reg_list) == self.reg_count:
+            return list(candidates)
+        return [
+            register
+            for register in candidates
+            if all(reg in self.reg_list for reg in range(register, register + width))
+        ]
 
     def allocate_operand(self, name: str, register: int, width: int, *, suppress_overlap: bool = False) -> None:
         """
@@ -527,7 +534,10 @@ class VectorRegisterFile(RegisterFile):
 
     def return_register(self, reg: int) -> None:
         """Return a register to the register file, accounting for the lmul it was allocated at"""
-        return self.return_registers([reg])
+        if reg not in self.allocation_map:
+            self.reg_list.add(reg)
+            return
+        self.return_registers([reg])
 
     def copy(self) -> VectorRegisterFile:
         """Create a deep copy of the VectorRegisterFile object."""

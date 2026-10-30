@@ -7,8 +7,8 @@
 
     sew_widen_unsupported_fp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
         `ifndef D_COVERAGE
-        // SEW=32 (vsew=2) widens to EEW=64, unsupported without D extension
-        bins sew32 = {2};
+            // SEW=32 (vsew=2) widens to EEW=64, unsupported without D extension
+            bins sew32 = {2};
         `endif
     }
 

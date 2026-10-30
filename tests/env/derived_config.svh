@@ -122,14 +122,6 @@
   `define MSECCFG_SUPPORTED
 `endif
 
-// ---- SV_TRANSLATION_SUPPORTED ----
-// Page-based translation is supported: Sv32, or Sv39 (which Sv48 and Sv57 imply).
-`ifdef SV39_SUPPORTED
-  `define SV_TRANSLATION_SUPPORTED
-`elsif SV32_SUPPORTED
-  `define SV_TRANSLATION_SUPPORTED
-`endif
-
 // Cumulative privileged ISA version defines
 `ifdef S1P13P0_SUPPORTED
   `define S1P12P0_OR_LATER_SUPPORTED

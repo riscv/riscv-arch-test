@@ -5,7 +5,7 @@
     // Custom coverpoints for Vector whole register load and store operations
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 

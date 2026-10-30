@@ -152,8 +152,10 @@ HIGH_VA = {
 MODES = ["bare", "sv39", "sv48", "sv57"]
 MODE_GUARDS = {m: None if m == "bare" else f"{m.upper()}_SUPPORTED" for m in MODES}
 
-# PMM field bit position (common across mseccfg/menvcfg/senvcfg)
+# PMM field bit position (common across mseccfg/menvcfg/henvcfg/senvcfg)
 _PMM_SHIFT = 32
+# PMM fields that are not <CSR>_PMM at _PMM_SHIFT: the field and its position
+_PMM_FIELDS = {"hstatus": ("HSTATUS_HUPMM", 48)}
 
 # Smaller tag set used by the MPRV coverage points.
 _MPRV_UPPER_PATTERNS = [0x0000, 0x0001, 0x0200]
@@ -202,14 +204,21 @@ def csr_op(op: str, csr: str, value: str, test_data: TestData, tsbi: bool = Fals
     return lines
 
 
-def set_pmm_field(csr: str, val: int, pmlen: int, test_data: TestData, tsbi: bool = False) -> list[str]:
-    """Clear then set the 2-bit PMM field in *csr*."""
+def set_pmm_field(csr: str, val: int | str, pmlen: int | None, test_data: TestData, tsbi: bool = False) -> list[str]:
+    """Clear then set the 2-bit PMM field in *csr* (hstatus.HUPMM for hstatus).
+
+    *val* is a PMM encoding, or an assembler expression for one, whose PMLEN is then *pmlen* = None.
+    """
+    field, shift = _PMM_FIELDS.get(csr, (f"{csr.upper()}_PMM", _PMM_SHIFT))
+    name = f"{csr}.{field.split('_')[1]}"
     lines = [
-        f"# {csr}.PMM={val:#04b} PMLEN={pmlen}",
-        *csr_op("csrc", csr, f"{csr.upper()}_PMM", test_data, tsbi),
+        f"# {name}={val:#04b} PMLEN={pmlen}" if isinstance(val, int) else f"# {name}={val}",
+        *csr_op("csrc", csr, field, test_data, tsbi),
     ]
-    if val:
-        lines.extend(csr_op("csrs", csr, hex(val << _PMM_SHIFT), test_data, tsbi))
+    if isinstance(val, str):
+        lines.extend(csr_op("csrs", csr, f"({val}) << {shift}", test_data, tsbi))
+    elif val:
+        lines.extend(csr_op("csrs", csr, hex(val << shift), test_data, tsbi))
     return lines
 
 
@@ -436,7 +445,7 @@ def _ifdef(guard: str, body: list[str]) -> list[str]:
 
 
 # Extension that owns the PMM field of each CSR.
-_PMM_EXTENSION = {"mseccfg": "SMMPM", "menvcfg": "SMNPM", "senvcfg": "SSNPM"}
+_PMM_EXTENSION = {"mseccfg": "SMMPM", "menvcfg": "SMNPM", "senvcfg": "SSNPM", "henvcfg": "SSNPM", "hstatus": "SSNPM"}
 
 
 def pmm_ifdef(csr: str, pmlen: int, body: list[str]) -> list[str]:
@@ -459,8 +468,18 @@ def _access(
     covergroup: str,
     via_sp: bool,
     arch_extensions: tuple[str, ...],
+    mode: str | None = None,
 ) -> list[str]:
-    """Emit the testcase label and ``instr, 0(addr)``, addressed through sp for c.*sp forms."""
+    """Emit the testcase label and ``instr, 0(addr)``, addressed through sp for c.*sp forms.
+
+    With *mode* (VS, VU or U), the access runs in that mode, entered from and returning to S-mode through T-SBI.
+    """
+    if mode is not None:
+        return [
+            f"RVTEST_TSBI_GOTO_{mode}MODE",
+            *_access(instr, addr, bin_name, test_data, coverpoint, covergroup, via_sp, arch_extensions),
+            "RVTEST_TSBI_GOTO_SMODE",
+        ]
     if not via_sp:
         return [
             test_data.add_testcase(bin_name, coverpoint, covergroup),
@@ -478,7 +497,7 @@ def _access(
     return lines
 
 
-def _probe_load(
+def probe_load(
     mnemonic: str,
     upper_tag: int,
     bin_name: str,
@@ -492,12 +511,14 @@ def _probe_load(
     via_sp: bool = False,
     float_load: bool = False,
     arch_extensions: tuple[str, ...] = (),
+    mode: str | None = None,
 ) -> list[str]:
     """Generate one load probe and record the loaded value.
 
     ``compressed`` restricts address and result registers to x8-x15.
     ``via_sp`` uses the stack pointer as the address register.
     ``float_load`` records the result with the floating-point signature helper.
+    ``mode`` runs the load in that mode (see _access).
     """
     reg_range = _COMPRESSED_REGS if compressed else None
     addr, scratch = test_data.int_regs.get_registers(2, reg_range=reg_range)
@@ -513,7 +534,17 @@ def _probe_load(
     if not float_load:
         lines.append(f"LI(x{result}, {hex(SENTINEL)})")
     lines.extend(
-        _access(f"{mnemonic} {destination}", addr, bin_name, test_data, coverpoint, covergroup, via_sp, arch_extensions)
+        _access(
+            f"{mnemonic} {destination}",
+            addr,
+            bin_name,
+            test_data,
+            coverpoint,
+            covergroup,
+            via_sp,
+            arch_extensions,
+            mode,
+        )
     )
     lines.append(write_sigupd(result, test_data, sig_type="float" if float_load else "int"))
 
@@ -523,7 +554,7 @@ def _probe_load(
     return lines
 
 
-def _probe_store(
+def probe_store(
     mnemonic: str,
     readback_mnemonic: str,
     upper_tag: int,
@@ -538,8 +569,9 @@ def _probe_store(
     via_sp: bool = False,
     fp_move_mnemonic: str | None = None,
     arch_extensions: tuple[str, ...] = (),
+    mode: str | None = None,
 ) -> list[str]:
-    """Generate one store probe, then read the untagged address back."""
+    """Generate one store probe, then read the untagged address back.  ``mode`` runs the store in that mode."""
     reg_range = _COMPRESSED_REGS if compressed else None
     addr, value = test_data.int_regs.get_registers(2, reg_range=reg_range)
     base_reg = test_data.int_regs.get_register()
@@ -554,7 +586,9 @@ def _probe_store(
     if fp_move_mnemonic is not None:
         lines.append(f"{fp_move_mnemonic} {source}, x{value}")
     lines.extend(
-        _access(f"{mnemonic} {source}", addr, bin_name, test_data, coverpoint, covergroup, via_sp, arch_extensions)
+        _access(
+            f"{mnemonic} {source}", addr, bin_name, test_data, coverpoint, covergroup, via_sp, arch_extensions, mode
+        )
     )
     lines.extend([f"{readback_mnemonic} x{value}, 0(x{base_reg})", write_sigupd(value, test_data)])
 
@@ -744,9 +778,9 @@ def generate_instruction_sweep_tests(
     for upper in uppers:
         lines.append(comment_banner(f"{prefix} {CP_MASKING}: tag 0x{upper:04X} -- full instruction sweep"))
         for mn in READS:
-            lines.extend(_probe_load(mn, upper, _binname(prefix, upper, mn), test_data, cg))
+            lines.extend(probe_load(mn, upper, _binname(prefix, upper, mn), test_data, cg))
         for mn, rb in WRITES:
-            lines.extend(_probe_store(mn, rb, upper, _binname(prefix, upper, mn), test_data, cg))
+            lines.extend(probe_store(mn, rb, upper, _binname(prefix, upper, mn), test_data, cg))
 
         amos = []
         for mn, rb in RV64A_AMOS:
@@ -769,14 +803,14 @@ def generate_instruction_sweep_tests(
             lines.extend(
                 _ifdef(
                     guard,
-                    [*_probe_load(mn, upper, _binname(prefix, upper, mn), test_data, cg, float_load=True)],
+                    [*probe_load(mn, upper, _binname(prefix, upper, mn), test_data, cg, float_load=True)],
                 )
             )
         for mn, rb, guard, mv in FP_WRITES:
             lines.extend(
                 _ifdef(
                     guard,
-                    [*_probe_store(mn, rb, upper, _binname(prefix, upper, mn), test_data, cg, fp_move_mnemonic=mv)],
+                    [*probe_store(mn, rb, upper, _binname(prefix, upper, mn), test_data, cg, fp_move_mnemonic=mv)],
                 )
             )
 
@@ -784,7 +818,7 @@ def generate_instruction_sweep_tests(
         zca_lines = []
         for mn in ZCA_READS_CL:
             zca_lines.extend(
-                _probe_load(
+                probe_load(
                     mn,
                     upper,
                     _binname(prefix, upper, mn),
@@ -796,7 +830,7 @@ def generate_instruction_sweep_tests(
             )
         for mn, rb in ZCA_WRITES_CS:
             zca_lines.extend(
-                _probe_store(
+                probe_store(
                     mn,
                     rb,
                     upper,
@@ -809,7 +843,7 @@ def generate_instruction_sweep_tests(
             )
         for mn in ZCA_READS_SP:
             zca_lines.extend(
-                _probe_load(
+                probe_load(
                     mn,
                     upper,
                     _binname(prefix, upper, mn),
@@ -821,7 +855,7 @@ def generate_instruction_sweep_tests(
             )
         for mn, rb in ZCA_WRITES_SP:
             zca_lines.extend(
-                _probe_store(
+                probe_store(
                     mn,
                     rb,
                     upper,
@@ -838,8 +872,8 @@ def generate_instruction_sweep_tests(
             _ifdef(
                 "ZCD_SUPPORTED",
                 [
-                    *_probe_load("c.fldsp", upper, _binname(prefix, upper, "c.fldsp"), test_data, cg, **zcd_load),
-                    *_probe_store(
+                    *probe_load("c.fldsp", upper, _binname(prefix, upper, "c.fldsp"), test_data, cg, **zcd_load),
+                    *probe_store(
                         "c.fsdsp", "ld", upper, _binname(prefix, upper, "c.fsdsp"), test_data, cg, **zcd_store
                     ),
                 ],
@@ -902,7 +936,7 @@ def _load_store_sweep(
     for upper in UPPER_PATTERNS:
         lines.extend(
             [
-                *_probe_load(
+                *probe_load(
                     load,
                     upper,
                     _binname(prefix, upper, load),
@@ -912,7 +946,7 @@ def _load_store_sweep(
                     base_address=base,
                     offset=offset,
                 ),
-                *_probe_store(
+                *probe_store(
                     store,
                     readback,
                     upper,

@@ -136,10 +136,7 @@ normative_rule_definitions:
   # The STCE bit enables vstimecmp for VS-mode when set to one.
   - name: henvcfg_stce_op
     coverpoint:
-      [
-        "Sstc_H_cg/cp_vs_stimecmp_{accessible, accesses}",
-        "Sstc_H_cg/cp_vstip",
-      ]
+      ["Sstc_H_cg/cp_vs_stimecmp_{accessible, accesses}", "Sstc_H_cg/cp_vstip"]
   # When STCE bit is henvcfg is zero, an attempt to access stimecmp (really vstimecmp)
   # when V=1 raises a virtual-instruction exception, and VSTIP in hip reverts to its
   # defined behavior as if this extension is not implemented.

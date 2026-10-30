@@ -157,10 +157,8 @@ covergroup Sscofpmf_S_cg with function sample(ins_t ins);
     }
 
     sie_lcofi: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sie", "lcofie")[0] {}
-    sstatus_sie_set: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sstatus", "sie")[0] {
-            bins one = {1};
-    }
-
+    // SIE before the instruction: an interrupt the instruction enables is taken right after it,
+    // and the trap's clear of SIE can land in the same trace record.
     prev_mstatus_sie_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")[0] {
             bins one = {1};
     }
@@ -270,7 +268,7 @@ covergroup Sscofpmf_S_cg with function sample(ins_t ins);
     cp_scountovf_shadow:       cross priv_mode_s, scountovf_read, mcounteren_all_ones_state, of_stimulus_pattern;
     cp_scountovf_mcounteren:   cross priv_mode_s, scountovf_read, of_write_pattern, mcounteren_stimulus_pattern_state;
     cp_sscofpmf_access:        cross priv_mode_s, csr_access_pattern, hpm_csr_target;
-    cp_lcofi_sip_s:            cross priv_mode_s, sstatus_sie_set, sie_lcofi, sip_lcofi, lcofi_mideleg_one;
+    cp_lcofi_sip_s:            cross priv_mode_s, prev_mstatus_sie_one, sie_lcofi, sip_lcofi, lcofi_mideleg_one;
     cp_lcofip_priority_s:      cross priv_mode_s, mhpmevent_minh_only_state, prev_mstatus_sie_one, sie_state, lcofi_ip_one, mip_other_pending_s, mideleg_s_ints;
 endgroup
 

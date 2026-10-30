@@ -3664,7 +3664,7 @@ def _generate_match_size_tests(test_data: TestData, mode: str) -> list[TestChunk
     addr_reg, data_reg, temp_reg = test_data.int_regs.get_registers(3, reg_range=[8, 9, 12, 13, 14, 15])
 
     def config(trig_num: int, tdata2: int, xsl: int, match: int, n: int) -> tuple[list[str], list[str]]:
-        """(write tselect and tdata2 with the trigger disabled, write tdata1 to arm it)"""
+        """(write tdata2 with the trigger disabled, write tdata1 to arm it)"""
         lines = _config_mcontrol6(
             temp_reg, trig_num, tdata2, mode, xsl=xsl, select=1, size=_MS_SIZE_CODE[n], match=match
         )
@@ -3711,7 +3711,7 @@ def _generate_match_size_tests(test_data: TestData, mode: str) -> list[TestChunk
         xsl = {"store": 0b010, "load": 0b001, "execute": 0b100}[kind]
         for trig_num in TRIGGERS:
             gates = [*_mcontrol6_gates(trig_num, mode, select=1), *_xsl_ifdefs(xsl)]
-            lines.extend(gates)
+            lines.extend([*gates, *_select_trigger(temp_reg, trig_num, mode)])
             if kind != "execute":
                 lines.append(f"LA(x{addr_reg}, scratch)")
             for xlen in (32, 64):
@@ -3754,7 +3754,7 @@ def _generate_match_size_tests(test_data: TestData, mode: str) -> list[TestChunk
                         last_tdata2 = None
                         for i, (tdata2, label, value, width, note) in enumerate(cases):
                             setup, arm = config(trig_num, tdata2, xsl, match, n)
-                            if tdata2 != last_tdata2:  # tselect and tdata2 once per group
+                            if tdata2 != last_tdata2:  # tdata2 once per group
                                 lines.extend(setup)
                                 last_tdata2 = tdata2
                             binname = f"RV{xlen}_trig_{trig_num}_match_{match}_size_{size}_{label}_{i}"

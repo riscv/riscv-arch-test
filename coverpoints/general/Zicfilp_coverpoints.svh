@@ -20,7 +20,7 @@
 // and x0 for any other instruction. c.ebreak shares the c.jalr encoding with rs1=x0 and has no rs1 operand.
 `ifndef ZICFILP_LP_JALR
     `define ZICFILP_INDIRECT(TD)   ((TD.insn ==? JALR) || (TD.insn ==? C_JR) || (TD.insn ==? C_JALR))
-    `define ZICFILP_RS1(TD)        ((`ZICFILP_INDIRECT(TD) && TD.has_rs1) ? ins.get_gpr_reg(TD.rs1) : x0)
+    `define ZICFILP_RS1(TD)        gpr_name_t'((`ZICFILP_INDIRECT(TD) && TD.has_rs1) ? ins.get_gpr_reg(TD.rs1) : x0)
     `define ZICFILP_RS1_LINK(TD)   ((`ZICFILP_RS1(TD) == x1) || (`ZICFILP_RS1(TD) == x5) || (`ZICFILP_RS1(TD) == x7))
     `define ZICFILP_LP_JALR(TD)    ((TD.insn ==? JALR) && !`ZICFILP_RS1_LINK(TD))
     `define ZICFILP_LP_CJUMP(TD)   (((TD.insn ==? C_JR) || (TD.insn ==? C_JALR)) && (`ZICFILP_RS1(TD) != x0) && !`ZICFILP_RS1_LINK(TD))
@@ -176,7 +176,7 @@
     priority_case: coverpoint {
         `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
             (`ZICFILP_LP_JALR(ins.current) &&
-             ((ins.current.imm + ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS)),
+             ((ins.current.imm + ins.current.rs1_val) == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS))),
         `else
             1'b0,
         `endif

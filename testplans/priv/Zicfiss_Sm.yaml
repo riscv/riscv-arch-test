@@ -64,7 +64,7 @@ coverpoints:
       Leg A: from M-mode set menvcfg.SSE=0, then attempt to write 1 to senvcfg.SSE (from S-mode) and to henvcfg.SSE (from HS-mode). Read both back.
       Leg B: menvcfg.SSE=1, henvcfg.SSE=0, V=1. Attempt to write 1 to senvcfg.SSE and read back.
       Positive control per leg: with the parent field set to 1 the child is writable and reads back 1.
-      The henvcfg leg (cp_envcfg_sse_rdonly0_henvcfg) is generated and compiled only with H_SUPPORTED, which ACT4 leaves undefined until Sail supports the hypervisor extension.
+      The henvcfg leg (cp_envcfg_sse_rdonly0_henvcfg) is generated and compiled only with H_SUPPORTED. Zicfiss_H/cp_henvcfg_sse_rdonly0_hs checks the same henvcfg leg from HS-mode.
     expectation: |-
       Leg A: with menvcfg.SSE=0, both henvcfg.SSE and senvcfg.SSE are read-only zero -- the write is discarded and the field reads 0. No exception: these are WARL fields, not an illegal access.
       Leg B: with henvcfg.SSE=0 and V=1, senvcfg.SSE is read-only zero.

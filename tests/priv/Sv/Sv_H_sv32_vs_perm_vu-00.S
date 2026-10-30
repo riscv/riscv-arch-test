@@ -123,7 +123,7 @@ RVTEST_BEGIN
   LI(x15, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x15
   LI(x14, 0x90407000)
-  LI(x6, 0x144)
+  LI(x6, 0x142)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_H_vsstage_cg_cp_vsatp_perm_u0_RWX_store:
   sw x6, 8(x14)
@@ -155,7 +155,7 @@ Sv_H_vsstage_cg_cp_vsatp_perm_u0_RWX_exec:
   LI(x15, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x15
   LI(x13, 0x90407000)
-  LI(x8, 0x147)
+  LI(x8, 0x145)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_H_vsstage_cg_cp_vsatp_perm_u0_Xmonly_store:
   sw x8, 8(x13)
@@ -187,7 +187,7 @@ Sv_H_vsstage_cg_cp_vsatp_perm_u0_Xmonly_exec:
   LI(x15, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x15
   LI(x14, 0x90407000)
-  LI(x8, 0x14a)
+  LI(x8, 0x148)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_H_vsstage_cg_cp_vsatp_perm_u0_RX_store:
   sw x8, 8(x14)
@@ -219,7 +219,7 @@ Sv_H_vsstage_cg_cp_vsatp_perm_u0_RX_exec:
   LI(x15, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x15
   LI(x9, 0x90407000)
-  LI(x14, 0x14d)
+  LI(x14, 0x14b)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_H_vsstage_cg_cp_vsatp_perm_u0_RW_store:
   sw x14, 8(x9)
@@ -251,7 +251,7 @@ Sv_H_vsstage_cg_cp_vsatp_perm_u0_RW_exec:
   LI(x15, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x15
   LI(x14, 0x90407000)
-  LI(x13, 0x150)
+  LI(x13, 0x14e)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_H_vsstage_cg_cp_vsatp_perm_u0_Rmonly_store:
   sw x13, 8(x14)
@@ -283,7 +283,7 @@ Sv_H_vsstage_cg_cp_vsatp_perm_u0_Rmonly_exec:
   LI(x15, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x15
   LI(x6, 0x90407000)
-  LI(x13, 0x153)
+  LI(x13, 0x151)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_H_vsstage_cg_cp_vsatp_perm_u1_RWX_store:
   sw x13, 8(x6)
@@ -315,7 +315,7 @@ Sv_H_vsstage_cg_cp_vsatp_perm_u1_RWX_exec:
   LI(x15, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x15
   LI(x8, 0x90407000)
-  LI(x6, 0x156)
+  LI(x6, 0x154)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_H_vsstage_cg_cp_vsatp_perm_u1_Xmonly_store:
   sw x6, 8(x8)
@@ -347,7 +347,7 @@ Sv_H_vsstage_cg_cp_vsatp_perm_u1_Xmonly_exec:
   LI(x15, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x15
   LI(x13, 0x90407000)
-  LI(x9, 0x159)
+  LI(x9, 0x157)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_H_vsstage_cg_cp_vsatp_perm_u1_RX_store:
   sw x9, 8(x13)
@@ -379,7 +379,7 @@ Sv_H_vsstage_cg_cp_vsatp_perm_u1_RX_exec:
   LI(x15, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x15
   LI(x13, 0x90407000)
-  LI(x9, 0x15c)
+  LI(x9, 0x15a)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_H_vsstage_cg_cp_vsatp_perm_u1_RW_store:
   sw x9, 8(x13)
@@ -411,7 +411,7 @@ Sv_H_vsstage_cg_cp_vsatp_perm_u1_RW_exec:
   LI(x15, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x15
   LI(x6, 0x90407000)
-  LI(x9, 0x15f)
+  LI(x9, 0x15d)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_H_vsstage_cg_cp_vsatp_perm_u1_Rmonly_store:
   sw x9, 8(x6)
@@ -445,7 +445,7 @@ Sv_H_vsstage_cg_cp_vsatp_perm_u1_Rmonly_exec:
   LI(x15, SSTATUS_SUM)
   csrs vsstatus, x15
   LI(x13, 0x90407000)
-  LI(x6, 0x162)
+  LI(x6, 0x160)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_H_vsstage_cg_cp_vsatp_sum_sum_u0_RWX_store:
   sw x6, 8(x13)
@@ -479,7 +479,7 @@ Sv_H_vsstage_cg_cp_vsatp_sum_sum_u0_RWX_exec:
   LI(x15, SSTATUS_SUM)
   csrs vsstatus, x15
   LI(x6, 0x90407000)
-  LI(x14, 0x165)
+  LI(x14, 0x163)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_H_vsstage_cg_cp_vsatp_sum_sum_u1_RWX_store:
   sw x14, 8(x6)
@@ -513,7 +513,7 @@ Sv_H_vsstage_cg_cp_vsatp_sum_sum_u1_RWX_exec:
   LI(x15, SSTATUS_MXR)
   csrs vsstatus, x15
   LI(x6, 0x90407000)
-  LI(x13, 0x168)
+  LI(x13, 0x166)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_H_vsstage_cg_cp_vsstatus_mxr_mxr_sum0_u0_store:
   sw x13, 8(x6)
@@ -547,7 +547,7 @@ Sv_H_vsstage_cg_cp_vsstatus_mxr_mxr_sum0_u0_exec:
   LI(x15, SSTATUS_SUM | SSTATUS_MXR)
   csrs vsstatus, x15
   LI(x14, 0x90407000)
-  LI(x6, 0x16b)
+  LI(x6, 0x169)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_H_vsstage_cg_cp_vsstatus_mxr_mxr_sum1_u0_store:
   sw x6, 8(x14)
@@ -581,7 +581,7 @@ Sv_H_vsstage_cg_cp_vsstatus_mxr_mxr_sum1_u0_exec:
   LI(x15, SSTATUS_MXR)
   csrs vsstatus, x15
   LI(x6, 0x90407000)
-  LI(x9, 0x16e)
+  LI(x9, 0x16c)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_H_vsstage_cg_cp_vsstatus_mxr_mxr_sum0_u1_store:
   sw x9, 8(x6)
@@ -615,7 +615,7 @@ Sv_H_vsstage_cg_cp_vsstatus_mxr_mxr_sum0_u1_exec:
   LI(x15, SSTATUS_SUM | SSTATUS_MXR)
   csrs vsstatus, x15
   LI(x9, 0x90407000)
-  LI(x13, 0x171)
+  LI(x13, 0x16f)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_H_vsstage_cg_cp_vsstatus_mxr_mxr_sum1_u1_store:
   sw x13, 8(x9)
@@ -639,9 +639,9 @@ Sv_H_vsstage_cg_cp_vsstatus_mxr_mxr_sum1_u1_exec:
   csrc sstatus, x14
   LI(x14, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x14
-  LI(x14, HENVCFGH_ADUE | HENVCFGH_PBMTE)
+  LI(x14, HENVCFGH_ADUE)
   csrc henvcfgh, x14
-  RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFGH, MENVCFGH_ADUE | MENVCFGH_PBMTE)
+  RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFGH, MENVCFGH_ADUE)
   csrw hedeleg, zero
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -702,54 +702,54 @@ rvtest_vlvl0_pg_tbl:
   .endif
 
 // Testcase strings
-Sv_H_vsstage_cg_cp_vsatp_perm_u0_RWX_store_str: .string "\"test: 69; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u0_RWX_store\""
-Sv_H_vsstage_cg_cp_vsatp_perm_u0_RWX_load_str: .string "\"test: 70; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u0_RWX_load\""
-Sv_H_vsstage_cg_cp_vsatp_perm_u0_RWX_exec_str: .string "\"test: 71; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u0_RWX_exec\""
-Sv_H_vsstage_cg_cp_vsatp_perm_u0_Xmonly_store_str: .string "\"test: 72; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u0_X-only_store\""
-Sv_H_vsstage_cg_cp_vsatp_perm_u0_Xmonly_load_str: .string "\"test: 73; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u0_X-only_load\""
-Sv_H_vsstage_cg_cp_vsatp_perm_u0_Xmonly_exec_str: .string "\"test: 74; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u0_X-only_exec\""
-Sv_H_vsstage_cg_cp_vsatp_perm_u0_RX_store_str: .string "\"test: 75; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u0_RX_store\""
-Sv_H_vsstage_cg_cp_vsatp_perm_u0_RX_load_str: .string "\"test: 76; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u0_RX_load\""
-Sv_H_vsstage_cg_cp_vsatp_perm_u0_RX_exec_str: .string "\"test: 77; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u0_RX_exec\""
-Sv_H_vsstage_cg_cp_vsatp_perm_u0_RW_store_str: .string "\"test: 78; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u0_RW_store\""
-Sv_H_vsstage_cg_cp_vsatp_perm_u0_RW_load_str: .string "\"test: 79; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u0_RW_load\""
-Sv_H_vsstage_cg_cp_vsatp_perm_u0_RW_exec_str: .string "\"test: 80; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u0_RW_exec\""
-Sv_H_vsstage_cg_cp_vsatp_perm_u0_Rmonly_store_str: .string "\"test: 81; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u0_R-only_store\""
-Sv_H_vsstage_cg_cp_vsatp_perm_u0_Rmonly_load_str: .string "\"test: 82; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u0_R-only_load\""
-Sv_H_vsstage_cg_cp_vsatp_perm_u0_Rmonly_exec_str: .string "\"test: 83; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u0_R-only_exec\""
-Sv_H_vsstage_cg_cp_vsatp_perm_u1_RWX_store_str: .string "\"test: 84; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u1_RWX_store\""
-Sv_H_vsstage_cg_cp_vsatp_perm_u1_RWX_load_str: .string "\"test: 85; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u1_RWX_load\""
-Sv_H_vsstage_cg_cp_vsatp_perm_u1_RWX_exec_str: .string "\"test: 86; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u1_RWX_exec\""
-Sv_H_vsstage_cg_cp_vsatp_perm_u1_Xmonly_store_str: .string "\"test: 87; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u1_X-only_store\""
-Sv_H_vsstage_cg_cp_vsatp_perm_u1_Xmonly_load_str: .string "\"test: 88; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u1_X-only_load\""
-Sv_H_vsstage_cg_cp_vsatp_perm_u1_Xmonly_exec_str: .string "\"test: 89; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u1_X-only_exec\""
-Sv_H_vsstage_cg_cp_vsatp_perm_u1_RX_store_str: .string "\"test: 90; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u1_RX_store\""
-Sv_H_vsstage_cg_cp_vsatp_perm_u1_RX_load_str: .string "\"test: 91; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u1_RX_load\""
-Sv_H_vsstage_cg_cp_vsatp_perm_u1_RX_exec_str: .string "\"test: 92; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u1_RX_exec\""
-Sv_H_vsstage_cg_cp_vsatp_perm_u1_RW_store_str: .string "\"test: 93; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u1_RW_store\""
-Sv_H_vsstage_cg_cp_vsatp_perm_u1_RW_load_str: .string "\"test: 94; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u1_RW_load\""
-Sv_H_vsstage_cg_cp_vsatp_perm_u1_RW_exec_str: .string "\"test: 95; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u1_RW_exec\""
-Sv_H_vsstage_cg_cp_vsatp_perm_u1_Rmonly_store_str: .string "\"test: 96; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u1_R-only_store\""
-Sv_H_vsstage_cg_cp_vsatp_perm_u1_Rmonly_load_str: .string "\"test: 97; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u1_R-only_load\""
-Sv_H_vsstage_cg_cp_vsatp_perm_u1_Rmonly_exec_str: .string "\"test: 98; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u1_R-only_exec\""
-Sv_H_vsstage_cg_cp_vsatp_sum_sum_u0_RWX_store_str: .string "\"test: 99; cg: Sv_H_vsstage_cg; cp: cp_vsatp_sum; bin: sum_u0_RWX_store\""
-Sv_H_vsstage_cg_cp_vsatp_sum_sum_u0_RWX_load_str: .string "\"test: 100; cg: Sv_H_vsstage_cg; cp: cp_vsatp_sum; bin: sum_u0_RWX_load\""
-Sv_H_vsstage_cg_cp_vsatp_sum_sum_u0_RWX_exec_str: .string "\"test: 101; cg: Sv_H_vsstage_cg; cp: cp_vsatp_sum; bin: sum_u0_RWX_exec\""
-Sv_H_vsstage_cg_cp_vsatp_sum_sum_u1_RWX_store_str: .string "\"test: 102; cg: Sv_H_vsstage_cg; cp: cp_vsatp_sum; bin: sum_u1_RWX_store\""
-Sv_H_vsstage_cg_cp_vsatp_sum_sum_u1_RWX_load_str: .string "\"test: 103; cg: Sv_H_vsstage_cg; cp: cp_vsatp_sum; bin: sum_u1_RWX_load\""
-Sv_H_vsstage_cg_cp_vsatp_sum_sum_u1_RWX_exec_str: .string "\"test: 104; cg: Sv_H_vsstage_cg; cp: cp_vsatp_sum; bin: sum_u1_RWX_exec\""
-Sv_H_vsstage_cg_cp_vsstatus_mxr_mxr_sum0_u0_store_str: .string "\"test: 105; cg: Sv_H_vsstage_cg; cp: cp_vsstatus_mxr; bin: mxr_sum0_u0_store\""
-Sv_H_vsstage_cg_cp_vsstatus_mxr_mxr_sum0_u0_load_str: .string "\"test: 106; cg: Sv_H_vsstage_cg; cp: cp_vsstatus_mxr; bin: mxr_sum0_u0_load\""
-Sv_H_vsstage_cg_cp_vsstatus_mxr_mxr_sum0_u0_exec_str: .string "\"test: 107; cg: Sv_H_vsstage_cg; cp: cp_vsstatus_mxr; bin: mxr_sum0_u0_exec\""
-Sv_H_vsstage_cg_cp_vsstatus_mxr_mxr_sum1_u0_store_str: .string "\"test: 108; cg: Sv_H_vsstage_cg; cp: cp_vsstatus_mxr; bin: mxr_sum1_u0_store\""
-Sv_H_vsstage_cg_cp_vsstatus_mxr_mxr_sum1_u0_load_str: .string "\"test: 109; cg: Sv_H_vsstage_cg; cp: cp_vsstatus_mxr; bin: mxr_sum1_u0_load\""
-Sv_H_vsstage_cg_cp_vsstatus_mxr_mxr_sum1_u0_exec_str: .string "\"test: 110; cg: Sv_H_vsstage_cg; cp: cp_vsstatus_mxr; bin: mxr_sum1_u0_exec\""
-Sv_H_vsstage_cg_cp_vsstatus_mxr_mxr_sum0_u1_store_str: .string "\"test: 111; cg: Sv_H_vsstage_cg; cp: cp_vsstatus_mxr; bin: mxr_sum0_u1_store\""
-Sv_H_vsstage_cg_cp_vsstatus_mxr_mxr_sum0_u1_load_str: .string "\"test: 112; cg: Sv_H_vsstage_cg; cp: cp_vsstatus_mxr; bin: mxr_sum0_u1_load\""
-Sv_H_vsstage_cg_cp_vsstatus_mxr_mxr_sum0_u1_exec_str: .string "\"test: 113; cg: Sv_H_vsstage_cg; cp: cp_vsstatus_mxr; bin: mxr_sum0_u1_exec\""
-Sv_H_vsstage_cg_cp_vsstatus_mxr_mxr_sum1_u1_store_str: .string "\"test: 114; cg: Sv_H_vsstage_cg; cp: cp_vsstatus_mxr; bin: mxr_sum1_u1_store\""
-Sv_H_vsstage_cg_cp_vsstatus_mxr_mxr_sum1_u1_load_str: .string "\"test: 115; cg: Sv_H_vsstage_cg; cp: cp_vsstatus_mxr; bin: mxr_sum1_u1_load\""
-Sv_H_vsstage_cg_cp_vsstatus_mxr_mxr_sum1_u1_exec_str: .string "\"test: 116; cg: Sv_H_vsstage_cg; cp: cp_vsstatus_mxr; bin: mxr_sum1_u1_exec\""
+Sv_H_vsstage_cg_cp_vsatp_perm_u0_RWX_store_str: .string "\"test: 67; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u0_RWX_store\""
+Sv_H_vsstage_cg_cp_vsatp_perm_u0_RWX_load_str: .string "\"test: 68; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u0_RWX_load\""
+Sv_H_vsstage_cg_cp_vsatp_perm_u0_RWX_exec_str: .string "\"test: 69; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u0_RWX_exec\""
+Sv_H_vsstage_cg_cp_vsatp_perm_u0_Xmonly_store_str: .string "\"test: 70; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u0_X-only_store\""
+Sv_H_vsstage_cg_cp_vsatp_perm_u0_Xmonly_load_str: .string "\"test: 71; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u0_X-only_load\""
+Sv_H_vsstage_cg_cp_vsatp_perm_u0_Xmonly_exec_str: .string "\"test: 72; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u0_X-only_exec\""
+Sv_H_vsstage_cg_cp_vsatp_perm_u0_RX_store_str: .string "\"test: 73; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u0_RX_store\""
+Sv_H_vsstage_cg_cp_vsatp_perm_u0_RX_load_str: .string "\"test: 74; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u0_RX_load\""
+Sv_H_vsstage_cg_cp_vsatp_perm_u0_RX_exec_str: .string "\"test: 75; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u0_RX_exec\""
+Sv_H_vsstage_cg_cp_vsatp_perm_u0_RW_store_str: .string "\"test: 76; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u0_RW_store\""
+Sv_H_vsstage_cg_cp_vsatp_perm_u0_RW_load_str: .string "\"test: 77; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u0_RW_load\""
+Sv_H_vsstage_cg_cp_vsatp_perm_u0_RW_exec_str: .string "\"test: 78; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u0_RW_exec\""
+Sv_H_vsstage_cg_cp_vsatp_perm_u0_Rmonly_store_str: .string "\"test: 79; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u0_R-only_store\""
+Sv_H_vsstage_cg_cp_vsatp_perm_u0_Rmonly_load_str: .string "\"test: 80; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u0_R-only_load\""
+Sv_H_vsstage_cg_cp_vsatp_perm_u0_Rmonly_exec_str: .string "\"test: 81; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u0_R-only_exec\""
+Sv_H_vsstage_cg_cp_vsatp_perm_u1_RWX_store_str: .string "\"test: 82; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u1_RWX_store\""
+Sv_H_vsstage_cg_cp_vsatp_perm_u1_RWX_load_str: .string "\"test: 83; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u1_RWX_load\""
+Sv_H_vsstage_cg_cp_vsatp_perm_u1_RWX_exec_str: .string "\"test: 84; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u1_RWX_exec\""
+Sv_H_vsstage_cg_cp_vsatp_perm_u1_Xmonly_store_str: .string "\"test: 85; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u1_X-only_store\""
+Sv_H_vsstage_cg_cp_vsatp_perm_u1_Xmonly_load_str: .string "\"test: 86; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u1_X-only_load\""
+Sv_H_vsstage_cg_cp_vsatp_perm_u1_Xmonly_exec_str: .string "\"test: 87; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u1_X-only_exec\""
+Sv_H_vsstage_cg_cp_vsatp_perm_u1_RX_store_str: .string "\"test: 88; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u1_RX_store\""
+Sv_H_vsstage_cg_cp_vsatp_perm_u1_RX_load_str: .string "\"test: 89; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u1_RX_load\""
+Sv_H_vsstage_cg_cp_vsatp_perm_u1_RX_exec_str: .string "\"test: 90; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u1_RX_exec\""
+Sv_H_vsstage_cg_cp_vsatp_perm_u1_RW_store_str: .string "\"test: 91; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u1_RW_store\""
+Sv_H_vsstage_cg_cp_vsatp_perm_u1_RW_load_str: .string "\"test: 92; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u1_RW_load\""
+Sv_H_vsstage_cg_cp_vsatp_perm_u1_RW_exec_str: .string "\"test: 93; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u1_RW_exec\""
+Sv_H_vsstage_cg_cp_vsatp_perm_u1_Rmonly_store_str: .string "\"test: 94; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u1_R-only_store\""
+Sv_H_vsstage_cg_cp_vsatp_perm_u1_Rmonly_load_str: .string "\"test: 95; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u1_R-only_load\""
+Sv_H_vsstage_cg_cp_vsatp_perm_u1_Rmonly_exec_str: .string "\"test: 96; cg: Sv_H_vsstage_cg; cp: cp_vsatp_perm; bin: u1_R-only_exec\""
+Sv_H_vsstage_cg_cp_vsatp_sum_sum_u0_RWX_store_str: .string "\"test: 97; cg: Sv_H_vsstage_cg; cp: cp_vsatp_sum; bin: sum_u0_RWX_store\""
+Sv_H_vsstage_cg_cp_vsatp_sum_sum_u0_RWX_load_str: .string "\"test: 98; cg: Sv_H_vsstage_cg; cp: cp_vsatp_sum; bin: sum_u0_RWX_load\""
+Sv_H_vsstage_cg_cp_vsatp_sum_sum_u0_RWX_exec_str: .string "\"test: 99; cg: Sv_H_vsstage_cg; cp: cp_vsatp_sum; bin: sum_u0_RWX_exec\""
+Sv_H_vsstage_cg_cp_vsatp_sum_sum_u1_RWX_store_str: .string "\"test: 100; cg: Sv_H_vsstage_cg; cp: cp_vsatp_sum; bin: sum_u1_RWX_store\""
+Sv_H_vsstage_cg_cp_vsatp_sum_sum_u1_RWX_load_str: .string "\"test: 101; cg: Sv_H_vsstage_cg; cp: cp_vsatp_sum; bin: sum_u1_RWX_load\""
+Sv_H_vsstage_cg_cp_vsatp_sum_sum_u1_RWX_exec_str: .string "\"test: 102; cg: Sv_H_vsstage_cg; cp: cp_vsatp_sum; bin: sum_u1_RWX_exec\""
+Sv_H_vsstage_cg_cp_vsstatus_mxr_mxr_sum0_u0_store_str: .string "\"test: 103; cg: Sv_H_vsstage_cg; cp: cp_vsstatus_mxr; bin: mxr_sum0_u0_store\""
+Sv_H_vsstage_cg_cp_vsstatus_mxr_mxr_sum0_u0_load_str: .string "\"test: 104; cg: Sv_H_vsstage_cg; cp: cp_vsstatus_mxr; bin: mxr_sum0_u0_load\""
+Sv_H_vsstage_cg_cp_vsstatus_mxr_mxr_sum0_u0_exec_str: .string "\"test: 105; cg: Sv_H_vsstage_cg; cp: cp_vsstatus_mxr; bin: mxr_sum0_u0_exec\""
+Sv_H_vsstage_cg_cp_vsstatus_mxr_mxr_sum1_u0_store_str: .string "\"test: 106; cg: Sv_H_vsstage_cg; cp: cp_vsstatus_mxr; bin: mxr_sum1_u0_store\""
+Sv_H_vsstage_cg_cp_vsstatus_mxr_mxr_sum1_u0_load_str: .string "\"test: 107; cg: Sv_H_vsstage_cg; cp: cp_vsstatus_mxr; bin: mxr_sum1_u0_load\""
+Sv_H_vsstage_cg_cp_vsstatus_mxr_mxr_sum1_u0_exec_str: .string "\"test: 108; cg: Sv_H_vsstage_cg; cp: cp_vsstatus_mxr; bin: mxr_sum1_u0_exec\""
+Sv_H_vsstage_cg_cp_vsstatus_mxr_mxr_sum0_u1_store_str: .string "\"test: 109; cg: Sv_H_vsstage_cg; cp: cp_vsstatus_mxr; bin: mxr_sum0_u1_store\""
+Sv_H_vsstage_cg_cp_vsstatus_mxr_mxr_sum0_u1_load_str: .string "\"test: 110; cg: Sv_H_vsstage_cg; cp: cp_vsstatus_mxr; bin: mxr_sum0_u1_load\""
+Sv_H_vsstage_cg_cp_vsstatus_mxr_mxr_sum0_u1_exec_str: .string "\"test: 111; cg: Sv_H_vsstage_cg; cp: cp_vsstatus_mxr; bin: mxr_sum0_u1_exec\""
+Sv_H_vsstage_cg_cp_vsstatus_mxr_mxr_sum1_u1_store_str: .string "\"test: 112; cg: Sv_H_vsstage_cg; cp: cp_vsstatus_mxr; bin: mxr_sum1_u1_store\""
+Sv_H_vsstage_cg_cp_vsstatus_mxr_mxr_sum1_u1_load_str: .string "\"test: 113; cg: Sv_H_vsstage_cg; cp: cp_vsstatus_mxr; bin: mxr_sum1_u1_load\""
+Sv_H_vsstage_cg_cp_vsstatus_mxr_mxr_sum1_u1_exec_str: .string "\"test: 114; cg: Sv_H_vsstage_cg; cp: cp_vsstatus_mxr; bin: mxr_sum1_u1_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

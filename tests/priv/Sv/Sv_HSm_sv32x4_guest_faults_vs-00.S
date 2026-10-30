@@ -289,9 +289,9 @@ Sv_HSm_trap_cg_cp_guest_page_fault_m_table_invalid_exec:
   csrc sstatus, x8
   LI(x8, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x8
-  LI(x8, HENVCFGH_ADUE | HENVCFGH_PBMTE)
+  LI(x8, HENVCFGH_ADUE)
   csrc henvcfgh, x8
-  RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFGH, MENVCFGH_ADUE | MENVCFGH_PBMTE)
+  RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFGH, MENVCFGH_ADUE)
   csrw hedeleg, zero
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test

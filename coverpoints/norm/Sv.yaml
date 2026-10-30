@@ -858,7 +858,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Sv_H_gstage_cg/cp_hgatp_perm",
-        "Sv_H_gstage_cg/cp_hgatp_adue",
+        "Sv_H_gstage_cg/cp_hgatp_svade",
         "Sv_H_twostage_cg/cp_twostage_perm",
         "Sv_H_gstage_cg/cp_hgatp_gpa_width",
         "Sv_H_twostage_cg/cp_twostage_gpa_width",
@@ -884,6 +884,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Sv_H_twostage_cg/cp_implicit_gpf",
+        "Svadu_H_cg/{cp_implicit_gpf,cp_hlv_implicit}",
         "Sv_HSm_trap_cg/cp_guest_page_fault_m",
         "Sv_HSm_trap_cg/cp_implicit_gpf_m",
         "Sv_H_hlv_cg/{cp_hlv_implicit,cp_hlv_root_gpf}",
@@ -982,19 +983,27 @@ normative_rule_definitions:
 
   # henvcfg.PBMTE gates Svpbmt in the VS-stage, and menvcfg.PBMTE in the G-stage
   - names: [henvcfg_pbmte_op, Svpbmt_vsatp_stage_override_rule]
-    coverpoint: ["Sv_H_vsstage_cg/cp_vsatp_pbmt"]
+    coverpoint: ["Svpbmt_H_cg/cp_vsatp_pbmt"]
 
   - names: [menvcfg_pbmte_op, Svpbmt_hgatp_stage_override_rule]
-    coverpoint: ["Sv_H_gstage_cg/cp_hgatp_pbmt"]
+    coverpoint: ["Svpbmt_H_cg/cp_hgatp_pbmt"]
 
   # henvcfg.ADUE selects Svadu or Svade for the VS-stage, and menvcfg.ADUE for the G-stage
   - name: henvcfg_adue_op
     coverpoint:
-      ["Sv_H_vsstage_cg/cp_vsatp_adue", "Sv_H_twostage_cg/cp_twostage_adue"]
+      [
+        "Sv_H_vsstage_cg/cp_vsatp_svade",
+        "Sv_H_twostage_cg/cp_twostage_svade",
+        "Svadu_H_cg/{cp_vsatp_adue,cp_twostage_adue}",
+      ]
 
   - name: menvcfg_adue_op
     coverpoint:
-      ["Sv_H_gstage_cg/cp_hgatp_adue", "Sv_H_twostage_cg/cp_twostage_adue"]
+      [
+        "Sv_H_gstage_cg/cp_hgatp_svade",
+        "Sv_H_twostage_cg/cp_twostage_svade",
+        "Svadu_H_cg/{cp_hgatp_adue,cp_twostage_adue}",
+      ]
 
   # henvcfg.ADUE and henvcfg.PBMTE are writable only while menvcfg.ADUE and menvcfg.PBMTE are set
   - names:
@@ -1005,14 +1014,13 @@ normative_rule_definitions:
       ]
     coverpoint:
       [
-        "Sv_H_csr_cg/{cp_henvcfg_menvcfg, cp_henvcfg_menvcfg_pbmte}",
-        "Sv_H_vsstage_cg/cp_vsatp_adue",
+        "Svadu_H_cg/{cp_henvcfg_menvcfg,cp_vsatp_adue}",
+        "Svpbmt_H_cg/cp_henvcfg_menvcfg",
       ]
 
   # Svnapot in the G-stage, with the VS-stage Bare and paged
   - name: Svnapot_hyp_gstage
-    coverpoint:
-      ["Sv_H_gstage_cg/cp_hgatp_napot", "Sv_H_twostage_cg/cp_twostage_napot"]
+    coverpoint: ["Svnapot_H_cg/{cp_hgatp_napot,cp_twostage_napot}"]
 
   # VS-stage A bits must not be set speculatively
   - name: vs_stage_speculative_a_bit

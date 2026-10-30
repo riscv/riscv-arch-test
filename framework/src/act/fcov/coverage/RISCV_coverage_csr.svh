@@ -521,7 +521,6 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "adue" : val = (val >> 29) & `UDB_MXLEN'(1);
       "cde" : val = (val >> 28) & `UDB_MXLEN'(1);
       "dte" : val = (val >> 27) & `UDB_MXLEN'(1);
-      "pbmte" : val = (val >> 30) & `UDB_MXLEN'(1);
       "stce" : val = (val >> 31) & `UDB_MXLEN'(1);
       default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
     endcase

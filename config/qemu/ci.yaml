@@ -104,6 +104,9 @@ exclude_extensions:
   # (https://gitlab.com/qemu-project/qemu/-/issues/4620).
   - Svinval_H
   - Svinval_SmH
+  - Svadu_H
+  - Svpbmt_H
+  - Svnapot_H
   # The same mstatus.MPV bug keeps the VS-mode and VU-mode sweeps in HS-mode
   # (https://gitlab.com/qemu-project/qemu/-/work_items/4588).
   - Ssstrict_H

@@ -116,9 +116,10 @@ include::{testplansdir}/priv/SmctrH.adoc[]
 
 The hypervisor TLB invalidation tests are the H and SmH groups of the Svinval suite: see <<t-Svinval_H-coverpoints>> and <<t-Svinval_SmH-coverpoints>>.
 
-==== SvaduH Hypervisor Hardware Page Table A/D Updates
+==== Svadu, Svpbmt and Svnapot Hypervisor Virtual Memory
 
-include::{testplansdir}/priv/SvaduH.adoc[]
+The hypervisor tests of these extensions are the H groups of their suites: see <<t-Svadu_H-coverpoints>>,
+<<t-Svpbmt_H-coverpoints>> and <<t-Svnapot_H-coverpoints>>.
 
 ==== ZicfilpH Hypervisor Landing Pads
 

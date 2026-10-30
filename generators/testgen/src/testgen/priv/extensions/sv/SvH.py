@@ -52,8 +52,6 @@ from testgen.priv.extensions.sv.SvHFenceCommon import (
     SFENCE_VMA_VS,
     fence_chunk,
 )
-from testgen.priv.extensions.sv.Svnapot import NAPOT_64K_PPN, NAPOT_RESERVED_PPNS
-from testgen.priv.extensions.sv.Svpbmt import PBMT_ENCODINGS
 from testgen.priv.registry import add_priv_test_generator
 
 # Guest accesses: a store and a load of the word at offset 8 of the test page, and a fetch of the ret at
@@ -125,59 +123,53 @@ def status_bits(csr: str, reg: int, *, sum_: int = 0, mxr: int = 0) -> list[str]
 
 
 def menvcfg_bits(xlen: int, *, adue: int, pbmte: int = 0) -> list[str]:
-    """Write menvcfg.ADUE and menvcfg.PBMTE through T-SBI (menvcfgh on RV32)."""
-    csr, adue_mask, pbmte_mask = (
-        ("CSR_MENVCFG", "MENVCFG_ADUE", "MENVCFG_PBMTE")
+    """Write menvcfg.ADUE and menvcfg.PBMTE through T-SBI (menvcfgh.ADUE on RV32, which has no Svpbmt)."""
+    csr, fields = (
+        ("CSR_MENVCFG", (("MENVCFG_ADUE", adue), ("MENVCFG_PBMTE", pbmte)))
         if xlen == 64
-        else ("CSR_MENVCFGH", "MENVCFGH_ADUE", "MENVCFGH_PBMTE")
+        else ("CSR_MENVCFGH", (("MENVCFGH_ADUE", adue),))
     )
-    lines = [f"RVTEST_TSBI_CSR_CLEAR({csr}, {adue_mask} | {pbmte_mask})"]
-    bits = " | ".join(mask for mask, on in ((adue_mask, adue), (pbmte_mask, pbmte)) if on)
+    lines = [f"RVTEST_TSBI_CSR_CLEAR({csr}, {' | '.join(mask for mask, _ in fields)})"]
+    bits = " | ".join(mask for mask, on in fields if on)
     if bits:
         lines.append(f"RVTEST_TSBI_CSR_SET({csr}, {bits})")
     return lines
 
 
 def henvcfg_bits(xlen: int, reg: int, *, adue: int, pbmte: int = 0) -> list[str]:
-    """Write henvcfg.ADUE and henvcfg.PBMTE (henvcfgh on RV32)."""
-    csr, adue_mask, pbmte_mask = (
-        ("henvcfg", "HENVCFG_ADUE", "HENVCFG_PBMTE") if xlen == 64 else ("henvcfgh", "HENVCFGH_ADUE", "HENVCFGH_PBMTE")
+    """Write henvcfg.ADUE and henvcfg.PBMTE (henvcfgh.ADUE on RV32, which has no Svpbmt)."""
+    csr, fields = (
+        ("henvcfg", (("HENVCFG_ADUE", adue), ("HENVCFG_PBMTE", pbmte)))
+        if xlen == 64
+        else ("henvcfgh", (("HENVCFGH_ADUE", adue),))
     )
-    bits = " | ".join(mask for mask, on in ((adue_mask, adue), (pbmte_mask, pbmte)) if on) or "0"
-    return set_csr_bits(csr, f"{adue_mask} | {pbmte_mask}", bits, reg)
+    bits = " | ".join(mask for mask, on in fields if on) or "0"
+    return set_csr_bits(csr, " | ".join(mask for mask, _ in fields), bits, reg)
 
 
-def svpbmt_flush(reg: int) -> list[str]:
-    """Separate accesses to svh_page with different cacheability attributes (Svpbmt).
-
-    fence iorw, iorw; cbo.flush; fence iorw, iorw prevents loss of coherence and of memory ordering. Without
-    Zicbom there is no cbo.flush, and only the fence is emitted.
-    """
-    return [
-        "fence iorw, iorw",
-        "#ifdef ZICBOM_SUPPORTED",
-        f"LA(x{reg}, svh_page)",
-        ".option push",
-        ".option arch, +zicbom",
-        f"cbo.flush (x{reg})",
-        ".option pop",
-        "fence iorw, iorw",
-        "#endif",
-    ]
-
-
-def pbmt_block(lines: list[str], reg: int) -> list[str]:
-    """Wrap the PBMT testcases: enable cbo.flush in HS-mode, and flush svh_page before and after them."""
-    return [
-        "#ifdef ZICBOM_SUPPORTED",
-        "RVTEST_TSBI_CSR_SET(CSR_MENVCFG, MENVCFG_CBCFE)",
-        "#endif",
-        *lines,
-        *svpbmt_flush(reg),
-        "#ifdef ZICBOM_SUPPORTED",
-        "RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFG, MENVCFG_CBCFE)",
-        "#endif",
-    ]
+def henvcfg_gate(test_data: TestData, xlen: int, field: str, covergroup: str) -> list[str]:
+    """In HS-mode, set henvcfg.``field`` (ADUE or PBMTE) with menvcfg.``field`` = 0, where it is read-only zero, and
+    with menvcfg.``field`` = 1, and read it back.  RV32 has henvcfgh.ADUE and no Svpbmt."""
+    if xlen == 32:
+        csr, mask, bits = "henvcfgh", "HENVCFGH_ADUE", 1 << 29
+    else:
+        csr, mask, bits = "henvcfg", f"HENVCFG_{field}", 1 << (61 if field == "ADUE" else 62)
+    val, check = test_data.int_regs.get_registers(2)
+    code = []
+    for m_bit in (0, 1):
+        code.extend(
+            [
+                *menvcfg_bits(xlen, adue=m_bit if field == "ADUE" else 0, pbmte=m_bit if field == "PBMTE" else 0),
+                f"LI(x{val}, {mask})",
+                f"csrc {csr}, x{val}",
+                test_data.add_testcase(f"{field.lower()}_menvcfg{m_bit}", "cp_henvcfg_menvcfg", covergroup),
+                f"csrs {csr}, x{val}",
+                gen_csr_read_sigupd(check, (csr, bits), test_data, val),
+                f"csrc {csr}, x{val}",
+            ]
+        )
+    test_data.int_regs.return_registers([val, check])
+    return [*code, *menvcfg_bits(xlen, adue=0)]
 
 
 def map_test_page(
@@ -305,14 +297,16 @@ def guest_chunk_teardown(test_data: TestData, xlen: int) -> list[str]:
     return lines
 
 
-# VS-stage A/D cases: (menvcfg.ADUE, henvcfg.ADUE, leaf flags, accesses).  Svade faults on A = 0, and on D = 0 for a
-# store; Svadu sets A on any access and D on a store.  henvcfg.ADUE is read-only zero while menvcfg.ADUE = 0.
-AD_CASES = (
-    (0, 1, PteFlags(accessed=False, dirty=False), GUEST_OPS),
-    (1, 0, PteFlags(accessed=False, dirty=False), GUEST_OPS),
-    (1, 0, PteFlags(dirty=False), GUEST_OPS),
-    (1, 1, PteFlags(accessed=False, dirty=False), ("load", "exec")),
-    (1, 1, PteFlags(dirty=False), ("store",)),
+# VS-stage A/D cases: (menvcfg.ADUE, henvcfg.ADUE, leaf flags, accesses).  Svade (ADUE = 0) faults on A = 0, and on
+# D = 0 for a store.  The Svadu suite has the ADUE = 1 cases.
+SVADE_CASES = (
+    (0, 0, PteFlags(accessed=False, dirty=False), GUEST_OPS),
+    (0, 0, PteFlags(dirty=False), GUEST_OPS),
+)
+# G-stage A/D cases: (menvcfg.ADUE, leaf flags, accesses)
+G_SVADE_CASES = (
+    (0, PteFlags(user=True, accessed=False, dirty=False), GUEST_OPS),
+    (0, PteFlags(user=True, dirty=False), GUEST_OPS),
 )
 
 
@@ -321,6 +315,48 @@ def perm_flags(perm: str, user: bool) -> PteFlags:
     if perm == "inv":
         return PteFlags(valid=False, user=user)
     return PteFlags(user=user, read="r" in perm, write="w" in perm, execute="x" in perm)
+
+
+def vs_ad_accesses(
+    test_data: TestData,
+    vs: SvMode,
+    cases: Sequence[tuple[int, int, PteFlags, Sequence[str]]],
+    covergroup: str,
+    coverpoint: str,
+) -> list[str]:
+    """VS-mode accesses with hgatp = Bare through VS-stage leaves with A or D clear.  The leaf is read back."""
+    va = vs.data_va
+    reg = test_data.int_regs.get_register()
+    code = []
+    for m_adue, h_adue, flags, ops in cases:
+        name = f"madue{m_adue}_hadue{h_adue}_a{int(flags.accessed)}_d{int(flags.dirty)}_{ops[0]}"
+        setup = [
+            *menvcfg_bits(vs.xlen, adue=m_adue),
+            *henvcfg_bits(vs.xlen, reg, adue=h_adue),
+            *map_test_page(test_data, None, vs, vs_flags=flags),
+        ]
+        code.extend(guest_access(test_data, covergroup, coverpoint, name, "VS", va, setup=setup, ops=ops))
+        code.extend(read_pte(test_data, vs, 0, va, covergroup, coverpoint, f"{name}_pte"))
+    test_data.int_regs.return_register(reg)
+    return code
+
+
+def g_ad_accesses(
+    test_data: TestData,
+    g: SvMode,
+    cases: Sequence[tuple[int, PteFlags, Sequence[str]]],
+    covergroup: str,
+    coverpoint: str,
+) -> list[str]:
+    """VS-mode accesses with vsatp = Bare through G-stage leaves with A or D clear.  The leaf is read back."""
+    va = g.data_va
+    code = []
+    for m_adue, flags, ops in cases:
+        name = f"madue{m_adue}_a{int(flags.accessed)}_d{int(flags.dirty)}_{ops[0]}"
+        setup = [*menvcfg_bits(g.xlen, adue=m_adue), *map_test_page(test_data, g, None, g_flags=flags)]
+        code.extend(guest_access(test_data, covergroup, coverpoint, name, "VS", va, setup=setup, ops=ops))
+        code.extend(read_pte(test_data, g, 0, va, covergroup, coverpoint, f"{name}_pte"))
+    return code
 
 
 ###########################
@@ -377,18 +413,17 @@ def _pte_format_cases(xlen: int, user: bool) -> list[tuple[str, PteExpression]]:
 
 
 def _t_vs_pte(test_data: TestData, test_chunks: list[TestChunk], vs: SvMode) -> None:
-    """VS-stage PTE formats, henvcfg.PBMTE with PBMT, and henvcfg.ADUE with A/D bits, in VS-mode."""
+    """VS-stage PTE formats, and A/D bits with Svade, in VS-mode."""
     chunk = begin_chunk(
         test_data,
         f"H_{vs.name}_vs_pte",
-        "cp_vsatp_perm, cp_vsatp_pbmt, cp_vsatp_adue",
+        "cp_vsatp_perm, cp_vsatp_svade",
         "In VS-mode with hgatp = Bare, access through VS-stage leaves that are invalid, a level-0 pointer, or have\n"
-        "RSW, reserved or PBMT bits (PBMT with henvcfg.PBMTE = 0, 1), and through leaves with A or D clear\n"
-        "with henvcfg.ADUE = 0 (page fault) and 1 (hardware update, checked in the PTE)",
+        "RSW or reserved bits, and through leaves with A or D clear with menvcfg.ADUE = henvcfg.ADUE = 0\n"
+        "(page fault, PTE unchanged)",
         stages=(vs,),
     )
     va = vs.data_va
-    reg = test_data.int_regs.get_register()
     code = guest_chunk_setup(test_data, None, vs, "VS")
     for name, flags in _pte_format_cases(vs.xlen, False):
         code.extend(
@@ -402,30 +437,7 @@ def _t_vs_pte(test_data: TestData, test_chunks: list[TestChunk], vs: SvMode) -> 
                 setup=map_test_page(test_data, None, vs, vs_flags=flags),
             )
         )
-    if vs.xlen == 64:
-        code.extend(menvcfg_bits(64, adue=0, pbmte=1))
-        pbmt_cases: list[str] = []
-        for pbmte in (0, 1):
-            for pbmt, (pbmt_bits, _, _) in enumerate(PBMT_ENCODINGS, start=1):
-                setup = [
-                    *svpbmt_flush(reg),
-                    *henvcfg_bits(64, reg, adue=0, pbmte=pbmte),
-                    *map_test_page(test_data, None, vs, vs_flags=PteFlags(extra=(pbmt_bits,))),
-                ]
-                pbmt_cases.extend(
-                    guest_access(test_data, VS_CG, "cp_vsatp_pbmt", f"pbmte{pbmte}_pbmt{pbmt}", "VS", va, setup=setup)
-                )
-        code.extend(pbmt_block(pbmt_cases, reg))
-    for m_adue, h_adue, flags, ops in AD_CASES:
-        name = f"madue{m_adue}_hadue{h_adue}_a{int(flags.accessed)}_d{int(flags.dirty)}_{ops[0]}"
-        setup = [
-            *menvcfg_bits(vs.xlen, adue=m_adue),
-            *henvcfg_bits(vs.xlen, reg, adue=h_adue),
-            *map_test_page(test_data, None, vs, vs_flags=flags),
-        ]
-        code.extend(guest_access(test_data, VS_CG, "cp_vsatp_adue", name, "VS", va, setup=setup, ops=ops))
-        code.extend(read_pte(test_data, vs, 0, va, VS_CG, "cp_vsatp_adue", f"{name}_pte"))
-    test_data.int_regs.return_register(reg)
+    code.extend(vs_ad_accesses(test_data, vs, SVADE_CASES, VS_CG, "cp_vsatp_svade"))
     chunk.code.extend([*code, *guest_chunk_teardown(test_data, vs.xlen)])
     test_chunks.append(test_data.end_test_chunk())
 
@@ -469,24 +481,15 @@ def _t_g_perm(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, mode
     test_chunks.append(test_data.end_test_chunk())
 
 
-# G-stage A/D cases: (menvcfg.ADUE, leaf flags, accesses)
-G_AD_CASES = (
-    (0, PteFlags(user=True, accessed=False, dirty=False), GUEST_OPS),
-    (0, PteFlags(user=True, dirty=False), GUEST_OPS),
-    (1, PteFlags(user=True, accessed=False, dirty=False), ("load", "exec")),
-    (1, PteFlags(user=True, dirty=False), ("store",)),
-)
-
-
 def _t_g_pte(test_data: TestData, test_chunks: list[TestChunk], g: SvMode) -> None:
-    """G-stage PTE formats, the G bit, misaligned superpages, menvcfg.PBMTE with PBMT and menvcfg.ADUE with A/D."""
+    """G-stage PTE formats, the G bit, misaligned superpages, and A/D bits with Svade."""
     chunk = begin_chunk(
         test_data,
         f"H_{g.name}_g_pte",
-        "cp_hgatp_perm, cp_hgatp_pbmt, cp_hgatp_adue",
+        "cp_hgatp_perm, cp_hgatp_svade",
         "In VS-mode with vsatp = Bare, access through G-stage leaves that are invalid, a level-0 pointer, have RSW,\n"
-        "reserved, G or PBMT bits (PBMT with menvcfg.PBMTE = 0, 1), are misaligned superpages, or have A or D clear\n"
-        "with menvcfg.ADUE = 0 (guest-page fault) and 1 (hardware update, checked in the PTE)",
+        "reserved or G bits, are misaligned superpages, or have A or D clear with menvcfg.ADUE = 0 (guest-page\n"
+        "fault, PTE unchanged)",
         stages=(g,),
     )
     va = g.data_va
@@ -510,25 +513,7 @@ def _t_g_pte(test_data: TestData, test_chunks: list[TestChunk], g: SvMode) -> No
         ]
         test_data.int_regs.return_registers([pte, addr, tmp])
         code.extend(guest_access(test_data, G_CG, "cp_hgatp_perm", f"misaligned_lvl{level}", "VS", va, setup=setup))
-    if g.xlen == 64:
-        reg = test_data.int_regs.get_register()
-        pbmt_cases: list[str] = []
-        for pbmte in (0, 1):
-            for pbmt, (pbmt_bits, _, _) in enumerate(PBMT_ENCODINGS, start=1):
-                setup = [
-                    *svpbmt_flush(reg),
-                    *menvcfg_bits(64, adue=0, pbmte=pbmte),
-                    *map_test_page(test_data, g, None, g_flags=PteFlags(user=True, extra=(pbmt_bits,))),
-                ]
-                name = f"pbmte{pbmte}_pbmt{pbmt}"
-                pbmt_cases.extend(guest_access(test_data, G_CG, "cp_hgatp_pbmt", name, "VS", va, setup=setup))
-        code.extend(pbmt_block(pbmt_cases, reg))
-        test_data.int_regs.return_register(reg)
-    for m_adue, flags, ops in G_AD_CASES:
-        name = f"madue{m_adue}_a{int(flags.accessed)}_d{int(flags.dirty)}_{ops[0]}"
-        setup = [*menvcfg_bits(g.xlen, adue=m_adue), *map_test_page(test_data, g, None, g_flags=flags)]
-        code.extend(guest_access(test_data, G_CG, "cp_hgatp_adue", name, "VS", va, setup=setup, ops=ops))
-        code.extend(read_pte(test_data, g, 0, va, G_CG, "cp_hgatp_adue", f"{name}_pte"))
+    code.extend(g_ad_accesses(test_data, g, G_SVADE_CASES, G_CG, "cp_hgatp_svade"))
     chunk.code.extend([*code, *guest_chunk_teardown(test_data, g.xlen)])
     test_chunks.append(test_data.end_test_chunk())
 
@@ -753,51 +738,57 @@ VS_NO_AD = PteFlags(accessed=False, dirty=False)
 # Implicit VS-stage page-table accesses are G-stage user-level loads, and stores when the hardware updates VS-stage
 # A/D bits.  A guest-page fault on one reports the original access type, with a pseudoinstruction in htinst.
 # (name, coverpoint, menvcfg.ADUE, henvcfg.ADUE, VS-stage leaf, G-stage leaf of the VS-stage leaf table, G-stage
-# leaf of the page, accesses, PTEs checked afterwards)
-IMPLICIT_CASES = (
+# leaf of the page, accesses, PTEs checked afterwards: "vs", "table" or "page").  The Svadu suite has the ADUE = 1
+# cases.
+ImplicitCase = tuple[str, str, int, int, PteFlags, PteFlags, PteFlags, Sequence[str], Sequence[str]]
+IMPLICIT_CASES: tuple[ImplicitCase, ...] = (
     ("table_invalid", "cp_implicit_gpf", 0, 0, PteFlags(), PteFlags(valid=False, user=True), G_LEAF, GUEST_OPS, ()),
     ("table_xonly", "cp_implicit_gpf", 0, 0, PteFlags(), perm_flags("x", True), G_LEAF, GUEST_OPS, ()),
     ("table_supervisor", "cp_implicit_gpf", 0, 0, PteFlags(), PteFlags(), G_LEAF, GUEST_OPS, ()),
     ("table_svade", "cp_implicit_gpf", 0, 0, PteFlags(), G_NO_AD, G_LEAF, GUEST_OPS, ()),
-    ("table_readonly", "cp_implicit_gpf", 1, 1, VS_NO_AD, perm_flags("r", True), G_LEAF, GUEST_OPS, ()),
-    ("table_svadu", "cp_twostage_adue", 1, 0, PteFlags(), G_NO_AD, G_LEAF, ("load",), ("table",)),
-    ("vs_svadu_load", "cp_twostage_adue", 1, 1, VS_NO_AD, G_NO_D, G_LEAF, ("load", "exec"), ("vs", "table")),
-    ("vs_svadu_store", "cp_twostage_adue", 1, 1, PteFlags(dirty=False), G_NO_D, G_LEAF, ("store",), ("vs", "table")),
-    ("vs_svade", "cp_twostage_adue", 1, 0, VS_NO_AD, G_LEAF, G_LEAF, GUEST_OPS, ()),
-    ("vs_svade_dirty", "cp_twostage_adue", 1, 0, PteFlags(dirty=False), G_LEAF, G_LEAF, GUEST_OPS, ()),
-    ("g_svade", "cp_twostage_adue", 0, 0, PteFlags(), G_LEAF, G_NO_AD, GUEST_OPS, ()),
-    ("g_svade_dirty", "cp_twostage_adue", 0, 0, PteFlags(), G_LEAF, G_NO_D, GUEST_OPS, ()),
-    ("g_svadu_load", "cp_twostage_adue", 1, 0, PteFlags(), G_LEAF, G_NO_AD, ("load", "exec"), ("page",)),
-    ("g_svadu_store", "cp_twostage_adue", 1, 0, PteFlags(), G_LEAF, G_NO_D, ("store",), ("page",)),
+    ("vs_svade", "cp_twostage_svade", 0, 0, VS_NO_AD, G_LEAF, G_LEAF, GUEST_OPS, ()),
+    ("vs_svade_dirty", "cp_twostage_svade", 0, 0, PteFlags(dirty=False), G_LEAF, G_LEAF, GUEST_OPS, ()),
+    ("g_svade", "cp_twostage_svade", 0, 0, PteFlags(), G_LEAF, G_NO_AD, GUEST_OPS, ()),
+    ("g_svade_dirty", "cp_twostage_svade", 0, 0, PteFlags(), G_LEAF, G_NO_D, GUEST_OPS, ()),
 )
 
 
-def _t_implicit(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs: SvMode) -> None:
-    """G-stage checks of implicit VS-stage page-table accesses, and A/D updates in both stages."""
-    chunk = begin_chunk(
-        test_data,
-        f"H_{g.name}_implicit",
-        "cp_implicit_gpf, cp_twostage_adue, cp_implicit_mxr",
-        "In VS-mode, access through a VS-stage leaf table whose G-stage leaf is invalid, execute-only, not user,\n"
-        "has A clear, or is read-only while the hardware updates VS-stage A/D bits, and through VS-stage and\n"
-        "G-stage leaves with A or D clear, with menvcfg.ADUE and henvcfg.ADUE = 0, 1.  Updated PTEs are checked.\n"
-        "Load through an execute-only table with vsstatus.MXR = 1",
-        stages=(g, vs),
-    )
+def implicit_accesses(
+    test_data: TestData, g: SvMode, vs: SvMode, cases: Sequence[ImplicitCase], covergroup: str
+) -> list[str]:
+    """VS-mode accesses through a VS-stage leaf table (map_leaf_table) with each case's leaves and ADUE bits."""
     va = vs.data_va
     ptes = {"vs": (vs, vs.data_va), "table": (g, f"({g.data_va} + 0x1000)"), "page": (g, g.data_va)}
     reg = test_data.int_regs.get_register()
-    code = guest_chunk_setup(test_data, g, vs, "VS")
-    for name, coverpoint, m_adue, h_adue, vs_flags, table_flags, g_flags, ops, checks in IMPLICIT_CASES:
+    code = []
+    for name, coverpoint, m_adue, h_adue, vs_flags, table_flags, g_flags, ops, checks in cases:
         setup = [
             *menvcfg_bits(g.xlen, adue=m_adue),
             *henvcfg_bits(g.xlen, reg, adue=h_adue),
             *map_leaf_table(test_data, g, vs, vs_flags, table_flags, g_flags),
         ]
-        code.extend(guest_access(test_data, TWO_CG, coverpoint, name, "VS", va, setup=setup, ops=ops))
+        code.extend(guest_access(test_data, covergroup, coverpoint, name, "VS", va, setup=setup, ops=ops))
         for check in checks:
             mode, pte_va = ptes[check]
-            code.extend(read_pte(test_data, mode, 0, pte_va, TWO_CG, coverpoint, f"{name}_{check}_pte"))
+            code.extend(read_pte(test_data, mode, 0, pte_va, covergroup, coverpoint, f"{name}_{check}_pte"))
+    test_data.int_regs.return_register(reg)
+    return code
+
+
+def _t_implicit(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs: SvMode) -> None:
+    """G-stage checks of implicit VS-stage page-table accesses, and Svade in both stages."""
+    chunk = begin_chunk(
+        test_data,
+        f"H_{g.name}_implicit",
+        "cp_implicit_gpf, cp_twostage_svade, cp_implicit_mxr",
+        "In VS-mode, access through a VS-stage leaf table whose G-stage leaf is invalid, execute-only, not user or\n"
+        "has A clear, and through VS-stage and G-stage leaves with A or D clear, with menvcfg.ADUE = henvcfg.ADUE\n"
+        "= 0.  Load through an execute-only table with vsstatus.MXR = 1",
+        stages=(g, vs),
+    )
+    va = vs.data_va
+    reg = test_data.int_regs.get_register()
+    code = [*guest_chunk_setup(test_data, g, vs, "VS"), *implicit_accesses(test_data, g, vs, IMPLICIT_CASES, TWO_CG)]
     # MXR applies only to explicit loads, so vsstatus.MXR does not make the table readable
     setup = [
         *menvcfg_bits(g.xlen, adue=0),
@@ -1201,14 +1192,36 @@ HLV_PERM_CASES = (
     ("r", "rwx", "cp_hlvx_perm", ("hlvx",)),
     ("rwx", "r", "cp_hlvx_perm", ("hlvx",)),
 )
-# HLV, HLVX and HSV through a VS-stage leaf table whose G-stage leaf is execute-only, or read-only while the hardware
-# updates VS-stage A/D bits.  The table reads are implicit loads, so HLVX needs G-stage read permission, not execute.
+# HLV, HLVX and HSV through a VS-stage leaf table whose G-stage leaf is execute-only or readable.  The table reads
+# are implicit loads, so HLVX needs G-stage read permission, not execute.  The Svadu suite has the A/D update case.
 # (name, menvcfg.ADUE, henvcfg.ADUE, VS-stage leaf, G-stage leaf of the VS-stage leaf table, accesses)
-HLV_IMPLICIT_CASES = (
+HlvImplicitCase = tuple[str, int, int, PteFlags, PteFlags, Sequence[str]]
+HLV_IMPLICIT_CASES: tuple[HlvImplicitCase, ...] = (
     ("table_xonly", 0, 0, PteFlags(), perm_flags("x", True), ("hlv", "hlvx", "hsv")),
     ("table_readable", 0, 0, PteFlags(), perm_flags("r", True), ("hlvx",)),
-    ("table_readonly", 1, 1, VS_NO_AD, perm_flags("r", True), ("hlv", "hlvx", "hsv")),
 )
+
+
+def hlv_implicit_accesses(
+    test_data: TestData, g: SvMode, vs: SvMode, cases: Sequence[HlvImplicitCase], covergroup: str
+) -> list[str]:
+    """HS-mode HLV, HLVX and HSV with hstatus.SPVP = 1 through a VS-stage leaf table (map_leaf_table).  The caller
+    clears SPVP afterwards."""
+    va = f"{vs.data_va} + 8"
+    reg = test_data.int_regs.get_register()
+    code = []
+    for name, m_adue, h_adue, vs_flags, table_flags, ops in cases:
+        setup = [
+            *menvcfg_bits(g.xlen, adue=m_adue),
+            *henvcfg_bits(g.xlen, reg, adue=h_adue),
+            *map_leaf_table(test_data, g, vs, vs_flags, table_flags, G_LEAF),
+            *set_csr_bits("hstatus", "HSTATUS_SPVP", "HSTATUS_SPVP", reg),
+            *status_bits("vsstatus", reg),
+            *status_bits("sstatus", reg),
+        ]
+        code.extend(guest_access(test_data, covergroup, "cp_hlv_implicit", name, None, va, setup=setup, ops=ops))
+    test_data.int_regs.return_register(reg)
+    return code
 
 
 def _hlv_root_gpf(test_data: TestData, g: SvMode, vs: SvMode, va: str) -> list[str]:
@@ -1254,8 +1267,8 @@ def _t_hlv(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs: SvM
         "vsstatus.SUM = 0, 1 and sstatus.SUM = 0, 1 (ignored), hlv.w and hlvx.wu on execute-only VS-stage and\n"
         "G-stage pages, and hlvx.wu on read-only VS-stage and G-stage pages (a load page fault or load guest-page\n"
         "fault, because HLVX needs execute permission), with vsstatus.MXR = 0, 1 and sstatus.MXR = 0, 1.\n"
-        "Execute them through a VS-stage leaf table whose G-stage leaf is execute-only, readable, or read-only\n"
-        "while the hardware updates VS-stage A/D bits, and with a VS-stage root table whose G-stage leaf is invalid",
+        "Execute them through a VS-stage leaf table whose G-stage leaf is execute-only or readable, and with a\n"
+        "VS-stage root table whose G-stage leaf is invalid",
         stages=(g, vs),
     )
     va = f"{vs.data_va} + 8"
@@ -1287,15 +1300,7 @@ def _t_hlv(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs: SvM
                 ]
                 name = f"vs_{vs_perm}_g_{g_perm}_vsmxr{vs_mxr}_smxr{s_mxr}"
                 code.extend(guest_access(test_data, HLV_CG, coverpoint, name, None, va, setup=setup, ops=ops))
-    for name, m_adue, h_adue, vs_flags, table_flags, ops in HLV_IMPLICIT_CASES:
-        setup = [
-            *menvcfg_bits(g.xlen, adue=m_adue),
-            *henvcfg_bits(g.xlen, reg, adue=h_adue),
-            *map_leaf_table(test_data, g, vs, vs_flags, table_flags, G_LEAF),
-            *status_bits("vsstatus", reg),
-            *status_bits("sstatus", reg),
-        ]
-        code.extend(guest_access(test_data, HLV_CG, "cp_hlv_implicit", name, None, va, setup=setup, ops=ops))
+    code.extend(hlv_implicit_accesses(test_data, g, vs, HLV_IMPLICIT_CASES, HLV_CG))
     code.extend(_hlv_root_gpf(test_data, g, vs, va))
     code.extend(set_csr_bits("hstatus", "HSTATUS_SPVP", "0", reg))
     test_data.int_regs.return_register(reg)
@@ -1304,135 +1309,7 @@ def _t_hlv(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs: SvM
 
 
 ###########################
-# Svnapot in each stage (RV64)
-###########################
-
-
-# A 64 KiB NAPOT region of 16 pages, each starting with ret and holding a distinct word at offset 8
-NAPOT_PAGES = [
-    ".p2align 16",
-    "svh_napot:",
-    *(
-        line
-        for page in range(16)
-        for line in (".4byte 0x00008067    # ret", ".4byte 0", f".4byte {0x5A5A0000 + page:#x}", ".skip 4096 - 12")
-    ),
-]
-
-
-def _napot_leaves(
-    test_data: TestData, mode: SvMode, base: int, target: str, flags: PteFlags, pa_is_label: bool
-) -> list[str]:
-    """The 16 kilopage leaves of a 64 KiB NAPOT mapping from ``base`` to ``target``."""
-    pte, addr, tmp = test_data.int_regs.get_registers(3)
-    regs = (pte, addr, tmp)
-    lines = create_page_walk(mode, leaf_level=0, virtual_address=hex(base), regs=regs)
-    for page in range(16):
-        lines.extend(
-            write_pte(
-                mode,
-                level=0,
-                flags=flags,
-                virtual_address=hex(base + page * 0x1000),
-                physical_address=target,
-                regs=regs,
-                pa_is_label=pa_is_label,
-            )
-        )
-    test_data.int_regs.return_registers(list(regs))
-    return lines
-
-
-NAPOT_BITS = ("PTE_N", NAPOT_64K_PPN)
-
-
-def _t_napot(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs: SvMode, mode: str) -> None:
-    """64 KiB NAPOT translation in the VS-stage, the G-stage and both."""
-    chunk = begin_chunk(
-        test_data,
-        f"H_{g.name}_napot_{mode.lower()}",
-        "cp_vsatp_napot, cp_hgatp_napot, cp_twostage_napot",
-        f"In {mode}-mode, store, load and fetch in pages 0, 2 and 15 of a 64 KiB NAPOT mapping in the VS-stage\n"
-        "(hgatp = Bare), in the G-stage (vsatp = Bare) and in both stages",
-    )
-    chunk.raw_data.extend(NAPOT_PAGES)
-    user = mode == "VU"
-    vs_base = int(vs.data_va, 16) & ~0xFFFF
-    g_base = int(g.data_va, 16) & ~0xFFFF
-    code = []
-    for vs_stage, g_stage, covergroup, name in (
-        (vs, None, VS_CG, "vsatp_napot"),
-        (None, g, G_CG, "hgatp_napot"),
-        (vs, g, TWO_CG, "twostage_napot"),
-    ):
-        code.extend(guest_chunk_setup(test_data, g_stage, vs_stage, mode))
-        if vs_stage is not None:
-            target = "svh_napot" if g_stage is None else hex(g_base)
-            flags = PteFlags(user=user, extra=NAPOT_BITS)
-            code.extend(_napot_leaves(test_data, vs, vs_base, target, flags, g_stage is None))
-        if g_stage is not None:
-            code.extend(_napot_leaves(test_data, g, g_base, "svh_napot", PteFlags(user=True, extra=NAPOT_BITS), True))
-        code.extend(["hfence.vvma", "hfence.gvma"])
-        base = g_base if vs_stage is None else vs_base
-        for page in (0, 2, 15):
-            va = hex(base + page * 0x1000)
-            code.extend(guest_access(test_data, covergroup, f"cp_{name}", f"{name}_page{page}", mode, va))
-    chunk.code.extend([*code, *guest_chunk_teardown(test_data, g.xlen)])
-    test_chunks.append(test_data.end_test_chunk())
-
-
-def _t_napot_reserved(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs: SvMode) -> None:
-    """Reserved NAPOT encodings fault in either stage: N on a superpage, or PPN[3:0] other than 1000."""
-    chunk = begin_chunk(
-        test_data,
-        f"H_{g.name}_napot_reserved",
-        "cp_vsatp_napot, cp_hgatp_napot",
-        "In VS-mode, access through a VS-stage (hgatp = Bare) and a G-stage (vsatp = Bare) leaf with N set on a\n"
-        "superpage, or with N set and PPN[3:0] = 0000, 0001, 0010 or 0100",
-    )
-    chunk.raw_data.extend(NAPOT_PAGES)
-    code = []
-    for stage, covergroup, coverpoint in ((vs, VS_CG, "cp_vsatp_napot"), (g, G_CG, "cp_hgatp_napot")):
-        g_stage, vs_stage = (None, vs) if stage is vs else (g, None)
-        code.extend(guest_chunk_setup(test_data, g_stage, vs_stage, "VS"))
-        user = stage is g
-        # A superpage leaf maps svh_page; a kilopage leaf maps svh_napot, whose PPN[3:0] = 0000
-        cases = [
-            *(
-                (f"{stage.name}_superpage_lvl{level}", level, PteFlags(user=user, extra=("PTE_N",)), "svh_page")
-                for level in range(1, stage.levels)
-            ),
-            *(
-                (f"{stage.name}_ppn{ppn}", 0, PteFlags(user=user, extra=("PTE_N", f"({ppn} << 10)")), "svh_napot")
-                for ppn in NAPOT_RESERVED_PPNS
-            ),
-        ]
-        for name, level, flags, target in cases:
-            pte, addr, tmp = test_data.int_regs.get_registers(3)
-            setup = [
-                *create_page_mapping(
-                    stage,
-                    leaf_level=level,
-                    leaf_flags=flags,
-                    virtual_address=stage.data_va,
-                    physical_address=target,
-                    regs=(pte, addr, tmp),
-                ),
-                "hfence.vvma",
-                "hfence.gvma",
-            ]
-            test_data.int_regs.return_registers([pte, addr, tmp])
-            code.extend(
-                guest_access(
-                    test_data, covergroup, coverpoint, name, "VS", stage.data_va, setup=setup, sv=stage, level=level
-                )
-            )
-    chunk.code.extend([*code, *guest_chunk_teardown(test_data, g.xlen)])
-    test_chunks.append(test_data.end_test_chunk())
-
-
-###########################
-# vsatp, hgatp and satp MODE (RV64), and the henvcfg bits that menvcfg gates
+# vsatp, hgatp and satp MODE (RV64)
 ###########################
 
 # MODE: (the symbol defined when vsatp supports it, the symbol defined when hgatp supports it as SvNNx4)
@@ -1545,40 +1422,19 @@ def _t_atp_mode(test_data: TestData, test_chunks: list[TestChunk]) -> None:
 
 
 def _t_bare(test_data: TestData, test_chunks: list[TestChunk], g: SvMode) -> None:
-    """Guest accesses with vsatp and hgatp Bare, and henvcfg.ADUE and PBMTE, which menvcfg gates."""
+    """Guest accesses with vsatp and hgatp Bare."""
     chunk = begin_chunk(
         test_data,
         f"H_{g.name}_bare",
-        "cp_stage_both_bare, cp_henvcfg_menvcfg",
-        "In VS-mode and VU-mode with vsatp and hgatp Bare, store, load and fetch at a physical address.  In HS-mode,\n"
-        "set henvcfg.ADUE and henvcfg.PBMTE with menvcfg.ADUE and menvcfg.PBMTE = 0, where they are read-only\n"
-        "zero, and 1",
+        "cp_stage_both_bare",
+        "In VS-mode and VU-mode with vsatp and hgatp Bare, store, load and fetch at a physical address",
     )
     code = ["csrw vsatp, zero", "csrw hgatp, zero", "hfence.vvma", "hfence.gvma"]
     for mode in ("VS", "VU"):
         code.extend(
             guest_access(test_data, TWO_CG, "cp_stage_both_bare", mode.lower(), mode, "svh_page", va_is_label=True)
         )
-    csr, mask, bits = (
-        ("henvcfg", "HENVCFG_ADUE | HENVCFG_PBMTE", 3 << 61)
-        if g.xlen == 64
-        else ("henvcfgh", "HENVCFGH_ADUE | HENVCFGH_PBMTE", 3 << 29)
-    )
-    val, check = test_data.int_regs.get_registers(2)
-    for m_bits in (0, 1):
-        code.extend(
-            [
-                *menvcfg_bits(g.xlen, adue=m_bits, pbmte=m_bits),
-                f"LI(x{val}, {mask})",
-                f"csrc {csr}, x{val}",
-                test_data.add_testcase(f"menvcfg{m_bits}", "cp_henvcfg_menvcfg", CSR_CG),
-                f"csrs {csr}, x{val}",
-                gen_csr_read_sigupd(check, (csr, bits), test_data, val),
-                f"csrc {csr}, x{val}",
-            ]
-        )
-    test_data.int_regs.return_registers([val, check])
-    chunk.code.extend([*code, *menvcfg_bits(g.xlen, adue=0)])
+    chunk.code.extend(code)
     test_chunks.append(test_data.end_test_chunk())
 
 
@@ -1655,14 +1511,6 @@ def _make_svh_ldst_straddle(test_data: TestData, g: SvMode, vs: SvMode) -> list[
     return test_chunks
 
 
-def _make_svh_napot(test_data: TestData, g: SvMode, vs: SvMode) -> list[TestChunk]:
-    test_chunks: list[TestChunk] = []
-    for mode in ("VS", "VU"):
-        _t_napot(test_data, test_chunks, g, vs, mode)
-    _t_napot_reserved(test_data, test_chunks, g, vs)
-    return test_chunks
-
-
 SV32_PARAMS = ["SV32X4_TRANSLATION: true", "SV32_VSMODE_TRANSLATION: true"]
 SV39_PARAMS = ["SV39X4_TRANSLATION: true", "SV39_VSMODE_TRANSLATION: true"]
 SV48_PARAMS = ["SV48X4_TRANSLATION: true", "SV48_VSMODE_TRANSLATION: true"]
@@ -1701,11 +1549,6 @@ def make_svh_ldst_straddle_sv32(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator("Sv", required_extensions=["H"], extra_defines=BOOT, params=[*SV39_PARAMS, *MISALIGNED_PARAMS])
 def make_svh_ldst_straddle_sv39(test_data: TestData) -> list[TestChunk]:
     return _make_svh_ldst_straddle(test_data, SV39X4, VS_SV39)
-
-
-@add_priv_test_generator("Sv", required_extensions=["H", "Svnapot"], extra_defines=BOOT, params=SV39_PARAMS)
-def make_svh_napot_sv39(test_data: TestData) -> list[TestChunk]:
-    return _make_svh_napot(test_data, SV39X4, VS_SV39)
 
 
 @add_priv_test_generator("Sv", required_extensions=["H"], extra_defines=BOOT, params=["SV48_VSMODE_TRANSLATION: true"])

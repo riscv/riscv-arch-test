@@ -143,6 +143,49 @@ covergroup Svnapot_cg with function sample(ins_t ins);
 
 endgroup
 
+`ifdef H_SUPPORTED
+`ifdef UDB_MXLEN_64
+// 64 KiB NAPOT translation in the VS-stage, the G-stage and both
+covergroup Svnapot_H_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    access : coverpoint ins.current.insn {
+        wildcard bins lw   = {LW};
+        wildcard bins sw   = {SW};
+        wildcard bins jalr = {JALR};
+    }
+    vsatp_paged : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
+        bins paged = {[1:15]};
+    }
+    hgatp_paged : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode") {
+        bins paged = {[1:15]};
+    }
+    vsatp_bare : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
+        bins bare = {0};
+    }
+    hgatp_bare : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode") {
+        bins bare = {0};
+    }
+    // Pages 0, 2 and 15 of the 64 KiB NAPOT region
+    napot_page : coverpoint ins.current.rs1_val[15:12] {
+        bins page0  = {0};
+        bins page2  = {2};
+        bins page15 = {15};
+    }
+
+    cp_vsatp_napot    : cross priv_mode_vs_vu, access, vsatp_paged, hgatp_bare, napot_page;
+    cp_hgatp_napot    : cross priv_mode_vs_vu, access, vsatp_bare, hgatp_paged, napot_page;
+    cp_twostage_napot : cross priv_mode_vs_vu, access, vsatp_paged, hgatp_paged, napot_page;
+endgroup
+`endif // UDB_MXLEN_64
+`endif // H_SUPPORTED
+
 function void svnapot_sample(int hart, int issue, ins_t ins);
     Svnapot_cg.sample(ins);
+    `ifdef H_SUPPORTED
+        `ifdef UDB_MXLEN_64
+            Svnapot_H_cg.sample(ins);
+        `endif
+    `endif
 endfunction

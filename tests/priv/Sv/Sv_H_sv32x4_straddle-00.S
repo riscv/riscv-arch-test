@@ -294,9 +294,9 @@ Sv_H_twostage_cg_cp_straddle_vs_invalid_exec:
   csrc sstatus, x13
   LI(x13, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x13
-  LI(x13, HENVCFGH_ADUE | HENVCFGH_PBMTE)
+  LI(x13, HENVCFGH_ADUE)
   csrc henvcfgh, x13
-  RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFGH, MENVCFGH_ADUE | MENVCFGH_PBMTE)
+  RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFGH, MENVCFGH_ADUE)
   csrw hedeleg, zero
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test

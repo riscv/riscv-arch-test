@@ -703,9 +703,9 @@ Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vu_hlv:
   csrc sstatus, x8
   LI(x8, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x8
-  LI(x8, HENVCFGH_ADUE | HENVCFGH_PBMTE)
+  LI(x8, HENVCFGH_ADUE)
   csrc henvcfgh, x8
-  RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFGH, MENVCFGH_ADUE | MENVCFGH_PBMTE)
+  RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFGH, MENVCFGH_ADUE)
   csrw hedeleg, zero
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test

@@ -363,9 +363,9 @@ Sv_HZicbo_cg_cp_g_prefetch_vs_sv32x4_l0_u0_prefetch_r:
 Sv_HZicbo_cg_cp_g_prefetch_vs_sv32x4_l0_u0_prefetch_w:
   prefetch.w 0(x9)
   RVTEST_TSBI_GOTO_SMODE
-  RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFGH, MENVCFGH_ADUE | MENVCFGH_PBMTE)
+  RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFGH, MENVCFGH_ADUE)
   RVTEST_TSBI_CSR_SET(CSR_MENVCFGH, MENVCFGH_ADUE)
-  LI(x15, HENVCFGH_ADUE | HENVCFGH_PBMTE)
+  LI(x15, HENVCFGH_ADUE)
   csrc henvcfgh, x15
   LI(x15, HENVCFGH_ADUE)
   csrs henvcfgh, x15
@@ -442,9 +442,9 @@ Sv_HZicbo_cg_cp_g_prefetch_vs_sv32x4_ad0_pte:
   LREG x6, 0(x6)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, Sv_HZicbo_cg_cp_g_prefetch_vs_sv32x4_ad0_pte, Sv_HZicbo_cg_cp_g_prefetch_vs_sv32x4_ad0_pte_str)
-  LI(x15, HENVCFGH_ADUE | HENVCFGH_PBMTE)
+  LI(x15, HENVCFGH_ADUE)
   csrc henvcfgh, x15
-  RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFGH, MENVCFGH_ADUE | MENVCFGH_PBMTE)
+  RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFGH, MENVCFGH_ADUE)
   csrw vsatp, zero
   csrw hgatp, zero
   hfence.gvma
@@ -775,9 +775,9 @@ Sv_HZicbo_cg_cp_g_prefetch_vu_sv32x4_l0_u0_prefetch_r:
 Sv_HZicbo_cg_cp_g_prefetch_vu_sv32x4_l0_u0_prefetch_w:
   prefetch.w 0(x9)
   RVTEST_TSBI_GOTO_SMODE
-  RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFGH, MENVCFGH_ADUE | MENVCFGH_PBMTE)
+  RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFGH, MENVCFGH_ADUE)
   RVTEST_TSBI_CSR_SET(CSR_MENVCFGH, MENVCFGH_ADUE)
-  LI(x13, HENVCFGH_ADUE | HENVCFGH_PBMTE)
+  LI(x13, HENVCFGH_ADUE)
   csrc henvcfgh, x13
   LI(x13, HENVCFGH_ADUE)
   csrs henvcfgh, x13
@@ -854,9 +854,9 @@ Sv_HZicbo_cg_cp_g_prefetch_vu_sv32x4_ad0_pte:
   LREG x6, 0(x6)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, Sv_HZicbo_cg_cp_g_prefetch_vu_sv32x4_ad0_pte, Sv_HZicbo_cg_cp_g_prefetch_vu_sv32x4_ad0_pte_str)
-  LI(x13, HENVCFGH_ADUE | HENVCFGH_PBMTE)
+  LI(x13, HENVCFGH_ADUE)
   csrc henvcfgh, x13
-  RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFGH, MENVCFGH_ADUE | MENVCFGH_PBMTE)
+  RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFGH, MENVCFGH_ADUE)
   csrw vsatp, zero
   csrw hgatp, zero
   hfence.gvma

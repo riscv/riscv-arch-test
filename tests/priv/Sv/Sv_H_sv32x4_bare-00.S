@@ -17,7 +17,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 14
+#define SIGUPD_COUNT 12
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_SMODE
@@ -32,10 +32,8 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// cp_stage_both_bare, cp_henvcfg_menvcfg
-//   In VS-mode and VU-mode with vsatp and hgatp Bare, store, load and fetch at a physical address.  In HS-mode,
-//   set henvcfg.ADUE and henvcfg.PBMTE with menvcfg.ADUE and menvcfg.PBMTE = 0, where they are read-only
-//   zero, and 1
+// cp_stage_both_bare
+//   In VS-mode and VU-mode with vsatp and hgatp Bare, store, load and fetch at a physical address
 /////////////////////////////////
 
   csrw vsatp, zero
@@ -70,30 +68,6 @@ Sv_H_twostage_cg_cp_stage_both_bare_vu_exec:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_twostage_cg_cp_stage_both_bare_vu_load, Sv_H_twostage_cg_cp_stage_both_bare_vu_load_str)
 
-  RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFGH, MENVCFGH_ADUE | MENVCFGH_PBMTE)
-  LI(x14, HENVCFGH_ADUE | HENVCFGH_PBMTE)
-  csrc henvcfgh, x14
-Sv_H_csr_cg_cp_henvcfg_menvcfg_menvcfg0:
-  csrs henvcfgh, x14
-  # Read henvcfgh into x6, keep only bits specified by mask, and check against expected.
-  csrr x6, henvcfgh    # Read CSR
-  and x6, x6, x14    # keep only masked bits 0x60000000
-  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_csr_cg_cp_henvcfg_menvcfg_menvcfg0, Sv_H_csr_cg_cp_henvcfg_menvcfg_menvcfg0_str)
-  csrc henvcfgh, x14
-  RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFGH, MENVCFGH_ADUE | MENVCFGH_PBMTE)
-  RVTEST_TSBI_CSR_SET(CSR_MENVCFGH, MENVCFGH_ADUE | MENVCFGH_PBMTE)
-  LI(x14, HENVCFGH_ADUE | HENVCFGH_PBMTE)
-  csrc henvcfgh, x14
-Sv_H_csr_cg_cp_henvcfg_menvcfg_menvcfg1:
-  csrs henvcfgh, x14
-  # Read henvcfgh into x6, keep only bits specified by mask, and check against expected.
-  csrr x6, henvcfgh    # Read CSR
-  and x6, x6, x14    # keep only masked bits 0x60000000
-  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_csr_cg_cp_henvcfg_menvcfg_menvcfg1, Sv_H_csr_cg_cp_henvcfg_menvcfg_menvcfg1_str)
-  csrc henvcfgh, x14
-  RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFGH, MENVCFGH_ADUE | MENVCFGH_PBMTE)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -154,8 +128,6 @@ Sv_H_twostage_cg_cp_stage_both_bare_vs_exec_str: .string "\"test: 3; cg: Sv_H_tw
 Sv_H_twostage_cg_cp_stage_both_bare_vu_store_str: .string "\"test: 4; cg: Sv_H_twostage_cg; cp: cp_stage_both_bare; bin: vu_store\""
 Sv_H_twostage_cg_cp_stage_both_bare_vu_load_str: .string "\"test: 5; cg: Sv_H_twostage_cg; cp: cp_stage_both_bare; bin: vu_load\""
 Sv_H_twostage_cg_cp_stage_both_bare_vu_exec_str: .string "\"test: 6; cg: Sv_H_twostage_cg; cp: cp_stage_both_bare; bin: vu_exec\""
-Sv_H_csr_cg_cp_henvcfg_menvcfg_menvcfg0_str: .string "\"test: 7; cg: Sv_H_csr_cg; cp: cp_henvcfg_menvcfg; bin: menvcfg0\""
-Sv_H_csr_cg_cp_henvcfg_menvcfg_menvcfg1_str: .string "\"test: 8; cg: Sv_H_csr_cg; cp: cp_henvcfg_menvcfg; bin: menvcfg1\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

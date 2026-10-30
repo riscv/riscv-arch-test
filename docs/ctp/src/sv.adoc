@@ -126,17 +126,36 @@ include::norm/Svade_norm_rules.adoc[]
 
 include::{testplansdir}/priv/Svadu.adoc[]
 
+===== Svadu_H Hypervisor A/D Bit Hardware Update
+
+Checks henvcfg.ADUE and menvcfg.ADUE in the VS-stage, the G-stage and both stages, and the A/D updates of
+implicit VS-stage page-table accesses.
+
+include::{testplansdir}/priv/Svadu_H.adoc[]
+
 include::norm/Svadu_norm_rules.adoc[]
 
 ==== Svpbmt Page-Based Memory Types
 
 include::{testplansdir}/priv/Svpbmt.adoc[]
 
+===== Svpbmt_H Hypervisor Page-Based Memory Types
+
+Checks henvcfg.PBMTE in the VS-stage and menvcfg.PBMTE in the G-stage.
+
+include::{testplansdir}/priv/Svpbmt_H.adoc[]
+
 include::norm/Svpbmt_norm_rules.adoc[]
 
 ==== Svnapot Naturally-Aligned Power-of-Two Page Sizes
 
 include::{testplansdir}/priv/Svnapot.adoc[]
+
+===== Svnapot_H Hypervisor NAPOT Pages
+
+Checks 64 KiB NAPOT mappings in the VS-stage, the G-stage and both stages.
+
+include::{testplansdir}/priv/Svnapot_H.adoc[]
 
 include::norm/Svnapot_norm_rules.adoc[]
 

@@ -29,7 +29,7 @@ normative_rule_definitions:
         "Sstc_cg/{cp_supervisor_stce, cp_user_stce}",
         "Sstc_Sm_cg/cp_machine_stce",
         "Sstc_H_cg/{cp_hs_vstimecmp_accessible, cp_vs_stimecmp_accessible, cp_vu_timecmp_inaccessible}",
-        "Sstc_HSm_cg/cp_vstip",
+        "Sstc_H_cg/cp_vstip",
         "InterruptsSm_cg/cp_trigger_sti_sstc",
         "InterruptsSm_cg/cp_write_stip_sstc",
       ]
@@ -39,7 +39,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Sstc_Sm_cg/cp_machine_stce",
-        "Sstc_HSm_cg/cp_vstip",
+        "Sstc_H_cg/cp_vstip",
         "InterruptsSm_cg/cp_trigger_sti_sstc",
         "InterruptsSm_cg/cp_write_stip_sstc",
       ]
@@ -86,6 +86,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Sstc_Sm_cg/cp_machine_stce",
+        "Sstc_cg/cp_supervisor_stce",
         "InterruptsSm_cg/cp_trigger_sti_sstc",
         "InterruptsSm_cg/cp_write_stip_sstc",
       ]
@@ -107,6 +108,7 @@ normative_rule_definitions:
   - name: mip_sip_stip_op
     coverpoint:
       [
+        "InterruptsS_cg/cp_trigger_sti_sstc",
         "InterruptsSm_cg/cp_trigger_sti_sstc",
         "InterruptsSm_cg/cp_write_stip_sstc",
       ]
@@ -120,6 +122,7 @@ normative_rule_definitions:
   - name: sip_stip_sie_stie
     coverpoint:
       [
+        "InterruptsS_cg/cp_trigger_sti_sstc",
         "InterruptsSm_cg/cp_trigger_sti_sstc",
         "InterruptsSm_cg/cp_write_stip_sstc",
       ]
@@ -129,15 +132,12 @@ normative_rule_definitions:
   # The STCE bit enables vstimecmp for VS-mode when set to one.
   - name: henvcfg_stce_op
     coverpoint:
-      [
-        "Sstc_H_cg/cp_vs_stimecmp_{accessible, accesses}",
-        "Sstc_HSm_cg/cp_vstip",
-      ]
+      ["Sstc_H_cg/cp_vs_stimecmp_{accessible, accesses}", "Sstc_H_cg/cp_vstip"]
   # When STCE bit is henvcfg is zero, an attempt to access stimecmp (really vstimecmp)
   # when V=1 raises a virtual-instruction exception, and VSTIP in hip reverts to its
   # defined behavior as if this extension is not implemented.
   - name: henvcfg_stce_zero_op
-    coverpoint: ["Sstc_H_cg/cp_vs_stimecmp_accessible", "Sstc_HSm_cg/cp_vstip"]
+    coverpoint: ["Sstc_H_cg/cp_vs_stimecmp_accessible", "Sstc_H_cg/cp_vstip"]
   # In addition, when the TM bit in the hcounteren register is clear, attempts to access
   # the vstimecmp register (via stimecmp) while executing in VS-mode will cause a
   # virtual-instruction exception if the same bit in mcounteren is set. When this bit and
@@ -179,13 +179,17 @@ normative_rule_definitions:
 
   # The vstimecmp interrupt is taken under the usual enable and delegation rules
   - names: [hip_vstip_enable, hideleg_op]
-    coverpoint: ["{InterruptsS_cg, InterruptsSm_cg}/cp_trigger_vsti_sstc"]
+    coverpoint:
+      [
+        "InterruptsS_cg/{cp_trigger_vsti_sstc, cp_trigger_vsti_sstc_vs, cp_trigger_vsti_sstc_tsbi}",
+        "InterruptsSm_cg/cp_trigger_vsti_sstc",
+      ]
 
   # hip.VSTIP is hvip.VSTIP OR the vstimecmp comparison, which counts only when menvcfg.STCE and henvcfg.STCE are set
   - names: [hip_vstip_defined_v0]
-    coverpoint: ["InterruptsS_cg/cp_trigger_vsti_sstc", "Sstc_HSm_cg/cp_vstip"]
+    coverpoint: ["InterruptsS_cg/cp_trigger_vsti_sstc", "Sstc_H_cg/cp_vstip"]
   - names: [hip_vstip_acc]
-    coverpoint: ["Sstc_HSm_cg/cp_vstip"]
+    coverpoint: ["Sstc_H_cg/cp_vstip"]
 
   # VSTIP is set while (time + htimedelta) mod 2^64 >= vstimecmp, unsigned
   - names:
@@ -196,11 +200,15 @@ normative_rule_definitions:
         htimedelta_sz_acc_op,
         htimedeltah_sz_acc_op,
       ]
-    coverpoint: ["Sstc_HSm_cg/cp_htimedelta"]
+    coverpoint: ["Sstc_H_cg/cp_htimedelta"]
 
   # vstimecmp is a 64-bit register, with vstimecmph holding the upper half on RV32
   - names: [vstimecmp_exist, vstimecmp_sz, vstimecmp_acc]
-    coverpoint: ["Sstc_HSm_cg/cp_m_vstimecmp_{accessible, accesses}"]
+    coverpoint:
+      [
+        "Sstc_H_cg/cp_hs_vstimecmp_{accessible, accesses}",
+        "Sstc_HSm_cg/cp_m_vstimecmp_{accessible, accesses}",
+      ]
 
   # The Sstc extension adds the STCE bit to henvcfg
   - names: [henvcfg_stce]

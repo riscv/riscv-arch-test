@@ -142,14 +142,14 @@ def make_interruptss_s(test_data: TestData) -> list[TestChunk]:
 def make_interruptss_u(test_data: TestData) -> list[TestChunk]:
     """InterruptsS tests that run in U-mode."""
     # U-mode WFI traps after a bounded time when S-mode is implemented, so only test the timeout.
-    generators = _COMMON_GENERATORS + [generate_cp_wfi_timeout]
+    generators = _COMMON_GENERATORS + [generate_cp_wfi_timeout, generate_cp_trigger_vsti_sstc]
     return emit_interrupts(test_data, SUITE, "U", generators)
 
 
 @add_priv_test_generator(SUITE.name, required_extensions=["H"], extra_defines=["#define BOOT_TO_SMODE"])
 def make_interruptss_vs(test_data: TestData) -> list[TestChunk]:
     """InterruptsS tests that run in VS-mode."""
-    generators = _COMMON_GENERATORS + [generate_cp_wfi, generate_cp_wfi_timeout]
+    generators = _COMMON_GENERATORS + [generate_cp_wfi, generate_cp_wfi_timeout, generate_cp_trigger_vsti_sstc]
     return emit_interrupts(test_data, SUITE, "VS", generators)
 
 
@@ -157,5 +157,5 @@ def make_interruptss_vs(test_data: TestData) -> list[TestChunk]:
 def make_interruptss_vu(test_data: TestData) -> list[TestChunk]:
     """InterruptsS tests that run in VU-mode."""
     # VU-mode WFI never waits: it raises virtual instruction with TW = 0, so only test the timeout.
-    generators = _COMMON_GENERATORS + [generate_cp_wfi_timeout]
+    generators = _COMMON_GENERATORS + [generate_cp_wfi_timeout, generate_cp_trigger_vsti_sstc]
     return emit_interrupts(test_data, SUITE, "VU", generators)

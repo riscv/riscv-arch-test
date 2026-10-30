@@ -213,6 +213,70 @@ covergroup Sstc_H_cg with function sample(ins_t ins);
         wildcard bins csrr      = {CSRR}  iff (ins.current.rs1_val ==  0);
     }
 
+    hip: coverpoint ins.current.insn[31:20] {
+        bins hip = {CSR_HIP};
+    }
+    hvip_vstip: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hvip", "vstip")[0] {
+        // autofill 0/1
+    }
+    `ifdef UDB_MXLEN_64
+        vstimecmp_val: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstimecmp", "vstimecmp") {
+            bins zero = {64'h0};
+            bins max  = {64'hFFFFFFFFFFFFFFFF};
+        }
+        vstimecmp_delta: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstimecmp", "vstimecmp") {
+            bins zero    = {64'h0};
+            bins p2_29   = {64'h0000000020000000};
+            bins p2_31   = {64'h0000000080000000};
+            bins p2_61   = {64'h2000000000000000};
+            bins neg2_29 = {64'hFFFFFFFFE0000000};
+            bins neg2_31 = {64'hFFFFFFFF80000000};
+            bins neg2_61 = {64'hE000000000000000};
+        }
+        htimedelta_val: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "htimedelta", "htimedelta") {
+            bins zero    = {64'h0};
+            bins p2_30   = {64'h0000000040000000};
+            bins p2_32m1 = {64'h00000000FFFFFFFF};
+            bins p2_60   = {64'h1000000000000000};
+            bins neg1    = {64'hFFFFFFFFFFFFFFFF};
+            bins neg2_30 = {64'hFFFFFFFFC0000000};
+            bins neg2_60 = {64'hF000000000000000};
+        }
+        htimedelta_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "htimedelta", "htimedelta") {
+            bins zero = {64'h0};
+        }
+    `else
+        vstimecmp_val: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstimecmph", "vstimecmph"),
+                                   get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstimecmp", "vstimecmp")} {
+            bins zero = {64'h0};
+            bins max  = {64'hFFFFFFFFFFFFFFFF};
+        }
+        vstimecmp_delta: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstimecmph", "vstimecmph"),
+                                     get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstimecmp", "vstimecmp")} {
+            bins zero    = {64'h0};
+            bins p2_29   = {64'h0000000020000000};
+            bins p2_31   = {64'h0000000080000000};
+            bins p2_61   = {64'h2000000000000000};
+            bins neg2_29 = {64'hFFFFFFFFE0000000};
+            bins neg2_31 = {64'hFFFFFFFF80000000};
+            bins neg2_61 = {64'hE000000000000000};
+        }
+        htimedelta_val: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "htimedeltah", "htimedeltah"),
+                                    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "htimedelta", "htimedelta")} {
+            bins zero    = {64'h0};
+            bins p2_30   = {64'h0000000040000000};
+            bins p2_32m1 = {64'h00000000FFFFFFFF};
+            bins p2_60   = {64'h1000000000000000};
+            bins neg1    = {64'hFFFFFFFFFFFFFFFF};
+            bins neg2_30 = {64'hFFFFFFFFC0000000};
+            bins neg2_60 = {64'hF000000000000000};
+        }
+        htimedelta_zero: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "htimedeltah", "htimedeltah"),
+                                     get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "htimedelta", "htimedelta")} {
+            bins zero = {64'h0};
+        }
+    `endif
+
     // main coverpoints
     // HS-mode reaches vstimecmp only with menvcfg.STCE = mcounteren.TM = 1
     cp_hs_vstimecmp_accessible:   cross priv_mode_hs, csrr, vstimecmp_csrs, stce_pair, tm_pair;
@@ -226,6 +290,9 @@ covergroup Sstc_H_cg with function sample(ins_t ins);
     // instruction in U-mode
     cp_vu_timecmp_inaccessible:   cross priv_mode_vu, csrr, timecmp_csrs, stce_pair, tm_pair;
     cp_u_timecmp_inaccessible:    cross priv_mode_u, csrr, timecmp_csrs, stce_pair, tm_pair;
+    // hip.VSTIP is hvip.VSTIP | (menvcfg.STCE & henvcfg.STCE & time + htimedelta >= vstimecmp), unsigned
+    cp_vstip:                     cross priv_mode_hs, csrr, hip, stce_pair, hvip_vstip, vstimecmp_val, htimedelta_zero;
+    cp_htimedelta:                cross priv_mode_hs, csrr, hip, stce_pair_ones, htimedelta_val, vstimecmp_delta;
 endgroup
 
 // Sm tests are not part of a certificate without Sm (EXCLUDE_SM), so neither is their covergroup

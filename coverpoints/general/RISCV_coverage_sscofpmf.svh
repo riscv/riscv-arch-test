@@ -148,7 +148,7 @@
 
     mhpmcounter_extreme_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, `SSCOFPMF_MHPMCOUNTER, `SSCOFPMF_MHPMCOUNTER)) {
             // On RV32 this is the low half of the counter
-            bins all_ones  = {`SSCOFPMF_COUNTER_MAX & {`UDB_MXLEN{1'b1}}};
+            bins all_ones  = {`UDB_MXLEN'(`SSCOFPMF_COUNTER_MAX)};
             bins all_zeros = {'0};
     }
 

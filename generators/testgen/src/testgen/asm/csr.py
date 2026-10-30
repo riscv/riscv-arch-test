@@ -95,7 +95,7 @@ def gen_csr_write_sigupd(check_reg: int, csr_name: str, test_data: TestData) -> 
 
 
 def csr_access_test(
-    test_data: TestData, csr: tuple, covergroup: str, coverpoint: str, maskedwrites: bool = False
+    test_data: TestData, csr: tuple, covergroup: str, coverpoint: str, maskedwrites: bool = False, bin_prefix: str = ""
 ) -> list[str]:
     """
     Generate a CSR access test: write all 1s, write all 0s, set all, clear all.
@@ -107,6 +107,7 @@ def csr_access_test(
         covergroup: Covergroup name for testcase strings
         coverpoint: Coverpoint name for testcase strings
         maskedwrites: If True, the CSR is written with a mask applied to the value being written.
+        bin_prefix: Prefix for the testcase bin names, to keep them unique when a CSR is tested more than once.
 
     Returns:
         List of assembly lines for the access test
@@ -147,19 +148,19 @@ def csr_access_test(
         lines.append(f"LI(x{temp_reg}, -1)             # write {valstr}")
     lines.extend(
         [
-            test_data.add_testcase(f"{csr_name}_csrrw1", coverpoint, covergroup),
+            test_data.add_testcase(f"{bin_prefix}{csr_name}_csrrw1", coverpoint, covergroup),
             f"csrw {csr_name}, x{temp_reg}    # Write {valstr} to CSR",
             gen_csr_read_sigupd(check_reg, csr, test_data, mask_reg),
             "",
-            test_data.add_testcase(f"{csr_name}_csrrw0", coverpoint, covergroup),
+            test_data.add_testcase(f"{bin_prefix}{csr_name}_csrrw0", coverpoint, covergroup),
             f"csrw {csr_name}, zero   # Write all 0s to CSR",
             gen_csr_read_sigupd(check_reg, csr, test_data, mask_reg),
             "",
-            test_data.add_testcase(f"{csr_name}_csrs_all", coverpoint, covergroup),
+            test_data.add_testcase(f"{bin_prefix}{csr_name}_csrs_all", coverpoint, covergroup),
             f"csrs {csr_name}, x{temp_reg}    # Set {valstr}",
             gen_csr_read_sigupd(check_reg, csr, test_data, mask_reg),
             "",
-            test_data.add_testcase(f"{csr_name}_csrrc_all", coverpoint, covergroup),
+            test_data.add_testcase(f"{bin_prefix}{csr_name}_csrrc_all", coverpoint, covergroup),
             f"csrc {csr_name}, x{temp_reg}    # Clear {valstr}",
             gen_csr_read_sigupd(check_reg, csr, test_data, mask_reg),
             f"csrw {csr_name}, x{save_reg}       # Restore CSR",
@@ -238,6 +239,8 @@ def csr_walk_test(
     walk_zeros: bool = True,
     warl_fields: list[tuple] | None = None,
     maskedwrites: bool = False,
+    bin_prefix: str = "",
+    unchecked_bits: list[tuple[int, str]] | None = None,
 ) -> list[str]:
     """
     Generate a CSR walking-ones test: set and (optionally) clear each bit individually.
@@ -263,9 +266,15 @@ def csr_walk_test(
             bits and instead check that the field holds a legal (non-reserved) value; all
             other iterations check the field exactly as usual (see _warl_reserved_check).
         maskedwrites: If True, the CSR is written with a mask applied to the value being written.
+        bin_prefix: Prefix for testcase bin names, to walk the same CSR more than once under one coverpoint.
+        unchecked_bits: Optional (bits, define) pairs. The bits are walked but removed from the readback
+            mask only when `define` is defined for the config. Starts from the csr mask, or all ones if None.
     """
     assert 0 <= start_bit < 32, f"start_bit must be in 0..31, got {start_bit}"
     csr_name, mask = csr
+    if unchecked_bits and mask is None:
+        mask = (1 << 64) - 1
+        csr = (csr_name, mask)
     if maskedwrites:
         assert mask is not None, f"maskedwrites requires a csr mask (got None for {csr_name})"
     if mask is not None:
@@ -350,6 +359,13 @@ def csr_walk_test(
     ]
     if mask is not None:
         lines.append(f"LI(x{mask_reg}, {mask})    # Load mask ({mask:#x})")
+        for bits, define in unchecked_bits or []:
+            lines += [
+                f"#ifdef {define}",
+                f"LI(x{check_reg}, {~bits & ((1 << 64) - 1)})    # Do not check bits {bits:#x}",
+                f"and x{mask_reg}, x{mask_reg}, x{check_reg}",
+                f"#endif // {define}",
+            ]
     if walk_zeros:
         lines.append(f"LI(x{temp_reg}, -1)             # x{temp_reg} = all 1s")
 
@@ -366,7 +382,9 @@ def csr_walk_test(
             lines.append(f"csrs {csr_name}, x{check_reg}     # set walking 1 in column {i}")
         else:
             lines.append(f"csrs {csr_name}, x{walk_reg}     # set walking 1 in column {i}")
-        lines.extend(readback_lines(f"{csr_name}_set_bit_{i}", reserved_fields_written(i, walking_ones=True)))
+        lines.extend(
+            readback_lines(f"{bin_prefix}{csr_name}_set_bit_{i}", reserved_fields_written(i, walking_ones=True))
+        )
         lines.append(f"slli x{walk_reg}, x{walk_reg}, 1      # walk the 1")
     if need_endif:
         lines.append("#endif\n")
@@ -387,7 +405,9 @@ def csr_walk_test(
                 lines.append(f"csrc {csr_name}, x{check_reg}     # clear walking 0 in column {i}")
             else:
                 lines.append(f"csrc {csr_name}, x{walk_reg}     # clear walking 0 in column {i}")
-            lines.extend(readback_lines(f"{csr_name}_clr_bit_{i}", reserved_fields_written(i, walking_ones=False)))
+            lines.extend(
+                readback_lines(f"{bin_prefix}{csr_name}_clr_bit_{i}", reserved_fields_written(i, walking_ones=False))
+            )
             lines.append(f"slli x{walk_reg}, x{walk_reg}, 1      # walk the 1")
         if need_endif:
             lines.append("#endif\n")

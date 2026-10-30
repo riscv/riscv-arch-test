@@ -12,9 +12,11 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
     ins_t ins;
+    string inst_name;
     ins = new(hart, issue, traceDataQ);
+    inst_name = traceDataQ[hart][issue][0].inst_name;
 
-    case (traceDataQ[hart][issue][0].inst_name)
+    case (inst_name)
         "add"     : begin
             ins.add_rd(0);
             ins.add_rs1(1);

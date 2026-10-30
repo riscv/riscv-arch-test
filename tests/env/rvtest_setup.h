@@ -1289,6 +1289,19 @@
           LI(t0, MSTATEEN0_JVT | MSTATEEN0_FCSR)
           csrw mstateen0, t0
         #endif
+
+        // mstateen1-3.SE = 1: Enable access to sstateen1-3. Bit 63 is their only writable bit.
+        #if __riscv_xlen == 64
+          LI(t0, MSTATEEN_HSTATEEN)
+          csrw mstateen1, t0
+          csrw mstateen2, t0
+          csrw mstateen3, t0
+        #else    // RV32
+          LI(t0, MSTATEENH_HSTATEEN)
+          csrw mstateen1h, t0
+          csrw mstateen2h, t0
+          csrw mstateen3h, t0
+        #endif
       #endif
 
       // Enable all performance counters if they exist.

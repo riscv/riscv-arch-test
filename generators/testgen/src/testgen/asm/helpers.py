@@ -121,15 +121,20 @@ def load_float_reg(
     val: int,
     test_data: TestData,
     fp_load_type: Literal["single", "double", "half", "quad"] | None = None,
+    *,
+    comment: bool = True,
 ) -> str:
-    """Generate assembly to load a floating point register with a specific value."""
+    """Generate assembly to load a floating point register with a specific value, optionally with a comment."""
     if fp_load_type is None:
         fp_load_type = test_data.fp_load_size
 
     assert test_data.test_chunk is not None, "No active test chunk — call begin_test_chunk() first"
     test_data.test_chunk.data_values.append(val)
     fp_load_bits = {"half": 16, "single": 32, "double": 64, "quad": 128}.get(fp_load_type, test_data.flen)
-    return f"{INDENT}RVTEST_TESTDATA_LOAD_FLOAT_{fp_load_type.upper()}(x{test_data.int_regs.data_reg}, f{reg}) # load {name}: f{reg} = {to_hex(val & ((1 << fp_load_bits) - 1), fp_load_bits)}"
+    load = f"{INDENT}RVTEST_TESTDATA_LOAD_FLOAT_{fp_load_type.upper()}(x{test_data.int_regs.data_reg}, f{reg})"
+    if not comment:
+        return load
+    return f"{load} # load {name}: f{reg} = {to_hex(val & ((1 << fp_load_bits) - 1), fp_load_bits)}"
 
 
 def write_sigupd(
@@ -138,9 +143,10 @@ def write_sigupd(
     sig_type: Literal["int", "fflags", "float", "vstart", "vxsat"] = "int",
     *,
     label: str | None = None,
+    comment: bool = True,
 ) -> str:
     """
-    Generate assembly for SIGUPD and increment sigupd_count.
+    Generate assembly for SIGUPD and increment sigupd_count. comment=False omits the comment naming the registers.
     """
     assert test_data.test_chunk is not None, "No active test chunk — call begin_test_chunk() first"
     sig_reg = test_data.int_regs.sig_reg
@@ -152,18 +158,17 @@ def write_sigupd(
         if check_reg is None:
             raise ValueError("check_reg must be provided for int sig_type")
         test_data.test_chunk.sigupd_count += 1
-        return (
-            f"{INDENT}# Check if x{check_reg} contains the expected result. x{sig_reg} is the signature ptr, "
-            f"x{link_reg} is the link ptr, x{temp_reg} is a temp reg.\n"
-            f"{INDENT}RVTEST_SIGUPD(x{sig_reg}, x{link_reg}, x{temp_reg}, x{check_reg}, {label}, {label}_str)"
+        note = (
+            f"# Check if x{check_reg} contains the expected result. x{sig_reg} is the signature ptr, "
+            f"x{link_reg} is the link ptr, x{temp_reg} is a temp reg."
         )
+        macro = f"RVTEST_SIGUPD(x{sig_reg}, x{link_reg}, x{temp_reg}, x{check_reg}, {label}, {label}_str)"
     elif sig_type == "fflags":
         test_data.test_chunk.sigupd_count += 1
-        return (
-            f"{INDENT}# Check fflags. x{sig_reg} is the signature ptr, "
-            f"x{link_reg} is the link ptr, x{temp_reg} is a temp reg.\n"
-            f"{INDENT}RVTEST_SIGUPD_FFLAGS(x{sig_reg}, x{link_reg}, x{temp_reg}, {label}, {label}_str)"
+        note = (
+            f"# Check fflags. x{sig_reg} is the signature ptr, x{link_reg} is the link ptr, x{temp_reg} is a temp reg."
         )
+        macro = f"RVTEST_SIGUPD_FFLAGS(x{sig_reg}, x{link_reg}, x{temp_reg}, {label}, {label}_str)"
     elif sig_type == "float":
         if check_reg is None:
             raise ValueError("check_reg must be provided for float sig_type")
@@ -171,28 +176,23 @@ def write_sigupd(
             test_data.test_chunk.sigupd_count += 3
         else:
             test_data.test_chunk.sigupd_count += 2
-        return (
-            f"{INDENT}# Check if f{check_reg} contains the expected result. Also checks fflags. "
+        note = (
+            f"# Check if f{check_reg} contains the expected result. Also checks fflags. "
             f"x{sig_reg} is the signature ptr, x{link_reg} is the link ptr, x{temp_reg} "
-            f"is a temp reg, f{fp_temp_reg} is a floating point temp reg.\n"
-            f"{INDENT}RVTEST_SIGUPD_F(x{sig_reg}, x{link_reg}, x{temp_reg}, f{fp_temp_reg}, f{check_reg}, {label}, {label}_str)"
+            f"is a temp reg, f{fp_temp_reg} is a floating point temp reg."
+        )
+        macro = (
+            f"RVTEST_SIGUPD_F(x{sig_reg}, x{link_reg}, x{temp_reg}, f{fp_temp_reg}, f{check_reg}, {label}, {label}_str)"
         )
     elif sig_type == "vstart":
         test_data.test_chunk.sigupd_count += 1
-        return (
-            f"# Run SIGUPD to see if vstart was correctly set. x{sig_reg} is the signature ptr, x{link_reg}\n"
-            f"# is the link ptr, and x{temp_reg} is a temp reg.\n"
-            f"RVTEST_SIGUPD_VSTART(x{sig_reg}, x{link_reg}, x{temp_reg}, {label}, {label}_str)"
-        )
+        return f"RVTEST_SIGUPD_VSTART(x{sig_reg}, x{link_reg}, x{temp_reg}, {label})"
     elif sig_type == "vxsat":
         test_data.test_chunk.sigupd_count += 1
-        return (
-            f"# Run SIGUPD to see if vxsat was correctly set. x{sig_reg} is the signature ptr, x{link_reg}\n"
-            f"# is the link ptr, and x{temp_reg} is a temp reg.\n"
-            f"RVTEST_SIGUPD_VXSAT(x{sig_reg}, x{link_reg}, x{temp_reg}, {label}, {label}_str)"
-        )
+        return f"RVTEST_SIGUPD_VXSAT(x{sig_reg}, x{link_reg}, x{temp_reg}, {label})"
     else:
         raise ValueError(f"Unknown sig_type: {sig_type}")
+    return f"{INDENT}{note}\n{INDENT}{macro}" if comment else f"{INDENT}{macro}"
 
 
 # Bytes written by each S/FS-type store

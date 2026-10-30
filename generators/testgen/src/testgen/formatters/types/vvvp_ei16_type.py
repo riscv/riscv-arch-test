@@ -66,7 +66,7 @@ def format_vvvp_ei16_type(
         VectorLoad(reg="vs1", vl=vs1_vl, sew=16, lmul=16 * params.lmul / params.sew),
     ]
 
-    load_code, random_vl_reg = load_vec_regs(to_load, params, test_data)
+    load_code, random_vl_reg = load_vec_regs(to_load, params, test_data, base_tail_fill=True)
     setup.extend(load_code)
 
     if not params.ignore_vector_safety:

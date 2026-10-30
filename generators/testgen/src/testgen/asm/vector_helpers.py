@@ -67,36 +67,21 @@ def write_sigupd_v(
     max_bytes = vdsew * egs // 8
     test_data.test_chunk.sigupd_count += vector_sigupd_bytes(max_bytes, test_data, vdsew)
 
+    sig_lmul = 1 if egs == 1 else int(max(params.lmul or 1, 1))
+    lines = [f"vsetivli x0, {egs}, e{vdsew}, m{sig_lmul}, tu, mu"]
     if egs == 1:
-        lines = [
-            f"# set SEW={vdsew}, LMUL=1, VL=1 before signature check",
-            f"vsetivli x0, 1, e{vdsew}, m1, tu, mu",
-        ]
         vtmp, mtmp = test_data.vec_regs.get_registers(2, lmul=1, exclude_regs=[0])
     else:
-        sig_lmul = int(max(params.lmul or 1, 1))
-        lines = [
-            f"# set SEW={vdsew}, LMUL={sig_lmul}, VL={egs} before signature check",
-            f"vsetivli x0, {egs}, e{vdsew}, m{sig_lmul}, tu, mu",
-        ]
         vtmp = test_data.vec_regs.get_register(lmul=sig_lmul, exclude_regs=[0])
         mtmp = test_data.vec_regs.get_register(lmul=1, exclude_regs=[0])
 
     if mask_producing:
-        lines.extend(
-            [
-                f"# Check if v{params.vd} contains the expected result. x{sig_reg} is the signature ptr, x{link_reg} is the link ptr, x{temp_reg} is a temp reg.",
-                f"# v{mtmp} is a temporary register holding the mask of the comparison result and v{vtmp} will hold the signature result, and {vdsew} is the SEW",
-                f"RVTEST_SIGUPD_V(vmxor.mm, x{sig_reg}, x{link_reg}, x{temp_reg}, v{vtmp}, v{mtmp}, {vdsew}, v{check_reg}, {label}, {label}_str)",
-            ]
+        lines.append(
+            f"RVTEST_SIGUPD_V(vmxor.mm, x{sig_reg}, x{link_reg}, x{temp_reg}, v{vtmp}, v{mtmp}, {vdsew}, v{check_reg}, {label})"
         )
     else:
-        lines.extend(
-            [
-                f"# Check if v{params.vd} contains the expected result. x{sig_reg} is the signature ptr, x{link_reg} is the link ptr, x{temp_reg} is a temp reg.",
-                f"# v{mtmp} is a temporary register holding the mask of the comparison result and v{vtmp} will hold the signature result, and {vdsew} is the SEW",
-                f"RVTEST_SIGUPD_V(vmsne.vv, x{sig_reg}, x{link_reg}, x{temp_reg}, v{vtmp}, v{mtmp}, {vdsew}, v{check_reg}, {label}, {label}_str)",
-            ]
+        lines.append(
+            f"RVTEST_SIGUPD_V(vmsne.vv, x{sig_reg}, x{link_reg}, x{temp_reg}, v{vtmp}, v{mtmp}, {vdsew}, v{check_reg}, {label})"
         )
 
     test_data.vec_regs.return_registers([vtmp, mtmp])
@@ -172,23 +157,12 @@ def write_sigupd_v_len(
     scalar_dst_flag = 1 if scalar_dest else 0
     force_ta_ma_flag = 1 if params.vd_different_eew_overlap else 0
 
-    lines = [
-        f"# Check if v{params.vd} contains the expected result. x{sig_reg} is the signature ptr, x{link_reg} is the link ptr, x{temp_reg}, x{temp_reg2}, and x{temp_reg3} are a temp regs.",
-        f"# v{vtmp} will hold the signature result, v{mtmp3}, v{mtmp2}, and v{mtmp} are temporary mask registers holding the masks to aid error detection. v{vs1} was VS1 in the instruction",
-        f"# under test and is used to compute the evl for vcompress, v{mask_reg} is the register holding the mask for the instruction under test. In order the flags are: mask_producing,",
-        f"# masked and vcompress. VDSEW={vdsew}, signature lmul = {max(1, lmul)}, a flag for if the destination register is used as a scalar vector register, and a flag to force the",
-        "# instruction to be tail and mask agnostic.",
-    ]
-
-    if segments != 1:
-        lines.append(
-            f"# Do this for each segment of the result, incrementing by {int(max(lmul, 1))} register(s) each time"
-        )
+    lines: list[str] = []
 
     for i in range(segments):
         register_to_check = check_reg + i * int(max(lmul, 1))
         lines.append(
-            f"RVTEST_SIGUPD_V_LEN(x{sig_reg}, x{link_reg}, x{temp_reg}, x{temp_reg2}, x{temp_reg3}, v{vtmp}, v{mtmp3}, v{mtmp2}, v{mtmp}, v{register_to_check}, v{vs1}, v{mask_reg}, {maskprod_flag}, {masked_flag}, {vcompress_flag}, {vdsew}, {int(max(lmul, 1))}, {scalar_dst_flag}, {force_ta_ma_flag}, {label}, {label}_str)",
+            f"RVTEST_SIGUPD_V_LEN(x{sig_reg}, x{link_reg}, x{temp_reg}, x{temp_reg2}, x{temp_reg3}, v{vtmp}, v{mtmp3}, v{mtmp2}, v{mtmp}, v{register_to_check}, v{vs1}, v{mask_reg}, {maskprod_flag}, {masked_flag}, {vcompress_flag}, {vdsew}, {int(max(lmul, 1))}, {scalar_dst_flag}, {force_ta_ma_flag}, {label})",
         )
 
     test_data.int_regs.return_registers([temp_reg2, temp_reg3])
@@ -219,11 +193,7 @@ def write_sigupd_v_mask_prod(
     link_reg = test_data.int_regs.link_reg
     temp_reg = test_data.int_regs.temp_reg
 
-    return [
-        f"# Special SIGUPD variant that stores a mask in SIGRUN mode and no-ops in SELFCHECK mode. x{sig_reg} is the",
-        f"# signature pointer, x{link_reg} is the link register, x{temp_reg} is a temp register, and v{params.vd} is the result of the operation",
-        f"RVTEST_SIGUPD_VLMAX_MASK_PROD(x{sig_reg}, x{link_reg}, x{temp_reg}, v{params.vd})",
-    ]
+    return [f"RVTEST_SIGUPD_VLMAX_MASK_PROD(x{sig_reg}, x{link_reg}, x{temp_reg}, v{params.vd})"]
 
 
 def reload_vtype(params: InstructionParams, vl_register_or_imm: str | int) -> str:
@@ -275,10 +245,8 @@ def prep_base_v(
         randomVl = random_int(32, signed=False)
         lines.extend(
             [
-                "# Load Vl=Random",
                 f"LI(x{temp_reg}, {randomVl})",
                 f"vsetvli x{vlmax_reg}, x0, e{params.sew}, {flags}",
-                "# VLMAX should be a power of 2, so taking a remainder is simple",
                 f"addi x{vlmax_reg}, x{vlmax_reg}, -1",
                 f"and x{temp_reg}, x{temp_reg}, x{vlmax_reg}",
             ]
@@ -296,7 +264,6 @@ def prep_base_v(
     elif params.vl == "vlmax":
         lines.extend(
             [
-                "# Load Vl=VLMAX",
                 f"vsetvli x{params.temp_reg}, x0, e{params.sew}, {flags}",
             ]
         )
@@ -306,7 +273,6 @@ def prep_base_v(
 
         lines.extend(
             [
-                "# Set Registers to Deterministic Values (0xD)",
                 f"vsetvli x{params.temp_reg}, x0, e{params.sew}, m1, tu, mu",
             ]
         )
@@ -316,7 +282,6 @@ def prep_base_v(
 
         lines.extend(
             [
-                "# Load Desired VL",
                 f"LI (x{params.temp_reg}, {vl})",
                 f"vsetvli x0, x{params.temp_reg}, e{params.sew}, {flags}",
             ]
@@ -327,7 +292,6 @@ def prep_base_v(
     if params.vstart is not None:
         lines.extend(
             [
-                "# Load Desired vstart",
                 f"LI (x{params.temp_reg}, {params.vstart})",
                 f"csrw vstart, x{params.temp_reg}",
             ]
@@ -347,19 +311,15 @@ def set_lower_xreg_bits(num_bits_reg: int, test_data: TestData) -> list[str]:
     temp_v = test_data.vec_regs.get_register()
 
     code = [
-        "# Calculate the mask value by hand: start with a single whole register zeroed out",
         f"vsetvli x{temp_reg}, x0, e8, m1, ta, ma",
         f"vmv.v.i v{temp_v}, 0",
         "vsetivli x0, 1, e8, m1, tu, ma",
-        "# Calculate which bit is the barrier between the ones and zeros",
         f"andi x{temp_reg}, x{num_bits_reg}, 0x7",
         f"addi x{temp_reg2}, x0, 1",
         f"sll x{temp_reg}, x{temp_reg2}, x{temp_reg}",
-        "# Get something of the form 0b0011111 to prepare for a slideup",
         f"addi x{temp_reg}, x{temp_reg}, -1",
         f"vmv.v.x v{temp_v}, x{temp_reg}",
         f"vsetvli x{temp_reg}, x0, e8, m1, ta, ma",
-        "# Prepare and execute a slide up, filling 0xff",
         f"LI (x{temp_reg}, 0xff)",
         f"vmv.v.x v0, x{temp_reg}",
         f"srli x{temp_reg}, x{num_bits_reg}, 3",
@@ -421,44 +381,36 @@ def prep_mask_v(
     lines: list[str] = []
     if mask_val == PresetMask.ZEROS:
         lines = [
-            f"# Set mask value to zero, x{params.temp_reg} = VLMAX",
             f"vsetvli x{params.temp_reg}, x0, e{params.sew}, m1, tu, mu",
             "vmv.v.i v0, 0",
         ]
     elif mask_val == PresetMask.ONES:
         # Note that an approach using temp_reg is flawed because vmsltu can be tail agnostic regardless of vtype
         lines = [
-            f"# Set mask value to one, x{params.temp_reg} = VLMAX",
             f"vsetvli x{params.temp_reg}, x0, e{params.sew}, m1, tu, mu",
-            "# Sign extension makes the vector all ones",
             "vmv.v.i v0, -1",
         ]
     elif mask_val == PresetMask.VLMAX_M1_ONES:
         assert params.temp_reg is not None
         lines = [
-            f"# x{params.temp_reg} = VLMAX",
+            "# v0 = ones in elements 0 to VLMAX-2",
             f"vsetvli x{params.temp_reg}, x0, e{params.sew}, m{lmul_flag}, tu, mu",
-            f"# x{params.temp_reg} = VLMAX - 1",
             f"addi x{params.temp_reg}, x{params.temp_reg}, -1",
             *set_lower_xreg_bits(params.temp_reg, test_data),
         ]
     elif mask_val == PresetMask.VLMAX_D2_P1_ONES:
         assert params.temp_reg is not None
         lines = [
-            f"# x{params.temp_reg} = VLMAX",
+            "# v0 = ones in elements 0 to VLMAX/2",
             f"vsetvli x{params.temp_reg}, x0, e{params.sew}, m{lmul_flag}, tu, mu",
-            f"# x{params.temp_reg} = VLMAX / 2",
             f"srli x{params.temp_reg}, x{params.temp_reg}, 1",
-            f"# x{params.temp_reg} = VLMAX / 2 + 1",
             f"addi x{params.temp_reg}, x{params.temp_reg}, 1",
             *set_lower_xreg_bits(params.temp_reg, test_data),
         ]
     else:  # random mask
         lines = [
-            f"# x{params.temp_reg} = VLEN",
             f"vsetvli x{params.temp_reg}, x0, e8, m8, tu, mu",
             f"LA(x{params.temp_reg}, {mask_val})",
-            "# Load mask value into v0",
             f"vlm.v v0, (x{params.temp_reg})",
         ]
 
@@ -477,7 +429,6 @@ def load_vxrm(vxrm: str) -> list[str]:
     """
     vxrm_set_map = {"rod": "0x6", "rdn": "0x4", "rne": "0x2", "rnu": "0x0"}
     return [
-        f"# Clear vxrm and vcsr, then set vxrm = {vxrm}",
         "csrci vcsr, 0x6",
         f"csrsi vcsr, {vxrm_set_map[vxrm]}",
     ]
@@ -543,12 +494,11 @@ def generate_random_vl(params: InstructionParams, test_data: TestData, egs: int)
     temp_reg = test_data.int_regs.get_register(exclude_regs=[0])
 
     randomVl = random_int(32, signed=False)
+    code.append("# vl = random in [2, VLMAX)" if egs == 1 else f"# vl = random multiple of {egs} up to VLMAX")
     code.extend(
         [
-            "# Load vl=random",
             f"LI(x{temp_reg}, {randomVl})",
             f"vsetvli x{params.temp_reg}, x0, e{params.sew}, m{get_lmul_flag(params.lmul)}, tu, mu",
-            "# VLMAX should be a power of 2, so taking a remainder is simple",
             f"addi x{params.temp_reg}, x{params.temp_reg}, -1",
             f"and x{temp_reg}, x{temp_reg}, x{params.temp_reg}",
         ]
@@ -557,13 +507,11 @@ def generate_random_vl(params: InstructionParams, test_data: TestData, egs: int)
         min_safe_vlen = math.ceil(4 * (params.sew * egs / params.lmul))
         code.extend(
             [
-                f"# Ensure vl plays nicely with EGS={egs}",
-                f"andi x{temp_reg}, x{temp_reg}, -{egs}     # Ensure divisibility by EGS={egs}",
-                "# The ori can exceed vlmax if vlen is too small",
+                f"andi x{temp_reg}, x{temp_reg}, -{egs}",
                 f"#ifdef ZVL{min_safe_vlen}B_SUPPORTED",
-                f"{INDENT}ori x{temp_reg}, x{temp_reg}, {2 * egs}     # ensure that 2*egs <= vl < VLMAX",
+                f"{INDENT}ori x{temp_reg}, x{temp_reg}, {2 * egs}",
                 "#else",
-                f"{INDENT}ori x{temp_reg}, x{temp_reg}, {egs}       # In this case, it sets egs <= vl <= VLMAX",
+                f"{INDENT}ori x{temp_reg}, x{temp_reg}, {egs}",
                 "#endif",
             ]
         )
@@ -591,10 +539,34 @@ def load_test_vtype(params: InstructionParams, random_vl_reg: str, *, force_vlma
         return f"vsetivli x{params.temp_reg}, {params.vl}, e{params.sew}, {flags}"
 
 
-def load_vec_regs(regs: list[VectorLoad], params: InstructionParams, test_data: TestData) -> tuple[list[str], str]:
+def describe_vector_loads(regs: list[VectorLoad], params: InstructionParams) -> str:
+    """One-line comment summarizing what load_vec_regs puts in each register, e.g. "# Load vd (VLMAX elements)"."""
+    groups: dict[str, list[str]] = {}
+    for reg in regs:
+        vl = params.vl if reg.vl is None else reg.vl
+        if reg.only_setup_tail:
+            what = "filled with 0xd"
+        elif vl == "vlmax":
+            what = "VLMAX elements"
+        else:
+            what = f"{'vl' if vl == 'random' else vl} elements, tail 0xd"
+        groups.setdefault(what, []).append(reg.reg)
+    return "# Load " + "; ".join(f"{', '.join(names)} ({what})" for what, names in groups.items())
+
+
+def load_vec_regs(
+    regs: list[VectorLoad],
+    params: InstructionParams,
+    test_data: TestData,
+    *,
+    base_tail_fill: bool = False,
+) -> tuple[list[str], str]:
     """
     Loads the vector registers in regs according to their configuration, given default values from
     params.
+
+    Base-suite checks compare only the elements below vl, so the deterministic tail is skipped there unless
+    base_tail_fill is set for an instruction that reads source elements at or beyond vl.
     """
 
     vtype_code: defaultdict[tuple[Literal["vlmax", "random"] | int, int | float, int | float], list[str]] = defaultdict(
@@ -637,7 +609,7 @@ def load_vec_regs(regs: list[VectorLoad], params: InstructionParams, test_data: 
                     f"vle{sew}.v v{reg_to_load}, (x{params.temp_reg})",
                 )
 
-        if vl != "vlmax" or reg.only_setup_tail:
+        if (vl != "vlmax" or reg.only_setup_tail) and (params.vector_suite != "base" or base_tail_fill):
             # Create a deterministic tail at vlmax
             for i in range(reg.segments):
                 reg_to_load = reg_num + int(max(1, lmul)) * i
@@ -646,6 +618,9 @@ def load_vec_regs(regs: list[VectorLoad], params: InstructionParams, test_data: 
                 )
 
     code: list[str] = []
+    if params.vector_suite == "length":
+        code.append(describe_vector_loads(regs, params))
+
     # First handle everything at vlmax
     vlmax_vtypes = [vtype for vtype in vtype_code if vtype[0] == "vlmax"]
     for vl, sew, lmul in vlmax_vtypes:
@@ -750,8 +725,8 @@ def get_egs_lmul_for_register(reg_num: int, egs: int) -> int:
 def handle_vector_fp(setup: list[str], check: list[str], frm_val: int, test_data: TestData) -> None:
     """Modifies Setup, Test, Check in place to ensure that vector-fp tests are run with the correct rounding mode"""
     setup.append(f"fsrmi {frm_val}")
-    setup.append("fsflagsi 0b00000 # clear all fflags")
-    check.insert(0, write_sigupd(None, test_data, "fflags"))
+    setup.append("fsflagsi 0b00000")
+    check.insert(0, write_sigupd(None, test_data, "fflags", comment=False))
 
     # Insert a rounding mode reset inside the test body, (i.e before any #endifs)
     for i in range(len(check) - 1, -1, -1):
@@ -777,7 +752,7 @@ def prep_vstart(
     assert params.sew is not None, "SEW must be provided for vector tests"
 
     vstart_reg = test_data.int_regs.get_register(exclude_regs=[0])
-    lines = [f"# Load vstart={vstart_val}"]
+    lines: list[str] = []
 
     match vstart_val:
         case "one":
@@ -804,12 +779,11 @@ def prep_vstart(
                     f"vsetvli x{vlmax_reg}, x0, e{params.sew}, m{get_lmul_flag(params.lmul)}, ta, ma",
                     f"LI (x{vstart_reg}, {random_range(0, VLEN_MAX - 3)})",
                     "#ifdef M_SUPPORTED",
-                    f"{INDENT}# On cores with M, using remu to give legal vstart values is more uniformly random",
                     f"{INDENT}.option push",
                     f"{INDENT}.option arch, +m",
                     f"{INDENT}addi x{vlmax_reg}, x{vlmax_reg}, -2",
                     f"{INDENT}bgt x{vlmax_reg}, x0, 1f",
-                    f"{INDENT}addi x{vstart_reg}, x{vlmax_reg}, 1  # if vlmax is too low, default to vlmax-1",
+                    f"{INDENT}addi x{vstart_reg}, x{vlmax_reg}, 1",
                     f"{INDENT}j 2f",
                     "1:",
                     f"{INDENT}remu x{vstart_reg}, x{vstart_reg}, x{vlmax_reg}",
@@ -819,12 +793,10 @@ def prep_vstart(
                     "#else",
                     f"{INDENT}addi x{vlmax_reg}, x{vlmax_reg}, -1",
                     f"{INDENT}and x{vstart_reg}, x{vstart_reg}, x{vlmax_reg}",
-                    f"{INDENT}# Ensure that we have an interesting value for vstart",
                     f"{INDENT}LI (x{temp_reg}, 2)",
                     f"{INDENT}bge x{vstart_reg}, x{temp_reg}, 1f",
                     f"{INDENT}addi x{vstart_reg}, x{vstart_reg}, 2",
                     "1:",
-                    f"{INDENT}# Clamp to vlmax-1",
                     f"{INDENT}ble x{vstart_reg}, x{vlmax_reg}, 2f",
                     f"{INDENT}addi x{vstart_reg}, x{vlmax_reg}, 0",
                     "2:",
@@ -842,14 +814,12 @@ def prep_vstart(
             rand_vl = (random_range(2, VLEN_MAX - 1) & ~1) | 2
             lines.extend(
                 [
-                    "# Load random values for vl and vstart, and get their remainder mod vlmax",
                     f"vsetvli x{vlmax_reg}, x0, e{params.sew}, m{get_lmul_flag(params.lmul)}, ta, ma",
                     f"addi x{vlmax_reg}, x{vlmax_reg}, -1",
                     f"LI (x{vstart_reg}, {rand_vstart})",
                     f"and x{vstart_reg}, x{vstart_reg}, x{vlmax_reg}",
                     f"LI (x{vl_reg}, {rand_vl})",
                     f"and x{vl_reg}, x{vl_reg}, x{vlmax_reg}",
-                    "# Set vl < vstart",
                     f"bgt x{vstart_reg}, x{vl_reg}, 1f",
                     f"add x{vlmax_reg}, x{vstart_reg}, x0",
                     f"add x{vstart_reg}, x{vl_reg}, x0",
@@ -879,7 +849,6 @@ def index_register_safety(
     assert params.sew is not None, "SEW must be set for vector instructions"
 
     lines = [
-        "# Ensure that the data in vs2 is within the range [0, 2*vlmax) and sew-aligned",
         f"vsetvli x{params.temp_reg}, x0, e{params.sew}, m{get_lmul_flag(params.lmul)}, ta, ma",
         f"add x{params.temp_reg}, x{params.temp_reg}, x{params.temp_reg}",
     ]

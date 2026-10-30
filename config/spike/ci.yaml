@@ -17,10 +17,10 @@ exclude_extensions:
   # exclusions can be given per config.
   - Smstateen
   - Ssstateen
-  # Spike stores tdata2 as written (trigger_t::tdata2_write in riscv/triggers.cc), so
-  # an all-ones write to an mcontrol6 NAPOT trigger reads back with bit maskmax6-1 set; the Debug spec requires it to
-  # read 0 (fix: https://github.com/riscv-software-src/riscv-isa-sim/pull/2481). Drop it when the Spike pin includes it.
-  - SdtrigSm_mcontrol6_napot_allones
+  # Spike keeps the last vstimecmp comparison in hip.VSTIP after henvcfg.STCE or menvcfg.STCE is cleared; hip.VSTIP
+  # must revert to hvip.VSTIP (riscv/csrs.cc time_counter_csr_t::sync, https://github.com/riscv-software-src/riscv-isa-sim/issues/2504).
+  - Sstc_H_vstip
+  - Sstc_HSm_vstip
   # Sscofpmf_Sm_access fails on rv32-max only; the other Sscofpmf groups pass. Spike hardwires mhpmcounter3..31
   # to 0 but keeps mhpmevent3..31 writable (https://github.com/riscv-software-src/riscv-isa-sim/issues/2370). Sail's
   # writable_hpm_counters makes both or neither writable, so no reference config matches.

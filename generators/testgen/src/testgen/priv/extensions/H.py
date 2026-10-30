@@ -69,6 +69,8 @@ NONUSER_CSR_RANGES = [
     range(0xD00, 0x1000),
 ]
 USER_RO_CSR_RANGES = [range(0xC00, 0xD00)]
+# The read-only CSR numbers VS-mode tries to write, as in S (cp_csr_ro)
+S_RO_CSR_RANGES = [range(0xC00, 0xF00)]
 # Each VS-mode and VU-mode chunk of the CSR sweeps enters the mode once
 CSRS_PER_CHUNK = 16
 
@@ -205,6 +207,9 @@ def _vs_csr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> None:
         "In VS-mode, attempt to read each M-mode CSR.  Should throw illegal instruction",
         mode="VS",
         csrs_per_chunk=CSRS_PER_CHUNK,
+    )
+    csr_ro_write_tests(
+        test_data, test_chunks, VS_CG, S_RO_CSR_RANGES, "vscsr_ro", mode="VS", csrs_per_chunk=CSRS_PER_CHUNK
     )
 
     tc = test_data.new_test_chunk(test_chunks)

@@ -703,12 +703,18 @@ normative_rule_definitions:
         "Sv_HZicbo_cg/{cp_vs_pte,cp_g_pte}",
       ]
 
+  # If access to the cache block is not permitted, a cache-block prefetch instruction
+  # does not raise any exceptions and shall not access any caches or memory.
+  - name: cbp_unperm_noexcep
+    coverpoint: ["Sv_HZicbo_cg/{cp_vs_prefetch,cp_g_prefetch}"]
+
   # During address translation, the instruction does not check the accessed and dirty
   # bits and neither raises an exception nor sets the bits.
-  # Needs prefetches to pages with A=0 or D=0 that expect no trap and read the PTE back to
-  # check that A and D stay 0; the prefetch tests use only pages with A=D=1.
+  # The Sv_Zicbo prefetch tests use only pages with A=D=1.  The HZicbo prefetch tests use
+  # VS-stage and G-stage leaves with A=D=0 while the hardware updates A and D, and read
+  # the leaves back to check that A and D stay 0.
   - name: cbp_unperm_translate
-    coverpoint: [""]
+    coverpoint: ["Sv_HZicbo_cg/{cp_vs_prefetch,cp_g_prefetch}"]
 
   # A cache-block management instruction is permitted to access the specified cache block
   # whenever a load instruction or store instruction is permitted to access the

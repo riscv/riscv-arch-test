@@ -17,7 +17,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 30
+#define SIGUPD_COUNT 34
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_MMODE
@@ -34,8 +34,8 @@ RVTEST_BEGIN
 /////////////////////////////////
 // cp_hgatp_mprv_effects
 //   In M-mode with vsatp and satp Bare and a G-stage identity map that makes svh_page execute-only, execute
-//   lw, sw, hlv.w and hsv.w on svh_page with mstatus.MPRV = 0, 1 and MPP/MPV = M, HS, VS, U, VU.  Only hlv.w,
-//   hsv.w, and lw and sw with MPRV = 1 and MPV = 1, raise guest-page faults
+//   lw, sw, hlv.w and hsv.w on svh_page with mstatus.MPRV = 0, 1 and MPP/MPV = M, M with MPV = 1, HS, VS, U,
+//   VU.  Only hlv.w, hsv.w, and lw and sw with MPRV = 1, MPV = 1 and MPP = S or U, raise guest-page faults
 /////////////////////////////////
 
   LA(x9, svh_page)
@@ -125,246 +125,254 @@ Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_m_hlv:
   LI(x8, 0x10c)
   LI(x13, MSTATUSH_MPV)
   csrc mstatush, x13
+  LI(x13, MSTATUSH_MPV)
+  csrs mstatush, x13
   LI(x13, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, x13
-  LI(x13, MPP_SMODE)
+  LI(x13, MSTATUS_MPP)
   csrs mstatus, x13
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_hs_store:
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_m_mpv1_store:
   sw x8, 8(x6)
   LI(x13, MSTATUS_MPRV)
   csrc mstatus, x13
   LI(x8, -1)
   LI(x13, MSTATUSH_MPV)
   csrc mstatush, x13
+  LI(x13, MSTATUSH_MPV)
+  csrs mstatush, x13
   LI(x13, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, x13
-  LI(x13, MPP_SMODE)
+  LI(x13, MSTATUS_MPP)
   csrs mstatus, x13
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_hs_load:
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_m_mpv1_load:
   lw x8, 8(x6)
   LI(x13, MSTATUS_MPRV)
   csrc mstatus, x13
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_hs_load, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_hs_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_m_mpv1_load, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_m_mpv1_load_str)
   LI(x13, MSTATUSH_MPV)
   csrc mstatush, x13
+  LI(x13, MSTATUSH_MPV)
+  csrs mstatush, x13
   LI(x13, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, x13
-  LI(x13, MPP_SMODE)
+  LI(x13, MSTATUS_MPP)
   csrs mstatus, x13
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_hs_hsv:
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_m_mpv1_hsv:
   hsv.w x8, (x6)
   LI(x13, MSTATUS_MPRV)
   csrc mstatus, x13
   LI(x8, -1)
   LI(x13, MSTATUSH_MPV)
   csrc mstatush, x13
+  LI(x13, MSTATUSH_MPV)
+  csrs mstatush, x13
   LI(x13, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, x13
-  LI(x13, MPP_SMODE)
+  LI(x13, MSTATUS_MPP)
   csrs mstatus, x13
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_hs_hlv:
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_m_mpv1_hlv:
   hlv.w x8, (x6)
   LI(x13, MSTATUS_MPRV)
   csrc mstatus, x13
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_hs_hlv, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_hs_hlv_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_m_mpv1_hlv, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_m_mpv1_hlv_str)
 
   LA(x14, svh_page + 8)
   LI(x13, 0x110)
   LI(x8, MSTATUSH_MPV)
   csrc mstatush, x8
-  LI(x8, MSTATUSH_MPV)
-  csrs mstatush, x8
   LI(x8, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, x8
   LI(x8, MPP_SMODE)
   csrs mstatus, x8
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vs_store:
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_hs_store:
   sw x13, 8(x14)
   LI(x8, MSTATUS_MPRV)
   csrc mstatus, x8
   LI(x13, -1)
   LI(x8, MSTATUSH_MPV)
   csrc mstatush, x8
-  LI(x8, MSTATUSH_MPV)
-  csrs mstatush, x8
   LI(x8, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, x8
   LI(x8, MPP_SMODE)
   csrs mstatus, x8
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vs_load:
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_hs_load:
   lw x13, 8(x14)
   LI(x8, MSTATUS_MPRV)
   csrc mstatus, x8
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vs_load, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vs_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_hs_load, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_hs_load_str)
   LI(x8, MSTATUSH_MPV)
   csrc mstatush, x8
-  LI(x8, MSTATUSH_MPV)
-  csrs mstatush, x8
   LI(x8, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, x8
   LI(x8, MPP_SMODE)
   csrs mstatus, x8
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vs_hsv:
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_hs_hsv:
   hsv.w x13, (x14)
   LI(x8, MSTATUS_MPRV)
   csrc mstatus, x8
   LI(x13, -1)
   LI(x8, MSTATUSH_MPV)
   csrc mstatush, x8
-  LI(x8, MSTATUSH_MPV)
-  csrs mstatush, x8
   LI(x8, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, x8
   LI(x8, MPP_SMODE)
   csrs mstatus, x8
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vs_hlv:
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_hs_hlv:
   hlv.w x13, (x14)
   LI(x8, MSTATUS_MPRV)
   csrc mstatus, x8
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vs_hlv, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vs_hlv_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_hs_hlv, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_hs_hlv_str)
 
   LA(x15, svh_page + 8)
   LI(x14, 0x114)
   LI(x13, MSTATUSH_MPV)
   csrc mstatush, x13
+  LI(x13, MSTATUSH_MPV)
+  csrs mstatush, x13
   LI(x13, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, x13
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_u_store:
+  LI(x13, MPP_SMODE)
+  csrs mstatus, x13
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vs_store:
   sw x14, 8(x15)
   LI(x13, MSTATUS_MPRV)
   csrc mstatus, x13
   LI(x14, -1)
   LI(x13, MSTATUSH_MPV)
   csrc mstatush, x13
+  LI(x13, MSTATUSH_MPV)
+  csrs mstatush, x13
   LI(x13, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, x13
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_u_load:
+  LI(x13, MPP_SMODE)
+  csrs mstatus, x13
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vs_load:
   lw x14, 8(x15)
   LI(x13, MSTATUS_MPRV)
   csrc mstatus, x13
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_u_load, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_u_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vs_load, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vs_load_str)
   LI(x13, MSTATUSH_MPV)
   csrc mstatush, x13
+  LI(x13, MSTATUSH_MPV)
+  csrs mstatush, x13
   LI(x13, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, x13
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_u_hsv:
+  LI(x13, MPP_SMODE)
+  csrs mstatus, x13
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vs_hsv:
   hsv.w x14, (x15)
   LI(x13, MSTATUS_MPRV)
   csrc mstatus, x13
   LI(x14, -1)
   LI(x13, MSTATUSH_MPV)
   csrc mstatush, x13
+  LI(x13, MSTATUSH_MPV)
+  csrs mstatush, x13
   LI(x13, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, x13
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_u_hlv:
+  LI(x13, MPP_SMODE)
+  csrs mstatus, x13
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vs_hlv:
   hlv.w x14, (x15)
   LI(x13, MSTATUS_MPRV)
   csrc mstatus, x13
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_u_hlv, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_u_hlv_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vs_hlv, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vs_hlv_str)
 
   LA(x9, svh_page + 8)
   LI(x6, 0x118)
   LI(x13, MSTATUSH_MPV)
   csrc mstatush, x13
-  LI(x13, MSTATUSH_MPV)
-  csrs mstatush, x13
   LI(x13, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, x13
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vu_store:
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_u_store:
   sw x6, 8(x9)
   LI(x13, MSTATUS_MPRV)
   csrc mstatus, x13
   LI(x6, -1)
   LI(x13, MSTATUSH_MPV)
   csrc mstatush, x13
-  LI(x13, MSTATUSH_MPV)
-  csrs mstatush, x13
   LI(x13, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, x13
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vu_load:
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_u_load:
   lw x6, 8(x9)
   LI(x13, MSTATUS_MPRV)
   csrc mstatus, x13
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vu_load, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vu_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_u_load, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_u_load_str)
   LI(x13, MSTATUSH_MPV)
   csrc mstatush, x13
-  LI(x13, MSTATUSH_MPV)
-  csrs mstatush, x13
   LI(x13, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, x13
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vu_hsv:
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_u_hsv:
   hsv.w x6, (x9)
   LI(x13, MSTATUS_MPRV)
   csrc mstatus, x13
   LI(x6, -1)
   LI(x13, MSTATUSH_MPV)
   csrc mstatush, x13
-  LI(x13, MSTATUSH_MPV)
-  csrs mstatush, x13
   LI(x13, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, x13
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vu_hlv:
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_u_hlv:
   hlv.w x6, (x9)
   LI(x13, MSTATUS_MPRV)
   csrc mstatus, x13
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vu_hlv, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vu_hlv_str)
+  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_u_hlv, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_u_hlv_str)
 
   LA(x14, svh_page + 8)
   LI(x13, 0x11c)
   LI(x9, MSTATUSH_MPV)
   csrc mstatush, x9
+  LI(x9, MSTATUSH_MPV)
+  csrs mstatush, x9
   LI(x9, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, x9
-  LI(x9, MSTATUS_MPRV | MSTATUS_MPP)
-  csrs mstatus, x9
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_m_store:
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vu_store:
   sw x13, 8(x14)
   LI(x9, MSTATUS_MPRV)
   csrc mstatus, x9
   LI(x13, -1)
   LI(x9, MSTATUSH_MPV)
   csrc mstatush, x9
+  LI(x9, MSTATUSH_MPV)
+  csrs mstatush, x9
   LI(x9, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, x9
-  LI(x9, MSTATUS_MPRV | MSTATUS_MPP)
-  csrs mstatus, x9
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_m_load:
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vu_load:
   lw x13, 8(x14)
   LI(x9, MSTATUS_MPRV)
   csrc mstatus, x9
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_m_load, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_m_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vu_load, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vu_load_str)
   LI(x9, MSTATUSH_MPV)
   csrc mstatush, x9
+  LI(x9, MSTATUSH_MPV)
+  csrs mstatush, x9
   LI(x9, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, x9
-  LI(x9, MSTATUS_MPRV | MSTATUS_MPP)
-  csrs mstatus, x9
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_m_hsv:
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vu_hsv:
   hsv.w x13, (x14)
   LI(x9, MSTATUS_MPRV)
   csrc mstatus, x9
   LI(x13, -1)
   LI(x9, MSTATUSH_MPV)
   csrc mstatush, x9
+  LI(x9, MSTATUSH_MPV)
+  csrs mstatush, x9
   LI(x9, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, x9
-  LI(x9, MSTATUS_MPRV | MSTATUS_MPP)
-  csrs mstatus, x9
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_m_hlv:
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vu_hlv:
   hlv.w x13, (x14)
   LI(x9, MSTATUS_MPRV)
   csrc mstatus, x9
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_m_hlv, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_m_hlv_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vu_hlv, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vu_hlv_str)
 
   LA(x14, svh_page + 8)
   LI(x15, 0x120)
@@ -372,9 +380,9 @@ Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_m_hlv:
   csrc mstatush, x8
   LI(x8, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, x8
-  LI(x8, MSTATUS_MPRV | MPP_SMODE)
+  LI(x8, MSTATUS_MPRV | MSTATUS_MPP)
   csrs mstatus, x8
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_hs_store:
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_m_store:
   sw x15, 8(x14)
   LI(x8, MSTATUS_MPRV)
   csrc mstatus, x8
@@ -383,21 +391,21 @@ Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_hs_store:
   csrc mstatush, x8
   LI(x8, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, x8
-  LI(x8, MSTATUS_MPRV | MPP_SMODE)
+  LI(x8, MSTATUS_MPRV | MSTATUS_MPP)
   csrs mstatus, x8
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_hs_load:
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_m_load:
   lw x15, 8(x14)
   LI(x8, MSTATUS_MPRV)
   csrc mstatus, x8
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_hs_load, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_hs_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_m_load, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_m_load_str)
   LI(x8, MSTATUSH_MPV)
   csrc mstatush, x8
   LI(x8, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, x8
-  LI(x8, MSTATUS_MPRV | MPP_SMODE)
+  LI(x8, MSTATUS_MPRV | MSTATUS_MPP)
   csrs mstatus, x8
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_hs_hsv:
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_m_hsv:
   hsv.w x15, (x14)
   LI(x8, MSTATUS_MPRV)
   csrc mstatus, x8
@@ -406,14 +414,14 @@ Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_hs_hsv:
   csrc mstatush, x8
   LI(x8, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, x8
-  LI(x8, MSTATUS_MPRV | MPP_SMODE)
+  LI(x8, MSTATUS_MPRV | MSTATUS_MPP)
   csrs mstatus, x8
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_hs_hlv:
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_m_hlv:
   hlv.w x15, (x14)
   LI(x8, MSTATUS_MPRV)
   csrc mstatus, x8
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_hs_hlv, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_hs_hlv_str)
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_m_hlv, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_m_hlv_str)
 
   LA(x13, svh_page + 8)
   LI(x6, 0x124)
@@ -423,9 +431,9 @@ Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_hs_hlv:
   csrs mstatush, x9
   LI(x9, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, x9
-  LI(x9, MSTATUS_MPRV | MPP_SMODE)
+  LI(x9, MSTATUS_MPRV | MSTATUS_MPP)
   csrs mstatus, x9
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vs_store:
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_m_mpv1_store:
   sw x6, 8(x13)
   LI(x9, MSTATUS_MPRV)
   csrc mstatus, x9
@@ -436,23 +444,23 @@ Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vs_store:
   csrs mstatush, x9
   LI(x9, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, x9
-  LI(x9, MSTATUS_MPRV | MPP_SMODE)
+  LI(x9, MSTATUS_MPRV | MSTATUS_MPP)
   csrs mstatus, x9
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vs_load:
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_m_mpv1_load:
   lw x6, 8(x13)
   LI(x9, MSTATUS_MPRV)
   csrc mstatus, x9
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vs_load, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vs_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_m_mpv1_load, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_m_mpv1_load_str)
   LI(x9, MSTATUSH_MPV)
   csrc mstatush, x9
   LI(x9, MSTATUSH_MPV)
   csrs mstatush, x9
   LI(x9, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, x9
-  LI(x9, MSTATUS_MPRV | MPP_SMODE)
+  LI(x9, MSTATUS_MPRV | MSTATUS_MPP)
   csrs mstatus, x9
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vs_hsv:
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_m_mpv1_hsv:
   hsv.w x6, (x13)
   LI(x9, MSTATUS_MPRV)
   csrc mstatus, x9
@@ -463,14 +471,14 @@ Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vs_hsv:
   csrs mstatush, x9
   LI(x9, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, x9
-  LI(x9, MSTATUS_MPRV | MPP_SMODE)
+  LI(x9, MSTATUS_MPRV | MSTATUS_MPP)
   csrs mstatus, x9
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vs_hlv:
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_m_mpv1_hlv:
   hlv.w x6, (x13)
   LI(x9, MSTATUS_MPRV)
   csrc mstatus, x9
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vs_hlv, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vs_hlv_str)
+  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_m_mpv1_hlv, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_m_mpv1_hlv_str)
 
   LA(x9, svh_page + 8)
   LI(x14, 0x128)
@@ -478,9 +486,9 @@ Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vs_hlv:
   csrc mstatush, x13
   LI(x13, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, x13
-  LI(x13, MSTATUS_MPRV)
+  LI(x13, MSTATUS_MPRV | MPP_SMODE)
   csrs mstatus, x13
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_u_store:
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_hs_store:
   sw x14, 8(x9)
   LI(x13, MSTATUS_MPRV)
   csrc mstatus, x13
@@ -489,21 +497,21 @@ Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_u_store:
   csrc mstatush, x13
   LI(x13, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, x13
-  LI(x13, MSTATUS_MPRV)
+  LI(x13, MSTATUS_MPRV | MPP_SMODE)
   csrs mstatus, x13
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_u_load:
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_hs_load:
   lw x14, 8(x9)
   LI(x13, MSTATUS_MPRV)
   csrc mstatus, x13
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_u_load, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_u_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_hs_load, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_hs_load_str)
   LI(x13, MSTATUSH_MPV)
   csrc mstatush, x13
   LI(x13, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, x13
-  LI(x13, MSTATUS_MPRV)
+  LI(x13, MSTATUS_MPRV | MPP_SMODE)
   csrs mstatus, x13
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_u_hsv:
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_hs_hsv:
   hsv.w x14, (x9)
   LI(x13, MSTATUS_MPRV)
   csrc mstatus, x13
@@ -512,14 +520,14 @@ Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_u_hsv:
   csrc mstatush, x13
   LI(x13, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, x13
-  LI(x13, MSTATUS_MPRV)
+  LI(x13, MSTATUS_MPRV | MPP_SMODE)
   csrs mstatus, x13
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_u_hlv:
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_hs_hlv:
   hlv.w x14, (x9)
   LI(x13, MSTATUS_MPRV)
   csrc mstatus, x13
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_u_hlv, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_u_hlv_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_hs_hlv, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_hs_hlv_str)
 
   LA(x15, svh_page + 8)
   LI(x8, 0x12c)
@@ -529,9 +537,9 @@ Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_u_hlv:
   csrs mstatush, x9
   LI(x9, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, x9
-  LI(x9, MSTATUS_MPRV)
+  LI(x9, MSTATUS_MPRV | MPP_SMODE)
   csrs mstatus, x9
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vu_store:
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vs_store:
   sw x8, 8(x15)
   LI(x9, MSTATUS_MPRV)
   csrc mstatus, x9
@@ -542,23 +550,23 @@ Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vu_store:
   csrs mstatush, x9
   LI(x9, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, x9
-  LI(x9, MSTATUS_MPRV)
+  LI(x9, MSTATUS_MPRV | MPP_SMODE)
   csrs mstatus, x9
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vu_load:
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vs_load:
   lw x8, 8(x15)
   LI(x9, MSTATUS_MPRV)
   csrc mstatus, x9
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vu_load, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vu_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vs_load, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vs_load_str)
   LI(x9, MSTATUSH_MPV)
   csrc mstatush, x9
   LI(x9, MSTATUSH_MPV)
   csrs mstatush, x9
   LI(x9, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, x9
-  LI(x9, MSTATUS_MPRV)
+  LI(x9, MSTATUS_MPRV | MPP_SMODE)
   csrs mstatus, x9
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vu_hsv:
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vs_hsv:
   hsv.w x8, (x15)
   LI(x9, MSTATUS_MPRV)
   csrc mstatus, x9
@@ -569,28 +577,134 @@ Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vu_hsv:
   csrs mstatush, x9
   LI(x9, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, x9
-  LI(x9, MSTATUS_MPRV)
+  LI(x9, MSTATUS_MPRV | MPP_SMODE)
   csrs mstatus, x9
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vu_hlv:
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vs_hlv:
   hlv.w x8, (x15)
   LI(x9, MSTATUS_MPRV)
   csrc mstatus, x9
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vu_hlv, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vu_hlv_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vs_hlv, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vs_hlv_str)
+
+  LA(x6, svh_page + 8)
+  LI(x8, 0x130)
+  LI(x14, MSTATUSH_MPV)
+  csrc mstatush, x14
+  LI(x14, MSTATUS_MPRV | MSTATUS_MPP)
+  csrc mstatus, x14
+  LI(x14, MSTATUS_MPRV)
+  csrs mstatus, x14
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_u_store:
+  sw x8, 8(x6)
+  LI(x14, MSTATUS_MPRV)
+  csrc mstatus, x14
+  LI(x8, -1)
+  LI(x14, MSTATUSH_MPV)
+  csrc mstatush, x14
+  LI(x14, MSTATUS_MPRV | MSTATUS_MPP)
+  csrc mstatus, x14
+  LI(x14, MSTATUS_MPRV)
+  csrs mstatus, x14
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_u_load:
+  lw x8, 8(x6)
+  LI(x14, MSTATUS_MPRV)
+  csrc mstatus, x14
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_u_load, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_u_load_str)
+  LI(x14, MSTATUSH_MPV)
+  csrc mstatush, x14
+  LI(x14, MSTATUS_MPRV | MSTATUS_MPP)
+  csrc mstatus, x14
+  LI(x14, MSTATUS_MPRV)
+  csrs mstatus, x14
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_u_hsv:
+  hsv.w x8, (x6)
+  LI(x14, MSTATUS_MPRV)
+  csrc mstatus, x14
+  LI(x8, -1)
+  LI(x14, MSTATUSH_MPV)
+  csrc mstatush, x14
+  LI(x14, MSTATUS_MPRV | MSTATUS_MPP)
+  csrc mstatus, x14
+  LI(x14, MSTATUS_MPRV)
+  csrs mstatus, x14
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_u_hlv:
+  hlv.w x8, (x6)
+  LI(x14, MSTATUS_MPRV)
+  csrc mstatus, x14
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_u_hlv, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_u_hlv_str)
+
+  LA(x6, svh_page + 8)
+  LI(x15, 0x134)
+  LI(x8, MSTATUSH_MPV)
+  csrc mstatush, x8
+  LI(x8, MSTATUSH_MPV)
+  csrs mstatush, x8
+  LI(x8, MSTATUS_MPRV | MSTATUS_MPP)
+  csrc mstatus, x8
+  LI(x8, MSTATUS_MPRV)
+  csrs mstatus, x8
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vu_store:
+  sw x15, 8(x6)
+  LI(x8, MSTATUS_MPRV)
+  csrc mstatus, x8
+  LI(x15, -1)
+  LI(x8, MSTATUSH_MPV)
+  csrc mstatush, x8
+  LI(x8, MSTATUSH_MPV)
+  csrs mstatush, x8
+  LI(x8, MSTATUS_MPRV | MSTATUS_MPP)
+  csrc mstatus, x8
+  LI(x8, MSTATUS_MPRV)
+  csrs mstatus, x8
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vu_load:
+  lw x15, 8(x6)
+  LI(x8, MSTATUS_MPRV)
+  csrc mstatus, x8
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vu_load, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vu_load_str)
+  LI(x8, MSTATUSH_MPV)
+  csrc mstatush, x8
+  LI(x8, MSTATUSH_MPV)
+  csrs mstatush, x8
+  LI(x8, MSTATUS_MPRV | MSTATUS_MPP)
+  csrc mstatus, x8
+  LI(x8, MSTATUS_MPRV)
+  csrs mstatus, x8
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vu_hsv:
+  hsv.w x15, (x6)
+  LI(x8, MSTATUS_MPRV)
+  csrc mstatus, x8
+  LI(x15, -1)
+  LI(x8, MSTATUSH_MPV)
+  csrc mstatush, x8
+  LI(x8, MSTATUSH_MPV)
+  csrs mstatush, x8
+  LI(x8, MSTATUS_MPRV | MSTATUS_MPP)
+  csrc mstatus, x8
+  LI(x8, MSTATUS_MPRV)
+  csrs mstatus, x8
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vu_hlv:
+  hlv.w x15, (x6)
+  LI(x8, MSTATUS_MPRV)
+  csrc mstatus, x8
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vu_hlv, Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vu_hlv_str)
 
   csrw vsatp, zero
   csrw hgatp, zero
   hfence.gvma
   hfence.vvma
-  LA(x9, rvtest_code_begin)
+  LA(x6, rvtest_code_begin)
   LA(x15, Vtramptbl_sv)
-  SREG x9, code_bgn_off(x15)
-  LI(x6, SSTATUS_SUM | SSTATUS_MXR)
-  csrc sstatus, x6
-  LI(x6, SSTATUS_SUM | SSTATUS_MXR)
-  csrc vsstatus, x6
-  LI(x6, HENVCFGH_ADUE | HENVCFGH_PBMTE)
-  csrc henvcfgh, x6
+  SREG x6, code_bgn_off(x15)
+  LI(x8, SSTATUS_SUM | SSTATUS_MXR)
+  csrc sstatus, x8
+  LI(x8, SSTATUS_SUM | SSTATUS_MXR)
+  csrc vsstatus, x8
+  LI(x8, HENVCFGH_ADUE | HENVCFGH_PBMTE)
+  csrc henvcfgh, x8
   RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFGH, MENVCFGH_ADUE | MENVCFGH_PBMTE)
   csrw hedeleg, zero
 
@@ -651,42 +765,50 @@ Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_m_store_str: .string "\"test: 9; cg: 
 Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_m_load_str: .string "\"test: 10; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv0_m_load\""
 Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_m_hsv_str: .string "\"test: 11; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv0_m_hsv\""
 Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_m_hlv_str: .string "\"test: 12; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv0_m_hlv\""
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_hs_store_str: .string "\"test: 13; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv0_hs_store\""
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_hs_load_str: .string "\"test: 14; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv0_hs_load\""
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_hs_hsv_str: .string "\"test: 15; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv0_hs_hsv\""
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_hs_hlv_str: .string "\"test: 16; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv0_hs_hlv\""
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vs_store_str: .string "\"test: 17; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv0_vs_store\""
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vs_load_str: .string "\"test: 18; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv0_vs_load\""
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vs_hsv_str: .string "\"test: 19; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv0_vs_hsv\""
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vs_hlv_str: .string "\"test: 20; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv0_vs_hlv\""
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_u_store_str: .string "\"test: 21; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv0_u_store\""
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_u_load_str: .string "\"test: 22; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv0_u_load\""
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_u_hsv_str: .string "\"test: 23; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv0_u_hsv\""
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_u_hlv_str: .string "\"test: 24; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv0_u_hlv\""
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vu_store_str: .string "\"test: 25; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv0_vu_store\""
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vu_load_str: .string "\"test: 26; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv0_vu_load\""
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vu_hsv_str: .string "\"test: 27; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv0_vu_hsv\""
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vu_hlv_str: .string "\"test: 28; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv0_vu_hlv\""
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_m_store_str: .string "\"test: 29; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_m_store\""
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_m_load_str: .string "\"test: 30; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_m_load\""
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_m_hsv_str: .string "\"test: 31; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_m_hsv\""
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_m_hlv_str: .string "\"test: 32; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_m_hlv\""
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_hs_store_str: .string "\"test: 33; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_hs_store\""
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_hs_load_str: .string "\"test: 34; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_hs_load\""
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_hs_hsv_str: .string "\"test: 35; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_hs_hsv\""
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_hs_hlv_str: .string "\"test: 36; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_hs_hlv\""
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vs_store_str: .string "\"test: 37; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_vs_store\""
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vs_load_str: .string "\"test: 38; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_vs_load\""
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vs_hsv_str: .string "\"test: 39; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_vs_hsv\""
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vs_hlv_str: .string "\"test: 40; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_vs_hlv\""
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_u_store_str: .string "\"test: 41; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_u_store\""
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_u_load_str: .string "\"test: 42; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_u_load\""
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_u_hsv_str: .string "\"test: 43; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_u_hsv\""
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_u_hlv_str: .string "\"test: 44; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_u_hlv\""
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vu_store_str: .string "\"test: 45; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_vu_store\""
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vu_load_str: .string "\"test: 46; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_vu_load\""
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vu_hsv_str: .string "\"test: 47; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_vu_hsv\""
-Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vu_hlv_str: .string "\"test: 48; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_vu_hlv\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_m_mpv1_store_str: .string "\"test: 13; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv0_m_mpv1_store\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_m_mpv1_load_str: .string "\"test: 14; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv0_m_mpv1_load\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_m_mpv1_hsv_str: .string "\"test: 15; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv0_m_mpv1_hsv\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_m_mpv1_hlv_str: .string "\"test: 16; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv0_m_mpv1_hlv\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_hs_store_str: .string "\"test: 17; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv0_hs_store\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_hs_load_str: .string "\"test: 18; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv0_hs_load\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_hs_hsv_str: .string "\"test: 19; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv0_hs_hsv\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_hs_hlv_str: .string "\"test: 20; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv0_hs_hlv\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vs_store_str: .string "\"test: 21; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv0_vs_store\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vs_load_str: .string "\"test: 22; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv0_vs_load\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vs_hsv_str: .string "\"test: 23; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv0_vs_hsv\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vs_hlv_str: .string "\"test: 24; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv0_vs_hlv\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_u_store_str: .string "\"test: 25; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv0_u_store\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_u_load_str: .string "\"test: 26; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv0_u_load\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_u_hsv_str: .string "\"test: 27; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv0_u_hsv\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_u_hlv_str: .string "\"test: 28; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv0_u_hlv\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vu_store_str: .string "\"test: 29; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv0_vu_store\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vu_load_str: .string "\"test: 30; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv0_vu_load\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vu_hsv_str: .string "\"test: 31; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv0_vu_hsv\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv0_vu_hlv_str: .string "\"test: 32; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv0_vu_hlv\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_m_store_str: .string "\"test: 33; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_m_store\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_m_load_str: .string "\"test: 34; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_m_load\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_m_hsv_str: .string "\"test: 35; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_m_hsv\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_m_hlv_str: .string "\"test: 36; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_m_hlv\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_m_mpv1_store_str: .string "\"test: 37; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_m_mpv1_store\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_m_mpv1_load_str: .string "\"test: 38; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_m_mpv1_load\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_m_mpv1_hsv_str: .string "\"test: 39; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_m_mpv1_hsv\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_m_mpv1_hlv_str: .string "\"test: 40; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_m_mpv1_hlv\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_hs_store_str: .string "\"test: 41; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_hs_store\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_hs_load_str: .string "\"test: 42; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_hs_load\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_hs_hsv_str: .string "\"test: 43; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_hs_hsv\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_hs_hlv_str: .string "\"test: 44; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_hs_hlv\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vs_store_str: .string "\"test: 45; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_vs_store\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vs_load_str: .string "\"test: 46; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_vs_load\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vs_hsv_str: .string "\"test: 47; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_vs_hsv\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vs_hlv_str: .string "\"test: 48; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_vs_hlv\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_u_store_str: .string "\"test: 49; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_u_store\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_u_load_str: .string "\"test: 50; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_u_load\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_u_hsv_str: .string "\"test: 51; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_u_hsv\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_u_hlv_str: .string "\"test: 52; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_u_hlv\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vu_store_str: .string "\"test: 53; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_vu_store\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vu_load_str: .string "\"test: 54; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_vu_load\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vu_hsv_str: .string "\"test: 55; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_vu_hsv\""
+Sv_HSm_mprv_cg_cp_hgatp_mprv_effects_mprv1_vu_hlv_str: .string "\"test: 56; cg: Sv_HSm_mprv_cg; cp: cp_hgatp_mprv_effects; bin: mprv1_vu_hlv\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

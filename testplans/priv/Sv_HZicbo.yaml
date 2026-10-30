@@ -45,6 +45,15 @@ coverpoints:
       RVMODEL_ACCESS_FAULT_ADDRESS only. At each G-stage level, a leaf that maps RVMODEL_ACCESS_FAULT_ADDRESS; below the top level, a non-leaf G-stage PTE that points at the page of RVMODEL_ACCESS_FAULT_ADDRESS, with an index there that selects a PTE inside the access-fault region.
     expectation: Store/AMO access fault.
     bins: "{VS, VU} × CBO × store/AMO access fault"
+  - heading: Prefetches
+  - name: |-
+      cp_vs_prefetch
+      cp_g_prefetch
+    goal: Verify that prefetch.i, prefetch.r and prefetch.w raise no exception under two-stage translation, and do not set A or D.
+    description: |-
+      Zicbop only. In VS-mode and VU-mode, prefetch at a VS-stage kilopage leaf that is valid, has V = 0, has the wrong U for the mode (U = 1 in VS-mode with vsstatus.SUM = 0, U = 0 in VU-mode), or maps an unmapped guest physical address; and at a G-stage kilopage leaf that is valid, has V = 0 or has U = 0. Then, with menvcfg.ADUE = henvcfg.ADUE = 1, prefetch at a VS-stage leaf and at a G-stage leaf with A = D = 0, and read each leaf back.
+    expectation: No exception (cmo.adoc cbp_unperm_noexcep). A and D stay 0 (cbp_unperm_translate).
+    bins: "{VS, VU} × {prefetch.i, prefetch.r, prefetch.w} × {VS-stage, G-stage} case × no exception, with vsatp and hgatp paged"
   - heading: henvcfg CBO enables
   - name: cp_cbie_vs
     goal: menvcfg.CBIE and henvcfg.CBIE control cbo.inval in VS-mode

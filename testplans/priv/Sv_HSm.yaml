@@ -16,10 +16,10 @@ coverpoints:
   - name: cp_hgatp_mprv_effects
     goal: MPRV behavior when G-stage present
     description: |-
-      Environment: While in M-mode, with vsatp = satp = Bare and a G-stage identity mapping that makes the test page execute-only (U = 1), set MPRV={0,1} and mstatus.MPP/MPV={M, HS, VS, U, VU} before each access.
+      Environment: While in M-mode, with vsatp = satp = Bare and a G-stage identity mapping that makes the test page execute-only (U = 1), set MPRV={0,1} and mstatus.MPP/MPV={M, M with MPV=1, HS, VS, U, VU} before each access.
       Test Case: Execute lw, sw, hlv.w and hsv.w on the test page.  MPRV affects explicit memory accesses of loads and stores; HLV/HSV ignore MPRV.
-    expectation: When MPRV=1 and MPV=1 (MPP = S or U), lw and sw are translated through the G-stage (vsatp is Bare) and raise load or store/AMO guest-page faults with mtval2 = the guest physical address >> 2 (or zero).  When MPRV=0, or MPV=0, lw and sw access the test page untranslated; in particular M-mode with MPRV = 0 does no translation.  hlv.w and hsv.w always use the G-stage, whatever MPRV is, and raise guest-page faults.  MPV is ignored with MPP = M, so the M bin has MPV = 0.
-    bins: M x {lw, sw, hlv.w, hsv.w} x MPRV {0, 1} x MPP/MPV {M, HS, VS, U, VU} x vsatp Bare x hgatp paged
+    expectation: When MPRV=1 and MPV=1 (MPP = S or U), lw and sw are translated through the G-stage (vsatp is Bare) and raise load or store/AMO guest-page faults with mtval2 = the guest physical address >> 2 (or zero).  When MPRV=0, or MPV=0, lw and sw access the test page untranslated; in particular M-mode with MPRV = 0 does no translation.  hlv.w and hsv.w always use the G-stage, whatever MPRV is, and raise guest-page faults.  MPV is ignored with MPP = M, so MPRV = 1 with MPP = M and MPV = 1 is an M-level access with no translation.
+    bins: M x {lw, sw, hlv.w, hsv.w} x MPRV {0, 1} x MPP/MPV {M, M with MPV = 1, HS, VS, U, VU} x vsatp Bare x hgatp paged
   - name: cp_mprv_sum
     goal: With MPRV = 1 and MPV = 1, vsstatus.SUM applies instead of mstatus.SUM
     description: In M-mode with MPRV = 1, MPV = 1 and both stages paged, store and load through a VS-stage leaf with U = 1 with MPP = S, and through a leaf with U = 0 with MPP = U, with vsstatus.SUM = 0 and 1 and mstatus.SUM = 0 and 1.

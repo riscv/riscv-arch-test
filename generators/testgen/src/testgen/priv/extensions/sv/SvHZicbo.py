@@ -6,14 +6,14 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-"""Sv HZicbo group: cache-block management and zero instructions from VS-mode and VU-mode.
+"""Sv HZicbo group: cache-block management, zero and prefetch instructions from VS-mode and VU-mode.
 
 The group boots to HS-mode with hedeleg clear, so the HS-mode handler takes every guest trap.  It checks the
 henvcfg CBO enables and the fault that each VS-stage and G-stage PTE gives a CBO; the PMP suite's HSvZicbo group
 checks PMP on the final address.  A CBO faults like a store.  A cache-block management instruction needs read or
 write permission and never checks D; cbo.zero needs write permission and checks D (cmo.adoc).  Boot leaves
 menvcfg.ADUE = 0, which makes henvcfg.ADUE read-only zero, so a clear A or needed D bit raises a fault (Svade
-behavior).
+behavior).  A prefetch is a HINT and raises no exception.
 """
 
 import itertools
@@ -40,10 +40,15 @@ from testgen.priv.extensions.sv.page_tables import (
     guest_table_data,
     write_pte,
 )
+from testgen.priv.extensions.sv.SvH import henvcfg_bits, menvcfg_bits, read_pte
 from testgen.priv.extensions.sv.SvZicbo import cbo_leaves
 from testgen.priv.registry import add_priv_test_generator
 
-OPS = {"zicbom": ("cbo.clean", "cbo.flush", "cbo.inval"), "zicboz": ("cbo.zero",)}
+OPS = {
+    "zicbom": ("cbo.clean", "cbo.flush", "cbo.inval"),
+    "zicboz": ("cbo.zero",),
+    "zicbop": ("prefetch.i", "prefetch.r", "prefetch.w"),
+}
 _FIELDS = {"zicbom": ("cbie", "cbcfe"), "zicboz": ("cbze",)}
 DATA = "svhzicbo_data"
 _DATA_REGION = [".p2align 12", f"{DATA}:", f".fill 1024, 4, {CBO_ZERO_FILL:#x}"]
@@ -159,7 +164,7 @@ def case(
         lines.extend(
             [
                 test_data.add_testcase(f"{mode}_{stage.name}_l{level}_{name}_{op}", coverpoint, c.covergroup),
-                f"{op} (x{c.gva})",
+                f"{op} {'0' if c.family == 'zicbop' else ''}(x{c.gva})",
             ]
         )
     lines.extend([*guest[1], f"RVTEST_TSBI_GOTO_{c.home}MODE"])
@@ -357,6 +362,59 @@ def _g_cases(test_data: TestData, c: Chunk, mode: str) -> list[str]:
     return lines
 
 
+def _prefetch_cases(test_data: TestData, c: Chunk, mode: str) -> list[str]:
+    """Prefetches at kilopage leaves of each stage.  A prefetch is a HINT, so it raises no exception where a load or
+    store would fault in either stage."""
+    vs, g = c.vs, c.g
+    user = mode == "vu"
+    identity = vs_identity(test_data, c, mode)
+    unmapped_gpa = _pte(test_data, g, g.levels - 1, "0", g.data_va, "0")
+    cases = (
+        ("valid", "cp_vs_prefetch", vs, mapping(test_data, vs, 0, PteFlags(user=user))),
+        ("v0", "cp_vs_prefetch", vs, mapping(test_data, vs, 0, PteFlags(valid=False, user=user))),
+        ("u_mismatch", "cp_vs_prefetch", vs, mapping(test_data, vs, 0, PteFlags(user=not user))),
+        (
+            "leaf_gpa_unmapped",
+            "cp_vs_prefetch",
+            vs,
+            [*mapping(test_data, vs, 0, PteFlags(user=user), g.data_va), *unmapped_gpa],
+        ),
+        ("valid", "cp_g_prefetch", g, [*identity, *mapping(test_data, g, 0, PteFlags(user=True))]),
+        ("v0", "cp_g_prefetch", g, [*identity, *mapping(test_data, g, 0, PteFlags(valid=False, user=True))]),
+        ("u0", "cp_g_prefetch", g, [*identity, *mapping(test_data, g, 0, PteFlags())]),
+    )
+    lines = []
+    for name, coverpoint, stage, ptes in cases:
+        lines.extend(case(test_data, c, mode, name, coverpoint, "no exception", ptes, stage=stage, level=0))
+    # A prefetch neither checks nor sets A and D, even when the hardware updates them (cmo.adoc cbp_unperm_translate).
+    # The leaf is read back to check that A and D stay clear.
+    reg = test_data.int_regs.get_register()
+    ad_cases = (
+        ("cp_vs_prefetch", vs, mapping(test_data, vs, 0, PteFlags(user=user, accessed=False, dirty=False))),
+        ("cp_g_prefetch", g, [*identity, *mapping(test_data, g, 0, PteFlags(user=True, accessed=False, dirty=False))]),
+    )
+    lines.extend([*menvcfg_bits(g.xlen, adue=1), *henvcfg_bits(g.xlen, reg, adue=1)])
+    for coverpoint, stage, ptes in ad_cases:
+        lines.extend(
+            [
+                *case(
+                    test_data, c, mode, "ad0", coverpoint, "no exception, A and D stay 0", ptes, stage=stage, level=0
+                ),
+                *read_pte(test_data, stage, 0, stage.data_va, c.covergroup, coverpoint, f"{mode}_{stage.name}_ad0_pte"),
+            ]
+        )
+    lines.extend([*henvcfg_bits(g.xlen, reg, adue=0), *menvcfg_bits(g.xlen, adue=0)])
+    test_data.int_regs.return_register(reg)
+    return lines
+
+
+_PREFETCH_SECTION = (
+    "prefetch",
+    "cp_vs_prefetch, cp_g_prefetch",
+    "Prefetches at valid and faulting VS-stage and G-stage leaves, and at leaves with A = D = 0 and ADUE = 1",
+    _prefetch_cases,
+)
+
 # (file name, coverpoints, description, cases for one mode)
 _SECTIONS = (
     (
@@ -551,3 +609,30 @@ def make_svhzicbo_sv32x4_zicbom(test_data: TestData) -> list[TestChunk]:
 )
 def make_svhzicbo_sv32x4_zicboz(test_data: TestData) -> list[TestChunk]:
     return _make_svhzicbo(test_data, SV32X4, VS_SV32, "zicboz")
+
+
+def _make_svhzicbop(test_data: TestData, g: SvMode, vs: SvMode) -> list[TestChunk]:
+    section = _PREFETCH_SECTION
+    return [
+        make_chunk(test_data, "zicbop", g, vs, group="HZicbo", covergroup="Sv_HZicbo_cg", home="S", section=section)
+    ]
+
+
+@add_priv_test_generator(
+    "Sv",
+    required_extensions=["H", "Zicbop"],
+    extra_defines=["#define BOOT_TO_SMODE"],
+    params=["SV39X4_TRANSLATION: true", "SV39_VSMODE_TRANSLATION: true"],
+)
+def make_svhzicbo_sv39x4_zicbop(test_data: TestData) -> list[TestChunk]:
+    return _make_svhzicbop(test_data, SV39X4, VS_SV39)
+
+
+@add_priv_test_generator(
+    "Sv",
+    required_extensions=["H", "Zicbop"],
+    extra_defines=["#define BOOT_TO_SMODE"],
+    params=["SV32X4_TRANSLATION: true", "SV32_VSMODE_TRANSLATION: true"],
+)
+def make_svhzicbo_sv32x4_zicbop(test_data: TestData) -> list[TestChunk]:
+    return _make_svhzicbop(test_data, SV32X4, VS_SV32)

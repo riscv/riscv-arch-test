@@ -798,8 +798,7 @@ def _t_implicit(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs
         for check in checks:
             mode, pte_va = ptes[check]
             code.extend(read_pte(test_data, mode, 0, pte_va, TWO_CG, coverpoint, f"{name}_{check}_pte"))
-    # MXR applies only to explicit loads, so vsstatus.MXR does not make the table readable.  The sstatus.MXR = 1 cases
-    # are not generated, because Sail applies sstatus.MXR to the G-stage check of implicit accesses.
+    # MXR applies only to explicit loads, so vsstatus.MXR does not make the table readable
     setup = [
         *menvcfg_bits(g.xlen, adue=0),
         *status_bits("vsstatus", reg, mxr=1),
@@ -809,6 +808,38 @@ def _t_implicit(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs
     code.extend(
         guest_access(test_data, TWO_CG, "cp_implicit_mxr", "table_xonly_vsmxr1", "VS", va, setup=setup, ops=ops)
     )
+    test_data.int_regs.return_register(reg)
+    chunk.code.extend([*code, *guest_chunk_teardown(test_data, g.xlen)])
+    test_chunks.append(test_data.end_test_chunk())
+
+
+def _t_implicit_mxr(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs: SvMode) -> None:
+    """sstatus.MXR does not make an execute-only G-stage leaf readable for an implicit VS-stage page-table read.
+
+    MXR applies only to explicit loads (hypervisor.adoc, "readable by explicit loads").  This file is separate from
+    _t_implicit because Sail applies sstatus.MXR to implicit reads, so its expected results do not raise the
+    guest-page fault.
+    """
+    chunk = begin_chunk(
+        test_data,
+        f"H_{g.name}_implicit_mxr",
+        "cp_implicit_mxr",
+        "In VS-mode with sstatus.MXR = 1 and vsstatus.MXR = 0, 1, load through a VS-stage leaf table whose G-stage\n"
+        "leaf is execute-only.  The implicit read of the table raises a load guest-page fault",
+        stages=(g, vs),
+    )
+    va = vs.data_va
+    reg = test_data.int_regs.get_register()
+    code = guest_chunk_setup(test_data, g, vs, "VS")
+    for vs_mxr in (0, 1):
+        setup = [
+            *menvcfg_bits(g.xlen, adue=0),
+            *status_bits("sstatus", reg, mxr=1),
+            *status_bits("vsstatus", reg, mxr=vs_mxr),
+            *map_leaf_table(test_data, g, vs, PteFlags(), perm_flags("x", True), G_LEAF),
+        ]
+        name = f"table_xonly_smxr1_vsmxr{vs_mxr}"
+        code.extend(guest_access(test_data, TWO_CG, "cp_implicit_mxr", name, "VS", va, setup=setup, ops=("load",)))
     test_data.int_regs.return_register(reg)
     chunk.code.extend([*code, *guest_chunk_teardown(test_data, g.xlen)])
     test_chunks.append(test_data.end_test_chunk())
@@ -1577,6 +1608,8 @@ def _two_stage_tests(test_data: TestData, g: SvMode, vs: SvMode) -> list[TestChu
     for mode in ("VS", "VU"):
         _t_two_stage(test_data, test_chunks, g, vs, mode)
     _t_implicit(test_data, test_chunks, g, vs)
+    # TODO: Uncomment when Sail no longer applies sstatus.MXR to implicit VS-stage page-table reads.
+    # _t_implicit_mxr(test_data, test_chunks, g, vs)
     _t_access_fault(test_data, test_chunks, g, vs)
     _t_page_sizes(test_data, test_chunks, g, vs)
     _t_hlv(test_data, test_chunks, g, vs)

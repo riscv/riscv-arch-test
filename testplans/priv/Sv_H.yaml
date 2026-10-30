@@ -117,10 +117,9 @@ coverpoints:
     notes: The write bin needs Svadu, which makes the VS-stage A/D update an implicit store.
   - name: cp_implicit_mxr
     goal: MXR does not apply to implicit VS-stage page-table reads
-    description: In VS-mode, load through a VS-stage level-0 page table at a guest physical address whose G-stage leaf is execute-only, with vsstatus.MXR = 0 and 1 and sstatus.MXR = 0.
+    description: In VS-mode, load through a VS-stage level-0 page table at a guest physical address whose G-stage leaf is execute-only, with vsstatus.MXR = 0 and 1 and sstatus.MXR = 0 and 1.
     expectation: MXR makes execute-only pages readable only by explicit loads.  Each load raises a load guest-page fault with htinst = the read pseudoinstruction.
     bins: VS x lw x stage_modes x vsstatus.MXR {0, 1} x sstatus.MXR {0, 1} x htinst read pseudoinstruction
-    notes: The sstatus.MXR = 1 cases are not generated, because Sail applies sstatus.MXR to the G-stage check of implicit accesses.  Their bins stay open.
   - name: cp_twostage_access_fault
     goal: Access faults during two-stage translation report the original access type
     description: In VS-mode, store, load and fetch where the G-stage leaf maps the page to RVMODEL_ACCESS_FAULT_ADDRESS, where the G-stage maps the VS-stage level-0 page table there, and where a G-stage level-1 PTE points at a table there.

@@ -1857,6 +1857,8 @@ endgroup
     `define SV_HZICBO_ANY
 `elsif ZICBOZ_SUPPORTED
     `define SV_HZICBO_ANY
+`elsif ZICBOP_SUPPORTED
+    `define SV_HZICBO_ANY
 `endif
 
 covergroup Sv_H_vsstage_cg with function sample(ins_t ins);
@@ -2580,11 +2582,12 @@ covergroup Sv_HSm_mprv_cg with function sample(ins_t ins);
         mpp_mpv : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatush", "mpv")[0],
                               get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0]} {
     `endif
-        bins m  = {3'b011};
-        bins hs = {3'b001};
-        bins vs = {3'b101};
-        bins u  = {3'b000};
-        bins vu = {3'b100};
+        bins m      = {3'b011};
+        bins m_mpv1 = {3'b111};
+        bins hs     = {3'b001};
+        bins vs     = {3'b101};
+        bins u      = {3'b000};
+        bins vu     = {3'b100};
     }
     `ifdef UDB_MXLEN_64
         mpp_mpv_guest : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpv")[0],
@@ -2791,6 +2794,17 @@ covergroup Sv_HZicbo_cg with function sample(ins_t ins);
   cp_g_pte:           cross priv_mode_vs_vu, cbo, g_stage, g_pte_outcome, vsatp_paged, hgatp_paged;
   `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
     cp_g_pa:          cross priv_mode_vs_vu, cbo, g_stage, store_access_fault;
+  `endif
+
+  // A prefetch is a HINT, so it raises no exception even where a load or store would fault in either stage
+  `ifdef ZICBOP_SUPPORTED
+    prefetch: coverpoint ins.current.insn {
+      wildcard bins prefetch_i = {PREFETCH_I};
+      wildcard bins prefetch_r = {PREFETCH_R};
+      wildcard bins prefetch_w = {PREFETCH_W};
+    }
+    cp_vs_prefetch: cross priv_mode_vs_vu, prefetch, vs_stage, vsatp_paged, hgatp_paged, no_fault;
+    cp_g_prefetch:  cross priv_mode_vs_vu, prefetch, g_stage, vsatp_paged, hgatp_paged, no_fault;
   `endif
 
   // CBOs in VS-mode and VU-mode across the menvcfg, henvcfg and senvcfg enables, with translation Bare

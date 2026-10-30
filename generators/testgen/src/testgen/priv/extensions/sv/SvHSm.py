@@ -46,8 +46,15 @@ from testgen.priv.registry import add_priv_test_generator
 MPRV_CG = "Sv_HSm_mprv_cg"
 TRAP_CG = "Sv_HSm_trap_cg"
 
-# mstatus.MPP and MPV: M, HS, VS, U and VU
-MPP_MPV = (("m", "MSTATUS_MPP", 0), ("hs", "MPP_SMODE", 0), ("vs", "MPP_SMODE", 1), ("u", "0", 0), ("vu", "0", 1))
+# mstatus.MPP and MPV: M, HS, VS, U and VU, and M with MPV = 1, which MPRV treats as M
+MPP_MPV = (
+    ("m", "MSTATUS_MPP", 0),
+    ("m_mpv1", "MSTATUS_MPP", 1),
+    ("hs", "MPP_SMODE", 0),
+    ("vs", "MPP_SMODE", 1),
+    ("u", "0", 0),
+    ("vu", "0", 1),
+)
 
 
 def mprv_access(
@@ -128,8 +135,8 @@ def _t_mprv_hgatp(test_data: TestData, test_chunks: list[TestChunk], g: SvMode) 
         f"HSm_{g.name}_mprv_hgatp",
         "cp_hgatp_mprv_effects",
         "In M-mode with vsatp and satp Bare and a G-stage identity map that makes svh_page execute-only, execute\n"
-        "lw, sw, hlv.w and hsv.w on svh_page with mstatus.MPRV = 0, 1 and MPP/MPV = M, HS, VS, U, VU.  Only hlv.w,\n"
-        "hsv.w, and lw and sw with MPRV = 1 and MPV = 1, raise guest-page faults",
+        "lw, sw, hlv.w and hsv.w on svh_page with mstatus.MPRV = 0, 1 and MPP/MPV = M, M with MPV = 1, HS, VS, U,\n"
+        "VU.  Only hlv.w, hsv.w, and lw and sw with MPRV = 1, MPV = 1 and MPP = S or U, raise guest-page faults",
     )
     pte, addr, tmp = test_data.int_regs.get_registers(3)
     # M-mode makes every access, so no guest code alias is needed

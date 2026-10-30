@@ -39,236 +39,174 @@ RVTEST_BEGIN
 /////////////////////////////////
 
 // Identity map the test image in both stages
-  LA(x9, rvtest_code_begin)
-  srli x9, x9, 22
-  slli x9, x9, 20
-  srli x9, x9, 18
-  LA(x14, rvtest_Hroot_pg_tbl)
-  add x9, x9, x14
-  LA(x13, rvtest_code_begin)
-  srli x13, x13, 22
-  slli x13, x13, 20
-  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x13, x13, x14
-  SREG x13, 0(x9)
-  LA(x9, rvtest_code_begin)
-  srli x9, x9, 22
-  slli x9, x9, 22
-  srli x9, x9, 20
-  LA(x14, rvtest_Vroot_pg_tbl)
-  add x9, x9, x14
-  LA(x13, rvtest_code_begin)
-  srli x13, x13, 22
-  slli x13, x13, 20
-  LI(x14, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x13, x13, x14
-  SREG x13, 0(x9)
-  LA(x9, rvtest_data_begin)
-  srli x9, x9, 22
-  slli x9, x9, 20
-  srli x9, x9, 18
-  LA(x14, rvtest_Hroot_pg_tbl)
-  add x9, x9, x14
-  LA(x13, rvtest_data_begin)
-  srli x13, x13, 22
-  slli x13, x13, 20
-  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x13, x13, x14
-  SREG x13, 0(x9)
-  LA(x9, rvtest_data_begin)
-  srli x9, x9, 22
-  slli x9, x9, 22
-  srli x9, x9, 20
-  LA(x14, rvtest_Vroot_pg_tbl)
-  add x9, x9, x14
-  LA(x13, rvtest_data_begin)
-  srli x13, x13, 22
-  slli x13, x13, 20
-  LI(x14, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x13, x13, x14
-  SREG x13, 0(x9)
-  LA(x9, rvtest_sig_end)
-  srli x9, x9, 22
-  slli x9, x9, 20
-  srli x9, x9, 18
-  LA(x14, rvtest_Hroot_pg_tbl)
-  add x9, x9, x14
-  LA(x13, rvtest_sig_end)
-  srli x13, x13, 22
-  slli x13, x13, 20
-  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x13, x13, x14
-  SREG x13, 0(x9)
-  LA(x9, rvtest_sig_end)
-  srli x9, x9, 22
-  slli x9, x9, 22
-  srli x9, x9, 20
-  LA(x14, rvtest_Vroot_pg_tbl)
-  add x9, x9, x14
-  LA(x13, rvtest_sig_end)
-  srli x13, x13, 22
-  slli x13, x13, 20
-  LI(x14, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x13, x13, x14
-  SREG x13, 0(x9)
+  LA(x8, rvtest_code_begin)
+  srli x8, x8, 22
+  slli x8, x8, 20
+  srli x8, x8, 18
+  LA(x13, rvtest_Hroot_pg_tbl)
+  add x8, x8, x13
+  LA(x14, rvtest_code_begin)
+  srli x14, x14, 22
+  slli x14, x14, 20
+  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x14, x14, x13
+  SREG x14, 0(x8)
+  LA(x8, rvtest_code_begin)
+  srli x8, x8, 22
+  slli x8, x8, 22
+  srli x8, x8, 20
+  LA(x13, rvtest_Vroot_pg_tbl)
+  add x8, x8, x13
+  LA(x14, rvtest_code_begin)
+  srli x14, x14, 22
+  slli x14, x14, 20
+  LI(x13, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x14, x14, x13
+  SREG x14, 0(x8)
+  LA(x8, rvtest_data_begin)
+  srli x8, x8, 22
+  slli x8, x8, 20
+  srli x8, x8, 18
+  LA(x13, rvtest_Hroot_pg_tbl)
+  add x8, x8, x13
+  LA(x14, rvtest_data_begin)
+  srli x14, x14, 22
+  slli x14, x14, 20
+  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x14, x14, x13
+  SREG x14, 0(x8)
+  LA(x8, rvtest_data_begin)
+  srli x8, x8, 22
+  slli x8, x8, 22
+  srli x8, x8, 20
+  LA(x13, rvtest_Vroot_pg_tbl)
+  add x8, x8, x13
+  LA(x14, rvtest_data_begin)
+  srli x14, x14, 22
+  slli x14, x14, 20
+  LI(x13, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x14, x14, x13
+  SREG x14, 0(x8)
+  LA(x8, rvtest_sig_end)
+  srli x8, x8, 22
+  slli x8, x8, 20
+  srli x8, x8, 18
+  LA(x13, rvtest_Hroot_pg_tbl)
+  add x8, x8, x13
+  LA(x14, rvtest_sig_end)
+  srli x14, x14, 22
+  slli x14, x14, 20
+  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x14, x14, x13
+  SREG x14, 0(x8)
+  LA(x8, rvtest_sig_end)
+  srli x8, x8, 22
+  slli x8, x8, 22
+  srli x8, x8, 20
+  LA(x13, rvtest_Vroot_pg_tbl)
+  add x8, x8, x13
+  LA(x14, rvtest_sig_end)
+  srli x14, x14, 22
+  slli x14, x14, 20
+  LI(x13, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x14, x14, x13
+  SREG x14, 0(x8)
 // Map the code region again at the guest alias
-  LA(x9, rvtest_Hroot_pg_tbl + (((0xC0000000) >> 22) & 0xfff) * 4)
-  LA(x13, rvtest_code_begin)
-  srli x13, x13, 22
-  slli x13, x13, 20
-  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x13, x13, x14
-  SREG x13, 0(x9)
-  LA(x9, rvtest_Vroot_pg_tbl + (((0x30000000) >> 22) & 0x3ff) * 4)
-  LI(x13, (((0xC0000000) >> 22) << 20) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x13, 0(x9)
+  LA(x8, rvtest_Hroot_pg_tbl + (((0xC0000000) >> 22) & 0xfff) * 4)
+  LA(x14, rvtest_code_begin)
+  srli x14, x14, 22
+  slli x14, x14, 20
+  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x14, x14, x13
+  SREG x14, 0(x8)
+  LA(x8, rvtest_Vroot_pg_tbl + (((0x30000000) >> 22) & 0x3ff) * 4)
+  LI(x14, (((0xC0000000) >> 22) << 20) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x14, 0(x8)
 // Register the alias of rvtest_code_begin
-  LI(x13, ((0x30000000) >> 22) << 22)
-  LA(x9, rvtest_code_begin)
-  slli x9, x9, 10
-  srli x9, x9, 10
-  or x13, x13, x9
-  LA(x9, Vtramptbl_sv)
-  SREG x13, code_bgn_off(x9)
+  LI(x14, ((0x30000000) >> 22) << 22)
+  LA(x8, rvtest_code_begin)
+  slli x8, x8, 10
+  srli x8, x8, 10
+  or x14, x14, x8
+  LA(x8, Vtramptbl_sv)
+  SREG x14, code_bgn_off(x8)
 
-  LI(x13, 0x80000000)
-  LA(x9, rvtest_Hroot_pg_tbl)
-  srli x9, x9, 12
-  or x9, x9, x13
-  csrw hgatp, x9
-  LI(x13, 0x80000000)
-  LA(x9, rvtest_Vroot_pg_tbl)
-  srli x9, x9, 12
-  or x9, x9, x13
-  csrw vsatp, x9
+  LI(x14, 0x80000000)
+  LA(x8, rvtest_Hroot_pg_tbl)
+  srli x8, x8, 12
+  or x8, x8, x14
+  csrw hgatp, x8
+  LI(x14, 0x80000000)
+  LA(x8, rvtest_Vroot_pg_tbl)
+  srli x8, x8, 12
+  or x8, x8, x14
+  csrw vsatp, x8
   hfence.gvma
   hfence.vvma
-  LI(x8, SSTATUS_SUM | SSTATUS_MXR)
-  csrc sstatus, x8
-  LI(x8, SSTATUS_SUM | SSTATUS_MXR)
-  csrc vsstatus, x8
+  LI(x15, SSTATUS_SUM | SSTATUS_MXR)
+  csrc sstatus, x15
+  LI(x15, SSTATUS_SUM | SSTATUS_MXR)
+  csrc vsstatus, x15
   csrw hedeleg, zero
-  LA(x15, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LA(x13, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x8, rvtest_vlvl0_pg_tbl)
   srli x8, x8, 12
   slli x8, x8, 10
-  LI(x13, PTE_V)
-  or x8, x8, x13
-  SREG x8, 0(x15)
-  LA(x15, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LI(x15, PTE_V)
+  or x8, x8, x15
+  SREG x8, 0(x13)
+  LA(x13, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
   LI(x8, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x8, 0(x15)
-  LA(x15, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
+  SREG x8, 0(x13)
+  LA(x13, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
   LA(x8, rvtest_hlvl0_pg_tbl)
   srli x8, x8, 12
   slli x8, x8, 10
-  LI(x13, PTE_V)
-  or x8, x8, x13
-  SREG x8, 0(x15)
-  LA(x15, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  LI(x15, PTE_V)
+  or x8, x8, x15
+  SREG x8, 0(x13)
+  LA(x13, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
   LA(x8, svh_page)
   srli x8, x8, 12
   slli x8, x8, 10
-  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x8, x8, x13
-  SREG x8, 0(x15)
+  LI(x15, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x8, x8, x15
+  SREG x8, 0(x13)
   hfence.vvma
   hfence.gvma
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x6
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc mstatus, x6
-  LI(x15, 0x90407000)
-  LI(x14, 0x130)
-  LI(x8, MSTATUSH_MPV)
-  csrc mstatush, x8
-  LI(x8, MSTATUSH_MPV)
-  csrs mstatush, x8
-  LI(x8, MSTATUS_MPRV | MSTATUS_MPP)
-  csrc mstatus, x8
-  LI(x8, MSTATUS_MPRV | MPP_SMODE)
-  csrs mstatus, x8
+  LI(x13, 0x90407000)
+  LI(x14, 0x138)
+  LI(x15, MSTATUSH_MPV)
+  csrc mstatush, x15
+  LI(x15, MSTATUSH_MPV)
+  csrs mstatush, x15
+  LI(x15, MSTATUS_MPRV | MSTATUS_MPP)
+  csrc mstatus, x15
+  LI(x15, MSTATUS_MPRV | MPP_SMODE)
+  csrs mstatus, x15
 Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum0_msum0_store:
-  sw x14, 8(x15)
-  LI(x8, MSTATUS_MPRV)
-  csrc mstatus, x8
+  sw x14, 8(x13)
+  LI(x15, MSTATUS_MPRV)
+  csrc mstatus, x15
   LI(x14, -1)
-  LI(x8, MSTATUSH_MPV)
-  csrc mstatush, x8
-  LI(x8, MSTATUSH_MPV)
-  csrs mstatush, x8
-  LI(x8, MSTATUS_MPRV | MSTATUS_MPP)
-  csrc mstatus, x8
-  LI(x8, MSTATUS_MPRV | MPP_SMODE)
-  csrs mstatus, x8
+  LI(x15, MSTATUSH_MPV)
+  csrc mstatush, x15
+  LI(x15, MSTATUSH_MPV)
+  csrs mstatush, x15
+  LI(x15, MSTATUS_MPRV | MSTATUS_MPP)
+  csrc mstatus, x15
+  LI(x15, MSTATUS_MPRV | MPP_SMODE)
+  csrs mstatus, x15
 Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum0_msum0_load:
-  lw x14, 8(x15)
-  LI(x8, MSTATUS_MPRV)
-  csrc mstatus, x8
+  lw x14, 8(x13)
+  LI(x15, MSTATUS_MPRV)
+  csrc mstatus, x15
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum0_msum0_load, Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum0_msum0_load_str)
-
-  LA(x15, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
-  LA(x8, rvtest_vlvl0_pg_tbl)
-  srli x8, x8, 12
-  slli x8, x8, 10
-  LI(x9, PTE_V)
-  or x8, x8, x9
-  SREG x8, 0(x15)
-  LA(x15, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI(x8, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x8, 0(x15)
-  LA(x15, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
-  LA(x8, rvtest_hlvl0_pg_tbl)
-  srli x8, x8, 12
-  slli x8, x8, 10
-  LI(x9, PTE_V)
-  or x8, x8, x9
-  SREG x8, 0(x15)
-  LA(x15, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LA(x8, svh_page)
-  srli x8, x8, 12
-  slli x8, x8, 10
-  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x8, x8, x9
-  SREG x8, 0(x15)
-  hfence.vvma
-  hfence.gvma
-  LI(x6, SSTATUS_SUM | SSTATUS_MXR)
-  csrc vsstatus, x6
-  LI(x6, SSTATUS_SUM | SSTATUS_MXR)
-  csrc mstatus, x6
-  LI(x6, SSTATUS_SUM)
-  csrs mstatus, x6
-  LI(x8, 0x90407000)
-  LI(x13, 0x132)
-  LI(x9, MSTATUSH_MPV)
-  csrc mstatush, x9
-  LI(x9, MSTATUSH_MPV)
-  csrs mstatush, x9
-  LI(x9, MSTATUS_MPRV | MSTATUS_MPP)
-  csrc mstatus, x9
-  LI(x9, MSTATUS_MPRV | MPP_SMODE)
-  csrs mstatus, x9
-Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum0_msum1_store:
-  sw x13, 8(x8)
-  LI(x9, MSTATUS_MPRV)
-  csrc mstatus, x9
-  LI(x13, -1)
-  LI(x9, MSTATUSH_MPV)
-  csrc mstatush, x9
-  LI(x9, MSTATUSH_MPV)
-  csrs mstatush, x9
-  LI(x9, MSTATUS_MPRV | MSTATUS_MPP)
-  csrc mstatus, x9
-  LI(x9, MSTATUS_MPRV | MPP_SMODE)
-  csrs mstatus, x9
-Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum0_msum1_load:
-  lw x13, 8(x8)
-  LI(x9, MSTATUS_MPRV)
-  csrc mstatus, x9
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum0_msum1_load, Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum0_msum1_load_str)
 
   LA(x15, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x9, rvtest_vlvl0_pg_tbl)
@@ -298,12 +236,12 @@ Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum0_msum1_load:
   hfence.gvma
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x6
-  LI(x6, SSTATUS_SUM)
-  csrs vsstatus, x6
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc mstatus, x6
+  LI(x6, SSTATUS_SUM)
+  csrs mstatus, x6
   LI(x15, 0x90407000)
-  LI(x14, 0x134)
+  LI(x14, 0x13a)
   LI(x13, MSTATUSH_MPV)
   csrc mstatush, x13
   LI(x13, MSTATUSH_MPV)
@@ -312,7 +250,7 @@ Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum0_msum1_load:
   csrc mstatus, x13
   LI(x13, MSTATUS_MPRV | MPP_SMODE)
   csrs mstatus, x13
-Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum1_msum0_store:
+Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum0_msum1_store:
   sw x14, 8(x15)
   LI(x13, MSTATUS_MPRV)
   csrc mstatus, x13
@@ -325,12 +263,12 @@ Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum1_msum0_store:
   csrc mstatus, x13
   LI(x13, MSTATUS_MPRV | MPP_SMODE)
   csrs mstatus, x13
-Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum1_msum0_load:
+Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum0_msum1_load:
   lw x14, 8(x15)
   LI(x13, MSTATUS_MPRV)
   csrc mstatus, x13
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum1_msum0_load, Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum1_msum0_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum0_msum1_load, Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum0_msum1_load_str)
 
   LA(x14, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x15, rvtest_vlvl0_pg_tbl)
@@ -364,10 +302,8 @@ Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum1_msum0_load:
   csrs vsstatus, x6
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc mstatus, x6
-  LI(x6, SSTATUS_SUM)
-  csrs mstatus, x6
   LI(x9, 0x90407000)
-  LI(x13, 0x136)
+  LI(x13, 0x13c)
   LI(x15, MSTATUSH_MPV)
   csrc mstatush, x15
   LI(x15, MSTATUSH_MPV)
@@ -376,7 +312,7 @@ Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum1_msum0_load:
   csrc mstatus, x15
   LI(x15, MSTATUS_MPRV | MPP_SMODE)
   csrs mstatus, x15
-Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum1_msum1_store:
+Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum1_msum0_store:
   sw x13, 8(x9)
   LI(x15, MSTATUS_MPRV)
   csrc mstatus, x15
@@ -389,12 +325,12 @@ Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum1_msum1_store:
   csrc mstatus, x15
   LI(x15, MSTATUS_MPRV | MPP_SMODE)
   csrs mstatus, x15
-Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum1_msum1_load:
+Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum1_msum0_load:
   lw x13, 8(x9)
   LI(x15, MSTATUS_MPRV)
   csrc mstatus, x15
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum1_msum1_load, Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum1_msum1_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum1_msum0_load, Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum1_msum0_load_str)
 
   LA(x8, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x14, rvtest_vlvl0_pg_tbl)
@@ -404,7 +340,7 @@ Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum1_msum1_load:
   or x14, x14, x13
   SREG x14, 0(x8)
   LA(x8, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI(x14, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  LI(x14, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
   LA(x8, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
   LA(x14, rvtest_hlvl0_pg_tbl)
@@ -424,19 +360,23 @@ Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum1_msum1_load:
   hfence.gvma
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x6
+  LI(x6, SSTATUS_SUM)
+  csrs vsstatus, x6
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc mstatus, x6
+  LI(x6, SSTATUS_SUM)
+  csrs mstatus, x6
   LI(x9, 0x90407000)
-  LI(x14, 0x138)
+  LI(x14, 0x13e)
   LI(x8, MSTATUSH_MPV)
   csrc mstatush, x8
   LI(x8, MSTATUSH_MPV)
   csrs mstatush, x8
   LI(x8, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, x8
-  LI(x8, MSTATUS_MPRV)
+  LI(x8, MSTATUS_MPRV | MPP_SMODE)
   csrs mstatus, x8
-Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum0_msum0_store:
+Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum1_msum1_store:
   sw x14, 8(x9)
   LI(x8, MSTATUS_MPRV)
   csrc mstatus, x8
@@ -447,14 +387,14 @@ Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum0_msum0_store:
   csrs mstatush, x8
   LI(x8, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, x8
-  LI(x8, MSTATUS_MPRV)
+  LI(x8, MSTATUS_MPRV | MPP_SMODE)
   csrs mstatus, x8
-Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum0_msum0_load:
+Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum1_msum1_load:
   lw x14, 8(x9)
   LI(x8, MSTATUS_MPRV)
   csrc mstatus, x8
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum0_msum0_load, Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum0_msum0_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum1_msum1_load, Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum1_msum1_load_str)
 
   LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x14, rvtest_vlvl0_pg_tbl)
@@ -486,10 +426,8 @@ Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum0_msum0_load:
   csrc vsstatus, x6
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc mstatus, x6
-  LI(x6, SSTATUS_SUM)
-  csrs mstatus, x6
   LI(x14, 0x90407000)
-  LI(x13, 0x13a)
+  LI(x13, 0x140)
   LI(x9, MSTATUSH_MPV)
   csrc mstatush, x9
   LI(x9, MSTATUSH_MPV)
@@ -498,7 +436,7 @@ Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum0_msum0_load:
   csrc mstatus, x9
   LI(x9, MSTATUS_MPRV)
   csrs mstatus, x9
-Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum0_msum1_store:
+Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum0_msum0_store:
   sw x13, 8(x14)
   LI(x9, MSTATUS_MPRV)
   csrc mstatus, x9
@@ -511,12 +449,12 @@ Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum0_msum1_store:
   csrc mstatus, x9
   LI(x9, MSTATUS_MPRV)
   csrs mstatus, x9
-Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum0_msum1_load:
+Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum0_msum0_load:
   lw x13, 8(x14)
   LI(x9, MSTATUS_MPRV)
   csrc mstatus, x9
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum0_msum1_load, Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum0_msum1_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum0_msum0_load, Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum0_msum0_load_str)
 
   LA(x13, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x14, rvtest_vlvl0_pg_tbl)
@@ -546,12 +484,12 @@ Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum0_msum1_load:
   hfence.gvma
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x6
-  LI(x6, SSTATUS_SUM)
-  csrs vsstatus, x6
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc mstatus, x6
+  LI(x6, SSTATUS_SUM)
+  csrs mstatus, x6
   LI(x9, 0x90407000)
-  LI(x14, 0x13c)
+  LI(x14, 0x142)
   LI(x13, MSTATUSH_MPV)
   csrc mstatush, x13
   LI(x13, MSTATUSH_MPV)
@@ -560,7 +498,7 @@ Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum0_msum1_load:
   csrc mstatus, x13
   LI(x13, MSTATUS_MPRV)
   csrs mstatus, x13
-Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum1_msum0_store:
+Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum0_msum1_store:
   sw x14, 8(x9)
   LI(x13, MSTATUS_MPRV)
   csrc mstatus, x13
@@ -573,12 +511,12 @@ Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum1_msum0_store:
   csrc mstatus, x13
   LI(x13, MSTATUS_MPRV)
   csrs mstatus, x13
-Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum1_msum0_load:
+Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum0_msum1_load:
   lw x14, 8(x9)
   LI(x13, MSTATUS_MPRV)
   csrc mstatus, x13
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum1_msum0_load, Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum1_msum0_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum0_msum1_load, Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum0_msum1_load_str)
 
   LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x15, rvtest_vlvl0_pg_tbl)
@@ -612,10 +550,8 @@ Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum1_msum0_load:
   csrs vsstatus, x6
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc mstatus, x6
-  LI(x6, SSTATUS_SUM)
-  csrs mstatus, x6
   LI(x9, 0x90407000)
-  LI(x15, 0x13e)
+  LI(x15, 0x144)
   LI(x14, MSTATUSH_MPV)
   csrc mstatush, x14
   LI(x14, MSTATUSH_MPV)
@@ -624,7 +560,7 @@ Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum1_msum0_load:
   csrc mstatus, x14
   LI(x14, MSTATUS_MPRV)
   csrs mstatus, x14
-Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum1_msum1_store:
+Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum1_msum0_store:
   sw x15, 8(x9)
   LI(x14, MSTATUS_MPRV)
   csrc mstatus, x14
@@ -637,12 +573,12 @@ Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum1_msum1_store:
   csrc mstatus, x14
   LI(x14, MSTATUS_MPRV)
   csrs mstatus, x14
-Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum1_msum1_load:
+Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum1_msum0_load:
   lw x15, 8(x9)
   LI(x14, MSTATUS_MPRV)
   csrc mstatus, x14
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum1_msum1_load, Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum1_msum1_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum1_msum0_load, Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum1_msum0_load_str)
 
   LA(x15, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x9, rvtest_vlvl0_pg_tbl)
@@ -652,7 +588,7 @@ Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum1_msum1_load:
   or x9, x9, x8
   SREG x9, 0(x15)
   LA(x15, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI(x9, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_V))
+  LI(x9, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x9, 0(x15)
   LA(x15, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
   LA(x9, rvtest_hlvl0_pg_tbl)
@@ -672,10 +608,26 @@ Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum1_msum1_load:
   hfence.gvma
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x6
+  LI(x6, SSTATUS_SUM)
+  csrs vsstatus, x6
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc mstatus, x6
+  LI(x6, SSTATUS_SUM)
+  csrs mstatus, x6
   LI(x8, 0x90407000)
-  LI(x9, 0x140)
+  LI(x9, 0x146)
+  LI(x15, MSTATUSH_MPV)
+  csrc mstatush, x15
+  LI(x15, MSTATUSH_MPV)
+  csrs mstatush, x15
+  LI(x15, MSTATUS_MPRV | MSTATUS_MPP)
+  csrc mstatus, x15
+  LI(x15, MSTATUS_MPRV)
+  csrs mstatus, x15
+Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum1_msum1_store:
+  sw x9, 8(x8)
+  LI(x15, MSTATUS_MPRV)
+  csrc mstatus, x15
   LI(x9, -1)
   LI(x15, MSTATUSH_MPV)
   csrc mstatush, x15
@@ -683,14 +635,14 @@ Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum1_msum1_load:
   csrs mstatush, x15
   LI(x15, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, x15
-  LI(x15, MSTATUS_MPRV | MPP_SMODE)
+  LI(x15, MSTATUS_MPRV)
   csrs mstatus, x15
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_rwx_vsmxr0_mmxr0_load:
+Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum1_msum1_load:
   lw x9, 8(x8)
   LI(x15, MSTATUS_MPRV)
   csrc mstatus, x15
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_rwx_vsmxr0_mmxr0_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_rwx_vsmxr0_mmxr0_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum1_msum1_load, Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum1_msum1_load_str)
 
   LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x15, rvtest_vlvl0_pg_tbl)
@@ -722,10 +674,8 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_rwx_vsmxr0_mmxr0_load:
   csrc vsstatus, x6
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc mstatus, x6
-  LI(x6, SSTATUS_MXR)
-  csrs mstatus, x6
   LI(x13, 0x90407000)
-  LI(x9, 0x141)
+  LI(x9, 0x148)
   LI(x9, -1)
   LI(x15, MSTATUSH_MPV)
   csrc mstatush, x15
@@ -735,12 +685,12 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_rwx_vsmxr0_mmxr0_load:
   csrc mstatus, x15
   LI(x15, MSTATUS_MPRV | MPP_SMODE)
   csrs mstatus, x15
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_rwx_vsmxr0_mmxr1_load:
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_rwx_vsmxr0_mmxr0_load:
   lw x9, 8(x13)
   LI(x15, MSTATUS_MPRV)
   csrc mstatus, x15
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_rwx_vsmxr0_mmxr1_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_rwx_vsmxr0_mmxr1_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_rwx_vsmxr0_mmxr0_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_rwx_vsmxr0_mmxr0_load_str)
 
   LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x8, rvtest_vlvl0_pg_tbl)
@@ -770,12 +720,12 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_rwx_vsmxr0_mmxr1_load:
   hfence.gvma
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x6
-  LI(x6, SSTATUS_MXR)
-  csrs vsstatus, x6
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc mstatus, x6
+  LI(x6, SSTATUS_MXR)
+  csrs mstatus, x6
   LI(x14, 0x90407000)
-  LI(x13, 0x142)
+  LI(x13, 0x149)
   LI(x13, -1)
   LI(x8, MSTATUSH_MPV)
   csrc mstatush, x8
@@ -785,12 +735,12 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_rwx_vsmxr0_mmxr1_load:
   csrc mstatus, x8
   LI(x8, MSTATUS_MPRV | MPP_SMODE)
   csrs mstatus, x8
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_rwx_vsmxr1_mmxr0_load:
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_rwx_vsmxr0_mmxr1_load:
   lw x13, 8(x14)
   LI(x8, MSTATUS_MPRV)
   csrc mstatus, x8
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_rwx_vsmxr1_mmxr0_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_rwx_vsmxr1_mmxr0_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_rwx_vsmxr0_mmxr1_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_rwx_vsmxr0_mmxr1_load_str)
 
   LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x15, rvtest_vlvl0_pg_tbl)
@@ -824,10 +774,8 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_rwx_vsmxr1_mmxr0_load:
   csrs vsstatus, x6
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc mstatus, x6
-  LI(x6, SSTATUS_MXR)
-  csrs mstatus, x6
   LI(x13, 0x90407000)
-  LI(x9, 0x143)
+  LI(x9, 0x14a)
   LI(x9, -1)
   LI(x14, MSTATUSH_MPV)
   csrc mstatush, x14
@@ -837,12 +785,12 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_rwx_vsmxr1_mmxr0_load:
   csrc mstatus, x14
   LI(x14, MSTATUS_MPRV | MPP_SMODE)
   csrs mstatus, x14
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_rwx_vsmxr1_mmxr1_load:
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_rwx_vsmxr1_mmxr0_load:
   lw x9, 8(x13)
   LI(x14, MSTATUS_MPRV)
   csrc mstatus, x14
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_rwx_vsmxr1_mmxr1_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_rwx_vsmxr1_mmxr1_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_rwx_vsmxr1_mmxr0_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_rwx_vsmxr1_mmxr0_load_str)
 
   LA(x13, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x9, rvtest_vlvl0_pg_tbl)
@@ -852,7 +800,7 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_rwx_vsmxr1_mmxr1_load:
   or x9, x9, x14
   SREG x9, 0(x13)
   LA(x13, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI(x9, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  LI(x9, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_V))
   SREG x9, 0(x13)
   LA(x13, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
   LA(x9, rvtest_hlvl0_pg_tbl)
@@ -865,17 +813,21 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_rwx_vsmxr1_mmxr1_load:
   LA(x9, svh_page)
   srli x9, x9, 12
   slli x9, x9, 10
-  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_V)
+  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
   or x9, x9, x14
   SREG x9, 0(x13)
   hfence.vvma
   hfence.gvma
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x6
+  LI(x6, SSTATUS_MXR)
+  csrs vsstatus, x6
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc mstatus, x6
+  LI(x6, SSTATUS_MXR)
+  csrs mstatus, x6
   LI(x13, 0x90407000)
-  LI(x15, 0x144)
+  LI(x15, 0x14b)
   LI(x15, -1)
   LI(x14, MSTATUSH_MPV)
   csrc mstatush, x14
@@ -885,12 +837,12 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_rwx_vsmxr1_mmxr1_load:
   csrc mstatus, x14
   LI(x14, MSTATUS_MPRV | MPP_SMODE)
   csrs mstatus, x14
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_rwx_g_x_vsmxr0_mmxr0_load:
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_rwx_vsmxr1_mmxr1_load:
   lw x15, 8(x13)
   LI(x14, MSTATUS_MPRV)
   csrc mstatus, x14
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_rwx_g_x_vsmxr0_mmxr0_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_rwx_g_x_vsmxr0_mmxr0_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_rwx_vsmxr1_mmxr1_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_rwx_vsmxr1_mmxr1_load_str)
 
   LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x14, rvtest_vlvl0_pg_tbl)
@@ -922,10 +874,8 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_rwx_g_x_vsmxr0_mmxr0_load:
   csrc vsstatus, x6
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc mstatus, x6
-  LI(x6, SSTATUS_MXR)
-  csrs mstatus, x6
   LI(x14, 0x90407000)
-  LI(x13, 0x145)
+  LI(x13, 0x14c)
   LI(x13, -1)
   LI(x15, MSTATUSH_MPV)
   csrc mstatush, x15
@@ -935,12 +885,12 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_rwx_g_x_vsmxr0_mmxr0_load:
   csrc mstatus, x15
   LI(x15, MSTATUS_MPRV | MPP_SMODE)
   csrs mstatus, x15
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_rwx_g_x_vsmxr0_mmxr1_load:
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_rwx_g_x_vsmxr0_mmxr0_load:
   lw x13, 8(x14)
   LI(x15, MSTATUS_MPRV)
   csrc mstatus, x15
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_rwx_g_x_vsmxr0_mmxr1_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_rwx_g_x_vsmxr0_mmxr1_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_rwx_g_x_vsmxr0_mmxr0_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_rwx_g_x_vsmxr0_mmxr0_load_str)
 
   LA(x8, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x14, rvtest_vlvl0_pg_tbl)
@@ -970,12 +920,12 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_rwx_g_x_vsmxr0_mmxr1_load:
   hfence.gvma
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x6
-  LI(x6, SSTATUS_MXR)
-  csrs vsstatus, x6
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc mstatus, x6
+  LI(x6, SSTATUS_MXR)
+  csrs mstatus, x6
   LI(x14, 0x90407000)
-  LI(x15, 0x146)
+  LI(x15, 0x14d)
   LI(x15, -1)
   LI(x13, MSTATUSH_MPV)
   csrc mstatush, x13
@@ -985,12 +935,12 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_rwx_g_x_vsmxr0_mmxr1_load:
   csrc mstatus, x13
   LI(x13, MSTATUS_MPRV | MPP_SMODE)
   csrs mstatus, x13
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_rwx_g_x_vsmxr1_mmxr0_load:
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_rwx_g_x_vsmxr0_mmxr1_load:
   lw x15, 8(x14)
   LI(x13, MSTATUS_MPRV)
   csrc mstatus, x13
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_rwx_g_x_vsmxr1_mmxr0_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_rwx_g_x_vsmxr1_mmxr0_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_rwx_g_x_vsmxr0_mmxr1_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_rwx_g_x_vsmxr0_mmxr1_load_str)
 
   LA(x13, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x9, rvtest_vlvl0_pg_tbl)
@@ -1024,10 +974,8 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_rwx_g_x_vsmxr1_mmxr0_load:
   csrs vsstatus, x6
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc mstatus, x6
-  LI(x6, SSTATUS_MXR)
-  csrs mstatus, x6
   LI(x15, 0x90407000)
-  LI(x13, 0x147)
+  LI(x13, 0x14e)
   LI(x13, -1)
   LI(x9, MSTATUSH_MPV)
   csrc mstatush, x9
@@ -1037,12 +985,12 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_rwx_g_x_vsmxr1_mmxr0_load:
   csrc mstatus, x9
   LI(x9, MSTATUS_MPRV | MPP_SMODE)
   csrs mstatus, x9
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_rwx_g_x_vsmxr1_mmxr1_load:
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_rwx_g_x_vsmxr1_mmxr0_load:
   lw x13, 8(x15)
   LI(x9, MSTATUS_MPRV)
   csrc mstatus, x9
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_rwx_g_x_vsmxr1_mmxr1_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_rwx_g_x_vsmxr1_mmxr1_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_rwx_g_x_vsmxr1_mmxr0_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_rwx_g_x_vsmxr1_mmxr0_load_str)
 
   LA(x8, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x15, rvtest_vlvl0_pg_tbl)
@@ -1052,7 +1000,7 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_rwx_g_x_vsmxr1_mmxr1_load:
   or x15, x15, x13
   SREG x15, 0(x8)
   LA(x8, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI(x15, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_V))
+  LI(x15, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x15, 0(x8)
   LA(x8, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
   LA(x15, rvtest_hlvl0_pg_tbl)
@@ -1072,10 +1020,14 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_rwx_g_x_vsmxr1_mmxr1_load:
   hfence.gvma
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x6
+  LI(x6, SSTATUS_MXR)
+  csrs vsstatus, x6
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc mstatus, x6
+  LI(x6, SSTATUS_MXR)
+  csrs mstatus, x6
   LI(x9, 0x90407000)
-  LI(x14, 0x148)
+  LI(x14, 0x14f)
   LI(x14, -1)
   LI(x15, MSTATUSH_MPV)
   csrc mstatush, x15
@@ -1085,12 +1037,12 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_rwx_g_x_vsmxr1_mmxr1_load:
   csrc mstatus, x15
   LI(x15, MSTATUS_MPRV | MPP_SMODE)
   csrs mstatus, x15
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_x_vsmxr0_mmxr0_load:
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_rwx_g_x_vsmxr1_mmxr1_load:
   lw x14, 8(x9)
   LI(x15, MSTATUS_MPRV)
   csrc mstatus, x15
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_x_vsmxr0_mmxr0_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_x_vsmxr0_mmxr0_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_rwx_g_x_vsmxr1_mmxr1_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_rwx_g_x_vsmxr1_mmxr1_load_str)
 
   LA(x13, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x15, rvtest_vlvl0_pg_tbl)
@@ -1122,10 +1074,8 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_x_vsmxr0_mmxr0_load:
   csrc vsstatus, x6
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc mstatus, x6
-  LI(x6, SSTATUS_MXR)
-  csrs mstatus, x6
   LI(x14, 0x90407000)
-  LI(x8, 0x149)
+  LI(x8, 0x150)
   LI(x8, -1)
   LI(x9, MSTATUSH_MPV)
   csrc mstatush, x9
@@ -1135,12 +1085,12 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_x_vsmxr0_mmxr0_load:
   csrc mstatus, x9
   LI(x9, MSTATUS_MPRV | MPP_SMODE)
   csrs mstatus, x9
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_x_vsmxr0_mmxr1_load:
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_x_vsmxr0_mmxr0_load:
   lw x8, 8(x14)
   LI(x9, MSTATUS_MPRV)
   csrc mstatus, x9
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_x_vsmxr0_mmxr1_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_x_vsmxr0_mmxr1_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_x_vsmxr0_mmxr0_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_x_vsmxr0_mmxr0_load_str)
 
   LA(x15, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x13, rvtest_vlvl0_pg_tbl)
@@ -1170,12 +1120,12 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_x_vsmxr0_mmxr1_load:
   hfence.gvma
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x6
-  LI(x6, SSTATUS_MXR)
-  csrs vsstatus, x6
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc mstatus, x6
+  LI(x6, SSTATUS_MXR)
+  csrs mstatus, x6
   LI(x14, 0x90407000)
-  LI(x9, 0x14a)
+  LI(x9, 0x151)
   LI(x9, -1)
   LI(x15, MSTATUSH_MPV)
   csrc mstatush, x15
@@ -1185,12 +1135,12 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_x_vsmxr0_mmxr1_load:
   csrc mstatus, x15
   LI(x15, MSTATUS_MPRV | MPP_SMODE)
   csrs mstatus, x15
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_x_vsmxr1_mmxr0_load:
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_x_vsmxr0_mmxr1_load:
   lw x9, 8(x14)
   LI(x15, MSTATUS_MPRV)
   csrc mstatus, x15
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_x_vsmxr1_mmxr0_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_x_vsmxr1_mmxr0_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_x_vsmxr0_mmxr1_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_x_vsmxr0_mmxr1_load_str)
 
   LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x14, rvtest_vlvl0_pg_tbl)
@@ -1224,10 +1174,8 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_x_vsmxr1_mmxr0_load:
   csrs vsstatus, x6
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc mstatus, x6
-  LI(x6, SSTATUS_MXR)
-  csrs mstatus, x6
   LI(x13, 0x90407000)
-  LI(x14, 0x14b)
+  LI(x14, 0x152)
   LI(x14, -1)
   LI(x15, MSTATUSH_MPV)
   csrc mstatush, x15
@@ -1237,12 +1185,12 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_x_vsmxr1_mmxr0_load:
   csrc mstatus, x15
   LI(x15, MSTATUS_MPRV | MPP_SMODE)
   csrs mstatus, x15
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_x_vsmxr1_mmxr1_load:
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_x_vsmxr1_mmxr0_load:
   lw x14, 8(x13)
   LI(x15, MSTATUS_MPRV)
   csrc mstatus, x15
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_x_vsmxr1_mmxr1_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_x_vsmxr1_mmxr1_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_x_vsmxr1_mmxr0_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_x_vsmxr1_mmxr0_load_str)
 
   LA(x8, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x13, rvtest_vlvl0_pg_tbl)
@@ -1252,7 +1200,7 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_x_vsmxr1_mmxr1_load:
   or x13, x13, x15
   SREG x13, 0(x8)
   LA(x8, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI(x13, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_V))
+  LI(x13, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_V))
   SREG x13, 0(x8)
   LA(x8, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
   LA(x13, rvtest_hlvl0_pg_tbl)
@@ -1265,17 +1213,21 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_x_vsmxr1_mmxr1_load:
   LA(x13, svh_page)
   srli x13, x13, 12
   slli x13, x13, 10
-  LI(x15, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  LI(x15, PTE_D | PTE_A | PTE_U | PTE_X | PTE_V)
   or x13, x13, x15
   SREG x13, 0(x8)
   hfence.vvma
   hfence.gvma
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x6
+  LI(x6, SSTATUS_MXR)
+  csrs vsstatus, x6
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc mstatus, x6
+  LI(x6, SSTATUS_MXR)
+  csrs mstatus, x6
   LI(x15, 0x90407000)
-  LI(x9, 0x14c)
+  LI(x9, 0x153)
   LI(x9, -1)
   LI(x13, MSTATUSH_MPV)
   csrc mstatush, x13
@@ -1283,14 +1235,14 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_x_vsmxr1_mmxr1_load:
   csrs mstatush, x13
   LI(x13, MSTATUS_MPRV | MSTATUS_MPP)
   csrc mstatus, x13
-  LI(x13, MSTATUS_MPRV)
+  LI(x13, MSTATUS_MPRV | MPP_SMODE)
   csrs mstatus, x13
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_rwx_vsmxr0_mmxr0_load:
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_x_vsmxr1_mmxr1_load:
   lw x9, 8(x15)
   LI(x13, MSTATUS_MPRV)
   csrc mstatus, x13
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_rwx_vsmxr0_mmxr0_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_rwx_vsmxr0_mmxr0_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_x_vsmxr1_mmxr1_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_x_vsmxr1_mmxr1_load_str)
 
   LA(x15, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x14, rvtest_vlvl0_pg_tbl)
@@ -1322,10 +1274,8 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_rwx_vsmxr0_mmxr0_load:
   csrc vsstatus, x6
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc mstatus, x6
-  LI(x6, SSTATUS_MXR)
-  csrs mstatus, x6
   LI(x15, 0x90407000)
-  LI(x9, 0x14d)
+  LI(x9, 0x154)
   LI(x9, -1)
   LI(x8, MSTATUSH_MPV)
   csrc mstatush, x8
@@ -1335,12 +1285,12 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_rwx_vsmxr0_mmxr0_load:
   csrc mstatus, x8
   LI(x8, MSTATUS_MPRV)
   csrs mstatus, x8
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_rwx_vsmxr0_mmxr1_load:
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_rwx_vsmxr0_mmxr0_load:
   lw x9, 8(x15)
   LI(x8, MSTATUS_MPRV)
   csrc mstatus, x8
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_rwx_vsmxr0_mmxr1_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_rwx_vsmxr0_mmxr1_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_rwx_vsmxr0_mmxr0_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_rwx_vsmxr0_mmxr0_load_str)
 
   LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x13, rvtest_vlvl0_pg_tbl)
@@ -1370,12 +1320,12 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_rwx_vsmxr0_mmxr1_load:
   hfence.gvma
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x6
-  LI(x6, SSTATUS_MXR)
-  csrs vsstatus, x6
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc mstatus, x6
+  LI(x6, SSTATUS_MXR)
+  csrs mstatus, x6
   LI(x9, 0x90407000)
-  LI(x14, 0x14e)
+  LI(x14, 0x155)
   LI(x14, -1)
   LI(x13, MSTATUSH_MPV)
   csrc mstatush, x13
@@ -1385,12 +1335,12 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_rwx_vsmxr0_mmxr1_load:
   csrc mstatus, x13
   LI(x13, MSTATUS_MPRV)
   csrs mstatus, x13
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_rwx_vsmxr1_mmxr0_load:
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_rwx_vsmxr0_mmxr1_load:
   lw x14, 8(x9)
   LI(x13, MSTATUS_MPRV)
   csrc mstatus, x13
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_rwx_vsmxr1_mmxr0_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_rwx_vsmxr1_mmxr0_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_rwx_vsmxr0_mmxr1_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_rwx_vsmxr0_mmxr1_load_str)
 
   LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x14, rvtest_vlvl0_pg_tbl)
@@ -1424,10 +1374,8 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_rwx_vsmxr1_mmxr0_load:
   csrs vsstatus, x6
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc mstatus, x6
-  LI(x6, SSTATUS_MXR)
-  csrs mstatus, x6
   LI(x8, 0x90407000)
-  LI(x15, 0x14f)
+  LI(x15, 0x156)
   LI(x15, -1)
   LI(x9, MSTATUSH_MPV)
   csrc mstatush, x9
@@ -1437,12 +1385,12 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_rwx_vsmxr1_mmxr0_load:
   csrc mstatus, x9
   LI(x9, MSTATUS_MPRV)
   csrs mstatus, x9
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_rwx_vsmxr1_mmxr1_load:
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_rwx_vsmxr1_mmxr0_load:
   lw x15, 8(x8)
   LI(x9, MSTATUS_MPRV)
   csrc mstatus, x9
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_rwx_vsmxr1_mmxr1_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_rwx_vsmxr1_mmxr1_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_rwx_vsmxr1_mmxr0_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_rwx_vsmxr1_mmxr0_load_str)
 
   LA(x15, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x13, rvtest_vlvl0_pg_tbl)
@@ -1452,7 +1400,7 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_rwx_vsmxr1_mmxr1_load:
   or x13, x13, x9
   SREG x13, 0(x15)
   LA(x15, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI(x13, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
+  LI(x13, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_V))
   SREG x13, 0(x15)
   LA(x15, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
   LA(x13, rvtest_hlvl0_pg_tbl)
@@ -1465,17 +1413,21 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_rwx_vsmxr1_mmxr1_load:
   LA(x13, svh_page)
   srli x13, x13, 12
   slli x13, x13, 10
-  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_V)
+  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
   or x13, x13, x9
   SREG x13, 0(x15)
   hfence.vvma
   hfence.gvma
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x6
+  LI(x6, SSTATUS_MXR)
+  csrs vsstatus, x6
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc mstatus, x6
+  LI(x6, SSTATUS_MXR)
+  csrs mstatus, x6
   LI(x14, 0x90407000)
-  LI(x8, 0x150)
+  LI(x8, 0x157)
   LI(x8, -1)
   LI(x13, MSTATUSH_MPV)
   csrc mstatush, x13
@@ -1485,12 +1437,12 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_rwx_vsmxr1_mmxr1_load:
   csrc mstatus, x13
   LI(x13, MSTATUS_MPRV)
   csrs mstatus, x13
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_rwx_g_x_vsmxr0_mmxr0_load:
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_rwx_vsmxr1_mmxr1_load:
   lw x8, 8(x14)
   LI(x13, MSTATUS_MPRV)
   csrc mstatus, x13
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_rwx_g_x_vsmxr0_mmxr0_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_rwx_g_x_vsmxr0_mmxr0_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_rwx_vsmxr1_mmxr1_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_rwx_vsmxr1_mmxr1_load_str)
 
   LA(x8, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x13, rvtest_vlvl0_pg_tbl)
@@ -1522,10 +1474,8 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_rwx_g_x_vsmxr0_mmxr0_load:
   csrc vsstatus, x6
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc mstatus, x6
-  LI(x6, SSTATUS_MXR)
-  csrs mstatus, x6
   LI(x9, 0x90407000)
-  LI(x8, 0x151)
+  LI(x8, 0x158)
   LI(x8, -1)
   LI(x14, MSTATUSH_MPV)
   csrc mstatush, x14
@@ -1535,12 +1485,12 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_rwx_g_x_vsmxr0_mmxr0_load:
   csrc mstatus, x14
   LI(x14, MSTATUS_MPRV)
   csrs mstatus, x14
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_rwx_g_x_vsmxr0_mmxr1_load:
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_rwx_g_x_vsmxr0_mmxr0_load:
   lw x8, 8(x9)
   LI(x14, MSTATUS_MPRV)
   csrc mstatus, x14
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_rwx_g_x_vsmxr0_mmxr1_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_rwx_g_x_vsmxr0_mmxr1_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_rwx_g_x_vsmxr0_mmxr0_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_rwx_g_x_vsmxr0_mmxr0_load_str)
 
   LA(x15, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x9, rvtest_vlvl0_pg_tbl)
@@ -1570,12 +1520,12 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_rwx_g_x_vsmxr0_mmxr1_load:
   hfence.gvma
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x6
-  LI(x6, SSTATUS_MXR)
-  csrs vsstatus, x6
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc mstatus, x6
+  LI(x6, SSTATUS_MXR)
+  csrs mstatus, x6
   LI(x8, 0x90407000)
-  LI(x13, 0x152)
+  LI(x13, 0x159)
   LI(x13, -1)
   LI(x15, MSTATUSH_MPV)
   csrc mstatush, x15
@@ -1585,12 +1535,12 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_rwx_g_x_vsmxr0_mmxr1_load:
   csrc mstatus, x15
   LI(x15, MSTATUS_MPRV)
   csrs mstatus, x15
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_rwx_g_x_vsmxr1_mmxr0_load:
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_rwx_g_x_vsmxr0_mmxr1_load:
   lw x13, 8(x8)
   LI(x15, MSTATUS_MPRV)
   csrc mstatus, x15
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_rwx_g_x_vsmxr1_mmxr0_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_rwx_g_x_vsmxr1_mmxr0_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_rwx_g_x_vsmxr0_mmxr1_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_rwx_g_x_vsmxr0_mmxr1_load_str)
 
   LA(x8, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x13, rvtest_vlvl0_pg_tbl)
@@ -1624,10 +1574,8 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_rwx_g_x_vsmxr1_mmxr0_load:
   csrs vsstatus, x6
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc mstatus, x6
-  LI(x6, SSTATUS_MXR)
-  csrs mstatus, x6
   LI(x8, 0x90407000)
-  LI(x13, 0x153)
+  LI(x13, 0x15a)
   LI(x13, -1)
   LI(x9, MSTATUSH_MPV)
   csrc mstatush, x9
@@ -1637,12 +1585,12 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_rwx_g_x_vsmxr1_mmxr0_load:
   csrc mstatus, x9
   LI(x9, MSTATUS_MPRV)
   csrs mstatus, x9
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_rwx_g_x_vsmxr1_mmxr1_load:
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_rwx_g_x_vsmxr1_mmxr0_load:
   lw x13, 8(x8)
   LI(x9, MSTATUS_MPRV)
   csrc mstatus, x9
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_rwx_g_x_vsmxr1_mmxr1_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_rwx_g_x_vsmxr1_mmxr1_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_rwx_g_x_vsmxr1_mmxr0_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_rwx_g_x_vsmxr1_mmxr0_load_str)
 
   LA(x13, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x9, rvtest_vlvl0_pg_tbl)
@@ -1652,7 +1600,7 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_rwx_g_x_vsmxr1_mmxr1_load:
   or x9, x9, x14
   SREG x9, 0(x13)
   LA(x13, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI(x9, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_V))
+  LI(x9, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x9, 0(x13)
   LA(x13, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
   LA(x9, rvtest_hlvl0_pg_tbl)
@@ -1672,10 +1620,14 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_rwx_g_x_vsmxr1_mmxr1_load:
   hfence.gvma
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x6
+  LI(x6, SSTATUS_MXR)
+  csrs vsstatus, x6
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc mstatus, x6
+  LI(x6, SSTATUS_MXR)
+  csrs mstatus, x6
   LI(x15, 0x90407000)
-  LI(x13, 0x154)
+  LI(x13, 0x15b)
   LI(x13, -1)
   LI(x14, MSTATUSH_MPV)
   csrc mstatush, x14
@@ -1685,12 +1637,12 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_rwx_g_x_vsmxr1_mmxr1_load:
   csrc mstatus, x14
   LI(x14, MSTATUS_MPRV)
   csrs mstatus, x14
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_x_vsmxr0_mmxr0_load:
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_rwx_g_x_vsmxr1_mmxr1_load:
   lw x13, 8(x15)
   LI(x14, MSTATUS_MPRV)
   csrc mstatus, x14
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_x_vsmxr0_mmxr0_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_x_vsmxr0_mmxr0_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_rwx_g_x_vsmxr1_mmxr1_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_rwx_g_x_vsmxr1_mmxr1_load_str)
 
   LA(x15, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x8, rvtest_vlvl0_pg_tbl)
@@ -1722,10 +1674,8 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_x_vsmxr0_mmxr0_load:
   csrc vsstatus, x6
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc mstatus, x6
-  LI(x6, SSTATUS_MXR)
-  csrs mstatus, x6
   LI(x9, 0x90407000)
-  LI(x15, 0x155)
+  LI(x15, 0x15c)
   LI(x15, -1)
   LI(x14, MSTATUSH_MPV)
   csrc mstatush, x14
@@ -1735,12 +1685,12 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_x_vsmxr0_mmxr0_load:
   csrc mstatus, x14
   LI(x14, MSTATUS_MPRV)
   csrs mstatus, x14
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_x_vsmxr0_mmxr1_load:
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_x_vsmxr0_mmxr0_load:
   lw x15, 8(x9)
   LI(x14, MSTATUS_MPRV)
   csrc mstatus, x14
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_x_vsmxr0_mmxr1_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_x_vsmxr0_mmxr1_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_x_vsmxr0_mmxr0_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_x_vsmxr0_mmxr0_load_str)
 
   LA(x8, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x14, rvtest_vlvl0_pg_tbl)
@@ -1770,12 +1720,12 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_x_vsmxr0_mmxr1_load:
   hfence.gvma
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x6
-  LI(x6, SSTATUS_MXR)
-  csrs vsstatus, x6
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc mstatus, x6
+  LI(x6, SSTATUS_MXR)
+  csrs mstatus, x6
   LI(x8, 0x90407000)
-  LI(x14, 0x156)
+  LI(x14, 0x15d)
   LI(x14, -1)
   LI(x13, MSTATUSH_MPV)
   csrc mstatush, x13
@@ -1785,12 +1735,12 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_x_vsmxr0_mmxr1_load:
   csrc mstatus, x13
   LI(x13, MSTATUS_MPRV)
   csrs mstatus, x13
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_x_vsmxr1_mmxr0_load:
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_x_vsmxr0_mmxr1_load:
   lw x14, 8(x8)
   LI(x13, MSTATUS_MPRV)
   csrc mstatus, x13
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_x_vsmxr1_mmxr0_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_x_vsmxr1_mmxr0_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_x_vsmxr0_mmxr1_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_x_vsmxr0_mmxr1_load_str)
 
   LA(x13, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x8, rvtest_vlvl0_pg_tbl)
@@ -1824,10 +1774,8 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_x_vsmxr1_mmxr0_load:
   csrs vsstatus, x6
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc mstatus, x6
-  LI(x6, SSTATUS_MXR)
-  csrs mstatus, x6
   LI(x8, 0x90407000)
-  LI(x13, 0x157)
+  LI(x13, 0x15e)
   LI(x13, -1)
   LI(x9, MSTATUSH_MPV)
   csrc mstatush, x9
@@ -1837,12 +1785,64 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_x_vsmxr1_mmxr0_load:
   csrc mstatus, x9
   LI(x9, MSTATUS_MPRV)
   csrs mstatus, x9
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_x_vsmxr1_mmxr1_load:
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_x_vsmxr1_mmxr0_load:
   lw x13, 8(x8)
   LI(x9, MSTATUS_MPRV)
   csrc mstatus, x9
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_x_vsmxr1_mmxr1_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_x_vsmxr1_mmxr1_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_x_vsmxr1_mmxr0_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_x_vsmxr1_mmxr0_load_str)
+
+  LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LA(x15, rvtest_vlvl0_pg_tbl)
+  srli x15, x15, 12
+  slli x15, x15, 10
+  LI(x13, PTE_V)
+  or x15, x15, x13
+  SREG x15, 0(x9)
+  LA(x9, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LI(x15, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_V))
+  SREG x15, 0(x9)
+  LA(x9, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
+  LA(x15, rvtest_hlvl0_pg_tbl)
+  srli x15, x15, 12
+  slli x15, x15, 10
+  LI(x13, PTE_V)
+  or x15, x15, x13
+  SREG x15, 0(x9)
+  LA(x9, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  LA(x15, svh_page)
+  srli x15, x15, 12
+  slli x15, x15, 10
+  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_V)
+  or x15, x15, x13
+  SREG x15, 0(x9)
+  hfence.vvma
+  hfence.gvma
+  LI(x6, SSTATUS_SUM | SSTATUS_MXR)
+  csrc vsstatus, x6
+  LI(x6, SSTATUS_MXR)
+  csrs vsstatus, x6
+  LI(x6, SSTATUS_SUM | SSTATUS_MXR)
+  csrc mstatus, x6
+  LI(x6, SSTATUS_MXR)
+  csrs mstatus, x6
+  LI(x9, 0x90407000)
+  LI(x14, 0x15f)
+  LI(x14, -1)
+  LI(x8, MSTATUSH_MPV)
+  csrc mstatush, x8
+  LI(x8, MSTATUSH_MPV)
+  csrs mstatush, x8
+  LI(x8, MSTATUS_MPRV | MSTATUS_MPP)
+  csrc mstatus, x8
+  LI(x8, MSTATUS_MPRV)
+  csrs mstatus, x8
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_x_vsmxr1_mmxr1_load:
+  lw x14, 8(x9)
+  LI(x8, MSTATUS_MPRV)
+  csrc mstatus, x8
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_x_vsmxr1_mmxr1_load, Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_x_vsmxr1_mmxr1_load_str)
 
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc mstatus, x6
@@ -1850,15 +1850,15 @@ Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_x_vsmxr1_mmxr1_load:
   csrw hgatp, zero
   hfence.gvma
   hfence.vvma
-  LA(x8, rvtest_code_begin)
-  LA(x15, Vtramptbl_sv)
-  SREG x8, code_bgn_off(x15)
-  LI(x14, SSTATUS_SUM | SSTATUS_MXR)
-  csrc sstatus, x14
-  LI(x14, SSTATUS_SUM | SSTATUS_MXR)
-  csrc vsstatus, x14
-  LI(x14, HENVCFGH_ADUE | HENVCFGH_PBMTE)
-  csrc henvcfgh, x14
+  LA(x6, rvtest_code_begin)
+  LA(x8, Vtramptbl_sv)
+  SREG x6, code_bgn_off(x8)
+  LI(x13, SSTATUS_SUM | SSTATUS_MXR)
+  csrc sstatus, x13
+  LI(x13, SSTATUS_SUM | SSTATUS_MXR)
+  csrc vsstatus, x13
+  LI(x13, HENVCFGH_ADUE | HENVCFGH_PBMTE)
+  csrc henvcfgh, x13
   RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFGH, MENVCFGH_ADUE | MENVCFGH_PBMTE)
   csrw hedeleg, zero
 
@@ -1915,46 +1915,46 @@ rvtest_vlvl1_pg_tbl:
 #endif
 
 // Testcase strings
-Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum0_msum0_store_str: .string "\"test: 49; cg: Sv_HSm_mprv_cg; cp: cp_mprv_sum; bin: mpp_s_u1_vssum0_msum0_store\""
-Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum0_msum0_load_str: .string "\"test: 50; cg: Sv_HSm_mprv_cg; cp: cp_mprv_sum; bin: mpp_s_u1_vssum0_msum0_load\""
-Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum0_msum1_store_str: .string "\"test: 51; cg: Sv_HSm_mprv_cg; cp: cp_mprv_sum; bin: mpp_s_u1_vssum0_msum1_store\""
-Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum0_msum1_load_str: .string "\"test: 52; cg: Sv_HSm_mprv_cg; cp: cp_mprv_sum; bin: mpp_s_u1_vssum0_msum1_load\""
-Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum1_msum0_store_str: .string "\"test: 53; cg: Sv_HSm_mprv_cg; cp: cp_mprv_sum; bin: mpp_s_u1_vssum1_msum0_store\""
-Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum1_msum0_load_str: .string "\"test: 54; cg: Sv_HSm_mprv_cg; cp: cp_mprv_sum; bin: mpp_s_u1_vssum1_msum0_load\""
-Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum1_msum1_store_str: .string "\"test: 55; cg: Sv_HSm_mprv_cg; cp: cp_mprv_sum; bin: mpp_s_u1_vssum1_msum1_store\""
-Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum1_msum1_load_str: .string "\"test: 56; cg: Sv_HSm_mprv_cg; cp: cp_mprv_sum; bin: mpp_s_u1_vssum1_msum1_load\""
-Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum0_msum0_store_str: .string "\"test: 57; cg: Sv_HSm_mprv_cg; cp: cp_mprv_sum; bin: mpp_u_u0_vssum0_msum0_store\""
-Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum0_msum0_load_str: .string "\"test: 58; cg: Sv_HSm_mprv_cg; cp: cp_mprv_sum; bin: mpp_u_u0_vssum0_msum0_load\""
-Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum0_msum1_store_str: .string "\"test: 59; cg: Sv_HSm_mprv_cg; cp: cp_mprv_sum; bin: mpp_u_u0_vssum0_msum1_store\""
-Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum0_msum1_load_str: .string "\"test: 60; cg: Sv_HSm_mprv_cg; cp: cp_mprv_sum; bin: mpp_u_u0_vssum0_msum1_load\""
-Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum1_msum0_store_str: .string "\"test: 61; cg: Sv_HSm_mprv_cg; cp: cp_mprv_sum; bin: mpp_u_u0_vssum1_msum0_store\""
-Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum1_msum0_load_str: .string "\"test: 62; cg: Sv_HSm_mprv_cg; cp: cp_mprv_sum; bin: mpp_u_u0_vssum1_msum0_load\""
-Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum1_msum1_store_str: .string "\"test: 63; cg: Sv_HSm_mprv_cg; cp: cp_mprv_sum; bin: mpp_u_u0_vssum1_msum1_store\""
-Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum1_msum1_load_str: .string "\"test: 64; cg: Sv_HSm_mprv_cg; cp: cp_mprv_sum; bin: mpp_u_u0_vssum1_msum1_load\""
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_rwx_vsmxr0_mmxr0_load_str: .string "\"test: 65; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_s_vs_x_g_rwx_vsmxr0_mmxr0_load\""
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_rwx_vsmxr0_mmxr1_load_str: .string "\"test: 66; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_s_vs_x_g_rwx_vsmxr0_mmxr1_load\""
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_rwx_vsmxr1_mmxr0_load_str: .string "\"test: 67; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_s_vs_x_g_rwx_vsmxr1_mmxr0_load\""
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_rwx_vsmxr1_mmxr1_load_str: .string "\"test: 68; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_s_vs_x_g_rwx_vsmxr1_mmxr1_load\""
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_rwx_g_x_vsmxr0_mmxr0_load_str: .string "\"test: 69; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_s_vs_rwx_g_x_vsmxr0_mmxr0_load\""
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_rwx_g_x_vsmxr0_mmxr1_load_str: .string "\"test: 70; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_s_vs_rwx_g_x_vsmxr0_mmxr1_load\""
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_rwx_g_x_vsmxr1_mmxr0_load_str: .string "\"test: 71; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_s_vs_rwx_g_x_vsmxr1_mmxr0_load\""
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_rwx_g_x_vsmxr1_mmxr1_load_str: .string "\"test: 72; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_s_vs_rwx_g_x_vsmxr1_mmxr1_load\""
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_x_vsmxr0_mmxr0_load_str: .string "\"test: 73; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_s_vs_x_g_x_vsmxr0_mmxr0_load\""
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_x_vsmxr0_mmxr1_load_str: .string "\"test: 74; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_s_vs_x_g_x_vsmxr0_mmxr1_load\""
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_x_vsmxr1_mmxr0_load_str: .string "\"test: 75; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_s_vs_x_g_x_vsmxr1_mmxr0_load\""
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_x_vsmxr1_mmxr1_load_str: .string "\"test: 76; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_s_vs_x_g_x_vsmxr1_mmxr1_load\""
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_rwx_vsmxr0_mmxr0_load_str: .string "\"test: 77; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_u_vs_x_g_rwx_vsmxr0_mmxr0_load\""
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_rwx_vsmxr0_mmxr1_load_str: .string "\"test: 78; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_u_vs_x_g_rwx_vsmxr0_mmxr1_load\""
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_rwx_vsmxr1_mmxr0_load_str: .string "\"test: 79; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_u_vs_x_g_rwx_vsmxr1_mmxr0_load\""
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_rwx_vsmxr1_mmxr1_load_str: .string "\"test: 80; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_u_vs_x_g_rwx_vsmxr1_mmxr1_load\""
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_rwx_g_x_vsmxr0_mmxr0_load_str: .string "\"test: 81; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_u_vs_rwx_g_x_vsmxr0_mmxr0_load\""
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_rwx_g_x_vsmxr0_mmxr1_load_str: .string "\"test: 82; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_u_vs_rwx_g_x_vsmxr0_mmxr1_load\""
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_rwx_g_x_vsmxr1_mmxr0_load_str: .string "\"test: 83; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_u_vs_rwx_g_x_vsmxr1_mmxr0_load\""
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_rwx_g_x_vsmxr1_mmxr1_load_str: .string "\"test: 84; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_u_vs_rwx_g_x_vsmxr1_mmxr1_load\""
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_x_vsmxr0_mmxr0_load_str: .string "\"test: 85; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_u_vs_x_g_x_vsmxr0_mmxr0_load\""
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_x_vsmxr0_mmxr1_load_str: .string "\"test: 86; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_u_vs_x_g_x_vsmxr0_mmxr1_load\""
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_x_vsmxr1_mmxr0_load_str: .string "\"test: 87; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_u_vs_x_g_x_vsmxr1_mmxr0_load\""
-Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_x_vsmxr1_mmxr1_load_str: .string "\"test: 88; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_u_vs_x_g_x_vsmxr1_mmxr1_load\""
+Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum0_msum0_store_str: .string "\"test: 57; cg: Sv_HSm_mprv_cg; cp: cp_mprv_sum; bin: mpp_s_u1_vssum0_msum0_store\""
+Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum0_msum0_load_str: .string "\"test: 58; cg: Sv_HSm_mprv_cg; cp: cp_mprv_sum; bin: mpp_s_u1_vssum0_msum0_load\""
+Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum0_msum1_store_str: .string "\"test: 59; cg: Sv_HSm_mprv_cg; cp: cp_mprv_sum; bin: mpp_s_u1_vssum0_msum1_store\""
+Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum0_msum1_load_str: .string "\"test: 60; cg: Sv_HSm_mprv_cg; cp: cp_mprv_sum; bin: mpp_s_u1_vssum0_msum1_load\""
+Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum1_msum0_store_str: .string "\"test: 61; cg: Sv_HSm_mprv_cg; cp: cp_mprv_sum; bin: mpp_s_u1_vssum1_msum0_store\""
+Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum1_msum0_load_str: .string "\"test: 62; cg: Sv_HSm_mprv_cg; cp: cp_mprv_sum; bin: mpp_s_u1_vssum1_msum0_load\""
+Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum1_msum1_store_str: .string "\"test: 63; cg: Sv_HSm_mprv_cg; cp: cp_mprv_sum; bin: mpp_s_u1_vssum1_msum1_store\""
+Sv_HSm_mprv_cg_cp_mprv_sum_mpp_s_u1_vssum1_msum1_load_str: .string "\"test: 64; cg: Sv_HSm_mprv_cg; cp: cp_mprv_sum; bin: mpp_s_u1_vssum1_msum1_load\""
+Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum0_msum0_store_str: .string "\"test: 65; cg: Sv_HSm_mprv_cg; cp: cp_mprv_sum; bin: mpp_u_u0_vssum0_msum0_store\""
+Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum0_msum0_load_str: .string "\"test: 66; cg: Sv_HSm_mprv_cg; cp: cp_mprv_sum; bin: mpp_u_u0_vssum0_msum0_load\""
+Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum0_msum1_store_str: .string "\"test: 67; cg: Sv_HSm_mprv_cg; cp: cp_mprv_sum; bin: mpp_u_u0_vssum0_msum1_store\""
+Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum0_msum1_load_str: .string "\"test: 68; cg: Sv_HSm_mprv_cg; cp: cp_mprv_sum; bin: mpp_u_u0_vssum0_msum1_load\""
+Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum1_msum0_store_str: .string "\"test: 69; cg: Sv_HSm_mprv_cg; cp: cp_mprv_sum; bin: mpp_u_u0_vssum1_msum0_store\""
+Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum1_msum0_load_str: .string "\"test: 70; cg: Sv_HSm_mprv_cg; cp: cp_mprv_sum; bin: mpp_u_u0_vssum1_msum0_load\""
+Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum1_msum1_store_str: .string "\"test: 71; cg: Sv_HSm_mprv_cg; cp: cp_mprv_sum; bin: mpp_u_u0_vssum1_msum1_store\""
+Sv_HSm_mprv_cg_cp_mprv_sum_mpp_u_u0_vssum1_msum1_load_str: .string "\"test: 72; cg: Sv_HSm_mprv_cg; cp: cp_mprv_sum; bin: mpp_u_u0_vssum1_msum1_load\""
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_rwx_vsmxr0_mmxr0_load_str: .string "\"test: 73; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_s_vs_x_g_rwx_vsmxr0_mmxr0_load\""
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_rwx_vsmxr0_mmxr1_load_str: .string "\"test: 74; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_s_vs_x_g_rwx_vsmxr0_mmxr1_load\""
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_rwx_vsmxr1_mmxr0_load_str: .string "\"test: 75; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_s_vs_x_g_rwx_vsmxr1_mmxr0_load\""
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_rwx_vsmxr1_mmxr1_load_str: .string "\"test: 76; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_s_vs_x_g_rwx_vsmxr1_mmxr1_load\""
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_rwx_g_x_vsmxr0_mmxr0_load_str: .string "\"test: 77; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_s_vs_rwx_g_x_vsmxr0_mmxr0_load\""
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_rwx_g_x_vsmxr0_mmxr1_load_str: .string "\"test: 78; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_s_vs_rwx_g_x_vsmxr0_mmxr1_load\""
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_rwx_g_x_vsmxr1_mmxr0_load_str: .string "\"test: 79; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_s_vs_rwx_g_x_vsmxr1_mmxr0_load\""
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_rwx_g_x_vsmxr1_mmxr1_load_str: .string "\"test: 80; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_s_vs_rwx_g_x_vsmxr1_mmxr1_load\""
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_x_vsmxr0_mmxr0_load_str: .string "\"test: 81; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_s_vs_x_g_x_vsmxr0_mmxr0_load\""
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_x_vsmxr0_mmxr1_load_str: .string "\"test: 82; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_s_vs_x_g_x_vsmxr0_mmxr1_load\""
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_x_vsmxr1_mmxr0_load_str: .string "\"test: 83; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_s_vs_x_g_x_vsmxr1_mmxr0_load\""
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_s_vs_x_g_x_vsmxr1_mmxr1_load_str: .string "\"test: 84; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_s_vs_x_g_x_vsmxr1_mmxr1_load\""
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_rwx_vsmxr0_mmxr0_load_str: .string "\"test: 85; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_u_vs_x_g_rwx_vsmxr0_mmxr0_load\""
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_rwx_vsmxr0_mmxr1_load_str: .string "\"test: 86; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_u_vs_x_g_rwx_vsmxr0_mmxr1_load\""
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_rwx_vsmxr1_mmxr0_load_str: .string "\"test: 87; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_u_vs_x_g_rwx_vsmxr1_mmxr0_load\""
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_rwx_vsmxr1_mmxr1_load_str: .string "\"test: 88; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_u_vs_x_g_rwx_vsmxr1_mmxr1_load\""
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_rwx_g_x_vsmxr0_mmxr0_load_str: .string "\"test: 89; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_u_vs_rwx_g_x_vsmxr0_mmxr0_load\""
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_rwx_g_x_vsmxr0_mmxr1_load_str: .string "\"test: 90; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_u_vs_rwx_g_x_vsmxr0_mmxr1_load\""
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_rwx_g_x_vsmxr1_mmxr0_load_str: .string "\"test: 91; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_u_vs_rwx_g_x_vsmxr1_mmxr0_load\""
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_rwx_g_x_vsmxr1_mmxr1_load_str: .string "\"test: 92; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_u_vs_rwx_g_x_vsmxr1_mmxr1_load\""
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_x_vsmxr0_mmxr0_load_str: .string "\"test: 93; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_u_vs_x_g_x_vsmxr0_mmxr0_load\""
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_x_vsmxr0_mmxr1_load_str: .string "\"test: 94; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_u_vs_x_g_x_vsmxr0_mmxr1_load\""
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_x_vsmxr1_mmxr0_load_str: .string "\"test: 95; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_u_vs_x_g_x_vsmxr1_mmxr0_load\""
+Sv_HSm_mprv_cg_cp_mprv_mxr_mpp_u_vs_x_g_x_vsmxr1_mmxr1_load_str: .string "\"test: 96; cg: Sv_HSm_mprv_cg; cp: cp_mprv_mxr; bin: mpp_u_vs_x_g_x_vsmxr1_mmxr1_load\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

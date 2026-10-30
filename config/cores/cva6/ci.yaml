@@ -10,6 +10,8 @@ exclude_extensions:
   # access with OKAY, while Sail expects an access fault because there is no memory at 0.
   # CVA6 has no data-side PMA check, so the DUT raises no fault and the load returns 0.
   # Remove this exclusion once riscv-arch-test#2963 drops the address-0 probes.
+  # The exclusion is preemptive: both configs declare NUM_PMP_ENTRIES: 0, so no PMP test
+  # runs yet. It takes effect once cv32a65x declares its PMP entries (riscv-arch-test#2904).
   # https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/corev_apu/tb/ariane_soc_pkg.sv#L58
   # https://github.com/riscv/riscv-arch-test/issues/2963
   - PMP_Sm_cfg_A_tor_zero

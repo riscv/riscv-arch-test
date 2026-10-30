@@ -16,6 +16,8 @@ implemented_extensions:
     version: = 2.0
   - name: Zmmul
     version: = 1.0.0
+  - name: B
+    version: = 1.0.0
   - name: C
     version: = 2.0
   - name: Zba
@@ -42,6 +44,7 @@ params:
   MXLEN: 32
   PHYS_ADDR_WIDTH: 32
   MUTABLE_MISA_M: false
+  MUTABLE_MISA_B: false
   MUTABLE_MISA_C: false
   MISA_CSR_IMPLEMENTED: true
   NON_STANDARD_EXTENSION_IMPLEMENTED: false

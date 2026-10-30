@@ -460,7 +460,7 @@
     },
     "B": {
       "mutable_misa": false,
-      "supported": false
+      "supported": true
     },
     "S": {
       "mutable_misa": false,
@@ -658,7 +658,7 @@
       "supported": false
     },
     "Zbkc": {
-      "supported": false
+      "supported": true
     },
     "Zbkx": {
       "supported": false

@@ -20,13 +20,14 @@ export NUM_JOBS="${NUM_JOBS:-$(nproc)}"
 export VERILATOR_INSTALL_DIR="$INSTALL_DIR/verilator"
 export SPIKE_INSTALL_DIR="$INSTALL_DIR/spike"
 
-# The CVA6 Makefile refuses to run without RISCV; point it at the toolchain on PATH.
-gcc_path="$(command -v riscv64-unknown-elf-gcc)" || {
+# The CVA6 Makefile refuses to run without RISCV and links the testharness with
+# -L$(RISCV)/lib before $(SPIKE_INSTALL_DIR)/lib. Point RISCV at the Spike built below, so an
+# upstream Spike in the toolchain prefix cannot supply a libfesvr.a without read_elf.
+command -v riscv64-unknown-elf-gcc >/dev/null || {
   echo "install-cva6.sh: riscv64-unknown-elf-gcc not on PATH" >&2
   exit 1
 }
-RISCV="$(dirname "$(dirname "$gcc_path")")"
-export RISCV
+export RISCV="$SPIKE_INSTALL_DIR"
 
 # 1. Clone CVA6 at the pinned commit. The ISA manual and riscv-dv submodules are not
 #    needed to build the testharness.

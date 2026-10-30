@@ -16,6 +16,8 @@ implemented_extensions:
     version: = 2.0
   - name: Zmmul
     version: = 1.0.0
+  - name: B
+    version: = 1.0.0
   - name: C
     version: = 2.0
   - name: Zba
@@ -42,6 +44,7 @@ params:
   MXLEN: 32
   PHYS_ADDR_WIDTH: 32
   MUTABLE_MISA_M: false
+  MUTABLE_MISA_B: false
   MUTABLE_MISA_C: false
   MISA_CSR_IMPLEMENTED: true
   NON_STANDARD_EXTENSION_IMPLEMENTED: false
@@ -151,7 +154,7 @@ params:
   # TODO(riscv-arch-test#2904): the RTL has NrPMPEntries=8, TOR-only (PMPNapotEn=0,
   # NA4 unsupported, 8-byte granularity). It is not declared because ACT rejects PMP
   # without NAPOT (tests/env/check_defines.h). Once that is fixed, declare below and
-  # match sail.json; PMPSm_cfg_A_tor_zero still needs #2905 (no RAM at address 0):
+  # match sail.json; PMP_Sm_cfg_A_tor_zero still needs #2963 (no RAM at address 0):
   # NUM_PMP_ENTRIES: 16
   # NUM_USABLE_PMP_ENTRIES: 8
   # PMP_GRANULARITY: 3

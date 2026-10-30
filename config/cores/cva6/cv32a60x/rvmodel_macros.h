@@ -1,5 +1,5 @@
 # rvmodel_macros.h
-# RVMODEL macro definitions for OpenHW CVA6 (cv32a60x) core
+# RVMODEL macro definitions for the OpenHW CVA6 cv32a65x and cv32a60x cores
 # SPDX-License-Identifier: Apache-2.0
 
 #ifndef _RVMODEL_MACROS_H
@@ -93,9 +93,6 @@
 
 ##### Machine External Interrupts #####
 
-#define CLINT_BASE_ADDRESS 0x02000000
-#define RVMODEL_MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)
-
 // install-cva6.sh puts an interrupt generator in the testharness GPIO slot at the same
 // address as Sail's simple_interrupt_generator (sail.json), so one store reaches both.
 #define RVMODEL_SET_MEXT_INT(_R1, _R2)                                  \
@@ -107,11 +104,5 @@
     li _R1, 0x00000800           ; /* clear | MEI (bit 11) */           \
     li _R2, 0x40000004           ; /* simple_interrupt_generator + 4 */ \
     sw _R1, 0(_R2)
-
-##### Supervisor Interrupts #####
-
-#define RVMODEL_SET_SEXT_INT(_R1, _R2)
-
-#define RVMODEL_CLR_SEXT_INT(_R1, _R2)
 
 #endif // _RVMODEL_MACROS_H

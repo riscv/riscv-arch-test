@@ -3,16 +3,22 @@
 These configurations run the [CVA6](https://github.com/openhwfoundation/cva6) core in its Verilator
 testharness (`corev_apu/tb/ariane_testharness.sv`), pinned to CVA6 commit `81245a4`.
 
-| Config     | ISA                                             | Modes |
-| ---------- | ----------------------------------------------- | ----- |
-| `cv32a65x` | RV32IMC_Zicsr_Zifencei_Zcb_Zba_Zbb_Zbc_Zbkc_Zbs | M     |
-| `cv32a60x` | RV32IMC_Zicsr_Zifencei_Zcb_Zba_Zbb_Zbc_Zbkc_Zbs | M     |
+| Config     | ISA                                              | Modes | PMP                                  |
+| ---------- | ------------------------------------------------ | ----- | ------------------------------------ |
+| `cv32a65x` | RV32IMCB_Zicsr_Zifencei_Zcb_Zba_Zbb_Zbc_Zbkc_Zbs | M     | 8 TOR-only entries, not declared yet |
+| `cv32a60x` | RV32IMCB_Zicsr_Zifencei_Zcb_Zba_Zbb_Zbc_Zbkc_Zbs | M     | none                                 |
 
 `cv32a65x` is the 6-stage, M-mode-only release configuration described in the
 [CV32A65X Design Document](https://docs.openhwfoundation.org/projects/cva6-user-manual/04_cv32a65x/design/design.html).
-Its RTL parameters are in `core/include/cv32a65x_config_pkg.sv`. `cv32a60x` is the same ISA with
-no PMP entries (`NrPMPEntries=0`); its parameters are in
-`core/include/cv32a60x_config_pkg.sv`. Both share `ci.yaml` and `install-cva6.sh`.
+Its RTL parameters are in `core/include/cv32a65x_config_pkg.sv`. `cv32a60x` has the same ISA and
+differs in microarchitecture: it is single-issue (`SuperscalarEn=0`), has no ALU bypass
+(`ALUBypass=0`), has 4 scoreboard entries instead of 8, and has no PMP (`NrPMPEntries=0`). Its
+parameters are in `core/include/cv32a60x_config_pkg.sv`. Both share `ci.yaml` and
+`install-cva6.sh`.
+
+Both cores set `misa.B` (`RVB=1`), and B is Zba + Zbb + Zbs, so the ISA string includes B.
+`cv32a65x` has 8 TOR-only PMP entries in RTL. The configs declare none until ACT supports
+PMP without NAPOT (riscv-arch-test#2904).
 
 ## Building and running
 
@@ -28,7 +34,9 @@ The install script clones CVA6, builds the Verilator and Spike versions CVA6's o
 testharness links Spike's libraries), verilates one testharness per configuration under
 `<install-dir>/cva6/work-ver-<config>/`, and installs the shared `run-cva6.sh` runner. It needs
 `riscv64-unknown-elf-gcc` on `PATH`. The two exports do what `.github/scripts/setup-cva6.sh` does
-in CI. The excluded extensions and their reasons are listed in `ci.yaml`.
+in CI. The excluded extensions and their reasons are listed in `ci.yaml`. The
+`PMP_Sm_cfg_A_tor_zero` exclusion is preemptive: no PMP test runs until `cv32a65x` declares
+its PMP entries.
 
 The testharness has no external interrupt source, so `install-cva6.sh` patches it to replace
 the GPIO error slave at `0x4000_0000` with an interrupt generator that matches Sail's

@@ -291,41 +291,6 @@
         },
         "include_in_device_tree": false
       },
-      //Interrupt generator (testharness GPIO slot, see install-cva6.sh)
-      {
-        "base": {
-          "len": 64,
-          "value": "0x40000000"
-        },
-        "size": {
-          "len": 64,
-          "value": "0x00001000"
-        },
-        "attributes": {
-          "mem_type": "IOMemory",
-          "cacheable": false,
-          "coherent": true,
-          "executable": false,
-          "readable": true,
-          "writable": true,
-          "read_idempotent": false,
-          "write_idempotent": false,
-          "misaligned_exceptions": {
-            "load_store": { "Some": "AlignmentException" },
-            "vector": { "Some": "AlignmentException" },
-            "amo": "AlignmentException",
-            "lrsc": "AccessFault"
-          },
-          "atomic_support": "AMONone",
-          "misaligned_atomicity_granule_size_exp": 0,
-          "vector_misaligned_atomicity_granule_size_exp": 0,
-          "reservability": "RsrvNone",
-          "supports_cbo_zero": false,
-          "supports_pte_read": false,
-          "supports_pte_write": false
-        },
-        "include_in_device_tree": false
-      },
       //RAM
       {
         "base": {
@@ -388,7 +353,7 @@
     },
     "simple_interrupt_generator": {
       "supported": true,
-      "base": 1073741824
+      "base": 201326592
     },
     "clock_frequency": 1000000000,
     "instructions_per_tick": 2,

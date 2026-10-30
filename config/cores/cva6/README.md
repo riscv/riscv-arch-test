@@ -37,11 +37,9 @@ in CI. The excluded extensions and their reasons are listed in `ci.yaml`. The
 `PMP_Sm_cfg_A_tor_zero` exclusion is preemptive: no PMP test runs until `cv32a65x` declares
 its PMP entries.
 
-The testharness has no external interrupt source, so `install-cva6.sh` patches it to replace
-the GPIO error slave at `0x4000_0000` with an interrupt generator that matches Sail's
-`simple_interrupt_generator`. Writing `0x80000800` to `0x4000_0004` raises the machine external
-interrupt, and writing `0x00000800` clears it. `sail.json` places Sail's generator at the same
-address, so `RVMODEL_SET_MEXT_INT` and `RVMODEL_CLR_MEXT_INT` drive both models with one store.
+The Verilator testharness has no external interrupt source: the GPIO slot is an error slave and
+the PLIC's UART, SPI and Ethernet sources are disabled. The configs therefore set
+`MEI_INTR_IMPL: false`, and the machine external interrupt test cases are skipped.
 
 The testharness halts on a write to `tohost`: 1 is a pass, any other value a fail. The runner
 passes the `tohost` address to the simulator and turns the testharness verdict into an `RVCP-SUMMARY`

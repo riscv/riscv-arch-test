@@ -130,12 +130,21 @@ covergroup ZicsrF_cg with function sample(ins_t ins);
         bins rup = {3'b011};
         bins rmm = {3'b100};
     }
-    cp_frm_reserved_static_rm: cross fadd, frm_reserved, static_rm iff (ins.trap == 0);
+    // Three adds per mode, whose results together differ in every rounding mode
+    frm_reserved_addend: coverpoint ins.current.fs2_val[31:0] {
+        bins tie_odd      = {32'h34400000}; // 1 + 1.5*2^-23
+        bins tie_even_neg = {32'hB3800000}; // -1 - 2^-24
+        bins quarter_ulp  = {32'h33000000}; // 1 + 2^-25
+    }
+    cp_frm_reserved_static_rm: cross fadd, frm_reserved, static_rm, frm_reserved_addend iff (ins.trap == 0);
 
     // very specific tests to check that underflow is computed after rounding
     // The operand sets come from Berkeley TestFloat cases whose exact result is tiny before rounding.
     // Each is crossed with every static rounding mode: in some modes the result is not tiny after
     // rounding (UF = 0), in others it is tiny after rounding even though the delivered result is +/-2^emin (UF = 1).
+    // fmul_emin: 2^emin * (1 - 2^-p) is tiny after rounding in every mode (UF = 1), though it rounds to +/-2^emin in some.
+    // fdiv: (2 - 2^-(p-2)) * 2^emin / (2 - 2^-(p-1)) rounds to +/-2^emin, with UF = 1, when rounding away from zero.
+    // fdiv has no tiny-before-but-not-after case: a quotient of p-bit significands is never within 2^-p of 1 unless exact.
     // single-precision (S) cases
     underflow_fma_s: coverpoint ins.current.insn iff
         (ins.current.fs1_val[31:0] == 32'h3F00FBFF & ins.current.fs2_val[31:0] == 32'h80000001 & ins.current.fs3_val[31:0] == 32'h807FFFFF) {
@@ -148,6 +157,18 @@ covergroup ZicsrF_cg with function sample(ins_t ins);
             wildcard bins fmul = {FMUL_S};
         }
     cp_underflow_after_rounding_fmul_s: cross underflow_fmul_s, static_rm;
+
+    underflow_fmul_emin_s: coverpoint ins.current.insn iff
+        (ins.current.fs1_val[31:0] == 32'h00800000 & ins.current.fs2_val[31:0] == 32'h3F7FFFFF) {
+            wildcard bins fmul = {FMUL_S};
+        }
+    cp_underflow_after_rounding_fmul_emin_s: cross underflow_fmul_emin_s, static_rm;
+
+    underflow_fdiv_s: coverpoint ins.current.insn iff
+        (ins.current.fs1_val[31:0] == 32'h00FFFFFE & ins.current.fs2_val[31:0] == 32'h3FFFFFFF) {
+            wildcard bins fdiv = {FDIV_S};
+        }
+    cp_underflow_after_rounding_fdiv_s: cross underflow_fdiv_s, static_rm;
 
     `ifdef D_SUPPORTED
     // double-precision (D) cases
@@ -168,6 +189,18 @@ covergroup ZicsrF_cg with function sample(ins_t ins);
                 wildcard bins fcvt = {FCVT_S_D};
             }
         cp_underflow_after_rounding_fcvt_s_d: cross underflow_fcvt_s_d, static_rm;
+
+        underflow_fmul_emin_d: coverpoint ins.current.insn iff
+            (ins.current.fs1_val[63:0] == 64'h8010000000000000 & ins.current.fs2_val[63:0] == 64'h3FEFFFFFFFFFFFFF) {
+                wildcard bins fmul = {FMUL_D};
+            }
+        cp_underflow_after_rounding_fmul_emin_d: cross underflow_fmul_emin_d, static_rm;
+
+        underflow_fdiv_d: coverpoint ins.current.insn iff
+            (ins.current.fs1_val[63:0] == 64'h801FFFFFFFFFFFFE & ins.current.fs2_val[63:0] == 64'h3FFFFFFFFFFFFFFF) {
+                wildcard bins fdiv = {FDIV_D};
+            }
+        cp_underflow_after_rounding_fdiv_d: cross underflow_fdiv_d, static_rm;
     `endif
 
     `ifdef Q_SUPPORTED
@@ -205,21 +238,102 @@ covergroup ZicsrF_cg with function sample(ins_t ins);
             }
         cp_underflow_after_rounding_fmul_h: cross underflow_fmul_h, static_rm;
 
+        underflow_fmul_emin_h: coverpoint ins.current.insn iff
+            (ins.current.fs1_val[15:0] == 16'h0400 & ins.current.fs2_val[15:0] == 16'h3BFF) {
+                wildcard bins fmul = {FMUL_H};
+            }
+        cp_underflow_after_rounding_fmul_emin_h: cross underflow_fmul_emin_h, static_rm;
+
+        underflow_fdiv_h: coverpoint ins.current.insn iff
+            (ins.current.fs1_val[15:0] == 16'h07FE & ins.current.fs2_val[15:0] == 16'h3FFF) {
+                wildcard bins fdiv = {FDIV_H};
+            }
+        cp_underflow_after_rounding_fdiv_h: cross underflow_fdiv_h, static_rm;
+    `endif
+
+    `ifdef ZFHMIN_SUPPORTED
         underflow_fcvt_h_s: coverpoint ins.current.insn iff
             (ins.current.fs1_val[31:0] == 32'h387FF000) {
                 wildcard bins fcvt = {FCVT_H_S};
             }
         cp_underflow_after_rounding_fcvt_h_s: cross underflow_fcvt_h_s, static_rm;
-    `else
-        `ifdef ZFHMIN_SUPPORTED
-            // same test case, repeated if only Zfhmin is supported
-            underflow_fcvt_h_s: coverpoint ins.current.insn iff
-                (ins.current.fs1_val[31:0] == 32'h387FF000) {
-                    wildcard bins fcvt = {FCVT_H_S};
-                }
-            cp_underflow_after_rounding_fcvt_h_s: cross underflow_fcvt_h_s, static_rm;
-        `endif
-   `endif
+    `endif
+
+    ///////////////////////////////////////////
+    // FMA special cases (ZicsrF_fma test file)
+    // The sign of an exact zero sum depends on the rounding mode, so it is crossed with every static rounding mode.
+    ///////////////////////////////////////////
+
+    // FMA with multiplicands +inf and +0: canonical NaN and NV, even for a quiet NaN addend
+    fma_inf_zero_s_op: coverpoint ins.current.insn {
+        wildcard bins fmadd = {FMADD_S};
+        wildcard bins fmsub = {FMSUB_S};
+        wildcard bins fnmadd = {FNMADD_S};
+        wildcard bins fnmsub = {FNMSUB_S};
+    }
+    fma_inf_zero_s_addend: coverpoint ins.current.fs3_val[31:0] iff (ins.current.fs1_val[31:0] == 32'h7F800000 & ins.current.fs2_val[31:0] == 32'h00000000) {
+        bins qnan = {32'h7FC00000};
+        bins snan = {32'h7F800001};
+        bins one = {32'h3F800000};
+    }
+    cp_fma_inf_zero_s: cross fma_inf_zero_s_op, fma_inf_zero_s_addend;
+
+    // FMA whose product exactly cancels the addend: +0, or -0 under RDN, in every static rounding mode.
+    // fs1 = 1 + 2^-k and fs2 = 1 - 2^-k, so fs1*fs2 = 1 - 2^-2k exactly (k = 12 for S, 26 for D, 5 for H);
+    // fs3 = -(1 - 2^-2k) for fmadd and fnmadd and +(1 - 2^-2k) for fmsub and fnmsub.
+    fma_exact_zero_s: coverpoint ins.current.insn iff (ins.current.fs1_val[31:0] == 32'h3F800800 & ins.current.fs2_val[31:0] == 32'h3F7FF000) {
+        wildcard bins fmadd = {FMADD_S} iff (ins.current.fs3_val[31:0] == 32'hBF7FFFFF);
+        wildcard bins fmsub = {FMSUB_S} iff (ins.current.fs3_val[31:0] == 32'h3F7FFFFF);
+        wildcard bins fnmadd = {FNMADD_S} iff (ins.current.fs3_val[31:0] == 32'hBF7FFFFF);
+        wildcard bins fnmsub = {FNMSUB_S} iff (ins.current.fs3_val[31:0] == 32'h3F7FFFFF);
+    }
+    cp_fma_exact_zero_s: cross fma_exact_zero_s, static_rm;
+
+    `ifdef D_SUPPORTED
+        fma_inf_zero_d_op: coverpoint ins.current.insn {
+            wildcard bins fmadd = {FMADD_D};
+            wildcard bins fmsub = {FMSUB_D};
+            wildcard bins fnmadd = {FNMADD_D};
+            wildcard bins fnmsub = {FNMSUB_D};
+        }
+        fma_inf_zero_d_addend: coverpoint ins.current.fs3_val[63:0] iff (ins.current.fs1_val[63:0] == 64'h7FF0000000000000 & ins.current.fs2_val[63:0] == 64'h0000000000000000) {
+            bins qnan = {64'h7FF8000000000000};
+            bins snan = {64'h7FF0000000000001};
+            bins one = {64'h3FF0000000000000};
+        }
+        cp_fma_inf_zero_d: cross fma_inf_zero_d_op, fma_inf_zero_d_addend;
+
+        fma_exact_zero_d: coverpoint ins.current.insn iff (ins.current.fs1_val[63:0] == 64'h3FF0000004000000 & ins.current.fs2_val[63:0] == 64'h3FEFFFFFF8000000) {
+            wildcard bins fmadd = {FMADD_D} iff (ins.current.fs3_val[63:0] == 64'hBFEFFFFFFFFFFFFE);
+            wildcard bins fmsub = {FMSUB_D} iff (ins.current.fs3_val[63:0] == 64'h3FEFFFFFFFFFFFFE);
+            wildcard bins fnmadd = {FNMADD_D} iff (ins.current.fs3_val[63:0] == 64'hBFEFFFFFFFFFFFFE);
+            wildcard bins fnmsub = {FNMSUB_D} iff (ins.current.fs3_val[63:0] == 64'h3FEFFFFFFFFFFFFE);
+        }
+        cp_fma_exact_zero_d: cross fma_exact_zero_d, static_rm;
+    `endif
+
+    `ifdef ZFH_SUPPORTED
+        fma_inf_zero_h_op: coverpoint ins.current.insn {
+            wildcard bins fmadd = {FMADD_H};
+            wildcard bins fmsub = {FMSUB_H};
+            wildcard bins fnmadd = {FNMADD_H};
+            wildcard bins fnmsub = {FNMSUB_H};
+        }
+        fma_inf_zero_h_addend: coverpoint ins.current.fs3_val[15:0] iff (ins.current.fs1_val[15:0] == 16'h7C00 & ins.current.fs2_val[15:0] == 16'h0000) {
+            bins qnan = {16'h7E00};
+            bins snan = {16'h7C01};
+            bins one = {16'h3C00};
+        }
+        cp_fma_inf_zero_h: cross fma_inf_zero_h_op, fma_inf_zero_h_addend;
+
+        fma_exact_zero_h: coverpoint ins.current.insn iff (ins.current.fs1_val[15:0] == 16'h3C20 & ins.current.fs2_val[15:0] == 16'h3BC0) {
+            wildcard bins fmadd = {FMADD_H} iff (ins.current.fs3_val[15:0] == 16'hBBFE);
+            wildcard bins fmsub = {FMSUB_H} iff (ins.current.fs3_val[15:0] == 16'h3BFE);
+            wildcard bins fnmadd = {FNMADD_H} iff (ins.current.fs3_val[15:0] == 16'hBBFE);
+            wildcard bins fnmsub = {FNMSUB_H} iff (ins.current.fs3_val[15:0] == 16'h3BFE);
+        }
+        cp_fma_exact_zero_h: cross fma_exact_zero_h, static_rm;
+    `endif
  endgroup
 
 function void zicsrf_sample(int hart, int issue, ins_t ins);

@@ -39,3 +39,8 @@
 `ifdef SVADU_SUPPORTED
     PMP_Svadu_cg = new();    PMP_Svadu_cg.set_inst_name("obj_PMP_Svadu");
 `endif
+`ifdef H_SUPPORTED
+    PMP_H_cg = new();    PMP_H_cg.set_inst_name("obj_PMP_H");
+    PMP_H_hlv_cg = new();    PMP_H_hlv_cg.set_inst_name("obj_PMP_H_hlv");
+    PMP_H_guest_cg = new();    PMP_H_guest_cg.set_inst_name("obj_PMP_H_guest");
+`endif

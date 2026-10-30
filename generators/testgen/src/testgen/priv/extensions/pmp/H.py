@@ -1,0 +1,650 @@
+##################################
+# priv/extensions/pmp/H.py
+#
+# PMP H: PMP enforcement with the hypervisor extension.
+# David_Harris@hmc.edu 24 September 2026
+# SPDX-License-Identifier: Apache-2.0
+##################################
+
+"""PMP H group: PMP configured in M-mode and checked from VS and VU modes, for the hypervisor load and
+store instructions, and on the addresses that two-stage translation produces.
+
+The group boots to M-mode and delegates nothing, so the M-mode handler takes every trap.  PMP checks the
+supervisor physical address that G-stage translation produces and the implicit page-table reads of both
+stages (machine.adoc pmp_with_paging, hypervisor.adoc H_pmp), including the hardware A/D updates that
+Svadu makes.  A page or guest-page fault of the translation takes priority over an access fault on the
+final address, while an access fault on a page-table access is the first fault the walk encounters
+(hypervisor.adoc HSyncExcPrio).
+"""
+
+from collections.abc import Callable
+from dataclasses import dataclass, replace
+from functools import partial
+
+from testgen.asm.helpers import arch_block, comment_banner, gated, write_sigupd
+from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
+from testgen.priv.extensions.HCommon import HLV_INSTRS, HLVX_INSTRS, HSV_INSTRS, TWO_STAGE_GATE
+from testgen.priv.extensions.pmp._lower_mode import VS_MODE, VU_MODE, Mode, make_lower_mode_amode, make_lower_mode_base
+from testgen.priv.extensions.pmp.helpers import (
+    REGION_BLOBS,
+    UNLOCKED_LXWR_CASES,
+    cfg_byte,
+    cfg_shift,
+    lxwr_walk_body,
+    napot_mask_defines,
+    zero_pmp_regs,
+)
+from testgen.priv.extensions.pmp.probes import Cross
+from testgen.priv.extensions.sv.access import virtual_address
+from testgen.priv.extensions.sv.generate import guest_translation_setup, guest_translation_teardown, per_xlen
+from testgen.priv.extensions.sv.page_tables import (
+    PteFlags,
+    SvMode,
+    create_page_mapping,
+    guest_table_data,
+    write_pte,
+)
+from testgen.priv.registry import add_priv_test_generator
+
+# Covergroups of the hypervisor load/store probes and of the two-stage scenarios; the walks from VS-mode and
+# VU-mode go to PMP_H_cg through probes.covergroup
+_HLV_CG = "PMP_H_hlv_cg"
+_GUEST_CG = "PMP_H_guest_cg"
+
+# The PMP entry each scenario programs, so that coverage can tell the scenarios apart: a page table
+# (0-5), the final supervisor physical address (6), the guest virtual addresses of the two mappings
+# (7 and 8 together), the guest physical address of vlvl0 (8 alone), and the table that holds an invalid
+# leaf (9, 10).
+# table: (entry, NAPOT low ones for its size, RV64 only)
+_TABLES = {
+    "vlvl0": (0, "0x1FF", False),
+    "hlvl0": (1, "0x1FF", False),
+    "vlvl1": (2, "0x1FF", True),
+    "hlvl1": (3, "0x1FF", True),
+    "Vroot": (4, "0x1FF", False),
+    "Hroot": (5, "0x7FF", False),
+}
+# A deny region: (address label or register, entry, NAPOT low ones)
+_SPA = ("TEST_FOR_EXECUTION", 6, "PMP_REGION_SIZE")
+# A NAPOT region of 4 KiB page tables needs a PMP grain of at most 4 KiB, and entries 0-10 lie below the background
+# entry
+_TABLE_GATE = "UDB_PMP_GRANULARITY <= 10 && UDB_NUM_USABLE_PMP_ENTRIES >= 12"
+_MAPPINGS = ("vs", "g")
+
+
+def _deny(regions: list[tuple[str, int, str]], lxwr: str = "0000") -> list[str]:
+    """Clear the unlocked PMP entries, then make each (address, entry, NAPOT ones) a NAPOT region with ``lxwr``.
+
+    An address is a label or a register.  Uses x4 and x5 only, so allocator registers survive.  HFENCE.VVMA
+    flushes cached VS-stage translations, which HFENCE.GVMA need not flush (hypervisor.adoc hfence.vma NOTE).
+    """
+    lines = [*zero_pmp_regs()]
+    for address, entry, ones in regions:
+        load = f"mv x5, {address}" if address.startswith("x") else f"LA(x5, {address})"
+        lines.extend([load, "srli x5, x5, PMP_SHIFT", f"ori x5, x5, {ones}", f"csrw pmpaddr{entry}, x5"])
+    for xlen, per_csr in ((32, 4), (64, 8)):
+        csrs: dict[int, list[str]] = {}
+        for _, entry, _ in regions:
+            csrs.setdefault((entry // per_csr) * (xlen // 32), []).append(cfg_byte(lxwr, "napot", cfg_shift(entry)))
+        lines.append(f"#if __riscv_xlen == {xlen}")
+        for csr, values in csrs.items():
+            lines.extend([f"LI(x4, {' | '.join(values)})", f"csrw pmpcfg{csr}, x4"])
+        lines.append("#endif")
+    return [*lines, "sfence.vma", "hfence.gvma", "hfence.vvma"]
+
+
+#####################################################################
+# Hypervisor loads and stores with vsatp and hgatp Bare
+#####################################################################
+
+
+def _hlv_probes(test_data: TestData, case: str, coverpoint: Cross, region: str) -> list[str]:
+    """Every hsv, hlv and hlvx at ``region``.  A faulting load keeps rd's previous value.
+
+    ``coverpoint`` is the prefix of the per-instruction coverpoints, so it must be a name.
+    """
+    if not isinstance(coverpoint, str):
+        raise TypeError("_hlv_probes needs a coverpoint name prefix")
+    addr, rd = test_data.int_regs.get_registers(2)
+    lines = ["", f"LA(x{addr}, {region})", f"LI(x{rd}, RVTEST_PMP_RET_ENCODING)"]
+    for instr, rv64 in (*HSV_INSTRS, *HLV_INSTRS, *HLVX_INSTRS):
+        body = [
+            test_data.add_testcase(f"{case}_{instr}", f"{coverpoint}_{instr.split('.')[0]}", _HLV_CG),
+            f"{instr} x{rd}, (x{addr})",
+            write_sigupd(rd, test_data),
+        ]
+        lines.extend(gated(body, "__riscv_xlen == 64" if rv64 else None))
+    test_data.int_regs.return_registers([addr, rd])
+    return lines
+
+
+def _make_hlv_chunk(test_data: TestData, hs: bool) -> TestChunk:
+    """hsv, hlv and hlvx from M-mode (effective privilege VS) or HS-mode (VU) against each legal XWR.
+
+    HLVX needs both R and X from PMP (hypervisor.adoc hlsv_u_op).  An hlv from M-mode is still checked
+    against unlocked PMP entries, because its effective privilege is VS or VU.
+    """
+    mode = "HS" if hs else "M"
+    chunk = test_data.begin_test_chunk(f"H_hlv_{mode.lower()}")
+    chunk.section_header = comment_banner(
+        "cp_pmp_hsv, cp_pmp_hlv, cp_pmp_hlvx",
+        f"Every hsv, hlv and hlvx from {mode}-mode with hstatus.SPVP = {int(not hs)} at the start of a NAPOT region,\n"
+        "L = 0, each legal XWR.  vsatp and hgatp are Bare.",
+    )
+    temp = test_data.int_regs.get_register()
+    setup = [
+        "csrw vsatp, zero",
+        "csrw hgatp, zero",
+        "hfence.gvma",
+        f"LI(x{temp}, HSTATUS_SPVP)",
+        f"{'csrc' if hs else 'csrs'} hstatus, x{temp}",
+    ]
+    test_data.int_regs.return_register(temp)
+    chunk.code.extend(
+        lxwr_walk_body(
+            test_data,
+            UNLOCKED_LXWR_CASES,
+            "napot",
+            _hlv_probes,
+            "cp_pmp",
+            lower_mode="S" if hs else None,
+            extra_setup=setup,
+        )
+    )
+    chunk.raw_data.extend(REGION_BLOBS["napot"])
+    return test_data.end_test_chunk()
+
+
+#####################################################################
+# Accesses through two-stage translation
+#####################################################################
+
+
+def _vlvl0_gpa(g: SvMode) -> str:
+    """The guest physical address of rvtest_vlvl0_pg_tbl: the page after g.data_va, in the same G-stage table."""
+    return f"({g.data_va} + 0x1000)"
+
+
+def _guest_mappings(test_data: TestData, g: SvMode, vs: SvMode, user: bool, gvas: tuple[int, int]) -> list[str]:
+    """Map TEST_FOR_EXECUTION for a guest in two ways and leave the guest virtual addresses in ``gvas``.
+
+    Mapping "vs" is a VS-stage 4 KiB page at vs.data_va over the G-stage identity map, and mapping "g" is a
+    G-stage 4 KiB page at g.data_va reached through a VS-stage identity superpage.  VS-stage leaves are
+    user pages when ``user``.  The VS-stage walk of mapping vs reaches its last table, vlvl0, through the
+    guest physical address _vlvl0_gpa, which differs from its supervisor physical address.
+    """
+    lines = guest_translation_setup(test_data, g, vs, "VUmode" if user else "VSmode")
+    pte, addr, tmp = test_data.int_regs.get_registers(3)
+    lines.extend(
+        [
+            "// Mapping vs: VS-stage kilopage over the G-stage identity map",
+            *create_page_mapping(
+                vs,
+                leaf_level=0,
+                leaf_flags=PteFlags(user=user),
+                virtual_address=vs.data_va,
+                physical_address="TEST_FOR_EXECUTION",
+                regs=(pte, addr, tmp),
+            ),
+            "// Mapping g: VS-stage identity superpage over a G-stage kilopage",
+            *write_pte(
+                vs,
+                level=vs.levels - 1,
+                flags=PteFlags(user=user),
+                virtual_address=g.data_va,
+                physical_address=g.data_va,
+                regs=(pte, addr, tmp),
+                pa_is_label=False,
+                superpage=True,
+            ),
+            *create_page_mapping(
+                g,
+                leaf_level=0,
+                leaf_flags=PteFlags(user=True),
+                virtual_address=g.data_va,
+                physical_address="TEST_FOR_EXECUTION",
+                regs=(pte, addr, tmp),
+            ),
+            "// vlvl0 at a guest physical address that G-stage translation moves",
+            *write_pte(
+                g,
+                level=0,
+                flags=PteFlags(user=True),
+                virtual_address=_vlvl0_gpa(g),
+                physical_address="rvtest_vlvl0_pg_tbl",
+                regs=(pte, addr, tmp),
+            ),
+            *write_pte(
+                vs,
+                level=1,
+                flags=PteFlags.nonleaf(),
+                virtual_address=vs.data_va,
+                physical_address=_vlvl0_gpa(g),
+                regs=(pte, addr, tmp),
+                pa_is_label=False,
+            ),
+            "hfence.gvma",
+            "hfence.vvma",
+        ]
+    )
+    for mode, gva in ((vs, gvas[0]), (g, gvas[1])):
+        lines.extend(
+            virtual_address(
+                mode,
+                mode.data_va,
+                0,
+                destination=gva,
+                physical_address="TEST_FOR_EXECUTION",
+                merge_sv32_base_page=True,
+                scratch=pte,
+            )
+        )
+    test_data.int_regs.return_registers([pte, addr, tmp])
+    return lines
+
+
+def _guest_leaves(test_data: TestData, g: SvMode, vs: SvMode, user: bool, flags: PteFlags) -> list[str]:
+    """Rewrite the kilopage leaves of both mappings with ``flags``; G-stage leaves are always user pages."""
+    pte, addr, tmp = test_data.int_regs.get_registers(3)
+    lines = [
+        *write_pte(
+            vs,
+            level=0,
+            flags=replace(flags, user=user),
+            virtual_address=vs.data_va,
+            physical_address="TEST_FOR_EXECUTION",
+            regs=(pte, addr, tmp),
+        ),
+        *write_pte(
+            g,
+            level=0,
+            flags=replace(flags, user=True),
+            virtual_address=g.data_va,
+            physical_address="TEST_FOR_EXECUTION",
+            regs=(pte, addr, tmp),
+        ),
+        "hfence.gvma",
+        "hfence.vvma",
+    ]
+    test_data.int_regs.return_registers([pte, addr, tmp])
+    return lines
+
+
+@dataclass(frozen=True)
+class _Scenario:
+    """One PMP and leaf configuration that the probes run under.
+
+    regions are (address, entry, NAPOT low ones) as for _deny, with permissions lxwr; an address "{gva0}" or
+    "{gva1}" is the guest virtual address of mapping vs or g, and "{vlvl0_gpa}" is the guest physical address of
+    vlvl0.  leaves, if set, first rewrite both kilopage leaves.  atomics, if set, names the coverpoints of an
+    amoswap.w and an lr.w at each mapping.  adue sets menvcfg.ADUE and henvcfg.ADUE.
+    """
+
+    name: str
+    coverpoint: str
+    description: str
+    regions: tuple[tuple[str, int, str], ...] = ()
+    leaves: PteFlags | None = None
+    rv64: bool = False
+    lxwr: str = "0000"
+    atomics: tuple[str, str] | None = None
+    adue: bool = False
+
+    @property
+    def gate(self) -> str | None:
+        gates = [g for g, on in (("__riscv_xlen == 64", self.rv64), ("defined(SVADU_SUPPORTED)", self.adue)) if on]
+        return " && ".join(gates) or None
+
+
+def _table(name: str, entry: int | None = None) -> tuple[str, int, str]:
+    """The deny region of page table ``name``, in its own PMP entry unless ``entry`` is given."""
+    table_entry, ones, _ = _TABLES[name]
+    return (f"rvtest_{name}_pg_tbl", table_entry if entry is None else entry, ones)
+
+
+def _table_scenario(name: str, coverpoint: str, stage: str) -> _Scenario:
+    return _Scenario(
+        name,
+        coverpoint,
+        f"PMP denies the {stage} table {name}; accesses whose walk reads it raise access faults",
+        (_table(name),),
+        rv64=_TABLES[name][2],
+    )
+
+
+def _adue(on: bool) -> list[str]:
+    """Set or clear menvcfg.ADUE and henvcfg.ADUE (menvcfgh and henvcfgh on RV32), menvcfg first when setting, since
+    henvcfg.ADUE is read-only zero while menvcfg.ADUE = 0."""
+    op = "csrs" if on else "csrc"
+    lines = []
+    for xlen, h in ((64, ""), (32, "H")):
+        csrs = [("menvcfg", "MENVCFG"), ("henvcfg", "HENVCFG")]
+        lines.append(f"#if __riscv_xlen == {xlen}")
+        for csr, mask in csrs if on else reversed(csrs):
+            lines.extend([f"LI(x4, {mask}{h}_ADUE)", f"{op} {csr}{h.lower()}, x4"])
+        lines.append("#endif")
+    return lines
+
+
+def _atomic_probes(
+    test_data: TestData, name: str, coverpoints: tuple[str, str], gva: int, regs: list[int]
+) -> tuple[list[str], list[str]]:
+    """amoswap.w and lr.w at ``gva``: the probe lines and the signature checks.  amoswap.w writes back the return
+    instruction that the region holds, so later fetches still return."""
+    src, rd = regs
+    probes, checks = [], []
+    for ext, coverpoint, setup, instr, result in (
+        (
+            "Zaamo",
+            coverpoints[0],
+            [f"LI(x{src}, RVTEST_PMP_RET_ENCODING)", f"LI(x{rd}, 42)"],
+            f"amoswap.w x{rd}, x{src}, (x{gva})",
+            rd,
+        ),
+        ("Zalrsc", coverpoints[1], [f"LI(x{src}, 42)"], f"lr.w x{src}, (x{gva})", src),
+    ):
+        label = test_data.add_testcase(f"{name}_{instr.split()[0]}", coverpoint, _GUEST_CG)
+        guard = f"{ext.upper()}_SUPPORTED"
+        probes.extend([f"#ifdef {guard}", *setup, *arch_block([label, instr], ext), "#endif"])
+        checks.extend([f"#ifdef {guard}", write_sigupd(result, test_data, label=label.removesuffix(":")), "#endif"])
+    return probes, checks
+
+
+def _guest_scenarios(test_data: TestData, mode: str, scenarios: list[_Scenario]) -> list[str]:
+    """Map both test pages for a guest, then run jalr, sw and lw from VS-mode or VU-mode at the guest virtual address
+    of each mapping under each scenario.
+
+    A faulting load keeps its preloaded value.  VU-mode cannot write the signature through the VS-stage identity
+    map, which is not a user page, so M-mode checks its loads.
+    """
+    user = mode == "vu"
+    gva_vs, gva_g, vlvl0_gpa = test_data.int_regs.get_registers(3)
+    lines = [
+        *per_xlen(lambda g, vs: _guest_mappings(test_data, g, vs, user, (gva_vs, gva_g))),
+        *per_xlen(lambda g, _vs: [f"LI(x{vlvl0_gpa}, {_vlvl0_gpa(g)})"]),
+    ]
+    for scenario in scenarios:
+        body = [f"// {mode.upper()}-mode: {scenario.description}"]
+        if scenario.adue:
+            body.extend(_adue(True))
+        if scenario.leaves is not None:
+            body.extend(per_xlen(partial(_guest_leaves, test_data, user=user, flags=scenario.leaves)))
+        regions = [
+            (address.format(gva0=f"x{gva_vs}", gva1=f"x{gva_g}", vlvl0_gpa=f"x{vlvl0_gpa}"), entry, ones)
+            for address, entry, ones in scenario.regions
+        ]
+        body.extend([*_deny(regions, scenario.lxwr), "RVTEST_FENCEI", f"RVTEST_TSBI_GOTO_{mode.upper()}MODE"])
+        checks = []
+        rds = test_data.int_regs.get_registers(2)
+        for mapping, gva, rd in zip(_MAPPINGS, (gva_vs, gva_g), rds, strict=True):
+            name = f"{mode}_{scenario.name}_{mapping}"
+            body.extend(
+                [
+                    "LA(ra, 1f)",
+                    test_data.add_testcase(f"{name}_jalr", scenario.coverpoint, _GUEST_CG),
+                    f"jalr x0, 0(x{gva})",
+                    "1:",
+                    f"LI(x{rd}, RVTEST_PMP_RET_ENCODING)",
+                    test_data.add_testcase(f"{name}_sw", scenario.coverpoint, _GUEST_CG),
+                    f"sw x{rd}, 0(x{gva})",
+                    f"LI(x{rd}, 42)",
+                ]
+            )
+            label = test_data.add_testcase(f"{name}_lw", scenario.coverpoint, _GUEST_CG)
+            body.extend([label, f"lw x{rd}, 0(x{gva})"])
+            check = write_sigupd(rd, test_data, label=label.removesuffix(":"))
+            if user:
+                checks.append(check)
+            else:
+                body.append(check)
+        body.extend(["RVTEST_TSBI_GOTO_MMODE", *checks])
+        if scenario.atomics is not None:
+            for mapping, gva in zip(_MAPPINGS, (gva_vs, gva_g), strict=True):
+                probes, checks = _atomic_probes(
+                    test_data, f"{mode}_{scenario.name}_{mapping}", scenario.atomics, gva, rds
+                )
+                body.extend([f"RVTEST_TSBI_GOTO_{mode.upper()}MODE", *probes])
+                if not user:
+                    body.extend(checks)
+                body.extend(["RVTEST_TSBI_GOTO_MMODE", *(checks if user else [])])
+        test_data.int_regs.return_registers(rds)
+        if scenario.adue:
+            body.extend(_adue(False))
+        lines.extend(gated(body, scenario.gate))
+    test_data.int_regs.return_registers([gva_vs, gva_g, vlvl0_gpa])
+    return [*lines, *zero_pmp_regs(), *guest_translation_teardown(test_data)]
+
+
+def _hlv_scenarios(test_data: TestData, scenarios: list[_Scenario]) -> list[str]:
+    """Map both test pages, then run hsv.w, hlv.w and hlvx.wu from HS-mode with hstatus.SPVP = 1 in each scenario."""
+    gva_vs, gva_g = test_data.int_regs.get_registers(2)
+    rd = test_data.int_regs.get_register()
+    lines = [
+        *per_xlen(lambda g, vs: _guest_mappings(test_data, g, vs, False, (gva_vs, gva_g))),
+        f"LI(x{rd}, HSTATUS_SPVP)",
+        f"csrs hstatus, x{rd}",
+    ]
+    for scenario in scenarios:
+        body = [f"// HS-mode: {scenario.description}", *_deny(list(scenario.regions)), "RVTEST_TSBI_GOTO_SMODE"]
+        for mapping, gva in zip(_MAPPINGS, (gva_vs, gva_g), strict=True):
+            name = f"{scenario.name}_{mapping}"
+            body.extend(
+                [
+                    f"LI(x{rd}, RVTEST_PMP_RET_ENCODING)",
+                    test_data.add_testcase(f"{name}_hsv.w", scenario.coverpoint, _HLV_CG),
+                    f"hsv.w x{rd}, (x{gva})",
+                ]
+            )
+            for instr in ("hlv.w", "hlvx.wu"):
+                body.extend(
+                    [
+                        f"LI(x{rd}, 42)",
+                        test_data.add_testcase(f"{name}_{instr}", scenario.coverpoint, _HLV_CG),
+                        f"{instr} x{rd}, (x{gva})",
+                        write_sigupd(rd, test_data),
+                    ]
+                )
+        body.append("RVTEST_TSBI_GOTO_MMODE")
+        lines.extend(gated(body, scenario.gate))
+    lines.extend([f"LI(x{rd}, HSTATUS_SPVP)", f"csrc hstatus, x{rd}", *zero_pmp_regs()])
+    test_data.int_regs.return_registers([gva_vs, gva_g, rd])
+    return [*lines, *guest_translation_teardown(test_data)]
+
+
+_INVALID = PteFlags(valid=False)
+_ATOMICS = ("cp_pmp_amo", "cp_pmp_lr")
+
+_GUEST_SCENARIOS = [
+    _Scenario(
+        "gva",
+        "cp_pmp_after_translation",
+        "PMP denies the guest virtual addresses, which does not affect the accesses",
+        (("{gva0}", 7, "PMP_REGION_SIZE"), ("{gva1}", 8, "PMP_REGION_SIZE")),
+        atomics=_ATOMICS,
+    ),
+    _Scenario(
+        "spa", "cp_pmp_after_translation", "PMP denies the supervisor physical address", (_SPA,), atomics=_ATOMICS
+    ),
+    _table_scenario("vlvl1", "cp_pmp_pt", "VS-stage"),
+    _table_scenario("vlvl0", "cp_pmp_pt", "VS-stage"),
+    _Scenario(
+        "vlvl0_gpa",
+        "cp_pmp_pt_gpa",
+        "PMP denies the guest physical address of vlvl0, which does not affect the accesses",
+        (("{vlvl0_gpa}", 8, "0x1FF"),),
+    ),
+    _Scenario(
+        "spa_leaf_r",
+        "cp_pmp_pf_priority",
+        "PMP denies the supervisor physical address; R-only leaves fault jalr, sw and amoswap.w, and lw and lr.w raise "
+        "access faults",
+        (_SPA,),
+        PteFlags(write=False, execute=False),
+        atomics=("cp_pmp_amo_pf_priority", "cp_pmp_lr"),
+    ),
+    _Scenario(
+        "spa_leaf_x",
+        "cp_pmp_pf_priority",
+        "PMP denies the supervisor physical address; X-only leaves fault sw and lw, and jalr raises an access fault",
+        (_SPA,),
+        PteFlags(read=False, write=False),
+    ),
+    _Scenario(
+        "leaf_invalid_vlvl0",
+        "cp_pmp_pt_priority",
+        "PMP denies vlvl0, which holds the invalid VS-stage leaf, so its read raises an access fault first",
+        (_table("vlvl0", 9),),
+        _INVALID,
+    ),
+    _table_scenario("hlvl1", "cp_pmp_pt", "G-stage"),
+    _table_scenario("hlvl0", "cp_pmp_pt", "G-stage"),
+    _Scenario(
+        "leaf_invalid_hlvl0",
+        "cp_pmp_pt_priority",
+        "PMP denies hlvl0, which holds the invalid G-stage leaf, so its read raises an access fault first",
+        (_table("hlvl0", 10),),
+        _INVALID,
+    ),
+]
+
+# With ADUE = 1, a read-only table lets the walk read a leaf with A = D = 0 but not update it
+_PT_UPDATE_SCENARIOS = [
+    _Scenario(
+        f"adue_{name}",
+        "cp_pmp_pt_update",
+        f"PMP makes {name} read-only; accesses whose {stage} leaf needs an A/D update raise access faults",
+        (_table(name),),
+        PteFlags(accessed=False, dirty=False),
+        lxwr="0001",
+        adue=True,
+    )
+    for name, stage in (("vlvl0", "VS-stage"), ("hlvl0", "G-stage"))
+]
+
+_HLV_SCENARIOS = [
+    _Scenario("none", "cp_pmp_hlv_pt", "PMP denies nothing"),
+    *(_table_scenario(name, "cp_pmp_hlv_pt", "VS-stage") for name in ("Vroot", "vlvl1", "vlvl0")),
+    _Scenario("spa", "cp_pmp_hlv_pt", "PMP denies the supervisor physical address", (_SPA,)),
+    *(_table_scenario(name, "cp_pmp_hlv_pt", "G-stage") for name in ("Hroot", "hlvl1", "hlvl0")),
+]
+
+
+def _two_stage_chunk(
+    test_data: TestData, split: str, title: str, description: str, guest: list[_Scenario], hlv: list[_Scenario]
+) -> TestChunk:
+    """jalr, sw and lw from VS-mode and VU-mode in each ``guest`` scenario, then the HS-mode hypervisor loads and
+    stores in each ``hlv`` scenario, on the TEST_FOR_EXECUTION region under two-stage translation."""
+    chunk = test_data.begin_test_chunk(split)
+    chunk.section_header = comment_banner(title, description)
+    chunk.raw_data.extend(guest_table_data())
+    chunk.code.extend(
+        [
+            *napot_mask_defines(),
+            "RVTEST_PMP_SET_BACKGROUND x4",
+            f"#if ({TWO_STAGE_GATE}) && {_TABLE_GATE}",
+            *(line for mode in ("vs", "vu") if guest for line in _guest_scenarios(test_data, mode, guest)),
+            *(_hlv_scenarios(test_data, hlv) if hlv else []),
+            "#endif",
+        ]
+    )
+    chunk.raw_data.extend(REGION_BLOBS["napot"])
+    return test_data.end_test_chunk()
+
+
+def _make_two_stage_chunks(test_data: TestData) -> list[TestChunk]:
+    """PMP on the final address and on the page tables of two-stage translation."""
+    return [
+        _two_stage_chunk(
+            test_data,
+            "H_guest",
+            "cp_pmp_after_translation, cp_pmp_pt, cp_pmp_pt_gpa, cp_pmp_pf_priority, cp_pmp_pt_priority, cp_pmp_amo, "
+            "cp_pmp_lr, cp_pmp_amo_pf_priority",
+            "jalr, sw, lw, amoswap.w and lr.w from VS-mode and VU-mode through a VS-stage and a G-stage kilopage\n"
+            "mapping, under PMP regions at the guest virtual, supervisor physical and page-table addresses",
+            _GUEST_SCENARIOS,
+            [],
+        ),
+        _two_stage_chunk(
+            test_data,
+            "H_pt_update",
+            "cp_pmp_pt_update",
+            "jalr, sw and lw from VS-mode and VU-mode through both mappings, whose leaves have A = D = 0, with\n"
+            "menvcfg.ADUE = henvcfg.ADUE = 1 and PMP making vlvl0 or hlvl0 read-only",
+            _PT_UPDATE_SCENARIOS,
+            [],
+        ),
+        _two_stage_chunk(
+            test_data,
+            "H_hlv_translated",
+            "cp_pmp_hlv_pt",
+            "hsv.w, hlv.w and hlvx.wu from HS-mode through both mappings, under PMP regions at the page tables of\n"
+            "both stages and the supervisor physical address",
+            [],
+            _HLV_SCENARIOS,
+        ),
+    ]
+
+
+#####################################################################
+# Generators
+#####################################################################
+
+
+def _lower_mode_chunks(chunks: Callable[[Mode], list[TestChunk]]) -> list[TestChunk]:
+    """The chunks of the VS-mode and VU-mode walks, whose file names start with H_vs and H_vu."""
+    return [chunk for mode in (VS_MODE, VU_MODE) for chunk in chunks(mode)]
+
+
+_PARAMS = ["NUM_PMP_ENTRIES: '>0'"]
+
+
+@add_priv_test_generator(
+    "PMP", extra_defines=["#define BOOT_TO_MMODE"], required_extensions=["Sm", "H"], params=_PARAMS
+)
+def make_pmph_base(test_data: TestData) -> list[TestChunk]:
+    return _lower_mode_chunks(lambda mode: make_lower_mode_base(test_data, mode))
+
+
+@add_priv_test_generator(
+    "PMP",
+    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=["Sm", "H"],
+    params=[*_PARAMS, "PMP_NA4_SUPPORTED: true"],
+)
+def make_pmph_na4(test_data: TestData) -> list[TestChunk]:
+    return _lower_mode_chunks(lambda mode: make_lower_mode_amode(test_data, mode, "na4"))
+
+
+@add_priv_test_generator(
+    "PMP",
+    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=["Sm", "H"],
+    params=[*_PARAMS, "PMP_NAPOT_SUPPORTED: true"],
+)
+def make_pmph_napot(test_data: TestData) -> list[TestChunk]:
+    return _lower_mode_chunks(lambda mode: make_lower_mode_amode(test_data, mode, "napot"))
+
+
+@add_priv_test_generator(
+    "PMP",
+    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=["Sm", "H"],
+    params=[*_PARAMS, "PMP_TOR_SUPPORTED: true"],
+)
+def make_pmph_tor(test_data: TestData) -> list[TestChunk]:
+    return _lower_mode_chunks(lambda mode: make_lower_mode_amode(test_data, mode, "tor"))
+
+
+@add_priv_test_generator(
+    "PMP",
+    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=["Sm", "H"],
+    params=[*_PARAMS, "PMP_NAPOT_SUPPORTED: true"],
+)
+def make_pmph_hypervisor(test_data: TestData) -> list[TestChunk]:
+    return [
+        _make_hlv_chunk(test_data, hs=False),
+        _make_hlv_chunk(test_data, hs=True),
+        *_make_two_stage_chunks(test_data),
+    ]

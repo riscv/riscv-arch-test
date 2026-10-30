@@ -40,9 +40,9 @@ include::{testplansdir}/priv/Sm_Zicntr_H.adoc[]
 
 include::{testplansdir}/priv/H_Zicntr.adoc[]
 
-==== PMPH Hypervisor Physical Memory Protection
+==== Hypervisor Physical Memory Protection
 
-include::{testplansdir}/priv/PMPH.adoc[]
+The hypervisor PMP tests are the <<t-PMP_H-coverpoints,PMP_H>> group of the PMP suite.
 
 ==== SvH Hypervisor 2-Stage Virtual Memory
 

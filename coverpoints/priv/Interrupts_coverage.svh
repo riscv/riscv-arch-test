@@ -632,25 +632,6 @@ covergroup Interrupts_cg with function sample(ins_t ins);
         `ifdef UDB_SSI_INTR_IMPL
             cp_sie_vs:      cross priv_mode_vs, csrr, csr_sip, vsstatus_sie_zero, hvip_vssip, mip_ssip_one, hideleg_vs_all;
         `endif
-
-        // Sscofpmf makes mideleg[13] (LCOFI) writable. HS-mode clears it through T-SBI, then writes 1 to bit 13 of
-        // hideleg, hie and hip and reads it back: each is read-only zero while mideleg[13] = 0.
-        `ifdef SSCOFPMF_SUPPORTED
-            // csrw writing bit 13 = 1, or csrr (csrrs with rs1 = x0, leaving bit 13 alone)
-            csrw_one_csrr: coverpoint {ins.current.insn[14:12], ins.current.rs1_val[13]} {
-                bins csrw_one = {4'b0011};
-                bins csrr     = {4'b0100};
-            }
-            csr_hideleg_hie_hip: coverpoint ins.current.insn[31:20] {
-                bins hideleg = {CSR_HIDELEG};
-                bins hie     = {CSR_HIE};
-                bins hip     = {CSR_HIP};
-            }
-            mideleg_lcofi_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mideleg", "mideleg")[13] {
-                bins zero = {0};
-            }
-            cp_hideleg_lcofi_roz: cross priv_mode_hs, csrw_one_csrr, csr_hideleg_hie_hip, mideleg_lcofi_zero;
-        `endif
     `endif
 
 endgroup

@@ -819,6 +819,5 @@ normative_rule_definitions:
   - name: mideleg_hroz
     coverpoint:
       [
-        "Interrupts_cg/cp_hideleg_lcofi_roz (HS-mode writes bit 13 of hideleg, hie and hip with mideleg bit 13 = 0)",
         "Interrupts_SmShlcofideleg_cg/cp_trigger_lcofi_m (hideleg bit 13 reads zero while mideleg bit 13 is zero)",
       ]

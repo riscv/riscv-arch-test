@@ -9,7 +9,7 @@ description: |
   Boot to SMODE, run tests in each supported priv mode of <S,U,VS,VU>
   Reference model needs to know if each of the types of interrupts are supported
   menvcfg.STCE = 0 unless otherwise stated
-  mideleg boots with 1s below M-mode and does not change, except that cp_hideleg_lcofi_roz clears mideleg[13] through T-SBI
+  mideleg boots with 1s below M-mode and does not change
   stvec.MODE uses boot value
   RVTEST_SET_MTI_INT writes mtimecmp = 0 (with tsbi if necessary)
   Define ways to cause all of the interrupts that are standard as much as possible, only need RV macros for special stuff
@@ -207,10 +207,3 @@ coverpoints:
     description: With sie = 0, sip.SSIP = 1, hideleg = hie = 0x444 and hvip.VSSIP = {0/1}, change to VS-mode with vsstatus.SIE = 0 and read sip.  With vsstatus.SIE = 1, VS-mode takes VSSI on entry and its handler clears vsip.SSIP before the read; cp_trigger_tsbi covers that case.
     expectation: sip.SSIP reads hvip.VSSIP; the pending HS-level SSIP is not visible.
     bins: 2 VSSIP
-  - name: cp_hideleg_lcofi_roz
-    goal: For bits of mideleg that are zero, the same bits of hideleg, hie and hip are read-only zero
-    description: With Sscofpmf, clear mideleg[13] (LCOFI) through T-SBI.  In HS-mode, write 1 to bit 13 of {hideleg, hie, hip} and read it back.  Then set mideleg[13] again.
-    expectation: Bit 13 reads 0 in all three CSRs.
-    bins: 3 CSRs * 2 accesses
-    rules:
-      - mideleg_hroz

@@ -20,7 +20,7 @@ TODO: mip.MSIP update time
 
 ==== Interrupts Supervisor-Mode Interrupts
 
-These tests are run on any configuration with supervisor mode that supports interrupts. They boot to S-mode and also run in U-mode (and VS/VU-mode when the H extension is supported); `mideleg` keeps its boot value with all supervisor-level interrupts delegated, except that with H and Sscofpmf, `cp_hideleg_lcofi_roz` clears `mideleg[13]` through a T-SBI call to check that bit 13 of `hideleg`, `hie` and `hip` is then read-only zero.
+These tests are run on any configuration with supervisor mode that supports interrupts. They boot to S-mode and also run in U-mode (and VS/VU-mode when the H extension is supported); `mideleg` keeps its boot value with all supervisor-level interrupts delegated.
 
 include::{testplansdir}/priv/Interrupts.adoc[]
 

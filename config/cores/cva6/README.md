@@ -16,7 +16,6 @@ differs in microarchitecture: it is single-issue (`SuperscalarEn=0`), has no ALU
 parameters are in `core/include/cv32a60x_config_pkg.sv`. Both share `ci.yaml` and
 `install-cva6.sh`.
 
-Both cores set `misa.B` (`RVB=1`), and B is Zba + Zbb + Zbs, so the ISA string includes B.
 `cv32a65x` has 8 TOR-only PMP entries in RTL. The configs declare none until ACT supports
 PMP without NAPOT (riscv-arch-test#2904).
 

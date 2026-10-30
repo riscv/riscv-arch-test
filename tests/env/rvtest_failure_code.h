@@ -1976,6 +1976,15 @@
         call rvmodel_io_write_str
 
     failedtest_terminate:
+        # A failure found by the M-mode trap handler is already in M-mode trap context.
+        lw a0, failure_type
+        LI(a1, 3)
+        bne a0, a1, 1f
+        lw a0, trap_diag_mode
+        bnez a0, 1f
+        LA(T1, rvtest_fail_epilogs_mmode)
+        jr T1
+    1:
         LA(T1, rvtest_fail_epilogs)
         jr T1
 

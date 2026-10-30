@@ -709,17 +709,6 @@
 // PRECONDITION: a0 must be non-zero (it always is during normal test execution)
 //==============================================================================
 
-// rvtest_current_mode is zero in M-mode and nonzero in lower modes. The T-SBI mode
-// handlers maintain it so failure paths can avoid issuing an ecall from M-mode.
-#define RVTEST_MODE_M      0
-#define RVTEST_MODE_LOWER  1
-
-.macro RVTEST_SET_CURRENT_MODE mode
-  LA(T1, rvtest_current_mode)
-  LI(T2, \mode)
-  SREG T2, 0(T1)
-.endm
-
 // Switch to M-mode via T-SBI.
 // After this macro, the processor is in M-mode and a0 is undefined.
 // The S-mode handler forwards a GOTO_MMODE from U, VS or VU to M-mode and then
@@ -1294,9 +1283,9 @@ rvtest_\__MODE__\()prolog_done:
 
 rvtest_\__MODE__\()endtest:                      // impossible cause landed here
 .ifc \__MODE__ , M
-        LA(     T2, rvtest_trap_fail_summary_mmode) // M-mode is already in trap context
+        LA(     T2, rvtest_fail_summary_mmode)    // M-mode is already in trap context
 .else
-        LA(     T2, rvtest_trap_fail_summary)     // switch to M-mode before reporting
+        LA(     T2, rvtest_fail_summary)          // switch to M-mode before cleanup
 .endif
         jr      T2                                // long jump to failure summary and cleanup
 
@@ -1450,7 +1439,6 @@ tsbi_\__MODE__\()goto_mode:
         //--- GOTO M-mode: set MPP=11 (M), clear MPV ---
 tsbi_\__MODE__\()goto_m:
         RVTEST_PREPARE_MEDELEG_FOR_M sp, T2, T4
-        RVTEST_SET_CURRENT_MODE RVTEST_MODE_M
         LI(     T4, MSTATUS_MPP)                     // T4 = MPP field mask (bits 12:11)
         csrs    CSR_MSTATUS, T4                       // set MPP = 11 (M-mode): sets both bits
   #ifdef H_SUPPORTED
@@ -1469,7 +1457,6 @@ tsbi_\__MODE__\()goto_m:
         //--- GOTO S-mode: set MPP=01 (S), clear MPV ---
 tsbi_\__MODE__\()goto_s:
         RVTEST_PREPARE_MEDELEG_FOR_LOWER sp, T2, T4
-        RVTEST_SET_CURRENT_MODE RVTEST_MODE_LOWER
         LI(     T4, MSTATUS_MPP)                     // T4 = MPP field mask
         csrc    CSR_MSTATUS, T4                       // clear MPP bits first (to 00)
         LI(     T4, MPP_SMODE)                        // T4 = 01 << 11 (S-mode MPP value)
@@ -1490,7 +1477,6 @@ tsbi_\__MODE__\()goto_s:
         //--- GOTO U-mode: set MPP=00 (U), clear MPV ---
 tsbi_\__MODE__\()goto_u:
         RVTEST_PREPARE_MEDELEG_FOR_LOWER sp, T2, T4
-        RVTEST_SET_CURRENT_MODE RVTEST_MODE_LOWER
         LI(     T4, MSTATUS_MPP)                     // T4 = MPP field mask
         csrc    CSR_MSTATUS, T4                       // clear MPP = 00 (U-mode)
   #ifdef H_SUPPORTED
@@ -1510,7 +1496,6 @@ tsbi_\__MODE__\()goto_u:
         //--- GOTO VS-mode: set MPP=01 (S), set MPV=1 (virtual) ---
 tsbi_\__MODE__\()goto_vs:
         RVTEST_PREPARE_MEDELEG_FOR_LOWER sp, T2, T4
-        RVTEST_SET_CURRENT_MODE RVTEST_MODE_LOWER
         LI(     T4, MSTATUS_MPP)                     // T4 = MPP field mask
         csrc    CSR_MSTATUS, T4                       // clear MPP first
         LI(     T4, MPP_SMODE)                        // T4 = S-mode MPP value (VS uses S-mode MPP with MPV=1)
@@ -1529,7 +1514,6 @@ tsbi_\__MODE__\()goto_vs:
         //--- GOTO VU-mode: set MPP=00 (U), set MPV=1 (virtual) ---
 tsbi_\__MODE__\()goto_vu:
         RVTEST_PREPARE_MEDELEG_FOR_LOWER sp, T2, T4
-        RVTEST_SET_CURRENT_MODE RVTEST_MODE_LOWER
         LI(     T4, MSTATUS_MPP)                     // T4 = MPP field mask
         csrc    CSR_MSTATUS, T4                       // clear MPP = 00 (U-mode)
         LI(     T2, (1<<MPV_LSB))                    // T2 = MPV bit mask
@@ -1720,7 +1704,6 @@ tsbi_\__MODE__\()goto_mode:
   .endif
 
 tsbi_\__MODE__\()goto_s:                          // Return to HS/S-mode (VS-mode for the VS handler) via sret
-        RVTEST_SET_CURRENT_MODE RVTEST_MODE_LOWER
         LI(     T3, SSTATUS_SPP)                   // T3 = SPP bit mask (bit 8)
         csrs    CSR_XSTATUS, T3                     // set sstatus.SPP = 1 (sret -> S-mode)
 #ifdef H_SUPPORTED
@@ -1730,7 +1713,6 @@ tsbi_\__MODE__\()goto_s:                          // Return to HS/S-mode (VS-mod
         j       resto_\__MODE__\()rtn              // sret returns to HS-mode at sepc
 
 tsbi_\__MODE__\()goto_u:                          // Return to U-mode (VU-mode for the VS handler) via sret
-        RVTEST_SET_CURRENT_MODE RVTEST_MODE_LOWER
         LI(     T3, SSTATUS_SPP)                   // T3 = SPP bit mask
         csrc    CSR_XSTATUS, T3                     // clear sstatus.SPP = 0 (sret -> U-mode)
 #ifdef H_SUPPORTED
@@ -1742,7 +1724,6 @@ tsbi_\__MODE__\()goto_u:                          // Return to U-mode (VU-mode f
   .ifc \__MODE__ , S
   #ifdef H_SUPPORTED
 tsbi_\__MODE__\()goto_vs:                         // Return to VS-mode via sret
-        RVTEST_SET_CURRENT_MODE RVTEST_MODE_LOWER
         LI(     T3, SSTATUS_SPP)                   // T3 = SPP bit mask
         csrs    CSR_XSTATUS, T3                     // set sstatus.SPP = 1 (virtual supervisor)
         LI(     T3, HSTATUS_SPV)                    // enter virtual mode
@@ -1750,7 +1731,6 @@ tsbi_\__MODE__\()goto_vs:                         // Return to VS-mode via sret
         j       resto_\__MODE__\()rtn              // sret returns to VS-mode at sepc
 
 tsbi_\__MODE__\()goto_vu:                         // Return to VU-mode via sret
-        RVTEST_SET_CURRENT_MODE RVTEST_MODE_LOWER
         LI(     T3, SSTATUS_SPP)                   // T3 = SPP bit mask
         csrc    CSR_XSTATUS, T3                     // clear sstatus.SPP = 0 (virtual user)
         LI(     T3, HSTATUS_SPV)                    // enter virtual mode
@@ -1902,11 +1882,11 @@ tsbi_\__MODE__\()instr_dispatch:
         bltu    T5, T4, 2f                        // middle CSR below the key: search the upper half
         mv      T2, T3                            // key below the middle CSR: hi = middle
         bltu    T1, T2, 1b
-        j       tsbi_instr_not_found              // range empty: CSR is not in the table
+        j       tsbi_\__MODE__\()instr_not_found  // range empty: CSR is not in the table
 2:
         addi    T1, T3, 32                        // lo = group after the middle
         bltu    T1, T2, 1b
-        j       tsbi_instr_not_found              // range empty: CSR is not in the table
+        j       tsbi_\__MODE__\()instr_not_found  // range empty: CSR is not in the table
 3:
         mv      T2, T3                            // T2 = first entry of the matching group
         addi    T1, T3, 32                        // T1 = end of the group
@@ -1919,7 +1899,7 @@ tsbi_\__MODE__\()instr_dispatch:
         beq     T3, a0, tsbi_\__MODE__\()instr_found
         addi    T2, T2, 8                         // skip instruction and ret
         bltu    T2, T1, 4b
-        j       tsbi_instr_not_found              // CSR is in the table, but not this access
+        j       tsbi_\__MODE__\()instr_not_found  // CSR is in the table, but not this access
 
         // Other instructions: search tsbi_instr_table in order
 tsbi_\__MODE__\()instr_other:
@@ -1944,20 +1924,10 @@ tsbi_\__MODE__\()instr_found:
         j       resto_\__MODE__\()rtn           // restore handler regs and xret
 .endif
 
-.ifnc \__MODE__ , M
-
+.ifc \__MODE__ , S
 tsbi_\__MODE__\()instr_not_found:
-        // Lower modes cannot print or run the M-mode epilogs: switch to M-mode first.
-        // Leave the handler (restore regs and sp) before the ecall, as tsbi_forward_goto_m does,
-        // so the mode switch is not nested in a live trap context. a1 keeps the encoding.
+        // The epilogs read M-mode CSRs: switch to M-mode first. a1 keeps the encoding.
         mv      a1, a0
-        LREG    T1, trap_sv_off+1*REGWIDTH(sp)    // restore T1 (x6)
-        LREG    T2, trap_sv_off+2*REGWIDTH(sp)    // restore T2 (x7)
-        LREG    T3, trap_sv_off+3*REGWIDTH(sp)    // restore T3 (x8)
-        LREG    T4, trap_sv_off+4*REGWIDTH(sp)    // restore T4 (x9)
-        LREG    T5, trap_sv_off+5*REGWIDTH(sp)    // restore T5 (x14)
-        LREG    T6, trap_sv_off+6*REGWIDTH(sp)    // restore T6 (x15)
-        LREG    sp, trap_sv_off+7*REGWIDTH(sp)    // restore original sp (undo the xSCRATCH swap)
         RVTEST_TSBI_GOTO_MMODE
         mv      a0, a1
         j       tsbi_instr_not_found

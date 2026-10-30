@@ -122,9 +122,9 @@ The hypervisor TLB invalidation tests are the H and SmH groups of the Svinval su
 
 include::{testplansdir}/priv/SvaduH.adoc[]
 
-==== ZicfilpH Hypervisor Landing Pads
+==== Hypervisor Landing Pads
 
-include::{testplansdir}/priv/ZicfilpH.adoc[]
+The hypervisor landing pad tests are the <<t-Zicfilp_H-coverpoints,Zicfilp_H>> and <<t-Zicfilp_SmH-coverpoints,Zicfilp_SmH>> groups of the Zicfilp suite.
 
 ==== SsdbltrpH Hypervisor Double Trap
 

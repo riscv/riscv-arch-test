@@ -89,9 +89,11 @@ exclude_extensions:
   - H
   - Exceptions_H
   - Exceptions_HSm
+  - Zicfilp_H
   # The same mstatus.MPV bug breaks the mret and mstatus.TVM tests, and every vsstatus bit is
   # writable (https://gitlab.com/qemu-project/qemu/-/work_items/4589).
   - Sm_H
+  - Zicfilp_SmH
   # mstatus.MPV is read-only, so no VS/VU-mode (https://gitlab.com/qemu-project/qemu/-/work_items/4588);
   # hlvx.wu raises the wrong fault (https://gitlab.com/qemu-project/qemu/-/work_items/4595)
   - Shtvala

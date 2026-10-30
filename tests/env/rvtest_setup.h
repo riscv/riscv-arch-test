@@ -97,10 +97,12 @@
   rvtest_code_end:
 
   // The checks and epilogs read M-mode CSRs. The test body and the default
-  // unexpected-interrupt handlers can reach this point in any mode.
+  // unexpected-interrupt handlers can reach this point in any mode. Callers in
+  // the M-mode trap handler use the _mmode entry (see rvtest_fail_epilogs).
     #ifdef STANDARD_SM_SUPPORTED
       RVTEST_TSBI_GOTO_MMODE
     #endif
+  rvtest_code_end_mmode:
 
   #ifndef RVTEST_NOSIG
     // Check the regular signature offset to make sure the correct number of
@@ -197,10 +199,15 @@
     j   run_epilogs_body
 
   // Failure reporting reaches this entry after printing its diagnostic. Run the epilogs
-  // before the failure halt. Callers in an M-mode trap handler use the _mmode entry: with
-  // Smdbltrp, mstatus.MDT=1 there and the ecall to switch to M-mode is a double trap.
+  // before the failure halt. With Smdbltrp, an ecall to switch to M-mode is a double trap
+  // when mstatus.MDT=1 in M-mode. Callers in an M-mode trap handler use the _mmode entry.
+  // An M-mode test body can also set MDT, so skip the switch if the last T-SBI mode
+  // change was to M-mode.
   rvtest_fail_epilogs:
     #ifdef STANDARD_SM_SUPPORTED
+      LA(T1, rvtest_current_mode)
+      LREG T1, 0(T1)
+      beqz T1, rvtest_fail_epilogs_mmode
       RVTEST_TSBI_GOTO_MMODE
     #endif
   rvtest_fail_epilogs_mmode:
@@ -259,11 +266,17 @@
   trap_sig_overflow:
     LA(T5, trap_sig_overflow)
     j       rvtest_code_end // switch to M-mode and clean up and terminate
+  trap_sig_overflow_mmode:
+    LA(T5, trap_sig_overflow)
+    j       rvtest_code_end_mmode
 
   // Terminate test with a failure message
   abort_test:
     LI(     T5, 0xBAD0DEAD)
     j       rvtest_code_end // switch to M-mode and clean up and terminate
+  abort_test_mmode:
+    LI(     T5, 0xBAD0DEAD)
+    j       rvtest_code_end_mmode
 
   // Instantiate trap handlers for each priv mode
   // Guard matches the RVTEST_TRAP_EPILOG guard above: rvtest_Mend (and sibling
@@ -1030,6 +1043,11 @@
   .p2align 3
   .global rvtest_trap_count
   rvtest_trap_count:
+    .dword 0
+
+  // Target of the last T-SBI mode change: 0 for M-mode, nonzero for lower modes.
+  .p2align 3
+  rvtest_current_mode:
     .dword 0
 
   .p2align 4

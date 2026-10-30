@@ -1045,6 +1045,14 @@
         la x7, trap_sig_offset_mismatch
         beq x6, x7, trap_diag_offset_mismatch
 
+        // ---- Check for abortstr (from RVTEST_CODE_END, which runs in M-mode) ----
+        la x7, abortstr
+        bne x6, x7, 1f
+        LA(x7, trap_diag_mode)
+        sw zero, 0(x7)
+        j trap_diag_generic_report
+    1:
+
         // ---- Determine mode from string pointer ----
         // Mode is encoded in string name: sv_M*_str, sv_S*_str, sv_H*_str, sv_V*_str
         // and Xclr_Xext_int_str variants

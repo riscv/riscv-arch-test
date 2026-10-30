@@ -890,6 +890,17 @@
 
 #define RVTEST_DFLT_INT_HNDLR      la T1, rvtest_code_end; jr T1  // default: abort test on unexpected interrupt
 
+// Trap handler version. The M-mode handler uses rvtest_code_end_mmode: with Smdbltrp,
+// mstatus.MDT=1 there and the ecall to switch to M-mode is a double trap.
+.macro RVTEST_DFLT_INT_HNDLR_MODE __MODE__
+  .ifc \__MODE__ , M
+        LA(     T1, rvtest_code_end_mmode)
+  .else
+        LA(     T1, rvtest_code_end)
+  .endif
+        jr      T1
+.endm
+
 // M-mode interrupt defaults
 #ifndef RVMODEL_SET_MSW_INT
         #define  RVMODEL_SET_MSW_INT(_R1, _R2) RVTEST_DFLT_INT_HNDLR  // M-mode SW interrupt set: abort
@@ -1419,6 +1430,9 @@ tsbi_\__MODE__\()goto_mode:
         addi    T4, T4, 4                            // T4 = mepc + 4 (instruction after ecall)
         csrw    CSR_XEPC, T4                         // mepc = mepc + 4
         TSBI_RELOCATE_EPC \__MODE__                  // move between code region and its alias if needed
+        LA(     T4, rvtest_current_mode)
+        addi    T2, a0, -TSBI_GOTO_MMODE             // 0 for M-mode, nonzero for lower modes
+        SREG    T2, 0(T4)
 
         // Dispatch based on caller's a0 (still live in a0 from the ecall)
         li      T2, TSBI_GOTO_MMODE                  // T2 = 1
@@ -2345,7 +2359,11 @@ tsbi_instr_table:
         // sig_end_canary but must never pass it.
         LA(     T3, sig_end_canary)
         add     T4, T1, T2                          // T4 = this mode's updated trap sig write pointer
-        bgtu    T4, T3, trap_sig_overflow           // overrun -> fail before corrupting the signature/tohost
+  .ifc \__MODE__ , M
+        bgtu    T4, T3, trap_sig_overflow_mmode     // overrun -> fail before corrupting the signature/tohost
+  .else
+        bgtu    T4, T3, trap_sig_overflow
+  .endif
 
 //---------- Trap Signature Word 0: vect+mode+status ----------
 // Packed format:
@@ -2698,7 +2716,11 @@ spcl_\__MODE__\()dispatch_handling:
         srli    T2, T2,1                //odd entry>0, remove LSB, normalizing to cause range
         beq     T5, T2, resto_\__MODE__\()rtn // case range matches, not an error, just noop
 1:
+  .ifc \__MODE__ , M
+        j       abort_test_mmode
+  .else
         j       abort_test
+  .endif
 
 // The entry is in T2 (x7) because a jump through x7 does not set ELP (Zicfilp), so the
 // handler routines need no landing pad. The 15*4 offset above counts the instructions
@@ -2859,7 +2881,7 @@ excpt_\__MODE__\()hndlr_tbl:
         CLR_INT_RETURN \__MODE__
 #else
 \__MODE__\()clr_Ssw_int:
-        RVTEST_DFLT_INT_HNDLR
+        RVTEST_DFLT_INT_HNDLR_MODE \__MODE__
 #endif
 
 #ifdef S_SUPPORTED
@@ -2893,9 +2915,9 @@ excpt_\__MODE__\()hndlr_tbl:
 2:      CLR_INT_RETURN \__MODE__
 #else
 \__MODE__\()clr_Stmr_int:
-        RVTEST_DFLT_INT_HNDLR
+        RVTEST_DFLT_INT_HNDLR_MODE \__MODE__
 \__MODE__\()clr_Sext_int:
-        RVTEST_DFLT_INT_HNDLR
+        RVTEST_DFLT_INT_HNDLR_MODE \__MODE__
 #endif
 
 #else
@@ -2905,7 +2927,7 @@ excpt_\__MODE__\()hndlr_tbl:
 \__MODE__\()clr_Mext_int:
 \__MODE__\()clr_Ssw_int:
 \__MODE__\()clr_Sext_int:
-        RVTEST_DFLT_INT_HNDLR
+        RVTEST_DFLT_INT_HNDLR_MODE \__MODE__
 
 \__MODE__\()clr_Stmr_int:                            // S-mode timer interrupt: STIP comes from stimecmp or
         la      T2, resto_\__MODE__\()rtn            //   an M-mode mip write, which the test clears;
@@ -2950,7 +2972,7 @@ excpt_\__MODE__\()hndlr_tbl:
 #ifdef RVTEST_SGEI_INTR_IMPL
 \__MODE__\()clr_Sgei_int:                            // supervisor guest external interrupt
   .ifc \__MODE__ , V
-        RVTEST_DFLT_INT_HNDLR
+        RVTEST_DFLT_INT_HNDLR_MODE \__MODE__
   .else
         CLR_INT_ENTER
         csrr    T3, CSR_HGEIP                        // T3 = pending guest external interrupts
@@ -2972,7 +2994,7 @@ excpt_\__MODE__\()hndlr_tbl:
   .endif
 #else
 \__MODE__\()clr_Sgei_int:                            // no guest interrupt files: hgeip is always 0
-        RVTEST_DFLT_INT_HNDLR
+        RVTEST_DFLT_INT_HNDLR_MODE \__MODE__
 #endif
 #endif
 

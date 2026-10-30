@@ -570,7 +570,7 @@ def _cause_exception(
             raise ValueError("addr_reg is required for instruction access fault")
 
         return [
-            f"la x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS",
+            f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
             f"jalr ra, 0(x{addr_reg})",
             "nop # spacer; trap handler returns here",
         ]

@@ -132,8 +132,14 @@ def _make_a_all_chunk(test_data: TestData, chunk_name: str, amodes: tuple[str, .
     )
     chunk.code.extend([*zero_pmp_regs(), "", "RVTEST_PMP_SET_BACKGROUND x4"])
 
+    #: Loads the value under test into x4; empty for A = OFF, which writes x0.
+    load_value: list[str] = []
+
     def add_csr_checks(name: str, const: str | None, csrs: tuple[int, ...]) -> None:
         for csr in csrs:
+            # Reload the value: the readback check leaves pmpcfg<csr> in x4, and a locked
+            # background entry there would change what the next CSR is written with.
+            chunk.code.extend(load_value)
             chunk.code.extend(
                 [
                     test_data.add_testcase(
@@ -146,10 +152,11 @@ def _make_a_all_chunk(test_data: TestData, chunk_name: str, amodes: tuple[str, .
     for name in amodes:
         const = None if name == "OFF" else f"PMP_{name}"
         chunk.code.extend(["", f"// PMP configuration: write A = {name} to every byte of every pmpcfg CSR"])
+        load_value.clear()
         if const:
             rv32_bytes = "|".join(f"(({const}&0xFF) << PMP{i}_CFG_SHIFT)" for i in range(4))
             rv64_bytes = "|".join(f"(({const}&0xFF) << PMP{i}_CFG_SHIFT)" for i in range(8))
-            chunk.code.extend(
+            load_value.extend(
                 [
                     "#if __riscv_xlen == 64",
                     f"LI(x4, {rv64_bytes})",
@@ -722,7 +729,7 @@ def _make_legal_chunk(test_data: TestData, amode: str, part: int | None = None) 
     else:
         cases = LOCKED_LXWR_CASES[3 * (part - 1) : 3 * part]
         if amode == "tor":
-            cases = list(zip([lxwr for lxwr, _ in cases], TOR_ENTRIES[part - 1], strict=True))
+            cases = list(zip([lxwr for lxwr, _ in cases], TOR_ENTRIES, strict=True))
         first, name = 3 * (part - 1) + 1, f"{amode}_legal_lxwr-{part:02d}"
     chunk = test_data.begin_test_chunk(f"Sm_{name}")
     chunk.section_header = comment_banner(

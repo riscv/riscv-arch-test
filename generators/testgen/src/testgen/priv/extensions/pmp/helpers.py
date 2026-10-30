@@ -153,8 +153,9 @@ LOCKED_LXWR_CASES: list[tuple[str, int]] = [
 #: The same six encodings with L=0.
 UNLOCKED_LXWR_CASES: list[tuple[str, int]] = [(f"0{lxwr[1:]}", entry) for lxwr, entry in LOCKED_LXWR_CASES]
 
-#: TOR regions need two pmpaddr CSRs, so the six cases use every other entry.
-TOR_ENTRIES = ((11, 9, 7), (5, 3, 1))
+#: TOR regions need two pmpaddr CSRs, so each half of the six cases uses every other entry. Entries 0-5
+#: lie below the background entry whenever at least 8 entries are usable.
+TOR_ENTRIES: tuple[int, ...] = (5, 3, 1)
 
 
 def lxwr_walk_body(

@@ -4775,17 +4775,6 @@ def _generate_textra_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     return chunks
 
 
-def register_sdtrig_textra(mode: str, required_extensions: list[str | list[str]], extra_defines: list[str]) -> None:
-    """Register the textra (tdata3 context-match) section for ``mode`` as its own generator of suite ``Sdtrig{mode}``."""
-
-    @add_priv_test_generator(
-        f"Sdtrig{mode}", required_extensions=required_extensions, march_extensions=[], extra_defines=extra_defines
-    )
-    def make_sdtrig_textra(test_data: TestData) -> list[TestChunk]:
-        """textra context-match tests."""
-        return _with_trap_counts(_generate_textra_tests(test_data, mode))
-
-
 def _with_trap_counts(chunks: list[TestChunk]) -> list[TestChunk]:
     """Size each chunk's trap signature region: up to 6 traps per testcase (an exception or interrupt, a second
     one, and the breakpoints they fire) plus one per T-SBI call. With up to SDTRIG_MAX_TRIGGERS triggers a file can
@@ -4941,7 +4930,12 @@ def register_sdtrig_suite(mode: str, required_extensions: list[str | list[str]],
             """Breakpoint delegation tests."""
             return _with_trap_counts(_generate_native_triggers_tests(test_data, mode))
 
-    register_sdtrig_textra(mode, required_extensions, extra_defines)
+    @add_priv_test_generator(
+        suite, required_extensions=required_extensions, march_extensions=[], extra_defines=extra_defines
+    )
+    def make_sdtrig_textra(test_data: TestData) -> list[TestChunk]:
+        """textra context-match tests."""
+        return _with_trap_counts(_generate_textra_tests(test_data, mode))
 
     # Disabled section and its extra required extension:
     #   _generate_zcmp_tests: Zcmp; waits for Zcmp in the Sail reference model (riscv/sail-riscv#730)

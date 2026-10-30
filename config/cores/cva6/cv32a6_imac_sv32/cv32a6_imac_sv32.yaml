@@ -1,0 +1,463 @@
+# yaml-language-server: $schema=../../../../external/riscv-unified-db/spec/schemas/config_schema.json
+# Copyright (c) 2026, 10xEngineers, Harvey Mudd College and Eclipse Foundation
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# UDB Architecture Configuration for the CV32A6_IMAC_SV32, a configuration of the CVA6 project.
+
+---
+$schema: config_schema.json#
+kind: architecture configuration
+type: fully configured
+name: cv32a6_imac_sv32
+description: OpenHW Group CVA6 cv32a6_imac_sv32 configuration;
+implemented_extensions:
+  - name: I
+    version: = 2.1
+  - name: M
+    version: = 2.0
+  - name: Zmmul
+    version: = 1.0.0
+  - name: A
+    version: = 2.1.0
+  - name: Zaamo
+    version: = 1.0.0
+  - name: Zalrsc
+    version: = 1.0.0
+  - name: B
+    version: = 1.0.0
+  - name: C
+    version: = 2.0
+  - name: Zca
+    version: = 1.0.0
+  - name: Zba
+    version: = 1.0.0
+  - name: Zbb
+    version: = 1.0.0
+  - name: Zbs
+    version: = 1.0.0
+  - name: Zbc
+    version: = 1.0.0
+  - name: Zbkc
+    version: = 1.0.0
+  - name: Zbkb
+    version: = 1.0.0
+  - name: Zbkx
+    version: = 1.0.0
+  - name: Zkn
+    version: = 1.0.0
+  - name: Zknd
+    version: = 1.0.0
+  - name: Zkne
+    version: = 1.0.0
+  - name: Zknh
+    version: = 1.0.0
+  - name: Zicntr
+    version: = 2.0
+  - name: Zihpm
+    version: = 2.0
+  - name: Zicsr
+    version: = 2.0
+  - name: Zifencei
+    version: = 2.0
+  - name: Sm
+    version: = 1.12.0
+  - name: S
+    version: = 1.12.0
+  - name: U
+    version: = 1.0.0
+  - name: Sv32
+    version: = 1.0.0
+  - name: Svbare
+    version: = 1.0.0
+params:
+  MXLEN: 32
+  PHYS_ADDR_WIDTH: 34
+  MUTABLE_MISA_M: false
+  MUTABLE_MISA_A: false
+  MUTABLE_MISA_B: false
+  MUTABLE_MISA_C: false
+  MUTABLE_MISA_S: false
+  MUTABLE_MISA_U: false
+  MISA_CSR_IMPLEMENTED: true
+  NON_STANDARD_EXTENSION_IMPLEMENTED: false
+  M_MODE_ENDIANNESS: little
+  S_MODE_ENDIANNESS: little
+  U_MODE_ENDIANNESS: little
+  MEI_INTR_IMPL: false
+  MSI_INTR_IMPL: true
+  MTI_INTR_IMPL: true
+  SEI_INTR_IMPL: true
+  SSI_INTR_IMPL: true
+  STI_INTR_IMPL: true
+  WFI_FINITE: false
+  WFI_U_MODE: false
+  TRAP_ON_ECALL_FROM_M: true
+  TRAP_ON_ECALL_FROM_S: true
+  TRAP_ON_ECALL_FROM_U: true
+  TRAP_ON_EBREAK: true
+  TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
+  TRAP_ON_RESERVED_INSTRUCTION: true
+  TRAP_ON_UNIMPLEMENTED_CSR: true
+  TRAP_ON_ILLEGAL_WLRL: false
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: true
+  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_LOAD_PAGE_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_PAGE_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_PAGE_FAULT: true
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: true
+  MTVAL_WIDTH: 32
+  REPORT_VA_IN_STVAL_ON_BREAKPOINT: true
+  REPORT_VA_IN_STVAL_ON_LOAD_MISALIGNED: true
+  REPORT_VA_IN_STVAL_ON_STORE_AMO_MISALIGNED: true
+  REPORT_VA_IN_STVAL_ON_INSTRUCTION_MISALIGNED: true
+  REPORT_VA_IN_STVAL_ON_LOAD_ACCESS_FAULT: true
+  REPORT_VA_IN_STVAL_ON_STORE_AMO_ACCESS_FAULT: true
+  REPORT_VA_IN_STVAL_ON_INSTRUCTION_ACCESS_FAULT: true
+  REPORT_VA_IN_STVAL_ON_LOAD_PAGE_FAULT: true
+  REPORT_VA_IN_STVAL_ON_STORE_AMO_PAGE_FAULT: true
+  REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT: true
+  REPORT_ENCODING_IN_STVAL_ON_ILLEGAL_INSTRUCTION: true
+  STVAL_WIDTH: 32
+  MISALIGNED_LDST: false
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: high
+  MISALIGNED_AMO: false
+  LRSC_RESERVATION_STRATEGY: "reserve exactly enough to cover the access"
+  LRSC_FAIL_ON_VA_SYNONYM: false
+  LRSC_MISALIGNED_BEHAVIOR: "always raise misaligned exception"
+  LRSC_FAIL_ON_NON_EXACT_LRSC: false
+  ARCH_ID_VALUE: 3
+  IMP_ID_VALUE: 0
+  VENDOR_ID_BANK: 12
+  VENDOR_ID_OFFSET: 2
+  MTVEC_MODES:
+    - 0
+    - 1
+  MTVEC_ACCESS: rw
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom
+  MTVEC_BASE_ALIGNMENT_DIRECT: 4
+  MTVEC_BASE_ALIGNMENT_VECTORED: 256
+  STVEC_MODES:
+    - 0
+    - 1
+  # A vectored trap replaces stvec bits 7:2 with the cause, so the base must be 256-byte
+  # aligned. The RTL does not clear those bits on write (openhwfoundation/cva6#1987).
+  STVEC_BASE_ALIGNMENT_VECTORED: 256
+  PRECISE_SYNCHRONOUS_EXCEPTIONS: true
+  MARCHID_IMPLEMENTED: true
+  MIMPID_IMPLEMENTED: true
+  MEDELEG_DELEGATABLE:
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - false
+    - false
+    - false
+    - true
+    - true
+    - false
+    - true
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+  MIDELEG_DELEGATABLE:
+    - false
+    - true
+    - false
+    - false
+    - false
+    - true
+    - false
+    - false
+    - false
+    - true
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+  PMA_GRANULARITY: 4
+  ASID_WIDTH: 1
+  SATP_MODE_BARE: true
+  UXLEN:
+    - 32
+  SXLEN:
+    - 32
+  MSTATUS_FS_LEGAL_VALUES:
+    - 0
+  MSTATUS_VS_LEGAL_VALUES:
+    - 0
+  TIME_CSR_IMPLEMENTED: false
+  HPM_EVENTS:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+    - 9
+    - 10
+    - 11
+    - 12
+    - 13
+    - 14
+    - 15
+    - 16
+    - 17
+    - 18
+    - 19
+    - 20
+    - 21
+    - 22
+  HPM_COUNTER3_WIDTH: 64
+  HPM_COUNTER4_WIDTH: 64
+  HPM_COUNTER5_WIDTH: 64
+  HPM_COUNTER6_WIDTH: 64
+  HPM_COUNTER7_WIDTH: 64
+  HPM_COUNTER8_WIDTH: 64
+  HPM_COUNTER_EN:
+    - false
+    - false
+    - false
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+  MCOUNTINHIBIT_IMPLEMENTED: true
+  COUNTINHIBIT_EN:
+    - true
+    - false
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+  NUM_PMP_ENTRIES: 16
+  NUM_USABLE_PMP_ENTRIES: 8
+  PMP_GRANULARITY: 3
+  PMP_NA4_SUPPORTED: false
+  PMP_NAPOT_SUPPORTED: true
+  PMP_TOR_SUPPORTED: true
+  MCOUNTENABLE_EN:
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+  SCOUNTENABLE_EN:
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+  CONFIG_PTR_ADDRESS: 0

@@ -403,8 +403,9 @@ endgroup
 `endif
 `endif
 function void zicclsm_sample(int hart, int issue, ins_t ins);
+    string inst_name = traceDataQ[hart][issue][0].inst_name;
 
-    case (traceDataQ[hart][issue][0].inst_name)
+    case (inst_name)
 `ifdef ZCA_SUPPORTED
         "c.lw"     : begin
             ZicclsmZca_c_lw_cg.sample(ins);

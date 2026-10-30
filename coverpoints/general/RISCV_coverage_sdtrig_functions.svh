@@ -206,7 +206,7 @@ endfunction
 // with match = equal identifies the target by tdata2; otherwise the target is the instruction that retired.
 function automatic logic [1:0] sdtrig_exec_size_target(ins_t ins);
     if (sdtrig_exec_fired(ins))
-        return (ins.current.csr[CSR_TDATA2] == 32'h00008013) ? 2'd1 : (ins.current.csr[CSR_TDATA2] == 'h0001) ? 2'd2 : 2'd0;
+        return (ins.current.csr[CSR_TDATA2] == 'h00008013) ? 2'd1 : (ins.current.csr[CSR_TDATA2] == 'h0001) ? 2'd2 : 2'd0;
     if (ins.current.insn == 32'h00008013) return 2'd1;
     if (ins.current.insn[1:0] != 2'b11 && ins.current.insn[15:0] == 16'h0001) return 2'd2;
     return 2'd0;

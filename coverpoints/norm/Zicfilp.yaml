@@ -327,6 +327,7 @@ normative_rule_definitions:
         "{Zicfilp_S_cg,Zicfilp_U_cg}/cp_zicfilp_lpad_label_exception_delivery (V=0)",
         "Zicfilp_S_cg/cp_pelp_trap_return_zicfilp (SPELP written through sstatus)",
         "Zicfilp_H_cg/{cp_vs_sstatus_spelp, cp_vs_sret_spelp} (V=1)",
+        "Sm_H_inst_cg/cp_vs_sstatus_spelp_mstatus (V=1 leaves mstatus.SPELP unchanged)",
       ]
 
   # The Zicfilp extension adds the LPE field in senvcfg. When the LPE field is set to 1,

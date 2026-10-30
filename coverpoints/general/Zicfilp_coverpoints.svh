@@ -161,7 +161,7 @@
     priority_case: coverpoint {
         `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
             (`ZICFILP_LP_JALR(ins.current) &&
-             ((ins.current.imm + ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS)),
+             ((ins.current.imm + ins.current.rs1_val) == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS))),
         `else
             1'b0,
         `endif

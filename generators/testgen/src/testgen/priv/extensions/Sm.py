@@ -2221,6 +2221,45 @@ def _h_zicfilp_tests(test_data: TestData) -> list[str]:
         )
     for csr in ("henvcfg", "senvcfg", "menvcfg"):
         lines.extend([f"LI(x{temp_reg}, {csr.upper()}_LPE)", f"csrc {csr}, x{temp_reg}"])
+    lines.extend(
+        [
+            comment_banner(
+                "cp_vs_sstatus_spelp_mstatus",
+                "medeleg[10] = 0, so the T-SBI ecall from VS-mode goes to M-mode and no trap into HS-mode changes\n"
+                "mstatus.SPELP.  For each value of mstatus.SPELP, VS-mode sets and clears sstatus.SPELP, which is\n"
+                "vsstatus.SPELP.  M-mode then records mstatus.SPELP, which must be unchanged, and vsstatus.SPELP.",
+            ),
+            f"LI(x{temp_reg}, 1 << CAUSE_VIRTUAL_SUPERVISOR_ECALL)",
+            f"csrc medeleg, x{temp_reg}",
+        ]
+    )
+    for op, spelp in product(("csrs", "csrc"), (0, 1)):
+        lines.extend(
+            [
+                "",
+                f"LI(x{temp_reg}, MSTATUS_SPELP)",
+                f"{'csrs' if spelp else 'csrc'} mstatus, x{temp_reg} # mstatus.SPELP = {spelp}",
+                f"{'csrc' if op == 'csrs' else 'csrs'} vsstatus, x{temp_reg} # the opposite of the VS-mode write",
+                "RVTEST_TSBI_GOTO_VSMODE",
+                f"LI(x{jump_reg}, SSTATUS_SPELP)",
+                test_data.add_testcase(f"{op}_mstatus_spelp{spelp}", "cp_vs_sstatus_spelp_mstatus", _H_INST_CG),
+                f"{op} sstatus, x{jump_reg} # vsstatus.SPELP",
+                f"csrr x{temp_reg}, sstatus",
+                f"and x{temp_reg}, x{temp_reg}, x{jump_reg}",
+                write_sigupd(temp_reg, test_data),
+                "RVTEST_TSBI_GOTO_MMODE",
+            ]
+        )
+        for csr in ("mstatus", "vsstatus"):
+            lines.extend(
+                [
+                    f"csrr x{temp_reg}, {csr}",
+                    f"LI(x{jump_reg}, MSTATUS_SPELP)",
+                    f"and x{temp_reg}, x{temp_reg}, x{jump_reg}",
+                    write_sigupd(temp_reg, test_data),
+                ]
+            )
+    lines.extend([f"LI(x{temp_reg}, MSTATUS_SPELP)", f"csrc mstatus, x{temp_reg}", f"csrc vsstatus, x{temp_reg}"])
     lines.append(f"csrw medeleg, x{medeleg_reg}")
     test_data.int_regs.return_registers([medeleg_reg, jump_reg, temp_reg])
     return lines

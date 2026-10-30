@@ -531,8 +531,8 @@ covergroup Zicfilp_H_cg with function sample(ins_t ins);
 
     // ELP before the current instruction: the previous instruction set it
     elp_before: coverpoint (`ZICFILP_LP_BRANCH(ins.prev) &&
-                            ((ins.prev.mode == 2'b01) ? get_csr_val(ins.hart, ins.issue, `SAMPLE_PREV, "henvcfg", "lpe")
-                                                      : get_csr_val(ins.hart, ins.issue, `SAMPLE_PREV, "senvcfg", "lpe"))) {
+                            ((ins.prev.mode == 2'b01) ? get_csr_val(ins.hart, ins.issue, `SAMPLE_PREV, "henvcfg", "lpe")[0]
+                                                      : get_csr_val(ins.hart, ins.issue, `SAMPLE_PREV, "senvcfg", "lpe")[0])) {
         bins no_lp_expected = {1'b0};
     }
 
@@ -661,9 +661,9 @@ covergroup Zicfilp_H_cg with function sample(ins_t ins);
     spelp_set_before: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spelp") {
         bins lp_expected = {1};
     }
-    new_mode_lpe_enabled: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spp") ?
-                                      get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "lpe") :
-                                      get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "lpe")) {
+    new_mode_lpe_enabled: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spp")[0] ?
+                                      get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "lpe")[0] :
+                                      get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "lpe")[0]) {
         bins enabled = {1};
     }
     // {hvip.VSSIP, hie.VSSIE, hideleg.VSSI}

@@ -2328,11 +2328,11 @@ covergroup Sm_H_inst_cg with function sample(ins_t ins);
         }
         // {software-check exception, ebreak, MPELP after the trap}
         `ifdef UDB_MXLEN_64
-            m_trap_elp : coverpoint {(get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "code") == SOFTWARE_CHECK),
+            m_trap_elp : coverpoint {(get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "code") == `UDB_MXLEN'(SOFTWARE_CHECK)),
                                      (ins.current.insn == EBREAK),
                                      get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "mpelp")[0]}
         `else
-            m_trap_elp : coverpoint {(get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "code") == SOFTWARE_CHECK),
+            m_trap_elp : coverpoint {(get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "code") == `UDB_MXLEN'(SOFTWARE_CHECK)),
                                      (ins.current.insn == EBREAK),
                                      get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatush", "mpelp")[0]}
         `endif
@@ -2341,6 +2341,20 @@ covergroup Sm_H_inst_cg with function sample(ins_t ins);
             bins no_lp_expected = {3'b010};
         }
         cp_trap_mpelp_virt: cross priv_mode_vs_vu, virt_lpe_enabled, m_trap_elp;
+
+        // sstatus.SPELP written in VS-mode is vsstatus.SPELP, for each value of mstatus.SPELP, which must not change
+        vs_sstatus_spelp_write : coverpoint ins.current.insn {
+            wildcard bins csrrs = {CSRRS} iff (ins.current.insn[31:20] == CSR_SSTATUS);
+            wildcard bins csrrc = {CSRRC} iff (ins.current.insn[31:20] == CSR_SSTATUS);
+        }
+        spelp_operand : coverpoint ins.current.rs1_val[23] {
+            bins spelp = {1'b1};
+        }
+        mstatus_spelp_before : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "spelp") {
+            bins no_lp_expected = {0};
+            bins lp_expected    = {1};
+        }
+        cp_vs_sstatus_spelp_mstatus: cross priv_mode_vs, vs_sstatus_spelp_write, spelp_operand, mstatus_spelp_before;
     `endif
 endgroup
 `endif

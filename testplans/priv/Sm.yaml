@@ -636,6 +636,14 @@ coverpoints:
     bins: |-
       priv_mode M x mret x new mode {VU, VS} x henvcfg.LPE {0, 1} x senvcfg.LPE {0, 1} x MPELP {0, 1}
       = 16 bins
+  - name: cp_vs_sstatus_spelp_mstatus
+    goal: A VS-mode write to sstatus.SPELP writes vsstatus.SPELP and leaves mstatus.SPELP unchanged (Zicfilp)
+    description: |-
+      With Zicfilp, medeleg[10] = 0.  For each value of mstatus.SPELP, set vsstatus.SPELP to the opposite of the write.  In VS-mode, csrrs or csrrc sstatus with the SPELP bit, then read sstatus.  In M-mode, read mstatus.SPELP and vsstatus.SPELP.
+    expectation: sstatus in VS-mode and vsstatus hold the written value.  mstatus.SPELP is unchanged.
+    bins: |-
+      priv_mode VS x {csrrs, csrrc} x mstatus.SPELP {0, 1}
+      = 4 bins
   - heading: Not tested
   - goal: misa.H enables the hypervisor extension
     description: With MUTABLE_MISA_H, clear misa.H, check that hypervisor CSRs and instructions raise illegal instruction, and set it again.

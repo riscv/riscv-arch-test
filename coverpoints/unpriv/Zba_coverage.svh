@@ -885,8 +885,9 @@ endgroup
 // ---------------------
 `endif
 function void zba_sample(int hart, int issue, ins_t ins);
+    string inst_name = traceDataQ[hart][issue][0].inst_name;
 
-    case (traceDataQ[hart][issue][0].inst_name)
+    case (inst_name)
         "sh1add"     : begin
             Zba_sh1add_cg.sample(ins);
         end

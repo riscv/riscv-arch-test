@@ -1,0 +1,77 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Ssnpm_H
+source: https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=669410459#gid=669410459
+notes: |
+  The H group boots to HS-mode.  Each test runs with vsatp = Bare and hgatp = Sv57x4 or Sv48x4 identity mapping the
+  test image, so a guest address is a guest physical address and pointer masking zero-extends it.  A tagged address
+  sets one bit that PMLEN = 7 and 16 both mask (58 for Sv57x4, 57 for Sv48x4) or one that only PMLEN = 16 masks (48
+  for Sv57x4, 49 for Sv48x4).  When masking clears the tag, the access reaches the test data.  Otherwise the tagged
+  guest physical address has no G-stage mapping or is wider than hgatp allows, so it raises a guest-page fault in
+  HS-mode, and a load leaves its destination unchanged.  The PMM fields that do not apply to a case are enabled when
+  the one that applies is 00, and 00 otherwise; the HLVX and MXR cases enable every PMM field.  A PMM value selects
+  PMLEN = 7 (10) or 16 (11) only when the configuration supports that PMLEN.
+coverpoints:
+  - name: cp_vs_pmm
+    goal: henvcfg.PMM masks loads and stores in VS-mode
+    description: For each henvcfg.PMM value (00, 10, 11), ld and sd in VS-mode at the test data with each tag bit set.
+    expectation: The access reaches the test data when PMLEN masks the tag bit; otherwise load or store/AMO guest-page fault.
+    bins: |-
+      priv_mode VS x {ld, sd} x henvcfg.PMM {00, 10, 11} x tag {PMLEN 7, PMLEN 16 only} x vsatp Bare x hgatp {Sv48x4, Sv57x4}
+      PMM 10 and 11 only when PMLEN 7 and 16 are supported
+  - name: cp_vu_pmm
+    goal: senvcfg.PMM masks loads and stores in VU-mode
+    description: For each senvcfg.PMM value (00, 10, 11), ld and sd in VU-mode at the test data with each tag bit set.
+    expectation: The access reaches the test data when PMLEN masks the tag bit; otherwise load or store/AMO guest-page fault.
+    bins: |-
+      priv_mode VU x {ld, sd} x senvcfg.PMM {00, 10, 11} x tag {PMLEN 7, PMLEN 16 only} x vsatp Bare x hgatp {Sv48x4, Sv57x4}
+      PMM 10 and 11 only when PMLEN 7 and 16 are supported
+  - name: cp_hlv_hs_spvp1_pmm
+    goal: HLV and HSV in HS-mode with hstatus.SPVP = 1 take henvcfg.PMM
+    description: With hstatus.SPVP = 1, for each henvcfg.PMM value, hlv.d and hsv.d in HS-mode at the test data with each tag bit set.
+    expectation: The access reaches the test data when PMLEN masks the tag bit; otherwise load or store/AMO guest-page fault.
+    bins: |-
+      priv_mode HS x {hlv.d, hsv.d} x hstatus.SPVP = 1 x henvcfg.PMM {00, 10, 11} x tag {PMLEN 7, PMLEN 16 only} x vsatp Bare x hgatp {Sv48x4, Sv57x4}
+      PMM 10 and 11 only when PMLEN 7 and 16 are supported
+  - name: cp_hlv_hs_spvp0_pmm
+    goal: HLV and HSV in HS-mode with hstatus.SPVP = 0 take senvcfg.PMM
+    description: With hstatus.SPVP = 0, for each senvcfg.PMM value, hlv.d and hsv.d in HS-mode at the test data with each tag bit set.
+    expectation: The access reaches the test data when PMLEN masks the tag bit; otherwise load or store/AMO guest-page fault.
+    bins: |-
+      priv_mode HS x {hlv.d, hsv.d} x hstatus.SPVP = 0 x senvcfg.PMM {00, 10, 11} x tag {PMLEN 7, PMLEN 16 only} x vsatp Bare x hgatp {Sv48x4, Sv57x4}
+      PMM 10 and 11 only when PMLEN 7 and 16 are supported
+  - name: cp_hlv_u_spvp1_pmm
+    goal: HLV and HSV in U-mode with hstatus.SPVP = 1 take henvcfg.PMM
+    description: With hstatus.HU = 1 and hstatus.SPVP = 1, for each henvcfg.PMM value, hlv.d and hsv.d in U-mode at the test data with each tag bit set.
+    expectation: The access reaches the test data when PMLEN masks the tag bit; otherwise load or store/AMO guest-page fault.
+    bins: |-
+      priv_mode U x hstatus.HU = 1 x {hlv.d, hsv.d} x hstatus.SPVP = 1 x henvcfg.PMM {00, 10, 11} x tag {PMLEN 7, PMLEN 16 only} x vsatp Bare x hgatp {Sv48x4, Sv57x4}
+      PMM 10 and 11 only when PMLEN 7 and 16 are supported
+  - name: cp_hlv_u_spvp0_pmm
+    goal: HLV and HSV in U-mode with hstatus.SPVP = 0 take hstatus.HUPMM
+    description: With hstatus.HU = 1 and hstatus.SPVP = 0, for each hstatus.HUPMM value, hlv.d and hsv.d in U-mode at the test data with each tag bit set.
+    expectation: The access reaches the test data when PMLEN masks the tag bit; otherwise load or store/AMO guest-page fault.
+    bins: |-
+      priv_mode U x hstatus.HU = 1 x {hlv.d, hsv.d} x hstatus.SPVP = 0 x hstatus.HUPMM {00, 10, 11} x tag {PMLEN 7, PMLEN 16 only} x vsatp Bare x hgatp {Sv48x4, Sv57x4}
+      PMM 10 and 11 only when PMLEN 7 and 16 are supported
+  - name: cp_hlvx_hs_pmm
+    goal: HLVX in HS-mode is never masked
+    description: With henvcfg.PMM and senvcfg.PMM enabled, hlvx.wu in HS-mode for hstatus.SPVP = 0 and 1 at the test data with each tag bit set.
+    expectation: Load guest-page fault in every case.
+    bins: |-
+      priv_mode HS x hlvx.wu x hstatus.SPVP {0, 1} x henvcfg.PMM enabled x senvcfg.PMM enabled x tag {PMLEN 7, PMLEN 16 only} x vsatp Bare x hgatp {Sv48x4, Sv57x4}
+    notes: |-
+      hypervisor.adoc defines henvcfg.PMM, senvcfg.PMM and hstatus.HUPMM masking only for HLV.* and HSV.*, which Sail and Spike read as excluding HLVX.
+  - name: cp_hlvx_u_pmm
+    goal: HLVX in U-mode is never masked
+    description: With hstatus.HU = 1 and henvcfg.PMM and hstatus.HUPMM enabled, hlvx.wu in U-mode for hstatus.SPVP = 0 and 1 at the test data with each tag bit set.
+    expectation: Load guest-page fault in every case.
+    bins: |-
+      priv_mode U x hstatus.HU = 1 x hlvx.wu x hstatus.SPVP {0, 1} x henvcfg.PMM enabled x hstatus.HUPMM enabled x tag {PMLEN 7, PMLEN 16 only} x vsatp Bare x hgatp {Sv48x4, Sv57x4}
+    notes: |-
+      The HUPMM paragraph has no normative tag, so the row maps no rule.
+  - name: cp_mxr_pmm
+    goal: vsstatus.MXR = 1 turns pointer masking off in VS-mode and VU-mode
+    description: With vsstatus.MXR = 1 and henvcfg.PMM and senvcfg.PMM enabled, ld in VS-mode and VU-mode at the test data with each tag bit set.
+    expectation: Load guest-page fault in every case.
+    bins: |-
+      priv_mode {VS, VU} x ld x vsstatus.MXR = 1 x henvcfg.PMM enabled x senvcfg.PMM enabled x tag {PMLEN 7, PMLEN 16 only} x vsatp Bare x hgatp {Sv48x4, Sv57x4}

@@ -94,7 +94,7 @@ covergroup Sstvala_cg with function sample(ins_t ins);
         type_option.weight = 0;
         bins match = {1};
     }
-    stval_insn : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") == ins.current.insn {
+    stval_insn : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") == `UDB_MXLEN'(ins.current.insn) {
         bins match = {1};
     }
 

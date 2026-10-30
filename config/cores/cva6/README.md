@@ -38,9 +38,7 @@ The install script clones CVA6, builds the Verilator and Spike versions CVA6's o
 testharness links Spike's libraries), verilates one testharness per configuration under
 `<install-dir>/cva6/work-ver-<config>/`, and installs the shared `run-cva6.sh` runner. It needs
 `riscv64-unknown-elf-gcc` on `PATH`. The two exports do what `.github/scripts/setup-cva6.sh` does
-in CI. The excluded extensions and their reasons are listed in `ci.yaml`. The
-`PMP_Sm_cfg_A_tor_zero` exclusion is preemptive: no PMP test runs until `cv32a65x` declares
-its PMP entries.
+in CI. The excluded extensions and their reasons are listed in `ci.yaml`.
 
 The Verilator testharness has no external interrupt source: the GPIO slot is an error slave and
 the PLIC's UART, SPI and Ethernet sources are disabled. The configs therefore set

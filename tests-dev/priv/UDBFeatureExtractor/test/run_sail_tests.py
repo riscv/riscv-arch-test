@@ -25,12 +25,21 @@ CASES = {
     "max": {},
     "no-M": {"extensions": {"M": {"supported": False}}},
     "no-M-Zmmul": {"extensions": {"M": {"supported": False}, "Zmmul": {"supported": False}}},
-    # H requires I, and the Sh* extensions require H
+    # H requires I, and the Sh* extensions, the H exceptions (10, 20-23) in medeleg and etrigger,
+    # and the Sdtrig hcontext and VMID matching require H
     "E": {
-        "base": {"E": True},
+        "base": {"E": True, "medeleg": {"delegatable_bits": {"len": 64, "value": "0x0CB3FF"}}},
         "extensions": {
-            k: {"supported": False}
-            for k in ["H", "Sha", "Shcounterenw", "Shgatpa", "Shtvala", "Shvsatpa", "Shvstvala", "Shvstvecd"]
+            **{
+                k: {"supported": False}
+                for k in ["H", "Sha", "Shcounterenw", "Shgatpa", "Shtvala", "Shvsatpa", "Shvstvala", "Shvstvecd"]
+            },
+            "Stateen": {"mstateen0": {"P1P13": "CSRBit_ReadOnlyZero"}},  # hedelegh needs H
+            "Sdtrig": {
+                "hcontext": {"supported": False},
+                "textra": {"mhselect": {"vmid_match": False}},
+                "etrigger": {"supported_exceptions": {"len": "xlen", "value": "0x0DBBFF"}},
+            },
         },
     },
     "no-A": {

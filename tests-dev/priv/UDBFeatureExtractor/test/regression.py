@@ -148,9 +148,9 @@ def run_config(root: Path, build: Path, makefile: Path, config_dir: Path, udb_ya
         rc = proc.returncode
     except subprocess.TimeoutExpired:
         return name, "FAIL", f"timed out after {timeout}s, see {log}", set(), expected, set(), NO_PARAMS
-    text = out.read_text() if out.exists() else log.read_text()
-    if not out.exists():
-        out.write_text(text)
+    # A console that bypasses the log file (Wally's HTIF console without a UART) leaves it empty
+    text = out.read_text() if out.exists() and out.stat().st_size else log.read_text()
+    out.write_text(text)
     text = "\n".join(re.sub(r"^\[\s*\d+ [a-z]+\] ", "", l) for l in text.splitlines())
     reported = set(re.findall(r"^\s*- \{ name: (\w+),", text, re.MULTILINE))
     untested = set()

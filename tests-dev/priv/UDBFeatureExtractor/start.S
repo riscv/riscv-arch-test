@@ -28,6 +28,16 @@
 .section .text.init, "ax", @progbits
 .globl rvtest_entry_point
 rvtest_entry_point:
+    // A hart without Zicsr that ignores CSR instructions instead of trapping (Wally rv32i and
+    // rv64i) does not read back what was written to mscratch; s1 = 0 sends it to the reduced
+    // report instead of main
+    li      t0, 0x5A5
+    csrw    mscratch, t0
+    li      a0, 0
+    csrr    a0, mscratch
+    sub     s1, a0, t0
+    seqz    s1, s1
+    beqz    s1, 3f
     csrr    a0, mhartid
     bnez    a0, park                    // only hart 0 runs the extractor
 
@@ -35,6 +45,7 @@ rvtest_entry_point:
     csrw    mtvec, t0
     li      t0, MSTATUS_FS_VS
     csrs    mstatus, t0
+3:
 #ifdef RVMODEL_IO_INIT
     RVMODEL_IO_INIT(t0, t1, t2)
 #endif
@@ -47,7 +58,10 @@ rvtest_entry_point:
     j       1b
 2:  la      sp, __stack_top
     andi    sp, sp, -16
+    beqz    s1, 4f
     call    main
+    j       halt_pass
+4:  call    main_no_zicsr
 halt_pass:
     RVMODEL_HALT_PASS
 halt_fail:

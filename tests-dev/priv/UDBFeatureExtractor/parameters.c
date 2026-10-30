@@ -22,6 +22,8 @@
 
 bool have(const char *name);            // feature_extractor.c
 extern volatile unsigned long unimplemented_seen;
+extern unsigned long reset_mseccfg;     // mseccfg as found at boot, PROBE_TRAPPED if absent
+extern bool has_zdinx;
 
 #define COUNT(a) (sizeof(a) / sizeof((a)[0]))
 #define BIT(n) (1ul << (n))
@@ -30,7 +32,7 @@ extern volatile unsigned long unimplemented_seen;
 // Output helpers.  Every parameter printed is remembered, so that at the end the parameters that
 // apply to the hart but were not determined can be listed.
 
-#define MAX_PRINTED 320
+#define MAX_PRINTED 400
 static char printed[MAX_PRINTED][64];
 static unsigned num_printed;
 
@@ -98,6 +100,65 @@ static void param_ints(const char *name, const unsigned long *v, unsigned count)
     for (unsigned i = 0; i < count; i++)
         printf("%s%u", i ? ", " : "", v[i]);
     printf("]\n");
+}
+
+// The same lists from a 64-bit mask held in two words (RV32 has no 64-bit unsigned long)
+static void param_bools64(const char *name, unsigned long lo, unsigned long hi)
+{
+    note_printed(name);
+    printf("  %s: [", name);
+    for (unsigned i = 0; i < 64; i++) {
+        unsigned long w = i < __riscv_xlen ? lo : hi;
+        printf("%s%s", i ? ", " : "", (w >> (i % __riscv_xlen)) & 1 ? "true" : "false");
+    }
+    printf("]\n");
+}
+
+// Sail configuration keys that no UDB parameter covers, printed as comments the configuration
+// generator reads: "# sail: <dotted key>: <JSON value>".  A behavior the Sail key cannot express
+// is printed as "# sail-unmodelled: <dotted key>: <what was seen>".
+static void sail_bool(const char *key, bool v)
+{
+    printf("# sail: %s: %s\n", key, v ? "true" : "false");
+}
+
+static void sail_int(const char *key, unsigned long v)
+{
+    printf("# sail: %s: %u\n", key, v);
+}
+
+static void sail_str(const char *key, const char *v)
+{
+    printf("# sail: %s: \"%s\"\n", key, v);
+}
+
+static void sail_raw(const char *key, const char *json)
+{
+    printf("# sail: %s: %s\n", key, json);
+}
+
+// Sail's memory.misaligned.exceptions.* entry for an access that did or did not trap
+static void sail_misaligned(const char *key, bool ok, unsigned long cause, unsigned long align, unsigned long access)
+{
+    if (ok)
+        sail_raw(key, "{\"None\": null}");
+    else if (cause == align)
+        sail_raw(key, "{\"Some\": \"AlignmentException\"}");
+    else if (cause == access)
+        sail_raw(key, "{\"Some\": \"AccessFault\"}");
+}
+
+static void sail_unmodelled(const char *key, const char *what, unsigned long v)
+{
+    printf("# sail-unmodelled: %s: %s 0x%x\n", key, what, v);
+}
+
+// "CSRBit_Writable", "CSRBit_ReadOnlyZero" or "CSRBit_ReadOnlyOne" for a stateen enable bit
+static void sail_bit_type(const char *key, unsigned long set, unsigned long clear)
+{
+    if (set == PROBE_TRAPPED || clear == PROBE_TRAPPED)
+        return;
+    sail_str(key, set && !clear ? "CSRBit_Writable" : set ? "CSRBit_ReadOnlyOne" : "CSRBit_ReadOnlyZero");
 }
 
 static unsigned popcount(unsigned long v)
@@ -185,6 +246,39 @@ static unsigned long (*const pmpaddr_wr[64])(unsigned long) = { IDX64(PMPADDR_EN
 #define HPM_ENTRY(n) mhpmcounter##n##_wr,
 IDX3_31(HPM_FN)
 static unsigned long (*const mhpmcounter_wr[29])(unsigned long) = { IDX3_31(HPM_ENTRY) };
+#if __riscv_xlen == 32
+#define HPMH_FN(n) DEFINE_CSR_WRITE_READ(mhpmcounter##n##h_wr, 0xB80 + n)
+#define HPMH_ENTRY(n) mhpmcounter##n##h_wr,
+IDX3_31(HPMH_FN)
+static unsigned long (*const mhpmcounterh_wr[29])(unsigned long) = { IDX3_31(HPMH_ENTRY) };
+DEFINE_CSR_WRITE_READ(medelegh_wr, 0x312)
+DEFINE_CSR_WRITE_READ(midelegh_wr, 0x313)
+DEFINE_CSR_WRITE_READ(mhpmevent3h_wr, 0x723)
+#endif
+DEFINE_CSR_WRITE_READ(medeleg_wr, medeleg)
+DEFINE_CSR_WRITE_READ(mideleg_wr, mideleg)
+DEFINE_CSR_READ(mhartid_rd, mhartid)
+
+// Sdtrig trigger CSRs
+DEFINE_CSR_READ(tselect_rd, 0x7A0)
+DEFINE_CSR_SET(tselect_set, 0x7A0)
+DEFINE_CSR_READ(tdata1_rd, 0x7A1)
+// A tdata1 write goes through 0 first: a hart may accept a new configuration only for a disabled
+// trigger (Sail ignores all but the hit bits of an enabled one), and writing 0 disables
+static unsigned long tdata1_set(unsigned long value)
+{
+    return PROBE_VALUE_IN("zicsr", "csrw 0x7A1, zero\n\tcsrw 0x7A1, %[in]\n\tcsrr a3, 0x7A1", value);
+}
+DEFINE_CSR_READ(tdata2_rd, 0x7A2)
+DEFINE_CSR_SET(tdata2_set, 0x7A2)
+DEFINE_CSR_READ(tdata3_rd, 0x7A3)
+DEFINE_CSR_SET(tdata3_set, 0x7A3)
+DEFINE_CSR_READ(tinfo_rd, 0x7A4)
+DEFINE_CSR_READ(tcontrol_rd, 0x7A5)
+
+// Parameter values the applicability conditions in udb_parameters.h refer to
+static bool marchid_impl, mimpid_impl, mcontext_impl, scontext_impl, tdata3_impl;
+static bool trig_mcontrol6, trig_icount, trig_itrigger, trig_etrigger;
 
 // Set a bit, read it back and restore; and the same clearing the bit.  Both return the bit.
 #define BIT_SET_READ(csr, mask)                                                             \
@@ -337,6 +431,7 @@ volatile unsigned long cfi_active;               // tells the M-mode handler a l
 DEFINE_STUB(ecall_stub, "zicsr", "ecall\n\tebreak")     // ecall, then ebreak in case it did not trap
 DEFINE_STUB(stub_illegal, "zicsr", ".word 0x00004073")
 DEFINE_STUB(stub_ebreak, "zicsr", "ebreak")
+DEFINE_STUB(stub_wfi, "zicsr", "wfi")
 DEFINE_STUB(stub_lw_misaligned, "zicsr", "lw t1, 1(a1)")
 DEFINE_STUB(stub_sw_misaligned, "zicsr", "sw t1, 1(a1)")
 DEFINE_STUB(stub_jump_misaligned, "zicsr", "jalr zero, 2(a1)")
@@ -873,6 +968,360 @@ static void lower_mode_tval_params(const char *tval, bool virt, unsigned usable_
 
 // ---------------------------------------------------------------------------------------------
 
+// Sdtrig triggers.  Every tdata1 value written has all of m, s, u, vs, vu, execute, load and
+// store clear except the one bit under test, and never a privilege bit together with an access
+// type, so no trigger can fire.  Each trigger's tdata1-3 are restored afterwards.
+#define TDATA1_TYPE(t) ((unsigned long)(t) << (__riscv_xlen - 4))
+#define TDATA1_TYPE_OF(v) ((v) >> (__riscv_xlen - 4))
+#define TRIG_ICOUNT 3
+#define TRIG_ITRIGGER 4
+#define TRIG_ETRIGGER 5
+#define TRIG_MCONTROL6 6
+#define MAX_TRIGGERS __riscv_xlen
+
+// Write a tdata1 value of the given type; the read-back, or PROBE_TRAPPED if the type did not stick
+static unsigned long tdata1_try(unsigned type, unsigned long bits)
+{
+    unsigned long v = tdata1_set(TDATA1_TYPE(type) | bits);
+    return v == PROBE_TRAPPED || TDATA1_TYPE_OF(v) != type ? PROBE_TRAPPED : v;
+}
+
+// The bit numbers whose bits stick when tdata2 is written with all ones, for itrigger/etrigger
+static void tdata2_mask_list(const char *name, unsigned type)
+{
+    if (tdata1_try(type, 0) == PROBE_TRAPPED)
+        return;
+    unsigned long v = tdata2_set(~0ul);
+    if (!PROBE_OK())
+        return;
+    unsigned long list[__riscv_xlen];
+    unsigned n = 0;
+    for (unsigned i = 0; i < __riscv_xlen; i++)
+        if ((v >> i) & 1)
+            list[n++] = i;
+    if (n)
+        param_ints(name, list, n);
+}
+
+static void sdtrig_params(bool has_s, bool has_u, bool has_h)
+{
+    unsigned long tselect0 = tselect_rd();
+    if (!PROBE_OK())
+        return;
+    // Walk tselect until a value does not stick or selects no trigger.  tinfo gives the types a
+    // trigger supports; without tinfo, each type is written to tdata1 and read back.
+    unsigned long types[MAX_TRIGGERS], orig1[MAX_TRIGGERS], orig2[MAX_TRIGGERS], orig3[MAX_TRIGGERS];
+    unsigned n = 0;
+    for (unsigned i = 0; i < MAX_TRIGGERS; i++) {
+        if (tselect_set(i) != i)
+            break;
+        orig1[i] = tdata1_rd();
+        orig2[i] = tdata2_rd();
+        orig3[i] = tdata3_rd();
+        unsigned long info = tinfo_rd();
+        if (PROBE_OK()) {
+            info &= 0xFFFF;
+        } else {
+            info = 0;
+            for (unsigned t = 2; t <= 6; t++)
+                if (tdata1_try(t, 0) != PROBE_TRAPPED)
+                    info |= BIT(t);
+            tdata1_set(orig1[i]);
+        }
+        if ((info & ~1ul) == 0)
+            break;                                  // only type 0: no trigger at this tselect
+        types[n++] = info;
+    }
+    if (n == 0) {
+        tselect_set(tselect0);
+        return;
+    }
+    param_int("SDTRIG_NUM_TRIGGERS", n);
+    unsigned long mask[7] = { 0 };
+    for (unsigned i = 0; i < n; i++)
+        for (unsigned t = TRIG_ICOUNT; t <= TRIG_MCONTROL6; t++)
+            if ((types[i] >> t) & 1)
+                mask[t] |= BIT(i);
+    trig_mcontrol6 = mask[TRIG_MCONTROL6] != 0;
+    trig_icount = mask[TRIG_ICOUNT] != 0;
+    trig_itrigger = mask[TRIG_ITRIGGER] != 0;
+    trig_etrigger = mask[TRIG_ETRIGGER] != 0;
+    param_bools("SDTRIG_MCONTROL6_SUPPORTED_TRIGGERS", mask[TRIG_MCONTROL6], n);
+    param_bools("SDTRIG_ICOUNT_SUPPORTED_TRIGGERS", mask[TRIG_ICOUNT], n);
+    param_bools("SDTRIG_ITRIGGER_SUPPORTED_TRIGGERS", mask[TRIG_ITRIGGER], n);
+    param_bools("SDTRIG_ETRIGGER_SUPPORTED_TRIGGERS", mask[TRIG_ETRIGGER], n);
+    tselect_set(0);
+    tdata2_rd();
+    param_bool("TDATA2_IMPLEMENTED", PROBE_OK());
+    tdata3_rd();
+    tdata3_impl = PROBE_OK();
+    param_bool("TDATA3_IMPLEMENTED", tdata3_impl);
+    tcontrol_rd();
+    param_bool("TCONTROL_IMPLEMENTED", PROBE_OK());
+
+    if (trig_mcontrol6) {
+        unsigned m6 = ctz(mask[TRIG_MCONTROL6]);
+        tselect_set(m6);
+        // mcontrol6 fields: which privilege and access bits can be set, MATCH and SIZE values
+        static const struct { const char *name; unsigned bit; } bits[] = {
+            { "SDTRIG_M_WRITABLE", 6 },  { "SDTRIG_S_WRITABLE", 4 },  { "SDTRIG_U_WRITABLE", 3 },
+            { "SDTRIG_VS_WRITABLE", 24 }, { "SDTRIG_VU_WRITABLE", 23 },
+            { "SDTRIG_MCONTROL6_EXECUTE_WRITABLE", 2 }, { "SDTRIG_MCONTROL6_STORE_WRITABLE", 1 },
+            { "SDTRIG_MCONTROL6_LOAD_WRITABLE", 0 }, { "SDTRIG_MCONTROL6_SELECT_WRITABLE", 21 },
+        };
+        for (unsigned i = 0; i < COUNT(bits); i++) {
+            if ((bits[i].bit == 4 && !has_s) || (bits[i].bit == 3 && !has_u) ||
+                ((bits[i].bit == 24 || bits[i].bit == 23) && !has_h))
+                continue;
+            unsigned long v = tdata1_try(TRIG_MCONTROL6, BIT(bits[i].bit));
+            if (v != PROBE_TRAPPED)
+                param_bool(bits[i].name, (v >> bits[i].bit) & 1);
+        }
+        static const unsigned long matches[] = { 0, 1, 2, 3, 4, 5, 8, 9, 12, 13 };
+        unsigned long legal[10];
+        unsigned nl = 0;
+        for (unsigned i = 0; i < COUNT(matches); i++) {
+            unsigned long v = tdata1_try(TRIG_MCONTROL6, matches[i] << 7);
+            if (v != PROBE_TRAPPED && ((v >> 7) & 0xF) == matches[i])
+                legal[nl++] = matches[i];
+        }
+        bool napot = nl > 1 && legal[1] == 1;
+        if (nl && legal[0] == 0)
+            param_ints("SDTRIG_MCONTROL6_MATCH_LEGAL_VALUES", legal, nl);
+        nl = 0;
+        for (unsigned long size = 0; size <= 6; size++) {
+            unsigned long v = tdata1_try(TRIG_MCONTROL6, size << 16);
+            if (v != PROBE_TRAPPED && ((v >> 16) & 7) == size)
+                legal[nl++] = size;
+        }
+        if (nl && legal[0] == 0)
+            param_ints("SDTRIG_MCONTROL6_SIZE_LEGAL_VALUES", legal, nl);
+        // NAPOT: a tdata2 whose lowest zero is bit k describes a 2^(k+1)-byte range, legal for
+        // k < maskmax6.  The first k whose value does not read back is maskmax6; a hart that
+        // keeps every value tells nothing.
+        if (napot && tdata1_try(TRIG_MCONTROL6, 1 << 7) != PROBE_TRAPPED) {
+            for (unsigned k = 0; k < __riscv_xlen; k++) {
+                unsigned long range = (1ul << k) - 1;
+                unsigned long v = tdata2_set(range);
+                if (!PROBE_OK())
+                    break;
+                if (v != range) {
+                    if (k)
+                        param_int("SDTRIG_MCONTROL6_MASKMAX6", k);
+                    break;
+                }
+            }
+        }
+        tdata1_set(orig1[m6]);
+        tdata2_set(orig2[m6]);
+        // Chain length: set chain on the run of mcontrol6 triggers from trigger 0 in order; a
+        // chain bit that does not stick would make the chain longer than the hart allows
+        if (mask[TRIG_MCONTROL6] & 1) {
+            unsigned run = ctz(~mask[TRIG_MCONTROL6]), k = 0, tried = 0;
+            for (; tried < run; tried++) {
+                tselect_set(tried);
+                unsigned long v = tdata1_try(TRIG_MCONTROL6, BIT(11));
+                if (v == PROBE_TRAPPED || !((v >> 11) & 1)) {
+                    tried++;
+                    break;
+                }
+                k++;
+            }
+            while (tried--) {
+                tselect_set(tried);
+                tdata1_set(orig1[tried]);
+            }
+            param_int("SDTRIG_MAX_CHAIN_LENGTH", k < run ? k + 1 : run);
+        }
+    }
+
+    // textra (tdata3) of the first trigger, set to an inert value of a type that uses tdata3
+    if (tdata3_impl) {
+        unsigned t0 = 0;
+        unsigned type = (types[0] >> TRIG_MCONTROL6) & 1 ? TRIG_MCONTROL6 : (types[0] >> TRIG_ICOUNT) & 1 ? TRIG_ICOUNT
+                      : (types[0] >> TRIG_ITRIGGER) & 1 ? TRIG_ITRIGGER : (types[0] >> TRIG_ETRIGGER) & 1 ? TRIG_ETRIGGER : 0;
+        tselect_set(t0);
+        if (type && tdata1_try(type, 0) != PROBE_TRAPPED) {
+#if __riscv_xlen == 64
+#define MHVALUE(v) (((v) >> 51) & 0x1FFF)
+#define MHSELECT_SHIFT 48
+#define SVALUE(v) (((v) >> 2) & 0xFFFFFFFF)
+#else
+#define MHVALUE(v) (((v) >> 26) & 0x3F)
+#define MHSELECT_SHIFT 23
+#define SVALUE(v) (((v) >> 2) & 0xFFFF)
+#endif
+            unsigned long v = tdata3_set(~0ul);
+            if (PROBE_OK()) {
+                param_int("SDTRIG_TEXTRA_MHVALUE_LEN", popcount(MHVALUE(v)));
+                param_int("SDTRIG_TEXTRA_SVALUE_LEN", popcount(SVALUE(v)));
+                if (mcontext_impl) {
+                    v = tdata3_set(4ul << MHSELECT_SHIFT);
+                    param_bool("SDTRIG_TEXTRA_MHSELECT_MCONTEXT_MATCH", ((v >> MHSELECT_SHIFT) & 7) == 4);
+                }
+                if (has_h) {
+                    v = tdata3_set(2ul << MHSELECT_SHIFT);
+                    param_bool("SDTRIG_TEXTRA_MHSELECT_VMID_MATCH", ((v >> MHSELECT_SHIFT) & 7) == 2);
+                }
+                if (has_s && scontext_impl)
+                    param_bool("SDTRIG_TEXTRA_SSELECT_SCONTEXT_MATCH", (tdata3_set(1) & 3) == 1);
+                if (has_s)
+                    param_bool("SDTRIG_TEXTRA_SSELECT_ASID_MATCH", (tdata3_set(2) & 3) == 2);
+            }
+            tdata3_set(orig3[t0]);
+        }
+        tdata1_set(orig1[t0]);
+        tdata2_set(orig2[t0]);
+    }
+
+    // itrigger and etrigger: the interrupts and exceptions tdata2 can select
+    if (trig_itrigger) {
+        unsigned i = ctz(mask[TRIG_ITRIGGER]);
+        tselect_set(i);
+        tdata2_mask_list("SDTRIG_ITRIGGER_SUPPORTED_INTERRUPTS", TRIG_ITRIGGER);
+        tdata1_set(orig1[i]);
+        tdata2_set(orig2[i]);
+    }
+    if (trig_etrigger) {
+        unsigned i = ctz(mask[TRIG_ETRIGGER]);
+        tselect_set(i);
+        tdata2_mask_list("SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS", TRIG_ETRIGGER);
+        tdata1_set(orig1[i]);
+        tdata2_set(orig2[i]);
+    }
+    // icount: does count hold 2, or is it hardwired to 1?
+    if (trig_icount) {
+        unsigned i = ctz(mask[TRIG_ICOUNT]);
+        tselect_set(i);
+        unsigned long v = tdata1_try(TRIG_ICOUNT, 2ul << 10);
+        unsigned long count = (v >> 10) & 0x3FFF;
+        if (v != PROBE_TRAPPED && (count == 1 || count == 2))
+            param_bool("SDTRIG_ICOUNT_COUNT_HARDWIRED_1", count == 1);
+        tdata1_set(orig1[i]);
+    }
+    tselect_set(tselect0);
+}
+
+// Sail configuration keys for reserved and implementation-chosen behavior that UDB has no
+// parameter for.  Each is printed only when the experiment is conclusive.
+#define FS_AFTER(fflags_init, a, b, op)                                                         \
+    "li t1, " a "\n\tfmv.w.x ft0, t1\n\tli t1, " b "\n\tfmv.w.x ft1, t1\n\tcsrwi fflags, " fflags_init "\n\t" \
+    "csrr t2, mstatus\n\tli t1, 3 << 13\n\tnot a2, t1\n\tand a2, t2, a2\n\tli t1, 2 << 13\n\t" \
+    "or a2, a2, t1\n\tcsrw mstatus, a2\n\t" op "\n\tcsrr a3, mstatus\n\tcsrw mstatus, t2\n\t"  \
+    "srli a3, a3, 13\n\tandi a3, a3, 3"
+#define SNAN_S "0x7f800001"
+
+static void sail_reserved_behavior(bool has_s, unsigned long vlen)
+{
+    unsigned long v;
+
+    // menvcfg.FIOM writable
+    v = PROBE_VALUE("zicsr", BIT_SET_READ(menvcfg, 1));
+    if (v != PROBE_TRAPPED)
+        sail_bool("base.writable_fiom", v != 0);
+
+    // menvcfg.CBIE = 10 (reserved) written over 01: Ignore keeps 01, ClearPermissions gives 00
+    if (have("Zicbom")) {
+        v = PROBE_VALUE("zicsr", "csrr t2, menvcfg\n\tli t1, ~(3 << 4)\n\tand a2, t2, t1\n\tori a2, a2, 1 << 4\n\t"
+                                 "csrw menvcfg, a2\n\tcsrr s0, menvcfg\n\tand a2, t2, t1\n\tori a2, a2, 2 << 4\n\t"
+                                 "csrw menvcfg, a2\n\tcsrr a3, menvcfg\n\tcsrw menvcfg, t2\n\t"
+                                 "srli s0, s0, 4\n\tandi s0, s0, 3\n\tsrli a3, a3, 4\n\tandi a3, a3, 3\n\t"
+                                 "slli s0, s0, 4\n\tor a3, a3, s0");
+        if (v != PROBE_TRAPPED && (v >> 4) == 1) {
+            v &= 3;
+            if (v == 1)
+                sail_str("base.reserved_behavior.xenvcfg_cbie", "Xenvcfg_Ignore");
+            else if (v == 0)
+                sail_str("base.reserved_behavior.xenvcfg_cbie", "Xenvcfg_ClearPermissions");
+            else
+                sail_unmodelled("base.reserved_behavior.xenvcfg_cbie", "CBIE reads", v);
+        }
+    }
+
+    // stvec.MODE = 2 (reserved): Sail's Xtvec_Ignore keeps the old mode
+    if (has_s) {
+        v = PROBE_VALUE_IN("zicsr", "csrr t2, stvec\n\tcsrw stvec, %[in]\n\tcsrr s0, stvec\n\tori a2, %[in], 2\n\t"
+                                    "csrw stvec, a2\n\tcsrr a3, stvec\n\tcsrw stvec, t2\n\tandi s0, s0, 3\n\t"
+                                    "andi a3, a3, 3\n\tslli s0, s0, 4\n\tor a3, a3, s0",
+                           (unsigned long)probe_scratch);
+        if (v != PROBE_TRAPPED) {
+            if ((v & 3) == (v >> 4))
+                sail_str("base.reserved_behavior.xtvec_mode", "Xtvec_Ignore");
+            else
+                sail_unmodelled("base.reserved_behavior.xtvec_mode", "stvec.MODE reads", v & 3);
+        }
+    }
+
+    if (have("F")) {
+        // A dynamic-rounding instruction with frm = 5 (reserved) must be illegal
+        unsigned long fcsr = PROBE_VALUE("f", "csrr a3, fcsr");
+        v = PROBE_VALUE("f", "li t1, 5 << 5\n\tcsrw fcsr, t1\n\tcsrr a3, frm");
+        if (v == 5) {
+            probe_cause = CAUSE_NONE;
+            bool ok = PROBE("f", "li t1, 5 << 5\n\tcsrw fcsr, t1\n\tfadd.s ft0, ft1, ft2, dyn");
+            if (!ok && probe_cause == CAUSE_ILLEGAL_INSTRUCTION)
+                sail_str("base.reserved_behavior.fcsr_rm", "Fcsr_RM_Illegal");
+            else if (ok)
+                sail_unmodelled("base.reserved_behavior.fcsr_rm", "fadd.s with frm 5 executes, frm", 5);
+        }
+        PROBE_VALUE_IN("f", "csrw fcsr, %[in]\n\tli a3, 0", fcsr);
+
+        // When does an instruction that only writes fflags make FS Dirty?  feq.s writes an x
+        // register, so FS changes only through fflags.  From Clean: no flag raised (A), NV raised
+        // while NV is already set (B), NV newly raised (C, which must make FS Dirty).
+        unsigned long dry = PROBE_VALUE("f", FS_AFTER("0", "0", "0", "nop"));
+        unsigned long a = PROBE_VALUE("f", FS_AFTER("0", "0", "0", "feq.s s1, ft0, ft1"));
+        unsigned long b = PROBE_VALUE("f", FS_AFTER("0x10", SNAN_S, "0", "feq.s s1, ft0, ft1"));
+        unsigned long c = PROBE_VALUE("f", FS_AFTER("0", SNAN_S, "0", "feq.s s1, ft0, ft1"));
+        PROBE("f", "csrwi fflags, 0");
+        if (dry == 2 && c == 3 && (a == 2 || a == 3) && (b == 2 || b == 3))
+            sail_str("extensions.F.fflags_dirty_policy", a == 3 ? "Fflags_Dirty_Instruction"
+                                                         : b == 3 ? "Fflags_Dirty_Flag" : "Fflags_Dirty_Precise");
+    }
+
+    // An odd register pair for amocas.q (RV64) or amocas.d (RV32) is reserved: rd = x7
+    if (have("Zacas")) {
+        probe_cause = CAUSE_NONE;
+#if __riscv_xlen == 64
+        bool ok = PROBE("zacas", ".insn r 0x2F, 4, 0x14, x7, x11, x6");
+#else
+        bool ok = PROBE("zacas", ".insn r 0x2F, 3, 0x14, x7, x11, x6");
+#endif
+        if (!ok && probe_cause == CAUSE_ILLEGAL_INSTRUCTION)
+            sail_str("base.reserved_behavior.amocas_odd_register", "AMOCAS_Illegal");
+        else if (ok)
+            sail_unmodelled("base.reserved_behavior.amocas_odd_register", "amocas with odd rd executes, rd", 7);
+    }
+
+#if __riscv_xlen == 32
+    // Zdinx on RV32: an odd register pair for fadd.d is reserved: rd = x7
+    if (has_zdinx) {
+        probe_cause = CAUSE_NONE;
+        bool ok = PROBE("zicsr", ".insn r 0x53, 0, 0x01, x7, x6, x6");
+        if (!ok && probe_cause == CAUSE_ILLEGAL_INSTRUCTION)
+            sail_str("base.reserved_behavior.rv32zdinx_odd_register", "Zdinx_Illegal");
+        else if (ok)
+            sail_unmodelled("base.reserved_behavior.rv32zdinx_odd_register", "fadd.d with odd rd executes, rd", 7);
+    }
+#endif
+
+    // A vector load with vstart = VLMAX (out of bounds for e8, m1)
+    if (vlen) {
+        v = PROBE_VALUE("zve32x", "vsetvli t1, zero, e8, m1, ta, ma\n\tcsrw vstart, t1\n\tcsrr a3, vstart\n\t"
+                                  "sub a3, a3, t1\n\tcsrw vstart, zero");
+        if (v == 0) {
+            probe_cause = CAUSE_NONE;
+            bool ok = PROBE("zve32x", "vsetvli t1, zero, e8, m1, ta, ma\n\tcsrw vstart, t1\n\tvle8.v v1, (a1)");
+            unsigned long cause = probe_cause;
+            PROBE("zve32x", "csrw vstart, zero");
+            if (!ok && cause == CAUSE_ILLEGAL_INSTRUCTION)
+                sail_str("extensions.V.reserved_behavior.vstart_out_of_bounds", "Vstart_Illegal");
+            else if (ok)
+                sail_str("extensions.V.reserved_behavior.vstart_out_of_bounds", "Vstart_Ignore");
+        }
+    }
+}
+
 void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned long reset_vl)
 {
     bool has_s = have("S"), has_u = have("U"), has_h = have("H");
@@ -890,14 +1339,21 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
     }
     v = marchid_rd();
     if (v != PROBE_TRAPPED) {
-        param_bool("MARCHID_IMPLEMENTED", v != 0);
-        param_int("ARCH_ID_VALUE", v);
+        marchid_impl = v != 0;
+        param_bool("MARCHID_IMPLEMENTED", marchid_impl);
+        if (marchid_impl)
+            param_int("ARCH_ID_VALUE", v);
     }
     v = mimpid_rd();
     if (v != PROBE_TRAPPED) {
-        param_bool("MIMPID_IMPLEMENTED", v != 0);
-        param_int("IMP_ID_VALUE", v);
+        mimpid_impl = v != 0;
+        param_bool("MIMPID_IMPLEMENTED", mimpid_impl);
+        if (mimpid_impl)
+            param_int("IMP_ID_VALUE", v);
     }
+    v = mhartid_rd();
+    if (PROBE_OK())
+        sail_int("platform.hartid", v);
     v = mconfigptr_rd();
     if (v != PROBE_TRAPPED)
         param_int("CONFIG_PTR_ADDRESS", v);
@@ -906,6 +1362,8 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
     unsigned long misa = misa_rd();
     if (misa != PROBE_TRAPPED) {
         param_bool("MISA_CSR_IMPLEMENTED", misa != 0);
+        if (misa != 0)
+            param_bool("NON_STANDARD_EXTENSION_IMPLEMENTED", (misa >> ('X' - 'A')) & 1);
         static const struct { char letter; const char *param; } mutable_misa[] = {
             { 'A', "MUTABLE_MISA_A" }, { 'B', "MUTABLE_MISA_B" }, { 'C', "MUTABLE_MISA_C" },
             { 'D', "MUTABLE_MISA_D" }, { 'F', "MUTABLE_MISA_F" }, { 'H', "MUTABLE_MISA_H" },
@@ -938,16 +1396,16 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
                              "li t1, 1 << 13\n\tor a2, a2, t1\n\tcsrw mstatus, a2\n\t"
                              "fadd.s ft0, ft2, ft4\n\tcsrr a3, mstatus\n\tcsrw mstatus, t2\n\t"
                              "srli a3, a3, 13\n\tandi a3, a3, 3");
-        if (v != PROBE_TRAPPED)
-            param_str("HW_MSTATUS_FS_DIRTY_UPDATE", v == 3 ? "precise" : "never");
+        if (v == 3)                             // the enum has no value for a field never set Dirty
+            param_str("HW_MSTATUS_FS_DIRTY_UPDATE", "precise");
     }
     if (vlen) {
         v = PROBE_VALUE("zve32x", "csrr t2, mstatus\n\tli t1, 3 << 9\n\tnot a2, t1\n\tand a2, t2, a2\n\t"
                                   "li t1, 1 << 9\n\tor a2, a2, t1\n\tcsrw mstatus, a2\n\t"
                                   "vsetivli x0, 1, e32, m1, ta, ma\n\tvadd.vv v1, v2, v3\n\t"
                                   "csrr a3, mstatus\n\tcsrw mstatus, t2\n\tsrli a3, a3, 9\n\tandi a3, a3, 3");
-        if (v != PROBE_TRAPPED)
-            param_str("HW_MSTATUS_VS_DIRTY_UPDATE", v == 3 ? "precise" : "never");
+        if (v == 3)                             // the enum has no value for a field never set Dirty
+            param_str("HW_MSTATUS_VS_DIRTY_UPDATE", "precise");
     }
 #if __riscv_xlen == 64
     endianness("M_MODE_ENDIANNESS", PROBE_VALUE("zicsr", BIT_SET_READ(mstatus, 1 << 37)),
@@ -1043,11 +1501,27 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
             param_bool("SSI_INTR_IMPL", (v >> 1) & 1);
             param_bool("STI_INTR_IMPL", (v >> 5) & 1);
         }
-        if (has_h) {
-            param_bool("VSEI_INTR_IMPL", (v >> 10) & 1);
-            param_bool("VSSI_INTR_IMPL", (v >> 2) & 1);
-            param_bool("VSTI_INTR_IMPL", (v >> 6) & 1);
-        }
+    }
+    // Which exceptions and interrupts medeleg and mideleg can delegate (bits 32-63 in medelegh
+    // and midelegh on RV32, read as zero where those do not exist)
+    if (has_s) {
+        unsigned long eh = 0, ih = 0;
+        unsigned long e = medeleg_wr(~0ul);
+        bool e_ok = PROBE_OK();
+        unsigned long i = mideleg_wr(~0ul);
+        bool i_ok = PROBE_OK();
+#if __riscv_xlen == 32
+        eh = medelegh_wr(~0ul);
+        if (!PROBE_OK())
+            eh = 0;
+        ih = midelegh_wr(~0ul);
+        if (!PROBE_OK())
+            ih = 0;
+#endif
+        if (e_ok)
+            param_bools64("MEDELEG_DELEGATABLE", e, eh);
+        if (i_ok)
+            param_bools64("MIDELEG_DELEGATABLE", i, ih);
     }
 
     // Zcmt: the jvt CSR
@@ -1088,6 +1562,62 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
         }
         if (tried == 256 && n <= 64)
             param_ints("HPM_EVENTS", events, n);
+    }
+    // Counter widths: write all ones above the low byte (a running counter could wrap within a
+    // few cycles of an all-ones write) and find the highest bit that holds
+    for (unsigned i = 0; i < COUNT(mhpmcounter_wr); i++) {
+        if (!((hpm >> (i + 3)) & 1))
+            continue;
+        unsigned width = 0;
+#if __riscv_xlen == 32
+        v = mhpmcounterh_wr[i](~0ul);
+        if (PROBE_OK() && v != 0)
+            width = 32 + msb(v) + 1;
+#endif
+        if (!width) {
+            v = mhpmcounter_wr[i](~0ul << 8);
+            if (v != PROBE_TRAPPED && (v >> 8) != 0)
+                width = msb(v) + 1;
+        }
+        if (width) {
+            char name[] = "HPM_COUNTERnn_WIDTH";
+            unsigned n = i + 3;
+            if (n < 10) {
+                name[11] = '0' + n;
+                for (unsigned j = 12; name[j]; j++)     // close the gap left by a one-digit number
+                    name[j] = name[j + 1];
+            } else {
+                unsigned tens = 0;
+                for (; n >= 10; n -= 10)            // no M extension in the E build to divide with
+                    tens++;
+                name[11] = '0' + tens;
+                name[12] = '0' + n;
+            }
+            param_int(name, width);
+        }
+    }
+    // The event selector width of mhpmevent3 (Sail's hpmevent_width_bits); with Sscofpmf the top
+    // eight bits are OF and the mode inhibits, not selector bits
+    if (hpm & BIT(3)) {
+        v = mhpmevent3_wr(~0ul);
+        if (PROBE_OK()) {
+            unsigned long sel = v;
+            unsigned width = 0;
+#if __riscv_xlen == 64
+            if (have("Sscofpmf"))
+                sel &= (1ul << 56) - 1;
+            width = sel ? msb(sel) + 1 : 0;
+#else
+            width = sel ? msb(sel) + 1 : 0;
+            if (width == 32) {
+                unsigned long h = mhpmevent3h_wr(~0ul);
+                if (PROBE_OK() && (have("Sscofpmf") ? (h & 0xFFFFFF) : h))
+                    width = 32 + msb(have("Sscofpmf") ? (h & 0xFFFFFF) : h) + 1;
+            }
+#endif
+            if (width)
+                sail_int("base.hpmevent_width_bits", width);
+        }
     }
     bool inhibit = mcountinhibit_rd() != PROBE_TRAPPED;
     param_bool("MCOUNTINHIBIT_IMPLEMENTED", inhibit);
@@ -1133,9 +1663,26 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
                 param_bool("PMP_NA4_SUPPORTED", na4);
                 param_bool("PMP_NAPOT_SUPPORTED", napot);
                 param_bool("PMP_TOR_SUPPORTED", tor);
-                // With A = OFF, pmpaddr bits [G-2:0] read as zero; if bit 0 reads as one, G is 0
-                // when NA4 is supported and 1 otherwise
-                param_int("PMP_GRANULARITY", ones & 1 ? (na4 ? 0 : 1) : ctz(ones) + 2);
+                // PMP_GRANULARITY is G + 2.  With A = OFF, pmpaddr bits [G-1:0] read as zero, so
+                // the lowest set bit of an all-ones write is G (privileged spec, "Physical
+                // Memory Protection CSRs")
+                param_int("PMP_GRANULARITY", ctz(ones) + 2);
+                // R = 0, W = 1 is reserved (unless Smepmp's MML is set): with entry 0 at R|X and
+                // A = OFF, write W alone and see what Sail's pmpcfg_write_only would have to be
+                unsigned long seccfg = PROBE_VALUE("zicsr", "csrr a3, 0x747");
+                if (seccfg == PROBE_TRAPPED || !(seccfg & 1)) {
+                    unsigned long before = pmpcfg0_set((cfg0 & ~0xFFul) | 0x05) & 0xFF;
+                    unsigned long after = pmpcfg0_set((cfg0 & ~0xFFul) | 0x02) & 0xFF;
+                    pmpcfg0_set(cfg0);
+                    if (before == 0x05) {
+                        if (after == 0x05)
+                            sail_str("base.reserved_behavior.pmpcfg_write_only", "PMP_Ignore");
+                        else if (after == 0)
+                            sail_str("base.reserved_behavior.pmpcfg_write_only", "PMP_ClearPermissions");
+                        else
+                            sail_unmodelled("base.reserved_behavior.pmpcfg_write_only", "pmp0cfg reads", after);
+                    }
+                }
             }
         }
     }
@@ -1146,16 +1693,22 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
     bool lw_ok = PROBE("zicsr", "lw t1, 1(a1)");
     param_bool("MISALIGNED_LDST", lw_ok);
     bool amo_ok = false;
+    unsigned long lw_cause = probe_cause;
     if (!lw_ok && probe_cause == CAUSE_LOAD_MISALIGNED)
         param_bool("REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED", probe_tval == scratch + 1);
     probe_cause = CAUSE_NONE;
     bool sw_ok = PROBE("zicsr", "sw t1, 1(a1)");
     if (!sw_ok && probe_cause == CAUSE_STORE_MISALIGNED)
         param_bool("REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED", probe_tval == scratch + 1);
+    if (lw_ok == sw_ok)
+        sail_misaligned("memory.misaligned.exceptions.load_store", lw_ok, lw_ok ? CAUSE_NONE : lw_cause,
+                        CAUSE_LOAD_MISALIGNED, CAUSE_LOAD_ACCESS_FAULT);
     if (have("Zaamo")) {
         probe_cause = CAUSE_NONE;
         amo_ok = PROBE("zaamo", "addi a2, a1, 2\n\tamoadd.w t1, t2, (a2)");
         param_bool("MISALIGNED_AMO", amo_ok);
+        sail_misaligned("memory.misaligned.exceptions.amo", amo_ok, probe_cause, CAUSE_STORE_MISALIGNED,
+                        CAUSE_STORE_ACCESS_FAULT);
         if (sw_ok && !amo_ok && probe_cause == CAUSE_STORE_MISALIGNED)
             param_bool("REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED", probe_tval == scratch + 2);
         if (!amo_ok && have("Zalrsc")) {
@@ -1219,6 +1772,10 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
                 else
                     param_str("LRSC_RESERVATION_STRATEGY", "custom");
             }
+            // Does a store by this hart to the reserved address make the SC fail?
+            v = PROBE_VALUE("zalrsc", "lr.w t1, (a1)\n\tsw t1, 0(a1)\n\tsc.w a3, t1, (a1)");
+            if (PROBE_OK())
+                sail_bool("platform.reservation.invalidate_on_same_hart_store", v != 0);
             PROBE("zalrsc", "lr.w t1, (a1)\n\tsc.w a3, t1, (a1)");     // leave no reservation behind
         }
     }
@@ -1276,6 +1833,12 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
         pmp_open(num_pmp);
         if (has_u)
             ecall_from("TRAP_ON_ECALL_FROM_U", 0, false, mstatus);
+        // wfi in U-mode with mstatus.TW clear: with S-mode present it must retire or trap within
+        // a bounded time, so the probe cannot hang; without S it may wait forever, so it is not
+        // probed.  Only retiring is conclusive: a hart may wait and then raise the same
+        // illegal-instruction exception as one that does not let U-mode execute wfi (Sail does).
+        if (has_u && has_s && run_in_mode(stub_wfi, 0, false, mstatus & ~(1ul << 21)) == CAUSE_ECALL_U)
+            param_bool("WFI_U_MODE", true);
         if (has_s) {
             unsigned long stvec = stvec_rd();
             ecall_from("TRAP_ON_ECALL_FROM_S", 1, false, mstatus);
@@ -1474,18 +2037,6 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
                 if (g) { gany = true; glast = m; }
                 if (vs) { vany = true; vlast = m; }
             }
-            // the other XLEN's modes cannot exist here
-#if __riscv_xlen == 64
-            param_bool("SV32X4_TRANSLATION", false);
-            param_bool("SV32_VSMODE_TRANSLATION", false);
-#else
-            param_bool("SV39X4_TRANSLATION", false);
-            param_bool("SV39_VSMODE_TRANSLATION", false);
-            param_bool("SV48X4_TRANSLATION", false);
-            param_bool("SV48_VSMODE_TRANSLATION", false);
-            param_bool("SV57X4_TRANSLATION", false);
-            param_bool("SV57_VSMODE_TRANSLATION", false);
-#endif
             param_bool("GSTAGE_MODE_BARE", !gany || hgatp_bare_after(glast));
             param_bool("VSSTAGE_MODE_BARE", !vany || vsatp_bare_after(vlast));
             v = hgatp_wr(__riscv_xlen == 64 ? 0x03FFF00000000000ul : 0x1FC00000ul);   // VMID all ones
@@ -1533,8 +2084,10 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
             : PROBE_VALUE("zve32x", "vsetivli x0, 1, e32, mf8, ta, ma\n\tcsrr a3, vtype\n\tsrli a3, a3, " STR(__riscv_xlen) " - 1");
         if (vill_reserved != PROBE_TRAPPED)
             param_bool("VILL_SET_ON_RESERVED_VTYPE", vill_reserved != 0);
-        param_bool("VECTOR_LS_MISALIGNED_LEGAL",
-                   PROBE("zve32x", "vsetivli x0, 1, e32, m1, ta, ma\n\taddi a2, a1, 1\n\tvle32.v v1, (a2)"));
+        bool vmis = PROBE("zve32x", "vsetivli x0, 1, e32, m1, ta, ma\n\taddi a2, a1, 1\n\tvle32.v v1, (a2)");
+        param_bool("VECTOR_LS_MISALIGNED_LEGAL", vmis);
+        sail_misaligned("memory.misaligned.exceptions.vector", vmis, probe_cause, CAUSE_LOAD_MISALIGNED,
+                        CAUSE_LOAD_ACCESS_FAULT);
         param_bool("VECTOR_LS_WHOLEREG_MISALIGNED_LEGAL",
                    PROBE("zve32x", "vsetivli x0, 1, e32, m1, ta, ma\n\taddi a2, a1, 1\n\tvl1re32.v v1, (a2)"));
         // Reserved fractional LMUL (SEW > LMUL * ELEN) supported at all: the complement of vill
@@ -1660,6 +2213,36 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
             if (have("Sdtrig"))
                 bit_type("HSTATEEN_CONTEXT_TYPE", HSTATEEN_BIT(57));
         }
+        // Enable bits Sail configures that have no UDB parameter
+        if (have("Smstateen")) {
+#if __riscv_xlen == 64
+#define MSTATEEN(n) 0x30C + n
+#else
+#define MSTATEEN(n) 0x31C + n
+#endif
+            sail_bit_type("extensions.Stateen.mstateen0.SE0", STATEEN_BIT(MSTATEEN(0), 63));
+            sail_bit_type("extensions.Stateen.mstateen0.P1P13", STATEEN_BIT(MSTATEEN(0), 56));
+            sail_bit_type("extensions.Stateen.mstateen0.SRMCFG", STATEEN_BIT(MSTATEEN(0), 55));
+            sail_bit_type("extensions.Stateen.mstateen0.C", PROBE_VALUE("zicsr", BIT_SET_READ(0x30C, 1)),
+                          PROBE_VALUE("zicsr", BIT_CLEAR_READ(0x30C, 1)));
+            sail_bit_type("extensions.Stateen.mstateen0.FCSR", PROBE_VALUE("zicsr", BIT_SET_READ(0x30C, 2)),
+                          PROBE_VALUE("zicsr", BIT_CLEAR_READ(0x30C, 2)));
+            sail_bit_type("extensions.Stateen.mstateen1.SE1", STATEEN_BIT(MSTATEEN(1), 63));
+            sail_bit_type("extensions.Stateen.mstateen2.SE2", STATEEN_BIT(MSTATEEN(2), 63));
+            sail_bit_type("extensions.Stateen.mstateen3.SE3", STATEEN_BIT(MSTATEEN(3), 63));
+            if (has_h && have("Ssstateen")) {
+                sail_bit_type("extensions.Stateen.hstateen0.C", PROBE_VALUE("zicsr", GATED_SET_READ(0x30C, 0x60C, 1)),
+                              PROBE_VALUE("zicsr", GATED_CLEAR_READ(0x30C, 0x60C, 1)));
+                sail_bit_type("extensions.Stateen.hstateen0.FCSR", PROBE_VALUE("zicsr", GATED_SET_READ(0x30C, 0x60C, 2)),
+                              PROBE_VALUE("zicsr", GATED_CLEAR_READ(0x30C, 0x60C, 2)));
+            }
+            if (has_s && have("Ssstateen")) {
+                sail_bit_type("extensions.Stateen.sstateen0.C", PROBE_VALUE("zicsr", GATED_SET_READ(0x30C, 0x10C, 1)),
+                              PROBE_VALUE("zicsr", GATED_CLEAR_READ(0x30C, 0x10C, 1)));
+                sail_bit_type("extensions.Stateen.sstateen0.FCSR", PROBE_VALUE("zicsr", GATED_SET_READ(0x30C, 0x10C, 2)),
+                              PROBE_VALUE("zicsr", GATED_CLEAR_READ(0x30C, 0x10C, 2)));
+            }
+        }
     }
 
     // Ssqosid: the ID field widths of srmcfg
@@ -1672,14 +2255,27 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
     }
 
 #if __riscv_xlen == 64
-    // Pointer masking: PMLEN is 16 when PMM accepts 3, else 7, in whichever CSR has the field
-    if (have("Smnpm") || have("Smmpm") || have("Ssnpm")) {
-        unsigned long pmm3 = have("Smnpm") ? PROBE_VALUE("zicsr", CSR_FIELD(menvcfg, 3 << 32, 3 << 32))
-                           : have("Smmpm") ? PROBE_VALUE("zicsr", CSR_FIELD(0x747, 3 << 32, 3 << 32))
-                                           : PROBE_VALUE("zicsr", CSR_FIELD(senvcfg, 3 << 32, 3 << 32));
-        if (PROBE_OK())
-            param_int("PMLEN", pmm3 ? 16 : 7);
-    }
+    // Pointer masking: the PMLEN values each PMM field accepts (PMM 2 is PMLEN 7, 3 is 16)
+#define PMLEN_LIST(name, csr)                                                                   \
+    do {                                                                                        \
+        unsigned long pmlen[3] = { 0 }, n_ = 1;                                                 \
+        unsigned long pmm2 = PROBE_VALUE("zicsr", CSR_FIELD(csr, 3 << 32, 2 << 32));            \
+        bool ok2 = PROBE_OK();                                                                  \
+        unsigned long pmm3 = PROBE_VALUE("zicsr", CSR_FIELD(csr, 3 << 32, 3 << 32));            \
+        if (ok2 && PROBE_OK()) {                                                                \
+            if (pmm2)                                                                           \
+                pmlen[n_++] = 7;                                                                \
+            if (pmm3)                                                                           \
+                pmlen[n_++] = 16;                                                               \
+            param_ints(name, pmlen, n_);                                                        \
+        }                                                                                       \
+    } while (0)
+    if (have("Smnpm"))
+        PMLEN_LIST("SUPPORTED_PMLEN_SMNPM", menvcfg);
+    if (have("Smmpm"))
+        PMLEN_LIST("SUPPORTED_PMLEN_SMMPM", 0x747);
+    if (have("Ssnpm"))
+        PMLEN_LIST("SUPPORTED_PMLEN_SSNPM", senvcfg);
 #endif
 
     // Smctr: which CTR buffer depths sctrdepth.DEPTH accepts
@@ -1697,21 +2293,28 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
             param_ints("SCTRDEPTH_DEPTH_LEGAL_VALUES", depths, n);
     }
 
-    // Sdtrig: the context CSRs
+    // Sdtrig: the context CSRs, then the triggers
     if (have("Sdtrig")) {
-        bool mcontext = mcontext_rd() != PROBE_TRAPPED;
-        param_bool("MCONTEXT_AVAILABLE", mcontext);
-        if (mcontext) {
+        mcontext_rd();
+        mcontext_impl = PROBE_OK();
+        param_bool("MCONTEXT_IMPLEMENTED", mcontext_impl);
+        if (mcontext_impl) {
             v = mcontext_wr(~0ul);
             if (PROBE_OK())
                 param_int("DBG_HCONTEXT_WIDTH", popcount(v));
         }
-        param_bool("HCONTEXT_AVAILABLE", has_h && hcontext_rd() != PROBE_TRAPPED);   // no hcontext without H
+        if (has_h) {
+            hcontext_rd();
+            param_bool("HCONTEXT_IMPLEMENTED", PROBE_OK());
+        }
         if (has_s) {
             v = scontext_wr(~0ul);
-            if (PROBE_OK())
+            scontext_impl = PROBE_OK();
+            param_bool("SCONTEXT_IMPLEMENTED", scontext_impl);
+            if (scontext_impl)
                 param_int("DBG_SCONTEXT_WIDTH", popcount(v));
         }
+        sdtrig_params(has_s, has_u, has_h);
     }
 
     // Smctr: which mctrctl controls are implemented
@@ -1735,6 +2338,19 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
         }
     }
 #endif
+
+    // Zkr: whether mseccfg.SSEED and USEED can be set, and their values at boot
+    if (have("Zkr") && reset_mseccfg != PROBE_TRAPPED) {
+        unsigned long sseed = PROBE_VALUE("zicsr", CSR_BIT(0x747, 9));
+        if (has_s && sseed != PROBE_TRAPPED)
+            param_bool("SSEED_READ_ONLY_ZERO", sseed == 0);
+        unsigned long useed = PROBE_VALUE("zicsr", CSR_BIT(0x747, 8));
+        if (has_u && useed != PROBE_TRAPPED)
+            param_bool("USEED_READ_ONLY_ZERO", useed == 0);
+        sail_bool("extensions.Zkr.sseed_reset_value", (reset_mseccfg >> 9) & 1);
+        sail_bool("extensions.Zkr.useed_reset_value", (reset_mseccfg >> 8) & 1);
+    }
+    sail_reserved_behavior(has_s, vlen);
 
     // Every UDB parameter that applies to this hart and was not determined above
     bool first = true;

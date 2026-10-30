@@ -37,12 +37,15 @@ extension is present), `CSR_BIT` and `CSR_FIELD` (the field accepts a value; the
 restored afterwards). For example Sstc is `stimecmp` existing, Svadu is `menvcfg.ADUE` being
 settable, and Sstvecd is `stvec` accepting mode 0. The privilege modes are U (`mstatus.MPP` can hold
 0), S (`sstatus` exists) and H (`hstatus` exists); Sm is always present since the extractor runs in
-M-mode, with version 1.12 if `menvcfg` and (on RV32) `mstatush` both exist and 1.11 otherwise. On
-RV32, 1.13 is reported when `medelegh` exists as well; on RV64 nothing distinguishes 1.13 from
-1.12. Address-translation modes are found by writing each mode to `satp` and
+M-mode, with version 1.12 if `mconfigptr` and (on RV32) `mstatush` both exist and 1.11 otherwise. 1.13 is
+reported when `medeleg` can delegate the hardware-error exception (19), or the software-check
+exception (18) without Zicfilp or Zicfiss, both reserved before 1.13, or on RV32 when `medelegh`
+exists; a 1.13 hart without S-mode is reported as 1.12. Address-translation modes are found by writing each mode to `satp` and
 reading it back, which also gives Svbare, and Shgatpa and Shvsatpa by repeating that on `hgatp` and
 `vsatp`. Sscounterenw and Shcounterenw compare the writable bits of `scounteren` and `hcounteren`
-with those of `mcounteren`. Sspm, Supm, Ssu32xl on RV32, Svade with Svadu, and Sha are derived as
+with those of `mcounteren`, on a hart with Zihpm (UDB defines them only with it). A 32-bit hart
+without Sv32 gets `PHYS_ADDR_WIDTH` 32 even when `pmpaddr` keeps bits 33:32 writable, with a note.
+Sspm, Supm, Ssu32xl on RV32, Svade with Svadu, and Sha are derived as
 described in `extensions.h`.
 
 ### Parameters
@@ -140,7 +143,8 @@ measures what it can and prints each as a comment, `# sail: <key>: <JSON value>`
 being the dotted path in Sail's configuration: `base.writable_fiom`, `base.hpmevent_width_bits`,
 `base.reserved_behavior.*` (a reserved `pmpcfg` R/W combination, `menvcfg.CBIE` value, `stvec` mode,
 dynamic rounding mode, odd `amocas` and RV32 Zdinx register pair), `platform.hartid`,
-`platform.reservation.invalidate_on_same_hart_store`, `extensions.Zkr.*_reset_value`, the
+`platform.reservation.invalidate_on_same_hart_store` and `require_exact_reservation_addr` (an SC to
+the word after the LR's failing), `extensions.Zkr.*_reset_value`, the
 `extensions.Stateen` bits UDB has no parameter for, `extensions.V.reserved_behavior.vstart_out_of_bounds`,
 `extensions.F.fflags_dirty_policy` (whether `feq.s` makes `FS` Dirty with no flag raised, with a
 flag raised again, and with a new flag) and `memory.misaligned.exceptions.{load_store,amo,vector}`.
@@ -178,9 +182,9 @@ and Ibex both have `cycle` and `instret` but no `time` — is not reported, and 
 a note saying which one is missing. If the platform supplies `time` another way, set
 `TIME_CSR_IMPLEMENTED` to false and claim `Zicntr` by hand.
 
-`Sm` is reported as 1.12 only when both `menvcfg` and, on RV32, `mstatush` are present, since 1.12
-added both. A hart with one and not the other matches neither version; the extractor reports the
-lower one, which is the version such a hart actually works under, and prints a note. Declaring 1.12
+`Sm` is reported as 1.12 only when both `mconfigptr` and, on RV32, `mstatush` are present, since 1.12
+added both (`menvcfg` is not used as the marker because it exists only with U-mode). A hart with
+1.12 CSRs but no `mstatush` matches neither version; the extractor reports the lower one, which is the version such a hart actually works under, and prints a note. Declaring 1.12
 for a hart without `mstatush` makes the test environment read it on every trap, and each trap then
 takes a nested trap.
 

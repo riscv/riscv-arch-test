@@ -1615,7 +1615,10 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
                     width = 32 + msb(have("Sscofpmf") ? (h & 0xFFFFFF) : h) + 1;
             }
 #endif
-            if (width)
+            // Only a writable field that reads back all ones from bit 0 is a selector width; a
+            // hart with a read-only event value (Ibex reads back one bit) says nothing about it
+            unsigned long zero = mhpmevent3_wr(0);
+            if (width && (sel & (sel + 1)) == 0 && PROBE_OK() && (zero & sel) == 0)
                 sail_int("base.hpmevent_width_bits", width);
         }
     }
@@ -1655,7 +1658,16 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
             if (!(cfg0 & 0x80)) {                       // entry 0 not locked: its A field is writable
                 pmpcfg0_set(cfg0 & ~0xFFul);           // A = OFF for the granularity read
                 unsigned long ones = pmpaddr_wr[0](~0ul);
-                param_int("PHYS_ADDR_WIDTH", msb(ones) + 3);
+                unsigned pa = msb(ones) + 3;
+#if __riscv_xlen == 32
+                // Without Sv32 nothing can address beyond 32 bits, and UDB caps the width there
+                if (pa > 32 && !(has_s && atp_accepts(satp_wr, ATP_MODE(1)))) {
+                    printf("# note: pmpaddr keeps bits 33:32 of the address writable, but without Sv32\n"
+                           "#       physical addresses are 32 bits, so PHYS_ADDR_WIDTH is given as 32.\n");
+                    pa = 32;
+                }
+#endif
+                param_int("PHYS_ADDR_WIDTH", pa);
                 na4 = ((pmpcfg0_set((cfg0 & ~0xFFul) | 0x10) >> 3) & 3) == 2;
                 napot = ((pmpcfg0_set((cfg0 & ~0xFFul) | 0x18) >> 3) & 3) == 3;
                 tor = ((pmpcfg0_set((cfg0 & ~0xFFul) | 0x08) >> 3) & 3) == 1;
@@ -1763,6 +1775,8 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
                 static const unsigned long offsets[] = { 4, 60, 64, 124 };
                 for (unsigned i = 0; i < 4; i++)
                     at[i] = PROBE_VALUE_IN("zalrsc", "lr.w t1, (a1)\n\tadd a2, a1, %[in]\n\tsc.w a3, t1, (a2)", offsets[i]);
+                // An SC to the next word failing while one to the LR's address succeeds
+                sail_bool("platform.reservation.require_exact_reservation_addr", at[0] != 0);
                 if (at[0] != 0)
                     param_str("LRSC_RESERVATION_STRATEGY", "reserve exactly enough to cover the access");
                 else if (at[1] == 0 && at[2] != 0)

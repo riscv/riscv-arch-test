@@ -2527,6 +2527,13 @@ adj_\__MODE__\()epc_rtn:
         csrw    CSR_XEPC, T3
 
 skp_adj_\__MODE__\()epc:
+#ifdef IMPRECISE_ACCESS_FAULT_XTVAL
+        csrr    T2, CSR_XCAUSE                        // a misaligned access that faults may report the address
+        LI(     T6, CAUSE_LOAD_ACCESS)                //   of any faulting part of it in xtval -> don't record
+        beq     T2, T6, skp_\__MODE__\()tval          //   xtval for load and store/AMO access faults
+        LI(     T6, CAUSE_STORE_ACCESS)
+        beq     T2, T6, skp_\__MODE__\()tval
+#endif
 // Words 3-5 are also recorded for interrupts, which write zero to xtval
 // (norm:mtval_other_traps_zero) and, with H, to the second trap value and
 // xtinst (norm:H_trap_xtinst_interrupt).
@@ -2567,6 +2574,17 @@ skp_\__MODE__\()tval:
         TRAP_SIGUPD_ZERO(T4, T3, 4, T2, sv_\__MODE__\()Htval2, sv_Htval2_str) // write word 4: htval
         csrr    T3, CSR_HTINST
       .endif
+        #ifdef IMPRECISE_ACCESS_FAULT_XTVAL
+        csrr    T2, CSR_XCAUSE                        // the Addr. Offset field (bits 19:15) of a
+        LI(     T6, CAUSE_LOAD_ACCESS)                //   transformed mtinst or htinst follows the
+        beq     T2, T6, msk_\__MODE__\()tinst         //   imprecise xtval, so clear it for load and
+        LI(     T6, CAUSE_STORE_ACCESS)               //   store/AMO access faults and check the rest
+        bne     T2, T6, skp_msk_\__MODE__\()tinst
+msk_\__MODE__\()tinst:
+        LI(     T6, ~(0x1F << 15))
+        and     T3, T3, T6
+skp_msk_\__MODE__\()tinst:
+        #endif
         // Word 5: xtinst. Sail writes the transformed instruction for a load, store, AMO, HLV/HSV or
         // CBO fault on each cause its sail.json enables in extensions.H.transformed_instruction,
         // the pseudoinstruction for a guest-page fault on an implicit VS-stage page-table access,

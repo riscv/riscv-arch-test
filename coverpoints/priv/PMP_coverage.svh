@@ -9,6 +9,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_PMP
+`include "PMP_partial.svh"
 
 `ifndef PMP_HAS_SV
   `ifdef SV32_SUPPORTED
@@ -44,7 +45,7 @@
 
 
 `ifdef F_SUPPORTED
-covergroup PMP_F_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],logic [14:0] pmp_hit);
+covergroup PMP_F_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],logic [14:0] pmp_hit, pmp_partial_t partial);
   option.per_instance = 0;
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -81,6 +82,53 @@ covergroup PMP_F_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],log
 
   cp_cfg_R: cross priv_mode_m, fs_mstatus, legal_lxwr, read_fp_instr, addr_in_napot_region;
   cp_cfg_W: cross priv_mode_m, fs_mstatus, legal_lxwr, write_fp_instr, addr_in_napot_region;
+
+  // Partial matches (see PMP_partial.svh): the deciding entry matches only some bytes of the access.
+  // fld and fsd are in a misaligned atomicity granule only when they are at most XLEN bits.
+  partial_fp: coverpoint ins.current.insn {
+    type_option.weight = 0;
+    wildcard bins flw = {FLW};
+    wildcard bins fsw = {FSW};
+    `ifdef UDB_MXLEN_64
+      `ifdef D_SUPPORTED
+        wildcard bins fld = {FLD};
+        wildcard bins fsd = {FSD};
+      `endif
+    `endif
+  }
+
+  partial_kind: coverpoint partial.kind {
+    type_option.weight = 0;
+    bins lower = {PMP_PARTIAL_LOWER};
+    bins upper = {PMP_PARTIAL_UPPER};
+    bins both  = {PMP_PARTIAL_BOTH};
+  }
+
+  partial_in_granule16: coverpoint partial.align {
+    type_option.weight = 0;
+    bins in_granule16 = {PMP_ACCESS_IN_GRANULE16};
+  }
+
+  partial_lock: coverpoint partial.cfg[7] {
+    type_option.weight = 0;
+    bins unlocked = {1'b0};
+    bins locked   = {1'b1};
+  }
+
+  partial_tor: coverpoint partial.cfg[4:3] {
+    type_option.weight = 0;
+    bins tor = {2'b01};
+  }
+
+  `ifdef PMP_PARTIAL_ENTRIES
+    `ifdef ZAMA16B_SUPPORTED
+      `ifdef PMP_PARTIAL_GRAIN_8
+        `ifdef UDB_PMP_TOR_SUPPORTED
+          cp_misaligned_mag16: cross priv_mode_m, partial_fp, partial_in_granule16, partial_tor, partial_lock, partial_kind ;
+        `endif
+      `endif
+    `endif
+  `endif
 
 endgroup
 
@@ -122,12 +170,12 @@ function void pmp_F_sample(int hart, int issue, ins_t ins);
     pmp_hit[k] = ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`STANDARD_REGION & `PMP_PMPADDR_LOWMASK)) || ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`NON_STANDARD_REGION & `PMP_PMPADDR_LOWMASK));
   end
 
-  PMP_F_cg.sample(ins, pmpcfg, pmp_hit);
+  PMP_F_cg.sample(ins, pmpcfg, pmp_hit, pmp_partial(ins));
 endfunction
 `endif
 
 `ifdef S_SUPPORTED
-covergroup PMP_S_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pack_pmpaddr, logic [31:0] pmpcfg_a, [7:0] pmpcfg [63:0], logic [14:0] pmp_hit);
+covergroup PMP_S_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pack_pmpaddr, logic [31:0] pmpcfg_a, [7:0] pmpcfg [63:0], logic [14:0] pmp_hit, logic others_off, pmp_partial_t partial);
   option.per_instance = 0;
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -373,6 +421,23 @@ covergroup PMP_S_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
 
 //-------------------------------------------------------
 
+  `ifdef UDB_PMP_TOR_SUPPORTED
+    // cp_none: entry 0 = TOR [0, PMP_REGION_START), entry 1 = OFF, entry 2 = TOR [PMP_REGION_START + g, top),
+    // all L=0 and XWR=111, and every other entry OFF, so the grain at PMP_REGION_START matches no entry.
+    none_cfg: coverpoint {pmpcfg[2], pmpcfg[1], pmpcfg[0], others_off} {
+      bins tor_gap = {25'b00001111_00000000_00001111_1};
+    }
+
+    none_pmpaddr: coverpoint (((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr0", "pmpaddr0") & `PMP_PMPADDR_LOWMASK) ==
+                                (`NON_STANDARD_REGION & `PMP_PMPADDR_LOWMASK)) &&
+                              ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr1", "pmpaddr1") & `PMP_PMPADDR_LOWMASK) ==
+                                (((`PMP_REGION_START + `g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)) &&
+                              ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr2", "pmpaddr2") & `PMP_PMPADDR_LOWMASK) ==
+                                (`PMP_PMPADDR_LOWMASK & `READ_ZERO_MASK))) {
+      bins gap = {1};
+    }
+  `endif
+
   cp_cfg_X: cross priv_mode_s, legal_lxwr, exec_instr, addr_in_napot_region ;
   cp_cfg_R: cross priv_mode_s, legal_lxwr, read_instr, addr_in_napot_region ;
   cp_cfg_W: cross priv_mode_s, legal_lxwr, write_instr, addr_in_napot_region ;
@@ -407,10 +472,59 @@ covergroup PMP_S_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
   cp_pmpaddr_access_s: cross priv_mode_s, csrrw, pmpaddr_entries ;
   cp_pmpcfg_access_s: cross priv_mode_s, csrrw, pmpcfg_entries ;
 
+  `ifdef UDB_PMP_TOR_SUPPORTED
+    cp_none_jalr: cross priv_mode_s, none_cfg, none_pmpaddr, exec_instr, addr_in_region ;
+    cp_none_lw: cross priv_mode_s, none_cfg, none_pmpaddr, read_instr_lw, addr_in_region ;
+    cp_none_sw: cross priv_mode_s, none_cfg, none_pmpaddr, write_instr_sw, addr_in_region ;
+  `endif
+
+  // Misaligned accesses partly in a region (see PMP_partial.svh), the rest matching no entry.
+  partial_ldst: coverpoint ins.current.insn {
+    type_option.weight = 0;
+    wildcard bins lh  = {LH};
+    wildcard bins lhu = {LHU};
+    wildcard bins sh  = {SH};
+    wildcard bins lw  = {LW};
+    wildcard bins sw  = {SW};
+    `ifdef UDB_MXLEN_64
+      wildcard bins lwu = {LWU};
+      wildcard bins ld  = {LD};
+      wildcard bins sd  = {SD};
+    `endif
+  }
+
+  partial_misaligned: coverpoint partial.align {
+    type_option.weight = 0;
+    bins misaligned = {PMP_ACCESS_IN_GRANULE16, PMP_ACCESS_CROSSES_GRANULE16};
+  }
+
+  partial_tor_xwr111: coverpoint partial.cfg {
+    type_option.weight = 0;
+    bins l0_tor_xwr111 = {8'b0000_1111};
+  }
+
+  partial_one_end: coverpoint partial.kind {
+    type_option.weight = 0;
+    bins lower = {PMP_PARTIAL_LOWER};
+    bins upper = {PMP_PARTIAL_UPPER};
+  }
+
+  partial_rest_unmatched: coverpoint partial.rest_matched {
+    type_option.weight = 0;
+    bins unmatched = {1'b0};
+  }
+
+  `ifdef UDB_MISALIGNED_LDST
+    `ifdef UDB_PMP_TOR_SUPPORTED
+      cp_misaligned_partial: cross priv_mode_s, partial_ldst, partial_misaligned, partial_tor_xwr111, partial_one_end, partial_rest_unmatched ;
+    `endif
+  `endif
+
 endgroup
 
 function void pmp_S_sample(int hart, int issue, ins_t ins);
 
+  logic others_off;
   logic [16*`UDB_MXLEN-1:0] pack_pmpaddr;
   logic [31:0] pmpcfg_a;      // for first 15 Regions
   logic [7:0] pmpcfg [63:0];
@@ -507,7 +621,11 @@ function void pmp_S_sample(int hart, int issue, ins_t ins);
           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp0cfg_a")[1:0]
           };
   `endif
-  PMP_S_cg.sample(ins, pack_pmpaddr, pmpcfg_a, pmpcfg, pmp_hit);
+  // Every entry above entry 2 is OFF (cp_none).
+  others_off = 1'b1;
+  for (int k = 3; k < 64; k++) others_off &= (pmpcfg[k][4:3] == 2'b00);
+
+  PMP_S_cg.sample(ins, pack_pmpaddr, pmpcfg_a, pmpcfg, pmp_hit, others_off, pmp_partial(ins));
 endfunction
 
 `endif
@@ -530,7 +648,8 @@ covergroup PMP_Sm_cg with function sample(
                     logic [14:0] pmpcfg_l,            // first 15 regions L fields
                     logic [47:0] pmpcfg_L,            // next 48 regions L fields
                     logic [14:0] pmp_hit,             // for first 15 regions indicating hit of pmp_entry
-                    logic [47:0] pmp_HIT              // for next 48 regions indicating hit of pmp_entry
+                    logic [47:0] pmp_HIT,             // for next 48 regions indicating hit of pmp_entry
+                    pmp_partial_t partial             // how the entries match the bytes of a load or store
                     );
   option.per_instance = 0;
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
@@ -1307,6 +1426,25 @@ covergroup PMP_Sm_cg with function sample(
     `endif
   }
   `endif
+
+  `ifdef UDB_MXLEN_64
+    // The odd pmpcfg CSRs are illegal on RV64 whatever the number of PMP entries.
+    pmpcfg_entries_odd_rv64: coverpoint ins.current.insn[31:20] {
+      bins pmpcfg1   = {CSR_PMPCFG1};
+      bins pmpcfg3   = {CSR_PMPCFG3};
+      bins pmpcfg5   = {CSR_PMPCFG5};
+      bins pmpcfg7   = {CSR_PMPCFG7};
+      bins pmpcfg9   = {CSR_PMPCFG9};
+      bins pmpcfg11  = {CSR_PMPCFG11};
+      bins pmpcfg13  = {CSR_PMPCFG13};
+      bins pmpcfg15  = {CSR_PMPCFG15};
+    }
+
+    csrw_or_csrr: coverpoint ins.current.insn {
+      wildcard bins csrrw = {CSRRW};
+      wildcard bins csrr  = {CSRR};
+    }
+  `endif
 //-------------------------------------------------------
 
   `ifdef UDB_NUM_PMP_ENTRIES_64
@@ -1356,8 +1494,9 @@ covergroup PMP_Sm_cg with function sample(
       wildcard bins pmp57cfg = {240'b?????1??????????????????????????????????????????_?????1??????????????????????????????????????????_??????????01????????????????????????????????????????????????????????????????????????????????????_?????1000000000000000000000000000000000000000000};
       wildcard bins pmp58cfg = {240'b????1???????????????????????????????????????????_????1???????????????????????????????????????????_????????01??????????????????????????????????????????????????????????????????????????????????????_????10000000000000000000000000000000000000000000};
       wildcard bins pmp59cfg = {240'b???1????????????????????????????????????????????_???1????????????????????????????????????????????_??????01????????????????????????????????????????????????????????????????????????????????????????_???100000000000000000000000000000000000000000000};
-      wildcard bins pmp61cfg = {240'b??1?????????????????????????????????????????????_??1?????????????????????????????????????????????_????01??????????????????????????????????????????????????????????????????????????????????????????_??1000000000000000000000000000000000000000000000};
-      wildcard bins pmp62cfg = {240'b?1??????????????????????????????????????????????_?1??????????????????????????????????????????????_??01????????????????????????????????????????????????????????????????????????????????????????????_?10000000000000000000000000000000000000000000000};
+      wildcard bins pmp60cfg = {240'b??1?????????????????????????????????????????????_??1?????????????????????????????????????????????_????01??????????????????????????????????????????????????????????????????????????????????????????_??1000000000000000000000000000000000000000000000};
+      wildcard bins pmp61cfg = {240'b?1??????????????????????????????????????????????_?1??????????????????????????????????????????????_??01????????????????????????????????????????????????????????????????????????????????????????????_?10000000000000000000000000000000000000000000000};
+      wildcard bins pmp62cfg = {240'b1???????????????????????????????????????????????_1???????????????????????????????????????????????_01??????????????????????????????????????????????????????????????????????????????????????????????_100000000000000000000000000000000000000000000000};
     }
   `endif
 
@@ -1551,6 +1690,9 @@ covergroup PMP_Sm_cg with function sample(
     // Will throw illegal instruction when XLEN = 64.
     cp_pmpcfg_zero: cross priv_mode_m, cp_zero_rs1, csrrw, legal_pmpcfg_entries_odd ;
   `endif
+  `ifdef UDB_MXLEN_64
+    cp_pmpcfg_odd_rv64: cross priv_mode_m, csrw_or_csrr, pmpcfg_entries_odd_rv64 ;
+  `endif
 
   `ifdef UDB_NUM_PMP_ENTRIES_64
     cp_pmp64_write: cross priv_mode_m, write_instr_sw, pmp64;
@@ -1595,6 +1737,117 @@ covergroup PMP_Sm_cg with function sample(
 
   cp_grain_check_write: cross priv_mode_m, pmpcfg_for_cp_grain_check, value_to_write, csrw_to_pmpaddr0;
   cp_grain_check_read: cross priv_mode_m, pmpcfg_for_cp_grain_check, csrr_to_pmpaddr0;
+
+  // Partial matches (see PMP_partial.svh): the deciding entry matches only some bytes of the access.
+  partial_ldst_d: coverpoint ins.current.insn {
+    type_option.weight = 0;
+    wildcard bins ld = {LD};
+    wildcard bins sd = {SD};
+  }
+
+  partial_ldst: coverpoint ins.current.insn {
+    type_option.weight = 0;
+    wildcard bins lh  = {LH};
+    wildcard bins lhu = {LHU};
+    wildcard bins sh  = {SH};
+    wildcard bins lw  = {LW};
+    wildcard bins sw  = {SW};
+    `ifdef UDB_MXLEN_64
+      wildcard bins lwu = {LWU};
+      wildcard bins ld  = {LD};
+      wildcard bins sd  = {SD};
+    `endif
+  }
+
+  partial_kind: coverpoint partial.kind {
+    type_option.weight = 0;
+    bins lower = {PMP_PARTIAL_LOWER};
+    bins upper = {PMP_PARTIAL_UPPER};
+    bins both  = {PMP_PARTIAL_BOTH};
+  }
+
+  partial_one_end: coverpoint partial.kind {
+    type_option.weight = 0;
+    bins lower = {PMP_PARTIAL_LOWER};
+    bins upper = {PMP_PARTIAL_UPPER};
+  }
+
+  partial_covered: coverpoint partial.kind {
+    type_option.weight = 0;
+    bins covered = {PMP_PARTIAL_COVERED};
+  }
+
+  partial_aligned: coverpoint partial.align {
+    type_option.weight = 0;
+    bins aligned = {PMP_ACCESS_ALIGNED};
+  }
+
+  partial_in_granule16: coverpoint partial.align {
+    type_option.weight = 0;
+    bins in_granule16 = {PMP_ACCESS_IN_GRANULE16};
+  }
+
+  partial_misaligned: coverpoint partial.align {
+    type_option.weight = 0;
+    bins misaligned = {PMP_ACCESS_IN_GRANULE16, PMP_ACCESS_CROSSES_GRANULE16};
+  }
+
+  partial_lock: coverpoint partial.cfg[7] {
+    type_option.weight = 0;
+    bins unlocked = {1'b0};
+    bins locked   = {1'b1};
+  }
+
+  partial_amode: coverpoint partial.cfg[4:3] {
+    type_option.weight = 0;
+    `ifdef UDB_PMP_NA4_SUPPORTED
+      bins na4 = {2'b10};
+    `endif
+    `ifdef UDB_PMP_TOR_SUPPORTED
+      bins tor = {2'b01};
+    `endif
+  }
+
+  partial_tor: coverpoint partial.cfg[4:3] {
+    type_option.weight = 0;
+    bins tor = {2'b01};
+  }
+
+  partial_locked_tor_none: coverpoint partial.cfg {
+    type_option.weight = 0;
+    bins l1_tor_xwr000 = {8'b1000_1000};
+  }
+
+  partial_rest_unmatched: coverpoint partial.rest_matched {
+    type_option.weight = 0;
+    bins unmatched = {1'b0};
+  }
+
+  `ifdef PMP_PARTIAL_ENTRIES
+    `ifdef UDB_MXLEN_64
+      `ifdef UDB_PMP_GRANULARITY_2
+        cp_partial_match: cross priv_mode_m, partial_ldst_d, partial_aligned, partial_amode, partial_lock, partial_kind ;
+        `ifdef UDB_PMP_NA4_SUPPORTED
+          `ifdef UDB_PMP_NAPOT_SUPPORTED
+            cp_partial_covered: cross priv_mode_m, partial_ldst_d, partial_aligned, partial_covered ;
+          `endif
+        `endif
+      `endif
+    `endif
+    `ifdef ZAMA16B_SUPPORTED
+      `ifdef PMP_PARTIAL_GRAIN_8
+        `ifdef UDB_PMP_TOR_SUPPORTED
+          cp_misaligned_mag16: cross priv_mode_m, partial_ldst, partial_in_granule16, partial_tor, partial_lock, partial_kind ;
+        `endif
+      `endif
+    `endif
+  `endif
+
+  `ifdef UDB_MISALIGNED_LDST
+    `ifdef UDB_PMP_TOR_SUPPORTED
+      cp_misaligned_partial: cross priv_mode_m, partial_ldst, partial_misaligned, partial_locked_tor_none, partial_one_end, partial_rest_unmatched ;
+    `endif
+  `endif
 
 endgroup
 
@@ -1644,7 +1897,8 @@ function void pmp_Sm_sample(int hart, int issue, ins_t ins);
   end
 
   for (int k = 15; k < 63; k++) begin        // for next 48 regions
-    pmp_HIT[k-15] = ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`STANDARD_REGION & `PMP_PMPADDR_LOWMASK));
+    // all_entries_check writes each pmpaddr while its entry is OFF, so compare on bits >= G.
+    pmp_HIT[k-15] = ((pmpaddr[k] & `PMP_PMPADDR_GRAINMASK) == (`STANDARD_REGION & `PMP_PMPADDR_GRAINMASK));
   end
 
   pack_pmpaddr = { get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr15", "pmpaddr15")
@@ -2240,11 +2494,11 @@ function void pmp_Sm_sample(int hart, int issue, ins_t ins);
           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp0cfg_l")[0]
           };
   `endif
-  PMP_Sm_cg.sample(ins, pmpcfg, pmpaddr, pack_pmpaddr, pmpcfg_wr, pmpcfg_WR, pmpcfg_a, pmpcfg_A, pmpcfg_x, pmpcfg_X, pmpcfg_l, pmpcfg_L, pmp_hit, pmp_HIT);
+  PMP_Sm_cg.sample(ins, pmpcfg, pmpaddr, pack_pmpaddr, pmpcfg_wr, pmpcfg_WR, pmpcfg_a, pmpcfg_A, pmpcfg_x, pmpcfg_X, pmpcfg_l, pmpcfg_L, pmp_hit, pmp_HIT, pmp_partial(ins));
 endfunction
 
 `ifdef U_SUPPORTED
-covergroup PMP_U_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pack_pmpaddr, logic [31:0] pmpcfg_a, logic [7:0] pmpcfg [63:0],logic [14:0] pmp_hit);
+covergroup PMP_U_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pack_pmpaddr, logic [31:0] pmpcfg_a, logic [7:0] pmpcfg [63:0],logic [14:0] pmp_hit, logic others_off, pmp_partial_t partial);
   option.per_instance = 0;
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -2489,6 +2743,23 @@ covergroup PMP_U_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
 
 //-------------------------------------------------------
 
+  `ifdef UDB_PMP_TOR_SUPPORTED
+    // cp_none: entry 0 = TOR [0, PMP_REGION_START), entry 1 = OFF, entry 2 = TOR [PMP_REGION_START + g, top),
+    // all L=0 and XWR=111, and every other entry OFF, so the grain at PMP_REGION_START matches no entry.
+    none_cfg: coverpoint {pmpcfg[2], pmpcfg[1], pmpcfg[0], others_off} {
+      bins tor_gap = {25'b00001111_00000000_00001111_1};
+    }
+
+    none_pmpaddr: coverpoint (((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr0", "pmpaddr0") & `PMP_PMPADDR_LOWMASK) ==
+                                (`NON_STANDARD_REGION & `PMP_PMPADDR_LOWMASK)) &&
+                              ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr1", "pmpaddr1") & `PMP_PMPADDR_LOWMASK) ==
+                                (((`PMP_REGION_START + `g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)) &&
+                              ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr2", "pmpaddr2") & `PMP_PMPADDR_LOWMASK) ==
+                                (`PMP_PMPADDR_LOWMASK & `READ_ZERO_MASK))) {
+      bins gap = {1};
+    }
+  `endif
+
   cp_cfg_X: cross priv_mode_u, legal_lxwr, exec_instr, addr_in_napot_region ;
   cp_cfg_R: cross priv_mode_u, legal_lxwr, read_instr, addr_in_napot_region ;
   cp_cfg_W: cross priv_mode_u, legal_lxwr, write_instr, addr_in_napot_region ;
@@ -2523,10 +2794,59 @@ covergroup PMP_U_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
   cp_pmpaddr_access_u: cross priv_mode_u, csrrw, pmpaddr_entries ;
   cp_pmpcfg_access_u: cross priv_mode_u, csrrw, pmpcfg_entries ;
 
+  `ifdef UDB_PMP_TOR_SUPPORTED
+    cp_none_jalr: cross priv_mode_u, none_cfg, none_pmpaddr, exec_instr, addr_in_region ;
+    cp_none_lw: cross priv_mode_u, none_cfg, none_pmpaddr, read_instr_lw, addr_in_region ;
+    cp_none_sw: cross priv_mode_u, none_cfg, none_pmpaddr, write_instr_sw, addr_in_region ;
+  `endif
+
+  // Misaligned accesses partly in a region (see PMP_partial.svh), the rest matching no entry.
+  partial_ldst: coverpoint ins.current.insn {
+    type_option.weight = 0;
+    wildcard bins lh  = {LH};
+    wildcard bins lhu = {LHU};
+    wildcard bins sh  = {SH};
+    wildcard bins lw  = {LW};
+    wildcard bins sw  = {SW};
+    `ifdef UDB_MXLEN_64
+      wildcard bins lwu = {LWU};
+      wildcard bins ld  = {LD};
+      wildcard bins sd  = {SD};
+    `endif
+  }
+
+  partial_misaligned: coverpoint partial.align {
+    type_option.weight = 0;
+    bins misaligned = {PMP_ACCESS_IN_GRANULE16, PMP_ACCESS_CROSSES_GRANULE16};
+  }
+
+  partial_tor_xwr111: coverpoint partial.cfg {
+    type_option.weight = 0;
+    bins l0_tor_xwr111 = {8'b0000_1111};
+  }
+
+  partial_one_end: coverpoint partial.kind {
+    type_option.weight = 0;
+    bins lower = {PMP_PARTIAL_LOWER};
+    bins upper = {PMP_PARTIAL_UPPER};
+  }
+
+  partial_rest_unmatched: coverpoint partial.rest_matched {
+    type_option.weight = 0;
+    bins unmatched = {1'b0};
+  }
+
+  `ifdef UDB_MISALIGNED_LDST
+    `ifdef UDB_PMP_TOR_SUPPORTED
+      cp_misaligned_partial: cross priv_mode_u, partial_ldst, partial_misaligned, partial_tor_xwr111, partial_one_end, partial_rest_unmatched ;
+    `endif
+  `endif
+
 endgroup
 
 function void pmp_U_sample(int hart, int issue, ins_t ins);
 
+  logic others_off;
   logic [16*`UDB_MXLEN-1:0] pack_pmpaddr;
   logic [31:0] pmpcfg_a;      // for first 15 Regions
   logic [7:0] pmpcfg [63:0];
@@ -2624,12 +2944,16 @@ function void pmp_U_sample(int hart, int issue, ins_t ins);
           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp0cfg_a")[1:0]
           };
   `endif
-  PMP_U_cg.sample(ins, pack_pmpaddr, pmpcfg_a, pmpcfg, pmp_hit);
+  // Every entry above entry 2 is OFF (cp_none).
+  others_off = 1'b1;
+  for (int k = 3; k < 64; k++) others_off &= (pmpcfg[k][4:3] == 2'b00);
+
+  PMP_U_cg.sample(ins, pack_pmpaddr, pmpcfg_a, pmpcfg, pmp_hit, others_off, pmp_partial(ins));
 endfunction
 `endif
 
 `ifdef ZAAMO_SUPPORTED
-covergroup PMP_Zaamo_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],logic [14:0] pmp_hit);
+covergroup PMP_Zaamo_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],logic [14:0] pmp_hit, pmp_partial_t partial);
   option.per_instance = 0;
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -2671,6 +2995,113 @@ covergroup PMP_Zaamo_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0]
 
   cp_cfg_RW: cross priv_mode_m, legal_lxwr, atomic_intrs, rs1_in_region;
 
+  // Partial matches (see PMP_partial.svh): the deciding entry matches only some bytes of the access.
+  partial_amo: coverpoint ins.current.insn {
+    type_option.weight = 0;
+    wildcard bins amoswap_w = {AMOSWAP_W};
+    wildcard bins amoadd_w = {AMOADD_W};
+    wildcard bins amoxor_w = {AMOXOR_W};
+    wildcard bins amoand_w = {AMOAND_W};
+    wildcard bins amoor_w = {AMOOR_W};
+    wildcard bins amomin_w = {AMOMIN_W};
+    wildcard bins amomax_w = {AMOMAX_W};
+    wildcard bins amominu_w = {AMOMINU_W};
+    wildcard bins amomaxu_w = {AMOMAXU_W};
+    `ifdef ZABHA_SUPPORTED
+      wildcard bins amoswap_h = {AMOSWAP_H};
+      wildcard bins amoadd_h = {AMOADD_H};
+      wildcard bins amoxor_h = {AMOXOR_H};
+      wildcard bins amoand_h = {AMOAND_H};
+      wildcard bins amoor_h = {AMOOR_H};
+      wildcard bins amomin_h = {AMOMIN_H};
+      wildcard bins amomax_h = {AMOMAX_H};
+      wildcard bins amominu_h = {AMOMINU_H};
+      wildcard bins amomaxu_h = {AMOMAXU_H};
+    `endif
+    `ifdef UDB_MXLEN_64
+      wildcard bins amoswap_d = {AMOSWAP_D};
+      wildcard bins amoadd_d = {AMOADD_D};
+      wildcard bins amoxor_d = {AMOXOR_D};
+      wildcard bins amoand_d = {AMOAND_D};
+      wildcard bins amoor_d = {AMOOR_D};
+      wildcard bins amomin_d = {AMOMIN_D};
+      wildcard bins amomax_d = {AMOMAX_D};
+      wildcard bins amominu_d = {AMOMINU_D};
+      wildcard bins amomaxu_d = {AMOMAXU_D};
+    `endif
+  }
+
+  `ifdef UDB_MXLEN_64
+    partial_amo_d: coverpoint ins.current.insn {
+      type_option.weight = 0;
+      wildcard bins amoswap_d = {AMOSWAP_D};
+      wildcard bins amoadd_d = {AMOADD_D};
+      wildcard bins amoxor_d = {AMOXOR_D};
+      wildcard bins amoand_d = {AMOAND_D};
+      wildcard bins amoor_d = {AMOOR_D};
+      wildcard bins amomin_d = {AMOMIN_D};
+      wildcard bins amomax_d = {AMOMAX_D};
+      wildcard bins amominu_d = {AMOMINU_D};
+      wildcard bins amomaxu_d = {AMOMAXU_D};
+    }
+  `endif
+
+  partial_kind: coverpoint partial.kind {
+    type_option.weight = 0;
+    bins lower = {PMP_PARTIAL_LOWER};
+    bins upper = {PMP_PARTIAL_UPPER};
+    bins both  = {PMP_PARTIAL_BOTH};
+  }
+
+  partial_aligned: coverpoint partial.align {
+    type_option.weight = 0;
+    bins aligned = {PMP_ACCESS_ALIGNED};
+  }
+
+  partial_in_granule16: coverpoint partial.align {
+    type_option.weight = 0;
+    bins in_granule16 = {PMP_ACCESS_IN_GRANULE16};
+  }
+
+  partial_lock: coverpoint partial.cfg[7] {
+    type_option.weight = 0;
+    bins unlocked = {1'b0};
+    bins locked   = {1'b1};
+  }
+
+  partial_amode: coverpoint partial.cfg[4:3] {
+    type_option.weight = 0;
+    `ifdef UDB_PMP_NA4_SUPPORTED
+      bins na4 = {2'b10};
+    `endif
+    `ifdef UDB_PMP_TOR_SUPPORTED
+      bins tor = {2'b01};
+    `endif
+  }
+
+  partial_tor: coverpoint partial.cfg[4:3] {
+    type_option.weight = 0;
+    bins tor = {2'b01};
+  }
+
+  `ifdef PMP_PARTIAL_ENTRIES
+    `ifdef UDB_MXLEN_64
+      `ifdef UDB_PMP_GRANULARITY_2
+        cp_partial_match: cross priv_mode_m, partial_amo_d, partial_aligned, partial_amode, partial_lock, partial_kind ;
+      `endif
+    `endif
+  `endif
+
+  `ifdef PMP_PARTIAL_ENTRIES
+    `ifdef ZAMA16B_SUPPORTED
+      `ifdef PMP_PARTIAL_GRAIN_8
+        `ifdef UDB_PMP_TOR_SUPPORTED
+          cp_misaligned_mag16: cross priv_mode_m, partial_amo, partial_in_granule16, partial_tor, partial_lock, partial_kind ;
+        `endif
+      `endif
+    `endif
+  `endif
+
 endgroup
 
 function void pmp_Zaamo_sample(int hart, int issue, ins_t ins);
@@ -2711,12 +3142,12 @@ function void pmp_Zaamo_sample(int hart, int issue, ins_t ins);
     pmp_hit[k] = ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`SPECIAL_STANDARD_REGION & `PMP_PMPADDR_LOWMASK)) || ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`SPECIAL_NON_STANDARD_REGION & `PMP_PMPADDR_LOWMASK));
   end
 
-  PMP_Zaamo_cg.sample(ins, pmpcfg, pmp_hit);
+  PMP_Zaamo_cg.sample(ins, pmpcfg, pmp_hit, pmp_partial(ins));
 endfunction
 `endif
 
 `ifdef ZALRSC_SUPPORTED
-covergroup PMP_Zalrsc_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],logic [14:0] pmp_hit);
+covergroup PMP_Zalrsc_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],logic [14:0] pmp_hit, pmp_partial_t partial);
   option.per_instance = 0;
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -2746,6 +3177,51 @@ covergroup PMP_Zalrsc_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0
   }
 
   cp_cfg_RW: cross priv_mode_m, legal_lxwr, atomic_intrs, rs1_in_region;
+
+  // Partial matches (see PMP_partial.svh): the deciding entry matches only some bytes of the access.
+  `ifdef UDB_MXLEN_64
+    partial_lrsc_d: coverpoint ins.current.insn {
+      type_option.weight = 0;
+      wildcard bins lr_d = {LR_D};
+      wildcard bins sc_d = {SC_D};
+    }
+  `endif
+
+  partial_kind: coverpoint partial.kind {
+    type_option.weight = 0;
+    bins lower = {PMP_PARTIAL_LOWER};
+    bins upper = {PMP_PARTIAL_UPPER};
+    bins both  = {PMP_PARTIAL_BOTH};
+  }
+
+  partial_aligned: coverpoint partial.align {
+    type_option.weight = 0;
+    bins aligned = {PMP_ACCESS_ALIGNED};
+  }
+
+  partial_lock: coverpoint partial.cfg[7] {
+    type_option.weight = 0;
+    bins unlocked = {1'b0};
+    bins locked   = {1'b1};
+  }
+
+  partial_amode: coverpoint partial.cfg[4:3] {
+    type_option.weight = 0;
+    `ifdef UDB_PMP_NA4_SUPPORTED
+      bins na4 = {2'b10};
+    `endif
+    `ifdef UDB_PMP_TOR_SUPPORTED
+      bins tor = {2'b01};
+    `endif
+  }
+
+  `ifdef PMP_PARTIAL_ENTRIES
+    `ifdef UDB_MXLEN_64
+      `ifdef UDB_PMP_GRANULARITY_2
+        cp_partial_match: cross priv_mode_m, partial_lrsc_d, partial_aligned, partial_amode, partial_lock, partial_kind ;
+      `endif
+    `endif
+  `endif
 
 endgroup
 
@@ -2789,12 +3265,116 @@ function void pmp_Zalrsc_sample(int hart, int issue, ins_t ins);
                  ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`SPECIAL_NON_STANDARD_REGION & `PMP_PMPADDR_LOWMASK));
   end
 
-  PMP_Zalrsc_cg.sample(ins, pmpcfg, pmp_hit);
+  PMP_Zalrsc_cg.sample(ins, pmpcfg, pmp_hit, pmp_partial(ins));
+endfunction
+`endif
+
+`ifdef ZACAS_SUPPORTED
+// Aligned AMOs are one memory operation even when wider than XLEN (amocas.d on RV32, amocas.q), and so is a
+// misaligned AMO inside a misaligned atomicity granule.
+covergroup PMP_Zacas_cg with function sample(ins_t ins, pmp_partial_t partial);
+  option.per_instance = 0;
+  `include  "general/RISCV_coverage_standard_coverpoints.svh"
+
+  amocas_d: coverpoint ins.current.insn {
+    type_option.weight = 0;
+    wildcard bins amocas_d = {AMOCAS_D};
+  }
+
+  `ifdef UDB_MXLEN_64
+    amocas_q: coverpoint ins.current.insn {
+      type_option.weight = 0;
+      wildcard bins amocas_q = {AMOCAS_Q};
+    }
+  `endif
+
+  amocas_wd: coverpoint ins.current.insn {
+    type_option.weight = 0;
+    `ifdef ZABHA_SUPPORTED
+      wildcard bins amocas_h = {AMOCAS_H};
+    `endif
+    wildcard bins amocas_w = {AMOCAS_W};
+    wildcard bins amocas_d = {AMOCAS_D};
+  }
+
+  partial_kind: coverpoint partial.kind {
+    type_option.weight = 0;
+    bins lower = {PMP_PARTIAL_LOWER};
+    bins upper = {PMP_PARTIAL_UPPER};
+    bins both  = {PMP_PARTIAL_BOTH};
+  }
+
+  partial_aligned: coverpoint partial.align {
+    type_option.weight = 0;
+    bins aligned = {PMP_ACCESS_ALIGNED};
+  }
+
+  partial_in_granule16: coverpoint partial.align {
+    type_option.weight = 0;
+    bins in_granule16 = {PMP_ACCESS_IN_GRANULE16};
+  }
+
+  partial_lock: coverpoint partial.cfg[7] {
+    type_option.weight = 0;
+    bins unlocked = {1'b0};
+    bins locked   = {1'b1};
+  }
+
+  partial_amode: coverpoint partial.cfg[4:3] {
+    type_option.weight = 0;
+    `ifdef UDB_PMP_NA4_SUPPORTED
+      bins na4 = {2'b10};
+    `endif
+    `ifdef UDB_PMP_TOR_SUPPORTED
+      bins tor = {2'b01};
+    `endif
+  }
+
+  partial_amode_quad: coverpoint partial.cfg[4:3] {
+    type_option.weight = 0;
+    `ifdef UDB_PMP_NAPOT_SUPPORTED
+      bins napot = {2'b11};
+    `endif
+    `ifdef UDB_PMP_TOR_SUPPORTED
+      bins tor = {2'b01};
+    `endif
+  }
+
+  partial_tor: coverpoint partial.cfg[4:3] {
+    type_option.weight = 0;
+    bins tor = {2'b01};
+  }
+
+  `ifdef PMP_PARTIAL_ENTRIES
+    `ifdef UDB_PMP_GRANULARITY_2
+      cp_partial_match_d: cross priv_mode_m, amocas_d, partial_aligned, partial_amode, partial_lock, partial_kind ;
+    `endif
+    `ifdef UDB_MXLEN_64
+      `ifdef PMP_PARTIAL_GRAIN_8
+        cp_partial_match_q: cross priv_mode_m, amocas_q, partial_aligned, partial_amode_quad, partial_lock, partial_kind ;
+      `endif
+    `endif
+  `endif
+
+  `ifdef PMP_PARTIAL_ENTRIES
+    `ifdef ZAMA16B_SUPPORTED
+      `ifdef PMP_PARTIAL_GRAIN_8
+        `ifdef UDB_PMP_TOR_SUPPORTED
+          cp_misaligned_mag16: cross priv_mode_m, amocas_wd, partial_in_granule16, partial_tor, partial_lock, partial_kind ;
+        `endif
+      `endif
+    `endif
+  `endif
+
+endgroup
+
+function void pmp_Zacas_sample(int hart, int issue, ins_t ins);
+  PMP_Zacas_cg.sample(ins, pmp_partial(ins));
 endfunction
 `endif
 
 `ifdef ZCA_SUPPORTED
-covergroup PMP_Zca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], logic [14:0] pmp_hit, logic [`UDB_MXLEN-1:0] pmpaddr [62:0]);
+covergroup PMP_Zca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], logic [14:0] pmp_hit, logic [`UDB_MXLEN-1:0] pmpaddr [62:0], pmp_partial_t partial);
   option.per_instance = 0;
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -3014,6 +3594,65 @@ covergroup PMP_Zca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0],
 
   cp_misaligned_off: cross priv_mode_m, cfg_consecutive_off, addr_in_consecutive_regions_napot, exec_c_instr;
 
+  // Partial matches (see PMP_partial.svh): the deciding entry matches only some bytes of the access.
+  // c.fld and c.fsd are in a misaligned atomicity granule only when they are at most XLEN bits.
+  partial_c_ldst: coverpoint ins.current.insn {
+    type_option.weight = 0;
+    wildcard bins c_lw = {C_LW};
+    wildcard bins c_sw = {C_SW};
+    `ifdef UDB_MXLEN_64
+      wildcard bins c_ld = {C_LD};
+      wildcard bins c_sd = {C_SD};
+      `ifdef ZCD_SUPPORTED
+        wildcard bins c_fld = {C_FLD};
+        wildcard bins c_fsd = {C_FSD};
+      `endif
+    `else
+      `ifdef ZCF_SUPPORTED
+        wildcard bins c_flw = {C_FLW};
+        wildcard bins c_fsw = {C_FSW};
+      `endif
+    `endif
+    `ifdef ZCB_SUPPORTED
+      wildcard bins c_lh  = {C_LH};
+      wildcard bins c_lhu = {C_LHU};
+      wildcard bins c_sh  = {C_SH};
+    `endif
+  }
+
+  partial_kind: coverpoint partial.kind {
+    type_option.weight = 0;
+    bins lower = {PMP_PARTIAL_LOWER};
+    bins upper = {PMP_PARTIAL_UPPER};
+    bins both  = {PMP_PARTIAL_BOTH};
+  }
+
+  partial_in_granule16: coverpoint partial.align {
+    type_option.weight = 0;
+    bins in_granule16 = {PMP_ACCESS_IN_GRANULE16};
+  }
+
+  partial_lock: coverpoint partial.cfg[7] {
+    type_option.weight = 0;
+    bins unlocked = {1'b0};
+    bins locked   = {1'b1};
+  }
+
+  partial_tor: coverpoint partial.cfg[4:3] {
+    type_option.weight = 0;
+    bins tor = {2'b01};
+  }
+
+  `ifdef PMP_PARTIAL_ENTRIES
+    `ifdef ZAMA16B_SUPPORTED
+      `ifdef PMP_PARTIAL_GRAIN_8
+        `ifdef UDB_PMP_TOR_SUPPORTED
+          cp_misaligned_mag16: cross priv_mode_m, partial_c_ldst, partial_in_granule16, partial_tor, partial_lock, partial_kind ;
+        `endif
+      `endif
+    `endif
+  `endif
+
 endgroup
 
 function void pmp_Zca_sample(int hart, int issue, ins_t ins);
@@ -3054,7 +3693,7 @@ function void pmp_Zca_sample(int hart, int issue, ins_t ins);
     pmp_hit[k] = ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`STANDARD_REGION & `PMP_PMPADDR_LOWMASK)) || ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`NON_STANDARD_REGION & `PMP_PMPADDR_LOWMASK));
   end
 
-  PMP_Zca_cg.sample(ins, pmpcfg, pmp_hit, pmpaddr);
+  PMP_Zca_cg.sample(ins, pmpcfg, pmp_hit, pmpaddr, pmp_partial(ins));
 endfunction
 `endif
 
@@ -3535,6 +4174,9 @@ function void pmp_sample(int hart, int issue, ins_t ins);
   `endif
   `ifdef ZALRSC_SUPPORTED
     pmp_Zalrsc_sample(hart, issue, ins);
+  `endif
+  `ifdef ZACAS_SUPPORTED
+    pmp_Zacas_sample(hart, issue, ins);
   `endif
   `ifdef ZCA_SUPPORTED
     pmp_Zca_sample(hart, issue, ins);

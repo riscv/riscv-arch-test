@@ -64,8 +64,12 @@ exclude_extensions:
   # QEMU zama16b handling is incomplete: misaligned Zabha/Zacas AMOs fault,
   # but cross-granule word/doubleword AMOs execute instead of trapping
   # (https://gitlab.com/qemu-project/qemu/-/work_items/4101).
+  # PMP_Zacas and PMP_Zaamo_zabha: a misaligned amocas or Zabha AMO inside a 16-byte granule raises store/AMO
+  # address misaligned instead of the PMP store/AMO access fault.
   - Exceptions_Zaamo
   - Zama16b
+  - PMP_Zacas
+  - PMP_Zaamo_zabha
   # mstateen0 bits are writable for state the hart lacks: P1P13 on RV64 and on RV32 without H
   # (https://gitlab.com/qemu-project/qemu/-/work_items/4495), and ENVCFG, CSRIND, AIA and IMSIC without S
   # (https://gitlab.com/qemu-project/qemu/-/work_items/4655).

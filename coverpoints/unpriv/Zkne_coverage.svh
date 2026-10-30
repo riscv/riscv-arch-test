@@ -678,8 +678,9 @@ endgroup
 // ---------------------
 `endif
 function void zkne_sample(int hart, int issue, ins_t ins);
+    string inst_name = traceDataQ[hart][issue][0].inst_name;
 
-    case (traceDataQ[hart][issue][0].inst_name)
+    case (inst_name)
 `ifdef UDB_MXLEN_32
         "aes32esi"     : begin
             Zkne_aes32esi_cg.sample(ins);

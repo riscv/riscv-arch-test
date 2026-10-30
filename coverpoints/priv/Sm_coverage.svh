@@ -399,10 +399,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         bins debug_only[] = {[12'h7B0:12'h7BF]};
     }
     csr_ro: coverpoint ins.current.insn[31:20] {
-        bins readonly_c[] = {[12'hC00:12'hCFF]};
-        bins readonly_d[] = {[12'hD00:12'hDFF]};
-        bins readonly_e[] = {[12'hE00:12'hEFF]};
-        bins readonly_f[] = {[12'hF00:12'hFFF]};
+        bins readonly[] = {[12'hC00:12'hFFF]};
     }
 
     csrr: coverpoint ins.current.insn  {
@@ -2501,7 +2498,7 @@ covergroup Sm_Zicntr_H_cg with function sample(ins_t ins);
     }
 
     // The enable bit of the accessed counter in mcounteren
-    mcounteren_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "mcounteren")[ins.current.insn[24:20]] {
+    mcounteren_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "mcounteren")[int'(ins.current.insn[24:20])] {
         bins disabled = {0};
         bins enabled  = {1};
     }
@@ -2534,10 +2531,10 @@ covergroup Sm_Zicntr_H_cg with function sample(ins_t ins);
 
     // mcounteren, hcounteren and scounteren hold the same enable bit for the accessed counter
     cp_mhscounteren_access_m: cross csraccess, counter, mcounteren_bit, priv_mode_m
-        iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "mcounteren")[ins.current.insn[24:20]] ==
-                 get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hcounteren", "hcounteren")[ins.current.insn[24:20]] &&
-             get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "mcounteren")[ins.current.insn[24:20]] ==
-                 get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scounteren", "scounteren")[ins.current.insn[24:20]]);
+        iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "mcounteren")[int'(ins.current.insn[24:20])] ==
+                 get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hcounteren", "hcounteren")[int'(ins.current.insn[24:20])] &&
+             get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "mcounteren")[int'(ins.current.insn[24:20])] ==
+                 get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scounteren", "scounteren")[int'(ins.current.insn[24:20])]);
     cp_delta_m: cross csrr_time, htimedelta, priv_mode_m;
 endgroup
 `endif

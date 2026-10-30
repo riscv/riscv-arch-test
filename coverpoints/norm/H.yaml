@@ -644,7 +644,8 @@ normative_rule_definitions:
 
   # With Ssnpm, henvcfg.PMM enables pointer masking for VS-mode; PMM is read-only zero without Ssnpm and on RV32
   - names: [henvcfg_pmm_op]
-    coverpoint: ["SsnpmH_cg/{cp_vs_pmm,cp_hlv_hs_pmm,cp_hlv_u_pmm}"]
+    coverpoint:
+      ["Ssnpm_H_cg/{cp_vs_pmm,cp_hlv_hs_spvp1_pmm,cp_hlv_u_spvp1_pmm}"]
 
   # With Ssdbltrp, henvcfg.DTE = 0 disables Ssdbltrp for VS-mode and makes vsstatus.SDT read-only zero
   - names: [henvcfg_dte_op]

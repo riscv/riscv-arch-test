@@ -77,9 +77,9 @@ coverpoints:
     goal: VSTI with Sstc
     description: |-
       if H_SUPPORTED and SSTC_SUPPORTED:
-      In HS-mode with menvcfg.STCE = henvcfg.STCE = 1, hie.VSTIE = 1, vsstatus.SIE = 1 and hideleg.VSTI = {0/1}, write vstimecmp = {0, time + htimedelta + a short delay}; with hideleg.VSTI = 0, set sstatus.SIE, else change to VS-mode
+      In HS-mode with menvcfg.STCE = henvcfg.STCE = 1, hie.VSTIE = 1, vsstatus.SIE = 1 and hideleg.VSTI = {0/1}, write vstimecmp = 0; with hideleg.VSTI = 0, set sstatus.SIE, else change to VS-mode
     expectation: HS-mode takes VSTI (cause 6) when hideleg.VSTI = 0; VS-mode takes STI (cause 5) when hideleg.VSTI = 1
-    bins: 2 hideleg * 2 (at once, soon)
+    bins: 2 hideleg
   - name: cp_enable
     goal: Enables control interrupts
     description: |-

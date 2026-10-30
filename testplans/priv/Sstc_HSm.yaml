@@ -3,7 +3,8 @@ suite: Sstc_HSm
 notes: |-
   The suite boots to M-mode, where vstimecmp is always accessible.
   time has no reset value, so a check whose result depends on time compares hip.VSTIP with the comparison computed from a read of time.
-  A change of the comparison reaches hip.VSTIP eventually, so hip is read until it matches, for at most RVMODEL_INTERRUPT_LATENCY reads.
+  A change of the comparison reaches hip.VSTIP eventually, so hip is read after waiting RVMODEL_INTERRUPT_LATENCY.
+  cp_vstip and cp_htimedelta are also in Sstc_H, from HS-mode.
 coverpoints:
   - heading: In M-Mode
   - name: cp_vstip

@@ -50,14 +50,14 @@ include::{testplansdir}/priv/Sstc_Sm.adoc[]
 ===== Sstc_H Hypervisor Timer Compare
 
 These tests are run on any configuration with the hypervisor extension when the Sstc supervisor timer compare extension is supported.
-They check vstimecmp and stimecmp access from HS, VS, VU and U modes.
+They check vstimecmp and stimecmp access from HS, VS, VU and U modes, and from HS-mode hip.VSTIP as hvip.VSTIP OR the vstimecmp comparison with each menvcfg.STCE and henvcfg.STCE, and htimedelta (including 64-bit wrap).
 
 include::{testplansdir}/priv/Sstc_H.adoc[]
 
 ===== Sstc_HSm Machine-Mode Hypervisor Timer Compare
 
 These tests are run on any configuration with machine mode and the hypervisor extension when the Sstc supervisor timer compare extension is supported.
-They check from M-mode vstimecmp access, hip.VSTIP as hvip.VSTIP OR the vstimecmp comparison with each menvcfg.STCE and henvcfg.STCE, and htimedelta (including 64-bit wrap).
+They check vstimecmp access from M-mode, and repeat the hip.VSTIP and htimedelta checks from M-mode.
 
 include::{testplansdir}/priv/Sstc_HSm.adoc[]
 

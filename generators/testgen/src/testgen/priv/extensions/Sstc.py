@@ -63,17 +63,11 @@ def stce_tm(test_data: TestData, m_stce: int, h_stce: int, m_tm: int, h_tm: int,
 
     henvcfg follows menvcfg because henvcfg.STCE is read-only zero while menvcfg.STCE = 0.
     """
-    op = "csrs" if h_stce else "csrc"
+    priv = "M" if mode == "machine" else "S"
     reg = test_data.int_regs.get_register()
     lines = [
-        *write_stce(test_data, bool(m_stce), "M" if mode == "machine" else "S"),
-        "#if __riscv_xlen == 64",
-        f"LI(x{reg}, HENVCFG_STCE)",
-        f"{op} henvcfg, x{reg}",
-        "#else",
-        f"LI(x{reg}, HENVCFGH_STCE)",
-        f"{op} henvcfgh, x{reg}",
-        "#endif",
+        *write_stce(test_data, bool(m_stce), priv),
+        *write_stce(test_data, bool(h_stce), priv, henvcfg=True),
         *mcounteren_tm(test_data, bool(m_tm), mode),
         f"LI(x{reg}, MCOUNTEREN_TIME)",
         f"{'csrs' if h_tm else 'csrc'} hcounteren, x{reg}",
@@ -365,33 +359,22 @@ def make_sstch(test_data: TestData) -> list[TestChunk]:
     tc = test_data.new_test_chunk(test_chunks, "H_vu")
     tc.code.extend(_user_tests(test_data))
 
+    tc = test_data.new_test_chunk(test_chunks, "H_vstip")
+    tc.code.extend([*_vstip_tests(test_data, _CG_H, "supervisor"), *_htimedelta_tests(test_data, _CG_H, "supervisor")])
+
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks
 
 
-# HSm group: boots to M-mode, where vstimecmp is always accessible.  time has no reset value, so a check whose
-# result depends on time compares hip.VSTIP with the comparison computed from a read of time.
+# hip.VSTIP tests, run from HS-mode in the H group and from M-mode in the HSm group.  time has no reset value, so a
+# check whose result depends on time compares hip.VSTIP with the comparison computed from a read of time.
 
 
-def _vstip_check(test_data: TestData, expected_reg: int, tmp_reg: int, count_reg: int) -> list[str]:
-    """Read hip until VSTIP equals expected_reg (0 or MIP_VSTIP), for at most RVMODEL_INTERRUPT_LATENCY reads,
-    and record the difference.  A change of the timer comparison reaches hip.VSTIP eventually, not at once."""
-    return [
-        f"LA(x{count_reg}, RVMODEL_INTERRUPT_LATENCY)",
-        "1:",
-        f"csrr x{tmp_reg}, hip",
-        f"andi x{tmp_reg}, x{tmp_reg}, MIP_VSTIP",
-        f"xor x{tmp_reg}, x{tmp_reg}, x{expected_reg}",
-        f"beqz x{tmp_reg}, 2f",
-        f"addi x{count_reg}, x{count_reg}, -1",
-        f"bnez x{count_reg}, 1b",
-        "2:",
-        write_sigupd(tmp_reg, test_data),
-    ]
+def _vstip_tests(test_data: TestData, covergroup: str, mode: str) -> list[str]:
+    """hip.VSTIP is hvip.VSTIP OR the vstimecmp comparison, which counts only with menvcfg.STCE = henvcfg.STCE = 1.
 
-
-def _vstip_tests(test_data: TestData) -> list[str]:
-    """hip.VSTIP is hvip.VSTIP OR the vstimecmp comparison, which counts only with menvcfg.STCE = henvcfg.STCE = 1."""
+    vstimecmp is written with both STCE and TM bits set, which HS-mode needs to reach it.
+    """
     tmp_reg, expected_reg, count_reg = test_data.int_regs.get_registers(3)
     lines = [
         comment_banner(
@@ -408,17 +391,22 @@ def _vstip_tests(test_data: TestData) -> list[str]:
         expected = vstip or (m_stce and h_stce and compare == 0)
         lines.extend(
             [
-                *stce_tm(test_data, m_stce, h_stce, 1, 1, "machine"),
+                *stce_tm(test_data, 1, 1, 1, 1, mode),
                 *write64_csr("vstimecmp", compare, tmp_reg),
+                *stce_tm(test_data, m_stce, h_stce, 1, 1, mode),
                 f"LI(x{tmp_reg}, MIP_VSTIP)",
                 f"{'csrs' if vstip else 'csrc'} hvip, x{tmp_reg}",
                 f"LI(x{expected_reg}, {'MIP_VSTIP' if expected else 0})",
                 test_data.add_testcase(
                     f"mstce{m_stce}_hstce{h_stce}_hvip{vstip}_vstimecmp_{'max' if compare else '0'}",
                     "cp_vstip",
-                    _CG_HSM,
+                    covergroup,
                 ),
-                *_vstip_check(test_data, expected_reg, tmp_reg, count_reg),
+                f"RVTEST_IDLE_FOR_INTERRUPT(x{count_reg}) # let the comparison reach hip.VSTIP",
+                f"csrr x{tmp_reg}, hip",
+                f"andi x{tmp_reg}, x{tmp_reg}, MIP_VSTIP",
+                f"xor x{tmp_reg}, x{tmp_reg}, x{expected_reg}    # 0 when hip.VSTIP is as expected",
+                write_sigupd(tmp_reg, test_data),
             ]
         )
     lines.append("csrw hvip, zero")
@@ -426,7 +414,7 @@ def _vstip_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-def _htimedelta_tests(test_data: TestData) -> list[str]:
+def _htimedelta_tests(test_data: TestData, covergroup: str, mode: str) -> list[str]:
     """hip.VSTIP = ((time + htimedelta) mod 2^64 >= vstimecmp), unsigned, with the expected value computed from time."""
     time_reg, time_hi_reg, tmp_reg, expected_reg = test_data.int_regs.get_registers(4)
     lines = [
@@ -436,7 +424,7 @@ def _htimedelta_tests(test_data: TestData) -> list[str]:
             "+-2^29..2^61.  hip.VSTIP = ((time + htimedelta) mod 2^64 >= vstimecmp), unsigned; the expected value is\n"
             "computed from a read of time",
         ),
-        *stce_tm(test_data, 1, 1, 1, 1, "machine"),
+        *stce_tm(test_data, 1, 1, 1, 1, mode),
         "csrw hvip, zero",
     ]
     for delta_name, delta in HTIMEDELTAS.items():
@@ -469,9 +457,13 @@ def _htimedelta_tests(test_data: TestData) -> list[str]:
                     f"xori x{expected_reg}, x{expected_reg}, 1    # time + htimedelta >= vstimecmp",
                     f"slli x{expected_reg}, x{expected_reg}, IRQ_VS_TIMER",
                     test_data.add_testcase(
-                        f"htimedelta_{delta_name}_vstimecmp_{compare_name}", "cp_htimedelta", _CG_HSM
+                        f"htimedelta_{delta_name}_vstimecmp_{compare_name}", "cp_htimedelta", covergroup
                     ),
-                    *_vstip_check(test_data, expected_reg, time_reg, time_hi_reg),
+                    f"RVTEST_IDLE_FOR_INTERRUPT(x{time_hi_reg}) # let the comparison reach hip.VSTIP",
+                    f"csrr x{time_reg}, hip",
+                    f"andi x{time_reg}, x{time_reg}, MIP_VSTIP",
+                    f"xor x{time_reg}, x{time_reg}, x{expected_reg}    # 0 when hip.VSTIP is as expected",
+                    write_sigupd(time_reg, test_data),
                 ]
             )
     lines.extend(write64_csr("htimedelta", 0, tmp_reg))
@@ -514,7 +506,7 @@ def make_sstchsm(test_data: TestData) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
 
     tc = test_data.new_test_chunk(test_chunks, "HSm_vstip")
-    tc.code.extend([*_vstip_tests(test_data), *_htimedelta_tests(test_data)])
+    tc.code.extend([*_vstip_tests(test_data, _CG_HSM, "machine"), *_htimedelta_tests(test_data, _CG_HSM, "machine")])
 
     tc = test_data.new_test_chunk(test_chunks, "HSm_access")
     tc.code.extend(_access_tests(test_data))

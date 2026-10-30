@@ -110,6 +110,11 @@ exclude_extensions:
   # The same mstatus.MPV bug keeps the VS-mode and VU-mode sweeps in HS-mode
   # (https://gitlab.com/qemu-project/qemu/-/work_items/4588).
   - Ssstrict_H
+  # mret never enters VS/VU (https://gitlab.com/qemu-project/qemu/-/issues/4620), so the VS/VU
+  # accesses and the VS timer interrupts fail, and M-mode writes of hvip.VSTIP are dropped while
+  # menvcfg.STCE = henvcfg.STCE = 1 (https://gitlab.com/qemu-project/qemu/-/work_items/4593).
+  - Sstc_H
+  - Sstc_HSm
   # Runs in VS-mode and VU-mode, which QEMU never enters (see H above).
   - Ssnpm_H
   # With ADUE=1, QEMU sets A/D on a PTE with a reserved Svnapot encoding before raising the page fault

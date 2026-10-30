@@ -94,9 +94,9 @@ include::{testplansdir}/priv/Shlcofideleg.adoc[]
 
 include::{testplansdir}/priv/ZkrH.adoc[]
 
-==== SstcH Hypervisor Timer Compare
+==== Sstc Hypervisor Timer Compare
 
-include::{testplansdir}/priv/SstcH.adoc[]
+The hypervisor timer compare tests are the H and HSm groups of the Sstc suite: see <<t-Sstc_H-coverpoints>> and <<t-Sstc_HSm-coverpoints>>.
 
 ==== SscrindH Hypervisor Indirect CSR Access
 

@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 35
+#define SIGUPD_COUNT 37
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_SMODE
@@ -33,7 +33,7 @@ RVTEST_BEGIN
 /////////////////////////////////
 // cp_hgatp_gpa_width
 //   In VS-mode with vsatp = Bare and hgatp = Sv48x4, load from guest physical addresses with one of
-//   bits 39-63 set.  Bits below 50 translate through a root-table leaf; bits 50-63 must be
+//   bits 37-63 set.  Bits below 50 translate through a superpage leaf; bits 50-63 must be
 //   zero, or a guest-page fault occurs
 /////////////////////////////////
 
@@ -104,51 +104,137 @@ RVTEST_BEGIN
   LI(x8, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x8
   csrw hedeleg, zero
-  LA(x15, rvtest_Hroot_pg_tbl + (((0x8000000000) >> 39) & 0x7ff) * 8)
+  LA(x15, rvtest_Hroot_pg_tbl + (((0x2000000000) >> 39) & 0x7ff) * 8)
+  LA(x6, rvtest_hlvl2_pg_tbl)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x13, PTE_V)
+  or x6, x6, x13
+  SREG x6, 0(x15)
+  LA(x15, rvtest_code_begin)
+  srli x15, x15, 30
+  slli x15, x15, 55
+  srli x15, x15, 52
+  LA(x13, rvtest_hlvl2_pg_tbl)
+  add x15, x15, x13
+  LA(x6, rvtest_code_begin)
+  srli x6, x6, 30
+  slli x6, x6, 28
+  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x6, x6, x13
+  SREG x6, 0(x15)
+  LA(x15, rvtest_data_begin)
+  srli x15, x15, 30
+  slli x15, x15, 55
+  srli x15, x15, 52
+  LA(x13, rvtest_hlvl2_pg_tbl)
+  add x15, x15, x13
+  LA(x6, rvtest_data_begin)
+  srli x6, x6, 30
+  slli x6, x6, 28
+  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x6, x6, x13
+  SREG x6, 0(x15)
+  LA(x15, rvtest_sig_end)
+  srli x15, x15, 30
+  slli x15, x15, 55
+  srli x15, x15, 52
+  LA(x13, rvtest_hlvl2_pg_tbl)
+  add x15, x15, x13
+  LA(x6, rvtest_sig_end)
+  srli x6, x6, 30
+  slli x6, x6, 28
+  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x6, x6, x13
+  SREG x6, 0(x15)
+  LA(x15, rvtest_hlvl2_pg_tbl + (((0x2000000000) >> 30) & 0x1ff) * 8)
   LA(x6, svh_page)
-  srli x6, x6, 39
-  slli x6, x6, 37
+  srli x6, x6, 30
+  slli x6, x6, 28
   LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
   or x6, x6, x13
   SREG x6, 0(x15)
   hfence.gvma
-  LI(x13, (0x8000000000 >> 39) << 39)
+  LI(x13, (0x2000000000 >> 30) << 30)
   LA(x8, svh_page)
-  slli x8, x8, 25
-  srli x8, x8, 25
+  slli x8, x8, 34
+  srli x8, x8, 34
   add x13, x13, x8
   LI(x8, 0x19e)
   RVTEST_TSBI_GOTO_VSMODE
   LI(x8, -1)
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit39_load:
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit37_load:
   lw x8, 8(x13)
   RVTEST_TSBI_GOTO_SMODE
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit39_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit39_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit37_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit37_load_str)
 
-  LA(x8, rvtest_Hroot_pg_tbl + (((0x10000000000) >> 39) & 0x7ff) * 8)
+  LA(x8, rvtest_Hroot_pg_tbl + (((0x4000000000) >> 39) & 0x7ff) * 8)
+  LA(x13, rvtest_hlvl2_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x14, PTE_V)
+  or x13, x13, x14
+  SREG x13, 0(x8)
+  LA(x8, rvtest_code_begin)
+  srli x8, x8, 30
+  slli x8, x8, 55
+  srli x8, x8, 52
+  LA(x14, rvtest_hlvl2_pg_tbl)
+  add x8, x8, x14
+  LA(x13, rvtest_code_begin)
+  srli x13, x13, 30
+  slli x13, x13, 28
+  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x14
+  SREG x13, 0(x8)
+  LA(x8, rvtest_data_begin)
+  srli x8, x8, 30
+  slli x8, x8, 55
+  srli x8, x8, 52
+  LA(x14, rvtest_hlvl2_pg_tbl)
+  add x8, x8, x14
+  LA(x13, rvtest_data_begin)
+  srli x13, x13, 30
+  slli x13, x13, 28
+  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x14
+  SREG x13, 0(x8)
+  LA(x8, rvtest_sig_end)
+  srli x8, x8, 30
+  slli x8, x8, 55
+  srli x8, x8, 52
+  LA(x14, rvtest_hlvl2_pg_tbl)
+  add x8, x8, x14
+  LA(x13, rvtest_sig_end)
+  srli x13, x13, 30
+  slli x13, x13, 28
+  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x14
+  SREG x13, 0(x8)
+  LA(x8, rvtest_hlvl2_pg_tbl + (((0x4000000000) >> 30) & 0x1ff) * 8)
   LA(x13, svh_page)
-  srli x13, x13, 39
-  slli x13, x13, 37
+  srli x13, x13, 30
+  slli x13, x13, 28
   LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
   or x13, x13, x14
   SREG x13, 0(x8)
   hfence.gvma
-  LI(x14, (0x10000000000 >> 39) << 39)
+  LI(x14, (0x4000000000 >> 30) << 30)
   LA(x9, svh_page)
-  slli x9, x9, 25
-  srli x9, x9, 25
+  slli x9, x9, 34
+  srli x9, x9, 34
   add x14, x14, x9
   LI(x9, 0x19f)
   RVTEST_TSBI_GOTO_VSMODE
   LI(x9, -1)
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit40_load:
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit38_load:
   lw x9, 8(x14)
   RVTEST_TSBI_GOTO_SMODE
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit40_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit40_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit38_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit38_load_str)
 
-  LA(x6, rvtest_Hroot_pg_tbl + (((0x20000000000) >> 39) & 0x7ff) * 8)
+  LA(x6, rvtest_Hroot_pg_tbl + (((0x8000000000) >> 39) & 0x7ff) * 8)
   LA(x13, svh_page)
   srli x13, x13, 39
   slli x13, x13, 37
@@ -156,7 +242,7 @@ Sv_H_gstage_cg_cp_hgatp_gpa_width_bit40_load:
   or x13, x13, x15
   SREG x13, 0(x6)
   hfence.gvma
-  LI(x9, (0x20000000000 >> 39) << 39)
+  LI(x9, (0x8000000000 >> 39) << 39)
   LA(x8, svh_page)
   slli x8, x8, 25
   srli x8, x8, 25
@@ -164,13 +250,13 @@ Sv_H_gstage_cg_cp_hgatp_gpa_width_bit40_load:
   LI(x8, 0x1a0)
   RVTEST_TSBI_GOTO_VSMODE
   LI(x8, -1)
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit41_load:
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit39_load:
   lw x8, 8(x9)
   RVTEST_TSBI_GOTO_SMODE
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit41_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit41_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit39_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit39_load_str)
 
-  LA(x8, rvtest_Hroot_pg_tbl + (((0x40000000000) >> 39) & 0x7ff) * 8)
+  LA(x8, rvtest_Hroot_pg_tbl + (((0x10000000000) >> 39) & 0x7ff) * 8)
   LA(x15, svh_page)
   srli x15, x15, 39
   slli x15, x15, 37
@@ -178,7 +264,7 @@ Sv_H_gstage_cg_cp_hgatp_gpa_width_bit41_load:
   or x15, x15, x9
   SREG x15, 0(x8)
   hfence.gvma
-  LI(x13, (0x40000000000 >> 39) << 39)
+  LI(x13, (0x10000000000 >> 39) << 39)
   LA(x15, svh_page)
   slli x15, x15, 25
   srli x15, x15, 25
@@ -186,13 +272,13 @@ Sv_H_gstage_cg_cp_hgatp_gpa_width_bit41_load:
   LI(x15, 0x1a1)
   RVTEST_TSBI_GOTO_VSMODE
   LI(x15, -1)
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit42_load:
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit40_load:
   lw x15, 8(x13)
   RVTEST_TSBI_GOTO_SMODE
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit42_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit42_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit40_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit40_load_str)
 
-  LA(x15, rvtest_Hroot_pg_tbl + (((0x80000000000) >> 39) & 0x7ff) * 8)
+  LA(x15, rvtest_Hroot_pg_tbl + (((0x20000000000) >> 39) & 0x7ff) * 8)
   LA(x13, svh_page)
   srli x13, x13, 39
   slli x13, x13, 37
@@ -200,7 +286,7 @@ Sv_H_gstage_cg_cp_hgatp_gpa_width_bit42_load:
   or x13, x13, x8
   SREG x13, 0(x15)
   hfence.gvma
-  LI(x6, (0x80000000000 >> 39) << 39)
+  LI(x6, (0x20000000000 >> 39) << 39)
   LA(x8, svh_page)
   slli x8, x8, 25
   srli x8, x8, 25
@@ -208,13 +294,13 @@ Sv_H_gstage_cg_cp_hgatp_gpa_width_bit42_load:
   LI(x8, 0x1a2)
   RVTEST_TSBI_GOTO_VSMODE
   LI(x8, -1)
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit43_load:
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit41_load:
   lw x8, 8(x6)
   RVTEST_TSBI_GOTO_SMODE
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit43_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit43_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit41_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit41_load_str)
 
-  LA(x15, rvtest_Hroot_pg_tbl + (((0x100000000000) >> 39) & 0x7ff) * 8)
+  LA(x15, rvtest_Hroot_pg_tbl + (((0x40000000000) >> 39) & 0x7ff) * 8)
   LA(x6, svh_page)
   srli x6, x6, 39
   slli x6, x6, 37
@@ -222,7 +308,7 @@ Sv_H_gstage_cg_cp_hgatp_gpa_width_bit43_load:
   or x6, x6, x13
   SREG x6, 0(x15)
   hfence.gvma
-  LI(x8, (0x100000000000 >> 39) << 39)
+  LI(x8, (0x40000000000 >> 39) << 39)
   LA(x6, svh_page)
   slli x6, x6, 25
   srli x6, x6, 25
@@ -230,13 +316,13 @@ Sv_H_gstage_cg_cp_hgatp_gpa_width_bit43_load:
   LI(x6, 0x1a3)
   RVTEST_TSBI_GOTO_VSMODE
   LI(x6, -1)
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit44_load:
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit42_load:
   lw x6, 8(x8)
   RVTEST_TSBI_GOTO_SMODE
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit44_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit44_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit42_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit42_load_str)
 
-  LA(x13, rvtest_Hroot_pg_tbl + (((0x200000000000) >> 39) & 0x7ff) * 8)
+  LA(x13, rvtest_Hroot_pg_tbl + (((0x80000000000) >> 39) & 0x7ff) * 8)
   LA(x6, svh_page)
   srli x6, x6, 39
   slli x6, x6, 37
@@ -244,7 +330,7 @@ Sv_H_gstage_cg_cp_hgatp_gpa_width_bit44_load:
   or x6, x6, x8
   SREG x6, 0(x13)
   hfence.gvma
-  LI(x9, (0x200000000000 >> 39) << 39)
+  LI(x9, (0x80000000000 >> 39) << 39)
   LA(x13, svh_page)
   slli x13, x13, 25
   srli x13, x13, 25
@@ -252,13 +338,13 @@ Sv_H_gstage_cg_cp_hgatp_gpa_width_bit44_load:
   LI(x13, 0x1a4)
   RVTEST_TSBI_GOTO_VSMODE
   LI(x13, -1)
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit45_load:
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit43_load:
   lw x13, 8(x9)
   RVTEST_TSBI_GOTO_SMODE
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit45_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit45_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit43_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit43_load_str)
 
-  LA(x8, rvtest_Hroot_pg_tbl + (((0x400000000000) >> 39) & 0x7ff) * 8)
+  LA(x8, rvtest_Hroot_pg_tbl + (((0x100000000000) >> 39) & 0x7ff) * 8)
   LA(x14, svh_page)
   srli x14, x14, 39
   slli x14, x14, 37
@@ -266,7 +352,7 @@ Sv_H_gstage_cg_cp_hgatp_gpa_width_bit45_load:
   or x14, x14, x15
   SREG x14, 0(x8)
   hfence.gvma
-  LI(x8, (0x400000000000 >> 39) << 39)
+  LI(x8, (0x100000000000 >> 39) << 39)
   LA(x9, svh_page)
   slli x9, x9, 25
   srli x9, x9, 25
@@ -274,13 +360,13 @@ Sv_H_gstage_cg_cp_hgatp_gpa_width_bit45_load:
   LI(x9, 0x1a5)
   RVTEST_TSBI_GOTO_VSMODE
   LI(x9, -1)
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit46_load:
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit44_load:
   lw x9, 8(x8)
   RVTEST_TSBI_GOTO_SMODE
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit46_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit46_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit44_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit44_load_str)
 
-  LA(x8, rvtest_Hroot_pg_tbl + (((0x800000000000) >> 39) & 0x7ff) * 8)
+  LA(x8, rvtest_Hroot_pg_tbl + (((0x200000000000) >> 39) & 0x7ff) * 8)
   LA(x14, svh_page)
   srli x14, x14, 39
   slli x14, x14, 37
@@ -288,7 +374,7 @@ Sv_H_gstage_cg_cp_hgatp_gpa_width_bit46_load:
   or x14, x14, x13
   SREG x14, 0(x8)
   hfence.gvma
-  LI(x9, (0x800000000000 >> 39) << 39)
+  LI(x9, (0x200000000000 >> 39) << 39)
   LA(x15, svh_page)
   slli x15, x15, 25
   srli x15, x15, 25
@@ -296,13 +382,13 @@ Sv_H_gstage_cg_cp_hgatp_gpa_width_bit46_load:
   LI(x15, 0x1a6)
   RVTEST_TSBI_GOTO_VSMODE
   LI(x15, -1)
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit47_load:
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit45_load:
   lw x15, 8(x9)
   RVTEST_TSBI_GOTO_SMODE
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit47_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit47_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit45_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit45_load_str)
 
-  LA(x13, rvtest_Hroot_pg_tbl + (((0x1000000000000) >> 39) & 0x7ff) * 8)
+  LA(x13, rvtest_Hroot_pg_tbl + (((0x400000000000) >> 39) & 0x7ff) * 8)
   LA(x9, svh_page)
   srli x9, x9, 39
   slli x9, x9, 37
@@ -310,7 +396,7 @@ Sv_H_gstage_cg_cp_hgatp_gpa_width_bit47_load:
   or x9, x9, x8
   SREG x9, 0(x13)
   hfence.gvma
-  LI(x8, (0x1000000000000 >> 39) << 39)
+  LI(x8, (0x400000000000 >> 39) << 39)
   LA(x6, svh_page)
   slli x6, x6, 25
   srli x6, x6, 25
@@ -318,13 +404,13 @@ Sv_H_gstage_cg_cp_hgatp_gpa_width_bit47_load:
   LI(x6, 0x1a7)
   RVTEST_TSBI_GOTO_VSMODE
   LI(x6, -1)
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit48_load:
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit46_load:
   lw x6, 8(x8)
   RVTEST_TSBI_GOTO_SMODE
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit48_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit48_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit46_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit46_load_str)
 
-  LA(x9, rvtest_Hroot_pg_tbl + (((0x2000000000000) >> 39) & 0x7ff) * 8)
+  LA(x9, rvtest_Hroot_pg_tbl + (((0x800000000000) >> 39) & 0x7ff) * 8)
   LA(x15, svh_page)
   srli x15, x15, 39
   slli x15, x15, 37
@@ -332,7 +418,7 @@ Sv_H_gstage_cg_cp_hgatp_gpa_width_bit48_load:
   or x15, x15, x13
   SREG x15, 0(x9)
   hfence.gvma
-  LI(x15, (0x2000000000000 >> 39) << 39)
+  LI(x15, (0x800000000000 >> 39) << 39)
   LA(x6, svh_page)
   slli x6, x6, 25
   srli x6, x6, 25
@@ -340,18 +426,62 @@ Sv_H_gstage_cg_cp_hgatp_gpa_width_bit48_load:
   LI(x6, 0x1a8)
   RVTEST_TSBI_GOTO_VSMODE
   LI(x6, -1)
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit49_load:
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit47_load:
   lw x6, 8(x15)
   RVTEST_TSBI_GOTO_SMODE
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit49_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit49_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit47_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit47_load_str)
+
+  LA(x14, rvtest_Hroot_pg_tbl + (((0x1000000000000) >> 39) & 0x7ff) * 8)
+  LA(x6, svh_page)
+  srli x6, x6, 39
+  slli x6, x6, 37
+  LI(x15, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x6, x6, x15
+  SREG x6, 0(x14)
+  hfence.gvma
+  LI(x15, (0x1000000000000 >> 39) << 39)
+  LA(x13, svh_page)
+  slli x13, x13, 25
+  srli x13, x13, 25
+  add x15, x15, x13
+  LI(x13, 0x1a9)
+  RVTEST_TSBI_GOTO_VSMODE
+  LI(x13, -1)
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit48_load:
+  lw x13, 8(x15)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit48_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit48_load_str)
+
+  LA(x9, rvtest_Hroot_pg_tbl + (((0x2000000000000) >> 39) & 0x7ff) * 8)
+  LA(x6, svh_page)
+  srli x6, x6, 39
+  slli x6, x6, 37
+  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x6, x6, x13
+  SREG x6, 0(x9)
+  hfence.gvma
+  LI(x14, (0x2000000000000 >> 39) << 39)
+  LA(x9, svh_page)
+  slli x9, x9, 25
+  srli x9, x9, 25
+  add x14, x14, x9
+  LI(x9, 0x1aa)
+  RVTEST_TSBI_GOTO_VSMODE
+  LI(x9, -1)
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit49_load:
+  lw x9, 8(x14)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit49_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit49_load_str)
 
   LI(x6, (0x4000000000000 >> 39) << 39)
   LA(x14, svh_page)
   slli x14, x14, 25
   srli x14, x14, 25
   add x6, x6, x14
-  LI(x14, 0x1a9)
+  LI(x14, 0x1ab)
   RVTEST_TSBI_GOTO_VSMODE
   LI(x14, -1)
 Sv_H_gstage_cg_cp_hgatp_gpa_width_bit50_load:
@@ -360,82 +490,82 @@ Sv_H_gstage_cg_cp_hgatp_gpa_width_bit50_load:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit50_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit50_load_str)
 
-  LI(x6, (0x8000000000000 >> 39) << 39)
-  LA(x13, svh_page)
-  slli x13, x13, 25
-  srli x13, x13, 25
-  add x6, x6, x13
-  LI(x13, 0x1aa)
-  RVTEST_TSBI_GOTO_VSMODE
-  LI(x13, -1)
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit51_load:
-  lw x13, 8(x6)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit51_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit51_load_str)
-
-  LI(x6, (0x10000000000000 >> 39) << 39)
+  LI(x13, (0x8000000000000 >> 39) << 39)
   LA(x9, svh_page)
   slli x9, x9, 25
   srli x9, x9, 25
-  add x6, x6, x9
-  LI(x9, 0x1ab)
+  add x13, x13, x9
+  LI(x9, 0x1ac)
   RVTEST_TSBI_GOTO_VSMODE
   LI(x9, -1)
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit52_load:
-  lw x9, 8(x6)
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit51_load:
+  lw x9, 8(x13)
   RVTEST_TSBI_GOTO_SMODE
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit52_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit52_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit51_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit51_load_str)
 
-  LI(x13, (0x20000000000000 >> 39) << 39)
-  LA(x14, svh_page)
-  slli x14, x14, 25
-  srli x14, x14, 25
-  add x13, x13, x14
-  LI(x14, 0x1ac)
-  RVTEST_TSBI_GOTO_VSMODE
-  LI(x14, -1)
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit53_load:
-  lw x14, 8(x13)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit53_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit53_load_str)
-
-  LI(x9, (0x40000000000000 >> 39) << 39)
+  LI(x14, (0x10000000000000 >> 39) << 39)
   LA(x6, svh_page)
   slli x6, x6, 25
   srli x6, x6, 25
-  add x9, x9, x6
+  add x14, x14, x6
   LI(x6, 0x1ad)
   RVTEST_TSBI_GOTO_VSMODE
   LI(x6, -1)
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit54_load:
-  lw x6, 8(x9)
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit52_load:
+  lw x6, 8(x14)
   RVTEST_TSBI_GOTO_SMODE
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit54_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit54_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit52_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit52_load_str)
 
-  LI(x15, (0x80000000000000 >> 39) << 39)
+  LI(x8, (0x20000000000000 >> 39) << 39)
+  LA(x9, svh_page)
+  slli x9, x9, 25
+  srli x9, x9, 25
+  add x8, x8, x9
+  LI(x9, 0x1ae)
+  RVTEST_TSBI_GOTO_VSMODE
+  LI(x9, -1)
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit53_load:
+  lw x9, 8(x8)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit53_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit53_load_str)
+
+  LI(x15, (0x40000000000000 >> 39) << 39)
   LA(x14, svh_page)
   slli x14, x14, 25
   srli x14, x14, 25
   add x15, x15, x14
-  LI(x14, 0x1ae)
+  LI(x14, 0x1af)
   RVTEST_TSBI_GOTO_VSMODE
   LI(x14, -1)
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit55_load:
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit54_load:
   lw x14, 8(x15)
   RVTEST_TSBI_GOTO_SMODE
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit55_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit55_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit54_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit54_load_str)
+
+  LI(x15, (0x80000000000000 >> 39) << 39)
+  LA(x13, svh_page)
+  slli x13, x13, 25
+  srli x13, x13, 25
+  add x15, x15, x13
+  LI(x13, 0x1b0)
+  RVTEST_TSBI_GOTO_VSMODE
+  LI(x13, -1)
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit55_load:
+  lw x13, 8(x15)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit55_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit55_load_str)
 
   LI(x13, (0x100000000000000 >> 39) << 39)
   LA(x9, svh_page)
   slli x9, x9, 25
   srli x9, x9, 25
   add x13, x13, x9
-  LI(x9, 0x1af)
+  LI(x9, 0x1b1)
   RVTEST_TSBI_GOTO_VSMODE
   LI(x9, -1)
 Sv_H_gstage_cg_cp_hgatp_gpa_width_bit56_load:
@@ -444,117 +574,117 @@ Sv_H_gstage_cg_cp_hgatp_gpa_width_bit56_load:
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit56_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit56_load_str)
 
-  LI(x14, (0x200000000000000 >> 39) << 39)
-  LA(x6, svh_page)
-  slli x6, x6, 25
-  srli x6, x6, 25
-  add x14, x14, x6
-  LI(x6, 0x1b0)
-  RVTEST_TSBI_GOTO_VSMODE
-  LI(x6, -1)
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit57_load:
-  lw x6, 8(x14)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit57_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit57_load_str)
-
-  LI(x8, (0x400000000000000 >> 39) << 39)
-  LA(x9, svh_page)
-  slli x9, x9, 25
-  srli x9, x9, 25
-  add x8, x8, x9
-  LI(x9, 0x1b1)
-  RVTEST_TSBI_GOTO_VSMODE
-  LI(x9, -1)
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit58_load:
-  lw x9, 8(x8)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit58_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit58_load_str)
-
-  LI(x15, (0x800000000000000 >> 39) << 39)
-  LA(x14, svh_page)
-  slli x14, x14, 25
-  srli x14, x14, 25
-  add x15, x15, x14
-  LI(x14, 0x1b2)
-  RVTEST_TSBI_GOTO_VSMODE
-  LI(x14, -1)
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit59_load:
-  lw x14, 8(x15)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit59_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit59_load_str)
-
-  LI(x15, (0x1000000000000000 >> 39) << 39)
-  LA(x13, svh_page)
-  slli x13, x13, 25
-  srli x13, x13, 25
-  add x15, x15, x13
-  LI(x13, 0x1b3)
-  RVTEST_TSBI_GOTO_VSMODE
-  LI(x13, -1)
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit60_load:
-  lw x13, 8(x15)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit60_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit60_load_str)
-
-  LI(x13, (0x2000000000000000 >> 39) << 39)
-  LA(x9, svh_page)
-  slli x9, x9, 25
-  srli x9, x9, 25
-  add x13, x13, x9
-  LI(x9, 0x1b4)
-  RVTEST_TSBI_GOTO_VSMODE
-  LI(x9, -1)
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit61_load:
-  lw x9, 8(x13)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit61_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit61_load_str)
-
-  LI(x13, (0x4000000000000000 >> 39) << 39)
+  LI(x13, (0x200000000000000 >> 39) << 39)
   LA(x14, svh_page)
   slli x14, x14, 25
   srli x14, x14, 25
   add x13, x13, x14
-  LI(x14, 0x1b5)
+  LI(x14, 0x1b2)
   RVTEST_TSBI_GOTO_VSMODE
   LI(x14, -1)
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit62_load:
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit57_load:
   lw x14, 8(x13)
   RVTEST_TSBI_GOTO_SMODE
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit62_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit62_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit57_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit57_load_str)
 
-  LI(x14, (0x8000000000000000 >> 39) << 39)
+  LI(x14, (0x400000000000000 >> 39) << 39)
   LA(x6, svh_page)
   slli x6, x6, 25
   srli x6, x6, 25
   add x14, x14, x6
-  LI(x6, 0x1b6)
+  LI(x6, 0x1b3)
   RVTEST_TSBI_GOTO_VSMODE
   LI(x6, -1)
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit63_load:
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit58_load:
   lw x6, 8(x14)
   RVTEST_TSBI_GOTO_SMODE
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit63_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit63_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit58_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit58_load_str)
+
+  LI(x14, (0x800000000000000 >> 39) << 39)
+  LA(x9, svh_page)
+  slli x9, x9, 25
+  srli x9, x9, 25
+  add x14, x14, x9
+  LI(x9, 0x1b4)
+  RVTEST_TSBI_GOTO_VSMODE
+  LI(x9, -1)
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit59_load:
+  lw x9, 8(x14)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit59_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit59_load_str)
+
+  LI(x6, (0x1000000000000000 >> 39) << 39)
+  LA(x13, svh_page)
+  slli x13, x13, 25
+  srli x13, x13, 25
+  add x6, x6, x13
+  LI(x13, 0x1b5)
+  RVTEST_TSBI_GOTO_VSMODE
+  LI(x13, -1)
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit60_load:
+  lw x13, 8(x6)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit60_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit60_load_str)
+
+  LI(x9, (0x2000000000000000 >> 39) << 39)
+  LA(x14, svh_page)
+  slli x14, x14, 25
+  srli x14, x14, 25
+  add x9, x9, x14
+  LI(x14, 0x1b6)
+  RVTEST_TSBI_GOTO_VSMODE
+  LI(x14, -1)
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit61_load:
+  lw x14, 8(x9)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit61_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit61_load_str)
+
+  LI(x9, (0x4000000000000000 >> 39) << 39)
+  LA(x13, svh_page)
+  slli x13, x13, 25
+  srli x13, x13, 25
+  add x9, x9, x13
+  LI(x13, 0x1b7)
+  RVTEST_TSBI_GOTO_VSMODE
+  LI(x13, -1)
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit62_load:
+  lw x13, 8(x9)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit62_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit62_load_str)
+
+  LI(x15, (0x8000000000000000 >> 39) << 39)
+  LA(x14, svh_page)
+  slli x14, x14, 25
+  srli x14, x14, 25
+  add x15, x15, x14
+  LI(x14, 0x1b8)
+  RVTEST_TSBI_GOTO_VSMODE
+  LI(x14, -1)
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit63_load:
+  lw x14, 8(x15)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit63_load, Sv_H_gstage_cg_cp_hgatp_gpa_width_bit63_load_str)
 
   csrw vsatp, zero
   csrw hgatp, zero
   hfence.gvma
   hfence.vvma
-  LA(x9, rvtest_code_begin)
-  LA(x6, Vtramptbl_sv)
-  SREG x9, code_bgn_off(x6)
-  LI(x14, SSTATUS_SUM | SSTATUS_MXR)
-  csrc sstatus, x14
-  LI(x14, SSTATUS_SUM | SSTATUS_MXR)
-  csrc vsstatus, x14
-  LI(x14, HENVCFG_ADUE | HENVCFG_PBMTE)
-  csrc henvcfg, x14
+  LA(x6, rvtest_code_begin)
+  LA(x9, Vtramptbl_sv)
+  SREG x6, code_bgn_off(x9)
+  LI(x8, SSTATUS_SUM | SSTATUS_MXR)
+  csrc sstatus, x8
+  LI(x8, SSTATUS_SUM | SSTATUS_MXR)
+  csrc vsstatus, x8
+  LI(x8, HENVCFG_ADUE | HENVCFG_PBMTE)
+  csrc henvcfg, x8
   RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFG, MENVCFG_ADUE | MENVCFG_PBMTE)
   csrw hedeleg, zero
 
@@ -609,33 +739,50 @@ rvtest_vlvl1_pg_tbl:
   .skip 4096
   .endif
 #endif
+  .ifndef rvtest_hlvl0_pg_tbl
+  .p2align 12
+rvtest_hlvl0_pg_tbl:
+  .skip 4096
+  .endif
+  .ifndef rvtest_hlvl1_pg_tbl
+  .p2align 12
+rvtest_hlvl1_pg_tbl:
+  .skip 4096
+  .endif
+  .ifndef rvtest_hlvl2_pg_tbl
+  .p2align 12
+rvtest_hlvl2_pg_tbl:
+  .skip 4096
+  .endif
 
 // Testcase strings
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit39_load_str: .string "\"test: 159; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit39_load\""
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit40_load_str: .string "\"test: 160; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit40_load\""
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit41_load_str: .string "\"test: 161; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit41_load\""
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit42_load_str: .string "\"test: 162; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit42_load\""
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit43_load_str: .string "\"test: 163; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit43_load\""
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit44_load_str: .string "\"test: 164; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit44_load\""
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit45_load_str: .string "\"test: 165; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit45_load\""
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit46_load_str: .string "\"test: 166; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit46_load\""
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit47_load_str: .string "\"test: 167; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit47_load\""
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit48_load_str: .string "\"test: 168; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit48_load\""
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit49_load_str: .string "\"test: 169; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit49_load\""
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit50_load_str: .string "\"test: 170; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit50_load\""
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit51_load_str: .string "\"test: 171; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit51_load\""
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit52_load_str: .string "\"test: 172; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit52_load\""
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit53_load_str: .string "\"test: 173; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit53_load\""
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit54_load_str: .string "\"test: 174; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit54_load\""
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit55_load_str: .string "\"test: 175; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit55_load\""
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit56_load_str: .string "\"test: 176; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit56_load\""
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit57_load_str: .string "\"test: 177; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit57_load\""
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit58_load_str: .string "\"test: 178; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit58_load\""
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit59_load_str: .string "\"test: 179; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit59_load\""
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit60_load_str: .string "\"test: 180; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit60_load\""
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit61_load_str: .string "\"test: 181; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit61_load\""
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit62_load_str: .string "\"test: 182; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit62_load\""
-Sv_H_gstage_cg_cp_hgatp_gpa_width_bit63_load_str: .string "\"test: 183; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit63_load\""
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit37_load_str: .string "\"test: 159; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit37_load\""
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit38_load_str: .string "\"test: 160; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit38_load\""
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit39_load_str: .string "\"test: 161; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit39_load\""
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit40_load_str: .string "\"test: 162; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit40_load\""
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit41_load_str: .string "\"test: 163; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit41_load\""
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit42_load_str: .string "\"test: 164; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit42_load\""
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit43_load_str: .string "\"test: 165; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit43_load\""
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit44_load_str: .string "\"test: 166; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit44_load\""
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit45_load_str: .string "\"test: 167; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit45_load\""
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit46_load_str: .string "\"test: 168; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit46_load\""
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit47_load_str: .string "\"test: 169; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit47_load\""
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit48_load_str: .string "\"test: 170; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit48_load\""
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit49_load_str: .string "\"test: 171; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit49_load\""
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit50_load_str: .string "\"test: 172; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit50_load\""
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit51_load_str: .string "\"test: 173; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit51_load\""
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit52_load_str: .string "\"test: 174; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit52_load\""
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit53_load_str: .string "\"test: 175; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit53_load\""
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit54_load_str: .string "\"test: 176; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit54_load\""
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit55_load_str: .string "\"test: 177; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit55_load\""
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit56_load_str: .string "\"test: 178; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit56_load\""
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit57_load_str: .string "\"test: 179; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit57_load\""
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit58_load_str: .string "\"test: 180; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit58_load\""
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit59_load_str: .string "\"test: 181; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit59_load\""
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit60_load_str: .string "\"test: 182; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit60_load\""
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit61_load_str: .string "\"test: 183; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit61_load\""
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit62_load_str: .string "\"test: 184; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit62_load\""
+Sv_H_gstage_cg_cp_hgatp_gpa_width_bit63_load_str: .string "\"test: 185; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit63_load\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

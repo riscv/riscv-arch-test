@@ -224,7 +224,7 @@ Sv_Zicbo_cg_cp_Dbit_unset_zicbom_s_test6_inval:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_s_test6_inval, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_s_test6_inval_str)
 
-  // Test case 7: RX permissions with sstatus.SUM set | Test in S-Mode | expected = Store page fault
+  // Test case 7: RX permissions with sstatus.SUM set | Test in S-Mode | expected = No fault
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_R | PTE_V), va_data, LEVEL4)
   sfence.vma
   LI(x9, MSTATUS_SUM)
@@ -500,7 +500,7 @@ Sv_Zicbo_cg_cp_Dbit_unset_zicbom_s_test16_inval:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_s_test16_inval, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_s_test16_inval_str)
 
-  // Test case 17: RX permissions with sstatus.SUM set | Test in S-Mode | expected = Store page fault
+  // Test case 17: RX permissions with sstatus.SUM set | Test in S-Mode | expected = No fault
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_R | PTE_V), va_data, LEVEL3)
   sfence.vma
@@ -902,7 +902,7 @@ Sv_Zicbo_cg_cp_Dbit_unset_zicbom_s_test30_inval:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_s_test30_inval, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_s_test30_inval_str)
 
-  // Test case 31: RX permissions with sstatus.SUM set | Test in S-Mode | expected = Store page fault
+  // Test case 31: RX permissions with sstatus.SUM set | Test in S-Mode | expected = No fault
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_R | PTE_V), va_data, LEVEL2)
@@ -1318,7 +1318,7 @@ Sv_Zicbo_cg_cp_Dbit_unset_zicbom_s_test44_inval:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_s_test44_inval, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_s_test44_inval_str)
 
-  // Test case 45: RX permissions with sstatus.SUM set | Test in S-Mode | expected = Store page fault
+  // Test case 45: RX permissions with sstatus.SUM set | Test in S-Mode | expected = No fault
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
   PTE_SETUP_SV57(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
@@ -1748,7 +1748,7 @@ Sv_Zicbo_cg_cp_Dbit_unset_zicbom_s_test58_inval:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_s_test58_inval, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_s_test58_inval_str)
 
-  // Test case 59: RX permissions with sstatus.SUM set | Test in S-Mode | expected = Store page fault
+  // Test case 59: RX permissions with sstatus.SUM set | Test in S-Mode | expected = No fault
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
   PTE_SETUP_SV57(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)

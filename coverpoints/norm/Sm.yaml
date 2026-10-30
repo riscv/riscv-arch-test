@@ -2021,14 +2021,14 @@ normative_rule_definitions:
   - names: [hfence-gvma_vmid]
     coverpoint:
       [
-        "Sv_H_fence_cg/cp_hfence_gvma (rs2 with every VMIDMAX bit set; ignoring bits above VMIDMAX is only a should)",
+        "Sv_H_fence_cg/cp_hfence_gvma_vmid (rs2 with every VMIDMAX bit set; ignoring bits above VMIDMAX is only a should)",
       ]
 
   # hfence.vvma ignores rs2 bits above ASIDMAX and unimplemented ASID bits
   - names: [hfence-vvma_asid]
     coverpoint:
       [
-        "Sv_H_fence_cg/cp_hfence_vvma (rs2 with every ASIDMAX bit set; ignoring bits above ASIDMAX is only a should)",
+        "Sv_H_fence_cg/cp_hfence_vvma_asid (rs2 with every ASIDMAX bit set; ignoring bits above ASIDMAX is only a should)",
       ]
 
   # hfence.vvma need not order implicit reads under a different hgatp.VMID; a nonzero rs1 selects one guest

@@ -44,11 +44,11 @@ RVTEST_BEGIN
 # Store a nonzero value so the test can check cbo.zero
   LI(x6, 0xc0b0000)
   sw x6, 0(x15)
-Sv_HZicbo_envcfg_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze0_henvcfg_cbze0:
+Sv_HZicbo_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze0_henvcfg_cbze0:
   cbo.zero    0(x15)
   lw x6, 0(x15)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_HZicbo_envcfg_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze0_henvcfg_cbze0, Sv_HZicbo_envcfg_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze0_henvcfg_cbze0_str)
+  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_HZicbo_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze0_henvcfg_cbze0, Sv_HZicbo_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze0_henvcfg_cbze0_str)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x13
   mv a1, x13
@@ -60,11 +60,11 @@ Sv_HZicbo_envcfg_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze0_henvcfg_cbze0:
 # Store a nonzero value so the test can check cbo.zero
   LI(x6, 0xc0b0000)
   sw x6, 0(x15)
-Sv_HZicbo_envcfg_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze0_henvcfg_cbze1:
+Sv_HZicbo_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze0_henvcfg_cbze1:
   cbo.zero    0(x15)
   lw x6, 0(x15)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_HZicbo_envcfg_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze0_henvcfg_cbze1, Sv_HZicbo_envcfg_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze0_henvcfg_cbze1_str)
+  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_HZicbo_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze0_henvcfg_cbze1, Sv_HZicbo_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze0_henvcfg_cbze1_str)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x13
   mv a1, x13
@@ -78,11 +78,11 @@ Sv_HZicbo_envcfg_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze0_henvcfg_cbze1:
 # Store a nonzero value so the test can check cbo.zero
   LI(x6, 0xc0b0000)
   sw x6, 0(x15)
-Sv_HZicbo_envcfg_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze1_henvcfg_cbze0:
+Sv_HZicbo_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze1_henvcfg_cbze0:
   cbo.zero    0(x15)
   lw x6, 0(x15)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_HZicbo_envcfg_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze1_henvcfg_cbze0, Sv_HZicbo_envcfg_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze1_henvcfg_cbze0_str)
+  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_HZicbo_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze1_henvcfg_cbze0, Sv_HZicbo_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze1_henvcfg_cbze0_str)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x13
   mv a1, x13
@@ -98,11 +98,11 @@ Sv_HZicbo_envcfg_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze1_henvcfg_cbze0:
 # Store a nonzero value so the test can check cbo.zero
   LI(x6, 0xc0b0000)
   sw x6, 0(x15)
-Sv_HZicbo_envcfg_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze1_henvcfg_cbze1:
+Sv_HZicbo_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze1_henvcfg_cbze1:
   cbo.zero    0(x15)
   lw x6, 0(x15)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_HZicbo_envcfg_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze1_henvcfg_cbze1, Sv_HZicbo_envcfg_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze1_henvcfg_cbze1_str)
+  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_HZicbo_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze1_henvcfg_cbze1, Sv_HZicbo_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze1_henvcfg_cbze1_str)
   RVTEST_TSBI_GOTO_SMODE
 #endif // ZICBOZ_SUPPORTED
 
@@ -123,11 +123,11 @@ Sv_HZicbo_envcfg_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze1_henvcfg_cbze1:
 # Store a nonzero value so the test can check cbo.zero
   LI(x8, 0xc0b0000)
   sw x8, 0(x14)
-Sv_HZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze0_senvcfg_cbze0:
+Sv_HZicbo_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze0_senvcfg_cbze0:
   cbo.zero    0(x14)
   lw x8, 0(x14)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze0_senvcfg_cbze0, Sv_HZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze0_senvcfg_cbze0_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze0_senvcfg_cbze0, Sv_HZicbo_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze0_senvcfg_cbze0_str)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x6
   mv a1, x6
@@ -140,11 +140,11 @@ Sv_HZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze0_senvcfg_cbze
 # Store a nonzero value so the test can check cbo.zero
   LI(x8, 0xc0b0000)
   sw x8, 0(x14)
-Sv_HZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze0_senvcfg_cbze1:
+Sv_HZicbo_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze0_senvcfg_cbze1:
   cbo.zero    0(x14)
   lw x8, 0(x14)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze0_senvcfg_cbze1, Sv_HZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze0_senvcfg_cbze1_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze0_senvcfg_cbze1, Sv_HZicbo_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze0_senvcfg_cbze1_str)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x6
   mv a1, x6
@@ -157,11 +157,11 @@ Sv_HZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze0_senvcfg_cbze
 # Store a nonzero value so the test can check cbo.zero
   LI(x8, 0xc0b0000)
   sw x8, 0(x14)
-Sv_HZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze1_senvcfg_cbze0:
+Sv_HZicbo_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze1_senvcfg_cbze0:
   cbo.zero    0(x14)
   lw x8, 0(x14)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze1_senvcfg_cbze0, Sv_HZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze1_senvcfg_cbze0_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze1_senvcfg_cbze0, Sv_HZicbo_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze1_senvcfg_cbze0_str)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x6
   mv a1, x6
@@ -176,11 +176,11 @@ Sv_HZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze1_senvcfg_cbze
 # Store a nonzero value so the test can check cbo.zero
   LI(x8, 0xc0b0000)
   sw x8, 0(x14)
-Sv_HZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze1_senvcfg_cbze1:
+Sv_HZicbo_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze1_senvcfg_cbze1:
   cbo.zero    0(x14)
   lw x8, 0(x14)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze1_senvcfg_cbze1, Sv_HZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze1_senvcfg_cbze1_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze1_senvcfg_cbze1, Sv_HZicbo_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze1_senvcfg_cbze1_str)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x6
   mv a1, x6
@@ -195,11 +195,11 @@ Sv_HZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze1_senvcfg_cbze
 # Store a nonzero value so the test can check cbo.zero
   LI(x8, 0xc0b0000)
   sw x8, 0(x14)
-Sv_HZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze0_senvcfg_cbze0:
+Sv_HZicbo_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze0_senvcfg_cbze0:
   cbo.zero    0(x14)
   lw x8, 0(x14)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze0_senvcfg_cbze0, Sv_HZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze0_senvcfg_cbze0_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze0_senvcfg_cbze0, Sv_HZicbo_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze0_senvcfg_cbze0_str)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x6
   mv a1, x6
@@ -216,11 +216,11 @@ Sv_HZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze0_senvcfg_cbze
 # Store a nonzero value so the test can check cbo.zero
   LI(x8, 0xc0b0000)
   sw x8, 0(x14)
-Sv_HZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze0_senvcfg_cbze1:
+Sv_HZicbo_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze0_senvcfg_cbze1:
   cbo.zero    0(x14)
   lw x8, 0(x14)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze0_senvcfg_cbze1, Sv_HZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze0_senvcfg_cbze1_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze0_senvcfg_cbze1, Sv_HZicbo_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze0_senvcfg_cbze1_str)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x6
   mv a1, x6
@@ -237,11 +237,11 @@ Sv_HZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze0_senvcfg_cbze
 # Store a nonzero value so the test can check cbo.zero
   LI(x8, 0xc0b0000)
   sw x8, 0(x14)
-Sv_HZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze1_senvcfg_cbze0:
+Sv_HZicbo_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze1_senvcfg_cbze0:
   cbo.zero    0(x14)
   lw x8, 0(x14)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze1_senvcfg_cbze0, Sv_HZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze1_senvcfg_cbze0_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze1_senvcfg_cbze0, Sv_HZicbo_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze1_senvcfg_cbze0_str)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x6
   mv a1, x6
@@ -260,11 +260,11 @@ Sv_HZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze1_senvcfg_cbze
 # Store a nonzero value so the test can check cbo.zero
   LI(x8, 0xc0b0000)
   sw x8, 0(x14)
-Sv_HZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze1_senvcfg_cbze1:
+Sv_HZicbo_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze1_senvcfg_cbze1:
   cbo.zero    0(x14)
   lw x8, 0(x14)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze1_senvcfg_cbze1, Sv_HZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze1_senvcfg_cbze1_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze1_senvcfg_cbze1, Sv_HZicbo_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze1_senvcfg_cbze1_str)
   RVTEST_TSBI_GOTO_SMODE
 #endif // ZICBOZ_SUPPORTED
 
@@ -278,18 +278,18 @@ RVTEST_DATA_BEGIN
 
 
 // Testcase strings
-Sv_HZicbo_envcfg_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze0_henvcfg_cbze0_str: .string "\"test: 1; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbze_vs; bin: cbo.zero_menvcfg.cbze0_henvcfg.cbze0\""
-Sv_HZicbo_envcfg_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze0_henvcfg_cbze1_str: .string "\"test: 2; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbze_vs; bin: cbo.zero_menvcfg.cbze0_henvcfg.cbze1\""
-Sv_HZicbo_envcfg_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze1_henvcfg_cbze0_str: .string "\"test: 3; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbze_vs; bin: cbo.zero_menvcfg.cbze1_henvcfg.cbze0\""
-Sv_HZicbo_envcfg_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze1_henvcfg_cbze1_str: .string "\"test: 4; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbze_vs; bin: cbo.zero_menvcfg.cbze1_henvcfg.cbze1\""
-Sv_HZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze0_senvcfg_cbze0_str: .string "\"test: 5; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbze_vu; bin: cbo.zero_menvcfg.cbze0_henvcfg.cbze0_senvcfg.cbze0\""
-Sv_HZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze0_senvcfg_cbze1_str: .string "\"test: 6; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbze_vu; bin: cbo.zero_menvcfg.cbze0_henvcfg.cbze0_senvcfg.cbze1\""
-Sv_HZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze1_senvcfg_cbze0_str: .string "\"test: 7; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbze_vu; bin: cbo.zero_menvcfg.cbze0_henvcfg.cbze1_senvcfg.cbze0\""
-Sv_HZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze1_senvcfg_cbze1_str: .string "\"test: 8; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbze_vu; bin: cbo.zero_menvcfg.cbze0_henvcfg.cbze1_senvcfg.cbze1\""
-Sv_HZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze0_senvcfg_cbze0_str: .string "\"test: 9; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbze_vu; bin: cbo.zero_menvcfg.cbze1_henvcfg.cbze0_senvcfg.cbze0\""
-Sv_HZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze0_senvcfg_cbze1_str: .string "\"test: 10; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbze_vu; bin: cbo.zero_menvcfg.cbze1_henvcfg.cbze0_senvcfg.cbze1\""
-Sv_HZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze1_senvcfg_cbze0_str: .string "\"test: 11; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbze_vu; bin: cbo.zero_menvcfg.cbze1_henvcfg.cbze1_senvcfg.cbze0\""
-Sv_HZicbo_envcfg_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze1_senvcfg_cbze1_str: .string "\"test: 12; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbze_vu; bin: cbo.zero_menvcfg.cbze1_henvcfg.cbze1_senvcfg.cbze1\""
+Sv_HZicbo_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze0_henvcfg_cbze0_str: .string "\"test: 1; cg: Sv_HZicbo_cg; cp: cp_cbze_vs; bin: cbo.zero_menvcfg.cbze0_henvcfg.cbze0\""
+Sv_HZicbo_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze0_henvcfg_cbze1_str: .string "\"test: 2; cg: Sv_HZicbo_cg; cp: cp_cbze_vs; bin: cbo.zero_menvcfg.cbze0_henvcfg.cbze1\""
+Sv_HZicbo_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze1_henvcfg_cbze0_str: .string "\"test: 3; cg: Sv_HZicbo_cg; cp: cp_cbze_vs; bin: cbo.zero_menvcfg.cbze1_henvcfg.cbze0\""
+Sv_HZicbo_cg_cp_cbze_vs_cbo_zero_menvcfg_cbze1_henvcfg_cbze1_str: .string "\"test: 4; cg: Sv_HZicbo_cg; cp: cp_cbze_vs; bin: cbo.zero_menvcfg.cbze1_henvcfg.cbze1\""
+Sv_HZicbo_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze0_senvcfg_cbze0_str: .string "\"test: 5; cg: Sv_HZicbo_cg; cp: cp_cbze_vu; bin: cbo.zero_menvcfg.cbze0_henvcfg.cbze0_senvcfg.cbze0\""
+Sv_HZicbo_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze0_senvcfg_cbze1_str: .string "\"test: 6; cg: Sv_HZicbo_cg; cp: cp_cbze_vu; bin: cbo.zero_menvcfg.cbze0_henvcfg.cbze0_senvcfg.cbze1\""
+Sv_HZicbo_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze1_senvcfg_cbze0_str: .string "\"test: 7; cg: Sv_HZicbo_cg; cp: cp_cbze_vu; bin: cbo.zero_menvcfg.cbze0_henvcfg.cbze1_senvcfg.cbze0\""
+Sv_HZicbo_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze0_henvcfg_cbze1_senvcfg_cbze1_str: .string "\"test: 8; cg: Sv_HZicbo_cg; cp: cp_cbze_vu; bin: cbo.zero_menvcfg.cbze0_henvcfg.cbze1_senvcfg.cbze1\""
+Sv_HZicbo_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze0_senvcfg_cbze0_str: .string "\"test: 9; cg: Sv_HZicbo_cg; cp: cp_cbze_vu; bin: cbo.zero_menvcfg.cbze1_henvcfg.cbze0_senvcfg.cbze0\""
+Sv_HZicbo_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze0_senvcfg_cbze1_str: .string "\"test: 10; cg: Sv_HZicbo_cg; cp: cp_cbze_vu; bin: cbo.zero_menvcfg.cbze1_henvcfg.cbze0_senvcfg.cbze1\""
+Sv_HZicbo_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze1_senvcfg_cbze0_str: .string "\"test: 11; cg: Sv_HZicbo_cg; cp: cp_cbze_vu; bin: cbo.zero_menvcfg.cbze1_henvcfg.cbze1_senvcfg.cbze0\""
+Sv_HZicbo_cg_cp_cbze_vu_cbo_zero_menvcfg_cbze1_henvcfg_cbze1_senvcfg_cbze1_str: .string "\"test: 12; cg: Sv_HZicbo_cg; cp: cp_cbze_vu; bin: cbo.zero_menvcfg.cbze1_henvcfg.cbze1_senvcfg.cbze1\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

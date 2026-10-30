@@ -25,7 +25,7 @@ from testgen.asm.tsbi import tsbi_call
 from testgen.data.random import random_int
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.exceptions.ExceptionsZicboCommon import CBO_FIELDS, cbo_test
+from testgen.priv.extensions.exceptions.ExceptionsZicboCommon import CBO_FIELDS, CBO_ZERO_FILL, cbo_test
 from testgen.priv.extensions.sv.access import virtual_address
 from testgen.priv.extensions.sv.generate import guest_translation_setup, guest_translation_teardown
 from testgen.priv.extensions.sv.page_tables import (
@@ -43,11 +43,10 @@ from testgen.priv.extensions.sv.page_tables import (
 from testgen.priv.extensions.sv.SvZicbo import cbo_leaves
 from testgen.priv.registry import add_priv_test_generator
 
-_ENVCFG_CG = "Sv_HZicbo_envcfg_cg"
 OPS = {"zicbom": ("cbo.clean", "cbo.flush", "cbo.inval"), "zicboz": ("cbo.zero",)}
 _FIELDS = {"zicbom": ("cbie", "cbcfe"), "zicboz": ("cbze",)}
 DATA = "svhzicbo_data"
-_DATA_REGION = [".p2align 12", f"{DATA}:", ".fill 1024, 4, 0x0C0B0000"]
+_DATA_REGION = [".p2align 12", f"{DATA}:", f".fill 1024, 4, {CBO_ZERO_FILL:#x}"]
 
 
 class Chunk(NamedTuple):
@@ -154,7 +153,7 @@ def case(
         ),
     ]
     if check:
-        lines.extend([f"LA(x{addr}, {DATA})", f"LI(x{val}, 0x0C0B0000)", f"sw x{val}, 0(x{addr})"])
+        lines.extend([f"LA(x{addr}, {DATA})", f"LI(x{val}, {CBO_ZERO_FILL:#x})", f"sw x{val}, 0(x{addr})"])
     lines.extend([f"RVTEST_TSBI_GOTO_{mode.upper()}MODE", *guest[0]])
     for op in OPS[c.family]:
         lines.extend(
@@ -175,7 +174,10 @@ def _leaf_cases(
 ) -> list[str]:
     """The cases that both stages share: each permission of the leaf at ``level`` (``flags`` when valid), a pointer in
     place of a kilopage leaf, reserved bits in the non-leaf PTE above, and a misaligned superpage.  ``prefix``
-    precedes each case's page-table writes."""
+    precedes each case's page-table writes.
+
+    The reserved R/W/X leaves need no S1P12P0_OR_LATER_SUPPORTED guard: H requires privileged architecture 1.12 or
+    later."""
     leaves = [
         ("valid", "no fault", flags),
         *(
@@ -378,18 +380,18 @@ def make_chunk(
     g: SvMode,
     vs: SvMode,
     *,
+    group: str,
     covergroup: str,
     home: str,
     section: tuple[str, str, str, Callable[[TestData, Chunk, str], list[str]]],
     setup: tuple[str, ...] = (),
 ) -> TestChunk:
-    """One file of a section's cases from VS-mode and VU-mode, after ``setup``.
+    """One file of ``group``, with a section's cases from VS-mode and VU-mode, after ``setup``.
 
     section is (file name, coverpoints, description, cases for one mode).  The CBOs are enabled in henvcfg and
-    senvcfg; boot enables them in menvcfg.
+    senvcfg, and cleared there at the end; boot enables them in menvcfg.
     """
     name, title, description, cases = section
-    group = covergroup.split("_", 1)[1].removesuffix("_cg")
     tc = test_data.begin_test_chunk(f"{group}_{g.name}_{family}_{name}")
     tc.section_header = comment_banner(title, f"{description}, for {', '.join(OPS[family])} from VS and VU")
     chunk = Chunk(family, g, vs, covergroup, home, test_data.int_regs.get_register())
@@ -408,6 +410,14 @@ def make_chunk(
                 *guest_translation_teardown(test_data),
             ]
         )
+    body.extend(
+        [
+            f"LI(x{chunk.gva}, HENVCFG_CBIE | HENVCFG_CBCFE | HENVCFG_CBZE)",
+            f"csrc henvcfg, x{chunk.gva}",
+            f"LI(x{chunk.gva}, SENVCFG_CBIE | SENVCFG_CBCFE | SENVCFG_CBZE)",
+            f"csrc senvcfg, x{chunk.gva}",
+        ]
+    )
     test_data.int_regs.return_register(chunk.gva)
     tc.code.extend(body)
     tc.raw_data.extend([*_DATA_REGION, *guest_table_data()])
@@ -416,7 +426,7 @@ def make_chunk(
 
 def _make_svhzicbo(test_data: TestData, g: SvMode, vs: SvMode, family: str) -> list[TestChunk]:
     return [
-        make_chunk(test_data, family, g, vs, covergroup="Sv_HZicbo_cg", home="S", section=section)
+        make_chunk(test_data, family, g, vs, group="HZicbo", covergroup="Sv_HZicbo_cg", home="S", section=section)
         for section in _SECTIONS
     ]
 
@@ -462,14 +472,14 @@ def _henvcfg_cases(test_data: TestData, field: str, mode: str) -> list[str]:
                     [
                         f"LI(x{val_reg}, {random_int(32, signed=False):#x})",
                         f"sw x{val_reg}, 0(x{addr_reg})",
-                        test_data.add_testcase(name, coverpoint, _ENVCFG_CG),
+                        test_data.add_testcase(name, coverpoint, "Sv_HZicbo_cg"),
                         f"{instr}    0(x{addr_reg})",
                         f"lw x{val_reg}, 0(x{addr_reg})",
                         write_sigupd(val_reg, test_data),
                     ]
                 )
             else:
-                lines.extend(cbo_test(instr, name, coverpoint, _ENVCFG_CG, addr_reg, val_reg, test_data))
+                lines.extend(cbo_test(instr, name, coverpoint, "Sv_HZicbo_cg", addr_reg, val_reg, test_data))
         lines.append("RVTEST_TSBI_GOTO_SMODE")
     lines.append(f"#endif // {cfg.guard}")
     test_data.int_regs.return_registers([addr_reg, cfg_reg, mask_reg, val_reg])

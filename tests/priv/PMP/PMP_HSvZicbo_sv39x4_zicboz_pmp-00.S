@@ -13,7 +13,7 @@
 # params:
 #   NUM_PMP_ENTRIES: '>1'
 #   PMP_NAPOT_SUPPORTED: true
-#   PMP_GRANULARITY: '<=10'
+#   PMP_GRANULARITY: '<=12'
 #   SV39X4_TRANSLATION: true
 #   SV39_VSMODE_TRANSLATION: true
 # MARCH: rv${XLEN}ih_zicboz_zicsr_zifencei
@@ -207,7 +207,7 @@ RVTEST_BEGIN
   srli x15, x15, 52
   add x9, x9, x15
   LA(x15, svhzicbo_data)
-  LI(x8, 0x0C0B0000)
+  LI(x8, 0xc0b0000)
   sw x8, 0(x15)
   RVTEST_TSBI_GOTO_VSMODE
 PMP_HSvZicbo_cg_cp_pmp_vs_sv39_l0_pmp000_cbo_zero:
@@ -270,7 +270,7 @@ PMP_HSvZicbo_cg_cp_pmp_vs_sv39_l0_pmp000_cbo_zero:
   srli x15, x15, 52
   add x9, x9, x15
   LA(x15, svhzicbo_data)
-  LI(x8, 0x0C0B0000)
+  LI(x8, 0xc0b0000)
   sw x8, 0(x15)
   RVTEST_TSBI_GOTO_VSMODE
 PMP_HSvZicbo_cg_cp_pmp_vs_sv39x4_l0_pmp000_cbo_zero:
@@ -330,7 +330,7 @@ PMP_HSvZicbo_cg_cp_pmp_vs_sv39x4_l0_pmp000_cbo_zero:
   srli x14, x14, 52
   add x9, x9, x14
   LA(x14, svhzicbo_data)
-  LI(x8, 0x0C0B0000)
+  LI(x8, 0xc0b0000)
   sw x8, 0(x14)
   RVTEST_TSBI_GOTO_VSMODE
 PMP_HSvZicbo_cg_cp_pmp_vs_sv39_l0_pmp001_cbo_zero:
@@ -393,7 +393,7 @@ PMP_HSvZicbo_cg_cp_pmp_vs_sv39_l0_pmp001_cbo_zero:
   srli x8, x8, 52
   add x9, x9, x8
   LA(x8, svhzicbo_data)
-  LI(x14, 0x0C0B0000)
+  LI(x14, 0xc0b0000)
   sw x14, 0(x8)
   RVTEST_TSBI_GOTO_VSMODE
 PMP_HSvZicbo_cg_cp_pmp_vs_sv39x4_l0_pmp001_cbo_zero:
@@ -576,7 +576,7 @@ PMP_HSvZicbo_cg_cp_pmp_vs_sv39x4_l0_pmp001_cbo_zero:
   srli x14, x14, 52
   add x9, x9, x14
   LA(x14, svhzicbo_data)
-  LI(x6, 0x0C0B0000)
+  LI(x6, 0xc0b0000)
   sw x6, 0(x14)
   RVTEST_TSBI_GOTO_VUMODE
 PMP_HSvZicbo_cg_cp_pmp_vu_sv39_l0_pmp000_cbo_zero:
@@ -639,7 +639,7 @@ PMP_HSvZicbo_cg_cp_pmp_vu_sv39_l0_pmp000_cbo_zero:
   srli x8, x8, 52
   add x9, x9, x8
   LA(x8, svhzicbo_data)
-  LI(x14, 0x0C0B0000)
+  LI(x14, 0xc0b0000)
   sw x14, 0(x8)
   RVTEST_TSBI_GOTO_VUMODE
 PMP_HSvZicbo_cg_cp_pmp_vu_sv39x4_l0_pmp000_cbo_zero:
@@ -699,7 +699,7 @@ PMP_HSvZicbo_cg_cp_pmp_vu_sv39x4_l0_pmp000_cbo_zero:
   srli x6, x6, 52
   add x9, x9, x6
   LA(x6, svhzicbo_data)
-  LI(x13, 0x0C0B0000)
+  LI(x13, 0xc0b0000)
   sw x13, 0(x6)
   RVTEST_TSBI_GOTO_VUMODE
 PMP_HSvZicbo_cg_cp_pmp_vu_sv39_l0_pmp001_cbo_zero:
@@ -762,7 +762,7 @@ PMP_HSvZicbo_cg_cp_pmp_vu_sv39_l0_pmp001_cbo_zero:
   srli x13, x13, 52
   add x9, x9, x13
   LA(x13, svhzicbo_data)
-  LI(x14, 0x0C0B0000)
+  LI(x14, 0xc0b0000)
   sw x14, 0(x13)
   RVTEST_TSBI_GOTO_VUMODE
 PMP_HSvZicbo_cg_cp_pmp_vu_sv39x4_l0_pmp001_cbo_zero:
@@ -789,6 +789,10 @@ PMP_HSvZicbo_cg_cp_pmp_vu_sv39x4_l0_pmp001_cbo_zero:
   LA(x14, rvtest_code_begin)
   LA(x13, Vtramptbl_sv)
   SREG x14, code_bgn_off(x13)
+  LI(x9, HENVCFG_CBIE | HENVCFG_CBCFE | HENVCFG_CBZE)
+  csrc henvcfg, x9
+  LI(x9, SENVCFG_CBIE | SENVCFG_CBCFE | SENVCFG_CBZE)
+  csrc senvcfg, x9
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -800,7 +804,7 @@ RVTEST_DATA_BEGIN
 
   .p2align 12
 svhzicbo_data:
-  .fill 1024, 4, 0x0C0B0000
+  .fill 1024, 4, 0xc0b0000
 #if __riscv_xlen == 32
   .ifndef rvtest_hlvl0_pg_tbl
   .p2align 12

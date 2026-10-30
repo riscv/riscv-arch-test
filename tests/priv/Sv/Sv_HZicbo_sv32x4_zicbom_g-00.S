@@ -1710,6 +1710,10 @@ Sv_HZicbo_cg_cp_g_pa_vu_sv32x4_l0_nonleaf_access_fault_cbo_inval:
   LA(x15, rvtest_code_begin)
   LA(x14, Vtramptbl_sv)
   SREG x15, code_bgn_off(x14)
+  LI(x13, HENVCFG_CBIE | HENVCFG_CBCFE | HENVCFG_CBZE)
+  csrc henvcfg, x13
+  LI(x13, SENVCFG_CBIE | SENVCFG_CBCFE | SENVCFG_CBZE)
+  csrc senvcfg, x13
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -1721,7 +1725,7 @@ RVTEST_DATA_BEGIN
 
   .p2align 12
 svhzicbo_data:
-  .fill 1024, 4, 0x0C0B0000
+  .fill 1024, 4, 0xc0b0000
 #if __riscv_xlen == 32
   .ifndef rvtest_hlvl0_pg_tbl
   .p2align 12

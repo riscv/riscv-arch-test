@@ -65,6 +65,10 @@
         `define PMP_COVER_HSVZICBO
       `elsif UDB_PMP_GRANULARITY_10
         `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_11
+        `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_12
+        `define PMP_COVER_HSVZICBO
       `endif
       `ifdef UDB_NUM_PMP_ENTRIES_0
         `undef PMP_COVER_HSVZICBO

@@ -41,7 +41,7 @@ RVTEST_BEGIN
   RVTEST_TSBI_CSR_ACCESS TSBI_CSR_CLEAR(CSR_MENVCFG)
   csrc henvcfg, x9
   RVTEST_TSBI_GOTO_VSMODE
-Sv_HZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie00_henvcfg_cbie00:
+Sv_HZicbo_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie00_henvcfg_cbie00:
   cbo.inval    0(x14)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x9
@@ -51,7 +51,7 @@ Sv_HZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie00_henvcfg_cbie00:
   LI(x8, 0x10)
   csrs henvcfg, x8
   RVTEST_TSBI_GOTO_VSMODE
-Sv_HZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie00_henvcfg_cbie01:
+Sv_HZicbo_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie00_henvcfg_cbie01:
   cbo.inval    0(x14)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x9
@@ -61,7 +61,7 @@ Sv_HZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie00_henvcfg_cbie01:
   LI(x8, 0x30)
   csrs henvcfg, x8
   RVTEST_TSBI_GOTO_VSMODE
-Sv_HZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie00_henvcfg_cbie11:
+Sv_HZicbo_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie00_henvcfg_cbie11:
   cbo.inval    0(x14)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x9
@@ -73,7 +73,7 @@ Sv_HZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie00_henvcfg_cbie11:
   RVTEST_TSBI_CSR_ACCESS TSBI_CSR_SET(CSR_MENVCFG)
   csrc henvcfg, x9
   RVTEST_TSBI_GOTO_VSMODE
-Sv_HZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie01_henvcfg_cbie00:
+Sv_HZicbo_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie01_henvcfg_cbie00:
   cbo.inval    0(x14)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x9
@@ -89,11 +89,11 @@ Sv_HZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie01_henvcfg_cbie00:
   RVTEST_TSBI_GOTO_VSMODE
   LI(x15, 0xbbc7d7f2)
   sw x15, 0(x14)
-Sv_HZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie01_henvcfg_cbie01:
+Sv_HZicbo_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie01_henvcfg_cbie01:
   cbo.inval    0(x14)
   lw x15, 0(x14)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_HZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie01_henvcfg_cbie01, Sv_HZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie01_henvcfg_cbie01_str)
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_HZicbo_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie01_henvcfg_cbie01, Sv_HZicbo_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie01_henvcfg_cbie01_str)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x9
   mv a1, x9
@@ -108,11 +108,11 @@ Sv_HZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie01_henvcfg_cbie01:
   RVTEST_TSBI_GOTO_VSMODE
   LI(x15, 0xa598b619)
   sw x15, 0(x14)
-Sv_HZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie01_henvcfg_cbie11:
+Sv_HZicbo_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie01_henvcfg_cbie11:
   cbo.inval    0(x14)
   lw x15, 0(x14)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_HZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie01_henvcfg_cbie11, Sv_HZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie01_henvcfg_cbie11_str)
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_HZicbo_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie01_henvcfg_cbie11, Sv_HZicbo_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie01_henvcfg_cbie11_str)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x9
   mv a1, x9
@@ -123,7 +123,7 @@ Sv_HZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie01_henvcfg_cbie11:
   RVTEST_TSBI_CSR_ACCESS TSBI_CSR_SET(CSR_MENVCFG)
   csrc henvcfg, x9
   RVTEST_TSBI_GOTO_VSMODE
-Sv_HZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie11_henvcfg_cbie00:
+Sv_HZicbo_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie11_henvcfg_cbie00:
   cbo.inval    0(x14)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x9
@@ -139,11 +139,11 @@ Sv_HZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie11_henvcfg_cbie00:
   RVTEST_TSBI_GOTO_VSMODE
   LI(x15, 0x7d5b649a)
   sw x15, 0(x14)
-Sv_HZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie11_henvcfg_cbie01:
+Sv_HZicbo_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie11_henvcfg_cbie01:
   cbo.inval    0(x14)
   lw x15, 0(x14)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_HZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie11_henvcfg_cbie01, Sv_HZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_str)
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_HZicbo_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie11_henvcfg_cbie01, Sv_HZicbo_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_str)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x9
   mv a1, x9
@@ -156,7 +156,7 @@ Sv_HZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie11_henvcfg_cbie01:
   LI(x8, 0x30)
   csrs henvcfg, x8
   RVTEST_TSBI_GOTO_VSMODE
-Sv_HZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie11_henvcfg_cbie11:
+Sv_HZicbo_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie11_henvcfg_cbie11:
   cbo.inval    0(x14)
   RVTEST_TSBI_GOTO_SMODE
 #endif // ZICBOM_SUPPORTED
@@ -175,7 +175,7 @@ Sv_HZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie11_henvcfg_cbie11:
   csrc henvcfg, x14
   csrc senvcfg, x14
   RVTEST_TSBI_GOTO_VUMODE
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie00_senvcfg_cbie00:
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie00_senvcfg_cbie00:
   cbo.inval    0(x9)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x14
@@ -186,7 +186,7 @@ Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie00_senvcfg_c
   LI(x13, 0x10)
   csrs senvcfg, x13
   RVTEST_TSBI_GOTO_VUMODE
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie00_senvcfg_cbie01:
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie00_senvcfg_cbie01:
   cbo.inval    0(x9)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x14
@@ -197,7 +197,7 @@ Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie00_senvcfg_c
   LI(x13, 0x30)
   csrs senvcfg, x13
   RVTEST_TSBI_GOTO_VUMODE
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie00_senvcfg_cbie11:
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie00_senvcfg_cbie11:
   cbo.inval    0(x9)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x14
@@ -208,7 +208,7 @@ Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie00_senvcfg_c
   csrs henvcfg, x13
   csrc senvcfg, x14
   RVTEST_TSBI_GOTO_VUMODE
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie01_senvcfg_cbie00:
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie01_senvcfg_cbie00:
   cbo.inval    0(x9)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x14
@@ -216,49 +216,49 @@ Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie01_senvcfg_c
   RVTEST_TSBI_CSR_ACCESS TSBI_CSR_CLEAR(CSR_MENVCFG)
   csrc henvcfg, x14
   LI(x13, 0x10)
-  csrs henvcfg, x13
-  csrc senvcfg, x14
-  LI(x13, 0x10)
-  csrs senvcfg, x13
-  RVTEST_TSBI_GOTO_VUMODE
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie01_senvcfg_cbie01:
-  cbo.inval    0(x9)
-  RVTEST_TSBI_GOTO_SMODE
-  # T-SBI call to execute instruction: csrc menvcfg, x14
-  mv a1, x14
-  RVTEST_TSBI_CSR_ACCESS TSBI_CSR_CLEAR(CSR_MENVCFG)
-  csrc henvcfg, x14
-  LI(x13, 0x10)
-  csrs henvcfg, x13
-  csrc senvcfg, x14
-  LI(x13, 0x30)
-  csrs senvcfg, x13
-  RVTEST_TSBI_GOTO_VUMODE
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie01_senvcfg_cbie11:
-  cbo.inval    0(x9)
-  RVTEST_TSBI_GOTO_SMODE
-  # T-SBI call to execute instruction: csrc menvcfg, x14
-  mv a1, x14
-  RVTEST_TSBI_CSR_ACCESS TSBI_CSR_CLEAR(CSR_MENVCFG)
-  csrc henvcfg, x14
-  LI(x13, 0x30)
-  csrs henvcfg, x13
-  csrc senvcfg, x14
-  RVTEST_TSBI_GOTO_VUMODE
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie11_senvcfg_cbie00:
-  cbo.inval    0(x9)
-  RVTEST_TSBI_GOTO_SMODE
-  # T-SBI call to execute instruction: csrc menvcfg, x14
-  mv a1, x14
-  RVTEST_TSBI_CSR_ACCESS TSBI_CSR_CLEAR(CSR_MENVCFG)
-  csrc henvcfg, x14
-  LI(x13, 0x30)
   csrs henvcfg, x13
   csrc senvcfg, x14
   LI(x13, 0x10)
   csrs senvcfg, x13
   RVTEST_TSBI_GOTO_VUMODE
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie11_senvcfg_cbie01:
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie01_senvcfg_cbie01:
+  cbo.inval    0(x9)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x14
+  mv a1, x14
+  RVTEST_TSBI_CSR_ACCESS TSBI_CSR_CLEAR(CSR_MENVCFG)
+  csrc henvcfg, x14
+  LI(x13, 0x10)
+  csrs henvcfg, x13
+  csrc senvcfg, x14
+  LI(x13, 0x30)
+  csrs senvcfg, x13
+  RVTEST_TSBI_GOTO_VUMODE
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie01_senvcfg_cbie11:
+  cbo.inval    0(x9)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x14
+  mv a1, x14
+  RVTEST_TSBI_CSR_ACCESS TSBI_CSR_CLEAR(CSR_MENVCFG)
+  csrc henvcfg, x14
+  LI(x13, 0x30)
+  csrs henvcfg, x13
+  csrc senvcfg, x14
+  RVTEST_TSBI_GOTO_VUMODE
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie11_senvcfg_cbie00:
+  cbo.inval    0(x9)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x14
+  mv a1, x14
+  RVTEST_TSBI_CSR_ACCESS TSBI_CSR_CLEAR(CSR_MENVCFG)
+  csrc henvcfg, x14
+  LI(x13, 0x30)
+  csrs henvcfg, x13
+  csrc senvcfg, x14
+  LI(x13, 0x10)
+  csrs senvcfg, x13
+  RVTEST_TSBI_GOTO_VUMODE
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie11_senvcfg_cbie01:
   cbo.inval    0(x9)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x14
@@ -271,7 +271,7 @@ Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie11_senvcfg_c
   LI(x13, 0x30)
   csrs senvcfg, x13
   RVTEST_TSBI_GOTO_VUMODE
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie11_senvcfg_cbie11:
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie11_senvcfg_cbie11:
   cbo.inval    0(x9)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x14
@@ -284,7 +284,7 @@ Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie11_senvcfg_c
   csrc henvcfg, x14
   csrc senvcfg, x14
   RVTEST_TSBI_GOTO_VUMODE
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie00_senvcfg_cbie00:
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie00_senvcfg_cbie00:
   cbo.inval    0(x9)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x14
@@ -299,7 +299,7 @@ Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie00_senvcfg_c
   LI(x13, 0x10)
   csrs senvcfg, x13
   RVTEST_TSBI_GOTO_VUMODE
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie00_senvcfg_cbie01:
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie00_senvcfg_cbie01:
   cbo.inval    0(x9)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x14
@@ -314,7 +314,7 @@ Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie00_senvcfg_c
   LI(x13, 0x30)
   csrs senvcfg, x13
   RVTEST_TSBI_GOTO_VUMODE
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie00_senvcfg_cbie11:
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie00_senvcfg_cbie11:
   cbo.inval    0(x9)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x14
@@ -329,7 +329,7 @@ Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie00_senvcfg_c
   csrs henvcfg, x13
   csrc senvcfg, x14
   RVTEST_TSBI_GOTO_VUMODE
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie01_senvcfg_cbie00:
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie01_senvcfg_cbie00:
   cbo.inval    0(x9)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x14
@@ -348,11 +348,11 @@ Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie01_senvcfg_c
   RVTEST_TSBI_GOTO_VUMODE
   LI(x8, 0x4aee6f8c)
   sw x8, 0(x9)
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie01_senvcfg_cbie01:
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie01_senvcfg_cbie01:
   cbo.inval    0(x9)
   lw x8, 0(x9)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie01_senvcfg_cbie01, Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie01_senvcfg_cbie01_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie01_senvcfg_cbie01, Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie01_senvcfg_cbie01_str)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x14
   mv a1, x14
@@ -370,11 +370,11 @@ Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie01_senvcfg_c
   RVTEST_TSBI_GOTO_VUMODE
   LI(x8, 0xbacbc402)
   sw x8, 0(x9)
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie01_senvcfg_cbie11:
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie01_senvcfg_cbie11:
   cbo.inval    0(x9)
   lw x8, 0(x9)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie01_senvcfg_cbie11, Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie01_senvcfg_cbie11_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie01_senvcfg_cbie11, Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie01_senvcfg_cbie11_str)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x14
   mv a1, x14
@@ -388,7 +388,7 @@ Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie01_senvcfg_c
   csrs henvcfg, x13
   csrc senvcfg, x14
   RVTEST_TSBI_GOTO_VUMODE
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie11_senvcfg_cbie00:
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie11_senvcfg_cbie00:
   cbo.inval    0(x9)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x14
@@ -407,11 +407,11 @@ Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie11_senvcfg_c
   RVTEST_TSBI_GOTO_VUMODE
   LI(x8, 0xc3da7f96)
   sw x8, 0(x9)
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie11_senvcfg_cbie01:
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie11_senvcfg_cbie01:
   cbo.inval    0(x9)
   lw x8, 0(x9)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie11_senvcfg_cbie01, Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie11_senvcfg_cbie01_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie11_senvcfg_cbie01, Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie11_senvcfg_cbie01_str)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x14
   mv a1, x14
@@ -429,11 +429,11 @@ Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie11_senvcfg_c
   RVTEST_TSBI_GOTO_VUMODE
   LI(x8, 0xcffa02e)
   sw x8, 0(x9)
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie11_senvcfg_cbie11:
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie11_senvcfg_cbie11:
   cbo.inval    0(x9)
   lw x8, 0(x9)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie11_senvcfg_cbie11, Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie11_senvcfg_cbie11_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie11_senvcfg_cbie11, Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie11_senvcfg_cbie11_str)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x14
   mv a1, x14
@@ -445,7 +445,7 @@ Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie11_senvcfg_c
   csrc henvcfg, x14
   csrc senvcfg, x14
   RVTEST_TSBI_GOTO_VUMODE
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie00_senvcfg_cbie00:
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie00_senvcfg_cbie00:
   cbo.inval    0(x9)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x14
@@ -460,7 +460,7 @@ Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie00_senvcfg_c
   LI(x13, 0x10)
   csrs senvcfg, x13
   RVTEST_TSBI_GOTO_VUMODE
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie00_senvcfg_cbie01:
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie00_senvcfg_cbie01:
   cbo.inval    0(x9)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x14
@@ -475,7 +475,7 @@ Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie00_senvcfg_c
   LI(x13, 0x30)
   csrs senvcfg, x13
   RVTEST_TSBI_GOTO_VUMODE
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie00_senvcfg_cbie11:
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie00_senvcfg_cbie11:
   cbo.inval    0(x9)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x14
@@ -490,7 +490,7 @@ Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie00_senvcfg_c
   csrs henvcfg, x13
   csrc senvcfg, x14
   RVTEST_TSBI_GOTO_VUMODE
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_senvcfg_cbie00:
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_senvcfg_cbie00:
   cbo.inval    0(x9)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x14
@@ -509,11 +509,11 @@ Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_senvcfg_c
   RVTEST_TSBI_GOTO_VUMODE
   LI(x8, 0xffb4d7d4)
   sw x8, 0(x9)
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_senvcfg_cbie01:
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_senvcfg_cbie01:
   cbo.inval    0(x9)
   lw x8, 0(x9)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_senvcfg_cbie01, Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_senvcfg_cbie01_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_senvcfg_cbie01, Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_senvcfg_cbie01_str)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x14
   mv a1, x14
@@ -531,11 +531,11 @@ Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_senvcfg_c
   RVTEST_TSBI_GOTO_VUMODE
   LI(x8, 0x444e8a10)
   sw x8, 0(x9)
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_senvcfg_cbie11:
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_senvcfg_cbie11:
   cbo.inval    0(x9)
   lw x8, 0(x9)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_senvcfg_cbie11, Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_senvcfg_cbie11_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_senvcfg_cbie11, Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_senvcfg_cbie11_str)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x14
   mv a1, x14
@@ -549,7 +549,7 @@ Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_senvcfg_c
   csrs henvcfg, x13
   csrc senvcfg, x14
   RVTEST_TSBI_GOTO_VUMODE
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie11_senvcfg_cbie00:
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie11_senvcfg_cbie00:
   cbo.inval    0(x9)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x14
@@ -568,11 +568,11 @@ Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie11_senvcfg_c
   RVTEST_TSBI_GOTO_VUMODE
   LI(x8, 0xbb42805c)
   sw x8, 0(x9)
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie11_senvcfg_cbie01:
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie11_senvcfg_cbie01:
   cbo.inval    0(x9)
   lw x8, 0(x9)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie11_senvcfg_cbie01, Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie11_senvcfg_cbie01_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie11_senvcfg_cbie01, Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie11_senvcfg_cbie01_str)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x14
   mv a1, x14
@@ -588,7 +588,7 @@ Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie11_senvcfg_c
   LI(x13, 0x30)
   csrs senvcfg, x13
   RVTEST_TSBI_GOTO_VUMODE
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie11_senvcfg_cbie11:
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie11_senvcfg_cbie11:
   cbo.inval    0(x9)
   RVTEST_TSBI_GOTO_SMODE
 #endif // ZICBOM_SUPPORTED
@@ -606,9 +606,9 @@ Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie11_senvcfg_c
   RVTEST_TSBI_CSR_ACCESS TSBI_CSR_CLEAR(CSR_MENVCFG)
   csrc henvcfg, x13
   RVTEST_TSBI_GOTO_VSMODE
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vs_cbo_clean_menvcfg_cbcfe0_henvcfg_cbcfe0:
+Sv_HZicbo_cg_cp_cbcfe_vs_cbo_clean_menvcfg_cbcfe0_henvcfg_cbcfe0:
   cbo.clean    0(x15)
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vs_cbo_flush_menvcfg_cbcfe0_henvcfg_cbcfe0:
+Sv_HZicbo_cg_cp_cbcfe_vs_cbo_flush_menvcfg_cbcfe0_henvcfg_cbcfe0:
   cbo.flush    0(x15)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x13
@@ -618,9 +618,9 @@ Sv_HZicbo_envcfg_cg_cp_cbcfe_vs_cbo_flush_menvcfg_cbcfe0_henvcfg_cbcfe0:
   LI(x9, 0x40)
   csrs henvcfg, x9
   RVTEST_TSBI_GOTO_VSMODE
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vs_cbo_clean_menvcfg_cbcfe0_henvcfg_cbcfe1:
+Sv_HZicbo_cg_cp_cbcfe_vs_cbo_clean_menvcfg_cbcfe0_henvcfg_cbcfe1:
   cbo.clean    0(x15)
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vs_cbo_flush_menvcfg_cbcfe0_henvcfg_cbcfe1:
+Sv_HZicbo_cg_cp_cbcfe_vs_cbo_flush_menvcfg_cbcfe0_henvcfg_cbcfe1:
   cbo.flush    0(x15)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x13
@@ -632,9 +632,9 @@ Sv_HZicbo_envcfg_cg_cp_cbcfe_vs_cbo_flush_menvcfg_cbcfe0_henvcfg_cbcfe1:
   RVTEST_TSBI_CSR_ACCESS TSBI_CSR_SET(CSR_MENVCFG)
   csrc henvcfg, x13
   RVTEST_TSBI_GOTO_VSMODE
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vs_cbo_clean_menvcfg_cbcfe1_henvcfg_cbcfe0:
+Sv_HZicbo_cg_cp_cbcfe_vs_cbo_clean_menvcfg_cbcfe1_henvcfg_cbcfe0:
   cbo.clean    0(x15)
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vs_cbo_flush_menvcfg_cbcfe1_henvcfg_cbcfe0:
+Sv_HZicbo_cg_cp_cbcfe_vs_cbo_flush_menvcfg_cbcfe1_henvcfg_cbcfe0:
   cbo.flush    0(x15)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x13
@@ -648,9 +648,9 @@ Sv_HZicbo_envcfg_cg_cp_cbcfe_vs_cbo_flush_menvcfg_cbcfe1_henvcfg_cbcfe0:
   LI(x9, 0x40)
   csrs henvcfg, x9
   RVTEST_TSBI_GOTO_VSMODE
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vs_cbo_clean_menvcfg_cbcfe1_henvcfg_cbcfe1:
+Sv_HZicbo_cg_cp_cbcfe_vs_cbo_clean_menvcfg_cbcfe1_henvcfg_cbcfe1:
   cbo.clean    0(x15)
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vs_cbo_flush_menvcfg_cbcfe1_henvcfg_cbcfe1:
+Sv_HZicbo_cg_cp_cbcfe_vs_cbo_flush_menvcfg_cbcfe1_henvcfg_cbcfe1:
   cbo.flush    0(x15)
   RVTEST_TSBI_GOTO_SMODE
 #endif // ZICBOM_SUPPORTED
@@ -669,9 +669,9 @@ Sv_HZicbo_envcfg_cg_cp_cbcfe_vs_cbo_flush_menvcfg_cbcfe1_henvcfg_cbcfe1:
   csrc henvcfg, x9
   csrc senvcfg, x9
   RVTEST_TSBI_GOTO_VUMODE
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vu_cbo_clean_menvcfg_cbcfe0_henvcfg_cbcfe0_senvcfg_cbcfe0:
+Sv_HZicbo_cg_cp_cbcfe_vu_cbo_clean_menvcfg_cbcfe0_henvcfg_cbcfe0_senvcfg_cbcfe0:
   cbo.clean    0(x15)
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe0_henvcfg_cbcfe0_senvcfg_cbcfe0:
+Sv_HZicbo_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe0_henvcfg_cbcfe0_senvcfg_cbcfe0:
   cbo.flush    0(x15)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x9
@@ -682,9 +682,9 @@ Sv_HZicbo_envcfg_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe0_henvcfg_cbcfe0_senvcfg_
   LI(x13, 0x40)
   csrs senvcfg, x13
   RVTEST_TSBI_GOTO_VUMODE
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vu_cbo_clean_menvcfg_cbcfe0_henvcfg_cbcfe0_senvcfg_cbcfe1:
+Sv_HZicbo_cg_cp_cbcfe_vu_cbo_clean_menvcfg_cbcfe0_henvcfg_cbcfe0_senvcfg_cbcfe1:
   cbo.clean    0(x15)
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe0_henvcfg_cbcfe0_senvcfg_cbcfe1:
+Sv_HZicbo_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe0_henvcfg_cbcfe0_senvcfg_cbcfe1:
   cbo.flush    0(x15)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x9
@@ -695,9 +695,9 @@ Sv_HZicbo_envcfg_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe0_henvcfg_cbcfe0_senvcfg_
   csrs henvcfg, x13
   csrc senvcfg, x9
   RVTEST_TSBI_GOTO_VUMODE
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vu_cbo_clean_menvcfg_cbcfe0_henvcfg_cbcfe1_senvcfg_cbcfe0:
+Sv_HZicbo_cg_cp_cbcfe_vu_cbo_clean_menvcfg_cbcfe0_henvcfg_cbcfe1_senvcfg_cbcfe0:
   cbo.clean    0(x15)
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe0_henvcfg_cbcfe1_senvcfg_cbcfe0:
+Sv_HZicbo_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe0_henvcfg_cbcfe1_senvcfg_cbcfe0:
   cbo.flush    0(x15)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x9
@@ -710,9 +710,9 @@ Sv_HZicbo_envcfg_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe0_henvcfg_cbcfe1_senvcfg_
   LI(x13, 0x40)
   csrs senvcfg, x13
   RVTEST_TSBI_GOTO_VUMODE
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vu_cbo_clean_menvcfg_cbcfe0_henvcfg_cbcfe1_senvcfg_cbcfe1:
+Sv_HZicbo_cg_cp_cbcfe_vu_cbo_clean_menvcfg_cbcfe0_henvcfg_cbcfe1_senvcfg_cbcfe1:
   cbo.clean    0(x15)
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe0_henvcfg_cbcfe1_senvcfg_cbcfe1:
+Sv_HZicbo_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe0_henvcfg_cbcfe1_senvcfg_cbcfe1:
   cbo.flush    0(x15)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x9
@@ -725,9 +725,9 @@ Sv_HZicbo_envcfg_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe0_henvcfg_cbcfe1_senvcfg_
   csrc henvcfg, x9
   csrc senvcfg, x9
   RVTEST_TSBI_GOTO_VUMODE
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vu_cbo_clean_menvcfg_cbcfe1_henvcfg_cbcfe0_senvcfg_cbcfe0:
+Sv_HZicbo_cg_cp_cbcfe_vu_cbo_clean_menvcfg_cbcfe1_henvcfg_cbcfe0_senvcfg_cbcfe0:
   cbo.clean    0(x15)
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe1_henvcfg_cbcfe0_senvcfg_cbcfe0:
+Sv_HZicbo_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe1_henvcfg_cbcfe0_senvcfg_cbcfe0:
   cbo.flush    0(x15)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x9
@@ -742,26 +742,9 @@ Sv_HZicbo_envcfg_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe1_henvcfg_cbcfe0_senvcfg_
   LI(x13, 0x40)
   csrs senvcfg, x13
   RVTEST_TSBI_GOTO_VUMODE
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vu_cbo_clean_menvcfg_cbcfe1_henvcfg_cbcfe0_senvcfg_cbcfe1:
+Sv_HZicbo_cg_cp_cbcfe_vu_cbo_clean_menvcfg_cbcfe1_henvcfg_cbcfe0_senvcfg_cbcfe1:
   cbo.clean    0(x15)
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe1_henvcfg_cbcfe0_senvcfg_cbcfe1:
-  cbo.flush    0(x15)
-  RVTEST_TSBI_GOTO_SMODE
-  # T-SBI call to execute instruction: csrc menvcfg, x9
-  mv a1, x9
-  RVTEST_TSBI_CSR_ACCESS TSBI_CSR_CLEAR(CSR_MENVCFG)
-  LI(x13, 0x40)
-  # T-SBI call to execute instruction: csrs menvcfg, x13
-  mv a1, x13
-  RVTEST_TSBI_CSR_ACCESS TSBI_CSR_SET(CSR_MENVCFG)
-  csrc henvcfg, x9
-  LI(x13, 0x40)
-  csrs henvcfg, x13
-  csrc senvcfg, x9
-  RVTEST_TSBI_GOTO_VUMODE
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vu_cbo_clean_menvcfg_cbcfe1_henvcfg_cbcfe1_senvcfg_cbcfe0:
-  cbo.clean    0(x15)
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe1_henvcfg_cbcfe1_senvcfg_cbcfe0:
+Sv_HZicbo_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe1_henvcfg_cbcfe0_senvcfg_cbcfe1:
   cbo.flush    0(x15)
   RVTEST_TSBI_GOTO_SMODE
   # T-SBI call to execute instruction: csrc menvcfg, x9
@@ -775,12 +758,29 @@ Sv_HZicbo_envcfg_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe1_henvcfg_cbcfe1_senvcfg_
   LI(x13, 0x40)
   csrs henvcfg, x13
   csrc senvcfg, x9
+  RVTEST_TSBI_GOTO_VUMODE
+Sv_HZicbo_cg_cp_cbcfe_vu_cbo_clean_menvcfg_cbcfe1_henvcfg_cbcfe1_senvcfg_cbcfe0:
+  cbo.clean    0(x15)
+Sv_HZicbo_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe1_henvcfg_cbcfe1_senvcfg_cbcfe0:
+  cbo.flush    0(x15)
+  RVTEST_TSBI_GOTO_SMODE
+  # T-SBI call to execute instruction: csrc menvcfg, x9
+  mv a1, x9
+  RVTEST_TSBI_CSR_ACCESS TSBI_CSR_CLEAR(CSR_MENVCFG)
+  LI(x13, 0x40)
+  # T-SBI call to execute instruction: csrs menvcfg, x13
+  mv a1, x13
+  RVTEST_TSBI_CSR_ACCESS TSBI_CSR_SET(CSR_MENVCFG)
+  csrc henvcfg, x9
+  LI(x13, 0x40)
+  csrs henvcfg, x13
+  csrc senvcfg, x9
   LI(x13, 0x40)
   csrs senvcfg, x13
   RVTEST_TSBI_GOTO_VUMODE
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vu_cbo_clean_menvcfg_cbcfe1_henvcfg_cbcfe1_senvcfg_cbcfe1:
+Sv_HZicbo_cg_cp_cbcfe_vu_cbo_clean_menvcfg_cbcfe1_henvcfg_cbcfe1_senvcfg_cbcfe1:
   cbo.clean    0(x15)
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe1_henvcfg_cbcfe1_senvcfg_cbcfe1:
+Sv_HZicbo_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe1_henvcfg_cbcfe1_senvcfg_cbcfe1:
   cbo.flush    0(x15)
   RVTEST_TSBI_GOTO_SMODE
 #endif // ZICBOM_SUPPORTED
@@ -795,66 +795,66 @@ RVTEST_DATA_BEGIN
 
 
 // Testcase strings
-Sv_HZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie00_henvcfg_cbie00_str: .string "\"test: 1; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbie_vs; bin: cbo.inval_menvcfg.cbie00_henvcfg.cbie00\""
-Sv_HZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie00_henvcfg_cbie01_str: .string "\"test: 2; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbie_vs; bin: cbo.inval_menvcfg.cbie00_henvcfg.cbie01\""
-Sv_HZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie00_henvcfg_cbie11_str: .string "\"test: 3; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbie_vs; bin: cbo.inval_menvcfg.cbie00_henvcfg.cbie11\""
-Sv_HZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie01_henvcfg_cbie00_str: .string "\"test: 4; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbie_vs; bin: cbo.inval_menvcfg.cbie01_henvcfg.cbie00\""
-Sv_HZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie01_henvcfg_cbie01_str: .string "\"test: 5; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbie_vs; bin: cbo.inval_menvcfg.cbie01_henvcfg.cbie01\""
-Sv_HZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie01_henvcfg_cbie11_str: .string "\"test: 6; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbie_vs; bin: cbo.inval_menvcfg.cbie01_henvcfg.cbie11\""
-Sv_HZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie11_henvcfg_cbie00_str: .string "\"test: 7; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbie_vs; bin: cbo.inval_menvcfg.cbie11_henvcfg.cbie00\""
-Sv_HZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_str: .string "\"test: 8; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbie_vs; bin: cbo.inval_menvcfg.cbie11_henvcfg.cbie01\""
-Sv_HZicbo_envcfg_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie11_henvcfg_cbie11_str: .string "\"test: 9; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbie_vs; bin: cbo.inval_menvcfg.cbie11_henvcfg.cbie11\""
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie00_senvcfg_cbie00_str: .string "\"test: 10; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie00_henvcfg.cbie00_senvcfg.cbie00\""
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie00_senvcfg_cbie01_str: .string "\"test: 11; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie00_henvcfg.cbie00_senvcfg.cbie01\""
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie00_senvcfg_cbie11_str: .string "\"test: 12; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie00_henvcfg.cbie00_senvcfg.cbie11\""
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie01_senvcfg_cbie00_str: .string "\"test: 13; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie00_henvcfg.cbie01_senvcfg.cbie00\""
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie01_senvcfg_cbie01_str: .string "\"test: 14; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie00_henvcfg.cbie01_senvcfg.cbie01\""
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie01_senvcfg_cbie11_str: .string "\"test: 15; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie00_henvcfg.cbie01_senvcfg.cbie11\""
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie11_senvcfg_cbie00_str: .string "\"test: 16; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie00_henvcfg.cbie11_senvcfg.cbie00\""
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie11_senvcfg_cbie01_str: .string "\"test: 17; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie00_henvcfg.cbie11_senvcfg.cbie01\""
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie11_senvcfg_cbie11_str: .string "\"test: 18; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie00_henvcfg.cbie11_senvcfg.cbie11\""
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie00_senvcfg_cbie00_str: .string "\"test: 19; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie01_henvcfg.cbie00_senvcfg.cbie00\""
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie00_senvcfg_cbie01_str: .string "\"test: 20; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie01_henvcfg.cbie00_senvcfg.cbie01\""
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie00_senvcfg_cbie11_str: .string "\"test: 21; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie01_henvcfg.cbie00_senvcfg.cbie11\""
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie01_senvcfg_cbie00_str: .string "\"test: 22; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie01_henvcfg.cbie01_senvcfg.cbie00\""
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie01_senvcfg_cbie01_str: .string "\"test: 23; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie01_henvcfg.cbie01_senvcfg.cbie01\""
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie01_senvcfg_cbie11_str: .string "\"test: 24; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie01_henvcfg.cbie01_senvcfg.cbie11\""
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie11_senvcfg_cbie00_str: .string "\"test: 25; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie01_henvcfg.cbie11_senvcfg.cbie00\""
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie11_senvcfg_cbie01_str: .string "\"test: 26; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie01_henvcfg.cbie11_senvcfg.cbie01\""
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie11_senvcfg_cbie11_str: .string "\"test: 27; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie01_henvcfg.cbie11_senvcfg.cbie11\""
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie00_senvcfg_cbie00_str: .string "\"test: 28; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie11_henvcfg.cbie00_senvcfg.cbie00\""
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie00_senvcfg_cbie01_str: .string "\"test: 29; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie11_henvcfg.cbie00_senvcfg.cbie01\""
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie00_senvcfg_cbie11_str: .string "\"test: 30; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie11_henvcfg.cbie00_senvcfg.cbie11\""
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_senvcfg_cbie00_str: .string "\"test: 31; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie11_henvcfg.cbie01_senvcfg.cbie00\""
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_senvcfg_cbie01_str: .string "\"test: 32; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie11_henvcfg.cbie01_senvcfg.cbie01\""
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_senvcfg_cbie11_str: .string "\"test: 33; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie11_henvcfg.cbie01_senvcfg.cbie11\""
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie11_senvcfg_cbie00_str: .string "\"test: 34; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie11_henvcfg.cbie11_senvcfg.cbie00\""
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie11_senvcfg_cbie01_str: .string "\"test: 35; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie11_henvcfg.cbie11_senvcfg.cbie01\""
-Sv_HZicbo_envcfg_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie11_senvcfg_cbie11_str: .string "\"test: 36; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie11_henvcfg.cbie11_senvcfg.cbie11\""
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vs_cbo_clean_menvcfg_cbcfe0_henvcfg_cbcfe0_str: .string "\"test: 37; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbcfe_vs; bin: cbo.clean_menvcfg.cbcfe0_henvcfg.cbcfe0\""
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vs_cbo_flush_menvcfg_cbcfe0_henvcfg_cbcfe0_str: .string "\"test: 38; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbcfe_vs; bin: cbo.flush_menvcfg.cbcfe0_henvcfg.cbcfe0\""
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vs_cbo_clean_menvcfg_cbcfe0_henvcfg_cbcfe1_str: .string "\"test: 39; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbcfe_vs; bin: cbo.clean_menvcfg.cbcfe0_henvcfg.cbcfe1\""
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vs_cbo_flush_menvcfg_cbcfe0_henvcfg_cbcfe1_str: .string "\"test: 40; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbcfe_vs; bin: cbo.flush_menvcfg.cbcfe0_henvcfg.cbcfe1\""
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vs_cbo_clean_menvcfg_cbcfe1_henvcfg_cbcfe0_str: .string "\"test: 41; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbcfe_vs; bin: cbo.clean_menvcfg.cbcfe1_henvcfg.cbcfe0\""
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vs_cbo_flush_menvcfg_cbcfe1_henvcfg_cbcfe0_str: .string "\"test: 42; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbcfe_vs; bin: cbo.flush_menvcfg.cbcfe1_henvcfg.cbcfe0\""
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vs_cbo_clean_menvcfg_cbcfe1_henvcfg_cbcfe1_str: .string "\"test: 43; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbcfe_vs; bin: cbo.clean_menvcfg.cbcfe1_henvcfg.cbcfe1\""
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vs_cbo_flush_menvcfg_cbcfe1_henvcfg_cbcfe1_str: .string "\"test: 44; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbcfe_vs; bin: cbo.flush_menvcfg.cbcfe1_henvcfg.cbcfe1\""
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vu_cbo_clean_menvcfg_cbcfe0_henvcfg_cbcfe0_senvcfg_cbcfe0_str: .string "\"test: 45; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbcfe_vu; bin: cbo.clean_menvcfg.cbcfe0_henvcfg.cbcfe0_senvcfg.cbcfe0\""
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe0_henvcfg_cbcfe0_senvcfg_cbcfe0_str: .string "\"test: 46; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbcfe_vu; bin: cbo.flush_menvcfg.cbcfe0_henvcfg.cbcfe0_senvcfg.cbcfe0\""
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vu_cbo_clean_menvcfg_cbcfe0_henvcfg_cbcfe0_senvcfg_cbcfe1_str: .string "\"test: 47; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbcfe_vu; bin: cbo.clean_menvcfg.cbcfe0_henvcfg.cbcfe0_senvcfg.cbcfe1\""
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe0_henvcfg_cbcfe0_senvcfg_cbcfe1_str: .string "\"test: 48; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbcfe_vu; bin: cbo.flush_menvcfg.cbcfe0_henvcfg.cbcfe0_senvcfg.cbcfe1\""
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vu_cbo_clean_menvcfg_cbcfe0_henvcfg_cbcfe1_senvcfg_cbcfe0_str: .string "\"test: 49; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbcfe_vu; bin: cbo.clean_menvcfg.cbcfe0_henvcfg.cbcfe1_senvcfg.cbcfe0\""
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe0_henvcfg_cbcfe1_senvcfg_cbcfe0_str: .string "\"test: 50; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbcfe_vu; bin: cbo.flush_menvcfg.cbcfe0_henvcfg.cbcfe1_senvcfg.cbcfe0\""
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vu_cbo_clean_menvcfg_cbcfe0_henvcfg_cbcfe1_senvcfg_cbcfe1_str: .string "\"test: 51; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbcfe_vu; bin: cbo.clean_menvcfg.cbcfe0_henvcfg.cbcfe1_senvcfg.cbcfe1\""
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe0_henvcfg_cbcfe1_senvcfg_cbcfe1_str: .string "\"test: 52; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbcfe_vu; bin: cbo.flush_menvcfg.cbcfe0_henvcfg.cbcfe1_senvcfg.cbcfe1\""
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vu_cbo_clean_menvcfg_cbcfe1_henvcfg_cbcfe0_senvcfg_cbcfe0_str: .string "\"test: 53; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbcfe_vu; bin: cbo.clean_menvcfg.cbcfe1_henvcfg.cbcfe0_senvcfg.cbcfe0\""
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe1_henvcfg_cbcfe0_senvcfg_cbcfe0_str: .string "\"test: 54; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbcfe_vu; bin: cbo.flush_menvcfg.cbcfe1_henvcfg.cbcfe0_senvcfg.cbcfe0\""
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vu_cbo_clean_menvcfg_cbcfe1_henvcfg_cbcfe0_senvcfg_cbcfe1_str: .string "\"test: 55; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbcfe_vu; bin: cbo.clean_menvcfg.cbcfe1_henvcfg.cbcfe0_senvcfg.cbcfe1\""
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe1_henvcfg_cbcfe0_senvcfg_cbcfe1_str: .string "\"test: 56; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbcfe_vu; bin: cbo.flush_menvcfg.cbcfe1_henvcfg.cbcfe0_senvcfg.cbcfe1\""
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vu_cbo_clean_menvcfg_cbcfe1_henvcfg_cbcfe1_senvcfg_cbcfe0_str: .string "\"test: 57; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbcfe_vu; bin: cbo.clean_menvcfg.cbcfe1_henvcfg.cbcfe1_senvcfg.cbcfe0\""
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe1_henvcfg_cbcfe1_senvcfg_cbcfe0_str: .string "\"test: 58; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbcfe_vu; bin: cbo.flush_menvcfg.cbcfe1_henvcfg.cbcfe1_senvcfg.cbcfe0\""
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vu_cbo_clean_menvcfg_cbcfe1_henvcfg_cbcfe1_senvcfg_cbcfe1_str: .string "\"test: 59; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbcfe_vu; bin: cbo.clean_menvcfg.cbcfe1_henvcfg.cbcfe1_senvcfg.cbcfe1\""
-Sv_HZicbo_envcfg_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe1_henvcfg_cbcfe1_senvcfg_cbcfe1_str: .string "\"test: 60; cg: Sv_HZicbo_envcfg_cg; cp: cp_cbcfe_vu; bin: cbo.flush_menvcfg.cbcfe1_henvcfg.cbcfe1_senvcfg.cbcfe1\""
+Sv_HZicbo_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie00_henvcfg_cbie00_str: .string "\"test: 1; cg: Sv_HZicbo_cg; cp: cp_cbie_vs; bin: cbo.inval_menvcfg.cbie00_henvcfg.cbie00\""
+Sv_HZicbo_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie00_henvcfg_cbie01_str: .string "\"test: 2; cg: Sv_HZicbo_cg; cp: cp_cbie_vs; bin: cbo.inval_menvcfg.cbie00_henvcfg.cbie01\""
+Sv_HZicbo_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie00_henvcfg_cbie11_str: .string "\"test: 3; cg: Sv_HZicbo_cg; cp: cp_cbie_vs; bin: cbo.inval_menvcfg.cbie00_henvcfg.cbie11\""
+Sv_HZicbo_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie01_henvcfg_cbie00_str: .string "\"test: 4; cg: Sv_HZicbo_cg; cp: cp_cbie_vs; bin: cbo.inval_menvcfg.cbie01_henvcfg.cbie00\""
+Sv_HZicbo_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie01_henvcfg_cbie01_str: .string "\"test: 5; cg: Sv_HZicbo_cg; cp: cp_cbie_vs; bin: cbo.inval_menvcfg.cbie01_henvcfg.cbie01\""
+Sv_HZicbo_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie01_henvcfg_cbie11_str: .string "\"test: 6; cg: Sv_HZicbo_cg; cp: cp_cbie_vs; bin: cbo.inval_menvcfg.cbie01_henvcfg.cbie11\""
+Sv_HZicbo_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie11_henvcfg_cbie00_str: .string "\"test: 7; cg: Sv_HZicbo_cg; cp: cp_cbie_vs; bin: cbo.inval_menvcfg.cbie11_henvcfg.cbie00\""
+Sv_HZicbo_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_str: .string "\"test: 8; cg: Sv_HZicbo_cg; cp: cp_cbie_vs; bin: cbo.inval_menvcfg.cbie11_henvcfg.cbie01\""
+Sv_HZicbo_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie11_henvcfg_cbie11_str: .string "\"test: 9; cg: Sv_HZicbo_cg; cp: cp_cbie_vs; bin: cbo.inval_menvcfg.cbie11_henvcfg.cbie11\""
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie00_senvcfg_cbie00_str: .string "\"test: 10; cg: Sv_HZicbo_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie00_henvcfg.cbie00_senvcfg.cbie00\""
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie00_senvcfg_cbie01_str: .string "\"test: 11; cg: Sv_HZicbo_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie00_henvcfg.cbie00_senvcfg.cbie01\""
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie00_senvcfg_cbie11_str: .string "\"test: 12; cg: Sv_HZicbo_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie00_henvcfg.cbie00_senvcfg.cbie11\""
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie01_senvcfg_cbie00_str: .string "\"test: 13; cg: Sv_HZicbo_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie00_henvcfg.cbie01_senvcfg.cbie00\""
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie01_senvcfg_cbie01_str: .string "\"test: 14; cg: Sv_HZicbo_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie00_henvcfg.cbie01_senvcfg.cbie01\""
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie01_senvcfg_cbie11_str: .string "\"test: 15; cg: Sv_HZicbo_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie00_henvcfg.cbie01_senvcfg.cbie11\""
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie11_senvcfg_cbie00_str: .string "\"test: 16; cg: Sv_HZicbo_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie00_henvcfg.cbie11_senvcfg.cbie00\""
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie11_senvcfg_cbie01_str: .string "\"test: 17; cg: Sv_HZicbo_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie00_henvcfg.cbie11_senvcfg.cbie01\""
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie00_henvcfg_cbie11_senvcfg_cbie11_str: .string "\"test: 18; cg: Sv_HZicbo_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie00_henvcfg.cbie11_senvcfg.cbie11\""
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie00_senvcfg_cbie00_str: .string "\"test: 19; cg: Sv_HZicbo_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie01_henvcfg.cbie00_senvcfg.cbie00\""
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie00_senvcfg_cbie01_str: .string "\"test: 20; cg: Sv_HZicbo_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie01_henvcfg.cbie00_senvcfg.cbie01\""
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie00_senvcfg_cbie11_str: .string "\"test: 21; cg: Sv_HZicbo_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie01_henvcfg.cbie00_senvcfg.cbie11\""
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie01_senvcfg_cbie00_str: .string "\"test: 22; cg: Sv_HZicbo_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie01_henvcfg.cbie01_senvcfg.cbie00\""
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie01_senvcfg_cbie01_str: .string "\"test: 23; cg: Sv_HZicbo_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie01_henvcfg.cbie01_senvcfg.cbie01\""
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie01_senvcfg_cbie11_str: .string "\"test: 24; cg: Sv_HZicbo_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie01_henvcfg.cbie01_senvcfg.cbie11\""
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie11_senvcfg_cbie00_str: .string "\"test: 25; cg: Sv_HZicbo_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie01_henvcfg.cbie11_senvcfg.cbie00\""
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie11_senvcfg_cbie01_str: .string "\"test: 26; cg: Sv_HZicbo_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie01_henvcfg.cbie11_senvcfg.cbie01\""
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie11_senvcfg_cbie11_str: .string "\"test: 27; cg: Sv_HZicbo_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie01_henvcfg.cbie11_senvcfg.cbie11\""
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie00_senvcfg_cbie00_str: .string "\"test: 28; cg: Sv_HZicbo_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie11_henvcfg.cbie00_senvcfg.cbie00\""
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie00_senvcfg_cbie01_str: .string "\"test: 29; cg: Sv_HZicbo_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie11_henvcfg.cbie00_senvcfg.cbie01\""
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie00_senvcfg_cbie11_str: .string "\"test: 30; cg: Sv_HZicbo_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie11_henvcfg.cbie00_senvcfg.cbie11\""
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_senvcfg_cbie00_str: .string "\"test: 31; cg: Sv_HZicbo_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie11_henvcfg.cbie01_senvcfg.cbie00\""
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_senvcfg_cbie01_str: .string "\"test: 32; cg: Sv_HZicbo_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie11_henvcfg.cbie01_senvcfg.cbie01\""
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_senvcfg_cbie11_str: .string "\"test: 33; cg: Sv_HZicbo_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie11_henvcfg.cbie01_senvcfg.cbie11\""
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie11_senvcfg_cbie00_str: .string "\"test: 34; cg: Sv_HZicbo_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie11_henvcfg.cbie11_senvcfg.cbie00\""
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie11_senvcfg_cbie01_str: .string "\"test: 35; cg: Sv_HZicbo_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie11_henvcfg.cbie11_senvcfg.cbie01\""
+Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie11_senvcfg_cbie11_str: .string "\"test: 36; cg: Sv_HZicbo_cg; cp: cp_cbie_vu; bin: cbo.inval_menvcfg.cbie11_henvcfg.cbie11_senvcfg.cbie11\""
+Sv_HZicbo_cg_cp_cbcfe_vs_cbo_clean_menvcfg_cbcfe0_henvcfg_cbcfe0_str: .string "\"test: 37; cg: Sv_HZicbo_cg; cp: cp_cbcfe_vs; bin: cbo.clean_menvcfg.cbcfe0_henvcfg.cbcfe0\""
+Sv_HZicbo_cg_cp_cbcfe_vs_cbo_flush_menvcfg_cbcfe0_henvcfg_cbcfe0_str: .string "\"test: 38; cg: Sv_HZicbo_cg; cp: cp_cbcfe_vs; bin: cbo.flush_menvcfg.cbcfe0_henvcfg.cbcfe0\""
+Sv_HZicbo_cg_cp_cbcfe_vs_cbo_clean_menvcfg_cbcfe0_henvcfg_cbcfe1_str: .string "\"test: 39; cg: Sv_HZicbo_cg; cp: cp_cbcfe_vs; bin: cbo.clean_menvcfg.cbcfe0_henvcfg.cbcfe1\""
+Sv_HZicbo_cg_cp_cbcfe_vs_cbo_flush_menvcfg_cbcfe0_henvcfg_cbcfe1_str: .string "\"test: 40; cg: Sv_HZicbo_cg; cp: cp_cbcfe_vs; bin: cbo.flush_menvcfg.cbcfe0_henvcfg.cbcfe1\""
+Sv_HZicbo_cg_cp_cbcfe_vs_cbo_clean_menvcfg_cbcfe1_henvcfg_cbcfe0_str: .string "\"test: 41; cg: Sv_HZicbo_cg; cp: cp_cbcfe_vs; bin: cbo.clean_menvcfg.cbcfe1_henvcfg.cbcfe0\""
+Sv_HZicbo_cg_cp_cbcfe_vs_cbo_flush_menvcfg_cbcfe1_henvcfg_cbcfe0_str: .string "\"test: 42; cg: Sv_HZicbo_cg; cp: cp_cbcfe_vs; bin: cbo.flush_menvcfg.cbcfe1_henvcfg.cbcfe0\""
+Sv_HZicbo_cg_cp_cbcfe_vs_cbo_clean_menvcfg_cbcfe1_henvcfg_cbcfe1_str: .string "\"test: 43; cg: Sv_HZicbo_cg; cp: cp_cbcfe_vs; bin: cbo.clean_menvcfg.cbcfe1_henvcfg.cbcfe1\""
+Sv_HZicbo_cg_cp_cbcfe_vs_cbo_flush_menvcfg_cbcfe1_henvcfg_cbcfe1_str: .string "\"test: 44; cg: Sv_HZicbo_cg; cp: cp_cbcfe_vs; bin: cbo.flush_menvcfg.cbcfe1_henvcfg.cbcfe1\""
+Sv_HZicbo_cg_cp_cbcfe_vu_cbo_clean_menvcfg_cbcfe0_henvcfg_cbcfe0_senvcfg_cbcfe0_str: .string "\"test: 45; cg: Sv_HZicbo_cg; cp: cp_cbcfe_vu; bin: cbo.clean_menvcfg.cbcfe0_henvcfg.cbcfe0_senvcfg.cbcfe0\""
+Sv_HZicbo_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe0_henvcfg_cbcfe0_senvcfg_cbcfe0_str: .string "\"test: 46; cg: Sv_HZicbo_cg; cp: cp_cbcfe_vu; bin: cbo.flush_menvcfg.cbcfe0_henvcfg.cbcfe0_senvcfg.cbcfe0\""
+Sv_HZicbo_cg_cp_cbcfe_vu_cbo_clean_menvcfg_cbcfe0_henvcfg_cbcfe0_senvcfg_cbcfe1_str: .string "\"test: 47; cg: Sv_HZicbo_cg; cp: cp_cbcfe_vu; bin: cbo.clean_menvcfg.cbcfe0_henvcfg.cbcfe0_senvcfg.cbcfe1\""
+Sv_HZicbo_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe0_henvcfg_cbcfe0_senvcfg_cbcfe1_str: .string "\"test: 48; cg: Sv_HZicbo_cg; cp: cp_cbcfe_vu; bin: cbo.flush_menvcfg.cbcfe0_henvcfg.cbcfe0_senvcfg.cbcfe1\""
+Sv_HZicbo_cg_cp_cbcfe_vu_cbo_clean_menvcfg_cbcfe0_henvcfg_cbcfe1_senvcfg_cbcfe0_str: .string "\"test: 49; cg: Sv_HZicbo_cg; cp: cp_cbcfe_vu; bin: cbo.clean_menvcfg.cbcfe0_henvcfg.cbcfe1_senvcfg.cbcfe0\""
+Sv_HZicbo_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe0_henvcfg_cbcfe1_senvcfg_cbcfe0_str: .string "\"test: 50; cg: Sv_HZicbo_cg; cp: cp_cbcfe_vu; bin: cbo.flush_menvcfg.cbcfe0_henvcfg.cbcfe1_senvcfg.cbcfe0\""
+Sv_HZicbo_cg_cp_cbcfe_vu_cbo_clean_menvcfg_cbcfe0_henvcfg_cbcfe1_senvcfg_cbcfe1_str: .string "\"test: 51; cg: Sv_HZicbo_cg; cp: cp_cbcfe_vu; bin: cbo.clean_menvcfg.cbcfe0_henvcfg.cbcfe1_senvcfg.cbcfe1\""
+Sv_HZicbo_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe0_henvcfg_cbcfe1_senvcfg_cbcfe1_str: .string "\"test: 52; cg: Sv_HZicbo_cg; cp: cp_cbcfe_vu; bin: cbo.flush_menvcfg.cbcfe0_henvcfg.cbcfe1_senvcfg.cbcfe1\""
+Sv_HZicbo_cg_cp_cbcfe_vu_cbo_clean_menvcfg_cbcfe1_henvcfg_cbcfe0_senvcfg_cbcfe0_str: .string "\"test: 53; cg: Sv_HZicbo_cg; cp: cp_cbcfe_vu; bin: cbo.clean_menvcfg.cbcfe1_henvcfg.cbcfe0_senvcfg.cbcfe0\""
+Sv_HZicbo_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe1_henvcfg_cbcfe0_senvcfg_cbcfe0_str: .string "\"test: 54; cg: Sv_HZicbo_cg; cp: cp_cbcfe_vu; bin: cbo.flush_menvcfg.cbcfe1_henvcfg.cbcfe0_senvcfg.cbcfe0\""
+Sv_HZicbo_cg_cp_cbcfe_vu_cbo_clean_menvcfg_cbcfe1_henvcfg_cbcfe0_senvcfg_cbcfe1_str: .string "\"test: 55; cg: Sv_HZicbo_cg; cp: cp_cbcfe_vu; bin: cbo.clean_menvcfg.cbcfe1_henvcfg.cbcfe0_senvcfg.cbcfe1\""
+Sv_HZicbo_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe1_henvcfg_cbcfe0_senvcfg_cbcfe1_str: .string "\"test: 56; cg: Sv_HZicbo_cg; cp: cp_cbcfe_vu; bin: cbo.flush_menvcfg.cbcfe1_henvcfg.cbcfe0_senvcfg.cbcfe1\""
+Sv_HZicbo_cg_cp_cbcfe_vu_cbo_clean_menvcfg_cbcfe1_henvcfg_cbcfe1_senvcfg_cbcfe0_str: .string "\"test: 57; cg: Sv_HZicbo_cg; cp: cp_cbcfe_vu; bin: cbo.clean_menvcfg.cbcfe1_henvcfg.cbcfe1_senvcfg.cbcfe0\""
+Sv_HZicbo_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe1_henvcfg_cbcfe1_senvcfg_cbcfe0_str: .string "\"test: 58; cg: Sv_HZicbo_cg; cp: cp_cbcfe_vu; bin: cbo.flush_menvcfg.cbcfe1_henvcfg.cbcfe1_senvcfg.cbcfe0\""
+Sv_HZicbo_cg_cp_cbcfe_vu_cbo_clean_menvcfg_cbcfe1_henvcfg_cbcfe1_senvcfg_cbcfe1_str: .string "\"test: 59; cg: Sv_HZicbo_cg; cp: cp_cbcfe_vu; bin: cbo.clean_menvcfg.cbcfe1_henvcfg.cbcfe1_senvcfg.cbcfe1\""
+Sv_HZicbo_cg_cp_cbcfe_vu_cbo_flush_menvcfg_cbcfe1_henvcfg_cbcfe1_senvcfg_cbcfe1_str: .string "\"test: 60; cg: Sv_HZicbo_cg; cp: cp_cbcfe_vu; bin: cbo.flush_menvcfg.cbcfe1_henvcfg.cbcfe1_senvcfg.cbcfe1\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

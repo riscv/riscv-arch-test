@@ -53,6 +53,7 @@ def _make_hsvzicbo(test_data: TestData, g: SvMode, vs: SvMode, family: str) -> l
             family,
             g,
             vs,
+            group="HSvZicbo",
             covergroup="PMP_HSvZicbo_cg",
             home="M",
             section=("pmp", "cp_pmp", "PMP denies the test page, then allows only reads", _pmp_cases),
@@ -66,7 +67,7 @@ def _make_hsvzicbo(test_data: TestData, g: SvMode, vs: SvMode, family: str) -> l
 _PARAMS = [
     "NUM_PMP_ENTRIES: '>1'",
     "PMP_NAPOT_SUPPORTED: true",
-    "PMP_GRANULARITY: '<=10'",
+    "PMP_GRANULARITY: '<=12'",
 ]
 
 

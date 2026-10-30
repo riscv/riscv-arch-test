@@ -225,7 +225,7 @@ def _add_exception_cases(
                 level,
                 PteFlags(write=False),
                 "RX permissions with sstatus.SUM set",
-                "Store page fault",
+                "No fault" if family == "zicbom" else "Store page fault",
                 crosses["rx"],
                 before=(f"  LI(x{regs.scratch}, MSTATUS_SUM)", f"  csrs sstatus, x{regs.scratch}"),
                 after=(f"  LI(x{regs.scratch}, MSTATUS_SUM)", f"  csrc sstatus, x{regs.scratch}"),

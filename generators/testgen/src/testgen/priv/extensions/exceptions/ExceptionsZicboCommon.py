@@ -56,6 +56,10 @@ CBO_FIELDS: dict[str, CboField] = {
 }
 
 
+# The nonzero word that a test stores before cbo.zero
+CBO_ZERO_FILL = 0x0C0B0000
+
+
 def cbo_test(
     instr: str,
     name: str,
@@ -70,7 +74,7 @@ def cbo_test(
         lines.extend(
             [
                 "# Store a nonzero value so the test can check cbo.zero",
-                f"LI(x{val_reg}, {0x0C0B0000:#x})",
+                f"LI(x{val_reg}, {CBO_ZERO_FILL:#x})",
                 f"sw x{val_reg}, 0(x{addr_reg})",
             ]
         )

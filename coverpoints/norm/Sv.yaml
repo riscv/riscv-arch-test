@@ -986,7 +986,10 @@ normative_rule_definitions:
         Svadu_hypervisor_adue_writable,
       ]
     coverpoint:
-      ["Sv_H_csr_cg/cp_henvcfg_menvcfg", "Sv_H_vsstage_cg/cp_vsatp_adue"]
+      [
+        "Sv_H_csr_cg/{cp_henvcfg_menvcfg, cp_henvcfg_menvcfg_pbmte}",
+        "Sv_H_vsstage_cg/cp_vsatp_adue",
+      ]
 
   # Svnapot in the G-stage, with the VS-stage Bare and paged
   - name: Svnapot_hyp_gstage
@@ -1024,7 +1027,7 @@ normative_rule_definitions:
   # With V=1, SFENCE.VMA takes a guest virtual address and a VS-level ASID and orders VS-stage translation for the
   # current VMID
   - name: sfence_vma_v1
-    coverpoint: ["Sv_H_fence_cg/cp_sfence_vma_vs"]
+    coverpoint: ["Sv_H_fence_cg/{cp_sfence_vma_vs, cp_sfence_vma_vs_asid}"]
 
   # MPRV with MPV = 1 translates M-mode loads and stores through both stages, where vsstatus.SUM replaces the
   # HS-level SUM and the HS-level MXR covers both stages
@@ -1063,7 +1066,7 @@ normative_rule_definitions:
   - name: henvcfg_cbie
     coverpoint:
       [
-        "Sv_HZicbo_envcfg_cg/{cp_cbie_vs,cp_cbie_vu}",
+        "Sv_HZicbo_cg/{cp_cbie_vs,cp_cbie_vu}",
         "H_hscsr_cg/cp_hcsrwalk_masked",
         "HSm_mcsr_cg/cp_hcsrwalk_masked",
       ]
@@ -1073,13 +1076,13 @@ normative_rule_definitions:
   # is set to 0b01 or 0b11, the instruction is enabled for execution; otherwise, it raises
   # a virtual-instruction exception.
   - name: cbo-inval_h_mode_veq1_op
-    coverpoint: ["Sv_HZicbo_envcfg_cg/{cp_cbie_vs,cp_cbie_vu}"]
+    coverpoint: ["Sv_HZicbo_cg/{cp_cbie_vs,cp_cbie_vu}"]
 
   # A insn:cbo.inval[] instruction executes or raises either an illegal-instruction
   # exception or a virtual-instruction exception based on the state of the
   # csr:envcfg[cbie] fields:
   - name: cbo-inval
-    coverpoint: ["Sv_HZicbo_envcfg_cg/{cp_cbie_vs,cp_cbie_vu}"]
+    coverpoint: ["Sv_HZicbo_cg/{cp_cbie_vs,cp_cbie_vu}"]
 
   # The Zicbom extension adds the CBCFE (Cache Block Clean and Flush instruction Enable)
   # field to henvcfg. When V=1, if the CBO.CLEAN and CBO.FLUSH instructions are not
@@ -1090,7 +1093,7 @@ normative_rule_definitions:
   - name: henvcfg_cbcfe
     coverpoint:
       [
-        "Sv_HZicbo_envcfg_cg/{cp_cbcfe_vs,cp_cbcfe_vu}",
+        "Sv_HZicbo_cg/{cp_cbcfe_vs,cp_cbcfe_vu}",
         "H_hscsr_cg/cp_hcsrwalk_masked",
         "HSm_mcsr_cg/cp_hcsrwalk_masked",
       ]
@@ -1099,7 +1102,7 @@ normative_rule_definitions:
   # illegal-instruction or virtual-instruction exception based on the state of the
   # csr:envcfg[cbcfe] bits:
   - name: cbo-clean_cbo-flush
-    coverpoint: ["Sv_HZicbo_envcfg_cg/{cp_cbcfe_vs,cp_cbcfe_vu}"]
+    coverpoint: ["Sv_HZicbo_cg/{cp_cbcfe_vs,cp_cbcfe_vu}"]
 
   # The Zicboz extension adds the CBZE (Cache Block Zero instruction enable) field to
   # henvcfg. The CBZE field applies to execution of the cache block zero instruction
@@ -1112,7 +1115,7 @@ normative_rule_definitions:
   - name: henvcfg_cbze
     coverpoint:
       [
-        "Sv_HZicbo_envcfg_cg/{cp_cbze_vs,cp_cbze_vu}",
+        "Sv_HZicbo_cg/{cp_cbze_vs,cp_cbze_vu}",
         "H_hscsr_cg/cp_hcsrwalk_masked",
         "HSm_mcsr_cg/cp_hcsrwalk_masked",
       ]
@@ -1120,7 +1123,7 @@ normative_rule_definitions:
   # Finally, a insn:cbo.zero[] instruction executes or raises an illegal-instruction or
   # virtual-instruction exception based on the state of the csr:envcfg[cbze] bits:
   - name: cbo-zero_basedon_xenvcfg_cbze
-    coverpoint: ["Sv_HZicbo_envcfg_cg/{cp_cbze_vs,cp_cbze_vu}"]
+    coverpoint: ["Sv_HZicbo_cg/{cp_cbze_vs,cp_cbze_vu}"]
 
   # CBO permission and faults under two-stage translation
   - name: cbz_access
@@ -1136,7 +1139,7 @@ normative_rule_definitions:
   # depends on the CBIE encoding, as follows:
   # A store, then cbo.inval with a CBIE field = 01, then a load that returns the stored data
   - names: [cbo-inval_h_mode_enabled_op, cbo-inval_h_mode_flush_enc]
-    coverpoint: ["Sv_HZicbo_envcfg_cg/{cp_cbie_vs,cp_cbie_vu}"]
+    coverpoint: ["Sv_HZicbo_cg/{cp_cbie_vs,cp_cbie_vu}"]
 
   - name: cbo-inval_h_mode_inval_enc
     coverpoint:

@@ -79,9 +79,9 @@ coverpoints:
     bins: "{VS, VU} x {sw, lw, jalr} x vsatp Bare x hgatp paged x NAPOT page {0, 2, 15}"
   - name: cp_hgatp_gpa_width
     goal: Guest physical address width of each G-stage mode
-    description: RV64 only.  In VS-mode with vsatp = Bare, for each supported hgatp mode, load from guest physical addresses with one bit set, from bit 37 (or from the lowest root-table index bit, if higher) to bit 63.  A root-table superpage leaf maps each address below the mode's width (41 for Sv39x4, 50 for Sv48x4, 59 for Sv57x4) to the test page.
+    description: RV64 only.  In VS-mode with vsatp = Bare, for each supported hgatp mode, load from guest physical addresses with one bit set, from bit 37 to bit 63.  A superpage leaf at the highest level whose page offset is at most the set bit maps each address below the mode's width (41 for Sv39x4, 50 for Sv48x4, 59 for Sv57x4) to the test page.  Below the root, the test image is identity mapped again at the leaf's level.
     expectation: Addresses below the width translate, including the two extra root-table index bits of the x4 mode (bits 40:39 for Sv39x4), which index the 16 KiB root table.  An address with a bit set at or above the width raises a load guest-page fault (GPA bits 63:41 for Sv39x4, 63:50 for Sv48x4 and 63:59 for Sv57x4 must be zero).
-    bins: VS x lw x vsatp Bare x hgatp_mode x set GPA bit {37-63} (from 39 for Sv48x4 and from 48 for Sv57x4)
+    bins: VS x lw x vsatp Bare x hgatp_mode x set GPA bit {37-63}
   - name: cp_hgatp_sv32x4_gpa
     goal: Sv32x4 translates 34-bit guest physical addresses
     description: RV32 only.  In VS-mode, load through a VS-stage leaf whose guest physical address has bit 32, bit 33 or both set, with the G-stage leaf for that address valid and invalid.
@@ -196,12 +196,15 @@ coverpoints:
     goal: henvcfg.ADUE and henvcfg.PBMTE are read-only zero while the menvcfg bits are zero
     description: In HS-mode with menvcfg.ADUE = menvcfg.PBMTE = 0, then with both 1, set henvcfg.ADUE and henvcfg.PBMTE (henvcfgh on RV32) and read them back.
     expectation: Both read as zero while the menvcfg bits are zero.  With the menvcfg bits set, each reads back as written if Svadu or Svpbmt is implemented.
-    bins: HS x csrrs henvcfg (henvcfgh on RV32) x menvcfg.ADUE {0, 1}
+    bins: HS x csrrs henvcfg (henvcfgh on RV32) x menvcfg.ADUE {0, 1}; HS x csrrs henvcfg x menvcfg.PBMTE {0, 1} (RV64)
   - heading: Fences (Sv_H_fence_cg)
   - name: |-
       cp_hfence_vvma
       cp_hfence_gvma
       cp_sfence_vma_vs
+      cp_hfence_vvma_asid
+      cp_hfence_gvma_vmid
+      cp_sfence_vma_vs_asid
     goal: Fences remove stale VS-stage and G-stage translations (Sv_H_fence_cg)
     description: |-
       Sv32/Sv32x4 and Sv39/Sv39x4.  Map a guest virtual address through the VS-stage to guest physical page A and through the G-stage to physical page A, and load from it in VS-mode.  HS-mode then points the VS-stage leaf at guest page B, or the G-stage leaf of page A at physical page B, and runs hfence.vvma or hfence.gvma in HS-mode, or sfence.vma in VS-mode.  rs1 is x0 or the address (the guest virtual address, or the guest physical address >> 2 for hfence.gvma); rs2 is x0 or the current ASID (hfence.vvma, sfence.vma) or VMID (hfence.gvma), and the address is also used with all ASIDMAX or VMIDMAX bits set in rs2.  The cases run with every implemented vsatp.ASID and hgatp.VMID bit set.
@@ -211,6 +214,9 @@ coverpoints:
       cp_hfence_vvma: HS x hfence.vvma x vsatp paged x hgatp paged x rs1 {x0, register} x rs2 {x0, register}
       cp_hfence_gvma: HS x hfence.gvma x vsatp paged x hgatp paged x rs1 {x0, register} x rs2 {x0, register}
       cp_sfence_vma_vs: VS x sfence.vma x vsatp paged x hgatp paged x rs1 {x0, register} x rs2 {x0, register}
+      cp_hfence_vvma_asid: HS x hfence.vvma x vsatp paged x hgatp paged x rs2 {current ASID, all ASIDMAX bits set}
+      cp_hfence_gvma_vmid: HS x hfence.gvma x vsatp paged x hgatp paged x rs2 {current VMID, all VMIDMAX bits set}
+      cp_sfence_vma_vs_asid: VS x sfence.vma x vsatp paged x hgatp paged x rs2 {current ASID, all ASIDMAX bits set}
     notes: A fence is required only to make new translations visible.  That a fence leaves the translations of another ASID or VMID cached, or that SFENCE.VMA in VS-mode leaves HS-level and G-stage translations cached, is not observable.
   - heading: Not tested
   - goal: hstatus.VSBE sets the endianness of VS-mode explicit accesses and VS-stage page-table accesses

@@ -34,7 +34,7 @@ RVTEST_BEGIN
 /////////////////////////////////
 // cp_hgatp_gpa_width
 //   In VS-mode with vsatp = Bare and hgatp = Sv39x4, load from guest physical addresses with one of
-//   bits 37-63 set.  Bits below 41 translate through a root-table leaf; bits 41-63 must be
+//   bits 37-63 set.  Bits below 41 translate through a superpage leaf; bits 41-63 must be
 //   zero, or a guest-page fault occurs
 /////////////////////////////////
 
@@ -582,6 +582,16 @@ rvtest_vlvl1_pg_tbl:
   .skip 4096
   .endif
 #endif
+  .ifndef rvtest_hlvl0_pg_tbl
+  .p2align 12
+rvtest_hlvl0_pg_tbl:
+  .skip 4096
+  .endif
+  .ifndef rvtest_hlvl1_pg_tbl
+  .p2align 12
+rvtest_hlvl1_pg_tbl:
+  .skip 4096
+  .endif
 
 // Testcase strings
 Sv_H_gstage_cg_cp_hgatp_gpa_width_bit37_load_str: .string "\"test: 346; cg: Sv_H_gstage_cg; cp: cp_hgatp_gpa_width; bin: bit37_load\""

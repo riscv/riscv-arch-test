@@ -50,6 +50,5 @@
     `endif // EXCLUDE_SM
     `ifdef SV_HZICBO_ANY
         Sv_HZicbo_cg = new(); Sv_HZicbo_cg.set_inst_name("obj_Sv_HZicbo");
-        Sv_HZicbo_envcfg_cg = new(); Sv_HZicbo_envcfg_cg.set_inst_name("obj_Sv_HZicbo_envcfg");
     `endif // SV_HZICBO_ANY
 `endif // H_SUPPORTED

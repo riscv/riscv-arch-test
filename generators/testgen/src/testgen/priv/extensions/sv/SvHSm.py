@@ -66,8 +66,9 @@ def mprv_access(
     """In M-mode, run each of ``ops`` at ``va`` with mstatus.MPRV, MPP and MPV (mstatush.MPV on RV32) set, and check
     each load.
 
-    MPRV is set before each access, because a trap from M-mode leaves MPP = M and MPV = 0, and cleared after it,
-    so the signature is written with M-mode translation.
+    MPRV, MPP and MPV are set before each access, because the mret that ends a trap handler sets MPP to the least
+    privileged mode and clears MPV.  MPRV is cleared after each access, so the signature is written with M-mode
+    translation.
     """
     va_reg, data, reg = test_data.int_regs.get_registers(3)
     bits = " | ".join(

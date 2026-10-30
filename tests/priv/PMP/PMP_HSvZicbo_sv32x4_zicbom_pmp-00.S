@@ -13,7 +13,7 @@
 # params:
 #   NUM_PMP_ENTRIES: '>1'
 #   PMP_NAPOT_SUPPORTED: true
-#   PMP_GRANULARITY: '<=10'
+#   PMP_GRANULARITY: '<=12'
 #   SV32X4_TRANSLATION: true
 #   SV32_VSMODE_TRANSLATION: true
 # MARCH: rv${XLEN}ih_zicbom_zicsr_zifencei
@@ -717,6 +717,10 @@ PMP_HSvZicbo_cg_cp_pmp_vu_sv32x4_l0_pmp001_cbo_inval:
   LA(x6, rvtest_code_begin)
   LA(x14, Vtramptbl_sv)
   SREG x6, code_bgn_off(x14)
+  LI(x8, HENVCFG_CBIE | HENVCFG_CBCFE | HENVCFG_CBZE)
+  csrc henvcfg, x8
+  LI(x8, SENVCFG_CBIE | SENVCFG_CBCFE | SENVCFG_CBZE)
+  csrc senvcfg, x8
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -728,7 +732,7 @@ RVTEST_DATA_BEGIN
 
   .p2align 12
 svhzicbo_data:
-  .fill 1024, 4, 0x0C0B0000
+  .fill 1024, 4, 0xc0b0000
 #if __riscv_xlen == 32
   .ifndef rvtest_hlvl0_pg_tbl
   .p2align 12

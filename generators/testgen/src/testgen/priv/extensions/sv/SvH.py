@@ -536,38 +536,49 @@ def _t_g_pte(test_data: TestData, test_chunks: list[TestChunk], g: SvMode) -> No
 def _t_gpa_width(test_data: TestData, test_chunks: list[TestChunk], g: SvMode) -> None:
     """Guest physical addresses with one bit set; bits beyond the mode's width fault.
 
-    The set bit starts at bit 37, above the guest physical addresses of the test image and the other tests, or at
-    the lowest root-table index bit if that is higher, because the address is mapped by a root-table leaf.
+    The set bit starts at bit 37, above the guest physical addresses of the test image and the other tests.  A leaf
+    at the highest level whose page offset is at most the bit maps the address.  Below the root, that walk shares
+    the PTEs above the leaf with the test image, so the image is identity mapped again at the leaf's level.
     """
     top = g.levels - 1
     width = g.va_bits
-    first_bit = max(37, g.page_offset_bits(top))
+    first_bit = 37
     chunk = begin_chunk(
         test_data,
         f"H_{g.name}_gpa_width",
         "cp_hgatp_gpa_width",
         f"In VS-mode with vsatp = Bare and hgatp = {g.extension}, load from guest physical addresses with one of\n"
-        f"bits {first_bit}-63 set.  Bits below {width} translate through a root-table leaf; bits {width}-63 must be\n"
+        f"bits {first_bit}-63 set.  Bits below {width} translate through a superpage leaf; bits {width}-63 must be\n"
         "zero, or a guest-page fault occurs",
+        (g,),
     )
     code = guest_chunk_setup(test_data, g, None, "VS")
     for bit in range(first_bit, 64):
+        gpa = hex(1 << bit)
+        level = max(lvl for lvl in range(g.levels) if g.page_offset_bits(lvl) <= bit)
         setup = []
         if bit < width:
             pte, addr, tmp = test_data.int_regs.get_registers(3)
+            regs = (pte, addr, tmp)
+            if level < top:
+                setup = [
+                    *create_page_walk(g, leaf_level=level, virtual_address=gpa, regs=regs),
+                    *identity_map_image(((g, PteFlags(user=True)),), regs, level),
+                ]
             setup = [
+                *setup,
                 *write_pte(
                     g,
-                    level=top,
+                    level=level,
                     flags=PteFlags(user=True),
-                    virtual_address=hex(1 << bit),
+                    virtual_address=gpa,
                     physical_address="svh_page",
-                    regs=(pte, addr, tmp),
+                    regs=regs,
                     superpage=True,
                 ),
                 "hfence.gvma",
             ]
-            test_data.int_regs.return_registers([pte, addr, tmp])
+            test_data.int_regs.return_registers(list(regs))
         code.extend(
             guest_access(
                 test_data,
@@ -575,11 +586,11 @@ def _t_gpa_width(test_data: TestData, test_chunks: list[TestChunk], g: SvMode) -
                 "cp_hgatp_gpa_width",
                 f"bit{bit}",
                 "VS",
-                hex(1 << bit),
+                gpa,
                 setup=setup,
                 ops=("load",),
                 sv=g,
-                level=top,
+                level=level,
             )
         )
     chunk.code.extend([*code, *guest_chunk_teardown(test_data, g.xlen)])
@@ -884,43 +895,27 @@ def map_straddle_pages(
     return lines
 
 
-def _t_straddle(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs: SvMode) -> None:
-    """An instruction fetch that straddles a page boundary faults on the second page."""
-    chunk = begin_chunk(
-        test_data,
-        f"H_{g.name}_straddle",
-        "cp_straddle",
+def _t_straddle(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs: SvMode, fetch: bool) -> None:
+    """An instruction fetch, or a misaligned store or load, that straddles a page boundary faults on the second
+    page."""
+    name = "straddle" if fetch else "ldst_straddle"
+    coverpoint = f"cp_{name}"
+    description = (
         "In VS-mode, execute a 4-byte instruction in the last halfword of a page whose next page is mapped, has an\n"
         "invalid G-stage leaf (instruction guest-page fault) or an invalid VS-stage leaf (instruction page fault).\n"
-        "stval holds the address of the next page",
-        stages=(g, vs),
-    )
-    code = guest_chunk_setup(test_data, g, vs, "VS")
-    for name, vs_valid, g_valid in STRADDLE_CASES:
-        setup = map_straddle_pages(test_data, g, vs, vs_valid=vs_valid, g_valid=g_valid)
-        va = f"{vs.data_va} + 0xffe"
-        code.extend(guest_access(test_data, TWO_CG, "cp_straddle", name, "VS", va, setup=setup, ops=("exec",)))
-    chunk.code.extend([*code, *guest_chunk_teardown(test_data, g.xlen)])
-    test_chunks.append(test_data.end_test_chunk())
-
-
-def _t_ldst_straddle(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs: SvMode) -> None:
-    """A misaligned store or load that straddles a page boundary faults on the second page."""
-    chunk = begin_chunk(
-        test_data,
-        f"H_{g.name}_ldst_straddle",
-        "cp_ldst_straddle",
-        "In VS-mode, store and load the word two bytes below the end of a page whose next page is mapped, has an\n"
+        "stval holds the address of the next page"
+        if fetch
+        else "In VS-mode, store and load the word two bytes below the end of a page whose next page is mapped, has an\n"
         "invalid G-stage leaf (guest-page fault) or an invalid VS-stage leaf (page fault).  The hart performs\n"
-        "misaligned accesses byte by byte, so stval holds the address of the next page",
-        stages=(g, vs),
+        "misaligned accesses byte by byte, so stval holds the address of the next page"
     )
+    chunk = begin_chunk(test_data, f"H_{g.name}_{name}", coverpoint, description, stages=(g, vs))
     code = guest_chunk_setup(test_data, g, vs, "VS")
-    for name, vs_valid, g_valid in STRADDLE_CASES:
+    va = f"{vs.data_va} + {0xFFE if fetch else 0xFF6:#x}"
+    ops = ("exec",) if fetch else ("store", "load")
+    for case, vs_valid, g_valid in STRADDLE_CASES:
         setup = map_straddle_pages(test_data, g, vs, vs_valid=vs_valid, g_valid=g_valid)
-        va = f"{vs.data_va} + 0xff6"
-        ops = ("store", "load")
-        code.extend(guest_access(test_data, TWO_CG, "cp_ldst_straddle", name, "VS", va, setup=setup, ops=ops))
+        code.extend(guest_access(test_data, TWO_CG, coverpoint, case, "VS", va, setup=setup, ops=ops))
     chunk.code.extend([*code, *guest_chunk_teardown(test_data, g.xlen)])
     test_chunks.append(test_data.end_test_chunk())
 
@@ -1448,13 +1443,13 @@ def _make_svh(test_data: TestData, g: SvMode, vs: SvMode) -> list[TestChunk]:
 
 def _make_svh_straddle(test_data: TestData, g: SvMode, vs: SvMode) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
-    _t_straddle(test_data, test_chunks, g, vs)
+    _t_straddle(test_data, test_chunks, g, vs, fetch=True)
     return test_chunks
 
 
 def _make_svh_ldst_straddle(test_data: TestData, g: SvMode, vs: SvMode) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
-    _t_ldst_straddle(test_data, test_chunks, g, vs)
+    _t_straddle(test_data, test_chunks, g, vs, fetch=False)
     return test_chunks
 
 

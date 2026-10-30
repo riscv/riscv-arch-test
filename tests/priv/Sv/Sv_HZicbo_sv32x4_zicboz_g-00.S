@@ -164,7 +164,7 @@ RVTEST_BEGIN
   srli x15, x15, 10
   add x6, x6, x15
   LA(x15, svhzicbo_data)
-  LI(x14, 0x0C0B0000)
+  LI(x14, 0xc0b0000)
   sw x14, 0(x15)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l1_valid_cbo_zero:
@@ -192,7 +192,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l1_valid_cbo_zero:
   srli x9, x9, 10
   add x6, x6, x9
   LA(x9, svhzicbo_data)
-  LI(x15, 0x0C0B0000)
+  LI(x15, 0xc0b0000)
   sw x15, 0(x9)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l1_v0_cbo_zero:
@@ -220,7 +220,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l1_v0_cbo_zero:
   srli x8, x8, 10
   add x6, x6, x8
   LA(x8, svhzicbo_data)
-  LI(x15, 0x0C0B0000)
+  LI(x15, 0xc0b0000)
   sw x15, 0(x8)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l1_wx_cbo_zero:
@@ -248,7 +248,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l1_wx_cbo_zero:
   srli x15, x15, 10
   add x6, x6, x15
   LA(x15, svhzicbo_data)
-  LI(x9, 0x0C0B0000)
+  LI(x9, 0xc0b0000)
   sw x9, 0(x15)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l1_w_cbo_zero:
@@ -276,7 +276,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l1_w_cbo_zero:
   srli x8, x8, 10
   add x6, x6, x8
   LA(x8, svhzicbo_data)
-  LI(x9, 0x0C0B0000)
+  LI(x9, 0xc0b0000)
   sw x9, 0(x8)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l1_rx_cbo_zero:
@@ -304,7 +304,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l1_rx_cbo_zero:
   srli x8, x8, 10
   add x6, x6, x8
   LA(x8, svhzicbo_data)
-  LI(x9, 0x0C0B0000)
+  LI(x9, 0xc0b0000)
   sw x9, 0(x8)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l1_x_cbo_zero:
@@ -332,7 +332,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l1_x_cbo_zero:
   srli x13, x13, 10
   add x6, x6, x13
   LA(x13, svhzicbo_data)
-  LI(x14, 0x0C0B0000)
+  LI(x14, 0xc0b0000)
   sw x14, 0(x13)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l1_a0_cbo_zero:
@@ -360,7 +360,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l1_a0_cbo_zero:
   srli x9, x9, 10
   add x6, x6, x9
   LA(x9, svhzicbo_data)
-  LI(x13, 0x0C0B0000)
+  LI(x13, 0xc0b0000)
   sw x13, 0(x9)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l1_d0_cbo_zero:
@@ -410,7 +410,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l1_misaligned_cbo_zero:
   srli x13, x13, 10
   add x6, x6, x13
   LA(x13, svhzicbo_data)
-  LI(x14, 0x0C0B0000)
+  LI(x14, 0xc0b0000)
   sw x14, 0(x13)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l1_u0_cbo_zero:
@@ -465,7 +465,7 @@ Sv_HZicbo_cg_cp_g_pa_vs_sv32x4_l1_leaf_access_fault_cbo_zero:
   srli x15, x15, 20
   add x6, x6, x15
   LA(x15, svhzicbo_data)
-  LI(x8, 0x0C0B0000)
+  LI(x8, 0xc0b0000)
   sw x8, 0(x15)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l0_valid_cbo_zero:
@@ -500,7 +500,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l0_valid_cbo_zero:
   srli x15, x15, 20
   add x6, x6, x15
   LA(x15, svhzicbo_data)
-  LI(x14, 0x0C0B0000)
+  LI(x14, 0xc0b0000)
   sw x14, 0(x15)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l0_v0_cbo_zero:
@@ -535,7 +535,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l0_v0_cbo_zero:
   srli x15, x15, 20
   add x6, x6, x15
   LA(x15, svhzicbo_data)
-  LI(x14, 0x0C0B0000)
+  LI(x14, 0xc0b0000)
   sw x14, 0(x15)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l0_wx_cbo_zero:
@@ -570,7 +570,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l0_wx_cbo_zero:
   srli x8, x8, 20
   add x6, x6, x8
   LA(x8, svhzicbo_data)
-  LI(x9, 0x0C0B0000)
+  LI(x9, 0xc0b0000)
   sw x9, 0(x8)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l0_w_cbo_zero:
@@ -605,7 +605,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l0_w_cbo_zero:
   srli x9, x9, 20
   add x6, x6, x9
   LA(x9, svhzicbo_data)
-  LI(x8, 0x0C0B0000)
+  LI(x8, 0xc0b0000)
   sw x8, 0(x9)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l0_rx_cbo_zero:
@@ -640,7 +640,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l0_rx_cbo_zero:
   srli x13, x13, 20
   add x6, x6, x13
   LA(x13, svhzicbo_data)
-  LI(x14, 0x0C0B0000)
+  LI(x14, 0xc0b0000)
   sw x14, 0(x13)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l0_x_cbo_zero:
@@ -675,7 +675,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l0_x_cbo_zero:
   srli x14, x14, 20
   add x6, x6, x14
   LA(x14, svhzicbo_data)
-  LI(x8, 0x0C0B0000)
+  LI(x8, 0xc0b0000)
   sw x8, 0(x14)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l0_a0_cbo_zero:
@@ -710,7 +710,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l0_a0_cbo_zero:
   srli x15, x15, 20
   add x6, x6, x15
   LA(x15, svhzicbo_data)
-  LI(x13, 0x0C0B0000)
+  LI(x13, 0xc0b0000)
   sw x13, 0(x15)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l0_d0_cbo_zero:
@@ -745,7 +745,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l0_d0_cbo_zero:
   srli x14, x14, 20
   add x6, x6, x14
   LA(x14, svhzicbo_data)
-  LI(x13, 0x0C0B0000)
+  LI(x13, 0xc0b0000)
   sw x13, 0(x14)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l0_pointer_cbo_zero:
@@ -780,7 +780,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l0_pointer_cbo_zero:
   srli x13, x13, 20
   add x6, x6, x13
   LA(x13, svhzicbo_data)
-  LI(x14, 0x0C0B0000)
+  LI(x14, 0xc0b0000)
   sw x14, 0(x13)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l0_nonleaf_d_cbo_zero:
@@ -815,7 +815,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l0_nonleaf_d_cbo_zero:
   srli x15, x15, 20
   add x6, x6, x15
   LA(x15, svhzicbo_data)
-  LI(x9, 0x0C0B0000)
+  LI(x9, 0xc0b0000)
   sw x9, 0(x15)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l0_nonleaf_a_cbo_zero:
@@ -850,7 +850,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l0_nonleaf_a_cbo_zero:
   srli x14, x14, 20
   add x6, x6, x14
   LA(x14, svhzicbo_data)
-  LI(x15, 0x0C0B0000)
+  LI(x15, 0xc0b0000)
   sw x15, 0(x14)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l0_nonleaf_u_cbo_zero:
@@ -885,7 +885,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l0_nonleaf_u_cbo_zero:
   srli x13, x13, 20
   add x6, x6, x13
   LA(x13, svhzicbo_data)
-  LI(x15, 0x0C0B0000)
+  LI(x15, 0xc0b0000)
   sw x15, 0(x13)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_g_pte_vs_sv32x4_l0_u0_cbo_zero:
@@ -951,7 +951,7 @@ Sv_HZicbo_cg_cp_g_pa_vs_sv32x4_l0_leaf_access_fault_cbo_zero:
   srli x15, x15, 20
   add x6, x6, x15
   LA(x15, svhzicbo_data)
-  LI(x8, 0x0C0B0000)
+  LI(x8, 0xc0b0000)
   sw x8, 0(x15)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_g_pa_vs_sv32x4_l0_nonleaf_access_fault_cbo_zero:
@@ -1092,7 +1092,7 @@ Sv_HZicbo_cg_cp_g_pa_vs_sv32x4_l0_nonleaf_access_fault_cbo_zero:
   srli x15, x15, 10
   add x6, x6, x15
   LA(x15, svhzicbo_data)
-  LI(x13, 0x0C0B0000)
+  LI(x13, 0xc0b0000)
   sw x13, 0(x15)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l1_valid_cbo_zero:
@@ -1120,7 +1120,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l1_valid_cbo_zero:
   srli x15, x15, 10
   add x6, x6, x15
   LA(x15, svhzicbo_data)
-  LI(x8, 0x0C0B0000)
+  LI(x8, 0xc0b0000)
   sw x8, 0(x15)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l1_v0_cbo_zero:
@@ -1148,7 +1148,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l1_v0_cbo_zero:
   srli x9, x9, 10
   add x6, x6, x9
   LA(x9, svhzicbo_data)
-  LI(x13, 0x0C0B0000)
+  LI(x13, 0xc0b0000)
   sw x13, 0(x9)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l1_wx_cbo_zero:
@@ -1176,7 +1176,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l1_wx_cbo_zero:
   srli x15, x15, 10
   add x6, x6, x15
   LA(x15, svhzicbo_data)
-  LI(x14, 0x0C0B0000)
+  LI(x14, 0xc0b0000)
   sw x14, 0(x15)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l1_w_cbo_zero:
@@ -1204,7 +1204,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l1_w_cbo_zero:
   srli x8, x8, 10
   add x6, x6, x8
   LA(x8, svhzicbo_data)
-  LI(x14, 0x0C0B0000)
+  LI(x14, 0xc0b0000)
   sw x14, 0(x8)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l1_rx_cbo_zero:
@@ -1232,7 +1232,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l1_rx_cbo_zero:
   srli x8, x8, 10
   add x6, x6, x8
   LA(x8, svhzicbo_data)
-  LI(x9, 0x0C0B0000)
+  LI(x9, 0xc0b0000)
   sw x9, 0(x8)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l1_x_cbo_zero:
@@ -1260,7 +1260,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l1_x_cbo_zero:
   srli x13, x13, 10
   add x6, x6, x13
   LA(x13, svhzicbo_data)
-  LI(x15, 0x0C0B0000)
+  LI(x15, 0xc0b0000)
   sw x15, 0(x13)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l1_a0_cbo_zero:
@@ -1288,7 +1288,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l1_a0_cbo_zero:
   srli x14, x14, 10
   add x6, x6, x14
   LA(x14, svhzicbo_data)
-  LI(x8, 0x0C0B0000)
+  LI(x8, 0xc0b0000)
   sw x8, 0(x14)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l1_d0_cbo_zero:
@@ -1338,7 +1338,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l1_misaligned_cbo_zero:
   srli x14, x14, 10
   add x6, x6, x14
   LA(x14, svhzicbo_data)
-  LI(x13, 0x0C0B0000)
+  LI(x13, 0xc0b0000)
   sw x13, 0(x14)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l1_u0_cbo_zero:
@@ -1393,7 +1393,7 @@ Sv_HZicbo_cg_cp_g_pa_vu_sv32x4_l1_leaf_access_fault_cbo_zero:
   srli x14, x14, 20
   add x6, x6, x14
   LA(x14, svhzicbo_data)
-  LI(x8, 0x0C0B0000)
+  LI(x8, 0xc0b0000)
   sw x8, 0(x14)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l0_valid_cbo_zero:
@@ -1428,7 +1428,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l0_valid_cbo_zero:
   srli x13, x13, 20
   add x6, x6, x13
   LA(x13, svhzicbo_data)
-  LI(x8, 0x0C0B0000)
+  LI(x8, 0xc0b0000)
   sw x8, 0(x13)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l0_v0_cbo_zero:
@@ -1463,7 +1463,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l0_v0_cbo_zero:
   srli x14, x14, 20
   add x6, x6, x14
   LA(x14, svhzicbo_data)
-  LI(x13, 0x0C0B0000)
+  LI(x13, 0xc0b0000)
   sw x13, 0(x14)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l0_wx_cbo_zero:
@@ -1498,7 +1498,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l0_wx_cbo_zero:
   srli x8, x8, 20
   add x6, x6, x8
   LA(x8, svhzicbo_data)
-  LI(x9, 0x0C0B0000)
+  LI(x9, 0xc0b0000)
   sw x9, 0(x8)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l0_w_cbo_zero:
@@ -1533,7 +1533,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l0_w_cbo_zero:
   srli x13, x13, 20
   add x6, x6, x13
   LA(x13, svhzicbo_data)
-  LI(x9, 0x0C0B0000)
+  LI(x9, 0xc0b0000)
   sw x9, 0(x13)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l0_rx_cbo_zero:
@@ -1568,7 +1568,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l0_rx_cbo_zero:
   srli x9, x9, 20
   add x6, x6, x9
   LA(x9, svhzicbo_data)
-  LI(x15, 0x0C0B0000)
+  LI(x15, 0xc0b0000)
   sw x15, 0(x9)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l0_x_cbo_zero:
@@ -1603,7 +1603,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l0_x_cbo_zero:
   srli x9, x9, 20
   add x6, x6, x9
   LA(x9, svhzicbo_data)
-  LI(x14, 0x0C0B0000)
+  LI(x14, 0xc0b0000)
   sw x14, 0(x9)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l0_a0_cbo_zero:
@@ -1638,7 +1638,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l0_a0_cbo_zero:
   srli x15, x15, 20
   add x6, x6, x15
   LA(x15, svhzicbo_data)
-  LI(x9, 0x0C0B0000)
+  LI(x9, 0xc0b0000)
   sw x9, 0(x15)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l0_d0_cbo_zero:
@@ -1673,7 +1673,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l0_d0_cbo_zero:
   srli x13, x13, 20
   add x6, x6, x13
   LA(x13, svhzicbo_data)
-  LI(x9, 0x0C0B0000)
+  LI(x9, 0xc0b0000)
   sw x9, 0(x13)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l0_pointer_cbo_zero:
@@ -1708,7 +1708,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l0_pointer_cbo_zero:
   srli x9, x9, 20
   add x6, x6, x9
   LA(x9, svhzicbo_data)
-  LI(x13, 0x0C0B0000)
+  LI(x13, 0xc0b0000)
   sw x13, 0(x9)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l0_nonleaf_d_cbo_zero:
@@ -1743,7 +1743,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l0_nonleaf_d_cbo_zero:
   srli x14, x14, 20
   add x6, x6, x14
   LA(x14, svhzicbo_data)
-  LI(x13, 0x0C0B0000)
+  LI(x13, 0xc0b0000)
   sw x13, 0(x14)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l0_nonleaf_a_cbo_zero:
@@ -1778,7 +1778,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l0_nonleaf_a_cbo_zero:
   srli x8, x8, 20
   add x6, x6, x8
   LA(x8, svhzicbo_data)
-  LI(x14, 0x0C0B0000)
+  LI(x14, 0xc0b0000)
   sw x14, 0(x8)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l0_nonleaf_u_cbo_zero:
@@ -1813,7 +1813,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l0_nonleaf_u_cbo_zero:
   srli x13, x13, 20
   add x6, x6, x13
   LA(x13, svhzicbo_data)
-  LI(x9, 0x0C0B0000)
+  LI(x9, 0xc0b0000)
   sw x9, 0(x13)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_g_pte_vu_sv32x4_l0_u0_cbo_zero:
@@ -1879,7 +1879,7 @@ Sv_HZicbo_cg_cp_g_pa_vu_sv32x4_l0_leaf_access_fault_cbo_zero:
   srli x9, x9, 20
   add x6, x6, x9
   LA(x9, svhzicbo_data)
-  LI(x13, 0x0C0B0000)
+  LI(x13, 0xc0b0000)
   sw x13, 0(x9)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_g_pa_vu_sv32x4_l0_nonleaf_access_fault_cbo_zero:
@@ -1896,6 +1896,10 @@ Sv_HZicbo_cg_cp_g_pa_vu_sv32x4_l0_nonleaf_access_fault_cbo_zero:
   LA(x14, rvtest_code_begin)
   LA(x9, Vtramptbl_sv)
   SREG x14, code_bgn_off(x9)
+  LI(x6, HENVCFG_CBIE | HENVCFG_CBCFE | HENVCFG_CBZE)
+  csrc henvcfg, x6
+  LI(x6, SENVCFG_CBIE | SENVCFG_CBCFE | SENVCFG_CBZE)
+  csrc senvcfg, x6
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -1907,7 +1911,7 @@ RVTEST_DATA_BEGIN
 
   .p2align 12
 svhzicbo_data:
-  .fill 1024, 4, 0x0C0B0000
+  .fill 1024, 4, 0xc0b0000
 #if __riscv_xlen == 32
   .ifndef rvtest_hlvl0_pg_tbl
   .p2align 12

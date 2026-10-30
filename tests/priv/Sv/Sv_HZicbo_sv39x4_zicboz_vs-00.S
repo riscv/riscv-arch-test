@@ -161,7 +161,7 @@ RVTEST_BEGIN
   srli x13, x13, 34
   add x8, x8, x13
   LA(x13, svhzicbo_data)
-  LI(x15, 0x0C0B0000)
+  LI(x15, 0xc0b0000)
   sw x15, 0(x13)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l2_valid_cbo_zero:
@@ -186,7 +186,7 @@ Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l2_valid_cbo_zero:
   srli x9, x9, 34
   add x8, x8, x9
   LA(x9, svhzicbo_data)
-  LI(x6, 0x0C0B0000)
+  LI(x6, 0xc0b0000)
   sw x6, 0(x9)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l2_v0_cbo_zero:
@@ -211,7 +211,7 @@ Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l2_v0_cbo_zero:
   srli x9, x9, 34
   add x8, x8, x9
   LA(x9, svhzicbo_data)
-  LI(x15, 0x0C0B0000)
+  LI(x15, 0xc0b0000)
   sw x15, 0(x9)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l2_wx_cbo_zero:
@@ -236,7 +236,7 @@ Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l2_wx_cbo_zero:
   srli x15, x15, 34
   add x8, x8, x15
   LA(x15, svhzicbo_data)
-  LI(x13, 0x0C0B0000)
+  LI(x13, 0xc0b0000)
   sw x13, 0(x15)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l2_w_cbo_zero:
@@ -261,7 +261,7 @@ Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l2_w_cbo_zero:
   srli x13, x13, 34
   add x8, x8, x13
   LA(x13, svhzicbo_data)
-  LI(x6, 0x0C0B0000)
+  LI(x6, 0xc0b0000)
   sw x6, 0(x13)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l2_rx_cbo_zero:
@@ -286,7 +286,7 @@ Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l2_rx_cbo_zero:
   srli x13, x13, 34
   add x8, x8, x13
   LA(x13, svhzicbo_data)
-  LI(x15, 0x0C0B0000)
+  LI(x15, 0xc0b0000)
   sw x15, 0(x13)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l2_x_cbo_zero:
@@ -311,7 +311,7 @@ Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l2_x_cbo_zero:
   srli x13, x13, 34
   add x8, x8, x13
   LA(x13, svhzicbo_data)
-  LI(x9, 0x0C0B0000)
+  LI(x9, 0xc0b0000)
   sw x9, 0(x13)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l2_a0_cbo_zero:
@@ -336,7 +336,7 @@ Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l2_a0_cbo_zero:
   srli x9, x9, 34
   add x8, x8, x9
   LA(x9, svhzicbo_data)
-  LI(x6, 0x0C0B0000)
+  LI(x6, 0xc0b0000)
   sw x6, 0(x9)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l2_d0_cbo_zero:
@@ -380,7 +380,7 @@ Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l2_misaligned_cbo_zero:
   srli x15, x15, 34
   add x8, x8, x15
   LA(x15, svhzicbo_data)
-  LI(x6, 0x0C0B0000)
+  LI(x6, 0xc0b0000)
   sw x6, 0(x15)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l2_u1_sum0_cbo_zero:
@@ -405,7 +405,7 @@ Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l2_u1_sum0_cbo_zero:
   srli x9, x9, 34
   add x8, x8, x9
   LA(x9, svhzicbo_data)
-  LI(x13, 0x0C0B0000)
+  LI(x13, 0xc0b0000)
   sw x13, 0(x9)
   RVTEST_TSBI_GOTO_VSMODE
   LI(x14, SSTATUS_SUM)
@@ -432,7 +432,7 @@ Sv_HZicbo_cg_cp_vs_sum_vs_sv39_l2_u1_sum1_cbo_zero:
   srli x15, x15, 34
   add x8, x8, x15
   LA(x15, svhzicbo_data)
-  LI(x13, 0x0C0B0000)
+  LI(x13, 0xc0b0000)
   sw x13, 0(x15)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_vs_gpa_vs_sv39_l2_leaf_gpa_unmapped_cbo_zero:
@@ -464,7 +464,7 @@ Sv_HZicbo_cg_cp_vs_gpa_vs_sv39_l2_leaf_gpa_unmapped_cbo_zero:
   srli x6, x6, 43
   add x8, x8, x6
   LA(x6, svhzicbo_data)
-  LI(x13, 0x0C0B0000)
+  LI(x13, 0xc0b0000)
   sw x13, 0(x6)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l1_valid_cbo_zero:
@@ -496,7 +496,7 @@ Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l1_valid_cbo_zero:
   srli x15, x15, 43
   add x8, x8, x15
   LA(x15, svhzicbo_data)
-  LI(x6, 0x0C0B0000)
+  LI(x6, 0xc0b0000)
   sw x6, 0(x15)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l1_v0_cbo_zero:
@@ -528,7 +528,7 @@ Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l1_v0_cbo_zero:
   srli x13, x13, 43
   add x8, x8, x13
   LA(x13, svhzicbo_data)
-  LI(x6, 0x0C0B0000)
+  LI(x6, 0xc0b0000)
   sw x6, 0(x13)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l1_wx_cbo_zero:
@@ -560,7 +560,7 @@ Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l1_wx_cbo_zero:
   srli x13, x13, 43
   add x8, x8, x13
   LA(x13, svhzicbo_data)
-  LI(x6, 0x0C0B0000)
+  LI(x6, 0xc0b0000)
   sw x6, 0(x13)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l1_w_cbo_zero:
@@ -592,7 +592,7 @@ Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l1_w_cbo_zero:
   srli x13, x13, 43
   add x8, x8, x13
   LA(x13, svhzicbo_data)
-  LI(x15, 0x0C0B0000)
+  LI(x15, 0xc0b0000)
   sw x15, 0(x13)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l1_rx_cbo_zero:
@@ -624,7 +624,7 @@ Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l1_rx_cbo_zero:
   srli x15, x15, 43
   add x8, x8, x15
   LA(x15, svhzicbo_data)
-  LI(x6, 0x0C0B0000)
+  LI(x6, 0xc0b0000)
   sw x6, 0(x15)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l1_x_cbo_zero:
@@ -656,7 +656,7 @@ Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l1_x_cbo_zero:
   srli x6, x6, 43
   add x8, x8, x6
   LA(x6, svhzicbo_data)
-  LI(x15, 0x0C0B0000)
+  LI(x15, 0xc0b0000)
   sw x15, 0(x6)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l1_a0_cbo_zero:
@@ -688,7 +688,7 @@ Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l1_a0_cbo_zero:
   srli x13, x13, 43
   add x8, x8, x13
   LA(x13, svhzicbo_data)
-  LI(x9, 0x0C0B0000)
+  LI(x9, 0xc0b0000)
   sw x9, 0(x13)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l1_d0_cbo_zero:
@@ -720,7 +720,7 @@ Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l1_d0_cbo_zero:
   srli x9, x9, 43
   add x8, x8, x9
   LA(x9, svhzicbo_data)
-  LI(x13, 0x0C0B0000)
+  LI(x13, 0xc0b0000)
   sw x13, 0(x9)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l1_nonleaf_d_cbo_zero:
@@ -752,7 +752,7 @@ Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l1_nonleaf_d_cbo_zero:
   srli x13, x13, 43
   add x8, x8, x13
   LA(x13, svhzicbo_data)
-  LI(x9, 0x0C0B0000)
+  LI(x9, 0xc0b0000)
   sw x9, 0(x13)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l1_nonleaf_a_cbo_zero:
@@ -784,7 +784,7 @@ Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l1_nonleaf_a_cbo_zero:
   srli x9, x9, 43
   add x8, x8, x9
   LA(x9, svhzicbo_data)
-  LI(x6, 0x0C0B0000)
+  LI(x6, 0xc0b0000)
   sw x6, 0(x9)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l1_nonleaf_u_cbo_zero:
@@ -842,7 +842,7 @@ Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l1_misaligned_cbo_zero:
   srli x13, x13, 43
   add x8, x8, x13
   LA(x13, svhzicbo_data)
-  LI(x9, 0x0C0B0000)
+  LI(x9, 0xc0b0000)
   sw x9, 0(x13)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l1_u1_sum0_cbo_zero:
@@ -874,7 +874,7 @@ Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l1_u1_sum0_cbo_zero:
   srli x9, x9, 43
   add x8, x8, x9
   LA(x9, svhzicbo_data)
-  LI(x15, 0x0C0B0000)
+  LI(x15, 0xc0b0000)
   sw x15, 0(x9)
   RVTEST_TSBI_GOTO_VSMODE
   LI(x14, SSTATUS_SUM)
@@ -908,7 +908,7 @@ Sv_HZicbo_cg_cp_vs_sum_vs_sv39_l1_u1_sum1_cbo_zero:
   srli x15, x15, 43
   add x8, x8, x15
   LA(x15, svhzicbo_data)
-  LI(x6, 0x0C0B0000)
+  LI(x6, 0xc0b0000)
   sw x6, 0(x15)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_vs_gpa_vs_sv39_l1_leaf_gpa_unmapped_cbo_zero:
@@ -946,7 +946,7 @@ Sv_HZicbo_cg_cp_vs_gpa_vs_sv39_l1_leaf_gpa_unmapped_cbo_zero:
   srli x6, x6, 43
   add x8, x8, x6
   LA(x6, svhzicbo_data)
-  LI(x9, 0x0C0B0000)
+  LI(x9, 0xc0b0000)
   sw x9, 0(x6)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_vs_gpa_vs_sv39_l1_nonleaf_gpa_unmapped_cbo_zero:
@@ -999,7 +999,7 @@ Sv_HZicbo_cg_cp_vs_gpa_vs_sv39_l1_nonleaf_gpa_unmapped_cbo_zero:
   srli x9, x9, 43
   add x8, x8, x9
   LA(x9, svhzicbo_data)
-  LI(x13, 0x0C0B0000)
+  LI(x13, 0xc0b0000)
   sw x13, 0(x9)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_vs_gpa_vs_sv39_l1_nonleaf_gpa_access_fault_cbo_zero:
@@ -1039,7 +1039,7 @@ Sv_HZicbo_cg_cp_vs_gpa_vs_sv39_l1_nonleaf_gpa_access_fault_cbo_zero:
   srli x13, x13, 52
   add x8, x8, x13
   LA(x13, svhzicbo_data)
-  LI(x6, 0x0C0B0000)
+  LI(x6, 0xc0b0000)
   sw x6, 0(x13)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l0_valid_cbo_zero:
@@ -1078,7 +1078,7 @@ Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l0_valid_cbo_zero:
   srli x6, x6, 52
   add x8, x8, x6
   LA(x6, svhzicbo_data)
-  LI(x9, 0x0C0B0000)
+  LI(x9, 0xc0b0000)
   sw x9, 0(x6)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l0_v0_cbo_zero:
@@ -1117,7 +1117,7 @@ Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l0_v0_cbo_zero:
   srli x15, x15, 52
   add x8, x8, x15
   LA(x15, svhzicbo_data)
-  LI(x9, 0x0C0B0000)
+  LI(x9, 0xc0b0000)
   sw x9, 0(x15)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l0_wx_cbo_zero:
@@ -1156,7 +1156,7 @@ Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l0_wx_cbo_zero:
   srli x6, x6, 52
   add x8, x8, x6
   LA(x6, svhzicbo_data)
-  LI(x9, 0x0C0B0000)
+  LI(x9, 0xc0b0000)
   sw x9, 0(x6)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l0_w_cbo_zero:
@@ -1195,7 +1195,7 @@ Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l0_w_cbo_zero:
   srli x6, x6, 52
   add x8, x8, x6
   LA(x6, svhzicbo_data)
-  LI(x15, 0x0C0B0000)
+  LI(x15, 0xc0b0000)
   sw x15, 0(x6)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l0_rx_cbo_zero:
@@ -1234,7 +1234,7 @@ Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l0_rx_cbo_zero:
   srli x15, x15, 52
   add x8, x8, x15
   LA(x15, svhzicbo_data)
-  LI(x6, 0x0C0B0000)
+  LI(x6, 0xc0b0000)
   sw x6, 0(x15)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l0_x_cbo_zero:
@@ -1273,7 +1273,7 @@ Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l0_x_cbo_zero:
   srli x13, x13, 52
   add x8, x8, x13
   LA(x13, svhzicbo_data)
-  LI(x6, 0x0C0B0000)
+  LI(x6, 0xc0b0000)
   sw x6, 0(x13)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l0_a0_cbo_zero:
@@ -1312,7 +1312,7 @@ Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l0_a0_cbo_zero:
   srli x13, x13, 52
   add x8, x8, x13
   LA(x13, svhzicbo_data)
-  LI(x6, 0x0C0B0000)
+  LI(x6, 0xc0b0000)
   sw x6, 0(x13)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l0_d0_cbo_zero:
@@ -1351,7 +1351,7 @@ Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l0_d0_cbo_zero:
   srli x9, x9, 52
   add x8, x8, x9
   LA(x9, svhzicbo_data)
-  LI(x13, 0x0C0B0000)
+  LI(x13, 0xc0b0000)
   sw x13, 0(x9)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l0_pointer_cbo_zero:
@@ -1390,7 +1390,7 @@ Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l0_pointer_cbo_zero:
   srli x6, x6, 52
   add x8, x8, x6
   LA(x6, svhzicbo_data)
-  LI(x13, 0x0C0B0000)
+  LI(x13, 0xc0b0000)
   sw x13, 0(x6)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l0_nonleaf_d_cbo_zero:
@@ -1429,7 +1429,7 @@ Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l0_nonleaf_d_cbo_zero:
   srli x13, x13, 52
   add x8, x8, x13
   LA(x13, svhzicbo_data)
-  LI(x9, 0x0C0B0000)
+  LI(x9, 0xc0b0000)
   sw x9, 0(x13)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l0_nonleaf_a_cbo_zero:
@@ -1468,7 +1468,7 @@ Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l0_nonleaf_a_cbo_zero:
   srli x9, x9, 52
   add x8, x8, x9
   LA(x9, svhzicbo_data)
-  LI(x13, 0x0C0B0000)
+  LI(x13, 0xc0b0000)
   sw x13, 0(x9)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l0_nonleaf_u_cbo_zero:
@@ -1507,7 +1507,7 @@ Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l0_nonleaf_u_cbo_zero:
   srli x13, x13, 52
   add x8, x8, x13
   LA(x13, svhzicbo_data)
-  LI(x9, 0x0C0B0000)
+  LI(x9, 0xc0b0000)
   sw x9, 0(x13)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l0_u1_sum0_cbo_zero:
@@ -1546,7 +1546,7 @@ Sv_HZicbo_cg_cp_vs_pte_vs_sv39_l0_u1_sum0_cbo_zero:
   srli x9, x9, 52
   add x8, x8, x9
   LA(x9, svhzicbo_data)
-  LI(x13, 0x0C0B0000)
+  LI(x13, 0xc0b0000)
   sw x13, 0(x9)
   RVTEST_TSBI_GOTO_VSMODE
   LI(x14, SSTATUS_SUM)
@@ -1587,7 +1587,7 @@ Sv_HZicbo_cg_cp_vs_sum_vs_sv39_l0_u1_sum1_cbo_zero:
   srli x15, x15, 52
   add x8, x8, x15
   LA(x15, svhzicbo_data)
-  LI(x6, 0x0C0B0000)
+  LI(x6, 0xc0b0000)
   sw x6, 0(x15)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_vs_gpa_vs_sv39_l0_leaf_gpa_unmapped_cbo_zero:
@@ -1632,7 +1632,7 @@ Sv_HZicbo_cg_cp_vs_gpa_vs_sv39_l0_leaf_gpa_unmapped_cbo_zero:
   srli x15, x15, 52
   add x8, x8, x15
   LA(x15, svhzicbo_data)
-  LI(x6, 0x0C0B0000)
+  LI(x6, 0xc0b0000)
   sw x6, 0(x15)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_vs_gpa_vs_sv39_l0_nonleaf_gpa_unmapped_cbo_zero:
@@ -1692,7 +1692,7 @@ Sv_HZicbo_cg_cp_vs_gpa_vs_sv39_l0_nonleaf_gpa_unmapped_cbo_zero:
   srli x13, x13, 52
   add x8, x8, x13
   LA(x13, svhzicbo_data)
-  LI(x9, 0x0C0B0000)
+  LI(x9, 0xc0b0000)
   sw x9, 0(x13)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_HZicbo_cg_cp_vs_gpa_vs_sv39_l0_nonleaf_gpa_access_fault_cbo_zero:
@@ -1830,7 +1830,7 @@ Sv_HZicbo_cg_cp_vs_gpa_vs_sv39_l0_nonleaf_gpa_access_fault_cbo_zero:
   srli x9, x9, 34
   add x8, x8, x9
   LA(x9, svhzicbo_data)
-  LI(x14, 0x0C0B0000)
+  LI(x14, 0xc0b0000)
   sw x14, 0(x9)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l2_valid_cbo_zero:
@@ -1855,7 +1855,7 @@ Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l2_valid_cbo_zero:
   srli x6, x6, 34
   add x8, x8, x6
   LA(x6, svhzicbo_data)
-  LI(x9, 0x0C0B0000)
+  LI(x9, 0xc0b0000)
   sw x9, 0(x6)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l2_v0_cbo_zero:
@@ -1880,7 +1880,7 @@ Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l2_v0_cbo_zero:
   srli x14, x14, 34
   add x8, x8, x14
   LA(x14, svhzicbo_data)
-  LI(x6, 0x0C0B0000)
+  LI(x6, 0xc0b0000)
   sw x6, 0(x14)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l2_wx_cbo_zero:
@@ -1905,7 +1905,7 @@ Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l2_wx_cbo_zero:
   srli x14, x14, 34
   add x8, x8, x14
   LA(x14, svhzicbo_data)
-  LI(x6, 0x0C0B0000)
+  LI(x6, 0xc0b0000)
   sw x6, 0(x14)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l2_w_cbo_zero:
@@ -1930,7 +1930,7 @@ Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l2_w_cbo_zero:
   srli x9, x9, 34
   add x8, x8, x9
   LA(x9, svhzicbo_data)
-  LI(x6, 0x0C0B0000)
+  LI(x6, 0xc0b0000)
   sw x6, 0(x9)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l2_rx_cbo_zero:
@@ -1955,7 +1955,7 @@ Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l2_rx_cbo_zero:
   srli x15, x15, 34
   add x8, x8, x15
   LA(x15, svhzicbo_data)
-  LI(x9, 0x0C0B0000)
+  LI(x9, 0xc0b0000)
   sw x9, 0(x15)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l2_x_cbo_zero:
@@ -1980,7 +1980,7 @@ Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l2_x_cbo_zero:
   srli x14, x14, 34
   add x8, x8, x14
   LA(x14, svhzicbo_data)
-  LI(x9, 0x0C0B0000)
+  LI(x9, 0xc0b0000)
   sw x9, 0(x14)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l2_a0_cbo_zero:
@@ -2005,7 +2005,7 @@ Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l2_a0_cbo_zero:
   srli x6, x6, 34
   add x8, x8, x6
   LA(x6, svhzicbo_data)
-  LI(x15, 0x0C0B0000)
+  LI(x15, 0xc0b0000)
   sw x15, 0(x6)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l2_d0_cbo_zero:
@@ -2049,7 +2049,7 @@ Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l2_misaligned_cbo_zero:
   srli x15, x15, 34
   add x8, x8, x15
   LA(x15, svhzicbo_data)
-  LI(x14, 0x0C0B0000)
+  LI(x14, 0xc0b0000)
   sw x14, 0(x15)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l2_u0_cbo_zero:
@@ -2073,7 +2073,7 @@ Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l2_u0_cbo_zero:
   srli x14, x14, 34
   add x8, x8, x14
   LA(x14, svhzicbo_data)
-  LI(x6, 0x0C0B0000)
+  LI(x6, 0xc0b0000)
   sw x6, 0(x14)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_vs_gpa_vu_sv39_l2_leaf_gpa_unmapped_cbo_zero:
@@ -2105,7 +2105,7 @@ Sv_HZicbo_cg_cp_vs_gpa_vu_sv39_l2_leaf_gpa_unmapped_cbo_zero:
   srli x9, x9, 43
   add x8, x8, x9
   LA(x9, svhzicbo_data)
-  LI(x6, 0x0C0B0000)
+  LI(x6, 0xc0b0000)
   sw x6, 0(x9)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l1_valid_cbo_zero:
@@ -2137,7 +2137,7 @@ Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l1_valid_cbo_zero:
   srli x15, x15, 43
   add x8, x8, x15
   LA(x15, svhzicbo_data)
-  LI(x9, 0x0C0B0000)
+  LI(x9, 0xc0b0000)
   sw x9, 0(x15)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l1_v0_cbo_zero:
@@ -2169,7 +2169,7 @@ Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l1_v0_cbo_zero:
   srli x14, x14, 43
   add x8, x8, x14
   LA(x14, svhzicbo_data)
-  LI(x6, 0x0C0B0000)
+  LI(x6, 0xc0b0000)
   sw x6, 0(x14)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l1_wx_cbo_zero:
@@ -2201,7 +2201,7 @@ Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l1_wx_cbo_zero:
   srli x9, x9, 43
   add x8, x8, x9
   LA(x9, svhzicbo_data)
-  LI(x15, 0x0C0B0000)
+  LI(x15, 0xc0b0000)
   sw x15, 0(x9)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l1_w_cbo_zero:
@@ -2233,7 +2233,7 @@ Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l1_w_cbo_zero:
   srli x6, x6, 43
   add x8, x8, x6
   LA(x6, svhzicbo_data)
-  LI(x14, 0x0C0B0000)
+  LI(x14, 0xc0b0000)
   sw x14, 0(x6)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l1_rx_cbo_zero:
@@ -2265,7 +2265,7 @@ Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l1_rx_cbo_zero:
   srli x14, x14, 43
   add x8, x8, x14
   LA(x14, svhzicbo_data)
-  LI(x15, 0x0C0B0000)
+  LI(x15, 0xc0b0000)
   sw x15, 0(x14)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l1_x_cbo_zero:
@@ -2297,7 +2297,7 @@ Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l1_x_cbo_zero:
   srli x9, x9, 43
   add x8, x8, x9
   LA(x9, svhzicbo_data)
-  LI(x14, 0x0C0B0000)
+  LI(x14, 0xc0b0000)
   sw x14, 0(x9)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l1_a0_cbo_zero:
@@ -2329,7 +2329,7 @@ Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l1_a0_cbo_zero:
   srli x9, x9, 43
   add x8, x8, x9
   LA(x9, svhzicbo_data)
-  LI(x6, 0x0C0B0000)
+  LI(x6, 0xc0b0000)
   sw x6, 0(x9)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l1_d0_cbo_zero:
@@ -2361,7 +2361,7 @@ Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l1_d0_cbo_zero:
   srli x15, x15, 43
   add x8, x8, x15
   LA(x15, svhzicbo_data)
-  LI(x14, 0x0C0B0000)
+  LI(x14, 0xc0b0000)
   sw x14, 0(x15)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l1_nonleaf_d_cbo_zero:
@@ -2393,7 +2393,7 @@ Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l1_nonleaf_d_cbo_zero:
   srli x6, x6, 43
   add x8, x8, x6
   LA(x6, svhzicbo_data)
-  LI(x14, 0x0C0B0000)
+  LI(x14, 0xc0b0000)
   sw x14, 0(x6)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l1_nonleaf_a_cbo_zero:
@@ -2425,7 +2425,7 @@ Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l1_nonleaf_a_cbo_zero:
   srli x15, x15, 43
   add x8, x8, x15
   LA(x15, svhzicbo_data)
-  LI(x9, 0x0C0B0000)
+  LI(x9, 0xc0b0000)
   sw x9, 0(x15)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l1_nonleaf_u_cbo_zero:
@@ -2483,7 +2483,7 @@ Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l1_misaligned_cbo_zero:
   srli x6, x6, 43
   add x8, x8, x6
   LA(x6, svhzicbo_data)
-  LI(x14, 0x0C0B0000)
+  LI(x14, 0xc0b0000)
   sw x14, 0(x6)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l1_u0_cbo_zero:
@@ -2514,7 +2514,7 @@ Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l1_u0_cbo_zero:
   srli x9, x9, 43
   add x8, x8, x9
   LA(x9, svhzicbo_data)
-  LI(x14, 0x0C0B0000)
+  LI(x14, 0xc0b0000)
   sw x14, 0(x9)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_vs_gpa_vu_sv39_l1_leaf_gpa_unmapped_cbo_zero:
@@ -2552,7 +2552,7 @@ Sv_HZicbo_cg_cp_vs_gpa_vu_sv39_l1_leaf_gpa_unmapped_cbo_zero:
   srli x15, x15, 43
   add x8, x8, x15
   LA(x15, svhzicbo_data)
-  LI(x14, 0x0C0B0000)
+  LI(x14, 0xc0b0000)
   sw x14, 0(x15)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_vs_gpa_vu_sv39_l1_nonleaf_gpa_unmapped_cbo_zero:
@@ -2605,7 +2605,7 @@ Sv_HZicbo_cg_cp_vs_gpa_vu_sv39_l1_nonleaf_gpa_unmapped_cbo_zero:
   srli x9, x9, 43
   add x8, x8, x9
   LA(x9, svhzicbo_data)
-  LI(x14, 0x0C0B0000)
+  LI(x14, 0xc0b0000)
   sw x14, 0(x9)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_vs_gpa_vu_sv39_l1_nonleaf_gpa_access_fault_cbo_zero:
@@ -2645,7 +2645,7 @@ Sv_HZicbo_cg_cp_vs_gpa_vu_sv39_l1_nonleaf_gpa_access_fault_cbo_zero:
   srli x9, x9, 52
   add x8, x8, x9
   LA(x9, svhzicbo_data)
-  LI(x6, 0x0C0B0000)
+  LI(x6, 0xc0b0000)
   sw x6, 0(x9)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l0_valid_cbo_zero:
@@ -2684,7 +2684,7 @@ Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l0_valid_cbo_zero:
   srli x6, x6, 52
   add x8, x8, x6
   LA(x6, svhzicbo_data)
-  LI(x15, 0x0C0B0000)
+  LI(x15, 0xc0b0000)
   sw x15, 0(x6)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l0_v0_cbo_zero:
@@ -2723,7 +2723,7 @@ Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l0_v0_cbo_zero:
   srli x14, x14, 52
   add x8, x8, x14
   LA(x14, svhzicbo_data)
-  LI(x6, 0x0C0B0000)
+  LI(x6, 0xc0b0000)
   sw x6, 0(x14)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l0_wx_cbo_zero:
@@ -2762,7 +2762,7 @@ Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l0_wx_cbo_zero:
   srli x6, x6, 52
   add x8, x8, x6
   LA(x6, svhzicbo_data)
-  LI(x15, 0x0C0B0000)
+  LI(x15, 0xc0b0000)
   sw x15, 0(x6)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l0_w_cbo_zero:
@@ -2801,7 +2801,7 @@ Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l0_w_cbo_zero:
   srli x6, x6, 52
   add x8, x8, x6
   LA(x6, svhzicbo_data)
-  LI(x9, 0x0C0B0000)
+  LI(x9, 0xc0b0000)
   sw x9, 0(x6)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l0_rx_cbo_zero:
@@ -2840,7 +2840,7 @@ Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l0_rx_cbo_zero:
   srli x15, x15, 52
   add x8, x8, x15
   LA(x15, svhzicbo_data)
-  LI(x9, 0x0C0B0000)
+  LI(x9, 0xc0b0000)
   sw x9, 0(x15)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l0_x_cbo_zero:
@@ -2879,7 +2879,7 @@ Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l0_x_cbo_zero:
   srli x9, x9, 52
   add x8, x8, x9
   LA(x9, svhzicbo_data)
-  LI(x15, 0x0C0B0000)
+  LI(x15, 0xc0b0000)
   sw x15, 0(x9)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l0_a0_cbo_zero:
@@ -2918,7 +2918,7 @@ Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l0_a0_cbo_zero:
   srli x6, x6, 52
   add x8, x8, x6
   LA(x6, svhzicbo_data)
-  LI(x14, 0x0C0B0000)
+  LI(x14, 0xc0b0000)
   sw x14, 0(x6)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l0_d0_cbo_zero:
@@ -2957,7 +2957,7 @@ Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l0_d0_cbo_zero:
   srli x9, x9, 52
   add x8, x8, x9
   LA(x9, svhzicbo_data)
-  LI(x15, 0x0C0B0000)
+  LI(x15, 0xc0b0000)
   sw x15, 0(x9)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l0_pointer_cbo_zero:
@@ -2996,7 +2996,7 @@ Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l0_pointer_cbo_zero:
   srli x9, x9, 52
   add x8, x8, x9
   LA(x9, svhzicbo_data)
-  LI(x15, 0x0C0B0000)
+  LI(x15, 0xc0b0000)
   sw x15, 0(x9)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l0_nonleaf_d_cbo_zero:
@@ -3035,7 +3035,7 @@ Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l0_nonleaf_d_cbo_zero:
   srli x15, x15, 52
   add x8, x8, x15
   LA(x15, svhzicbo_data)
-  LI(x6, 0x0C0B0000)
+  LI(x6, 0xc0b0000)
   sw x6, 0(x15)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l0_nonleaf_a_cbo_zero:
@@ -3074,7 +3074,7 @@ Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l0_nonleaf_a_cbo_zero:
   srli x9, x9, 52
   add x8, x8, x9
   LA(x9, svhzicbo_data)
-  LI(x15, 0x0C0B0000)
+  LI(x15, 0xc0b0000)
   sw x15, 0(x9)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l0_nonleaf_u_cbo_zero:
@@ -3113,7 +3113,7 @@ Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l0_nonleaf_u_cbo_zero:
   srli x15, x15, 52
   add x8, x8, x15
   LA(x15, svhzicbo_data)
-  LI(x14, 0x0C0B0000)
+  LI(x14, 0xc0b0000)
   sw x14, 0(x15)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l0_u0_cbo_zero:
@@ -3151,7 +3151,7 @@ Sv_HZicbo_cg_cp_vs_pte_vu_sv39_l0_u0_cbo_zero:
   srli x6, x6, 52
   add x8, x8, x6
   LA(x6, svhzicbo_data)
-  LI(x9, 0x0C0B0000)
+  LI(x9, 0xc0b0000)
   sw x9, 0(x6)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_vs_gpa_vu_sv39_l0_leaf_gpa_unmapped_cbo_zero:
@@ -3196,7 +3196,7 @@ Sv_HZicbo_cg_cp_vs_gpa_vu_sv39_l0_leaf_gpa_unmapped_cbo_zero:
   srli x9, x9, 52
   add x8, x8, x9
   LA(x9, svhzicbo_data)
-  LI(x6, 0x0C0B0000)
+  LI(x6, 0xc0b0000)
   sw x6, 0(x9)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_vs_gpa_vu_sv39_l0_nonleaf_gpa_unmapped_cbo_zero:
@@ -3256,7 +3256,7 @@ Sv_HZicbo_cg_cp_vs_gpa_vu_sv39_l0_nonleaf_gpa_unmapped_cbo_zero:
   srli x9, x9, 52
   add x8, x8, x9
   LA(x9, svhzicbo_data)
-  LI(x14, 0x0C0B0000)
+  LI(x14, 0xc0b0000)
   sw x14, 0(x9)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_HZicbo_cg_cp_vs_gpa_vu_sv39_l0_nonleaf_gpa_access_fault_cbo_zero:
@@ -3273,6 +3273,10 @@ Sv_HZicbo_cg_cp_vs_gpa_vu_sv39_l0_nonleaf_gpa_access_fault_cbo_zero:
   LA(x9, rvtest_code_begin)
   LA(x15, Vtramptbl_sv)
   SREG x9, code_bgn_off(x15)
+  LI(x8, HENVCFG_CBIE | HENVCFG_CBCFE | HENVCFG_CBZE)
+  csrc henvcfg, x8
+  LI(x8, SENVCFG_CBIE | SENVCFG_CBCFE | SENVCFG_CBZE)
+  csrc senvcfg, x8
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -3284,7 +3288,7 @@ RVTEST_DATA_BEGIN
 
   .p2align 12
 svhzicbo_data:
-  .fill 1024, 4, 0x0C0B0000
+  .fill 1024, 4, 0xc0b0000
 #if __riscv_xlen == 32
   .ifndef rvtest_hlvl0_pg_tbl
   .p2align 12

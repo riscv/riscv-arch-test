@@ -154,9 +154,11 @@ def set_atp(mode: SvMode, reg: int, tmp: int) -> list[str]:
     ]
 
 
-def identity_map_image(stages: Iterable[tuple[SvMode | None, PteFlags]], regs: tuple[int, int, int]) -> list[str]:
-    """Identity map the code, data and signature regions of the test image with a root-level superpage in each
-    (mode, leaf flags) of ``stages``.  A None mode is skipped."""
+def identity_map_image(
+    stages: Iterable[tuple[SvMode | None, PteFlags]], regs: tuple[int, int, int], level: int | None = None
+) -> list[str]:
+    """Identity map the code, data and signature regions of the test image with a superpage at ``level`` (default:
+    the root) in each (mode, leaf flags) of ``stages``.  A None mode is skipped."""
     stages = [(mode, flags) for mode, flags in stages if mode is not None]
     return [
         line
@@ -164,7 +166,7 @@ def identity_map_image(stages: Iterable[tuple[SvMode | None, PteFlags]], regs: t
         for mode, flags in stages
         for line in write_pte(
             mode,
-            level=mode.levels - 1,
+            level=mode.levels - 1 if level is None else level,
             flags=flags,
             virtual_address=label,
             physical_address=label,

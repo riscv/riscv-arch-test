@@ -114,7 +114,7 @@ covergroup S_scause_cg with function sample(ins_t ins);
             bins b_8_reserved = {8};
             bins b_14_reserved = {14};
             bins b_15_reserved = {15};
-            bins b_31_16_custom[] = {[31:16]}; // designated for platform use
+            bins b_31_16_custom[] = {[16:31]}; // designated for platform use
         `endif
         `ifdef SCAUSE_HOLDS_COUNTER_OVERFLOW
             bins b_13_counter_overflow = {13}; // Sscofpmf, or any code 0-31 in Ss1p12 or higher

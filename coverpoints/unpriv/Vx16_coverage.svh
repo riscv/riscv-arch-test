@@ -5660,7 +5660,7 @@ covergroup Vx16_vmadc_vi_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -5849,7 +5849,7 @@ covergroup Vx16_vmadc_vim_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -6066,7 +6066,7 @@ covergroup Vx16_vmadc_vv_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -6282,7 +6282,7 @@ covergroup Vx16_vmadc_vvm_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -6506,7 +6506,7 @@ covergroup Vx16_vmadc_vx_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -6719,7 +6719,7 @@ covergroup Vx16_vmadc_vxm_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -7408,7 +7408,7 @@ covergroup Vx16_vmand_mm_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -7653,7 +7653,7 @@ covergroup Vx16_vmandn_mm_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -10175,7 +10175,7 @@ covergroup Vx16_vmnand_mm_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -10420,7 +10420,7 @@ covergroup Vx16_vmnor_mm_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -10665,7 +10665,7 @@ covergroup Vx16_vmor_mm_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -10910,7 +10910,7 @@ covergroup Vx16_vmorn_mm_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -11125,7 +11125,7 @@ covergroup Vx16_vmsbc_vv_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -11341,7 +11341,7 @@ covergroup Vx16_vmsbc_vvm_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -11565,7 +11565,7 @@ covergroup Vx16_vmsbc_vx_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -11778,7 +11778,7 @@ covergroup Vx16_vmsbc_vxm_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -12009,7 +12009,7 @@ covergroup Vx16_vmsbf_m_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -12180,7 +12180,7 @@ covergroup Vx16_vmseq_vi_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -12396,7 +12396,7 @@ covergroup Vx16_vmseq_vv_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -12618,7 +12618,7 @@ covergroup Vx16_vmseq_vx_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -12848,7 +12848,7 @@ covergroup Vx16_vmsgt_vi_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -13054,7 +13054,7 @@ covergroup Vx16_vmsgt_vx_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -13284,7 +13284,7 @@ covergroup Vx16_vmsgtu_vi_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -13490,7 +13490,7 @@ covergroup Vx16_vmsgtu_vx_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -13720,7 +13720,7 @@ covergroup Vx16_vmsif_m_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -13891,7 +13891,7 @@ covergroup Vx16_vmsle_vi_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -14107,7 +14107,7 @@ covergroup Vx16_vmsle_vv_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -14329,7 +14329,7 @@ covergroup Vx16_vmsle_vx_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -14559,7 +14559,7 @@ covergroup Vx16_vmsleu_vi_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -14775,7 +14775,7 @@ covergroup Vx16_vmsleu_vv_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -14997,7 +14997,7 @@ covergroup Vx16_vmsleu_vx_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -15237,7 +15237,7 @@ covergroup Vx16_vmslt_vv_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -15459,7 +15459,7 @@ covergroup Vx16_vmslt_vx_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -15699,7 +15699,7 @@ covergroup Vx16_vmsltu_vv_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -15921,7 +15921,7 @@ covergroup Vx16_vmsltu_vx_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -16151,7 +16151,7 @@ covergroup Vx16_vmsne_vi_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -16367,7 +16367,7 @@ covergroup Vx16_vmsne_vv_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -16589,7 +16589,7 @@ covergroup Vx16_vmsne_vx_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -16819,7 +16819,7 @@ covergroup Vx16_vmsof_m_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -20096,7 +20096,7 @@ covergroup Vx16_vmxnor_mm_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -20341,7 +20341,7 @@ covergroup Vx16_vmxor_mm_cg with function sample(ins_t ins);
     }
 
     vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
@@ -47915,12 +47915,14 @@ covergroup Vx16_vzext_vf2_cg with function sample(ins_t ins);
 endgroup
 // ---------------------
 function void vx16_sample(int hart, int issue, ins_t ins);
+    string inst_name = traceDataQ[hart][issue][0].inst_name;
+
     // Want to sample only if the SEW matches the target SEW of the file, some tests require
     // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
     // associated sew with these tests
     if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1 ||
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
-        case (traceDataQ[hart][issue][0].inst_name)
+        case (inst_name)
             "vaadd.vv"     : begin
                 Vx16_vaadd_vv_cg.sample(ins);
             end

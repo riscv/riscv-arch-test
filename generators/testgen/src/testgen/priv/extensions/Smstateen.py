@@ -1,775 +1,134 @@
 # Smstateen.py
 # Written by : Ayesha Anwar ayesha.anwaar2005@gmail.com
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # Smstateen state-enable extension test generator.
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
 """Smstateen privileged extension test generator."""
 
-from testgen.asm.csr import csr_walk_test
-from testgen.asm.helpers import arch_block, comment_banner, write_sigupd
-from testgen.constants import INDENT
+from dataclasses import replace
+
+from testgen.asm.helpers import gated
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
+from testgen.priv.extensions.StateenCommon import (
+    FEATURES,
+    GateWrite,
+    StateenFeature,
+    feature_tests,
+    illegal_access_tests,
+    stateen_walk_tests,
+    walk_tests,
+)
 from testgen.priv.registry import add_priv_test_generator
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-MSTATEEN_CSRS_64 = ["mstateen0", "mstateen1", "mstateen2", "mstateen3"]
-MSTATEEN_CSRS_H = ["mstateen0h", "mstateen1h", "mstateen2h", "mstateen3h"]
-
-CSR_OPS = ["csrrw", "csrrs", "csrrc", "csrr"]
-
-
-IN_MMODE = f"{INDENT}# already in M-mode"  # M-mode is the default; just a marker comment
-
-# Mode dispatch for the priv_mode_m_maybes_u coverpoints. Each entry is
-# (label, line that switches into the mode, whether an S_SUPPORTED guard is needed).
-# RVTEST_TSBI_GOTO_MMODE returns from any lower mode. Lower-mode-only coverpoints slice [1:].
-_MODES_MUS = [
-    ("mmode", IN_MMODE, False),
-    ("umode", "RVTEST_TSBI_GOTO_UMODE", False),
-    ("smode", "RVTEST_TSBI_GOTO_SMODE", True),
+CG = "Smstateen_cg"
+MSTATEEN_REGS = [f"mstateen{n}" for n in range(4)]
+MSTATEENH_REGS = [f"{csr}h" for csr in MSTATEEN_REGS]
+MODES = ["M", "U", "S", "VS", "VU"]
+# TODO: Enable the skipped features once Sail models Smaia/Ssaia, Sscsrind, Zcmt and Smctr
+# (feature, coverpoint)
+FEATURE_COVERPOINTS = [
+    ("envcfg", "cp_envcfg"),
+    # ("csrind", "cp_csrind"),
+    # ("imsic", "cp_imsic"),
+    # ("aia", "cp_aia"),
+    # ("jvt", "cp_jvt_access"),
+    ("context", "cp_context"),
+    ("p1p13", "cp_p1p13"),
+    ("srmcfg", "cp_srmcfg"),
+    # ("ctr", "cp_ctr"),
+    ("fcsr", "cp_fcsr"),
+    ("fp", "cp_fcsr_fp_instrs"),
 ]
 
 
-def _csr_insn(op: str, rd: int, csr: str, rs1: int) -> str:
-    """Emit a single CSR instruction line. csrr is read-only and only takes (rd, csr)."""
-    if op == "csrr":
-        return f"{op} x{rd}, {csr}"
-    return f"{op} x{rd}, {csr}, x{rs1}"
+def _mstateen_states(feat: StateenFeature, gate: str = "mstateen0") -> list[list[GateWrite]]:
+    """Clear the bit in `gate`, then set it and the bit in each lower-level CSR.
 
-
-# ---------------------------------------------------------------------------
-# cp_csr_illegal_accesses
-#   Cross: priv_mode_s_u × mstateen_csrs × csrops
-#   All CSR ops to mstateenN CSRs from U-mode AND S-mode — must trap.
-# ---------------------------------------------------------------------------
-
-
-def _generate_csr_illegal_accesses(test_data: TestData) -> list[str]:
-    coverpoint = "cp_csr_illegal_accesses"
-    covergroup = "Smstateen_cg"
-
-    lines = [
-        comment_banner(
-            coverpoint,
-            "All CSR ops to mstateenN CSRs from U-mode and S-mode — must trap (M-only CSRs)",
-        )
-    ]
-
-    temp_reg = test_data.int_regs.get_register()
-
-    # ── U-mode ──────────────────────────────────────────────────────────────
-    lines.append("RVTEST_TSBI_GOTO_UMODE")
-
-    for csr in MSTATEEN_CSRS_64:
-        for op in CSR_OPS:
-            lines.extend(
-                [
-                    "",
-                    test_data.add_testcase(f"{csr}_{op.lower()}_umode", coverpoint, covergroup),
-                    _csr_insn(op, temp_reg, csr, temp_reg),
-                ]
-            )
-
-    lines.append("#if __riscv_xlen == 32")
-    for csr in MSTATEEN_CSRS_H:
-        for op in CSR_OPS:
-            lines.extend(
-                [
-                    "",
-                    test_data.add_testcase(f"{csr}_{op.lower()}_umode", coverpoint, covergroup),
-                    _csr_insn(op, temp_reg, csr, temp_reg),
-                ]
-            )
-    lines.append("#endif  // __riscv_xlen == 32")
-
-    lines.append("RVTEST_TSBI_GOTO_MMODE")
-
-    # ── S-mode ──────────────────────────────────────────────────────────────
-    lines.append("#ifdef S_SUPPORTED")
-    lines.append("RVTEST_TSBI_GOTO_SMODE")
-
-    for csr in MSTATEEN_CSRS_64:
-        for op in CSR_OPS:
-            lines.extend(
-                [
-                    "",
-                    test_data.add_testcase(f"{csr}_{op.lower()}_smode", coverpoint, covergroup),
-                    _csr_insn(op, temp_reg, csr, temp_reg),
-                ]
-            )
-
-    lines.append("#if __riscv_xlen == 32")
-    for csr in MSTATEEN_CSRS_H:
-        for op in CSR_OPS:
-            lines.extend(
-                [
-                    "",
-                    test_data.add_testcase(f"{csr}_{op.lower()}_smode", coverpoint, covergroup),
-                    _csr_insn(op, temp_reg, csr, temp_reg),
-                ]
-            )
-    lines.append("#endif  // __riscv_xlen == 32")
-
-    lines.append("RVTEST_TSBI_GOTO_MMODE")
-    lines.append("#endif  // S_SUPPORTED")
-
-    test_data.int_regs.return_registers([temp_reg])
-    return lines
-
-
-# ---------------------------------------------------------------------------
-# cp_walking_ones
-#   Cross: mstateen_walk_csrs × csrops × csr_walk
-#   mstateen_walk_csrs = mstateen0 always, mstateen0h on RV32 only.
-# ---------------------------------------------------------------------------
-
-
-def _generate_walking_ones(test_data: TestData) -> list[str]:
-    coverpoint = "cp_walking_ones"
-    covergroup = "Smstateen_cg"
-
-    lines = [
-        comment_banner(
-            coverpoint,
-            "Walking-1 and walking-0 patterns on mstateen0 (+ mstateen0h on RV32) from M-mode",
-        )
-    ]
-
-    # The walk mask selects which bits are checked against the signature (csr_walk_test
-    # walks every bit position regardless). It mirrors mstateen0's writable high-word
-    # bits on RV64: SE0(63)|ENVCFG(62)|CSRIND(60)|AIA(59)|IMSIC(58)|CONTEXT(57)|P1P13(56)|
-    # SRMCFG(55), plus FCSR(1)|JVT(2) in the low word. On RV32 mstateen0 is the low word
-    # (0x6) and those high bits live in mstateen0h (0xDF800000).
-    lines.extend(
-        [
-            "",
-            test_data.add_testcase("mstateen0_walk", coverpoint, covergroup),
-        ]
-    )
-    lines.extend(csr_walk_test(test_data, ("mstateen0", 0xDF80000000000006), covergroup, coverpoint))
-
-    # mstateen0h — RV32 only
-    lines.append("#if __riscv_xlen == 32")
-    lines.extend(
-        [
-            "",
-            test_data.add_testcase("mstateen0h_walk", coverpoint, covergroup),
-        ]
-    )
-    lines.extend(csr_walk_test(test_data, ("mstateen0h", 0xDF800000), covergroup, coverpoint))
-    lines.append("#endif  // __riscv_xlen == 32")
-
-    # mstateen1-3 define only bit 63 (SE1-SE3), which gates sstateenN (and hstateenN). It is
-    # writable unless H is absent and sstateenN is all read-only zero (norm:mstateen_bit_63_roz);
-    # every other bit is reserved and read-only zero, so the whole CSR is checked.
-    for n in range(1, 4):
-        lines.extend(["", test_data.add_testcase(f"mstateen{n}_walk", coverpoint, covergroup)])
-        lines.extend(csr_walk_test(test_data, (f"mstateen{n}", None), covergroup, coverpoint))
-    lines.append("#if __riscv_xlen == 32")
-    for n in range(1, 4):
-        lines.extend(["", test_data.add_testcase(f"mstateen{n}h_walk", coverpoint, covergroup)])
-        lines.extend(csr_walk_test(test_data, (f"mstateen{n}h", None), covergroup, coverpoint))
-    lines.append("#endif  // __riscv_xlen == 32")
-
-    return lines
-
-
-# ---------------------------------------------------------------------------
-# Bit-controlled feature coverpoints
-#   cp_envcfg, cp_imsic, cp_aia, cp_context, cp_p1p13, cp_srmcfg, cp_ctr
-#
-#   Each of these crosses csrops × <feature>_csr(s) × <feature>_state ×
-#   priv_mode_m_maybes_u: a single mstateen0 control bit gates a small set of
-#   S-mode CSRs, and the cross must be hit from M-, U-, and S-mode with the
-#   control bit both set and cleared. They differ only in the control-bit
-#   position and the gated CSR list.
-# ---------------------------------------------------------------------------
-
-
-def _generate_bit_controlled(
-    test_data: TestData,
-    *,
-    coverpoint: str,
-    bit: int,
-    bit_name: str,
-    banner: str,
-    csrs: list[str],
-    csrs_rv32: list[str] | None = None,
-) -> list[str]:
-    """Generate M/U/S-mode CSR-op tests for a single mstateen0 control bit.
-
-    The control bit lives at `bit` in mstateen0 on RV64 and at `bit - 32` in mstateen0h
-    on RV32. For each control-bit state (cleared, set) and each of M-, U-, and S-mode,
-    every CSR in `csrs` is exercised with every op in CSR_OPS.
-
-    Args:
-        csrs: CSRs to access.
-        csrs_rv32: Additional CSRs to access on RV32 only (e.g. the AIA high halves sieh/siph).
+    Clearing the bit in `gate` makes it read-only zero in the lower-level CSRs, so they must be set again.
     """
-    covergroup = "Smstateen_cg"
-    lines = [comment_banner(coverpoint, banner)]
+    return [[(gate, 0)], [(gate, 1), *((csr, 1) for csr in feat.lower_csrs)]]
 
-    temp_reg, ones_reg = test_data.int_regs.get_registers(2)
-    mask_64 = f"{1 << bit:#x}"
-    mask_32 = f"{1 << (bit - 32):#x}"
 
-    def emit_ops(op_csrs: list[str], state: int, mode_label: str) -> list[str]:
-        out: list[str] = []
-        for csr in op_csrs:
-            for op in CSR_OPS:
-                out.extend(
-                    [
-                        "",
-                        test_data.add_testcase(
-                            f"{csr}_{op.lower()}_{bit_name}{state}_{mode_label}", coverpoint, covergroup
-                        ),
-                        _csr_insn(op, temp_reg, csr, ones_reg),
-                    ]
-                )
-        return out
-
-    lines.append(f"LI(x{ones_reg}, -1)")
-
-    for state in (0, 1):
-        bit_action = "csrs" if state else "csrc"
-        lines.extend(
-            [
-                "",
-                f"{INDENT}# mstateen0.{bit_name} = {state} (bit {bit})",
-                "#if __riscv_xlen == 64",
-                f"LI(x{temp_reg}, {mask_64})",
-                f"{bit_action} mstateen0, x{temp_reg}",
-                "#else",
-                f"LI(x{temp_reg}, {mask_32})",
-                f"{bit_action} mstateen0h, x{temp_reg}",
-                "#endif",
-            ]
+def _se_tests(test_data: TestData, n: int, csr: str) -> list[str]:
+    """Access `csr` with mstateen<n>.SE<n> set and clear: sstateen<n> from S and VS-mode, hstateen<n> from HS-mode."""
+    if csr == "sstateen":
+        feat = replace(FEATURES["se"], csrs=(f"sstateen{n}",), lower_csrs=(f"hstateen{n}",))
+        cp, modes = "cp_mstateen_se_controls_sstateen", ["S", "VS"]
+    else:
+        feat = replace(
+            FEATURES["se"], csrs=(f"hstateen{n}", f"hstateen{n}h"), guard="defined(H_SUPPORTED)", lower_csrs=()
         )
-
-        for mode_label, enter_line, needs_guard in _MODES_MUS:
-            if needs_guard:
-                lines.append("#ifdef S_SUPPORTED")
-            lines.append(enter_line)
-            lines.extend(emit_ops(csrs, state, mode_label))
-            if csrs_rv32:
-                lines.append("#if __riscv_xlen == 32")
-                lines.extend(emit_ops(csrs_rv32, state, mode_label))
-                lines.append("#endif  // __riscv_xlen == 32")
-            lines.append("RVTEST_TSBI_GOTO_MMODE")
-            if needs_guard:
-                lines.append("#endif  // S_SUPPORTED")
-
-    test_data.int_regs.return_registers([temp_reg, ones_reg])
-    return lines
+        cp, modes = "cp_mstateen_se_controls_hstateen", ["S"]
+    return feature_tests(test_data, CG, cp, feat, states=_mstateen_states(feat, f"mstateen{n}"), modes=modes, base="M")
 
 
-# ---------------------------------------------------------------------------
-# cp_jvt_access
-#   Cross: priv_mode_maybes_u (S-mode + U-mode) × csrops × jvt_csr × jvt_state
-#   The covergroup cross samples U/S-mode only — there is no M-mode jvt cross,
-#   so M-mode jvt access is intentionally not exercised here.
-# ---------------------------------------------------------------------------
-
-
-def _generate_jvt(test_data: TestData) -> list[str]:
-    coverpoint = "cp_jvt_access"
-    covergroup = "Smstateen_cg"
-
+def _se0_only_walk(test_data: TestData, csr: str, guard: str) -> list[str]:
+    """Walk sstateen0 or hstateen0 from M-mode and S-mode with only mstateen0.SE0 set."""
+    cp = f"cp_mstateen0_se0_only_{csr}"
+    walk = walk_tests(test_data, CG, cp, csr, modes=["M", "S"], base="M")
+    save, saveh, tmp = test_data.int_regs.get_registers(3)
     lines = [
-        comment_banner(
-            coverpoint,
-            "CSR ops on jvt from U/S-mode with mstateen0.jvt (bit 2) disabled and enabled",
-        )
-    ]
-
-    temp_reg, ones_reg = test_data.int_regs.get_registers(2)
-    JVT_BIT_MASK = 1 << 2
-
-    lines.append(f"LI(x{ones_reg}, -1)")
-
-    # Lower modes only (U + S); the cp_jvt_access cross does not sample M-mode.
-    for mode_label, enter_line, needs_guard in _MODES_MUS[1:]:
-        if needs_guard:
-            lines.append("#ifdef S_SUPPORTED")
-        for state in [0, 1]:
-            bit_action = "csrc" if state == 0 else "csrs"
-            lines.extend(
-                [
-                    "",
-                    f"{INDENT}# mstateen0.jvt = {state}, {mode_label}",
-                    f"LI(x{temp_reg}, {JVT_BIT_MASK})",
-                    f"{bit_action} mstateen0, x{temp_reg}",
-                ]
-            )
-            lines.append(enter_line)
-            for op in CSR_OPS:
-                lines.extend(
-                    [
-                        "",
-                        test_data.add_testcase(
-                            f"jvt_{op.lower()}_jvt{state}_{mode_label}",
-                            coverpoint,
-                            covergroup,
-                        ),
-                        _csr_insn(op, temp_reg, "jvt", ones_reg),
-                    ]
-                )
-            lines.append("RVTEST_TSBI_GOTO_MMODE")
-        if needs_guard:
-            lines.append("#endif  // S_SUPPORTED")
-
-    test_data.int_regs.return_registers([temp_reg, ones_reg])
-    return lines
-
-
-# ---------------------------------------------------------------------------
-# cp_fcsr_ro_zero
-#   Cross: misa_F × csrops × mstateen0_fcsr_bit
-#   Exercises the ignore_bins-covered path where fcsr reads as zero
-#   when misa.F is set but mstateen0.fcsr (bit 1) is clear.
-# ---------------------------------------------------------------------------
-
-
-def _generate_fcsr_ro_zero(test_data: TestData) -> list[str]:
-    coverpoint = "cp_fcsr_ro_zero"
-    covergroup = "Smstateen_cg"
-
-    lines = [
-        comment_banner(
-            coverpoint,
-            "misa.F set, mstateen0.fcsr (bit 1) clear — fcsr reads as zero (access-fault path)",
-        )
-    ]
-
-    temp_reg, ones_reg = test_data.int_regs.get_registers(2)
-    FCSR_BIT_MASK = 1 << 1  # bit 1 of mstateen0
-
-    lines.extend(
-        [
-            f"LI(x{ones_reg}, -1)",
-            "",
-            f"{INDENT}# Ensure misa.F is set (read misa, verify F bit, then proceed)",
-            f"csrr x{temp_reg}, misa",
-            f"{INDENT}# bit 5 = F; test proceeds assuming F is present per MARCH",
-            "",
-            f"{INDENT}# Clear mstateen0.fcsr so fcsr reads zero",
-            f"LI(x{temp_reg}, {FCSR_BIT_MASK})",
-            f"csrc mstateen0, x{temp_reg}",
-        ]
-    )
-
-    for op in CSR_OPS:
-        lines.extend(
-            [
-                "",
-                test_data.add_testcase(f"fcsr_{op.lower()}_ro_zero", coverpoint, covergroup),
-                _csr_insn(op, temp_reg, "fcsr", ones_reg),
-                "nop",
-            ]
-        )
-
-    test_data.int_regs.return_registers([temp_reg, ones_reg])
-    return lines
-
-
-# ---------------------------------------------------------------------------
-# cp_fcsr
-# ---------------------------------------------------------------------------
-
-
-def _generate_fcsr(test_data: TestData) -> list[str]:
-    coverpoint = "cp_fcsr"
-    covergroup = "Smstateen_cg"
-
-    lines = [
-        comment_banner(
-            coverpoint,
-            "M-mode CSR ops on fcsr under misa.F set and mstateen0.fcsr (bit 1) both states",
-        )
-    ]
-
-    temp_reg, ones_reg = test_data.int_regs.get_registers(2)
-    FCSR_BIT_MASK = 1 << 1
-
-    lines.append(f"LI(x{ones_reg}, -1)")
-
-    lines.extend(
-        [
-            "",
-            f"{INDENT}# mstateen0.fcsr = 1 (only meaningful state per ignore_bins)",
-            f"LI(x{temp_reg}, {FCSR_BIT_MASK})",
-            f"csrs mstateen0, x{temp_reg}",
-        ]
-    )
-    for op in CSR_OPS:
-        lines.extend(
-            [
-                "",
-                test_data.add_testcase(f"fcsr_{op.lower()}_fcsr1", coverpoint, covergroup),
-                _csr_insn(op, temp_reg, "fcsr", ones_reg),
-                "nop",
-            ]
-        )
-
-    lines.extend(
-        [
-            "",
-            f"{INDENT}# mstateen0.fcsr = 0",
-            f"LI(x{temp_reg}, {FCSR_BIT_MASK})",
-            f"csrc mstateen0, x{temp_reg}",
-        ]
-    )
-    for op in CSR_OPS:
-        lines.extend(
-            [
-                "",
-                test_data.add_testcase(f"fcsr_{op.lower()}_fcsr0", coverpoint, covergroup),
-                _csr_insn(op, temp_reg, "fcsr", ones_reg),
-                "nop",
-            ]
-        )
-
-    test_data.int_regs.return_registers([temp_reg, ones_reg])
-    return lines
-
-
-# ---------------------------------------------------------------------------
-# cp_fcsr_lower
-#   Cross: priv_mode_s_u × misa_F × mstateen0_fcsr_bit × csrops × fcsr_lower_mode_csrs
-#   S-mode and U-mode only.
-# ---------------------------------------------------------------------------
-
-
-def _generate_fcsr_lower(test_data: TestData) -> list[str]:
-    coverpoint = "cp_fcsr_lower"
-    covergroup = "Smstateen_cg"
-
-    lines = [
-        comment_banner(
-            coverpoint,
-            "S/U-mode CSR ops on frm/fflags/fcsr with mstateen0.fcsr (bit 1) both states",
-        )
-    ]
-
-    temp_reg, ones_reg = test_data.int_regs.get_registers(2)
-    FCSR_BIT_MASK = 1 << 1
-    fp_csrs = ["frm", "fflags", "fcsr"]
-
-    lines.append(f"LI(x{ones_reg}, -1)")
-
-    # Lower modes only (U + S); these crosses do not sample M-mode.
-    for mode_label, enter_line, needs_guard in _MODES_MUS[1:]:
-        if needs_guard:
-            lines.append("#ifdef S_SUPPORTED")
-        for state in [0, 1]:
-            bit_action = "csrc" if state == 0 else "csrs"
-            lines.extend(
-                [
-                    "",
-                    f"{INDENT}# mstateen0.fcsr = {state}, {mode_label}",
-                    f"LI(x{temp_reg}, {FCSR_BIT_MASK})",
-                    f"{bit_action} mstateen0, x{temp_reg}",
-                ]
-            )
-            lines.append(enter_line)
-            for csr in fp_csrs:
-                for op in CSR_OPS:
-                    lines.extend(
-                        [
-                            "",
-                            test_data.add_testcase(
-                                f"{csr}_{op.lower()}_fcsr{state}_{mode_label}",
-                                coverpoint,
-                                covergroup,
-                            ),
-                            _csr_insn(op, temp_reg, csr, ones_reg),
-                        ]
-                    )
-            lines.append("RVTEST_TSBI_GOTO_MMODE")
-        if needs_guard:
-            lines.append("#endif  // S_SUPPORTED")
-
-    test_data.int_regs.return_registers([temp_reg, ones_reg])
-    return lines
-
-
-# ---------------------------------------------------------------------------
-# cp_fcsr_fp_instrs
-#   Cross: priv_mode_s_u × misa_F × mstateen0_fcsr_bit × fp_instrs
-#   S-mode and U-mode only.
-# ---------------------------------------------------------------------------
-
-
-def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
-    coverpoint = "cp_fcsr_fp_instrs"
-    covergroup = "Smstateen_cg"
-
-    lines = [
-        comment_banner(
-            coverpoint,
-            "FP instructions from U/S-mode with mstateen0.fcsr (bit 1) disabled and enabled",
-        )
-    ]
-
-    temp_reg1, temp_reg2, temp_reg3 = test_data.int_regs.get_registers(3)
-    FCSR_BIT_MASK = 1 << 1
-
-    fp_instrs = [
-        (f"fadd.s x{temp_reg1}, x{temp_reg2}, x{temp_reg3}", "fadd_s"),
-        (f"fcvt.w.s x{temp_reg1}, x{temp_reg2}", "fcvt_w_s"),
-        (f"fcvt.s.w x{temp_reg1}, x{temp_reg2}", "fcvt_s_w"),
-        (f"fclass.s x{temp_reg1}, x{temp_reg2}", "fclass_s"),
-    ]
-
-    # Lower modes only (U + S); these crosses do not sample M-mode.
-    for mode_label, enter_line, needs_guard in _MODES_MUS[1:]:
-        if needs_guard:
-            lines.append("#ifdef S_SUPPORTED")
-        for state in [0, 1]:
-            bit_action = "csrc" if state == 0 else "csrs"
-            lines.extend(
-                [
-                    "",
-                    f"{INDENT}# mstateen0.fcsr = {state}, {mode_label}",
-                    f"LI(x{temp_reg1}, {FCSR_BIT_MASK})",
-                    f"{bit_action} mstateen0, x{temp_reg1}",
-                ]
-            )
-            lines.append(enter_line)
-            for insn, label in fp_instrs:
-                lines.extend(
-                    [
-                        "",
-                        test_data.add_testcase(f"{label}_fcsr{state}_{mode_label}", coverpoint, covergroup),
-                        insn,
-                    ]
-                )
-            lines.append("RVTEST_TSBI_GOTO_MMODE")
-        if needs_guard:
-            lines.append("#endif  // S_SUPPORTED")
-
-    test_data.int_regs.return_registers([temp_reg1, temp_reg2, temp_reg3])
-    return lines
-
-
-# ---------------------------------------------------------------------------
-# Main entry point
-# ---------------------------------------------------------------------------
-
-
-def _write_se(n: int, temp_reg: int, *, enable: bool) -> list[str]:
-    """Set or clear SE<n> (bit 63 of mstateen<n> on RV64, bit 31 of mstateen<n>h on RV32)."""
-    action = "csrs" if enable else "csrc"
-    description = f"set SE{n}=1" if enable else f"clear SE{n}=0"
-    return [
+        f"csrr x{save}, mstateen0  # save mstateen0",
         "#if __riscv_xlen == 64",
-        f"LI(x{temp_reg}, 0x8000000000000000)  # SE{n} = bit 63 of mstateen{n}",
-        f"{action} mstateen{n}, x{temp_reg}  # {description}",
+        f"LI(x{tmp}, MSTATEEN_HSTATEEN)",
+        f"csrw mstateen0, x{tmp}  # only SE0 set",
         "#else",
-        f"LI(x{temp_reg}, 0x80000000)  # SE{n} = bit 31 of mstateen{n}h",
-        f"{action} mstateen{n}h, x{temp_reg}  # {description}",
+        f"csrr x{saveh}, mstateen0h  # save mstateen0h",
+        "csrw mstateen0, zero",
+        f"LI(x{tmp}, MSTATEENH_HSTATEEN)",
+        f"csrw mstateen0h, x{tmp}  # only SE0 set",
         "#endif",
+        *walk,
+        f"csrw mstateen0, x{save}  # restore mstateen0",
+        "#if __riscv_xlen == 32",
+        f"csrw mstateen0h, x{saveh}  # restore mstateen0h",
+        "#endif",
+        f"mv x{save}, zero",
+        f"mv x{saveh}, zero",
     ]
-
-
-def _generate_se_controls_sstateen(test_data: TestData, *, n: int, se: int) -> list[str]:
-    """CSR ops on sstateen<n> from S-mode with SE<n> (bit 63 of mstateen<n>) set or clear.
-
-    The subject is the M-mode control bit, which is why this lives in Smstateen rather
-    than Ssstateen. The accesses themselves run in S-mode to hit the priv_mode_s bin.
-    sstateen1-3 have no defined bits, so for them each access also checks the value read,
-    which must be zero (norm:stateen_reserved_roz) whenever the access does not trap.
-    """
-    coverpoint = "cp_mstateen0_se0_controls_sstateen0" if n == 0 else "cp_mstateen_se_controls_sstateen123"
-    csr = f"sstateen{n}"
-    detail = f"SE{n}=1 (access permitted)" if se else f"SE{n}=0 (should trap)"
-
-    lines = [comment_banner(coverpoint, f"CSR ops to {csr} from S-mode with mstateen{n}.{detail}")]
-
-    temp_reg, save_mstateen, save_mstatenh, save_sstateen, ones_reg = test_data.int_regs.get_registers(5)
-
-    lines.extend(
-        [
-            f"csrr x{save_sstateen}, {csr}  # save {csr}",
-            f"LI(x{ones_reg}, -1)",
-            f"csrr x{save_mstateen}, mstateen{n}  # save mstateen{n}",
-            "#if __riscv_xlen == 32",
-            f"csrr x{save_mstatenh}, mstateen{n}h  # save mstateen{n}h on RV32",
-            "#endif",
-        ]
-    )
-    lines.extend(_write_se(n, temp_reg, enable=bool(se)))
-    lines.append("RVTEST_TSBI_GOTO_SMODE")
-
-    for op in CSR_OPS:
-        insn = f"{op} x{temp_reg}, {csr}" if op == "csrr" else f"{op} x{temp_reg}, {csr}, x{ones_reg}"
-        label = f"{csr}_{op.lower()}_se{n}_{se}_smode"
-        lines.extend(["", test_data.add_testcase(label, coverpoint, "Smstateen_cg"), insn])
-        if n:
-            lines.append(write_sigupd(temp_reg, test_data))
-
-    lines.extend(
-        [
-            "RVTEST_TSBI_GOTO_MMODE",
-            "",
-            f"csrw {csr}, x{save_sstateen}  # restore {csr}",
-            f"csrw mstateen{n}, x{save_mstateen}  # restore mstateen{n}",
-            "#if __riscv_xlen == 32",
-            f"csrw mstateen{n}h, x{save_mstatenh}  # restore mstateen{n}h on RV32",
-            "#endif",
-        ]
-    )
-
-    test_data.int_regs.return_registers([temp_reg, save_mstateen, save_mstatenh, save_sstateen, ones_reg])
-    return lines
+    test_data.int_regs.return_registers([save, saveh, tmp])
+    return gated(lines, guard)
 
 
 @add_priv_test_generator(
     "Smstateen",
-    required_extensions=["Smstateen"],
+    required_extensions=["Smstateen", "Sm"],
     march_extensions=["Smstateen"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_smstateen(test_data: TestData) -> list[TestChunk]:
-    """Generate tests for Smstateen state-enable extension testsuite."""
+    """Generate tests for Smstateen state-enable extension testsuite.
+
+    The boot code sets mstateen0-3, so each feature test clears and restores its own control bit.
+    """
     test_chunks: list[TestChunk] = []
     tc = test_data.begin_test_chunk()
 
-    # Unconditional coverpoints — required by all Smstateen targets
-    tc.code.extend(_generate_csr_illegal_accesses(test_data))
-    tc.code.extend(_generate_walking_ones(test_data))
-
-    # cp_envcfg — only when SM1P11P0 is not present
-    tc.code.append("#ifdef SM1P12P0_OR_LATER_SUPPORTED")
     tc.code.extend(
-        _generate_bit_controlled(
+        illegal_access_tests(
             test_data,
-            coverpoint="cp_envcfg",
-            bit=62,
-            bit_name="envcfg",
-            banner="CSR ops on senvcfg from M/S/U-mode with mstateen0.envcfg (bit 62) enabled and disabled",
-            csrs=["senvcfg"],
+            CG,
+            "cp_csr_illegal_accesses",
+            MSTATEEN_REGS + MSTATEENH_REGS,
+            modes=["U", "S", "VS", "VU"],
+            base="M",
         )
     )
-    tc.code.append("#endif")
-
-    # cp_imsic — only when IMSIC is present
-    tc.code.append("#ifdef SSAIA_SUPPORTED")
-    tc.code.extend(
-        _generate_bit_controlled(
-            test_data,
-            coverpoint="cp_imsic",
-            bit=58,
-            bit_name="imsic",
-            banner="CSR ops on stopei/vstopei with mstateen0.imsic (bit 58) disabled and enabled — M/S/U-mode",
-            csrs=["stopei", "vstopei"],
-        )
-    )
-    tc.code.append("#endif  // SSAIA_SUPPORTED")
-
-    # cp_aia — only when AIA is present
-    tc.code.append("#ifdef SSAIA_SUPPORTED")
-    tc.code.extend(
-        _generate_bit_controlled(
-            test_data,
-            coverpoint="cp_aia",
-            bit=59,
-            bit_name="aia",
-            banner="CSR ops on Ssaia CSRs with mstateen0.aia (bit 59) disabled and enabled — M/S/U-mode",
-            csrs=["stopi"],
-            csrs_rv32=["sieh", "siph"],
-        )
-    )
-    tc.code.append("#endif  // SSAIA_SUPPORTED")
-
-    # cp_jvt_access — only when Zcmt is present (covers S-mode and U-mode)
-    tc.code.append("#ifdef ZCMT_SUPPORTED")
-    tc.code.extend(arch_block(_generate_jvt(test_data), "zcmt"))
-    tc.code.append("#endif  // ZCMT_SUPPORTED")
-
-    # cp_context — only when Sdtrig is present
-    tc.code.append("#ifdef SDTRIG_SUPPORTED")
-    tc.code.extend(
-        _generate_bit_controlled(
-            test_data,
-            coverpoint="cp_context",
-            bit=57,
-            bit_name="context",
-            banner="CSR ops on scontext with mstateen0.context (bit 57) disabled and enabled — M/S/U-mode",
-            csrs=["scontext"],
-        )
-    )
-    tc.code.append("#endif  // SDTRIG_SUPPORTED")
-
-    # cp_p1p13 — only when Sm1p13 + Hypervisor present. hedelegh is the high half of
-    # hedeleg and exists only on RV32; on RV64 mstateen0.P1P13 is read-only zero.
-    tc.code.append("#if defined(SM1P13P0_OR_LATER_SUPPORTED) && defined(H_SUPPORTED) && __riscv_xlen == 32")
-    tc.code.extend(
-        _generate_bit_controlled(
-            test_data,
-            coverpoint="cp_p1p13",
-            bit=56,
-            bit_name="p1p13",
-            banner="CSR ops on hedelegh with mstateen0.p1p13 (bit 56) disabled and enabled — M/S/U-mode",
-            csrs=["hedelegh"],
-        )
-    )
-    tc.code.append("#endif  // SM1P13P0_OR_LATER_SUPPORTED && H_SUPPORTED && RV32")
-
-    # cp_srmcfg — only when Ssqosid is present
-    tc.code.append("#ifdef SSQOSID_SUPPORTED")
-    tc.code.extend(
-        _generate_bit_controlled(
-            test_data,
-            coverpoint="cp_srmcfg",
-            bit=55,
-            bit_name="srmcfg",
-            banner="CSR ops on srmcfg with mstateen0.srmcfg (bit 55) disabled and enabled — M/S/U-mode",
-            csrs=["srmcfg"],
-        )
-    )
-    tc.code.append("#endif  // SSQOSID_SUPPORTED")
-
-    # cp_ctr — only when Sctr is present
-    tc.code.append("#ifdef SSCTR_SUPPORTED")
-    tc.code.extend(
-        _generate_bit_controlled(
-            test_data,
-            coverpoint="cp_ctr",
-            bit=54,
-            bit_name="ctr",
-            banner="CSR ops on sctrdepth/sctrstatus with mstateen0.ctr (bit 54) disabled and enabled — M/S/U-mode",
-            csrs=["sctrdepth", "sctrstatus"],
-        )
-    )
-    tc.code.append("#endif  // SSCTR_SUPPORTED")
-
-    # cp_fcsr, cp_fcsr_ro_zero, cp_fcsr_lower, cp_fcsr_fp_instrs — only when Zfinx present
-    tc.code.append("#ifdef ZFINX_SUPPORTED")
-    fcsr_lines = [
-        *_generate_fcsr_ro_zero(test_data),
-        *_generate_fcsr(test_data),
-        *_generate_fcsr_lower(test_data),
-        *_generate_fcsr_lower_fp_instrs(test_data),
-    ]
-    tc.code.extend(arch_block(fcsr_lines, "zfinx"))
-    tc.code.append("#endif  // ZFINX_SUPPORTED")
-
+    for key, cp in FEATURE_COVERPOINTS:
+        feat = FEATURES[key]
+        tc = test_data.new_test_chunk(test_chunks)
+        tc.code.extend(feature_tests(test_data, CG, cp, feat, states=_mstateen_states(feat), modes=MODES, base="M"))
+    for csr in ("sstateen", "hstateen"):
+        for n in range(4):
+            tc = test_data.new_test_chunk(test_chunks)
+            tc.code.extend(_se_tests(test_data, n, csr))
+    tc = test_data.new_test_chunk(test_chunks)
+    tc.code.extend(_se0_only_walk(test_data, "sstateen0", "defined(S_SUPPORTED)"))
+    tc = test_data.new_test_chunk(test_chunks)
+    tc.code.extend(_se0_only_walk(test_data, "hstateen0", "defined(H_SUPPORTED)"))
+    stateen_walk_tests(test_data, test_chunks, CG, "cp_walking_ones", MSTATEEN_REGS, base="M")
     test_chunks.append(test_data.end_test_chunk())
-
-    # mstateenN.SE<N> (bit 63) gating of sstateenN, kept in its own chunk so it lands in its own file.
-    # sstateenN only exists under Ssstateen, which also implies S-mode.
-    tc = test_data.begin_test_chunk()
-    tc.code.append("#ifdef SSSTATEEN_SUPPORTED")
-    for n in range(4):
-        for se in (0, 1):
-            tc.code.extend(_generate_se_controls_sstateen(test_data, n=n, se=se))
-    tc.code.append("#endif  // SSSTATEEN_SUPPORTED")
-    test_chunks.append(test_data.end_test_chunk())
-
     return test_chunks

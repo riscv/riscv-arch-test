@@ -29,6 +29,7 @@ class SubprocessAction:
     cmd: list[str]
     stdout_file: Path | None = None  # redirect stdout to file
     cwd: Path | None = None  # working directory for the subprocess
+    env: tuple[tuple[str, str], ...] = ()  # extra environment variables; excluded from the recipe hash
 
 
 @dataclass(frozen=True)

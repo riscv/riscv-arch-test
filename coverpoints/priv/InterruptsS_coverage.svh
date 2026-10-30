@@ -311,6 +311,27 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
         // cp_trigger_vsti_sstc: vstimecmp written to its minimum, as stimecmp_min, with henvcfg.STCE = 1,
         // hie.VSTIE = 1 and hideleg.VSTI = 0/1
         `ifdef H_SUPPORTED
+            // VS-mode writes its own timer through stimecmp, which is vstimecmp there.  The trace records an
+            // interrupt taken right after an instruction with that instruction, so the write is matched by
+            // encoding rather than by the vstimecmp value.
+            csrw_stimecmp_zero: coverpoint ins.current.insn {
+                wildcard bins zero = {CSRRW} iff (ins.current.insn[31:20] == CSR_STIMECMP && ins.current.rs1_val == 0);
+            }
+            // U-mode and VU-mode cannot write vstimecmp, so HS-mode sets it and enters them with the T-SBI mret
+            // from M-mode.  MPV is mstatus bit 39, which lands in mstatush when MXLEN is 32.
+            `ifdef UDB_MXLEN_64
+                mret_to_u_vu: coverpoint {ins.current.insn == MRET, get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpv")[0],
+                                          get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0]} {
+                    bins U_mode  = {4'b1000};
+                    bins VU_mode = {4'b1100};
+                }
+            `else
+                mret_to_u_vu: coverpoint {ins.current.insn == MRET, get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatush", "mpv")[0],
+                                          get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0]} {
+                    bins U_mode  = {4'b1000};
+                    bins VU_mode = {4'b1100};
+                }
+            `endif
             `ifdef UDB_MXLEN_64
                 vstimecmp_min: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vstimecmp", "vstimecmp") {
                     bins min = {'0};
@@ -397,8 +418,11 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
         }
         cp_trigger_sti_sstc_tsbi: cross tsbi_return_sret, menvcfg_stce_one, stimecmp_min, sstatus_sie_on_return, sie_ones, mideleg_s_ones, stvec_both;
         `ifdef H_SUPPORTED
-            // vstimecmp armed from HS-mode raises VSTI in HS-mode or, delegated by hideleg, STI in VS-mode
-            cp_trigger_vsti_sstc: cross priv_mode_hs, vstimecmp_min, menvcfg_stce_one, henvcfg_stce_one, hie_vstie_one, hideleg_vstip;
+            // vstimecmp = 0 raises VSTI in HS-mode or, delegated by hideleg, STI in VS-mode
+            cp_trigger_vsti_sstc:      cross priv_mode_hs, vstimecmp_min, menvcfg_stce_one, henvcfg_stce_one, hie_vstie_one, hideleg_vstip;
+            cp_trigger_vsti_sstc_vs:   cross priv_mode_vs, csrw_stimecmp_zero, menvcfg_stce_one, henvcfg_stce_one, hie_vstie_one, hideleg_vstip;
+            // The interrupt is taken on the mret into U-mode or VU-mode, except that U-mode never takes it delegated
+            cp_trigger_vsti_sstc_tsbi: cross mret_to_u_vu, vstimecmp_min, menvcfg_stce_one, henvcfg_stce_one, hie_vstie_one, hideleg_vstip;
         `endif
     `endif
 

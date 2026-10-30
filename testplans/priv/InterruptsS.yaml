@@ -80,6 +80,20 @@ coverpoints:
       In HS-mode with menvcfg.STCE = henvcfg.STCE = 1, hie.VSTIE = 1, vsstatus.SIE = 1 and hideleg.VSTI = {0/1}, write vstimecmp = 0; with hideleg.VSTI = 0, set sstatus.SIE, else change to VS-mode
     expectation: HS-mode takes VSTI (cause 6) when hideleg.VSTI = 0; VS-mode takes STI (cause 5) when hideleg.VSTI = 1
     bins: 2 hideleg
+  - name: cp_trigger_vsti_sstc_vs
+    goal: VS-mode sets its own timer
+    description: |-
+      if H_SUPPORTED and SSTC_SUPPORTED:
+      With menvcfg.STCE = henvcfg.STCE = 1, hie.VSTIE = 1, vsstatus.SIE = 1 and hideleg.VSTI = {0/1}, in VS-mode write stimecmp = 0, which writes vstimecmp
+    expectation: HS-mode takes VSTI (cause 6) when hideleg.VSTI = 0; VS-mode takes STI (cause 5) when hideleg.VSTI = 1
+    bins: 2 hideleg
+  - name: cp_trigger_vsti_sstc_tsbi
+    goal: VSTI with Sstc in U-mode and VU-mode
+    description: |-
+      if H_SUPPORTED and SSTC_SUPPORTED:
+      With menvcfg.STCE = henvcfg.STCE = 1, hie.VSTIE = 1, vsstatus.SIE = 1 and hideleg.VSTI = {0/1}, in HS-mode write vstimecmp = 0 and change to {U, VU} mode through the T-SBI mret
+    expectation: HS-mode takes VSTI (cause 6) on entry when hideleg.VSTI = 0.  When hideleg.VSTI = 1, VS-mode takes STI (cause 5) on entry to VU-mode, and U-mode does not take it
+    bins: 2 modes (U, VU) * 2 hideleg
   - name: cp_enable
     goal: Enables control interrupts
     description: |-

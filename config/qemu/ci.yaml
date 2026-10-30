@@ -87,6 +87,10 @@ exclude_extensions:
   # (https://gitlab.com/qemu-project/qemu/-/issues/4620). QEMU has further hypervisor bugs
   # filed the same day, 4611 through 4617, so this exclusion will be needed for a while.
   - H
+  - Sv_H
+  - Sv_HSm
+  - Sv_HZicbo
+  - PMP_HSvZicbo
   - Exceptions_H
   - Exceptions_HSm
   - Zicfilp_H
@@ -102,6 +106,9 @@ exclude_extensions:
   # (https://gitlab.com/qemu-project/qemu/-/issues/4620).
   - Svinval_H
   - Svinval_SmH
+  - Svadu_H
+  - Svpbmt_H
+  - Svnapot_H
   # The same mstatus.MPV bug keeps the VS-mode and VU-mode sweeps in HS-mode
   # (https://gitlab.com/qemu-project/qemu/-/work_items/4588).
   - Ssstrict_H

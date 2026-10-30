@@ -26,7 +26,7 @@ coverpoints:
       The trap record holds xcause, xepc, xtval, the status fields written by the trap and, in HS-mode, htval and htinst.
     bins: 9 exceptions * 2 modes * 11 hedeleg (* 8 offsets for misaligned loads and stores)
     notes: |-
-      Also covers hstatus.GVA, which these traps set when they write a guest virtual address to stval.  Page-fault and guest-page-fault delegation is in SvH cp_hedeleg_page_fault and cp_hedeleg_guest_page_fault.
+      Also covers hstatus.GVA, which these traps set when they write a guest virtual address to stval.  Page-fault and guest-page-fault delegation is in Sv_H_twostage_cg cp_hedeleg_page_fault and cp_hedeleg_guest_page_fault.
   - name: cp_hedeleg_hs_u
     goal: Traps from HS and U ignore hedeleg
     description: In HS-mode and U-mode with hedeleg = all writable bits, raise the same exceptions as cp_hedeleg.

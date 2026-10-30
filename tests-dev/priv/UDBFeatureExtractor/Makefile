@@ -51,7 +51,7 @@ SRCS := start.S feature_extractor.c parameters.c console.c
 DEPS := extensions.h probe.h udb_parameters.h console.h
 ELF  := $(BUILD_DIR)/feature_extractor$(XLEN).elf
 
-.PHONY: all elf xlen-elf run dump test regression clean help
+.PHONY: all elf xlen-elf run dump test regression config config-regression clean help
 all: run
 
 $(BUILD_DIR):
@@ -90,6 +90,14 @@ JOBS ?= 1
 regression:
 	$(PYTHON) $(SRC_DIR)/test/regression.py --repo-root $(REPO_ROOT) --build-dir $(BUILD_DIR)/regression --jobs $(JOBS)
 
+# Generate CONFIG_DIR's UDB yaml and sail.json in CONFIG_OUT from its test_config.yaml, run_cmd.txt,
+# link.ld and rvmodel_macros.h; config-regression does that for every configuration and compares
+CONFIG_OUT ?= $(BUILD_DIR)/config/$(notdir $(CONFIG_DIR))
+config:
+	uv run $(SRC_DIR)/make_config.py --config-dir $(CONFIG_DIR) --out-dir $(CONFIG_OUT)
+config-regression:
+	uv run $(SRC_DIR)/test/make_config_regression.py --build-dir $(BUILD_DIR)/make_config --jobs $(JOBS)
+
 clean:
 	rm -rf $(BUILD_DIR)
 
@@ -100,4 +108,6 @@ help:
 	@echo "  dump  disassemble"
 	@echo "  test  self-test against the Sail max configurations for both XLENs"
 	@echo "  regression  run every config/**/run_cmd.txt configuration and compare with its UDB yaml (JOBS=n)"
+	@echo "  config     generate CONFIG_DIR's UDB yaml and sail.json in CONFIG_OUT"
+	@echo "  config-regression  generate every configuration and compare with the checked-in yaml and sail.json"
 	@echo "  clean remove $(BUILD_DIR)"

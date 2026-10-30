@@ -260,6 +260,87 @@ B, C, Zi*, vector, floating point, Zfinx family, and E) and checks that every ex
 configuration names is reported exactly when the configuration enables it. Privileged
 extensions, the untested ones above and extensions that are not yet ratified are not checked.
 
+## Generating a configuration for a new DUT
+
+```
+make -f tests-dev/priv/UDBFeatureExtractor/Makefile config CONFIG_DIR=config/cores/<vendor>/<core>
+uv run tests-dev/priv/UDBFeatureExtractor/make_config.py --config-dir config/cores/<vendor>/<core> --out-dir OUT
+```
+
+reads only the four files a DUT port starts with — `test_config.yaml`, `run_cmd.txt`, `link.ld`
+and `rvmodel_macros.h` — and writes `<name>.yaml` and `sail.json` to `OUT` (the Make target uses
+`work/UDBFeatureExtractor/config/<core>`):
+
+1. `xlen_probe.S` runs on the DUT to find XLEN. Its instructions behave the same on RV32 and RV64,
+   but simulators refuse an ELF of the wrong class, so both classes are tried; the run command only
+   decides which goes first.
+2. The extractor is built for that XLEN and run with `run_cmd.txt`.
+3. The yaml gets the extensions and parameters the extractor reported. `udb validate cfg` then says
+   what is still wrong, and the script repeats until UDB accepts the file: a missing parameter gets
+   the value most ACT configurations of the same XLEN use; a parameter that does not apply, or that
+   the schema rejects, is dropped; an extension that another one requires and the extractor cannot
+   probe (such as Shtvala for Sha) is added; and an extension's version is raised when another one
+   requires a later one (Ssqosid needs S 1.13, which the extractor cannot tell from 1.12 on RV64).
+   Every such value carries an `# assumed:` comment, so the file says exactly what was measured.
+4. `udb_to_sail.py` turns the yaml into `sail.json`, adding the Sail-only values the extractor
+   measured (its `# sail:` lines).
+
+UDB keeps a cache of every configuration it has resolved, under the configuration's name, and
+reuses it while it is newer than the yaml. A generated yaml has the same name as the checked-in
+one, so the script points UDB at a data directory of its own (`OUT/udb-data`).
+
+## Converting a UDB configuration to a Sail configuration
+
+```
+uv run tests-dev/priv/UDBFeatureExtractor/udb_to_sail.py <udb.yaml> -o sail.json --config-dir DIR [--sail-extra extra.json] [--compare old.json]
+```
+
+starts from Sail's default configuration for the XLEN (`sail_riscv_sim --print-default-config`) and
+sets every key a UDB extension or parameter determines. The memory map comes from `DIR`: main memory
+from `RAM_ORIGIN`/`RAM_LENGTH` in `link.ld`, and an IO region holding Sail's CLINT (at the DUT's
+`RVMODEL_MTIME_ADDRESS` - 0xBFF8 when that is free) and the simple interrupt generator, kept clear of
+`RVMODEL_ACCESS_FAULT_ADDRESS`. The macros are evaluated by assembling `.dword MACRO`, so `.EQU`
+symbols and expressions work. The output is checked with `sail_riscv_sim --validate-config`.
+
+The comment block at the top of the output lists the keys left at Sail's default because neither
+UDB nor a measurement determines them, and the UDB values Sail cannot express. Some UDB facts map
+onto Sail only approximately:
+
+- Sail has one `xtval_nonzero` switch per exception for M, S and VS together, where UDB has one
+  parameter per mode; the converter uses the M-mode value and reports a disagreement.
+- `mideleg` bits 2, 6, 10 and 12 are read-only one with H, so Sail does not count them as
+  delegatable, though UDB's `MIDELEG_DELEGATABLE` lists them.
+- Trigger support is per trigger in UDB and per trigger type in Sail.
+- `MISALIGNED_AMO` says whether a misaligned AMO traps but not with which exception; the
+  converter assumes a misaligned-address exception unless the extractor measured otherwise. Sail
+  lets a misaligned AMO proceed only inside the main-memory region's atomicity granule, so a hart
+  whose misaligned AMOs succeed gets at least a 16-byte granule.
+- `MISALIGNED_SPLIT_STRATEGY` = `sequential_bytes` becomes aligned pieces in increasing address
+  order; Sail's byte-by-byte option looks the same, since a piece can only fault at a page or PMP
+  boundary, which is piece-aligned.
+- Reserved `medeleg` bits that a hart lets be set, and an RV64 `mstateen0.P1P13` that is writable,
+  are left out: Sail rejects both.
+- Stateen bits without a UDB parameter are writable exactly when what they guard exists.
+- Sail allows more than 16 PMP entries only from privileged ISA 1.12, so a 1.11 configuration with
+  64 entries gets 1.12.
+
+`--compare` lists the relevant keys that differ from an existing `sail.json`; misaligned-access
+settings are compared on what they do (trap, or allowed within a granule) rather than on how
+they are spelled.
+
+## Regression for the generated configurations
+
+```
+make -f tests-dev/priv/UDBFeatureExtractor/Makefile config-regression JOBS=16
+```
+
+runs `make_config.py` on every configuration with a `run_cmd.txt` and reports, per configuration:
+whether UDB and Sail accept the generated files; the extensions and measured parameters that
+differ from the configuration's yaml; the generated `sail.json` keys that differ from the
+configuration's, labelled by where the generated value came from (measured, assumed, an untested
+extension, or Sail's default); and the keys where the configuration's own yaml and `sail.json`
+disagree.
+
 ## Adding an extension
 
 Add one row to `extensions.h`:

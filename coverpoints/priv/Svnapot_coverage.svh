@@ -144,7 +144,6 @@ covergroup Svnapot_cg with function sample(ins_t ins);
 endgroup
 
 `ifdef H_SUPPORTED
-`ifdef UDB_MXLEN_64
 // 64 KiB NAPOT translation in the VS-stage, the G-stage and both
 covergroup Svnapot_H_cg with function sample(ins_t ins);
     option.per_instance = 0;
@@ -178,14 +177,11 @@ covergroup Svnapot_H_cg with function sample(ins_t ins);
     cp_hgatp_napot    : cross priv_mode_vs_vu, access, vsatp_bare, hgatp_paged, napot_page;
     cp_twostage_napot : cross priv_mode_vs_vu, access, vsatp_paged, hgatp_paged, napot_page;
 endgroup
-`endif // UDB_MXLEN_64
 `endif // H_SUPPORTED
 
 function void svnapot_sample(int hart, int issue, ins_t ins);
     Svnapot_cg.sample(ins);
     `ifdef H_SUPPORTED
-        `ifdef UDB_MXLEN_64
-            Svnapot_H_cg.sample(ins);
-        `endif
+        Svnapot_H_cg.sample(ins);
     `endif
 endfunction

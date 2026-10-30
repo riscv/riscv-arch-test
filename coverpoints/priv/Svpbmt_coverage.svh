@@ -147,7 +147,6 @@ covergroup Svpbmt_cg with function sample(ins_t ins);
 endgroup
 
 `ifdef H_SUPPORTED
-`ifdef UDB_MXLEN_64
 // Svpbmt in the VS-stage and G-stage: henvcfg.PBMTE enables PBMT in the VS-stage, and menvcfg.PBMTE in the G-stage
 covergroup Svpbmt_H_cg with function sample(ins_t ins);
     option.per_instance = 0;
@@ -175,9 +174,6 @@ covergroup Svpbmt_H_cg with function sample(ins_t ins);
         `ifdef UDB_SV57_VSMODE_TRANSLATION
             bins sv57 = {10};
         `endif
-        `ifdef UDB_SV32_VSMODE_TRANSLATION
-            bins sv32 = {1};
-        `endif
     }
     // Each supported G-stage mode
     hgatp_mode : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode") {
@@ -189,9 +185,6 @@ covergroup Svpbmt_H_cg with function sample(ins_t ins);
         `endif
         `ifdef UDB_SV57X4_TRANSLATION
             bins sv57x4 = {10};
-        `endif
-        `ifdef UDB_SV32X4_TRANSLATION
-            bins sv32x4 = {1};
         `endif
     }
     vsatp_bare : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
@@ -230,14 +223,11 @@ covergroup Svpbmt_H_cg with function sample(ins_t ins);
     // henvcfg.PBMTE is read-only zero while menvcfg.PBMTE = 0
     cp_henvcfg_menvcfg : cross priv_mode_hs, csrrs, henvcfg, menvcfg_pbmte;
 endgroup
-`endif // UDB_MXLEN_64
 `endif // H_SUPPORTED
 
 function void svpbmt_sample(int hart, int issue, ins_t ins);
     Svpbmt_cg.sample(ins);
     `ifdef H_SUPPORTED
-        `ifdef UDB_MXLEN_64
-            Svpbmt_H_cg.sample(ins);
-        `endif
+        Svpbmt_H_cg.sample(ins);
     `endif
 endfunction

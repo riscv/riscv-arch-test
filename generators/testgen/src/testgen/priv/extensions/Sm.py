@@ -11,8 +11,6 @@
 
 """Sm privileged extension test generator."""
 
-from itertools import product
-
 from testgen.asm.csr import cntr_access_test, csr_access_test, csr_walk_test, gen_csr_read_sigupd
 from testgen.asm.helpers import comment_banner, gated, write_sigupd
 from testgen.constants import INDENT
@@ -2124,147 +2122,6 @@ def _h_mret_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-def _h_zicfilp_tests(test_data: TestData) -> list[str]:
-    """Landing pads across traps from VS-mode and VU-mode into M-mode, and MRETs to VS-mode and VU-mode."""
-    medeleg_reg, jump_reg, temp_reg = test_data.int_regs.get_registers(3)
-    lpe_csr = {"VS": "henvcfg", "VU": "senvcfg"}
-    lines = [
-        comment_banner(
-            "cp_trap_mpelp_virt",
-            "Software-check exceptions and breakpoints are taken in M-mode.  With the landing pad enable of the mode\n"
-            "set (henvcfg.LPE in VS-mode, senvcfg.LPE in VU-mode), jalr through a non-link register to a non-LPAD\n"
-            "instruction traps with ELP = LP_EXPECTED, which the trap saves in MPELP.  The handler's MRET (MPV = 1)\n"
-            "restores it, so the next non-LPAD instruction traps again before the lpad.  An ebreak traps with\n"
-            "ELP = NO_LP_EXPECTED, so the instruction after it does not trap.",
-        ),
-        f"csrr x{medeleg_reg}, medeleg",
-        f"LI(x{temp_reg}, (1 << CAUSE_BREAKPOINT) | (1 << CAUSE_SOFTWARE_CHECK_FAULT))",
-        f"csrc medeleg, x{temp_reg}",
-    ]
-    resume = [
-        "addi x0, x0, 0 # ELP must be NO_LP_EXPECTED here, otherwise software-check exception",
-        "lpad 0         # resume point after a software-check exception on the nop",
-    ]
-    for mode in ("VS", "VU"):
-        test_data.add_testcase(f"{mode.lower()}_lp_expected", "cp_trap_mpelp_virt", _H_INST_CG)
-        label = test_data.current_testcase_label
-        lines.extend(
-            [
-                "",
-                f"LI(x{temp_reg}, {lpe_csr[mode].upper()}_LPE)",
-                f"csrs {lpe_csr[mode]}, x{temp_reg}",
-                f"RVTEST_TSBI_GOTO_{mode}MODE",
-                f"LA(x{jump_reg}, {label}_target)",
-                f"{label}:",
-                f"jalr x0, 0(x{jump_reg})",
-                ".p2align 2",
-                f"{label}_target:",
-                "addi x0, x0, 0 # non-LPAD target: software-check exception into M-mode",
-                *resume,
-                test_data.add_testcase(f"{mode.lower()}_no_lp_expected", "cp_trap_mpelp_virt", _H_INST_CG),
-                "ebreak",
-                *resume,
-                "RVTEST_TSBI_GOTO_MMODE",
-                f"LA(x{temp_reg}, rvtest_trap_count)",
-                f"LREG x{temp_reg}, 0(x{temp_reg})",
-                write_sigupd(temp_reg, test_data),
-                f"LI(x{temp_reg}, {lpe_csr[mode].upper()}_LPE)",
-                f"csrc {lpe_csr[mode]}, x{temp_reg}",
-            ]
-        )
-    lines.append(
-        comment_banner(
-            "cp_mret_mpelp_virt",
-            "mret with MPV = 1 to VS-mode or VU-mode and a non-LPAD target, for each value of henvcfg.LPE, senvcfg.LPE\n"
-            "and MPELP.  menvcfg.LPE holds the opposite of the new mode's enable.  Only MPELP = 1 with the new mode's\n"
-            "enable set raises a software-check exception.",
-        )
-    )
-    for mode, h_lpe, s_lpe, mpelp in product(("VS", "VU"), (0, 1), (0, 1), (0, 1)):
-        name = f"{mode.lower()}_henvcfg{h_lpe}_senvcfg{s_lpe}_mpelp{mpelp}"
-        m_lpe = 1 - (h_lpe if mode == "VS" else s_lpe)
-        mpelp_op = "csrs" if mpelp else "csrc"
-        test_data.add_testcase(name, "cp_mret_mpelp_virt", _H_INST_CG)
-        label = test_data.current_testcase_label
-        lines.append("")
-        for csr, lpe in (("henvcfg", h_lpe), ("senvcfg", s_lpe), ("menvcfg", m_lpe)):
-            lines.extend([f"LI(x{temp_reg}, {csr.upper()}_LPE)", f"{'csrs' if lpe else 'csrc'} {csr}, x{temp_reg}"])
-        lines.extend(
-            [
-                f"LI(x{temp_reg}, MSTATUS_MPP)",
-                f"csrc mstatus, x{temp_reg}",
-                *([f"LI(x{temp_reg}, MPP_SMODE)", f"csrs mstatus, x{temp_reg}"] if mode == "VS" else []),
-                "#if __riscv_xlen == 64",
-                f"LI(x{temp_reg}, MSTATUS_MPV)",
-                f"csrs mstatus, x{temp_reg}",
-                f"LI(x{temp_reg}, MSTATUS_MPELP)",
-                f"{mpelp_op} mstatus, x{temp_reg}",
-                "#else",
-                f"LI(x{temp_reg}, MSTATUSH_MPV)",
-                f"csrs mstatush, x{temp_reg}",
-                f"LI(x{temp_reg}, MSTATUSH_MPELP)",
-                f"{mpelp_op} mstatush, x{temp_reg}",
-                "#endif",
-                f"LA(x{temp_reg}, {label}_target)",
-                f"csrw mepc, x{temp_reg}",
-                f"{label}:",
-                "mret",
-                ".p2align 2",
-                f"{label}_target:",
-                "addi x0, x0, 0 # software-check exception only if MPELP = 1 and the new mode's enable is 1",
-                "lpad 0         # resume point after the software-check exception",
-                "RVTEST_TSBI_GOTO_MMODE",
-                f"LA(x{temp_reg}, rvtest_trap_count)",
-                f"LREG x{temp_reg}, 0(x{temp_reg})",
-                write_sigupd(temp_reg, test_data),
-            ]
-        )
-    for csr in ("henvcfg", "senvcfg", "menvcfg"):
-        lines.extend([f"LI(x{temp_reg}, {csr.upper()}_LPE)", f"csrc {csr}, x{temp_reg}"])
-    lines.extend(
-        [
-            comment_banner(
-                "cp_vs_sstatus_spelp_mstatus",
-                "medeleg[10] = 0, so the T-SBI ecall from VS-mode goes to M-mode and no trap into HS-mode changes\n"
-                "mstatus.SPELP.  For each value of mstatus.SPELP, VS-mode sets and clears sstatus.SPELP, which is\n"
-                "vsstatus.SPELP.  M-mode then records mstatus.SPELP, which must be unchanged, and vsstatus.SPELP.",
-            ),
-            f"LI(x{temp_reg}, 1 << CAUSE_VIRTUAL_SUPERVISOR_ECALL)",
-            f"csrc medeleg, x{temp_reg}",
-        ]
-    )
-    for op, spelp in product(("csrs", "csrc"), (0, 1)):
-        lines.extend(
-            [
-                "",
-                f"LI(x{temp_reg}, MSTATUS_SPELP)",
-                f"{'csrs' if spelp else 'csrc'} mstatus, x{temp_reg} # mstatus.SPELP = {spelp}",
-                f"{'csrc' if op == 'csrs' else 'csrs'} vsstatus, x{temp_reg} # the opposite of the VS-mode write",
-                "RVTEST_TSBI_GOTO_VSMODE",
-                f"LI(x{jump_reg}, SSTATUS_SPELP)",
-                test_data.add_testcase(f"{op}_mstatus_spelp{spelp}", "cp_vs_sstatus_spelp_mstatus", _H_INST_CG),
-                f"{op} sstatus, x{jump_reg} # vsstatus.SPELP",
-                f"csrr x{temp_reg}, sstatus",
-                f"and x{temp_reg}, x{temp_reg}, x{jump_reg}",
-                write_sigupd(temp_reg, test_data),
-                "RVTEST_TSBI_GOTO_MMODE",
-            ]
-        )
-        for csr in ("mstatus", "vsstatus"):
-            lines.extend(
-                [
-                    f"csrr x{temp_reg}, {csr}",
-                    f"LI(x{jump_reg}, MSTATUS_SPELP)",
-                    f"and x{temp_reg}, x{temp_reg}, x{jump_reg}",
-                    write_sigupd(temp_reg, test_data),
-                ]
-            )
-    lines.extend([f"LI(x{temp_reg}, MSTATUS_SPELP)", f"csrc mstatus, x{temp_reg}", f"csrc vsstatus, x{temp_reg}"])
-    lines.append(f"csrw medeleg, x{medeleg_reg}")
-    test_data.int_regs.return_registers([medeleg_reg, jump_reg, temp_reg])
-    return lines
-
-
 @add_priv_test_generator(
     "Sm",
     required_extensions=["Sm", "H"],
@@ -2314,20 +2171,6 @@ def make_smh(test_data: TestData) -> list[TestChunk]:
         ]
     )
 
-    test_chunks.append(test_data.end_test_chunk())
-    return test_chunks
-
-
-@add_priv_test_generator(
-    "Sm",
-    required_extensions=["Sm", "H", "Zicfilp"],
-    extra_defines=["#define BOOT_TO_MMODE"],
-)
-def make_sm_h_zicfilp(test_data: TestData) -> list[TestChunk]:
-    """Generate Sm_H_zicfilp tests: landing pads across traps from VS-mode and VU-mode into M-mode and MRETs back."""
-    test_chunks: list[TestChunk] = []
-    tc = test_data.new_test_chunk(test_chunks, "H_zicfilp")
-    tc.code.extend(_h_zicfilp_tests(test_data))
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks
 

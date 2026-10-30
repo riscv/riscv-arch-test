@@ -1,13 +1,13 @@
 ##################################
 # priv/extensions/Zicfilp.py
 #
-# Landing pad test generators for the Zicfilp suites (Sm, S, U and H groups).
+# Landing pad test generators for the Zicfilp suites (Sm, S, U, H and SmH groups).
 # umer@riscv.org Sep 2026
 # David_Harris@hmc.edu 29 September 2026 (H group)
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-"""Zicfilp_Sm, Zicfilp_S, Zicfilp_U and Zicfilp_H privileged test generators, shared helpers and per-mode registrations."""
+"""Zicfilp_Sm, Zicfilp_S, Zicfilp_U, Zicfilp_H and Zicfilp_SmH privileged test generators and shared helpers."""
 
 from itertools import product
 from typing import Literal
@@ -41,7 +41,7 @@ RESUME = [
 
 
 def _split(covergroup: str) -> str:
-    """Split name for a test chunk: the group (Sm, S, U or H) of the covergroup."""
+    """Split name for a test chunk: the group (Sm, S, U, H or SmH) of the covergroup."""
     return covergroup.removeprefix("Zicfilp_").removesuffix("_cg")
 
 
@@ -1192,3 +1192,149 @@ def make_zicfilph(test_data: TestData) -> list[TestChunk]:
         _h_sstatus_alias_tests(test_data),
         _h_async_interrupt_tests(test_data),
     ]
+
+
+# SmH group: the test boots to M-mode. medeleg[3] = medeleg[18] = 0, so breakpoints and software-check exceptions
+# from VS-mode and VU-mode are taken in M-mode.
+
+_SMH_CG = "Zicfilp_SmH_cg"
+# Modes whose landing pad enable is henvcfg.LPE, senvcfg.LPE and menvcfg.LPE
+_SMH_LPE_MODES: tuple[Mode, ...] = ("VS", "VU", "S")
+
+
+def _smh_trap_tests(test_data: TestData, jump_reg: int, temp_reg: int) -> list[str]:
+    """Traps from VS-mode and VU-mode into M-mode save ELP in MPELP."""
+    coverpoint = "cp_trap_mpelp_virt"
+    lines = [
+        comment_banner(
+            coverpoint,
+            "With the landing pad enable of the mode set (henvcfg.LPE in VS-mode, senvcfg.LPE in VU-mode), jalr\n"
+            "through a non-link register to a non-LPAD instruction traps with ELP = LP_EXPECTED, which the trap\n"
+            "saves in MPELP.  The handler's MRET (MPV = 1) restores it, so the next non-LPAD instruction traps again\n"
+            "before the lpad.  An ebreak traps with ELP = NO_LP_EXPECTED, so the instruction after it does not trap.",
+        ),
+    ]
+    for mode in _V_MODES:
+        lines.extend(
+            [
+                "",
+                *set_lpe("M", mode, temp_reg, True),
+                f"RVTEST_TSBI_GOTO_{mode}MODE",
+                *jump_to_target(
+                    test_data,
+                    "jalr",
+                    jump_reg,
+                    0,
+                    ["addi x0, x0, 0 # non-LPAD target: software-check exception into M-mode"],
+                    f"{mode.lower()}_lp_expected",
+                    coverpoint,
+                    _SMH_CG,
+                    temp_reg,
+                ),
+                test_data.add_testcase(f"{mode.lower()}_no_lp_expected", coverpoint, _SMH_CG),
+                "ebreak",
+                *RESUME,
+                "RVTEST_TSBI_GOTO_MMODE",
+                *_check_trap_count(test_data, temp_reg),
+                *set_lpe("M", mode, temp_reg, False),
+            ]
+        )
+    return lines
+
+
+def _smh_mret_tests(test_data: TestData, temp_reg: int) -> list[str]:
+    """MRET to VS-mode or VU-mode restores ELP from MPELP with the landing pad enable of the new mode."""
+    coverpoint = "cp_mret_mpelp_virt"
+    lines = [
+        comment_banner(
+            coverpoint,
+            "mret with MPV = 1 to VS-mode or VU-mode and a non-LPAD target, for each value of henvcfg.LPE,\n"
+            "senvcfg.LPE and MPELP.  menvcfg.LPE holds the opposite of the new mode's enable.  Only MPELP = 1 with\n"
+            "the new mode's enable set raises a software-check exception.",
+        ),
+    ]
+    for mode, h_lpe, s_lpe, mpelp in product(_V_MODES, (0, 1), (0, 1), (0, 1)):
+        m_lpe = 1 - (h_lpe if mode == "VS" else s_lpe)
+        test_data.add_testcase(f"{mode.lower()}_henvcfg{h_lpe}_senvcfg{s_lpe}_mpelp{mpelp}", coverpoint, _SMH_CG)
+        lines.append("")
+        for lpe_mode, lpe in zip(_SMH_LPE_MODES, (h_lpe, s_lpe, m_lpe)):
+            lines.extend(set_lpe("M", lpe_mode, temp_reg, bool(lpe)))
+        lines.extend(
+            [
+                *_set_xret_status("M", "S" if mode == "VS" else "U", mpelp, temp_reg),
+                "#if __riscv_xlen == 64",
+                f"LI(x{temp_reg}, MSTATUS_MPV)",
+                f"csrs mstatus, x{temp_reg}",
+                "#else",
+                f"LI(x{temp_reg}, MSTATUSH_MPV)",
+                f"csrs mstatush, x{temp_reg}",
+                "#endif",
+                *_xret_to_non_lpad(
+                    test_data, "mret", temp_reg, "software-check exception only if MPELP=1 and the new mode's LPE=1"
+                ),
+                "RVTEST_TSBI_GOTO_MMODE",
+                *_check_trap_count(test_data, temp_reg),
+            ]
+        )
+    for lpe_mode in _SMH_LPE_MODES:
+        lines.extend(set_lpe("M", lpe_mode, temp_reg, False))
+    return lines
+
+
+def _smh_sstatus_spelp_tests(test_data: TestData, mask_reg: int, temp_reg: int) -> list[str]:
+    """A VS-mode write to sstatus.SPELP writes vsstatus.SPELP and leaves mstatus.SPELP unchanged."""
+    coverpoint = "cp_vs_sstatus_spelp_mstatus"
+    lines = [
+        comment_banner(
+            coverpoint,
+            "medeleg[10] = 0, so the T-SBI ecall from VS-mode goes to M-mode and no trap into HS-mode changes\n"
+            "mstatus.SPELP.  For each value of mstatus.SPELP, VS-mode sets and clears sstatus.SPELP, which is\n"
+            "vsstatus.SPELP.  M-mode then records mstatus.SPELP, which must be unchanged, and vsstatus.SPELP.",
+        ),
+        f"LI(x{temp_reg}, 1 << CAUSE_VIRTUAL_SUPERVISOR_ECALL)",
+        f"csrc medeleg, x{temp_reg}",
+    ]
+    for op, spelp in product(("csrs", "csrc"), (0, 1)):
+        lines.extend(
+            [
+                "",
+                *_set_spelp("mstatus", spelp, temp_reg),
+                *_set_spelp("vsstatus", int(op == "csrc"), temp_reg),
+                "RVTEST_TSBI_GOTO_VSMODE",
+                f"LI(x{mask_reg}, SSTATUS_SPELP)",
+                test_data.add_testcase(f"{op}_mstatus_spelp{spelp}", coverpoint, _SMH_CG),
+                f"{op} sstatus, x{mask_reg} # vsstatus.SPELP",
+                f"csrr x{temp_reg}, sstatus",
+                f"and x{temp_reg}, x{temp_reg}, x{mask_reg}",
+                write_sigupd(temp_reg, test_data),
+                "RVTEST_TSBI_GOTO_MMODE",
+                *_record_spelp(test_data, "mstatus", temp_reg, mask_reg, "M"),
+                *_record_spelp(test_data, "vsstatus", temp_reg, mask_reg, "M"),
+            ]
+        )
+    lines.extend([*_set_spelp("mstatus", 0, temp_reg), *_set_spelp("vsstatus", 0, temp_reg)])
+    return lines
+
+
+@add_priv_test_generator(
+    "Zicfilp",
+    required_extensions=["Sm", "H", "Zicfilp"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_zicfilpsmh(test_data: TestData) -> list[TestChunk]:
+    """Generate Zicfilp tests of traps from VS-mode and VU-mode into M-mode and of MRETs back."""
+    medeleg_reg, jump_reg, temp_reg = test_data.int_regs.get_registers(3)
+    tc = test_data.begin_test_chunk(_split(_SMH_CG))
+    tc.code.extend(
+        [
+            f"csrr x{medeleg_reg}, medeleg",
+            f"LI(x{temp_reg}, (1 << CAUSE_BREAKPOINT) | (1 << CAUSE_SOFTWARE_CHECK_FAULT))",
+            f"csrc medeleg, x{temp_reg}",
+            *_smh_trap_tests(test_data, jump_reg, temp_reg),
+            *_smh_mret_tests(test_data, temp_reg),
+            *_smh_sstatus_spelp_tests(test_data, jump_reg, temp_reg),
+            f"csrw medeleg, x{medeleg_reg}",
+        ]
+    )
+    test_data.int_regs.return_registers([medeleg_reg, jump_reg, temp_reg])
+    return [test_data.end_test_chunk()]

@@ -212,7 +212,7 @@ normative_rule_definitions:
         "Zicfilp_S_cg/{cp_pelp_trap_entry_zicfilp,cp_pelp_trap_entry_guarded_zicfilp,cp_pelp_trap_entry_guarded_zicfilp_c,cp_elp_state_preservation_zicfilp}",
         "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg,Zicfilp_H_cg}/{cp_zicfilp_lpad_label_exception_delivery,cp_exception_priority_zicfilp}",
         "Zicfilp_H_cg/cp_trap_entry_spelp (traps into VS-mode and HS-mode from VS-mode and VU-mode)",
-        "Sm_H_inst_cg/cp_trap_mpelp_virt (traps into M-mode from VS-mode and VU-mode)",
+        "Zicfilp_SmH_cg/cp_trap_mpelp_virt (traps into M-mode from VS-mode and VU-mode)",
         "Zicfilp_H_cg/{cp_pelp_trap_entry_zicfilp,cp_pelp_trap_entry_guarded_zicfilp,cp_pelp_trap_entry_guarded_zicfilp_c,cp_elp_async_interrupt,cp_vs_trap_delivery}",
       ]
 
@@ -227,7 +227,7 @@ normative_rule_definitions:
         "xPELP=NO_LP_EXPECTED after an xRET to the same mode is checked in the signature",
         "Zicfilp_H_cg/{cp_vs_sret_spelp, cp_hs_sret_spelp} (SRET into VS-mode and VU-mode)",
         "Zicfilp_H_cg/cp_hs_sret_to_hs_spelp (SRET from HS-mode to HS-mode leaves vsstatus.SPELP alone)",
-        "Sm_H_inst_cg/cp_mret_mpelp_virt (MRET into VS-mode and VU-mode)",
+        "Zicfilp_SmH_cg/cp_mret_mpelp_virt (MRET into VS-mode and VU-mode)",
       ]
 
   # The ext:zicfilp[] extension adds the csr::[spelp] and csr::[mpelp] fields that hold
@@ -247,7 +247,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Zicfilp_Sm_cg/{cp_zicfilp_lpad_label_exception_delivery,cp_pelp_trap_entry_zicfilp,cp_elp_state_preservation_zicfilp,cp_pelp_trap_return_zicfilp}",
-        "Sm_H_inst_cg/{cp_trap_mpelp_virt,cp_mret_mpelp_virt} (MPELP with MPV = 1)",
+        "Zicfilp_SmH_cg/{cp_trap_mpelp_virt,cp_mret_mpelp_virt} (MPELP with MPV = 1)",
       ]
 
   # The x`PELP` fields are encoded as follows:
@@ -327,7 +327,7 @@ normative_rule_definitions:
         "{Zicfilp_S_cg,Zicfilp_U_cg}/cp_zicfilp_lpad_label_exception_delivery (V=0)",
         "Zicfilp_S_cg/cp_pelp_trap_return_zicfilp (SPELP written through sstatus)",
         "Zicfilp_H_cg/{cp_vs_sstatus_spelp, cp_vs_sret_spelp} (V=1)",
-        "Sm_H_inst_cg/cp_vs_sstatus_spelp_mstatus (V=1 leaves mstatus.SPELP unchanged)",
+        "Zicfilp_SmH_cg/cp_vs_sstatus_spelp_mstatus (V=1 leaves mstatus.SPELP unchanged)",
       ]
 
   # The Zicfilp extension adds the LPE field in senvcfg. When the LPE field is set to 1,

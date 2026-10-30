@@ -1,8 +1,8 @@
 ##################################
 # priv/extensions/Ssstrict.py
 #
-# Ssstrict privileged test generator, one group per privilege mode (Sm, S, U).
-# Tests CSR encodings and reserved instruction encodings from each mode.
+# Ssstrict privileged test generator, one group per privilege mode (Sm, S, U), plus group H for the
+# virtual modes (VS, VU). Tests CSR encodings and reserved instruction encodings from each mode.
 #
 # SPDX-License-Identifier: Apache-2.0
 ##################################
@@ -11,9 +11,10 @@
 
 A Ssstrict suite checks that reserved/illegal instruction encodings and CSR
 accesses trap as expected from a given privilege mode. The mode-specific
-generators (groups Sm, S and U) each call ``generate_ssstrict_suite`` with a suite
+generators (groups Sm, S, U and H) call ``generate_ssstrict_suite`` with a suite
 name, privilege mode, and the set of CSR addresses to skip; covergroup names
-and per-mode setup are derived from those.
+and per-mode setup are derived from those. Group H runs the S and U sweeps in
+VS and VU modes.
 
 Instruction encodings are expanded from template strings (see ``_gen_encodings``)
 and emitted as raw ``.word``/``.hword`` directives. Operand registers come from
@@ -29,6 +30,7 @@ from dataclasses import dataclass
 from random import randint, seed
 
 from testgen.asm.helpers import comment_banner, reproducible_hash
+from testgen.constants import INDENT
 from testgen.data.registers import IntegerRegisterFile
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -332,6 +334,7 @@ def _generate_csr_sweep_body(
 def _generate_illegal_instr(
     test_data: TestData,
     covergroup: str,
+    bin_prefix: str = "",
 ) -> list[TestChunk]:
     """Reserved/illegal 32-bit encoding sweep (testplan cp_illegal_instruction).
 
@@ -341,7 +344,7 @@ def _generate_illegal_instr(
     """
     test_chunks: list[TestChunk] = []
     # Only the first chunk carries the testcase label (on the cp_illegal sweep) and section banner.
-    label: tuple[str, str, str] | None = ("illegal_instr_sweep", "cp_illegal", covergroup)
+    label: tuple[str, str, str] | None = (f"{bin_prefix}illegal_instr_sweep", "cp_illegal", covergroup)
     section_header: str | None = comment_banner("Illegal 32-bit instruction sweep")
     split_name = "IllegalInstr"
 
@@ -520,6 +523,7 @@ def _vector_setup(sew: str = "8", avl: int = 0, lmul: int = 1) -> SetupFn:
 def _generate_vector_illegal_instr(
     test_data: TestData,
     covergroup: str,
+    bin_prefix: str = "",
 ) -> list[TestChunk]:
     """Reserved/illegal vector encoding sweep (testplan cp_illegal_vector_instruction).
 
@@ -529,7 +533,7 @@ def _generate_vector_illegal_instr(
     """
     test_chunks: list[TestChunk] = []
     # Only the first chunk carries the testcase label (on the cp_v_vsetvl sweep).
-    label: tuple[str, str, str] | None = ("vector_illegal_sweep", "cp_v_vsetvl", covergroup)
+    label: tuple[str, str, str] | None = (f"{bin_prefix}vector_illegal_sweep", "cp_v_vsetvl", covergroup)
 
     # ── vset* configuration instructions ──────────────────────────────
     vset_header = comment_banner(
@@ -639,6 +643,7 @@ def _generate_vector_illegal_instr(
 def _generate_compressed_instr(
     test_data: TestData,
     covergroup: str,
+    bin_prefix: str = "",
 ) -> list[TestChunk]:
     """Exhaustive 16-bit quadrant sweeps (testplan cp_illegal_compressed_instruction).
 
@@ -714,7 +719,7 @@ def _generate_compressed_instr(
         test_data,
         test_chunks,
         compressed_sweeps,
-        label=("compressed_sweep", "cp_compressed00", covergroup),
+        label=(f"{bin_prefix}compressed_sweep", "cp_compressed00", covergroup),
         section_header=comment_banner("cp_compressed00/01/10", "Exhaustive 16-bit quadrant sweep."),
         split_name="CompressedInstr",
     )
@@ -724,7 +729,7 @@ def _generate_compressed_instr(
 
 # ── Suite assembly ─────────────────────────────────────────────────────────
 
-_MODE_LABEL = {"M": "M-mode", "S": "S-mode", "U": "U-mode"}
+_MODE_LABEL = {"M": "M-mode", "S": "S-mode", "U": "U-mode", "VS": "VS-mode", "VU": "VU-mode"}
 
 # M-mode only: lock PMP region 0 before each CSR chunk so later CSR writes
 # cannot corrupt the PMP configuration regardless of which split file the chunk
@@ -741,7 +746,7 @@ _M_MODE_PMP_LOCK = [
 def _generate_csr_sweep(test_data: TestData, suite: str, priv_mode: str, csr_skip: frozenset[int]) -> list[TestChunk]:
     """CSR read/write/set/clear sweep, with covergroup and setup derived from priv mode.
 
-    The covergroup is ``{suite}_{m,s,u}csr_cg``. M-mode prepends the PMP lock to
+    The covergroup is ``{suite}_{m,s,u,vs,vu}csr_cg``. M-mode prepends the PMP lock to
     every chunk. ``csr_skip`` holds the suite's excluded CSRs (higher-privilege,
     custom, and reserved addresses), documented at its definition site.
     """
@@ -765,20 +770,22 @@ def generate_ssstrict_suite(
     suite: str,
     priv_mode: str,
     csr_skip: frozenset[int],
+    bin_prefix: str = "",
 ) -> list[TestChunk]:
-    """Assemble a full Ssstrict suite for ``priv_mode`` ("M"/"S"/"U").
+    """Assemble a full Ssstrict suite for ``priv_mode`` ("M"/"S"/"U"/"VS"/"VU").
 
     All covergroup names are derived from ``suite`` and ``priv_mode``; the only
-    suite-specific input is the CSR skip set.
+    suite-specific input is the CSR skip set. ``bin_prefix`` keeps the labels of
+    two modes that share the instruction covergroups distinct.
     """
     seed(42)
     instr_covergroup = f"{suite}_instr_cg"
     compressed_covergroup = f"{suite}_comp_instr_cg"
     test_chunks: list[TestChunk] = []
     test_chunks.extend(_generate_csr_sweep(test_data, suite, priv_mode, csr_skip))
-    test_chunks.extend(_generate_illegal_instr(test_data, instr_covergroup))
-    test_chunks.extend(_generate_compressed_instr(test_data, compressed_covergroup))
-    test_chunks.extend(_generate_vector_illegal_instr(test_data, instr_covergroup))
+    test_chunks.extend(_generate_illegal_instr(test_data, instr_covergroup, bin_prefix))
+    test_chunks.extend(_generate_compressed_instr(test_data, compressed_covergroup, bin_prefix))
+    test_chunks.extend(_generate_vector_illegal_instr(test_data, instr_covergroup, bin_prefix))
     return test_chunks
 
 
@@ -804,7 +811,6 @@ _S_CSR_SKIP: frozenset[int] = frozenset(
         0x180,  # satp: TLB flush / address-translation mode change
         0x105,  # stvec: overwriting stvec breaks the delegated-trap handler
         0x140,  # sscratch: avoid corrupting framework save area
-        0x5A8,  # scontext: Sail traps, Spike does not
     }
 )
 
@@ -830,6 +836,17 @@ _M_CSR_SKIP: frozenset[int] = frozenset(
 
 
 # ── Entry points ──────────────────────────────────────────────────────────
+
+
+def _in_virtual_mode(mode: str, chunks: list[TestChunk]) -> list[TestChunk]:
+    """Run each chunk in ``mode`` ("VS"/"VU"): enter it from HS-mode first and return to HS-mode last.
+
+    Each chunk may begin a fresh split file, which boots to HS-mode, so each one enters the mode itself.
+    """
+    for tc in chunks:
+        tc.code[:0] = [f"{INDENT}RVTEST_TSBI_GOTO_{mode}MODE"]
+        tc.code.append(f"{INDENT}RVTEST_TSBI_GOTO_SMODE")
+    return chunks
 
 
 def _group_chunks(group: str, chunks: list[TestChunk]) -> list[TestChunk]:
@@ -882,3 +899,27 @@ def make_ssstrictss(test_data: TestData) -> list[TestChunk]:
 def make_ssstrictu(test_data: TestData) -> list[TestChunk]:
     """Ssstrict user-mode group (formerly SsstrictU)."""
     return _group_chunks("U", generate_ssstrict_suite(test_data, "Ssstrict_U", "U", _U_CSR_SKIP))
+
+
+@add_priv_test_generator(
+    "Ssstrict",
+    required_extensions=["H", "Ssstrict"],
+    march_extensions=[
+        "I",
+        "V",
+    ],
+    extra_defines=["#define RVTEST_USE_FAST_TRAP_HANDLER", SCRATCH_SIZE_DEFINE, "#define BOOT_TO_SMODE"],
+)
+def make_ssstricth(test_data: TestData) -> list[TestChunk]:
+    """Ssstrict hypervisor group: the S group's sweeps from VS-mode and the U group's from VU-mode.
+
+    The suite boots to HS-mode. Boot delegates illegal-instruction and virtual-instruction exceptions to
+    HS-mode and leaves hedeleg = 0, so the HS-mode fast trap handler records every trap from VS and VU.
+    """
+    test_chunks = _group_chunks(
+        "H_vs", _in_virtual_mode("VS", generate_ssstrict_suite(test_data, "Ssstrict_H", "VS", _S_CSR_SKIP, "vs_"))
+    )
+    test_chunks += _group_chunks(
+        "H_vu", _in_virtual_mode("VU", generate_ssstrict_suite(test_data, "Ssstrict_H", "VU", _U_CSR_SKIP, "vu_"))
+    )
+    return test_chunks

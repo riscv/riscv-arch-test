@@ -1,0 +1,24 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Svpbmt_Zicboz
+coverpoints:
+  - heading: "General Test Environment (Svpbmt_Zicboz):\n- T-SBI suite: boots to S-mode (BOOT_TO_SMODE) and drives the test from the boot identity map. U-mode accesses use RVTEST_TSBI_GOTO_UMODE / RVTEST_TSBI_GOTO_SMODE.\n- Sv39 4 KiB page: va_data maps a data page with PBMT = NC, then IO; the page has no other mapping. The checks read the first 256 bytes of the cache block (UDB_CACHE_BLOCK_SIZE).\n- menvcfg.PBMTE and menvcfg.CBZE are set through T-SBI; U-mode tests also set senvcfg.CBZE. RV64 only."
+  - name: cp_cbo_zero_pbmt_s
+    goal: Verify cbo.zero zeroes a block of a PBMT = NC or IO page, and that a load or store right after it takes effect, from S-mode
+    description: "S-mode: fill the block and the doublewords on either side of it through va_data (PTE.U=0) and load a neighbor; cbo.zero the block; ld from the block in the next instruction; read the block and both neighbors. Then cbo.zero the block again, sd to it in the next instruction, and ld it back."
+    expectation: "The load right after cbo.zero and every doubleword of the block read zero, the neighbors keep their values, and the load after the store returns the store."
+    bins: |-
+      cbo_zero x leaf_PTE_pbmt_s_d {NC, IO} x PBMTE_set x PageType_d {sv39_kilo} x mode {S-mode}
+      = 2 bins on RV64 (RV64 only)
+    id: cbo-zero_op
+    rules:
+      - cbo-zero_op
+  - name: cp_cbo_zero_pbmt_u
+    goal: Verify cbo.zero zeroes a block of a PBMT = NC or IO page, and that a load or store right after it takes effect, from U-mode
+    description: "U-mode: fill the block and the doublewords on either side of it through va_data (PTE.U=1) and load a neighbor; cbo.zero the block; ld from the block in the next instruction; read the block and both neighbors. Then cbo.zero the block again, sd to it in the next instruction, and ld it back."
+    expectation: "The load right after cbo.zero and every doubleword of the block read zero, the neighbors keep their values, and the load after the store returns the store."
+    bins: |-
+      cbo_zero x leaf_PTE_pbmt_u_d {NC, IO} x PBMTE_set x PageType_d {sv39_kilo} x mode {U-mode}
+      = 2 bins on RV64 (RV64 only)
+    id: cbo-zero_op
+    rules:
+      - cbo-zero_op

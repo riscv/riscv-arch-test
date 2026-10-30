@@ -120,6 +120,14 @@ include::norm/Svadu_norm_rules.adoc[]
 
 include::{testplansdir}/priv/Svpbmt.adoc[]
 
+===== Svpbmt_Zicbom Cache-Block Flush Through PBMT Aliases
+
+include::{testplansdir}/priv/Svpbmt_Zicbom.adoc[]
+
+===== Svpbmt_Zicboz Cache-Block Zero on PBMT Pages
+
+include::{testplansdir}/priv/Svpbmt_Zicboz.adoc[]
+
 include::norm/Svpbmt_norm_rules.adoc[]
 
 ==== Svnapot Naturally-Aligned Power-of-Two Page Sizes

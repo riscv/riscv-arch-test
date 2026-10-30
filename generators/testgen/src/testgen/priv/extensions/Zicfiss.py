@@ -1,7 +1,7 @@
 ##################################
 # priv/extensions/Zicfiss.py
 #
-# Zicfiss (shadow stack) test generators for the Sm, S and U groups.
+# Zicfiss (shadow stack) test generators for the Sm, S, U and H groups.
 # umer@riscv.org September 2026
 # SPDX-License-Identifier: Apache-2.0
 ##################################
@@ -2519,3 +2519,53 @@ def make_zicfissu(test_data: TestData) -> list[TestChunk]:
         tc.code.extend(section(test_data))
         test_chunks.append(test_data.end_test_chunk())
     return test_chunks
+
+
+# ============================================================================
+# H group
+# ============================================================================
+# ZicfissH test generator.
+#
+# The suite boots to HS-mode. It writes henvcfg directly and changes menvcfg.SSE through T-SBI,
+# so the henvcfg half of the read-only-zero rule is checked without M-mode test code.
+
+_CG_H = "Zicfiss_H_cg"
+
+
+def _generate_henvcfg_rdonly0_hs(test_data: TestData) -> list[str]:
+    """henvcfg.SSE reads back 0 from HS-mode whenever menvcfg.SSE is 0.
+
+    csrrs sets and csrrc clears only the SSE bit, so no other henvcfg field changes.
+    """
+    coverpoint = "cp_henvcfg_sse_rdonly0_hs"
+    rd_reg, val_reg = test_data.int_regs.get_registers(2)
+    lines: list[str] = [comment_banner(coverpoint, "henvcfg.SSE read-only zero while menvcfg.SSE=0")]
+    for menvcfg in (0, 1):
+        lines.extend(set_envcfg_sse("menvcfg", menvcfg, test_data, mode="S"))
+        for written in (0, 1):
+            op = "csrrs" if written else "csrrc"
+            lines.extend(
+                [
+                    f"LI(x{val_reg}, HENVCFG_SSE)",
+                    test_data.add_testcase(f"henvcfg_{op}_men{menvcfg}_wrote{written}", coverpoint, _CG_H),
+                    f"{op} x{rd_reg}, henvcfg, x{val_reg}",
+                    f"csrr x{rd_reg}, henvcfg   # SSE must read 0 when menvcfg.SSE=0",
+                    write_sigupd(rd_reg, test_data),
+                ]
+            )
+    test_data.int_regs.return_registers([rd_reg, val_reg])
+    return lines
+
+
+@add_priv_test_generator(
+    "Zicfiss",
+    required_extensions=["S", "H", "Zicfiss"],
+    # Zicfiss implies Zimop and Zaamo; name them for the assembler.
+    march_extensions=["Zicfiss", "Zimop", "Zaamo"],
+    extra_defines=["#define BOOT_TO_SMODE"],
+)
+def make_zicfissh(test_data: TestData) -> list[TestChunk]:
+    """Generate the Zicfiss H group."""
+    tc = test_data.begin_test_chunk("H")
+    tc.code.extend(_generate_henvcfg_rdonly0_hs(test_data))
+    return [test_data.end_test_chunk()]

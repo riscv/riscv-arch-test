@@ -74,6 +74,16 @@ coverpoints:
     id: menvcfg_sse_rdonly0 henvcfg_sse_op
     rules:
       - "[norm:menvcfg_sse_rdonly0] [norm:henvcfg_sse_op]"
+  - name: cp_henvcfg_sse_rdonly0_hs
+    goal: Verify henvcfg.SSE reads back 0 from HS-mode whenever menvcfg.SSE is 0
+    description: |-
+      The suite boots to HS-mode. Through T-SBI, clear menvcfg.SSE. From HS-mode, set henvcfg.SSE with csrrs and clear it with csrrc, reading henvcfg back after each write.
+      Repeat the same sequence with menvcfg.SSE=1 as the positive control.
+      This is the HS-mode counterpart of cp_envcfg_sse_rdonly0_henvcfg on the Zicfiss_Sm sheet, which drives the same field from M-mode, so a configuration without Sm, such as RVA23, still checks this half of the rule.
+    expectation: |-
+      menvcfg.SSE=0: henvcfg.SSE reads back 0 after every write. No exception is raised -- SSE is a WARL field, so the write is discarded rather than rejected.
+      menvcfg.SSE=1: henvcfg.SSE is writable and reads back what was written.
+    bins: menvcfg.SSE {0,1} x csr_op {csrrs, csrrc} of henvcfg.SSE
   - name: cp_ss_enable_chain_cross_zicfiss
     goal: Cross all eight menvcfg/senvcfg/henvcfg SSE combinations against every SS instruction in every mode
     description: |-

@@ -82,6 +82,10 @@ include::{testplansdir}/priv/Ssnpm.adoc[]
 
 include::{testplansdir}/priv/Ssnpm_Sm.adoc[]
 
+===== Ssnpm_H
+
+include::{testplansdir}/priv/Ssnpm_H.adoc[]
+
 include::norm/Ssnpm_norm_rules.adoc[]
 
 include::norm/Zpm_norm_rules.adoc[]

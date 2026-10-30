@@ -219,7 +219,8 @@
     P(Svinval,    "1.0.0", "svinval", "sinval.vma zero, zero\n\tli a3, 1")                    \
     /* hypervisor-level extensions */                                                         \
     P(Shvstvecd,  "1.0.0", "zicsr", CSR_FIELD(vstvec, 3, 0))                                  \
-    P(Shlcofideleg, "1.0.0", "zicsr", CSR_BIT(hideleg, 13))         /* LCOFI delegable    */
+    P(Shlcofideleg, "1.0.0", "zicsr", "li s1, 1 << 13\n\tcsrs mideleg, s1\n\t" CSR_BIT(hideleg, 13) \
+                                       "\n\tcsrc mideleg, s1")          /* LCOFI delegable once M delegates it */
 
 #if __riscv_xlen == 64
 #define PRIV_EXTENSIONS_XLEN(P)                                                               \

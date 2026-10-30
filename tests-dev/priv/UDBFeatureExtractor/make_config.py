@@ -262,8 +262,13 @@ def schema_value(name: str, xlen: int) -> object:
     if kind == "array":
         items = schema.get("items", {})
         n = schema.get("minItems", 0)
-        item = items.get("enum", [False if items.get("type") == "boolean" else 0])[0]
-        return [item] * n
+
+        def first(item: dict[str, Any]) -> object:
+            return item.get("enum", [False if item.get("type") == "boolean" else item.get("minimum", 0)])[0]
+
+        if isinstance(items, list):  # one schema per position
+            return [first(i) for i in items][: max(n, len(items))]
+        return [first(items)] * n
     return None
 
 
@@ -338,6 +343,7 @@ def complete_yaml(
     errors: list[tuple[str, list[str]]] = []
     exts = {re.search(r"name: (\w+)", e).group(1): e for e in ext_lines}  # type: ignore[union-attr]
     tried: dict[str, int] = {}
+    untested = {n for h in header if h.startswith("untested:") for n in h.split()[1:]}
 
     def assume(name: str) -> bool:
         """Give an undetermined parameter its next candidate value; False when none is left."""
@@ -378,8 +384,12 @@ def complete_yaml(
                         exts[ext] = (
                             f'- {{ name: {ext}, version: "= {version}" }}  # assumed: {m.group(1)} requires {ext} {version}'
                         )
-                    else:
+                    elif ext in untested:
+                        # only an extension the extractor cannot look for may be added; one it found
+                        # absent stays absent, and UDB's complaint is reported
                         exts[ext] = f'- {{ name: {ext}, version: "= {version}" }}  # assumed: {m.group(1)} requires it'
+                    else:
+                        continue
                     progress = True
         if not errors or not progress:
             break

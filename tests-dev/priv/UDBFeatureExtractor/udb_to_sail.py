@@ -539,10 +539,21 @@ class Converter:
                 continue
             self.set(key, value)
         p1p13 = "extensions.Stateen.mstateen0.P1P13"
-        if self.xlen == 64 and self.extra.get(p1p13, "CSRBit_ReadOnlyZero") != "CSRBit_ReadOnlyZero":
-            # P1P13 guards hedelegh, which RV64 does not have; Sail insists the bit is read-only zero
-            self.unmodelled.append(f"{p1p13}: measured {self.extra[p1p13]}, but Sail requires read-only zero on RV64")
+        p1p13_exists = (
+            self.has("H") and self.xlen == 32 and self.cfg["base"]["privileged_isa_version"] == "Privileged_ISA_1_13"
+        )
+        if not p1p13_exists and self.extra.get(p1p13, "CSRBit_ReadOnlyZero") != "CSRBit_ReadOnlyZero":
+            # P1P13 guards hedelegh, which exists only with H on RV32; Sail insists the bit is otherwise read-only zero
+            self.unmodelled.append(
+                f"{p1p13}: measured {self.extra[p1p13]}, but Sail requires read-only zero without RV32 H"
+            )
             self.set(p1p13, "CSRBit_ReadOnlyZero")
+        any_atp = any(self.has(f"Sv{n}") for n in (32, 39, 48, 57))
+        if any_atp and self.extra.get("base.writable_fiom") is False:
+            self.unmodelled.append(
+                "base.writable_fiom: menvcfg.FIOM is read-only zero, which Sail allows only without translation"
+            )
+            self.set("base.writable_fiom", True)
 
     def regions(self, plat: dict[str, Any]) -> None:
         """Main memory from link.ld, and one IO region holding the CLINT and the interrupt generator."""

@@ -26,6 +26,10 @@ that are measured only under some condition.
 - `VFREDUSUM_NODE_ROUNDING_BEHAVIOR`: a per-node rounding difference can only be provoked with a
   known reduction tree, and the tree shape is left to the implementation; any input set that shows
   the difference under one tree shows a tree-shape difference under another.
+- `VFREDUSUM_FINAL_NODE_ELEMENT_BEHAVIOR` and `VFREDUSUM_INACTIVE_NODE_ELEMENT_BEHAVIOR`: the
+  additive identity is -0.0 (+0.0 under RDN), chosen so that adding it never changes a non-NaN
+  result (RVV 1.0 section 14.3), so copying and adding the identity give the same value; only a
+  NaN payload could differ, which `VFREDUSUM_NAN` already measures.
 - `DCSR_MPRVEN_TYPE`, `DCSR_STEPIE_TYPE`, `DCSR_STOPCOUNT_TYPE`, `DCSR_STOPTIME_TYPE`: `dcsr` is
   accessible only in debug mode.
 - `WFI_FINITE`: whether `wfi` in M-mode ever waits forever cannot be told from a wait that is long.
@@ -63,14 +67,13 @@ that are measured only under some condition.
   not make the field Dirty: the UDB enum has no value for a hart that never updates it.
 - `LRSC_FAIL_ON_NON_EXACT_LRSC` is measured with an `sc.w` inside an `lr.d` reservation, so RV64
   only; `LRSC_RESERVATION_STRATEGY` is measured only when a non-exact SC can succeed, and reports
-  `custom` for a set size that is none of the enumerated ones (Sail's 8-byte granule, for example).
+  `custom` for a set size that is none of the enumerated ones (Sail's 8-byte granule, for example),
+  or when an SC 4 KiB from the LR succeeds as well (no naturally-aligned region at all).
 - `HPM_EVENTS` tries event numbers 0-255 on `mhpmevent3`; a hart that accepts more than 64 of them
   is taken to be passing the value through and the list is left undetermined.
 - `TRAP_ON_UNIMPLEMENTED_INSTRUCTION` is reported (true) only when some extension probe's
   instruction raised an illegal-instruction exception; a hart implementing every probed extension
   gives nothing to observe.
-- `VFREDUSUM_INACTIVE_NODE_ELEMENT_BEHAVIOR` can only be seen when the final node copies (with an
-  identity added at the end, the sign of zero is lost either way).
 - The fault-only-first, segment, misaligned-edge and VA-synonym parameters need Sv39 (RV64) or Sv32
   (RV32), whose tables fit the scratch area; a hart with only Sv48 or Sv57 leaves them undetermined.
 - `REPORT_CAUSE_IN_VSTVAL_ON_SHADOW_STACK_SOFTWARE_CHECK` needs `ssp` accessible in VS-mode, which

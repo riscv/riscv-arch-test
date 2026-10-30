@@ -109,9 +109,8 @@ and the page's last bytes say what was trimmed, loaded or stored.
 Memory-model and reduction parameters: LR/SC behavior comes from an `sc.w` inside an `lr.d`
 reservation (non-exact), from SCs at increasing offsets from the LR (the reservation set), and from
 an SC through a second virtual address of the scratch area (VA synonym); the misaligned exception
-priority and split strategy from a misaligned access straddling the mapped page's edge; the
-`vfredusum` behaviors from reductions with all elements masked off, using a signed zero and a NaN
-payload as the scalar; `HPM_EVENTS` from writing event numbers to `mhpmevent3`; `TRAP_ON_ILLEGAL_WLRL`
+priority and split strategy from a misaligned access straddling the mapped page's edge; `VFREDUSUM_NAN`
+from a reduction with all elements masked off and a NaN payload as the scalar; `HPM_EVENTS` from writing event numbers to `mhpmevent3`; `TRAP_ON_ILLEGAL_WLRL`
 from writing an exception code no hart implements to `mcause`; and `FORCE_UPGRADE_CBO_INVAL_TO_FLUSH`
 from whether `menvcfg.CBIE` accepts 11.
 

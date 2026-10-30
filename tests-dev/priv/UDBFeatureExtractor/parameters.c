@@ -323,6 +323,7 @@ static void endianness(const char *name, unsigned long set, unsigned long clear)
     param_str(name, set && !clear ? "dynamic" : set ? "big" : "little");
 }
 
+#if __riscv_xlen == 64
 // The set of XLENs a mode supports, from an XL field accepting 1 (32) and 2 (64)
 static void xlen_list(const char *name, unsigned long accepts_32, unsigned long accepts_64)
 {
@@ -335,6 +336,7 @@ static void xlen_list(const char *name, unsigned long accepts_32, unsigned long 
     if (n)
         param_ints(name, v, n);
 }
+#endif
 
 // "rw", "read-only-0" or "read-only-1" for a stateen-style enable bit
 static void bit_type(const char *name, unsigned long set, unsigned long clear)
@@ -354,9 +356,12 @@ static void tvec_params(const char *prefix_modes, const char *align_direct, cons
     unsigned long base = (unsigned long)probe_scratch;
     unsigned long modes[2], nmodes = 0;
     if (access) {
-        unsigned long v = set(base);
-        param_str(access, v == base ? "rw" : "ro");
-        if (v != base) {
+        // BASE is writable when two different bases both read back; MODE may be hardwired
+        // (Ibex keeps it at vectored), so only BASE is compared
+        unsigned long other = base + PROBE_SCRATCH_SIZE / 2;
+        bool rw = (set(base) & ~3ul) == base && (set(other) & ~3ul) == other;
+        param_str(access, rw ? "rw" : "ro");
+        if (!rw) {
             set(orig);
             return;
         }
@@ -1771,9 +1776,11 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
             bool nonexact_fails = false;   // no wider LR than lr.w on RV32 to test with
 #endif
             if (!nonexact_fails) {
-                unsigned long at[4];
-                static const unsigned long offsets[] = { 4, 60, 64, 124 };
-                for (unsigned i = 0; i < 4; i++)
+                // the last offset is outside any 128-byte region: an SC there succeeding means the
+                // reservation is not a naturally-aligned region at all
+                unsigned long at[5];
+                static const unsigned long offsets[] = { 4, 60, 64, 124, 4096 };
+                for (unsigned i = 0; i < 5; i++)
                     at[i] = PROBE_VALUE_IN("zalrsc", "lr.w t1, (a1)\n\tadd a2, a1, %[in]\n\tsc.w a3, t1, (a2)", offsets[i]);
                 // An SC to the next word failing while one to the LR's address succeeds
                 sail_bool("platform.reservation.require_exact_reservation_addr", at[0] != 0);
@@ -1781,7 +1788,7 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
                     param_str("LRSC_RESERVATION_STRATEGY", "reserve exactly enough to cover the access");
                 else if (at[1] == 0 && at[2] != 0)
                     param_str("LRSC_RESERVATION_STRATEGY", "reserve naturally-aligned 64-byte region");
-                else if (at[1] == 0 && at[2] == 0 && at[3] == 0)
+                else if (at[1] == 0 && at[2] == 0 && at[3] == 0 && at[4] != 0)
                     param_str("LRSC_RESERVATION_STRATEGY", "reserve naturally-aligned 128-byte region");
                 else
                     param_str("LRSC_RESERVATION_STRATEGY", "custom");
@@ -2149,27 +2156,14 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
             param_str("LEGAL_VSTART", "4_stride");
         else
             param_str("LEGAL_VSTART", "custom");
-        // vfredusum with no active elements: is the final result the scalar copied (-0.0 stays
-        // -0.0, a NaN payload survives) or the scalar plus the additive identity?
+        // vfredusum with no active elements and a NaN scalar: does the payload survive?  (The
+        // final and inactive node behaviors cannot be seen: the additive identity -0.0 never
+        // changes a non-NaN sum.)
         if (have("Zve32f")) {
 #define VFREDUSUM_MASKED(scalar_bits)                                                           \
             "vsetivli x0, 4, e32, m1, tu, mu\n\tvmv.v.i v0, 0\n\tli t1, " scalar_bits "\n\t"   \
             "vmv.s.x v1, t1\n\tvmv.v.i v2, 0\n\tvfredusum.vs v3, v2, v1, v0.t\n\tvmv.x.s a3, v3"
-            unsigned long r = PROBE_VALUE("zve32f", VFREDUSUM_MASKED("0x80000000"));   // -0.0
-            if (PROBE_OK()) {
-                bool copy = (r & 0xFFFFFFFF) == 0x80000000;
-                param_str("VFREDUSUM_FINAL_NODE_ELEMENT_BEHAVIOR", copy ? "copy" : "additive_identity");
-                if (copy) {
-                    // one inactive element (masked off) beside one active -0.0 and the scalar -0.0:
-                    // an inactive input treated as +0.0 turns the result to +0.0
-                    r = PROBE_VALUE("zve32f", "vsetivli x0, 2, e32, m1, tu, mu\n\tvmv.v.i v0, 2\n\tli t1, 0x80000000\n\t"
-                                              "vmv.s.x v1, t1\n\tvmv.v.x v2, t1\n\tvfredusum.vs v3, v2, v1, v0.t\n\tvmv.x.s a3, v3");
-                    if (PROBE_OK())
-                        param_str("VFREDUSUM_INACTIVE_NODE_ELEMENT_BEHAVIOR",
-                                  (r & 0xFFFFFFFF) == 0x80000000 ? "copy" : "additive_identity");
-                }
-            }
-            r = PROBE_VALUE("zve32f", VFREDUSUM_MASKED("0x7FC12345"));   // a quiet NaN with a payload
+            unsigned long r = PROBE_VALUE("zve32f", VFREDUSUM_MASKED("0x7FC12345"));   // a quiet NaN with a payload
             if (PROBE_OK())
                 param_str("VFREDUSUM_NAN", (r & 0xFFFFFFFF) == 0x7FC12345 ? "no_change" : "custom");
         }

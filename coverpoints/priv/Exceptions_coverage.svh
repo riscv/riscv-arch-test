@@ -1554,7 +1554,7 @@ covergroup Exceptions_H_cg with function sample(ins_t ins);
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
         }
         // HLV and HSV have no immediate
-        hlv_address_legality: coverpoint (ins.current.rs1_val & ~(64'h3)) == (`RVMODEL_ACCESS_FAULT_ADDRESS & ~(64'h3)) {
+        hlv_address_legality: coverpoint (ins.current.rs1_val & ~`UDB_MXLEN'(3)) == (`UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS) & ~`UDB_MXLEN'(3)) {
             bins legal   = {0};
             bins illegal = {1};
         }
@@ -1788,7 +1788,7 @@ covergroup Exceptions_HSm_cg with function sample(ins_t ins);
         illegal_address: coverpoint ins.current.imm + ins.current.rs1_val {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
         }
-        hlv_address_legality: coverpoint (ins.current.rs1_val & ~(64'h3)) == (`RVMODEL_ACCESS_FAULT_ADDRESS & ~(64'h3)) {
+        hlv_address_legality: coverpoint (ins.current.rs1_val & ~`UDB_MXLEN'(3)) == (`UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS) & ~`UDB_MXLEN'(3)) {
             bins legal   = {0};
             bins illegal = {1};
         }

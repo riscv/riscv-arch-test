@@ -777,7 +777,7 @@ coverpoints:
       tdata1.select = 1 (data), tdata1.XSL = 010
       For each match in UDB_SDTRIG_MCONTROL6_MATCH_LEGAL_VALUES and each size N in
       UDB_SDTRIG_MCONTROL6_SIZE_LEGAL_VALUES (1/2/3/5, 5 on RV64 only):
-      tdata2 = a value whose low N bits have bit N-1 set, with other bits set above N
+      tdata2 = a value whose low N bits have bit N-1 set, with bits above N clear (sail-riscv#2038)
       perform {sb/sh/sw/sd} of size N of a register with other bits set above N whose low N bits:
         equal / not equal: the value; the value with bit 0 or bit N-1 flipped
         ge / lt: the value; the value minus 1; 1 (ordered the other way by a signed compare)
@@ -791,10 +791,10 @@ coverpoints:
       Breakpoint exception exactly for the stores of size N whose low N bits satisfy the match against the low N
       bits of tdata2 (equal, not equal, ge, lt, NAPOT), or the XLEN halves of tdata2 and of the zero-extended data
       (mask matches). The near misses, and every store of another width, do not fire.
-      Each miss would fire on a hart that compared tdata2 or the register above N, compared signed, ignored size,
+      Each miss would fire on a hart that compared the register above N, compared signed, ignored size,
       or matched the store's own width.
       The mask and NAPOT expectations follow the reading Sail 0.16, Whisper and ImperasDV implement; they wait on
-      riscv-isa-manual#3461. Sail 0.16 compares all of tdata2 (sail-riscv#2038).
+      riscv-isa-manual#3461. tdata2 bits above N are not tested: Sail 0.16 compares all of tdata2 (sail-riscv#2038).
     bins: NTRIG * legal matches * legal sizes * {fired, not fired, other width}
     rules:
       - Sdtrig_mcontrol6_comparisons
@@ -846,7 +846,7 @@ coverpoints:
       M-mode only. For each of UDB_SDTRIG_NUM_TRIGGERS if UDB_SDTRIG_MCONTROL6_SUPPORTED_TRIGGERS[i], SELECT_WRITABLE
       and EXECUTE_WRITABLE: tdata1.select = 1 (data), tdata1.XSL = 100
       For each match in UDB_SDTRIG_MCONTROL6_MATCH_LEGAL_VALUES and size 2 (16-bit, ZCA only) or 3 (32-bit), as
-      cp_mcontrol6_match_size_store with instruction encodings in place of data, tdata2 bits above N set, and step
+      cp_mcontrol6_match_size_store with instruction encodings in place of data, and step
       the lowest free field bit:
         16-bit targets: c.nop hints (nzimm varies)
         32-bit targets: addi/slti x0 hints (rs1 and imm vary) and, for not equal / not NAPOT / not mask low, csrrw

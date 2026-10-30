@@ -6,7 +6,13 @@ normative_rule_definitions:
   # in . If Ssnpm is not implemented, PMM is read-only zero. The PMM field is
   # read-only zero for RV32.
   - name: senvcfg_pmm_ssnpm
-    coverpoint: ["Ssnpm_cg/cp_pmlen_masking", "S_scsr_cg/cp_scsrwalk/senvcfg"]
+    coverpoint:
+      [
+        "Ssnpm_cg/cp_pmlen_masking",
+        "S_scsr_cg/cp_scsrwalk/senvcfg",
+        "Ssnpm_H_cg/cp_vu_pmm",
+        "Ssnpm_H_cg/cp_hlv_hs_spvp0_pmm",
+      ]
 
   # Changing senvcfg.PMM takes effect immediately, without the need to execute an
   # SFENCE.VMA instruction.
@@ -24,4 +30,12 @@ normative_rule_definitions:
       [
         "Ssnpm_cg/cp_pmlen_masking",
         "S_scsr_cg/cp_scsrwalk/senvcfg (the walk writes the reserved PMM=0b01)",
+      ]
+
+  # If the Ssnpm extension is implemented, the PMM field enables or disables pointer masking for VS-mode.
+  - name: henvcfg_pmm_op
+    coverpoint:
+      [
+        "Ssnpm_H_cg/cp_vs_pmm",
+        "Ssnpm_H_cg/{cp_hlv_hs_spvp1_pmm, cp_hlv_u_spvp1_pmm}",
       ]

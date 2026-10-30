@@ -20,6 +20,7 @@ from testgen.priv.extensions.InterruptsCommon import (
     generate_cp_enable,
     generate_cp_priority,
     generate_cp_priority_pending,
+    generate_cp_trigger_vsti_sstc,
     generate_cp_wfi,
     generate_cp_wfi_timeout,
     guard_symbol,
@@ -301,6 +302,7 @@ def make_interrupts_sm_m(test_data: TestData) -> list[TestChunk]:
         _generate_cp_priority_mideleg,
         _generate_cp_write_stip_sstc,
         _generate_cp_mip_seip,
+        generate_cp_trigger_vsti_sstc,
     ]
     return emit_interrupts(test_data, SUITE, "M", generators)
 

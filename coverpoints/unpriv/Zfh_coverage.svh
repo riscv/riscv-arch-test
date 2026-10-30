@@ -6212,8 +6212,9 @@ endgroup
 `endif
 `endif
 function void zfh_sample(int hart, int issue, ins_t ins);
+    string inst_name = traceDataQ[hart][issue][0].inst_name;
 
-    case (traceDataQ[hart][issue][0].inst_name)
+    case (inst_name)
         "fadd.h"     : begin
             Zfh_fadd_h_cg.sample(ins);
 `ifdef D_SUPPORTED

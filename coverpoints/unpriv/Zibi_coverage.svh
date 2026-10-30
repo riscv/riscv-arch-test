@@ -31,10 +31,8 @@ covergroup Zibi_beqi_cg with function sample(ins_t ins);
         bins b_31 = {31};
     }
 
-    cp_offset : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
-        // Branch Immediate Offset value
-        bins neg  = {[$:-1]};
-        bins pos  = {[1:$]};
+    cp_offset : coverpoint ins.current.imm[`UDB_MXLEN-1]  iff (ins.trap == 0 & ins.current.imm != 0)  {
+        // Branch Immediate Offset value is forward/backward
     }
 
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
@@ -118,10 +116,8 @@ covergroup Zibi_bnei_cg with function sample(ins_t ins);
         bins b_31 = {31};
     }
 
-    cp_offset : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
-        // Branch Immediate Offset value
-        bins neg  = {[$:-1]};
-        bins pos  = {[1:$]};
+    cp_offset : coverpoint ins.current.imm[`UDB_MXLEN-1]  iff (ins.trap == 0 & ins.current.imm != 0)  {
+        // Branch Immediate Offset value is forward/backward
     }
 
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
@@ -187,8 +183,9 @@ covergroup Zibi_bnei_cg with function sample(ins_t ins);
 endgroup
 // ---------------------
 function void zibi_sample(int hart, int issue, ins_t ins);
+    string inst_name = traceDataQ[hart][issue][0].inst_name;
 
-    case (traceDataQ[hart][issue][0].inst_name)
+    case (inst_name)
         "beqi"     : begin
             Zibi_beqi_cg.sample(ins);
         end

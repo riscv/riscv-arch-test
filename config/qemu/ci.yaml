@@ -68,8 +68,7 @@ exclude_extensions:
   - Zama16b
   # mstateen0 bits are writable for state the hart lacks: P1P13 on RV64 and on RV32 without H
   # (https://gitlab.com/qemu-project/qemu/-/work_items/4495), and ENVCFG, CSRIND, AIA and IMSIC without S
-  # (https://gitlab.com/qemu-project/qemu/-/work_items/4655). On the max configs CSRIND, AIA and IMSIC are
-  # legally writable, but Sail does not model Sscsrind or Ssaia.
+  # (https://gitlab.com/qemu-project/qemu/-/work_items/4655).
   - Smstateen
   # On RV64, reserved bit 63 of sstateen1-3 is writable while mstateenN bit 63 is set, but sstateen1-3 have no
   # defined bits and must read zero (https://gitlab.com/qemu-project/qemu/-/work_items/4726). Smstateen fails too.
@@ -104,6 +103,8 @@ exclude_extensions:
   # The same mstatus.MPV bug keeps the VS-mode and VU-mode sweeps in HS-mode
   # (https://gitlab.com/qemu-project/qemu/-/work_items/4588).
   - Ssstrict_H
+  # Runs in VS-mode and VU-mode, which QEMU never enters (see H above).
+  - Ssnpm_H
   # With ADUE=1, QEMU sets A/D on a PTE with a reserved Svnapot encoding before raising the page fault
   # (https://gitlab.com/qemu-project/qemu/-/work_items/4636)
   - Svadu_sv39_Svadu_fault

@@ -1358,11 +1358,11 @@ covergroup Sv_Zicbo_cg with function sample(ins_t ins);
         // Example: Setup a giga page in sv48, lvl 3 pte (tera) should point to lvl2 page table, but it points to non existent PA
         // The walk faults before any data physical address exists, so check where the pointer PTE points instead
         `ifdef UDB_MXLEN_64
-            nonleaf_ppn_nonexistent: coverpoint (ins.current.pte_d[53:10] == (`RVMODEL_ACCESS_FAULT_ADDRESS >> 12)) {
+            nonleaf_ppn_nonexistent: coverpoint (ins.current.pte_d[53:10] == 44'(`RVMODEL_ACCESS_FAULT_ADDRESS >> 12)) {
                 bins non_existent_pa = {1};
             }
         `else
-            nonleaf_ppn_nonexistent: coverpoint (ins.current.pte_d[31:10] == (`RVMODEL_ACCESS_FAULT_ADDRESS >> 12)) {
+            nonleaf_ppn_nonexistent: coverpoint (ins.current.pte_d[31:10] == 22'(`RVMODEL_ACCESS_FAULT_ADDRESS >> 12)) {
                 bins non_existent_pa = {1};
             }
         `endif

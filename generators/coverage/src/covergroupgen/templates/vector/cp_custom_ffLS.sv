@@ -34,11 +34,11 @@
     }
 
     ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
         bins at_fault_addr = {1'b1};
     }
 

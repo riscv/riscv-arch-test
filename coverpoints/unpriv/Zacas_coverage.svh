@@ -620,8 +620,9 @@ endgroup
 // ---------------------
 `endif
 function void zacas_sample(int hart, int issue, ins_t ins);
+    string inst_name = traceDataQ[hart][issue][0].inst_name;
 
-    case (traceDataQ[hart][issue][0].inst_name)
+    case (inst_name)
 `ifdef ZABHA_SUPPORTED
         "amocas.b"     : begin
             ZacasZabha_amocas_b_cg.sample(ins);

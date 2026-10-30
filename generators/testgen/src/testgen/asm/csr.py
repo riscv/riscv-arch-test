@@ -239,8 +239,8 @@ def csr_walk_test(
     walk_zeros: bool = True,
     warl_fields: list[tuple] | None = None,
     maskedwrites: bool = False,
-    cond_mask: list[tuple[str, int]] | None = None,
     bin_prefix: str = "",
+    unwalked_bits: list[tuple[int, str]] | None = None,
 ) -> list[str]:
     """
     Generate a CSR walking-ones test: set and (optionally) clear each bit individually.
@@ -266,15 +266,19 @@ def csr_walk_test(
             bits and instead check that the field holds a legal (non-reserved) value; all
             other iterations check the field exactly as usual (see _warl_reserved_check).
         maskedwrites: If True, the CSR is written with a mask applied to the value being written.
-        cond_mask: Optional list of (condition, bits): bits are added to the mask when the
-            preprocessor condition holds.  Use it for state the reference model cannot model:
-            walk it only where it is read-only zero, so its coverage reports missing elsewhere.
-            Example: [("!defined(SMCDELEG_SUPPORTED)", 1 << 28)] walks menvcfgh.CDE only
-            without Smcdeleg.
         bin_prefix: Prefix for testcase bin names, to walk the same CSR more than once under one coverpoint.
+        unwalked_bits: Optional (bits, define) pairs for state the reference model cannot model. When
+            `define` is defined for the config, the bits are neither written nor checked, so their
+            coverage reports missing; otherwise they are walked and checked (read-only zero). Implies
+            maskedwrites, starting from the csr mask, or all ones if None.
     """
     assert 0 <= start_bit < 32, f"start_bit must be in 0..31, got {start_bit}"
     csr_name, mask = csr
+    if unwalked_bits:
+        maskedwrites = True
+        if mask is None:
+            mask = (1 << 64) - 1
+            csr = (csr_name, mask)
     if maskedwrites:
         assert mask is not None, f"maskedwrites requires a csr mask (got None for {csr_name})"
     if mask is not None:
@@ -359,16 +363,13 @@ def csr_walk_test(
     ]
     if mask is not None:
         lines.append(f"LI(x{mask_reg}, {mask})    # Load mask ({mask:#x})")
-    for cond, bits in cond_mask or []:
-        assert mask is not None, f"cond_mask requires a csr mask (got None for {csr_name})"
-        lines.extend(
-            [
-                f"#if {cond}",
-                f"LI(x{check_reg}, {bits:#x})",
-                f"or x{mask_reg}, x{mask_reg}, x{check_reg}    # also walk these bits",
-                "#endif",
+        for bits, define in unwalked_bits or []:
+            lines += [
+                f"#ifdef {define}",
+                f"LI(x{check_reg}, {~bits & ((1 << 64) - 1)})    # Do not walk bits {bits:#x}",
+                f"and x{mask_reg}, x{mask_reg}, x{check_reg}",
+                f"#endif // {define}",
             ]
-        )
     if walk_zeros:
         lines.append(f"LI(x{temp_reg}, -1)             # x{temp_reg} = all 1s")
 

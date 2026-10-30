@@ -14,3 +14,7 @@ Ssnpm_cg.set_inst_name("obj_Ssnpm");
 Ssnpm_Sm_cg = new();
 Ssnpm_Sm_cg.set_inst_name("obj_Ssnpm_Sm");
 `endif
+`ifdef H_SUPPORTED
+Ssnpm_H_cg = new();
+Ssnpm_H_cg.set_inst_name("obj_Ssnpm_H");
+`endif

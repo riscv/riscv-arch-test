@@ -26,6 +26,9 @@ CONFIG_DIR ?= $(REPO_ROOT)/config/sail/sail-RVA23S64
 SIM        ?= sail_riscv_sim
 SIM_FLAGS  ?= --config $(CONFIG_DIR)/sail.json
 OUT        ?= $(BUILD_DIR)/extracted_config$(XLEN).yaml
+# test_config.yaml may name a linker script and include directory other than CONFIG_DIR's
+LINKER_SCRIPT   ?= $(CONFIG_DIR)/link.ld
+DUT_INCLUDE_DIR ?= $(CONFIG_DIR)
 
 CC      := riscv64-unknown-elf-gcc
 OBJDUMP := riscv64-unknown-elf-objdump
@@ -42,21 +45,29 @@ CFLAGS := -march=$(ARCH) -mabi=$(ABI) -mcmodel=medany \
           -O2 -g -std=gnu11 -ffreestanding -fno-builtin -nostdlib -nostartfiles -static \
           -Wall -Wextra -Wno-deprecated \
           -Wl,--no-relax -Wl,--no-warn-rwx-segments \
-          -I$(SRC_DIR) -I$(CONFIG_DIR)
+          -I$(SRC_DIR) -I$(DUT_INCLUDE_DIR)
 
 SRCS := start.S feature_extractor.c parameters.c console.c
 DEPS := extensions.h probe.h udb_parameters.h console.h
 ELF  := $(BUILD_DIR)/feature_extractor$(XLEN).elf
 
-.PHONY: all elf run dump test regression clean help
+.PHONY: all elf xlen-elf run dump test regression clean help
 all: run
 
 $(BUILD_DIR):
 	mkdir -p $@
 
 elf: $(ELF)
-$(ELF): $(addprefix $(SRC_DIR)/,$(SRCS) $(DEPS)) $(CONFIG_DIR)/link.ld $(CONFIG_DIR)/rvmodel_macros.h | $(BUILD_DIR)
-	$(CC) $(CFLAGS) -T $(CONFIG_DIR)/link.ld $(addprefix $(SRC_DIR)/,$(SRCS)) -o $@
+$(ELF): $(addprefix $(SRC_DIR)/,$(SRCS) $(DEPS)) $(LINKER_SCRIPT) $(DUT_INCLUDE_DIR)/rvmodel_macros.h | $(BUILD_DIR)
+	$(CC) $(CFLAGS) -T $(LINKER_SCRIPT) $(addprefix $(SRC_DIR)/,$(SRCS)) -o $@
+
+# xlen_probe prints the hart's XLEN; its code is the same for both builds, which differ only in
+# ELF class (simulators refuse an ELF of the other class)
+XLEN_ELF := $(BUILD_DIR)/xlen_probe$(XLEN).elf
+xlen-elf: $(XLEN_ELF)
+$(XLEN_ELF): $(SRC_DIR)/xlen_probe.S $(LINKER_SCRIPT) $(DUT_INCLUDE_DIR)/rvmodel_macros.h | $(BUILD_DIR)
+	$(CC) -march=rv$(XLEN)i_zicsr -mabi=$(if $(filter 32,$(XLEN)),ilp32,lp64) -nostdlib -nostartfiles -static \
+	  -Wl,--no-relax -Wl,--no-warn-rwx-segments -I$(DUT_INCLUDE_DIR) -T $(LINKER_SCRIPT) $< -o $@
 
 run: $(ELF)
 	$(SIM) $(SIM_FLAGS) --terminal-log $(OUT) $(ELF)

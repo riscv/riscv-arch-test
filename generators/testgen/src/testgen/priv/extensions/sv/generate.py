@@ -248,52 +248,6 @@ def end_sv_test(test_data: TestData, regs: SvRegs) -> TestChunk:
     return test_data.end_test_chunk()
 
 
-def keep_image_mapped(sv: SvMode, regs: SvRegs) -> list[str]:
-    """Map the test image as a gigapage below the root.
-
-    On Sv48/Sv57 the boot identity map is root PTE 0, so a test VA in the same
-    root slot (VA 0) would unmap the running code without this path.
-    """
-    if sv.levels <= 3:
-        return []
-    pte, index, entry = (f"x{reg}" for reg in (regs.addr, regs.load, regs.scratch))
-    index_mask = "0x3FF" if sv.xlen == 32 else "0x1FF"
-    lines = ["// Keep the identity-mapped test image reachable through the level 2 table."]
-    for level in range(sv.levels - 2, 1, -1):
-        shift = sv.page_offset_bits(level)
-        lines.extend(
-            [
-                f"LA({pte}, rvtest_code_begin)",
-                f"srli {index}, {pte}, {shift}",
-                f"andi {index}, {index}, {index_mask}",
-                f"slli {index}, {index}, {2 if sv.xlen == 32 else 3}",
-                f"LA({entry}, rvtest_slvl{level}_pg_tbl)",
-                f"add {entry}, {entry}, {index}",
-            ]
-        )
-        if level > 2:
-            lines.extend(
-                [
-                    f"LA({pte}, rvtest_slvl{level - 1}_pg_tbl)",
-                    f"srli {pte}, {pte}, 12",
-                    f"slli {pte}, {pte}, 10",
-                    f"ori {pte}, {pte}, PTE_V",
-                ]
-            )
-        else:
-            lines.extend(
-                [
-                    f"srli {pte}, {pte}, {shift}",
-                    f"slli {pte}, {pte}, {shift - 2}",
-                    f"ori {pte}, {pte}, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V",
-                ]
-            )
-        lines.append(f"SREG {pte}, 0({entry})")
-    # Order the stores before the walks that reach them once the test rewrites the root entry.
-    lines.append("sfence.vma")
-    return lines
-
-
 def sv_data(
     sv: SvMode,
     regs: SvRegs,

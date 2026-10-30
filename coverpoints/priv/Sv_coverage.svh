@@ -74,20 +74,16 @@ covergroup Sv_VA_cg with function sample(ins_t ins);
 
     `ifdef UDB_MXLEN_64
         VA_i: coverpoint ins.current.virt_adr_i {
-            bins all_zeros = {64'd0};
             bins all_ones  = {64'hFFFFFFFF_FFFFFFFC};
         }
         VA_d: coverpoint ins.current.virt_adr_d {
-            bins all_zeros = {64'd0};
             bins all_ones  = {64'hFFFFFFFF_FFFFFFFF};
         }
     `else
         VA_i: coverpoint ins.current.virt_adr_i {
-            bins all_zeros = {32'd0};
             bins all_ones  = {32'hFFFFFFFC};
         }
         VA_d: coverpoint ins.current.virt_adr_d {
-            bins all_zeros = {32'd0};
             bins all_ones  = {32'hFFFFFFFF};
         }
     `endif
@@ -1100,6 +1096,43 @@ covergroup Sv_Sm_mstatus_mprv_cg with function sample(ins_t ins);
     cp_mstatus_sbe_write: cross write_acc, PTE_sbe_d, PageType_d, sbe_mstatus; //ms.5
 
 endgroup
+
+covergroup Sv_Sm_VA_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+
+    `ifdef UDB_MXLEN_64
+        VA_i: coverpoint ins.current.virt_adr_i {
+            bins all_zeros = {64'd0};
+        }
+        VA_d: coverpoint ins.current.virt_adr_d {
+            bins all_zeros = {64'd0};
+        }
+        mode_supported: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] {
+            `ifdef SV57_SUPPORTED
+                bins sv57 = {4'b1010};
+            `endif
+            `ifdef SV48_SUPPORTED
+                bins sv48 = {4'b1001};
+            `endif
+            `ifdef SV39_SUPPORTED
+                bins sv39 = {4'b1000};
+            `endif
+        }
+    `else
+        VA_i: coverpoint ins.current.virt_adr_i {
+            bins all_zeros = {32'd0};
+        }
+        VA_d: coverpoint ins.current.virt_adr_d {
+            bins all_zeros = {32'd0};
+        }
+        mode_supported: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] {
+            bins sv32 = {1'b1};
+        }
+    `endif
+
+    cp_VA_i_mode: cross mode_supported, VA_i;
+    cp_VA_d_mode: cross mode_supported, VA_d;
+endgroup
 `endif // EXCLUDE_SM
 
 `ifdef SV_ZICBO_ANY
@@ -1855,6 +1888,7 @@ function void sv_sample(int hart, int issue, ins_t ins);
 `ifndef EXCLUDE_SM
     Sv_Sm_satp_cg.sample(ins);
     Sv_Sm_mstatus_mprv_cg.sample(ins);
+    Sv_Sm_VA_cg.sample(ins);
 `endif // EXCLUDE_SM
 `ifdef SV_ZICBO_ANY
     Sv_Zicbo_cg.sample(ins);

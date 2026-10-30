@@ -16,8 +16,8 @@ from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk, trap_sigupd_count
 from testgen.priv.extensions.sv.access import Crosses, add_rwx_test, cross_names
-from testgen.priv.extensions.sv.assembly import VA_ONES_DATA, VA_ZEROS_DATA
-from testgen.priv.extensions.sv.generate import SvRegs, begin_sv_test, end_sv_test, keep_image_mapped, sv_data
+from testgen.priv.extensions.sv.assembly import VA_ONES_DATA
+from testgen.priv.extensions.sv.generate import SvRegs, begin_sv_test, end_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import (
     SV32,
     SV39,
@@ -122,11 +122,22 @@ def _add_rsw_readback(test_data: TestData, sv: SvMode, regs: SvRegs, level: int,
     ]
 
 
+#: The default crosses of the VA-extreme tests (the all-ones VAs); Sv_Sm passes its own for VA 0.
+_VA_CROSSES = Crosses("Sv_VA_cg", "cp_VA_d_mode", "cp_VA_d_mode", "cp_VA_i_mode")
+
+
 def _extreme_access(
-    test_data: TestData, regs: SvRegs, name: str, va: str, mode: str, style: str, driver_mode: str
+    test_data: TestData,
+    regs: SvRegs,
+    name: str,
+    va: str,
+    mode: str,
+    style: str,
+    driver_mode: str,
+    crosses: Crosses | None = None,
 ) -> list[str]:
     operations = ("store", "load") if style.startswith("rw") else ("exec",)
-    crosses = Crosses("Sv_VA_cg", "cp_VA_d_mode", "cp_VA_d_mode", "cp_VA_i_mode")
+    crosses = crosses or _VA_CROSSES
     labels = {
         operation: test_data.add_testcase(
             f"{name}_{operation}", crosses.by_operation()[operation], crosses.covergroup
@@ -179,7 +190,7 @@ def emit_access(
     crosses: Crosses | None = None,
 ) -> list[str]:
     if style in ("rw_byte", "rw_word", "x_only"):
-        return _extreme_access(test_data, regs, name, va, mode, style, driver_mode)
+        return _extreme_access(test_data, regs, name, va, mode, style, driver_mode, crosses)
     setup: tuple[str, ...] = ()
     cleanup: tuple[str, ...] = ()
     if style.startswith("mprv_"):
@@ -969,7 +980,7 @@ def _t_page_perm_topics(test_data: TestData, test_chunks: list[TestChunk], sv: S
     test_chunks.append(end_sv_test(test_data, regs))
 
 
-def _add_va_extreme_test(
+def add_va_extreme_test(
     test_data: TestData,
     chunk: TestChunk,
     sv: SvMode,
@@ -980,6 +991,8 @@ def _add_va_extreme_test(
     physical_label: str,
     permissions: PteExpression,
     style: str,
+    driver_mode: str = "Smode",
+    crosses: Crosses | None = None,
 ) -> None:
     chunk.code.extend(
         [
@@ -994,18 +1007,20 @@ def _add_va_extreme_test(
             ),
             "sfence.vma",
             "",
-            *emit_access(test_data, sv, regs, 0, style, f"test{number}", va, "Smode"),
+            *emit_access(test_data, sv, regs, 0, style, f"test{number}", va, "Smode", driver_mode, crosses=crosses),
             "",
         ]
     )
 
 
-def _t_va_all(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
+def va_extreme_sig_init(sv: SvMode) -> str:
+    """Return the initial store value for the VA-extreme tests."""
+    return "0x800" if sv.xlen == 32 else "0x12"
+
+
+def _t_va_all_ones(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
     all_ones = "0x" + "f" * (sv.xlen // 4)
     all_ones_code = all_ones[:-1] + "c"
-    all_zeros = "0x" + "0" * (sv.xlen // 4)
-    sig_init = "0x800" if sv.xlen == 32 else "0x12"
-
     regs = SvRegs.allocate(test_data)
     chunk = begin_sv_test(
         test_data,
@@ -1014,10 +1029,10 @@ def _t_va_all(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> 
         "Smode",
         f"{sv.name}_VA_all_ones_Smode",
         coverpoint="cp_VA_d_mode, cp_VA_i_mode",
-        sig_init=sig_init,
+        sig_init=va_extreme_sig_init(sv),
         va_defs=(("va_data_rw", all_ones), ("va_data_x", all_ones_code)),
     )
-    _add_va_extreme_test(
+    add_va_extreme_test(
         test_data,
         chunk,
         sv,
@@ -1028,7 +1043,7 @@ def _t_va_all(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> 
         permissions=PteFlags(execute=False),
         style="rw_byte",
     )
-    _add_va_extreme_test(
+    add_va_extreme_test(
         test_data,
         chunk,
         sv,
@@ -1040,45 +1055,6 @@ def _t_va_all(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> 
         style="x_only",
     )
     chunk.raw_data.extend(sv_data(sv, regs, (0,), data_region_body=VA_ONES_DATA))
-    chunk.trap_sigupd_count = 3
-    test_chunks.append(end_sv_test(test_data, regs))
-
-    regs = SvRegs.allocate(test_data)
-    chunk = begin_sv_test(
-        test_data,
-        regs,
-        sv,
-        "Smode",
-        f"{sv.name}_VA_all_zeros_Smode",
-        coverpoint="cp_VA_d_mode, cp_VA_i_mode",
-        sig_init=sig_init,
-        va_defs=(("va_data", all_zeros),),
-    )
-    if sv.levels > 3:
-        chunk.code.extend(keep_image_mapped(sv, regs))
-    _add_va_extreme_test(
-        test_data,
-        chunk,
-        sv,
-        regs,
-        number=1,
-        va="va_data",
-        physical_label="rvtest_data_1_l0_rw",
-        permissions=PteFlags(execute=False),
-        style="rw_word" if sv.name in ("sv32", "sv39") else "rw_byte",
-    )
-    _add_va_extreme_test(
-        test_data,
-        chunk,
-        sv,
-        regs,
-        number=2,
-        va="va_data",
-        physical_label="rvtest_data_1_l0_x",
-        permissions=PteFlags(read=False, write=False),
-        style="x_only",
-    )
-    chunk.raw_data.extend(sv_data(sv, regs, (0,), data_region_body=VA_ZEROS_DATA))
     chunk.trap_sigupd_count = 3
     test_chunks.append(end_sv_test(test_data, regs))
 
@@ -1201,7 +1177,7 @@ def _make_sv(test_data: TestData, sv: SvMode) -> list[TestChunk]:
     _t_svpbmt_disabled(test_data, test_chunks, sv)
     _t_svnapot_not_supported(test_data, test_chunks, sv)
     _t_page_perm_topics(test_data, test_chunks, sv)
-    _t_va_all(test_data, test_chunks, sv)
+    _t_va_all_ones(test_data, test_chunks, sv)
     _t_satp_access(test_data, test_chunks, sv)
     _t_nleaf_pte_reserved(test_data, test_chunks, sv)
     return test_chunks

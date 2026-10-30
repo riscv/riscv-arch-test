@@ -17,6 +17,10 @@ exclude_extensions:
   # exclusions can be given per config.
   - Smstateen
   - Ssstateen
+  # Spike keeps the last vstimecmp comparison in hip.VSTIP after henvcfg.STCE or menvcfg.STCE is cleared; hip.VSTIP
+  # must revert to hvip.VSTIP (riscv/csrs.cc time_counter_csr_t::sync, https://github.com/riscv-software-src/riscv-isa-sim/issues/2504).
+  - Sstc_H_vstip
+  - Sstc_HSm_vstip
   # Sscofpmf_Sm_access fails on rv32-max only; the other Sscofpmf groups pass. Spike hardwires mhpmcounter3..31
   # to 0 but keeps mhpmevent3..31 writable (https://github.com/riscv-software-src/riscv-isa-sim/issues/2370). Sail's
   # writable_hpm_counters makes both or neither writable, so no reference config matches.

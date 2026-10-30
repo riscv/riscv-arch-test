@@ -84,7 +84,12 @@ def run_on_dut(config_dir: Path, elf: Path, out: Path, timeout: int) -> str:
             )
     except subprocess.TimeoutExpired:
         pass
-    text = out.read_text(errors="replace") if out.exists() else log.read_text(errors="replace")
+    text = out.read_text(errors="replace") if out.exists() and out.stat().st_size else log.read_text(errors="replace")
+    if (
+        re.search(r"no simulator at|not found|No such file or directory", log.read_text(errors="replace"))
+        and "# " not in text
+    ):
+        raise FileNotFoundError(f"{command[0]} could not start its simulator; see {log}")
     return "\n".join(TIMESTAMP_RE.sub("", line) for line in text.splitlines())
 
 
@@ -118,13 +123,17 @@ def xlen_hint(config_dir: Path) -> int:
         f = REPO_ROOT / path
         if f.exists():
             text += f.read_text(errors="replace")
+    text += config_dir.name
     return 32 if re.search(r"rv32|riscv32|\"xlen\"\s*:\s*32|RV32", text) else 64
 
 
 def detect_xlen(config_dir: Path, test_config: dict[str, Any], build: Path, timeout: int) -> int:
     first = xlen_hint(config_dir)
     for xlen in (first, 96 - first):
-        elf = make("xlen-elf", build, test_config, config_dir, xlen)
+        try:
+            elf = make("xlen-elf", build, test_config, config_dir, xlen)
+        except subprocess.CalledProcessError:
+            continue  # rvmodel_macros.h may only assemble for its own XLEN
         text = run_on_dut(config_dir, elf, build / f"xlen_probe{xlen}.txt", timeout)
         m = re.search(r"# xlen: (32|64)", text)
         if m:
@@ -194,12 +203,18 @@ def udb_validate(path: Path) -> list[tuple[str, list[str]]]:
     if r.returncode == 0:
         return []
     errors: list[tuple[str, list[str]]] = []
+    # udb 0.1.18 crashes, rather than reporting the parameter missing, when a parameter that
+    # another check reads is absent (SXLEN with S, for example)
+    for name in re.findall(r'param_values\["(\w+)"\]', r.stdout + r.stderr):
+        errors.append((f"Parameter is required but missing: '{name}'", ["udb crashed reading it"]))
+    if errors:
+        return errors
     for line in (r.stdout + r.stderr).splitlines():
         if m := re.match(r"^\s*\* (.*)$", line):
             errors.append((m.group(1).strip(), []))
         elif (m := re.match(r"^\s+- (.*)$", line)) and errors:
             errors[-1][1].append(m.group(1).strip())
-    return errors or [((r.stdout + r.stderr).strip(), [])]
+    return errors or [(" ".join((r.stdout + r.stderr).split())[:300], [])]
 
 
 @cache
@@ -356,7 +371,7 @@ def complete_yaml(
                 progress = True
             elif m := re.match(r"Extension requirement is unmet: (\w+)@", e):
                 for c in conditions:
-                    if (r := re.fullmatch(r"`(\w+)(~>|=)([\d.]+)`\{false\}", c)) is None:
+                    if (r := re.fullmatch(r"`(\w+)(~>|=|>=)([\d.]+)`\{false\}", c)) is None:
                         continue
                     ext, version = r.group(1), r.group(3) + ".0" * (2 - r.group(3).count("."))
                     if ext in exts:

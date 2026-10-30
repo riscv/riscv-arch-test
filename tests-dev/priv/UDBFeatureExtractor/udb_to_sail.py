@@ -240,6 +240,11 @@ class Converter:
         elif behavior is not None:
             self.unmodelled.append(f"base.reserved_behavior.xtvec_mode: MTVEC_ILLEGAL_WRITE_BEHAVIOR = {behavior}")
         medeleg = mask(p.get("MEDELEG_DELEGATABLE"))
+        if medeleg & ~self.exceptions():
+            self.unmodelled.append(
+                f"base.medeleg.delegatable_bits: Sail rejects reserved bits 0x{medeleg & ~self.exceptions():X}"
+            )
+            medeleg &= self.exceptions()
         if self.cfg["base"]["privileged_isa_version"] != "Privileged_ISA_1_13":
             # software check (18) and hardware error (19) are reserved before 1.13
             keep = 1 << 18 if self.has("Zicfilp", "Zicfiss") else 0
@@ -470,7 +475,10 @@ class Converter:
                 )
             self.set(f"{t}.mcontrol6.maskmax6", min(maskmax, self.xlen - 1))
         self.set_param(f"{t}.mcontrol6.max_chain_length", "SDTRIG_MAX_CHAIN_LENGTH")
-        self.set_param(f"{t}.textra.mhselect.mcontext_match", "SDTRIG_TEXTRA_MHSELECT_MCONTEXT_MATCH")
+        self.set(
+            f"{t}.textra.mhselect.mcontext_match",
+            bool(p.get("SDTRIG_TEXTRA_MHSELECT_MCONTEXT_MATCH")) and bool(p.get("MCONTEXT_IMPLEMENTED")),
+        )
         self.set(f"{t}.textra.mhselect.vmid_match", bool(p.get("SDTRIG_TEXTRA_MHSELECT_VMID_MATCH")) and self.has("H"))
         self.set(
             f"{t}.textra.sselect.scontext_match",
@@ -530,6 +538,11 @@ class Converter:
                 self.unmodelled.append(f"{key}: not a Sail 0.16 key (value {value!r})")
                 continue
             self.set(key, value)
+        p1p13 = "extensions.Stateen.mstateen0.P1P13"
+        if self.xlen == 64 and self.extra.get(p1p13, "CSRBit_ReadOnlyZero") != "CSRBit_ReadOnlyZero":
+            # P1P13 guards hedelegh, which RV64 does not have; Sail insists the bit is read-only zero
+            self.unmodelled.append(f"{p1p13}: measured {self.extra[p1p13]}, but Sail requires read-only zero on RV64")
+            self.set(p1p13, "CSRBit_ReadOnlyZero")
 
     def regions(self, plat: dict[str, Any]) -> None:
         """Main memory from link.ld, and one IO region holding the CLINT and the interrupt generator."""
@@ -551,6 +564,13 @@ class Converter:
         a["reservability"] = "RsrvEventual" if self.has("A", "Zalrsc") else "RsrvNone"
         a["supports_cbo_zero"] = self.has("Zicboz")
         granule = 16 if self.has("Zama16b") else self.p.get("MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE", 0)
+        if self.p.get("MISALIGNED_AMO") and granule < 16:
+            # Sail lets a misaligned AMO proceed only inside the granule; the extractor's probe is a
+            # word AMO at offset 2, so a hart that allows misaligned AMOs needs at least 16 bytes
+            self.unmodelled.append(
+                f"misaligned_atomicity_granule_size_exp: 16 bytes used, MISALIGNED_AMO is true but the granule is {granule}"
+            )
+            granule = 16
         a["misaligned_atomicity_granule_size_exp"] = log2(granule) if granule else 0
         a["vector_misaligned_atomicity_granule_size_exp"] = a["misaligned_atomicity_granule_size_exp"]
 

@@ -7,15 +7,14 @@
 //
 // make_config.py runs this before the extractor, which must be compiled for the hart's XLEN.  The
 // code uses only instructions that RV32I and RV64I share with the same encoding, so the RV32 build
-// runs on either kind of hart: 1 << 31 is negative on RV32 and positive on RV64.
+// runs on either kind of hart: 1 << 31 is negative on RV32 and positive on RV64.  It uses no CSR,
+// since some harts (Wally rv32i, PicoRV32) have none.
 
 #include "rvmodel_macros.h"
 
 .section .text.init, "ax", @progbits
 .globl rvtest_entry_point
 rvtest_entry_point:
-    csrr    a0, mhartid
-    bnez    a0, park
 #ifdef RVMODEL_IO_INIT
     RVMODEL_IO_INIT(t0, t1, t2)
 #endif
@@ -26,9 +25,6 @@ rvtest_entry_point:
     la      a0, msg32
 1:  RVMODEL_IO_WRITE_STR(t0, t1, t2, a0)
     RVMODEL_HALT_PASS
-park:
-    wfi
-    j       park
 
 .section .data
 msg32:  .string "# xlen: 32\n"

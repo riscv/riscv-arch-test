@@ -11,11 +11,6 @@
 //   Weight 0: only the crosses count.
 //
 ///////////////////////////////////////////
-arm_type: coverpoint ins.current.rs1_val[XLEN-1:XLEN-4] {
-    type_option.weight = 0;
-    bins icount    = {4'd3};
-    bins mcontrol6 = {4'd6};
-}
 mhselect: coverpoint sdtrig_textra_mhselect(ins.current.csr[CSR_TDATA3]) {
     type_option.weight = 0;
     bins ignore   = {3'd0};

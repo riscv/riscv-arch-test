@@ -1,32 +1,64 @@
 
 === Sv* Virtual Memory
 
-==== Sv
+==== Sv Virtual Memory
 
+The Sv suite has one covergroup and test plan per group: the base `Sv` group, then `Sm`, `Zicbo` and the `Exceptions` groups.
 The UDB configuration file determines whether to run tests for Sv32, or for Sv39 and possibly Sv48 and Sv57.
 
 Coverpoints that need M-mode state (`mstatus.MPRV`, `mstatus.TVM`, `mstatus.SBE`, or an M-mode CSR access)
 are in the `Sm` groups.
-The PMP suites (SvPMP, SvPMPZicbo, SvaduPMP) boot to M-mode because they program PMP entries.
+The `PMP_Sv`, `PMP_SvZicbo` and `PMP_Svadu` groups of the PMP suite boot to M-mode because they program PMP entries.
 
 include::{testplansdir}/priv/Sv.adoc[]
-
-include::norm/Sv_norm_rules.adoc[]
 
 *UDB Parameters:*
 
 * REPORT_VA_IN_{MTVAL/STVAL}ON_{INSTRUCTION/LOAD/STORE_AMO}PAGE_FAULT affects result in {MTVAL,STVAL} during page-fault exceptions, such as coverpoints TODO
 * TODO other coverpoints at least SATP_MODE_BARE, TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY
 
-==== SvSm Virtual Memory with M-mode State
+===== Sv_Sm Virtual Memory with M-mode State
 
-Covers `mstatus.MPRV` accesses, `mstatus.TVM` trapping of `satp` and `SFENCE.VMA`, `mstatus.SBE` for implicit
+The `Sm` group runs only on configurations with `Sm`, so it is not part of a certificate without `Sm`, such as RVA23.
+It covers `mstatus.MPRV` accesses, `mstatus.TVM` trapping of `satp` and `SFENCE.VMA`, `mstatus.SBE` for implicit
 page-table accesses, and M-mode access to `satp`. The `mstatus.SBE` tests are generated but not run until a
 big-endian configuration is available.
 
-include::{testplansdir}/priv/SvSm.adoc[]
+include::{testplansdir}/priv/Sv_Sm.adoc[]
 
-include::norm/SvSm_norm_rules.adoc[]
+===== Sv_Zicbo VirtMem + CBOM/CBOZ
+
+include::{testplansdir}/priv/Sv_Zicbo.adoc[]
+
+===== Sv_Exceptions Virtual Memory Exceptions
+
+include::{testplansdir}/priv/Sv_Exceptions.adoc[]
+
+===== Sv_ExceptionsSm Virtual Memory Exceptions with M-mode State
+
+include::{testplansdir}/priv/Sv_ExceptionsSm.adoc[]
+
+===== Sv_ExceptionsZalrsc Virtual Memory LR/SC Exceptions
+
+include::{testplansdir}/priv/Sv_ExceptionsZalrsc.adoc[]
+
+===== Sv_ExceptionsZalrscSm Virtual Memory LR/SC Exceptions with M-mode State
+
+include::{testplansdir}/priv/Sv_ExceptionsZalrscSm.adoc[]
+
+===== Sv_ExceptionsZaamo Virtual Memory AMO Exceptions
+
+include::{testplansdir}/priv/Sv_ExceptionsZaamo.adoc[]
+
+===== Sv_ExceptionsZaamoSm Virtual Memory AMO Exceptions with M-mode State
+
+include::{testplansdir}/priv/Sv_ExceptionsZaamoSm.adoc[]
+
+===== Sv Normative Rules
+
+The rules apply to all Sv groups.
+
+include::norm/Sv_norm_rules.adoc[]
 
 ==== Svbare Virtual Memory Off
 
@@ -44,29 +76,9 @@ include::{testplansdir}/priv/Svbare_Sm.adoc[]
 include::norm/Svbare_norm_rules.adoc[]
 
 
-==== SvPMP VirtMem + PMP
-
-include::{testplansdir}/priv/SvPMP.adoc[]
-
-include::norm/SvPMP_norm_rules.adoc[]
-
-==== SvZicbo VirtMem + CBOM/CBOZ
-
-include::{testplansdir}/priv/SvZicbo.adoc[]
-
-include::norm/SvZicbo_norm_rules.adoc[]
-
-
-==== SvPMPZicbo VirtMem + PMP + CBOM/CBOZ
-
-include::{testplansdir}/priv/SvPMPZicbo.adoc[]
-
-include::norm/SvPMPZicbo_norm_rules.adoc[]
-
-
 ==== Svinval Memory Management Unit Table Invalidation
 
-The Svinval extension defines instructions to update memory management tables for virtual memory and optionally for PMP. Their effect is system-dependent, so these tests simply check that the instructions run.
+The Svinval extension defines instructions to update memory management tables for virtual memory and optionally for PMP. These tests check that the instructions run, and, with Sv39 or Sv32, that the SFENCE.W.INVAL, SINVAL.VMA, SFENCE.INVAL.IR sequence removes a changed leaf. A hart that caches no translations passes the invalidation test.
 
 include::{testplansdir}/priv/Svinval.adoc[]
 
@@ -77,6 +89,20 @@ include::norm/Svinval_norm_rules.adoc[]
 Runs the Svinval instructions in M, S and U mode with `mstatus.TVM=0` and `mstatus.TVM=1`.
 
 include::{testplansdir}/priv/Svinval_Sm.adoc[]
+
+===== Svinval_H Hypervisor Table Invalidation
+
+Runs the Svinval instructions in HS, VS, U and VU modes with `hstatus.VTVM=0` and `hstatus.VTVM=1`, and checks that
+the Svinval sequences remove changed VS-stage and G-stage leaves.
+
+include::{testplansdir}/priv/Svinval_H.adoc[]
+
+===== Svinval_SmH Hypervisor Table Invalidation with mstatus.TVM
+
+Runs the Svinval instructions in M-mode, and in HS, VS, U and VU modes with `mstatus.TVM=1`, whose traps are taken in
+M-mode.
+
+include::{testplansdir}/priv/Svinval_SmH.adoc[]
 
 ==== Svade A/D Bit Page Fault Exception
 
@@ -90,12 +116,6 @@ include::{testplansdir}/priv/Svadu.adoc[]
 
 include::norm/Svadu_norm_rules.adoc[]
 
-==== Svadu A/D Bit Hardware Update + PMP
-
-include::{testplansdir}/priv/SvaduPMP.adoc[]
-
-include::norm/SvaduPMP_norm_rules.adoc[]
-
 ==== Svpbmt Page-Based Memory Types
 
 include::{testplansdir}/priv/Svpbmt.adoc[]
@@ -107,6 +127,15 @@ include::norm/Svpbmt_norm_rules.adoc[]
 include::{testplansdir}/priv/Svnapot.adoc[]
 
 include::norm/Svnapot_norm_rules.adoc[]
+
+==== Svvptc Obviating Memory-Management Instructions after Marking PTEs Valid
+
+Svvptc requires a store that changes a PTE from invalid to valid to reach later implicit accesses within a bounded time, without `SFENCE.VMA`.
+The bound is implementation-defined, so each test provokes a page fault on the invalid PTE, stores the valid PTE, waits a fixed number of instructions, and checks that the retried access succeeds.
+
+include::{testplansdir}/priv/Svvptc.adoc[]
+
+include::norm/Svvptc_norm_rules.adoc[]
 
 ==== Svukte User Kernel Translation Enable
 

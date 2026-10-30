@@ -25,6 +25,10 @@ RVA23_EXTENSIONS = frozenset(
         "Zicbom",
         "Zicbop",
         "Zicboz",
+        "Ziccamoa",
+        "Ziccamoc",
+        "Ziccif",
+        "Ziccrse",
         "Zicfilp",
         "Zicfiss",
         "Zicntr",
@@ -83,6 +87,14 @@ RVA23_EXTENSIONS = frozenset(
         "Zvknhb",
         "Zvksed",
         "Zvksh",
+        # Sh extensions
+        "Shcounterenw",
+        "Shgatpa",
+        "Shlcofideleg",
+        "Shtvala",
+        "Shvsatpa",
+        "Shvstvala",
+        "Shvstvecd",
         # Ss extensions
         "Ssccptr",
         "Sscofpmf",
@@ -104,6 +116,7 @@ RVA23_EXTENSIONS = frozenset(
         "Svinval",
         "Svnapot",
         "Svpbmt",
+        "Svvptc",
     }
 )
 

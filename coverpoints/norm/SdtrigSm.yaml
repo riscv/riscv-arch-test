@@ -16,11 +16,7 @@ normative_rule_definitions:
   # Accessing trigger CSRs that are not used by any of the implemented triggers must
   # result in an illegal instruction exception.
   - name: Sdtrig_unimp_csr_illegal
-    coverpoint:
-      [
-        "SdtrigSm_trig_module_reg_cg/cp_csr_unimplemented",
-        "Only mcontext and hcontext have presence parameters so far; tcontrol, tdata3 and scontext need TCONTROL_IMPLEMENTED, TDATA3_IMPLEMENTED and SCONTEXT_IMPLEMENTED (riscv-unified-db#2069)",
-      ]
+    coverpoint: ["SdtrigSm_trig_module_reg_cg/cp_csr_unimplemented"]
 
   # M-Mode and Debug Mode accesses to trigger CSRs that are used by any of the
   # implemented triggers must succeed, regardless of the current type of the
@@ -42,7 +38,11 @@ normative_rule_definitions:
   # address of the next instruction that must be executed to preserve the program
   # flow.
   - name: Sdtrig_action0
-    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_mcontrol6_priv_mode"]
+    coverpoint:
+      [
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_priv_mode",
+        "xepc is not checked: with SDTRIG_IMPRECISE_XEPC the trap handler does not record xEPC for breakpoints, because DUTs that do not follow the suggested trigger timing take them at another instruction; only the breakpoint exception is checked",
+      ]
 
   # Enter Debug Mode. dpc must contain the virtual address of the next instruction
   # that must be executed to preserve the program flow. This action is only legal
@@ -341,17 +341,14 @@ normative_rule_definitions:
     coverpoint:
       [
         "SdtrigSm_trig_module_reg_cg/cp_tdata_write",
+        "SdtrigSm_trig_module_reg_cg/cp_csr_access_local",
         "SdtrigSm_access_cg/cp_csr_access_common",
       ]
 
   # Attempts to access an unimplemented Trigger Module Register raise an illegal
   # instruction exception.
   - name: Sdtrig_unimplemented_register
-    coverpoint:
-      [
-        "SdtrigSm_trig_module_reg_cg/cp_csr_unimplemented",
-        "Only mcontext and hcontext have presence parameters so far; tcontrol, tdata3 and scontext need TCONTROL_IMPLEMENTED, TDATA3_IMPLEMENTED and SCONTEXT_IMPLEMENTED (riscv-unified-db#2069)",
-      ]
+    coverpoint: ["SdtrigSm_trig_module_reg_cg/cp_csr_unimplemented"]
 
   # The Trigger Module registers, except mscontext, scontext, and hcontext, are only
   # accessible in machine and Debug Mode to prevent untrusted user code from causing
@@ -409,7 +406,11 @@ normative_rule_definitions:
 
   # Writing 0 to this register must result in a trigger that is disabled.
   - name: Sdtrig_tdata1_write0
-    coverpoint: ["SdtrigSm_trig_module_reg_cg/cp_tdata_write"]
+    coverpoint:
+      [
+        "SdtrigSm_trig_module_reg_cg/cp_tdata_write",
+        "SdtrigSm_icount_cg/cp_icount_self_write",
+      ]
 
   # If this trigger supports multiple types, then the hardware should disable it by
   # changing type to 15.
@@ -430,7 +431,8 @@ normative_rule_definitions:
   - name: Sdtrig_tdata1_dmode_type_0
     coverpoint:
       [
-        "Not tested: type 0 means there is no trigger at this tselect, so it can be read only after selecting a nonexistent trigger, whose tselect legalization is implementation-specific; needs SDTRIG_NUM_TRIGGERS (riscv-unified-db#2069)",
+        "SdtrigSm_trig_module_reg_cg/cp_tselect_nonexistent",
+        "tselect is WARL and no DUT here keeps a nonexistent index (Sail 0.16 legalizes it to the last trigger), so the rule is checked only on a hart that keeps it",
       ]
 
   # Both Debug and M-mode can write the tdata registers at the selected tselect.
@@ -450,7 +452,8 @@ normative_rule_definitions:
   - name: Sdtrig_tdata1_data
     coverpoint:
       [
-        "Not tested: type 0 means there is no trigger at this tselect, so it can be read only after selecting a nonexistent trigger, whose tselect legalization is implementation-specific; needs SDTRIG_NUM_TRIGGERS (riscv-unified-db#2069)",
+        "SdtrigSm_trig_module_reg_cg/cp_tselect_nonexistent",
+        "tselect is WARL and no DUT here keeps a nonexistent index (Sail 0.16 legalizes it to the last trigger), so the rule is checked only on a hart that keeps it",
       ]
 
   # This register provides access to the trigger selected by tselect.
@@ -464,7 +467,11 @@ normative_rule_definitions:
   # If the trigger is disabled, then this register can be written with any value
   # supported by any of the trigger types supported by this trigger.
   - name: Sdtrig_tdata2_disabled
-    coverpoint: ["SdtrigSm_trig_module_reg_cg/cp_tdata_write"]
+    coverpoint:
+      [
+        "SdtrigSm_trig_module_reg_cg/cp_tdata_write",
+        "SdtrigSm_trig_module_reg_cg/cp_csr_access_local",
+      ]
 
   # If XLEN is less than DXLEN, writes to this register are sign-extended.
   - name: Sdtrig_tdata2_sign_extend
@@ -518,13 +525,18 @@ normative_rule_definitions:
   # N. If the bit is set, then that type is supported by the currently selected
   # trigger.
   - name: Sdtrig_tinfo_support
-    coverpoint: ["SdtrigSm_trig_module_reg_cg/cp_tinfo_read_only"]
+    coverpoint:
+      [
+        "SdtrigSm_trig_module_reg_cg/cp_tselect_trigs",
+        "SdtrigSm_trig_module_reg_cg/cp_tinfo_read_only",
+      ]
 
   # If the currently selected trigger doesn't exist, this field contains 1.
   - name: Sdtrig_tinfo_no_trigger
     coverpoint:
       [
-        "Not tested: info = 1 can be read only after selecting a nonexistent trigger, whose tselect legalization is implementation-specific; needs SDTRIG_NUM_TRIGGERS (riscv-unified-db#2069)",
+        "SdtrigSm_trig_module_reg_cg/cp_tselect_nonexistent",
+        "tselect is WARL and no DUT here keeps a nonexistent index (Sail 0.16 legalizes it to the last trigger), so the rule is checked only on a hart that keeps it",
       ]
 
   # This optional register is only accessible in M-mode and Debug Mode and provides
@@ -533,9 +545,10 @@ normative_rule_definitions:
     coverpoint:
       [
         "SdtrigSm_access_cg/cp_csr_access_common",
+        "SdtrigSm_trig_module_reg_cg/cp_csr_access_global",
         "SdtrigS_access_cg/cp_csr_access_trap_s",
         "SdtrigU_access_cg/cp_csr_access_trap_u",
-        "The tcontrol accesses and bins need UDB_TCONTROL_AVAILABLE (TCONTROL_IMPLEMENTED, riscv-unified-db#2069); from S and U, cp_csr_insufficient_priv of the S and U suites also reads tcontrol (0x7A5) and expects an illegal instruction",
+        "The tcontrol accesses and bins need TCONTROL_IMPLEMENTED; from S and U, cp_csr_insufficient_priv of the S and U suites also reads tcontrol (0x7A5) and expects an illegal instruction",
       ]
 
   # When any trap into M-mode is taken, mpte is set to the value of mte.
@@ -552,7 +565,12 @@ normative_rule_definitions:
 
   # When any trap into M-mode is taken, mte is set to 0.
   - name: Sdtrig_tcontrol_mte
-    coverpoint: ["SdtrigSm_tcontrol_cg/cp_tcontrol_mtrap"]
+    coverpoint:
+      [
+        "SdtrigSm_tcontrol_cg/cp_tcontrol_mtrap",
+        "SdtrigSm_icount_cg/cp_icount_trap_fire",
+        "mte = 0 while the M-mode handler runs is observed only on harts with Use_tcontrol, where the pending breakpoint of cp_icount_trap_fire must wait for the handler's mret; cp_tcontrol_mtrap signs tcontrol after that mret, so it checks only that the trap copies mte to mpte",
+      ]
 
   # When mret is executed, mte is set to the value of mpte.
   - name: Sdtrig_tcontrol_mte_mret
@@ -606,7 +624,11 @@ normative_rule_definitions:
   # Supervisor mode software can write a context number to this register, which can
   # be used to set triggers that only fire in that specific context.
   - name: Sdtrig_scontext_data
-    coverpoint: ["SdtrigSm_access_cg/cp_csr_access_common"]
+    coverpoint:
+      [
+        "SdtrigSm_access_cg/cp_csr_access_common",
+        "SdtrigSm_textra_cg/cp_textra_scontext",
+      ]
 
   # This register must be implemented if hcontext is implemented, and is optional
   # otherwise.
@@ -628,7 +650,11 @@ normative_rule_definitions:
   # register, which can be used to set triggers that only fire in that specific
   # context.
   - name: Sdtrig_mcontext_hcontext_data
-    coverpoint: ["SdtrigSm_access_cg/cp_csr_access_common"]
+    coverpoint:
+      [
+        "SdtrigSm_access_cg/cp_csr_access_common",
+        "SdtrigSm_textra_cg/cp_textra_mcontext",
+      ]
 
   # This optional register is an alias for scontext.
   - name: Sdtrig_mscontext
@@ -887,7 +913,11 @@ normative_rule_definitions:
   # A chain of triggers must only fire if every trigger in the chain was matched by
   # the same instruction.
   - name: Sdtrig_mcontrol6_chain
-    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_mcontrol6_chain_adr"]
+    coverpoint:
+      [
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_chain_adr",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_chain_long",
+      ]
 
   # The Privileged Spec says that breakpoint exceptions that occur on instruction
   # fetches, loads, or stores update the tval CSR with either zero or the faulting
@@ -922,11 +952,7 @@ normative_rule_definitions:
   # All NAPOT ranges between stem:[2^1] and stem:[2^maskmax6] are supported where
   # stem:[maskmax6 >= 1].
   - name: Sdtrig_mcontrol6_napot_range
-    coverpoint:
-      [
-        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_napot",
-        "Once maskmax6 >= 1, every NAPOT range from 2^1 to 2^maskmax6 must be supported; cp_mcontrol6_match_napot is gated until MASKMAX6 and the supported MATCH values are UDB parameters (riscv-unified-db#2069)",
-      ]
+    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_napot"]
 
   # If textra32 or textra64 are implemented for this trigger, it only matches when
   # the conditions set there are satisfied.
@@ -1030,6 +1056,11 @@ normative_rule_definitions:
       [
         "SdtrigSm_mcontrol6_cg/cp_mcontrol6_execute_data",
         "SdtrigSm_mcontrol6_cg/cp_mcontrol6_load_store_data",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_size_data",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_store",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_load",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_execute",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_execute_other",
       ]
 
   # The trigger will attempt to match against an access of any size. The behavior is
@@ -1047,6 +1078,10 @@ normative_rule_definitions:
       [
         "SdtrigSm_mcontrol6_cg/cp_mcontrol6_load_store_size",
         "SdtrigSm_mcontrol6_cg/cp_mcontrol6_execute_size",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_execute_adr_size",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_size_data",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_store",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_load",
       ]
 
   # The trigger will only match against 16-bit memory accesses or execution of
@@ -1056,6 +1091,13 @@ normative_rule_definitions:
       [
         "SdtrigSm_mcontrol6_cg/cp_mcontrol6_execute_size",
         "SdtrigSm_mcontrol6_cg/cp_mcontrol6_load_store_size",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_execute_adr_size",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_size_data",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_store",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_load",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_execute",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_execute_other",
+        "A select = 0 execute trigger with size = 2 on a 32-bit instruction is not tested: Sail 0.16 fires it (sail-riscv#2033, ACT #2921)",
       ]
 
   # The trigger will only match against 32-bit memory accesses or execution of
@@ -1065,11 +1107,22 @@ normative_rule_definitions:
       [
         "SdtrigSm_mcontrol6_cg/cp_mcontrol6_execute_size",
         "SdtrigSm_mcontrol6_cg/cp_mcontrol6_load_store_size",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_execute_adr_size",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_size_data",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_store",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_load",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_execute",
+        "A select = 0 execute trigger with size = 3 on a 16-bit instruction is not tested: Sail 0.16 fires it (sail-riscv#2033, ACT #2921)",
       ]
 
   # The trigger will only match against execution of 48-bit instructions.
   - name: Sdtrig_mcontrol6_size_48bit
-    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_mcontrol6_execute_size"]
+    coverpoint:
+      [
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_execute_size",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_execute_adr_size",
+        "Only that no 16- or 32-bit instruction matches is tested, on RV64: the tests have no 48-bit instruction, and on RV32 size = 4 is never written because Sail 0.16 disables a trigger whose size exceeds XLEN",
+      ]
 
   # The trigger will only match against 64-bit memory accesses or execution of
   # 64-bit instructions.
@@ -1078,6 +1131,11 @@ normative_rule_definitions:
       [
         "SdtrigSm_mcontrol6_cg/cp_mcontrol6_execute_size",
         "SdtrigSm_mcontrol6_cg/cp_mcontrol6_load_store_size",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_execute_adr_size",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_size_data",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_store",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_load",
+        "On RV32 size = 5 is never written, so 64-bit fld/fsd and vector accesses are not tested there: Sail 0.16 disables a trigger whose size exceeds XLEN (sail-riscv#2034, ACT #2921)",
       ]
 
   # The trigger will only match against 128-bit memory accesses or execution of
@@ -1085,8 +1143,7 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol6_size_128bit
     coverpoint:
       [
-        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_execute_size",
-        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_load_store_size",
+        "Not tested: size = 6 is never written, so flq/fsq and 128-bit vector accesses are not tested with it, because Sail 0.16 disables a trigger whose size exceeds XLEN (as in sail-riscv#2034)",
       ]
 
   # An implementation must support the value of 0, but all other values are
@@ -1101,7 +1158,11 @@ normative_rule_definitions:
   # While this trigger does not match, it prevents the trigger with the next index
   # from matching.
   - name: Sdtrig_mcontrol6_chain_enabled
-    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_mcontrol6_chain_adr"]
+    coverpoint:
+      [
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_chain_adr",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_chain_long",
+      ]
 
   # A trigger chain starts on the first trigger with chain=1 after a trigger with
   # chain=0, or simply on the first trigger if that has chain=1. It ends on the
@@ -1110,7 +1171,11 @@ normative_rule_definitions:
   # final trigger will be taken if and only if all the triggers in the chain match
   # at the same time.
   - name: Sdtrig_mcontrol6_chain_start
-    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_mcontrol6_chain_adr"]
+    coverpoint:
+      [
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_chain_adr",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_chain_long",
+      ]
 
   # Because chain affects the next trigger, hardware must zero it in writes to
   # mcontrol6 that set dmode to 0 if the next trigger has dmode of 1.
@@ -1124,17 +1189,29 @@ normative_rule_definitions:
 
   # Matches when any compare value equals tdata2.
   - name: Sdtrig_mcontrol6_match_equal
-    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_mcontrol6_match"]
+    coverpoint:
+      [
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_store",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_load",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_execute",
+      ]
 
   # Matches when the top M bits of any compare value match the top M bits of tdata2.
   # M is XLEN-1 minus the index of the least-significant bit containing 0 in tdata2.
   - name: Sdtrig_mcontrol6_match_napot
-    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_napot"]
+    coverpoint:
+      [
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_napot",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_store",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_load",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_execute",
+      ]
 
   # if bits maskmax6-1:0 are written with all ones then bit maskmax6-1 will be set
   # to 0 while the values of bits maskmax6-2:0 are UNSPECIFIED.
   - name: Sdtrig_mcontrol6_match_napot_mask
-    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_napot"]
+    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_mcontrol6_napot_allones"]
 
   # Legal values for tdata2 require M maskmax6 >= XLEN and M > 0. See above for how
   # to determine maskmax6.
@@ -1143,39 +1220,87 @@ normative_rule_definitions:
 
   # Matches when any compare value is greater than (unsigned) or equal to tdata2.
   - name: Sdtrig_mcontrol6_match_ge
-    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_mcontrol6_match"]
+    coverpoint:
+      [
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_store",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_load",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_execute",
+      ]
 
   # Matches when any compare value is less than (unsigned) tdata2.
   - name: Sdtrig_mcontrol6_match_lt
-    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_mcontrol6_match"]
+    coverpoint:
+      [
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_store",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_load",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_execute",
+      ]
 
   # Matches when latexmath:[$\fracXLEN2-{1:0}] of any compare value equals
   # latexmath:[$\fracXLEN2-{1:0}] of tdata2 after latexmath:[$\fracXLEN2-{1:0}] of
   # the compare value is ANDed with XLEN-1:\fracXLEN2 of tdata2.
   - name: Sdtrig_mcontrol6_match_mask_low
-    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_mask"]
+    coverpoint:
+      [
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_mask",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_store",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_load",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_execute",
+      ]
 
   # Matches when XLEN-1:\fracXLEN2 of any compare value equals
   # latexmath:[$\fracXLEN2-{1:0}] of tdata2 after XLEN-1:\fracXLEN2 of the compare
   # value is ANDed with XLEN-1:\fracXLEN2 of tdata2.
   - name: Sdtrig_mcontrol6_match_mask_high
-    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_mask"]
+    coverpoint:
+      [
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_mask",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_store",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_load",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_execute",
+      ]
 
   # Matches when match =0 would not match.
   - name: Sdtrig_mcontrol6_match_not_equal
-    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_mcontrol6_match"]
+    coverpoint:
+      [
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_store",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_load",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_execute",
+      ]
 
   # Matches when match =1 would not match.
   - name: Sdtrig_mcontrol6_match_not_napot
-    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_napot"]
+    coverpoint:
+      [
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_napot",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_store",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_load",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_execute",
+      ]
 
   # Matches when match =4 would not match.
   - name: Sdtrig_mcontrol6_match_not_mask_low
-    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_mask"]
+    coverpoint:
+      [
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_mask",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_store",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_load",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_execute",
+      ]
 
   # Matches when match =5 would not match.
   - name: Sdtrig_mcontrol6_match_not_mask_high
-    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_mask"]
+    coverpoint:
+      [
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_mask",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_store",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_load",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_execute",
+      ]
 
   # Other values are reserved for future use.
   - name: Sdtrig_mcontrol6_match_rsv
@@ -1188,7 +1313,11 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol6_comparisons
     coverpoint:
       [
-        "Compares at a narrower current-mode XLEN need a writable UXL/SXL, and the lower-N-bit compare for select=1 needs mcontrol6 size values (riscv-unified-db#2069); not tested",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_size_data",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_store",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_load",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_execute",
+        "Compares at a narrower current-mode XLEN need a writable UXL/SXL; not tested",
       ]
 
   # When set, enable this trigger in M-mode.
@@ -1295,8 +1424,7 @@ normative_rule_definitions:
   - name: Sdtrig_icount_multiple_match
     coverpoint:
       [
-        "SdtrigSm_icount_cg/cp_icount_trap",
-        "SdtrigSm_icount_cg/cp_icount_trap_fire",
+        "Not tested: the trap cases use count = 1, where a second match in the same instruction is not visible, and with count > 1 whether the M-mode handler's instructions are counted depends on the reentrancy option",
       ]
 
   # For use in single step, icount must match for traps where the instruction will
@@ -1341,7 +1469,7 @@ normative_rule_definitions:
   # is a write to the icount trigger. In that case pending might or might not become
   # set if count was 1. Afterwards count contains the newly written value.
   - name: Sdtrig_icount_exception
-    coverpoint: ["WARL write-any-read-legal behavior not separately tested"]
+    coverpoint: ["SdtrigSm_icount_cg/cp_icount_self_write"]
 
   # When count is 0 it stays at 0 until explicitly written.
   - name: Sdtrig_icount_count_zero
@@ -1354,6 +1482,7 @@ normative_rule_definitions:
   - name: Sdtrig_icount_pending
     coverpoint:
       [
+        "SdtrigSm_icount_cg/cp_icount_instr",
         "SdtrigSm_icount_cg/cp_icount_eq0",
         "SdtrigSm_icount_cg/cp_icount_eq0_fire",
         "SdtrigSm_icount_cg/cp_icount_trap_fire",
@@ -1365,6 +1494,7 @@ normative_rule_definitions:
   - name: Sdtrig_icount_action0
     coverpoint:
       [
+        "SdtrigSm_icount_cg/cp_icount_instr",
         "SdtrigSm_icount_cg/cp_icount_instr_fire",
         "SdtrigSm_icount_cg/cp_icount_trap_fire",
         "SdtrigSm_icount_cg/cp_icount_eq0_fire",
@@ -1550,6 +1680,7 @@ normative_rule_definitions:
       [
         "SdtrigSm_itrigger_cg/cp_itrigger_m",
         "SdtrigSm_itrigger_cg/cp_itrigger_m_other",
+        "Only that the trigger does not fire is checked: with action = 0 a trap handled in M never fires it (mstatus.MIE or tcontrol.mte is 0 in the handler under both reentrancy options)",
       ]
 
   # When set, enable this trigger for interrupts that are taken from S/HS mode. This
@@ -1658,6 +1789,7 @@ normative_rule_definitions:
       [
         "SdtrigSm_etrigger_cg/cp_etrigger_m",
         "SdtrigSm_etrigger_cg/cp_etrigger_m_other",
+        "Only that the trigger does not fire is checked: with action = 0 a trap handled in M never fires it (mstatus.MIE or tcontrol.mte is 0 in the handler under both reentrancy options)",
       ]
 
   # When set, enable this trigger for exceptions that are taken from S/HS mode. This

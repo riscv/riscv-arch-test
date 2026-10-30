@@ -609,7 +609,8 @@ params:
   VSTVEC_MODES: [0, 1]
   HSTATEEN_ENVCFG_TYPE: rw
   IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO: true
-  NUM_EXTERNAL_GUEST_INTERRUPTS: 63
+  # GEILEN is 7: run_cmd.txt selects aia=aplic-imsic,aia-guests=7, the most QEMU's virt machine allows
+  NUM_EXTERNAL_GUEST_INTERRUPTS: 7
   REPORT_ENCODING_IN_VSTVAL_ON_ILLEGAL_INSTRUCTION: true
   REPORT_ENCODING_IN_VSTVAL_ON_VIRTUAL_INSTRUCTION: true
   REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT: true
@@ -633,19 +634,21 @@ params:
   SV48X4_TRANSLATION: true
   SV57_VSMODE_TRANSLATION: true
   SV57X4_TRANSLATION: true
+  # QEMU writes the transformed instruction for load, store and AMO faults (riscv_transformed_insn in
+  # target/riscv/tcg/cpu_helper.c), except zero for CBOs, which these parameters cannot express
   TINST_VALUE_ON_BREAKPOINT: "always zero"
   TINST_VALUE_ON_FINAL_INSTRUCTION_GUEST_PAGE_FAULT: "always zero"
-  TINST_VALUE_ON_FINAL_LOAD_GUEST_PAGE_FAULT: "always zero"
-  TINST_VALUE_ON_FINAL_STORE_AMO_GUEST_PAGE_FAULT: "always zero"
+  TINST_VALUE_ON_FINAL_LOAD_GUEST_PAGE_FAULT: "always transformed standard instruction"
+  TINST_VALUE_ON_FINAL_STORE_AMO_GUEST_PAGE_FAULT: "always transformed standard instruction"
   TINST_VALUE_ON_INSTRUCTION_ADDRESS_MISALIGNED: "always zero"
-  TINST_VALUE_ON_LOAD_ACCESS_FAULT: "always zero"
-  TINST_VALUE_ON_LOAD_ADDRESS_MISALIGNED: "always zero"
-  TINST_VALUE_ON_LOAD_PAGE_FAULT: "always zero"
+  TINST_VALUE_ON_LOAD_ACCESS_FAULT: "always transformed standard instruction"
+  TINST_VALUE_ON_LOAD_ADDRESS_MISALIGNED: "always transformed standard instruction"
+  TINST_VALUE_ON_LOAD_PAGE_FAULT: "always transformed standard instruction"
   TINST_VALUE_ON_MCALL: "always zero"
   TINST_VALUE_ON_SCALL: "always zero"
-  TINST_VALUE_ON_STORE_AMO_ACCESS_FAULT: "always zero"
-  TINST_VALUE_ON_STORE_AMO_ADDRESS_MISALIGNED: "always zero"
-  TINST_VALUE_ON_STORE_AMO_PAGE_FAULT: "always zero"
+  TINST_VALUE_ON_STORE_AMO_ACCESS_FAULT: "always transformed standard instruction"
+  TINST_VALUE_ON_STORE_AMO_ADDRESS_MISALIGNED: "always transformed standard instruction"
+  TINST_VALUE_ON_STORE_AMO_PAGE_FAULT: "always transformed standard instruction"
   TINST_VALUE_ON_UCALL: "always zero"
   TINST_VALUE_ON_VIRTUAL_INSTRUCTION: "always zero"
   TINST_VALUE_ON_VSCALL: "always zero"

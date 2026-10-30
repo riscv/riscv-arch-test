@@ -24,7 +24,7 @@ include::{testplansdir}/Zibi.adoc[]
 |===
 
 The instruction-address-misaligned exception rule uses Zibi-specific tests in
-`ExceptionsSm`, `ExceptionsS`, and `ExceptionsU`, which check both taken
+`Exceptions_Sm`, `Exceptions_S`, and `Exceptions_U`, which check both taken
 branches that trap and not-taken branches that do not trap for `beqi` and
 `bnei`.
 
@@ -38,7 +38,7 @@ include::norm/Zicsr_norm_rules.adoc[]
 
 [NOTE]
 ===
-TRAP_ON_UNIMPLEMENTED_CSR affects the results of Ssstrict/cp_csrr (<<t-SsstrictS-coverpoints>>).  It does not affect Zicsr because this is an unprivileged test that should never perform operations that trap.
+TRAP_ON_UNIMPLEMENTED_CSR affects the results of Ssstrict/cp_csrr (<<t-Ssstrict_S-coverpoints>>).  It does not affect Zicsr because this is an unprivileged test that should never perform operations that trap.
 ===
 
 ==== Zifencei Instruction-Fetch Fence
@@ -82,6 +82,38 @@ include::norm/Zicclsm_norm_rules.adoc[]
 |cp_misalign_cross64_{hword/word/double}|2|Whether a 2-, 4-, or 8-byte access crosses a 64-byte boundary, from effective address bits [5:0].
 |===
 
+==== Ziccif Main Memory Instruction Fetch
+
+The Ziccif suite executes an uncompressed and a compressed instruction from main memory.  It is short and largely redundant with the instruction suites; a single hart cannot observe atomicity, so atomicity is not tested.
+
+include::{testplansdir}/priv/Ziccif.adoc[]
+
+include::norm/Ziccif_norm_rules.adoc[]
+
+==== Ziccrse Main Memory RsrvEventual
+
+The Ziccrse suite performs one constrained LR/SC sequence on main memory.  It is short and largely redundant with the instruction suites; a single hart cannot observe atomicity, so atomicity is not tested.
+
+include::{testplansdir}/priv/Ziccrse.adoc[]
+
+include::norm/Ziccrse_norm_rules.adoc[]
+
+==== Ziccamoa Main Memory AMOArithmetic
+
+The Ziccamoa suite performs each supported AMOArithmetic-level AMO on main memory.  It is short and largely redundant with the instruction suites; a single hart cannot observe atomicity, so atomicity is not tested.
+
+include::{testplansdir}/priv/Ziccamoa.adoc[]
+
+include::norm/Ziccamoa_norm_rules.adoc[]
+
+==== Ziccamoc Main Memory AMOCASQ
+
+The Ziccamoc suite performs each supported AMOCASQ-level AMO on main memory.  It is short and largely redundant with the instruction suites; a single hart cannot observe atomicity, so atomicity is not tested.
+
+include::{testplansdir}/priv/Ziccamoc.adoc[]
+
+include::norm/Ziccamoc_norm_rules.adoc[]
+
 ==== Zicond Conditional Instructions
 
 include::{testplansdir}/Zicond.adoc[]
@@ -94,7 +126,7 @@ include::norm/Zicond_norm_rules.adoc[]
 
 Zicntr provides unprivileged read access to the `cycle`, `time`, and `instret` counters.
 Note that, like all other unprivileged tests, these tests are performed in M-mode.
-The <<t-ZicntrS-coverpoints, ZicntrS>> and <<t-ZicntrU-coverpoints, ZicntrU>> privileged tests exercise reading the counters in S-mode and U-mode,
+The Zicntr groups of the <<t-S-coverpoints, S>> and <<t-U-coverpoints, U>> privileged tests exercise reading the counters in S-mode and U-mode,
 with control by `mcounteren` and `scounteren` CSRs.
 The <<t-Sm-coverpoints, Sm>> privileged tests exercise `mcycle`, `minstret`, and HPMs from M-mode.
 
@@ -149,7 +181,7 @@ See https://github.com/riscv/riscv-isa-manual/issues/2558[RISC-V ISA Manual Issu
 
 [NOTE]
 ====
-MCOUNTENABLE_EN, SCOUNTENABLE_EN and HCOUNTENABLE_EN are exercised by the ZicntrS/U/H `cp_mcounteren_access_*`, `cp_scounteren_access_*` and `cp_hcounteren_access_*` coverpoints (<<t-ZicntrS-coverpoints>>). COUNTINHIBIT_EN is exercised by the Sm `cp_inhibit_*` coverpoints (<<t-Sm-coverpoints>>).
+MCOUNTENABLE_EN, SCOUNTENABLE_EN and HCOUNTENABLE_EN are exercised by the Sm_Zicntr, S_Zicntr, U_Zicntr and H_Zicntr `cp_mcounteren_access_*`, `cp_scounteren_access_*` and `cp_hcounteren_access_*` coverpoints (<<t-S-coverpoints>>). COUNTINHIBIT_EN is exercised by the Sm `cp_inhibit_*` coverpoints (<<t-Sm-coverpoints>>).
 ====
 
 ==== Zihintpause Pause Hint
@@ -209,8 +241,8 @@ include::{testplansdir}/priv/Za64rs.adoc[]
 
 include::norm/Za64rs_norm_rules.adoc[]
 
-==== Zic64bZicboz 64B Cache Block Zero
+==== Zic64b 64B Cache Block Zero
 
-include::{testplansdir}/priv/Zic64bZicboz.adoc[]
+include::{testplansdir}/priv/Zic64b.adoc[]
 
 include::norm/Zic64b_norm_rules.adoc[]

@@ -247,6 +247,8 @@ The ACT Framework uses a selection of assembly macros to run DUT-specific code t
 - `RVMODEL_BOOT` (can be omitted if not needed)
 - `RVMODEL_ACCESS_FAULT_ADDRESS` (can be omitted if DUT does not generate some/all access faults)
 - `RVMODEL_INVISIBLE_TRAP_HANDLER(_PC_REG, _INSTRUCTION_REG, _ACTION_REG, _DEST_REG, _VALUE_REG)` (can be omitted if the DUT does not trap and emulate instructions)
+- `RVMODEL_FENCEI` (can be omitted to use `fence.i`, or `nop` without Zifencei)
+- `RVMODEL_BOOT_TO_MMODE` (omit unless the DUT has a custom M-mode that cannot run the default M-mode boot)
 
 **Timer Macros**: Can be left blank if machine mode is not supported.
 
@@ -276,6 +278,10 @@ The ACT Framework uses a selection of assembly macros to run DUT-specific code t
 - `RVMODEL_SET_SSW_INT_M(_R1, _R2)`
 - `RVMODEL_CLR_SSW_INT(_R1, _R2)`
 - `RVMODEL_CLR_SSW_INT_M(_R1, _R2)`
+- `RVMODEL_SET_GUEST_EXT_INT(_GEI, _R1, _R2)` (sets `hgeip` bit \_GEI, a register; required when H is supported with GEILEN > 0)
+- `RVMODEL_SET_GUEST_EXT_INT_M(_GEI, _R1, _R2)`
+- `RVMODEL_CLR_GUEST_EXT_INT(_GEI, _R1, _R2)` (clears `hgeip` bit \_GEI; required with `RVMODEL_SET_GUEST_EXT_INT`)
+- `RVMODEL_CLR_GUEST_EXT_INT_M(_GEI, _R1, _R2)`
 - `RVMODEL_INTERRUPT_LATENCY`
 
 **Sscofpmf Macros**: Required if Sscofpmf is supported.
@@ -299,6 +305,10 @@ A linker script is needed to place the code and data regions in the appropriate 
 - There must be `.rodata`, `.data`, and `.bss` output sections. The `.bss` section must define `__bss_start` and `__bss_end` for C test startup.
 - The linker script must define `__stack_bottom` and `__stack_top`, using `__stack_size * __num_harts` bytes of stack space.
 - There must be a `.text.rvmodel` output section for DUT-specific (RVMODEL) code, with catch-all wildcards for any remaining text sections (i.e. `.text.rvmodel . : { *(.text.rvmodel) *(.text.rvmodel.*) *(.text) *(.text.*) } > ram`). This **must** follow the data and stack sections so that variable-size model-specific code does not affect the addresses of test data symbols (such as `scratch` and `begin_signature`). This ensures the DUT ELF and the reference-model ELF agree on data addresses.
+- On DUTs that support virtual memory, the test image must lie in a range the virtual memory tests leave mapped. 0x8000_0000 works for both RV32 and RV64. The safe ranges are:
+  - RV32: 0x0140_0000–0x03FF_FFFF, 0x0440_0000–0x2FFF_FFFF, 0x3040_0000–0x8FFF_FFFF and 0x90C0_0000–0xFFBF_FFFF.
+  - RV64: 0x4000_0000–0xBFFF_FFFF and 0x2_0000_0000–0x3F_FFFF_FFFF. The image must fit in the Sv39 address space, even on Sv48 or Sv57 harts.
+  - The image must also fit inside one aligned 4 MiB (RV32) or 1 GiB (RV64) superpage. For the reasons, see the Linker Script section of the [CTP](./docs/ctp/src/abstraction.adoc#linker-script).
 
 For an example linker script that should work for most basic implementations, see [config/cores/cvw/cvw-rv64gc/link.ld](./config/cores/cvw/cvw-rv64gc/link.ld). Most users should only need to modify the variables at the top of the sample linker script, before the `/* Most users should not need to modify anything below this line. */` comment:
 

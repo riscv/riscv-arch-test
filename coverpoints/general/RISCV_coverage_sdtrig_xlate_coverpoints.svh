@@ -11,10 +11,6 @@
 //   Weight 0: only the crosses count.
 //
 ///////////////////////////////////////////
-csr_tdata2: coverpoint ins.current.insn[31:20] {
-    type_option.weight = 0;
-    bins tdata2 = {CSR_TDATA2};
-}
 tdata2_xlate_value: coverpoint sdtrig_tdata2_xlate_value(ins) {
     type_option.weight = 0;
     bins bare_max_pa = {4'd9};

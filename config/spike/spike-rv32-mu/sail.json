@@ -245,7 +245,7 @@
       "grain": 0,
       // This specifies the number of PMP entries present.
       // The value must be one of 0, 16, or 64.
-      "count": 16,
+      "count": 64,
       // This specifies the number of usable PMP entries.
       // Entries higher than this are read-only-zero.
       // The value must be less than or equal to `count`.
@@ -448,7 +448,7 @@
       // This specifies both the size and alignment of the reservation set, specified as a power of 2.
       // It must be at least 2 on RV32 and 3 on RV64 to support Zalrsc.  It must not be more than
       // 6 for Za64rs and 7 for Za128rs.  In all cases, it must be less than or equal to 12.
-      "reservation_set_size_exp": 3,
+      "reservation_set_size_exp": 2,
       // Some implementations (e.g. Spike) require the Store-Conditional to provide the same
       // address as the matching Load-Reserve in order to succeed, regardless of the
       // configured reservation set size.  This controls whether such an exact address
@@ -550,7 +550,7 @@
       //                      if that flag is already set.
       // - Fflags_Dirty_Instruction: Set FS/SD when we execute an instruction that
       //                             might set a flag, even if it actually doesn't.
-      "fflags_dirty_policy": "Fflags_Dirty_Precise"
+      "fflags_dirty_policy": "Fflags_Dirty_Flag"
     },
     "D": {
       "mutable_misa": true,
@@ -589,7 +589,7 @@
         // vector spec marks reserved and recommends, but does not require, trapping.
         // "Vstart_Illegal" - raise an illegal instruction exception.
         // "Vstart_Ignore"  - treat as a no-op, the instruction writes nothing.
-        "vstart_out_of_bounds": "Vstart_Illegal"
+        "vstart_out_of_bounds": "Vstart_Ignore"
       },
       "vl_use_ceil": false,
       // The maximum index EEW for indexed vector addressing mode, as
@@ -1066,7 +1066,7 @@
         // corresponding interrupt is supported by the trigger.
         // Triggers for reserved interrupts are not supported.  This
         // value is ignored when `itrigger` is not supported.
-        "supported_interrupts": { "len": "xlen", "value": "0x3EEE" }
+        "supported_interrupts": { "len": "xlen", "value": "0x0888" }
       },
       "mcontrol6": {
         "supported": true,

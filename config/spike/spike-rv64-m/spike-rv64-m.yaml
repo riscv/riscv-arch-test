@@ -109,20 +109,20 @@ implemented_extensions:
 params:
   NON_STANDARD_EXTENSION_IMPLEMENTED: false
   # A params
-  MISALIGNED_AMO: false
+  MISALIGNED_AMO: true
   LRSC_RESERVATION_STRATEGY: "reserve exactly enough to cover the access"
   LRSC_FAIL_ON_VA_SYNONYM: false
   LRSC_MISALIGNED_BEHAVIOR: "always raise access fault"
-  LRSC_FAIL_ON_NON_EXACT_LRSC: true
-  MUTABLE_MISA_A: false
+  LRSC_FAIL_ON_NON_EXACT_LRSC: false
+  MUTABLE_MISA_A: true
   # M params
-  MUTABLE_MISA_M: false
+  MUTABLE_MISA_M: true
   # F params
-  MUTABLE_MISA_F: false
+  MUTABLE_MISA_F: true
   HW_MSTATUS_FS_DIRTY_UPDATE: precise
   MSTATUS_FS_LEGAL_VALUES: [0, 1, 2, 3]
   # D params
-  MUTABLE_MISA_D: false
+  MUTABLE_MISA_D: true
   # Q params
   MUTABLE_MISA_Q: false
   # C params
@@ -149,8 +149,7 @@ params:
   TRAP_ON_EBREAK: true
   MARCHID_IMPLEMENTED: true
   ARCH_ID_VALUE: 0x5
-  MIMPID_IMPLEMENTED: true
-  IMP_ID_VALUE: 0
+  MIMPID_IMPLEMENTED: false
   VENDOR_ID_BANK: 0
   VENDOR_ID_OFFSET: 0
   MISALIGNED_LDST: true
@@ -173,14 +172,14 @@ params:
   CONFIG_PTR_ADDRESS: 0
   PMA_GRANULARITY: 3
   PHYS_ADDR_WIDTH: 56
-  M_MODE_ENDIANNESS: dynamic
+  M_MODE_ENDIANNESS: little
   MISA_CSR_IMPLEMENTED: true
   MTVEC_ACCESS: rw
   MTVEC_MODES: [0, 1]
   MTVEC_BASE_ALIGNMENT_DIRECT: 4
   MTVEC_BASE_ALIGNMENT_VECTORED: 4
-  MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
-  NUM_PMP_ENTRIES: 16
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom
+  NUM_PMP_ENTRIES: 64
   PMP_GRANULARITY: 2
   NUM_USABLE_PMP_ENTRIES: 16
   PMP_NA4_SUPPORTED: true
@@ -191,66 +190,36 @@ params:
       false,
       false,
       false,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
     ]
-  HPM_COUNTER3_WIDTH: 64
-  HPM_COUNTER4_WIDTH: 64
-  HPM_COUNTER5_WIDTH: 64
-  HPM_COUNTER6_WIDTH: 64
-  HPM_COUNTER7_WIDTH: 64
-  HPM_COUNTER8_WIDTH: 64
-  HPM_COUNTER9_WIDTH: 64
-  HPM_COUNTER10_WIDTH: 64
-  HPM_COUNTER11_WIDTH: 64
-  HPM_COUNTER12_WIDTH: 64
-  HPM_COUNTER13_WIDTH: 64
-  HPM_COUNTER14_WIDTH: 64
-  HPM_COUNTER15_WIDTH: 64
-  HPM_COUNTER16_WIDTH: 64
-  HPM_COUNTER17_WIDTH: 64
-  HPM_COUNTER18_WIDTH: 64
-  HPM_COUNTER19_WIDTH: 64
-  HPM_COUNTER20_WIDTH: 64
-  HPM_COUNTER21_WIDTH: 64
-  HPM_COUNTER22_WIDTH: 64
-  HPM_COUNTER23_WIDTH: 64
-  HPM_COUNTER24_WIDTH: 64
-  HPM_COUNTER25_WIDTH: 64
-  HPM_COUNTER26_WIDTH: 64
-  HPM_COUNTER27_WIDTH: 64
-  HPM_COUNTER28_WIDTH: 64
-  HPM_COUNTER29_WIDTH: 64
-  HPM_COUNTER30_WIDTH: 64
-  HPM_COUNTER31_WIDTH: 64
-  HPM_EVENTS: [0]
   MCOUNTINHIBIT_IMPLEMENTED: true
   COUNTINHIBIT_EN:
     [
@@ -324,7 +293,7 @@ params:
     ]
   # Vector params
   MSTATUS_VS_LEGAL_VALUES: [0, 1, 2, 3]
-  MUTABLE_MISA_V: false
+  MUTABLE_MISA_V: true
   VLEN: 128
   ELEN: 64
   FOLLOW_VTYPE_RESET_RECOMMENDATION: true
@@ -344,9 +313,9 @@ params:
   VECTOR_LS_SEG_PARTIAL_ACCESS: false
   LEGAL_VSTART: "1_stride"
   VECTOR_LS_WHOLEREG_MISALIGNED_LEGAL: true
-  VSSTATUS_VS_EXISTS: true
+  VSSTATUS_VS_EXISTS: false
   VECTOR_FF_NO_EXCEPTION_TRIM: false
-  VFREDUSUM_NAN: "no_change"
+  VFREDUSUM_NAN: custom
   VFREDUSUM_NODE_ROUNDING_BEHAVIOR: "SEW_precision"
   VFREDUSUM_INACTIVE_NODE_ELEMENT_BEHAVIOR: "additive_identity"
   VFREDUSUM_FINAL_NODE_ELEMENT_BEHAVIOR: "additive_identity"

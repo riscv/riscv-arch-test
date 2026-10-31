@@ -176,7 +176,7 @@
       // The configuration option determines how to handle the reserved behavior `xenvcfg.CBIE` with 0b10.
       // "Xenvcfg_Fatal"  – raise a Sail exception, stopping execution.
       // "Xenvcfg_ClearPermissions" – convert CBIE with 0b10 to 0b00.
-      "xenvcfg_cbie": "Xenvcfg_ClearPermissions",
+      "xenvcfg_cbie": "Xenvcfg_Ignore",
       // The configuration option determines how to handle the reserved behavior `xtvec[Mode] >= 2`.
       // "Xtvec_Fatal"  – raise a Sail exception, stopping execution.
       // "Xtvec_Ignore" – use old Mode of xtvec.
@@ -547,7 +547,7 @@
       //                      if that flag is already set.
       // - Fflags_Dirty_Instruction: Set FS/SD when we execute an instruction that
       //                             might set a flag, even if it actually doesn't.
-      "fflags_dirty_policy": "Fflags_Dirty_Precise"
+      "fflags_dirty_policy": "Fflags_Dirty_Flag"
     },
     "D": {
       "mutable_misa": true,
@@ -586,7 +586,7 @@
         // vector spec marks reserved and recommends, but does not require, trapping.
         // "Vstart_Illegal" - raise an illegal instruction exception.
         // "Vstart_Ignore"  - treat as a no-op, the instruction writes nothing.
-        "vstart_out_of_bounds": "Vstart_Illegal"
+        "vstart_out_of_bounds": "Vstart_Ignore"
       },
       "vl_use_ceil": false,
       // The maximum index EEW for indexed vector addressing mode, as
@@ -615,7 +615,7 @@
       "supported": true
     },
     "S": {
-      "mutable_misa": true,
+      "mutable_misa": false,
       "supported": true,
       "interrupts": {
         "software": { "supported": true },
@@ -624,7 +624,7 @@
       }
     },
     "U": {
-      "mutable_misa": true,
+      "mutable_misa": false,
       "supported": true
     },
 

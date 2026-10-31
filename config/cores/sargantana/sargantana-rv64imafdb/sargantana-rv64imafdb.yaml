@@ -724,7 +724,7 @@ params:
   VUXLEN: [64]
   # hstatus.VSBE is in HSTATUS_WRITE_MASK (def_pkg.sv#L123), but nothing in rtl/ reads it, so
   # every access is little-endian.
-  VS_MODE_ENDIANNESS: little
+  VS_MODE_ENDIANNESS: dynamic
   VU_MODE_ENDIANNESS: little
   # "parameter VMID_WIDTH = 11" (csr_bsc.sv#L28), and top_drac.sv does not override it.
   VMID_WIDTH: 11

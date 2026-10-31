@@ -25,7 +25,7 @@
       // This bits in this value control whether the corresponding
       // bits of the CSR are writable.  Note that bit 1 cannot be written
       // to as it is read-only zero.
-      "writable_bits": { "len": 32, "value": "0xFFFF_FFFD" }
+      "writable_bits": { "len": 32, "value": "0x0000_0005" }
     },
     "writable_fiom": true,
     // The top 29 bits in this value control whether the corresponding
@@ -113,10 +113,7 @@
       // specification, and delegation of reserved traps is not
       // supported.  This value is ignored when the `medeleg` CSR does
       // not exist.
-      "delegatable_bits": {
-        "len": 64,
-        "value": "0x0000_0000_0000_B3FF"
-      }
+      "delegatable_bits": { "len": 64, "value": "0x0000_0000_0008_B3FF" }
     },
     "mideleg": {
       // A bit set to 1 in this value specifies that the corresponding
@@ -168,11 +165,11 @@
       // reserved rounding mode statically encoded in the instruction.
       // "Fcsr_RM_Fatal"  – raise a Sail exception, stopping execution.
       // "Fcsr_RM_Illegal" – treat it as an illegal instruction.
-      "fcsr_rm": "Fcsr_RM_Fatal",
+      "fcsr_rm": "Fcsr_RM_Illegal",
       // The configuration option determines how to handle the reserved behavior `pmpcfg_with_R0W1`.
       // "PMP_Fatal"  – raise a Sail exception, stopping execution.
       // "PMP_ClearPermissions" – convert a PMP entry with R=0, W=1 to R=0, W=0, X=0.
-      "pmpcfg_write_only": "PMP_Fatal",
+      "pmpcfg_write_only": "PMP_ClearPermissions",
       // The configuration option determines how to handle the reserved behavior `xenvcfg.CBIE` with 0b10.
       // "Xenvcfg_Fatal"  – raise a Sail exception, stopping execution.
       // "Xenvcfg_ClearPermissions" – convert CBIE with 0b10 to 0b00.
@@ -204,7 +201,7 @@
     // Note that currently, not all functionality for these versions
     // is available currently, and not all versions of the privileged
     // ISA can be specified.
-    "privileged_isa_version": "Privileged_ISA_1_12"
+    "privileged_isa_version": "Privileged_ISA_1_13"
   },
   "memory": {
     // This specifies the number of implemented physical address bits.
@@ -438,7 +435,7 @@
   },
   "platform": {
     "vendorid": 0,
-    "archid": 1,
+    "archid": 5,
     "impid": 0,
     "hartid": 0,
     // Cache block size, specified as a power of 2.
@@ -447,12 +444,12 @@
       // This specifies both the size and alignment of the reservation set, specified as a power of 2.
       // It must be at least 2 on RV32 and 3 on RV64 to support Zalrsc.  It must not be more than
       // 6 for Za64rs and 7 for Za128rs.  In all cases, it must be less than or equal to 12.
-      "reservation_set_size_exp": 3,
+      "reservation_set_size_exp": 2,
       // Some implementations (e.g. Spike) require the Store-Conditional to provide the same
       // address as the matching Load-Reserve in order to succeed, regardless of the
       // configured reservation set size.  This controls whether such an exact address
       // match is required for a Store-Conditional to succeed.
-      "require_exact_reservation_addr": false,
+      "require_exact_reservation_addr": true,
       // Some implementations (e.g. SiFive U74) also invalidate the
       // reservation on stores from the same hart.  If this is set to `true`, the
       // model invalidates the reservation if a store from the same hart lies within
@@ -530,15 +527,15 @@
   },
   "extensions": {
     "M": {
-      "mutable_misa": false,
+      "mutable_misa": true,
       "supported": true
     },
     "A": {
-      "mutable_misa": false,
+      "mutable_misa": true,
       "supported": true
     },
     "F": {
-      "mutable_misa": false,
+      "mutable_misa": true,
       "supported": true,
       // When to set mstatus[FS] and mstatus[SD] to 1, as a result of fflags
       // being set. There are three options:
@@ -549,10 +546,10 @@
       //                      if that flag is already set.
       // - Fflags_Dirty_Instruction: Set FS/SD when we execute an instruction that
       //                             might set a flag, even if it actually doesn't.
-      "fflags_dirty_policy": "Fflags_Dirty_Precise"
+      "fflags_dirty_policy": "Fflags_Dirty_Flag"
     },
     "D": {
-      "mutable_misa": false,
+      "mutable_misa": true,
       "supported": true
     },
     "C": {
@@ -1085,14 +1082,14 @@
         "mhselect": {
           // Values 1, 4 and 5, match on `mcontext`. Requires the
           // `mcontext` CSR. Values 1 and 5 also require H.
-          "mcontext_match": false,
+          "mcontext_match": true,
           // Values 2 and 6, match on the VMID in `hgatp`. Requires H.
           "vmid_match": false
         },
         "sselect": {
           // Value 1, match on `scontext`. Requires S and the `scontext`
           // CSR.
-          "scontext_match": false,
+          "scontext_match": true,
           // Value 2, match on the ASID in `satp` or `vsatp`. Requires S.
           "asid_match": true
         },

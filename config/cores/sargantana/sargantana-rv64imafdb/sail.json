@@ -429,7 +429,7 @@
       // reservation on stores from the same hart.  If this is set to `true`, the
       // model invalidates the reservation if a store from the same hart lies within
       // the reservation set.
-      "invalidate_on_same_hart_store": false
+      "invalidate_on_same_hart_store": true
     },
     "interrupts": {
       "machine": {
@@ -633,14 +633,14 @@
       // csr_bsc.sv writes ex_tinst_i for every exception except fetch faults,
       // illegal/virtual instruction, breakpoint and ecall.
       "transformed_instruction": {
-        "load_access_fault": true,
+        "load_access_fault": false,
         "load_address_misaligned": true,
-        "load_guest_page_fault": true,
-        "load_page_fault": true,
-        "samo_access_fault": true,
+        "load_guest_page_fault": false,
+        "load_page_fault": false,
+        "samo_access_fault": false,
         "samo_address_misaligned": true,
-        "samo_guest_page_fault": true,
-        "samo_page_fault": true
+        "samo_guest_page_fault": false,
+        "samo_page_fault": false
       },
       "geilen": 0,
       // Whether an implicit access to a VS-stage PTE sets the D bit of a writable G-stage PTE

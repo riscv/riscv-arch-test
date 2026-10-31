@@ -530,15 +530,15 @@
   },
   "extensions": {
     "M": {
-      "mutable_misa": false,
+      "mutable_misa": true,
       "supported": true
     },
     "A": {
-      "mutable_misa": false,
+      "mutable_misa": true,
       "supported": true
     },
     "F": {
-      "mutable_misa": false,
+      "mutable_misa": true,
       "supported": true,
       // When to set mstatus[FS] and mstatus[SD] to 1, as a result of fflags
       // being set. There are three options:
@@ -552,11 +552,11 @@
       "fflags_dirty_policy": "Fflags_Dirty_Precise"
     },
     "D": {
-      "mutable_misa": false,
+      "mutable_misa": true,
       "supported": true
     },
     "C": {
-      "mutable_misa": false
+      "mutable_misa": true
     },
     "V": {
       "mutable_misa": false,

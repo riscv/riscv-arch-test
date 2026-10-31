@@ -93,7 +93,7 @@
       },
       "vectored": {
         "supported": true,
-        "base_alignment": 2
+        "base_alignment": 6
       }
     },
     "vstvec": {
@@ -176,7 +176,7 @@
       // The configuration option determines how to handle the reserved behavior `xenvcfg.CBIE` with 0b10.
       // "Xenvcfg_Fatal"  – raise a Sail exception, stopping execution.
       // "Xenvcfg_ClearPermissions" – convert CBIE with 0b10 to 0b00.
-      "xenvcfg_cbie": "Xenvcfg_ClearPermissions",
+      "xenvcfg_cbie": "Xenvcfg_Ignore",
       // The configuration option determines how to handle the reserved behavior `xtvec[Mode] >= 2`.
       // "Xtvec_Fatal"  – raise a Sail exception, stopping execution.
       // "Xtvec_Ignore" – use old Mode of xtvec.
@@ -452,7 +452,7 @@
       // address as the matching Load-Reserve in order to succeed, regardless of the
       // configured reservation set size.  This controls whether such an exact address
       // match is required for a Store-Conditional to succeed.
-      "require_exact_reservation_addr": false,
+      "require_exact_reservation_addr": true,
       // Some implementations (e.g. SiFive U74) also invalidate the
       // reservation on stores from the same hart.  If this is set to `true`, the
       // model invalidates the reservation if a store from the same hart lies within
@@ -549,7 +549,7 @@
       //                      if that flag is already set.
       // - Fflags_Dirty_Instruction: Set FS/SD when we execute an instruction that
       //                             might set a flag, even if it actually doesn't.
-      "fflags_dirty_policy": "Fflags_Dirty_Precise"
+      "fflags_dirty_policy": "Fflags_Dirty_Flag"
     },
     "D": {
       "mutable_misa": false,

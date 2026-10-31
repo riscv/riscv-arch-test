@@ -21,7 +21,7 @@ To run the RVA23 tests, follow the [Getting Started Guide](https://github.com/ri
 
 `CONFIG_FILES=<your_config_directory>/test_config.yaml make CERTIFICATE=RVA23`
 
-The `CERTIFICATE` argument limits the generated tests to the certification suite. In particular, it excludes machine-mode tests and extensions that are neither mandatory nor optional in the profile. Your UDB configuration must contain at least all of the RVA23 mandatory extensions.
+The `CERTIFICATE` argument limits the generated tests to the certification suite: the mandatory extensions of the profile, and the optional extensions your UDB configuration implements. It excludes machine-mode tests and extensions that are neither mandatory nor optional in the profile. Your UDB configuration must contain all of the RVA23 mandatory extensions; the build stops with an error listing any that are missing.
 You are highly encouraged to run without the `CERTIFICATE` argument as well, to more comprehensively test RISC-V features outside of RVA23.
 
 Run all of the generated ELFs on your DUT. If all is well, each should display

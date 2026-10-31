@@ -239,7 +239,6 @@ def csr_walk_test(
     walk_zeros: bool = True,
     warl_fields: list[tuple] | None = None,
     maskedwrites: bool = False,
-    cond_mask: list[tuple[str, int]] | None = None,
     bin_prefix: str = "",
     unwalked_bits: list[tuple[int, str]] | None = None,
 ) -> list[str]:
@@ -267,11 +266,6 @@ def csr_walk_test(
             bits and instead check that the field holds a legal (non-reserved) value; all
             other iterations check the field exactly as usual (see _warl_reserved_check).
         maskedwrites: If True, the CSR is written with a mask applied to the value being written.
-        cond_mask: Optional list of (condition, bits): bits are added to the mask when the
-            preprocessor condition holds.  Use it for state the reference model cannot model:
-            walk it only where it is read-only zero, so its coverage reports missing elsewhere.
-            Example: [("defined(UDB_S_MODE_ENDIANNESS_LITTLE) || !defined(S_SUPPORTED)", 1 << 4)]
-            walks mstatush.SBE only where it is read-only zero.
         bin_prefix: Prefix for testcase bin names, to walk the same CSR more than once under one coverpoint.
         unwalked_bits: Optional (bits, cond) pairs for state the reference model cannot model. `cond` is a
             define name, or an #if expression. Where it holds, the bits are neither written nor checked,
@@ -378,16 +372,6 @@ def csr_walk_test(
                 f"and x{mask_reg}, x{mask_reg}, x{check_reg}",
                 f"#endif // {cond}",
             ]
-    for cond, bits in cond_mask or []:
-        assert mask is not None, f"cond_mask requires a csr mask (got None for {csr_name})"
-        lines.extend(
-            [
-                f"#if {cond}",
-                f"LI(x{check_reg}, {bits:#x})",
-                f"or x{mask_reg}, x{mask_reg}, x{check_reg}    # also walk these bits",
-                "#endif",
-            ]
-        )
     if walk_zeros:
         lines.append(f"LI(x{temp_reg}, -1)             # x{temp_reg} = all 1s")
 

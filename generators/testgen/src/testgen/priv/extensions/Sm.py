@@ -528,7 +528,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         (1 << 1)  # SIE:  Supervisor Interrupt Enable
         | (1 << 3)  # MIE:  Machine Interrupt Enable
         | (1 << 5)  # SPIE: Supervisor Previous Interrupt Enable
-        | (0 << 6)  # UBE: walked only where read-only zero (mstatus_cond_mask)
+        | (0 << 6)  # UBE: walked only where read-only zero (mstatus_unwalked)
         | (1 << 7)  # MPIE: Machine Previous Interrupt Enable
         | (1 << 8)  # SPP:  Supervisor Previous Privilege
         | (3 << 9)  # VS:   Vector Status
@@ -544,9 +544,9 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         | (1 << 23)  # SPELP: Supervisor Previous Expect Landing Pad
         | (1 << 24)  # SDT: Supervisor Disable Trap
         | (1 << 31)  # SD for RV32 (probably shouldn't be tested for RV64, but seems to work ok)
-        | (0 << 32)  # UXL: walked only where read-only (mstatus_cond_mask)
-        | (0 << 34)  # SXL: walked only where read-only (mstatus_cond_mask)
-        | (0 << 36)  # SBE: walked only where read-only zero (mstatus_cond_mask)
+        | (0 << 32)  # UXL: walked only where read-only (mstatus_unwalked)
+        | (0 << 34)  # SXL: walked only where read-only (mstatus_unwalked)
+        | (0 << 36)  # SBE: walked only where read-only zero (mstatus_unwalked)
         | (0 << 37)  # MBE: checked only where read-only zero, without memory accesses (_mbe_check)
         | (1 << 38)
         | (1 << 39)
@@ -557,19 +557,19 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     # Sail has no big-endian support and cannot change UXL/SXL.  Walk these bits only where they are
     # read-only, so Sail predicts them; elsewhere their walking_ones bins report missing.
     # TODO: walk them everywhere when Sail models writable UBE/SBE/MBE and UXL/SXL.
-    mstatus_cond_mask = [
-        ("defined(UDB_U_MODE_ENDIANNESS_LITTLE) || !defined(U_SUPPORTED)", 1 << 6),  # UBE
+    mstatus_unwalked = [
+        (1 << 6, "!(defined(UDB_U_MODE_ENDIANNESS_LITTLE) || !defined(U_SUPPORTED))"),  # UBE
         (
-            "__riscv_xlen == 64 && ((defined(UDB_UXLEN_64) && !defined(UDB_UXLEN_32)) || !defined(U_SUPPORTED))",
             3 << 32,  # UXL
+            "!(__riscv_xlen == 64 && ((defined(UDB_UXLEN_64) && !defined(UDB_UXLEN_32)) || !defined(U_SUPPORTED)))",
         ),
         (
-            "__riscv_xlen == 64 && ((defined(UDB_SXLEN_64) && !defined(UDB_SXLEN_32)) || !defined(S_SUPPORTED))",
             3 << 34,  # SXL
+            "!(__riscv_xlen == 64 && ((defined(UDB_SXLEN_64) && !defined(UDB_SXLEN_32)) || !defined(S_SUPPORTED)))",
         ),
-        ("__riscv_xlen == 64 && (defined(UDB_S_MODE_ENDIANNESS_LITTLE) || !defined(S_SUPPORTED))", 1 << 36),  # SBE
+        (1 << 36, "!(__riscv_xlen == 64 && (defined(UDB_S_MODE_ENDIANNESS_LITTLE) || !defined(S_SUPPORTED)))"),  # SBE
     ]
-    mstatush_cond_mask = [("defined(UDB_S_MODE_ENDIANNESS_LITTLE) || !defined(S_SUPPORTED)", 1 << 4)]  # SBE
+    mstatush_unwalked = [(1 << 4, "!(defined(UDB_S_MODE_ENDIANNESS_LITTLE) || !defined(S_SUPPORTED))")]  # SBE
     mseccfg_mask = (
         (0 << 0)  # Smepmp MML not supported TODO: change these to 1 when Sail implements & boot code sets it up
         | (0 << 1)  # Smepmp MMWP not supported
@@ -730,7 +730,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
             coverpoint_masked,
             warl_fields=warl_fields,
             maskedwrites=True,
-            cond_mask=mstatus_cond_mask,
+            unwalked_bits=mstatus_unwalked,
         )
     )
 
@@ -824,7 +824,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
     tc.code.extend(
         csr_walk_test(
-            test_data, csr_mstatush, covergroup, coverpoint_masked, maskedwrites=True, cond_mask=mstatush_cond_mask
+            test_data, csr_mstatush, covergroup, coverpoint_masked, maskedwrites=True, unwalked_bits=mstatush_unwalked
         )
     )
     tc.code.extend(

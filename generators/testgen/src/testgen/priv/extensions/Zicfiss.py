@@ -1504,28 +1504,30 @@ def _generate_perm_priority_s(test_data: TestData) -> list[str]:
 
 
 # ---------------------------------------------------------------------------
-# cp_senvcfg_sse_rdonly0_s
+# cp_senvcfg_sse_rdonly0_s and cp_henvcfg_sse_rdonly0_hs
 # ---------------------------------------------------------------------------
 
 
-def _generate_senvcfg_rdonly0_s(test_data: TestData) -> list[str]:
-    """senvcfg.SSE reads back 0 from S-mode whenever menvcfg.SSE is 0.
+def _generate_envcfg_sse_rdonly0(
+    test_data: TestData, csr: str = "senvcfg", mode: str = "s", covergroup: str = _CG_S
+) -> list[str]:
+    """csr.SSE reads back 0 whenever menvcfg.SSE is 0.
 
-    csrrs sets and csrrc clears only the SSE bit, so no other senvcfg field changes.
+    csrrs sets and csrrc clears only the SSE bit, so no other csr field changes.
     """
-    coverpoint = "cp_senvcfg_sse_rdonly0_s"
+    coverpoint = f"cp_{csr}_sse_rdonly0_{mode}"
     rd_reg, val_reg = test_data.int_regs.get_registers(2)
-    lines: list[str] = [comment_banner(coverpoint, "senvcfg.SSE read-only zero while menvcfg.SSE=0")]
+    lines: list[str] = [comment_banner(coverpoint, f"{csr}.SSE read-only zero while menvcfg.SSE=0")]
     for menvcfg in (0, 1):
         lines.extend(set_envcfg_sse("menvcfg", menvcfg, test_data, mode="S"))
         for written in (0, 1):
             op = "csrrs" if written else "csrrc"
             lines.extend(
                 [
-                    f"LI(x{val_reg}, SENVCFG_SSE)",
-                    test_data.add_testcase(f"senvcfg_{op}_men{menvcfg}_wrote{written}", coverpoint, _CG_S),
-                    f"{op} x{rd_reg}, senvcfg, x{val_reg}",
-                    f"csrr x{rd_reg}, senvcfg   # SSE must read 0 when menvcfg.SSE=0",
+                    f"LI(x{val_reg}, {csr.upper()}_SSE)",
+                    test_data.add_testcase(f"{csr}_{op}_men{menvcfg}_wrote{written}", coverpoint, covergroup),
+                    f"{op} x{rd_reg}, {csr}, x{val_reg}",
+                    f"csrr x{rd_reg}, {csr}   # SSE must read 0 when menvcfg.SSE=0",
                     write_sigupd(rd_reg, test_data),
                 ]
             )
@@ -1571,7 +1573,7 @@ def make_zicfisss(test_data: TestData) -> list[TestChunk]:
         _generate_target_page_s,
         _generate_non_idempotent_s,
         _generate_perm_priority_s,
-        _generate_senvcfg_rdonly0_s,
+        _generate_envcfg_sse_rdonly0,
     ):
         tc = test_data.begin_test_chunk("S")
         tc.code.extend(page_table_data_section())
@@ -2532,31 +2534,6 @@ def make_zicfissu(test_data: TestData) -> list[TestChunk]:
 _CG_H = "Zicfiss_H_cg"
 
 
-def _generate_henvcfg_rdonly0_hs(test_data: TestData) -> list[str]:
-    """henvcfg.SSE reads back 0 from HS-mode whenever menvcfg.SSE is 0.
-
-    csrrs sets and csrrc clears only the SSE bit, so no other henvcfg field changes.
-    """
-    coverpoint = "cp_henvcfg_sse_rdonly0_hs"
-    rd_reg, val_reg = test_data.int_regs.get_registers(2)
-    lines: list[str] = [comment_banner(coverpoint, "henvcfg.SSE read-only zero while menvcfg.SSE=0")]
-    for menvcfg in (0, 1):
-        lines.extend(set_envcfg_sse("menvcfg", menvcfg, test_data, mode="S"))
-        for written in (0, 1):
-            op = "csrrs" if written else "csrrc"
-            lines.extend(
-                [
-                    f"LI(x{val_reg}, HENVCFG_SSE)",
-                    test_data.add_testcase(f"henvcfg_{op}_men{menvcfg}_wrote{written}", coverpoint, _CG_H),
-                    f"{op} x{rd_reg}, henvcfg, x{val_reg}",
-                    f"csrr x{rd_reg}, henvcfg   # SSE must read 0 when menvcfg.SSE=0",
-                    write_sigupd(rd_reg, test_data),
-                ]
-            )
-    test_data.int_regs.return_registers([rd_reg, val_reg])
-    return lines
-
-
 @add_priv_test_generator(
     "Zicfiss",
     required_extensions=["S", "H", "Zicfiss"],
@@ -2567,5 +2544,5 @@ def _generate_henvcfg_rdonly0_hs(test_data: TestData) -> list[str]:
 def make_zicfissh(test_data: TestData) -> list[TestChunk]:
     """Generate the Zicfiss H group."""
     tc = test_data.begin_test_chunk("H")
-    tc.code.extend(_generate_henvcfg_rdonly0_hs(test_data))
+    tc.code.extend(_generate_envcfg_sse_rdonly0(test_data, "henvcfg", "hs", _CG_H))
     return [test_data.end_test_chunk()]

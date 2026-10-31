@@ -29,11 +29,11 @@ coverpoints:
     goal: Access fault
     description: |-
       For each supported cbo op {inval, clean, flush, zero, prefetch.{i/w/r}}
-      Execute op to RVMODEL_ACCESS_FAULT_ADDRESS with menvcfg and senvcfg enabled
+      Execute op to RVMODEL_ACCESS_FAULT_ADDRESS and RVMODEL_ACCESS_FAULT_ADDRESS + 1 with menvcfg and senvcfg enabled
     expectation: |-
       CBO: Store access fault
       Prefetch: no access fault
-    bins: 7 instr * 2 modes
+    bins: 7 instr * 2 offsets * 2 modes
   - name: cp_cbo_address_misaligned
     goal: No misaligned fault
     description: |-

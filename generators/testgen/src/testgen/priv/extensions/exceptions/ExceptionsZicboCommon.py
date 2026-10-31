@@ -224,7 +224,7 @@ def cbo_access_fault_helper(
         "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
         comment_banner(
             coverpoint,
-            "cbo.{inval,clean,flush,zero} and prefetch.{i,r,w} to\nRVMODEL_ACCESS_FAULT_ADDRESS raise an access fault",
+            "cbo.{inval,clean,flush,zero} to RVMODEL_ACCESS_FAULT_ADDRESS raise an access fault.\nprefetch.{i,r,w} to the same address do not trap",
         ),
         "",
         "#ifdef SM1P12P0_OR_LATER_SUPPORTED",

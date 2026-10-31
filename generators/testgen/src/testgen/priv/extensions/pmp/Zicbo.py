@@ -7,7 +7,6 @@
 
 """PMP Zicbo group: cache-block and prefetch instructions checked against PMP."""
 
-from collections.abc import Callable
 from functools import partial
 
 from testgen.asm.helpers import comment_banner
@@ -25,7 +24,6 @@ from testgen.priv.extensions.pmp.helpers import (
     zero_pmp_regs,
 )
 from testgen.priv.extensions.pmp.probes import (
-    ProbeGenerator,
     gen_cbo,
     gen_prefetch,
 )
@@ -48,36 +46,29 @@ _NONE_REGIONS = [
 ]
 
 
-def _cbo_cross(prefix: str) -> Callable[[str], str]:
-    return lambda instruction: f"{prefix}_{instruction.removeprefix('cbo.')}"
-
-
-def _make_cbo_chunk(
-    test_data: TestData,
-    name: str,
-    section_header: str,
-    cases: list[tuple[str, int]],
-    probe: ProbeGenerator,
-    prefix: str,
-    first: int = 1,
-) -> TestChunk:
-    """cbo.zero/clean/flush/inval against a page-sized NAPOT region for each of ``cases``."""
-    chunk = test_data.begin_test_chunk(name)
-    chunk.section_header = section_header
+def _make_unlocked_chunk(test_data: TestData) -> TestChunk:
+    chunk = test_data.begin_test_chunk("Zicbo_cbo_unlocked")
+    chunk.section_header = comment_banner(
+        "cp_cfg_L_access_cbo",
+        "cbo.zero/clean/flush/inval against an unlocked page-sized NAPOT region with XWR = 000 and 001; never faults.",
+    )
     chunk.code.extend(
         lxwr_walk_body(
             test_data,
-            cases,
+            [("0000", 0), ("0001", 0)],
             "napot",
-            probe,
-            _cbo_cross(prefix),
-            first=first,
+            partial(gen_cbo, readback=True),
+            lambda instruction: f"cp_cfg_L_access_cbo_{instruction.removeprefix('cbo.')}",
             extra_setup=_ENABLE_CBO,
             napot_mask=napot_mask_defines(12),
         )
     )
     chunk.raw_data.extend(_PAGE_REGION)
     return test_data.end_test_chunk()
+
+
+def _none_cbo(instruction: str) -> str:
+    return f"cp_none_cbo_{instruction.removeprefix('cbo.')}"
 
 
 def _make_none_chunk(test_data: TestData) -> TestChunk:
@@ -98,14 +89,14 @@ def _make_none_chunk(test_data: TestData) -> TestChunk:
             *_ENABLE_CBO,
             "",
             "// PMP configuration 1: every entry off",
-            *gen_cbo(test_data, "off", _cbo_cross("cp_none_cbo"), readback=True),
+            *gen_cbo(test_data, "off", _none_cbo, readback=True),
             "",
             "// PMP configuration 2: entry 0 = L=1, XWR=000 just above the region; entry 1 = L=0, XWR=000 just below it",
             *set_pmpaddr("napot", 0, "PMPZICBO_ABOVE"),
             *set_pmpaddr("napot", 1, "TEST_FOR_EXECUTION - (1 << PMP_REGION_SHIFT)"),
             *set_pmpcfg(0, neighbors),
             "RVTEST_SFENCE_VMA_IF_SUPPORTED",
-            *gen_cbo(test_data, "active", _cbo_cross("cp_none_cbo"), readback=True),
+            *gen_cbo(test_data, "active", _none_cbo, readback=True),
         ]
     )
     chunk.raw_data.extend(_NONE_REGIONS)
@@ -121,27 +112,26 @@ def _make_none_chunk(test_data: TestData) -> TestChunk:
 def make_pmpzicbo_cbo(test_data: TestData) -> list[TestChunk]:
     chunks = []
     for number, lxwr in ((1, "1000"), (2, "1001"), (3, "1011")):
-        banner = comment_banner(
+        chunk = test_data.begin_test_chunk(f"Zicbo_cbo_wr_{number:02d}")
+        chunk.section_header = comment_banner(
             "cp_cbo_zero, cp_cbo_clean, cp_cbo_flush and cp_cbo_inval",
             f"cbo.zero/clean/flush/inval against a locked page-sized NAPOT region with WR = {lxwr[2:]}.",
         )
-        chunks.append(
-            _make_cbo_chunk(test_data, f"Zicbo_cbo_wr_{number:02d}", banner, [(lxwr, 0)], gen_cbo, "cp_cbo", number)
+        chunk.code.extend(
+            lxwr_walk_body(
+                test_data,
+                [(lxwr, 0)],
+                "napot",
+                gen_cbo,
+                lambda instruction: f"cp_cbo_{instruction.removeprefix('cbo.')}",
+                first=number,
+                extra_setup=_ENABLE_CBO,
+                napot_mask=napot_mask_defines(12),
+            )
         )
-    chunks.append(
-        _make_cbo_chunk(
-            test_data,
-            "Zicbo_cbo_unlocked",
-            comment_banner(
-                "cp_cfg_L_access_cbo",
-                "cbo.zero/clean/flush/inval against an unlocked page-sized NAPOT region with XWR = 000 and 001; "
-                "never faults.",
-            ),
-            [("0000", 0), ("0001", 0)],
-            partial(gen_cbo, readback=True),
-            "cp_cfg_L_access_cbo",
-        )
-    )
+        chunk.raw_data.extend(_PAGE_REGION)
+        chunks.append(test_data.end_test_chunk())
+    chunks.append(_make_unlocked_chunk(test_data))
     chunks.append(_make_none_chunk(test_data))
     return chunks
 

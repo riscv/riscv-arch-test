@@ -24,8 +24,12 @@ exclude_extensions:
   # - Ssstrict_U
   # imperas-rv64-max: Imperas lets mstateen0.P1P13 be written on RV64:
   # https://solvnetplus.synopsys.com/s/case/500WQ0000289tyxYAA/mstateen0p1p13-should-be-readonly-zero-on-rv64
-  # (fixed in Imperas-HMC101126-eng-build). The other configs pass.
-  # - Smstateen
+  # (fixed in Imperas-HMC101126-eng-build).
+  # scontext is 16 bits wide on imperas-rv32gck/gcv and 0 bits on imperas-rv64-max, as their configs declare
+  # (DBG_SCONTEXT_WIDTH), but Sail always makes it 32 bits wide (cp_context, cp_hstateen_context):
+  # https://github.com/riscv/sail-riscv/issues/2054. imperas-rv64-mu, which has no scontext, passes.
+  - Smstateen
+  - Ssstateen
   # https://solvnetplus.synopsys.com/s/case/500WQ000023l1CPYAY/vmvnrrv-does-not-raise-an-illegalinstruction-exception-when-vtypevill-1
   # (fixed in Imperas-HMC101126-eng-build)
   # - ExceptionsVx

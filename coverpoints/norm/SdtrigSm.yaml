@@ -587,14 +587,12 @@ normative_rule_definitions:
 
   # This register is only accessible in HS-Mode, M-mode and Debug Mode.
   - name: Sdtrig_hcontext_access
-    coverpoint:
-      ["Needs H; deferred to the SdtrigH suite on the hypervisor branch"]
+    coverpoint: ["Smstateen_cg/cp_context"]
 
   # If Smstateen is implemented, then accessibility of in HS-Mode is controlled by
   # mstateenzero[57].
   - name: Sdtrig_hcontext_smstateen
-    coverpoint:
-      ["Needs H; deferred to the SdtrigH suite on the hypervisor branch"]
+    coverpoint: ["Smstateen_cg/cp_context"]
 
   # This register is an alias of the mcontext register, providing access to the
   # hcontext field from HS-Mode.
@@ -609,17 +607,14 @@ normative_rule_definitions:
       [
         "SdtrigSm_trig_module_reg_cg/cp_csr_access_global",
         "Smstateen_cg/cp_context",
-        "From U, cp_csr_insufficient_priv of the U suite reads scontext (0x5A8) and expects an illegal instruction; VS-mode access is deferred to the SdtrigH suite on the hypervisor branch",
+        "From U, cp_csr_insufficient_priv of the U suite reads scontext (0x5A8) and expects an illegal instruction",
+        "Ssstateen_cg/cp_hstateen_context",
       ]
 
   # Accessibility of this CSR is controlled by mstateenzero[57] and hstateenzero[57]
   # in the Smstateen extension.
   - name: Sdtrig_scontext_accessibility
-    coverpoint:
-      [
-        "Smstateen_cg/cp_context",
-        "hstateen0 (VS-mode access) is deferred to the SdtrigH suite on the hypervisor branch",
-      ]
+    coverpoint: ["Smstateen_cg/cp_context", "Ssstateen_cg/cp_hstateen_context"]
 
   # Supervisor mode software can write a context number to this register, which can
   # be used to set triggers that only fire in that specific context.

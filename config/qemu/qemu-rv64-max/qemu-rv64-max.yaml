@@ -320,7 +320,7 @@ params:
   WFI_U_MODE: false
   MUTABLE_MISA_U: false
   U_MODE_ENDIANNESS: dynamic
-  UXLEN: [64]
+  UXLEN: [32, 64]
   TRAP_ON_ECALL_FROM_U: true
   # S params
   SEI_INTR_IMPL: true

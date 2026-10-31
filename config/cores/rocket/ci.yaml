@@ -1,0 +1,49 @@
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# CI configuration for the Rocket family (Rocket + Saturn + H, Chipyard 1.14.0).
+#
+# Measured on act4 05218dbd3 with the simulator from .github/scripts/install-rocket.sh:
+# RC = chipsalliance/rocket-chip@55bcad0f with PR #3820 (d1d2c5e7), the TLB superpage-refill fix
+# and htimedelta, SAT = ucb-bar/saturn-vectors@8ef05c9c with the acc_done fix. The CI selection
+# (2009 tests) all pass; every excluded suite below still has failing tests.
+
+ci_enabled: true
+
+#   Vx8, Vx16, Vx32, Vx64
+#                 vsadd/vsaddu/vssub/vssubu .vx at each SEW (16 tests): csrr vxsat is not ordered
+#                 after in-flight vector instructions (RC rocket/RocketCore.scala:1066), so vxsat
+#                 reads back as 0.
+#   Vf16, Vf32, Vf64, Zvfhmin
+#                 csrr/csrw fflags/fcsr are not ordered after in-flight vector FP instructions
+#                 (RC rocket/RocketCore.scala:1065). Also: inactive elements set fflags
+#                 (SAT exu/fp/SharedFPFMA.scala:148, exu/fp/FPDiv.scala:300), FPComp raises NV
+#                 for quiet NaNs and for vfsgnj (SAT exu/fp/FPComp.scala:60,98,156), widening ops
+#                 drop NV for signaling NaNs (SAT exu/fp/SharedFPFMA.scala:79-102), FP sum
+#                 reductions start at +0 (SAT insns/Instructions.scala:177-180) and conversions
+#                 round RMM as RNE (SAT exu/fp/FPConv.scala:33).
+#   Vf8           5 of 6 tests: vfncvt.x.f.w, vfncvt.xu.f.w and their rtz forms with an 8-bit
+#                 destination raise an illegal-instruction exception, and vfwcvt.f.x.v from 8-bit
+#                 integers zero-extends the signed source (-99 converts to +157).
+#   Sm, S, U      Sm_V_vset, S_V_vset, U_V_vset: vsetvli x0, x0 right after another vset uses the
+#                 stale vl; the rd = rs1 = x0 form reads the CSR in EX before the earlier vset
+#                 writes it in WB (RC rocket/RocketCore.scala:498-504,1032-1035).
+#                 Sm_VF, S_VF, U_VF: fflags is not ordered after vector FP instructions (above).
+#                 Sm_mcause: mcause bit 4 is not writable, so exception code 20 reads back as 4,
+#                 but the exception code field must hold 0-31.
+#                 Sm_mcsr_cntr: cp_mtime_write reads time, which is not implemented, without
+#                 checking for Zicntr (a test bug).
+#   Sv, Sstvecd   Rocket converts non-canonical addresses written to sepc/stval/stvec into other
+#                 invalid addresses (bit 51 sign-extended), which the reference model does
+#                 not model.
+#
+# Not run in CI, because only `make vector-tests` generates them (last measured on act4 96493a914):
+#   ExceptionsVx, ExceptionsVf16, ExceptionsVf32, ExceptionsVf64, ExceptionsVfmin
+#                 The vstart != 0 illegal-instruction trap writes the PC to mtval
+#                 (SAT frontend/PipelinedFaultCheck.scala:221).
+#   ExceptionsVls Passes, but runs about 300 s on its own, at run_tests.py's 300 s per-test limit.
+exclude_extensions: "Vx8,Vx16,Vx32,Vx64,Vf8,Vf16,Vf32,Vf64,Zvfhmin,Sm,S,U,Sv,Sstvecd"
+
+apt_packages: "autoconf flex bison help2man libfl-dev ccache device-tree-compiler"
+install_script: ".github/scripts/install-rocket.sh"
+setup_script: ".github/scripts/setup-rocket.sh"
+shards: 4

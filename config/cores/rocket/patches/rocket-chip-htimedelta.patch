@@ -1,0 +1,40 @@
+rocket-chip CSR file: implement htimedelta (and htimedeltah on RV32) with the hypervisor
+extension. The hypervisor extension lists htimedelta among the CSRs it provides to HS-mode, but
+rocket-chip, which does not implement the time CSR, omits it, so every access raises an
+illegal-instruction exception. ACT writes htimedelta while booting to S-mode, so without this
+patch every test that runs below M-mode traps at boot. htimedelta has no other effect here,
+because time is not implemented. Local patch; no upstream issue or pull request.
+
+--- a/src/main/scala/rocket/CSR.scala
++++ b/src/main/scala/rocket/CSR.scala
+@@ -553,6 +553,7 @@
+   val reg_hstatus = RegInit(0.U.asTypeOf(new HStatus))
+   val reg_hgatp = Reg(new PTBR)
+   val reg_htval = Reg(reg_mtval2.cloneType)
++  val reg_htimedelta = Reg(UInt(64.W))
+   val read_hvip = reg_mip.asUInt & hs_delegable_interrupts
+   val read_hie = reg_mie & hs_delegable_interrupts
+
+@@ -823,6 +824,9 @@
+     read_mapping += CSRs.hgeie -> 0.U
+     read_mapping += CSRs.hgeip -> 0.U
+     read_mapping += CSRs.htval -> reg_htval
++    read_mapping += CSRs.htimedelta -> reg_htimedelta(xLen-1, 0)
++    if (xLen == 32)
++      read_mapping += CSRs.htimedeltah -> (reg_htimedelta >> 32)
+     read_mapping += CSRs.htinst -> read_htinst
+     read_mapping += CSRs.henvcfg -> reg_henvcfg.asUInt
+     if (xLen == 32)
+@@ -1410,6 +1414,12 @@
+       }
+       when (decoded_addr(CSRs.hcounteren)) { reg_hcounteren := wdata }
+       when (decoded_addr(CSRs.htval))      { reg_htval := wdata }
++      if (xLen == 32) {
++        when (decoded_addr(CSRs.htimedelta))  { reg_htimedelta := Cat(reg_htimedelta(63, 32), wdata) }
++        when (decoded_addr(CSRs.htimedeltah)) { reg_htimedelta := Cat(wdata, reg_htimedelta(31, 0)) }
++      } else {
++        when (decoded_addr(CSRs.htimedelta))  { reg_htimedelta := wdata }
++      }
+       when (decoded_addr(CSRs.mtval2))     { reg_mtval2 := wdata }
+
+       val write_mhtinst_read_pseudo = wdata(13) && (xLen == 32).option(true.B).getOrElse(wdata(12))

@@ -75,17 +75,9 @@ def make_exceptionsu(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(generate_load_access_fault_tests(test_data, _CG, use_sigupd=True))
     tc.code.extend(generate_store_address_misaligned_tests(test_data, _CG))
     tc.code.extend(generate_store_access_fault_tests(test_data, _CG))
-    tc.code.extend(
-        generate_misaligned_priority_load_tests(test_data, _CG, "cp_misaligned_priority_load", name_infix="_")
-    )
-    tc.code.extend(
-        generate_misaligned_priority_store_tests(test_data, _CG, "cp_misaligned_priority_store", name_infix="_")
-    )
-    tc.code.extend(
-        generate_misaligned_priority_fetch_tests(
-            test_data, _CG, "cp_misaligned_priority_fetch", name_prefix="", name_suffix=""
-        )
-    )
+    tc.code.extend(generate_misaligned_priority_load_tests(test_data, _CG, "cp_misaligned_priority_load"))
+    tc.code.extend(generate_misaligned_priority_store_tests(test_data, _CG, "cp_misaligned_priority_store"))
+    tc.code.extend(generate_misaligned_priority_fetch_tests(test_data, _CG, "cp_misaligned_priority_fetch"))
     tc.code.extend(generate_ecall_tests(test_data, _CG, "cp_ecall_u", "ecall_u", "Ecall"))
     tc.code.extend(_generate_mstatus_ie_tests(test_data))
 

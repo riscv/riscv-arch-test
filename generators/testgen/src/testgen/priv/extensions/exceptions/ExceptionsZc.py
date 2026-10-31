@@ -9,7 +9,6 @@
 """Compressed exceptions test generator."""
 
 from testgen.asm.helpers import comment_banner, write_sigupd
-from testgen.constants import INDENT
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
@@ -159,23 +158,11 @@ def _add_load_fault(
         t_lines.append("LI(sp, RVMODEL_ACCESS_FAULT_ADDRESS)")
         t_lines.append(test_data.add_testcase(test_label, coverpoint, covergroup))
         t_lines.append(f"{op} {reg_str}, 0(sp)")
-        t_lines.append(
-            f"{INDENT}#Faulting compressed instruction can land on or 2 bytes past a 4 byte boundary (Resume address is 8 or 6 bytes after instr addr); Three c.nops provide 6 bytes buffer"
-        )
-        t_lines.append("c.nop")
-        t_lines.append("c.nop")
-        t_lines.append("c.nop")
         t_lines.append(f"mv sp, x{base_reg}")
     else:
         t_lines.append(f"LI(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)")
         t_lines.append(test_data.add_testcase(test_label, coverpoint, covergroup))
         t_lines.append(f"{op} {reg_str}, 0(x{addr_reg})")
-        t_lines.append(
-            f"{INDENT}#Faulting compressed instruction can land on or 2 bytes past a 4 byte boundary (Resume address is 8 or 6 bytes after instr addr); Three c.nops provide 6 bytes buffer"
-        )
-        t_lines.append("c.nop")
-        t_lines.append("c.nop")
-        t_lines.append("c.nop")
 
     t_lines.append(write_sigupd(fp_reg if is_float else check_reg, test_data, sig_type="float" if is_float else "int"))
 
@@ -206,23 +193,11 @@ def _add_store_fault(
         t_lines.append("LI(sp, RVMODEL_ACCESS_FAULT_ADDRESS)")
         t_lines.append(test_data.add_testcase(test_label, coverpoint, covergroup))
         t_lines.append(f"{op} {reg_str}, 0(sp)")
-        t_lines.append(
-            f"{INDENT}#Faulting compressed instruction can land on or 2 bytes past a 4 byte boundary (Resume address is 8 or 6 bytes after instr addr); Three c.nops provide 6 bytes buffer"
-        )
-        t_lines.append("c.nop")
-        t_lines.append("c.nop")
-        t_lines.append("c.nop")
         t_lines.append(f"mv sp, x{base_reg}")
     else:
         t_lines.append(f"LI(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)")
         t_lines.append(test_data.add_testcase(test_label, coverpoint, covergroup))
         t_lines.append(f"{op} {reg_str}, 0(x{addr_reg})")
-        t_lines.append(
-            f"{INDENT}#Faulting compressed instruction can land on or 2 bytes past a 4 byte boundary (Resume address is 8 or 6 bytes after instr addr); Three c.nops provide 6 bytes buffer"
-        )
-        t_lines.append("c.nop")
-        t_lines.append("c.nop")
-        t_lines.append("c.nop")
 
     test_data.int_regs.return_registers([addr_reg, base_reg, check_reg])
     test_data.float_regs.return_registers([fp_reg])

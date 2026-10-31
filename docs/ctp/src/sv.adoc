@@ -166,6 +166,12 @@ Each test sets the bits in a leaf or non-leaf PTE and checks that loads, stores 
 
 include::{testplansdir}/priv/Svrsw60t59b.adoc[]
 
+===== Svrsw60t59b_H Hypervisor PTE Bits Reserved for Software
+
+Checks bits 60:59 in VS-stage and G-stage PTEs, with guest accesses in VS-mode and VU-mode.
+
+include::{testplansdir}/priv/Svrsw60t59b_H.adoc[]
+
 include::norm/Svrsw60t59b_norm_rules.adoc[]
 
 ==== Svvptc Obviating Memory-Management Instructions after Marking PTEs Valid

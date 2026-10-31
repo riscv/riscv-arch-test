@@ -57,6 +57,77 @@ covergroup Svrsw60t59b_cg with function sample(ins_t ins);
     cp_fetch: cross rsw60t59b_PTE_i, fetch_ok, satp_mode, priv_mode_s_u;
 endgroup
 
+`ifdef H_SUPPORTED
+// Svrsw60t59b in the VS-stage (hgatp = Bare) and in the G-stage (vsatp = Bare), from VS-mode and VU-mode.  As in
+// Svrsw60t59b_cg, the coverpoints sample the leaf cases and the signature checks the non-leaf cases.
+covergroup Svrsw60t59b_H_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    rsw60t59b_PTE_i: coverpoint ins.current.pte_i[60:59] {
+        bins bit_59 = {2'b01};
+        bins bit_60 = {2'b10};
+        bins both   = {2'b11};
+    }
+    rsw60t59b_PTE_d: coverpoint ins.current.pte_d[60:59] {
+        bins bit_59 = {2'b01};
+        bins bit_60 = {2'b10};
+        bins both   = {2'b11};
+    }
+
+    // Accesses that complete: the trace marks no read, write or execute access, so name the instruction.
+    // Only instructions in the page under test have bits 60:59 set in pte_i.
+    load_ok: coverpoint ins.current.insn {
+        wildcard bins lw = {LW} iff (!ins.current.trap);
+    }
+    store_ok: coverpoint ins.current.insn {
+        wildcard bins sw = {SW} iff (!ins.current.trap);
+    }
+    fetch_ok: coverpoint ins.current.trap {
+        bins no_trap = {1'b0};
+    }
+
+    vsatp_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
+        `ifdef UDB_SV39_VSMODE_TRANSLATION
+            bins sv39 = {8};
+        `endif
+        `ifdef UDB_SV48_VSMODE_TRANSLATION
+            bins sv48 = {9};
+        `endif
+        `ifdef UDB_SV57_VSMODE_TRANSLATION
+            bins sv57 = {10};
+        `endif
+    }
+    hgatp_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode") {
+        `ifdef UDB_SV39X4_TRANSLATION
+            bins sv39x4 = {8};
+        `endif
+        `ifdef UDB_SV48X4_TRANSLATION
+            bins sv48x4 = {9};
+        `endif
+        `ifdef UDB_SV57X4_TRANSLATION
+            bins sv57x4 = {10};
+        `endif
+    }
+    vsatp_bare: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
+        bins bare = {0};
+    }
+    hgatp_bare: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode") {
+        bins bare = {0};
+    }
+
+    cp_vsatp_load:  cross rsw60t59b_PTE_d, load_ok,  vsatp_mode, hgatp_bare, priv_mode_vs_vu;
+    cp_vsatp_store: cross rsw60t59b_PTE_d, store_ok, vsatp_mode, hgatp_bare, priv_mode_vs_vu;
+    cp_vsatp_fetch: cross rsw60t59b_PTE_i, fetch_ok, vsatp_mode, hgatp_bare, priv_mode_vs_vu;
+    cp_hgatp_load:  cross rsw60t59b_PTE_d, load_ok,  vsatp_bare, hgatp_mode, priv_mode_vs_vu;
+    cp_hgatp_store: cross rsw60t59b_PTE_d, store_ok, vsatp_bare, hgatp_mode, priv_mode_vs_vu;
+    cp_hgatp_fetch: cross rsw60t59b_PTE_i, fetch_ok, vsatp_bare, hgatp_mode, priv_mode_vs_vu;
+endgroup
+`endif // H_SUPPORTED
+
 function void svrsw60t59b_sample(int hart, int issue, ins_t ins);
     Svrsw60t59b_cg.sample(ins);
+    `ifdef H_SUPPORTED
+        Svrsw60t59b_H_cg.sample(ins);
+    `endif
 endfunction

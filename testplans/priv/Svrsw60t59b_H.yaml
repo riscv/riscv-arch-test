@@ -1,0 +1,35 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Svrsw60t59b_H
+notes: |-
+  Svrsw60t59b_H uses the Sv_H test environment (see Sv_H).  Svrsw60t59b exists only on RV64.  Each test sets bit 59, bit 60 or both in the PTE under test: the leaf PTE at every level (the 4 KiB page and each superpage size), and each non-leaf PTE above a 4 KiB leaf.  G-stage leaves have U = 1, as G-stage accesses are user-level, and VS-stage leaves have U = 1 for VU-mode.  The trace reports a PTE only for an access that walks the page table, so each access follows HFENCE.VVMA and HFENCE.GVMA.  The trace reports the leaf PTE of a walk that completes, so the coverpoints sample the leaf cases; the signature checks the non-leaf cases.
+coverpoints:
+  - name: cp_vsatp_load
+    goal: Verify a guest load through a VS-stage PTE with bits 60:59 set completes (Svrsw60t59b)
+    description: In VS-mode and VU-mode with hgatp = Bare, set bits 60:59 in the VS-stage PTE under test.  Load (lw) from the test page.
+    expectation: No fault; the load returns the word in the page.
+    bins: rsw60t59b_PTE_d x load_ok x vsatp_mode x hgatp Bare x {VS, VU}
+  - name: cp_vsatp_store
+    goal: Verify a guest store through a VS-stage PTE with bits 60:59 set completes (Svrsw60t59b)
+    description: As cp_vsatp_load, with a store (sw) to the test page.
+    expectation: No fault.
+    bins: rsw60t59b_PTE_d x store_ok x vsatp_mode x hgatp Bare x {VS, VU}
+  - name: cp_vsatp_fetch
+    goal: Verify a guest fetch through a VS-stage PTE with bits 60:59 set completes (Svrsw60t59b)
+    description: As cp_vsatp_load, with a jump (jalr) to the ret at the start of the test page.
+    expectation: No fault; the ret returns to the caller.
+    bins: rsw60t59b_PTE_i x fetch_ok x vsatp_mode x hgatp Bare x {VS, VU}
+  - name: cp_hgatp_load
+    goal: Verify a guest load through a G-stage PTE with bits 60:59 set completes (Svrsw60t59b)
+    description: In VS-mode and VU-mode with vsatp = Bare, set bits 60:59 in the G-stage PTE under test.  Load (lw) from the test page.
+    expectation: No fault; the load returns the word in the page.
+    bins: rsw60t59b_PTE_d x load_ok x vsatp Bare x hgatp_mode x {VS, VU}
+  - name: cp_hgatp_store
+    goal: Verify a guest store through a G-stage PTE with bits 60:59 set completes (Svrsw60t59b)
+    description: As cp_hgatp_load, with a store (sw) to the test page.
+    expectation: No fault.
+    bins: rsw60t59b_PTE_d x store_ok x vsatp Bare x hgatp_mode x {VS, VU}
+  - name: cp_hgatp_fetch
+    goal: Verify a guest fetch through a G-stage PTE with bits 60:59 set completes (Svrsw60t59b)
+    description: As cp_hgatp_load, with a jump (jalr) to the ret at the start of the test page.
+    expectation: No fault; the ret returns to the caller.
+    bins: rsw60t59b_PTE_i x fetch_ok x vsatp Bare x hgatp_mode x {VS, VU}

@@ -9,3 +9,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
     Svrsw60t59b_cg = new(); Svrsw60t59b_cg.set_inst_name("obj_Svrsw60t59b");
+`ifdef H_SUPPORTED
+    Svrsw60t59b_H_cg = new(); Svrsw60t59b_H_cg.set_inst_name("obj_Svrsw60t59b_H");
+`endif

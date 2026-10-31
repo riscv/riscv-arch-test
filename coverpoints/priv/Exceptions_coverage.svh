@@ -980,6 +980,9 @@ covergroup Exceptions_ZicboS_cg with function sample(ins_t ins);
 
     adr_misaligned: coverpoint ins.current.rs1_val[0]  {
     }
+    adr_is_misaligned: coverpoint ins.current.rs1_val[0] {
+        bins misaligned = {1};
+    }
     `ifdef SM1P12P0_OR_LATER_SUPPORTED
         menvcfg_all_enable: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "menvcfg", "menvcfg")[7:4] {
             bins ones = {4'b1111};
@@ -1015,12 +1018,12 @@ covergroup Exceptions_ZicboS_cg with function sample(ins_t ins);
             `ifdef ZICBOZ_SUPPORTED
                 cp_cbze:  cross cbo_zero,       menvcfg_cbze,  senvcfg_cbze,  priv_mode_s_u;
             `endif
-            cp_cbo_address_misaligned:  cross cbo_instrs, adr_misaligned, priv_mode_s_u, menvcfg_all_enable, senvcfg_all_enable;
+            cp_cbo_address_misaligned:  cross cbo_instrs, adr_is_misaligned, priv_mode_s_u, menvcfg_all_enable, senvcfg_all_enable;
         `else
-            cp_cbo_address_misaligned:  cross cbo_instrs, adr_misaligned, priv_mode_s_u;
+            cp_cbo_address_misaligned:  cross cbo_instrs, adr_is_misaligned, priv_mode_s_u;
         `endif
     `else
-        cp_cbo_address_misaligned:  cross cbo_instrs, adr_misaligned, priv_mode_s_u;
+        cp_cbo_address_misaligned:  cross cbo_instrs, adr_is_misaligned, priv_mode_s_u;
     `endif
 
     // access fault coverpoints
@@ -1087,6 +1090,9 @@ covergroup Exceptions_ZicboSm_cg with function sample(ins_t ins);
 
     adr_misaligned: coverpoint ins.current.rs1_val[0]  {
     }
+    adr_is_misaligned: coverpoint ins.current.rs1_val[0] {
+        bins misaligned = {1};
+    }
 
     `ifdef SM1P12P0_OR_LATER_SUPPORTED
         `ifdef U_SUPPORTED
@@ -1123,12 +1129,12 @@ covergroup Exceptions_ZicboSm_cg with function sample(ins_t ins);
             `ifdef ZICBOZ_SUPPORTED
                 cp_cbze: cross cbo_zero, menvcfg_cbze, priv_mode_m;
             `endif
-            cp_cbo_address_misaligned: cross cbo_instrs, adr_misaligned, priv_mode_m, menvcfg_all_enable;
+            cp_cbo_address_misaligned: cross cbo_instrs, adr_is_misaligned, priv_mode_m, menvcfg_all_enable;
         `else
-            cp_cbo_address_misaligned: cross cbo_instrs, adr_misaligned, priv_mode_m;
+            cp_cbo_address_misaligned: cross cbo_instrs, adr_is_misaligned, priv_mode_m;
         `endif
     `else
-        cp_cbo_address_misaligned:  cross cbo_instrs, adr_misaligned, priv_mode_m;
+        cp_cbo_address_misaligned:  cross cbo_instrs, adr_is_misaligned, priv_mode_m;
     `endif
 
     // access fault coverpoints
@@ -1199,6 +1205,9 @@ covergroup Exceptions_ZicboU_cg with function sample(ins_t ins);
 
     adr_misaligned: coverpoint ins.current.rs1_val[0]  {
     }
+    adr_is_misaligned: coverpoint ins.current.rs1_val[0] {
+        bins misaligned = {1};
+    }
     `ifdef SM1P12P0_OR_LATER_SUPPORTED
         menvcfg_all_enable: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "menvcfg", "menvcfg")[7:4] {
             bins ones = {4'b1111};
@@ -1232,9 +1241,9 @@ covergroup Exceptions_ZicboU_cg with function sample(ins_t ins);
         `ifdef ZICBOZ_SUPPORTED
             cp_cbze:  cross cbo_zero,       menvcfg_cbze,  priv_mode_u;
         `endif
-        cp_cbo_address_misaligned:  cross cbo_instrs, adr_misaligned, priv_mode_u, menvcfg_all_enable;
+        cp_cbo_address_misaligned:  cross cbo_instrs, adr_is_misaligned, priv_mode_u, menvcfg_all_enable;
     `else
-        cp_cbo_address_misaligned:  cross cbo_instrs, adr_misaligned, priv_mode_u;
+        cp_cbo_address_misaligned:  cross cbo_instrs, adr_is_misaligned, priv_mode_u;
     `endif
 
     // access fault coverpoints

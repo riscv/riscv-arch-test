@@ -18,15 +18,8 @@
   `endif
 `endif
 
-// PMP_HAS_CBO: Zicbom or Zicboz.
-`ifdef ZICBOM_SUPPORTED
-  `define PMP_HAS_CBO
-`elsif ZICBOZ_SUPPORTED
-  `define PMP_HAS_CBO
-`endif
-
 `ifdef PMP_HAS_SV
-  `ifdef PMP_HAS_CBO
+  `ifdef CBO_SUPPORTED
     `define PMP_COVER_SVZICBO
   `endif
 `endif

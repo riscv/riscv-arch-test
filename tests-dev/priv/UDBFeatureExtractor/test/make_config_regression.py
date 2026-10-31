@@ -24,25 +24,10 @@ from pathlib import Path
 from typing import Any
 
 import pyjson5
-from ruamel.yaml import YAML
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import make_config
 import udb_to_sail
-
-
-def load_yaml(text: str) -> dict[str, Any]:
-    """Parse yaml; ruamel's YAML objects are not thread-safe, so each call makes its own."""
-    return YAML(typ="safe").load(text)
-
-
-IMPLIED = {
-    "A": {"Zaamo", "Zalrsc"},
-    "B": {"Zba", "Zbb", "Zbs"},
-    "Zkn": {"Zbkb", "Zbkc", "Zbkx", "Zkne", "Zknd", "Zknh"},
-    "Zks": {"Zbkb", "Zbkc", "Zbkx", "Zksed", "Zksh"},
-    "Zbkc": {"Zbc"},
-}
 
 
 def ext_names(lines: list[str]) -> tuple[set[str], set[str]]:
@@ -85,7 +70,7 @@ def sail_diffs(
 def run_one(config_dir: Path, udb_yaml: Path, build: Path, timeout: int) -> dict[str, Any]:
     name = config_dir.name
     result: dict[str, Any] = {"name": name, "dir": str(config_dir.relative_to(make_config.REPO_ROOT))}
-    old_yaml = load_yaml(udb_yaml.read_text())
+    old_yaml = make_config.load_yaml(udb_yaml.read_text())
     old_sail = pyjson5.loads((config_dir / "sail.json").read_text()) if (config_dir / "sail.json").exists() else None
 
     # 3. The configuration's yaml against its sail.json
@@ -118,15 +103,13 @@ def run_one(config_dir: Path, udb_yaml: Path, build: Path, timeout: int) -> dict
     result["incomplete"] = r["incomplete"]
 
     # 1. Extensions and measured parameters against the configuration's yaml
-    gen = load_yaml(r["yaml"].read_text())
+    gen = make_config.load_yaml(r["yaml"].read_text())
     text = r["yaml"].read_text()
     reported, assumed_exts = ext_names(re.findall(r"^  - \{.*$", text, re.MULTILINE))
     expected = {e["name"] if isinstance(e, dict) else str(e) for e in old_yaml["implemented_extensions"]}
-    untested = set()
-    for m in re.finditer(r"^# untested: (.*)$", text, re.MULTILINE):
-        untested |= set(m.group(1).split())
+    untested = make_config.untested_extensions(text)
     extra = reported - expected
-    implied = {n for n in extra if n in IMPLIED and IMPLIED[n] <= expected}
+    implied = {n for n in extra if n in make_config.IMPLIED and make_config.IMPLIED[n] <= expected}
     result["ext_missing"] = sorted(expected - reported - assumed_exts - untested)
     result["ext_extra"] = sorted(extra - implied)
     result["ext_assumed"] = sorted(assumed_exts)
@@ -151,16 +134,6 @@ def run_one(config_dir: Path, udb_yaml: Path, build: Path, timeout: int) -> dict
     return result
 
 
-def find_configs(root: Path) -> list[tuple[Path, Path]]:
-    out = []
-    for run_cmd in sorted((root / "config").glob("**/run_cmd.txt")):
-        d = run_cmd.parent
-        yamls = [y for y in d.glob("*.yaml") if y.name != "test_config.yaml"]
-        if len(yamls) == 1:
-            out.append((d, yamls[0]))
-    return out
-
-
 def fmt(v: object) -> str:
     if isinstance(v, int) and not isinstance(v, bool) and v > 9:
         return hex(v)
@@ -180,7 +153,7 @@ def main() -> None:
     build.mkdir(parents=True, exist_ok=True)
     make_config.UDB_DATA_HOME = build / "udb-data"
     wanted = set(args.configs.split(",")) if args.configs else None
-    configs = [(d, y) for d, y in find_configs(make_config.REPO_ROOT) if wanted is None or d.name in wanted]
+    configs = [(d, y) for d, y in make_config.find_configs() if wanted is None or d.name in wanted]
     with concurrent.futures.ThreadPoolExecutor(max_workers=args.jobs) as pool:
         results = list(pool.map(lambda c: run_one(c[0], c[1], build, args.timeout), configs))
     (build / "results.json").write_text(json.dumps(results, indent=1, default=str))

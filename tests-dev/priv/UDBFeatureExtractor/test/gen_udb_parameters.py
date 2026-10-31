@@ -6,18 +6,18 @@
 # applies to a hart, from the udb gem the framework pins (framework/src/act/data/Gemfile) or from a
 # riscv-unified-db checkout:
 #
-#   test/gen_udb_parameters.py > udb_parameters.h
-#   test/gen_udb_parameters.py /path/to/riscv-unified-db > udb_parameters.h
+#   uv run tests-dev/priv/UDBFeatureExtractor/test/gen_udb_parameters.py > udb_parameters.h
+#   uv run tests-dev/priv/UDBFeatureExtractor/test/gen_udb_parameters.py /path/to/riscv-unified-db > udb_parameters.h
 #
 # The extractor prints, commented out, every parameter that applies to the hart but that it could
 # not determine, so the reader of the output knows what is left to fill in by hand.
 
-import os
 import subprocess
 import sys
 from pathlib import Path
 
-import yaml
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import make_config
 
 # Extensions the extractor knows by a name other than have("X")
 SPECIAL = {
@@ -104,24 +104,9 @@ def gate(node: object) -> str:
     return ""
 
 
-def gem_spec() -> Path:
-    """The spec directory of the udb gem pinned by framework/src/act/data/Gemfile."""
-    root = Path(__file__).resolve().parents[4]
-    gemfile = root / "framework/src/act/data/Gemfile"
-    env = dict(os.environ, BUNDLE_GEMFILE=str(gemfile))
-    out = subprocess.run(
-        ["mise", "exec", "--", "bundle", "info", "udb", "--path"],
-        capture_output=True,
-        text=True,
-        check=True,
-        cwd=root,
-        env=env,
-    ).stdout
-    return Path(out.strip().splitlines()[-1]) / ".data"
-
-
 def main() -> None:
-    udb = Path(sys.argv[1]) if len(sys.argv) > 1 else gem_spec()
+    # the udb gem's .data directory holds the same spec/ tree as a checkout
+    udb = Path(sys.argv[1]) if len(sys.argv) > 1 else make_config.udb_param_dir().parents[3]
     if (udb / ".git").exists():
         rev = (
             "riscv-unified-db "
@@ -133,7 +118,7 @@ def main() -> None:
         rev = udb.parent.name  # udb-<version>
     rows = []
     for f in sorted((udb / "spec/std/isa/param").glob("*.yaml")):
-        doc = yaml.safe_load(f.read_text())
+        doc = make_config.load_yaml(f.read_text())
         if not isinstance(doc, dict) or doc.get("kind") != "parameter" or doc.get("name") != f.stem:
             continue
         g = gate(doc.get("definedBy", {})) or "true"

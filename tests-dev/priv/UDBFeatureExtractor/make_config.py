@@ -43,13 +43,15 @@ from typing import Any
 from ruamel.yaml import YAML
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 import udb_to_sail
+
+import run_tests
 
 SRC_DIR = Path(__file__).resolve().parent
 REPO_ROOT = SRC_DIR.parents[2]
 GEMFILE = REPO_ROOT / "framework/src/act/data/Gemfile"
 
-DEBUG_PLACEHOLDER_RE = re.compile(r"\{debug:([^}]*)\}")
 TIMESTAMP_RE = re.compile(r"^\[\s*\d+ [a-z]+\] ")
 # How to make each simulator write the console output to a file; anything else prints it on stdout
 CONSOLE_FLAGS = {
@@ -58,9 +60,39 @@ CONSOLE_FLAGS = {
 }
 
 
+# Extensions defined as exactly a set of others: a yaml that lists the members but not the name is
+# not contradicted when the extractor reports the name (used by the regressions in test/)
+IMPLIED = {
+    "A": {"Zaamo", "Zalrsc"},
+    "B": {"Zba", "Zbb", "Zbs"},
+    "Zkn": {"Zbkb", "Zbkc", "Zbkx", "Zkne", "Zknd", "Zknh"},
+    "Zks": {"Zbkb", "Zbkc", "Zbkx", "Zksed", "Zksh"},
+    "Zbkc": {"Zbc"},
+}
+
+
 def load_yaml(text: str) -> dict[str, Any]:
     """Parse yaml; ruamel's YAML objects are not thread-safe, so each call makes its own."""
     return YAML(typ="safe").load(text)
+
+
+def find_configs() -> list[tuple[Path, Path]]:
+    """Every configuration directory under config/ with a run_cmd.txt and one UDB yaml."""
+    out = []
+    for run_cmd in sorted((REPO_ROOT / "config").glob("**/run_cmd.txt")):
+        d = run_cmd.parent
+        yamls = [y for y in d.glob("*.yaml") if y.name != "test_config.yaml"]
+        if len(yamls) == 1:
+            out.append((d, yamls[0]))
+    return out
+
+
+def untested_extensions(text: str) -> set[str]:
+    """The extensions the extractor's output lists as not looked for."""
+    untested: set[str] = set()
+    for m in re.finditer(r"^# untested: (.*)$", text, re.MULTILINE):
+        untested |= set(m.group(1).split())
+    return untested
 
 
 # ---------------------------------------------------------------------------------------------
@@ -74,11 +106,9 @@ def run_on_dut(config_dir: Path, elf: Path, out: Path, timeout: int) -> str:
 
 def run_on_dut_ex(config_dir: Path, elf: Path, out: Path, timeout: int) -> tuple[str, bool]:
     """run_on_dut, also saying whether the run was stopped for taking longer than timeout seconds."""
-    command = DEBUG_PLACEHOLDER_RE.sub("", (config_dir / "run_cmd.txt").read_text()).split()
-    env = dict(os.environ)
-    while command and re.match(r"^[A-Za-z_][A-Za-z0-9_]*=", command[0]):
-        var, value = command.pop(0).split("=", 1)
-        env[var] = value
+    run_cmd = run_tests._expand_debug_placeholders((config_dir / "run_cmd.txt").read_text(), debug=False)
+    env_overrides, command = run_tests.split_env_assignments(shlex.split(run_cmd))
+    env = {**os.environ, **env_overrides}
     if not command or shutil.which(command[0]) is None:
         raise FileNotFoundError(f"{command[0] if command else 'run_cmd.txt'} not on PATH")
     out.unlink(missing_ok=True)

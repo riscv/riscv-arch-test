@@ -16,16 +16,13 @@
 
 import argparse
 import concurrent.futures
-import os
 import re
-import shlex
-import shutil
 import subprocess
 import sys
-from collections.abc import Iterator
 from pathlib import Path
 
-import yaml
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import make_config
 
 # name, status ("ok", "FAIL" or "skip"), note, reported, expected, untested
 # params: (matched, mismatched {name: (extracted, expected)}, not extracted, extra)
@@ -33,37 +30,9 @@ Params = tuple[set[str], dict[str, tuple[object, object]], set[str], set[str]]
 NO_PARAMS: Params = (set(), {}, set(), set())
 Result = tuple[str, str, str, set[str], set[str], set[str], Params]
 
-DEBUG_PLACEHOLDER_RE = re.compile(r"\{debug:([^}]*)\}")
-
-# How to make each simulator write the extractor's console output to a file; anything else is
-# expected to print it on stdout
-CONSOLE_FLAGS = {
-    "sail_riscv_sim": "--terminal-log {out}",
-    "wsim": "--args '+UART_LOG=1 +UART_LOG_FILE={out}'",
-}
-
-
-# Extensions defined as exactly a set of others: a yaml that lists the members but not the name is
-# not contradicted when the extractor reports the name, so such an extra is listed as implied
-IMPLIED = {
-    "A": {"Zaamo", "Zalrsc"},
-    "B": {"Zba", "Zbb", "Zbs"},
-    "Zkn": {"Zbkb", "Zbkc", "Zbkx", "Zkne", "Zknd", "Zknh"},
-    "Zks": {"Zbkb", "Zbkc", "Zbkx", "Zksed", "Zksh"},
-    "Zbkc": {"Zbc"},
-}
-
-
-def find_configs(root: Path) -> Iterator[tuple[Path, Path]]:
-    for run_cmd in sorted((root / "config").glob("**/run_cmd.txt")):
-        d = run_cmd.parent
-        yamls = [y for y in d.glob("*.yaml") if y.name != "test_config.yaml"]
-        if len(yamls) == 1:
-            yield d, yamls[0]
-
 
 def expected_extensions(udb_yaml: Path) -> tuple[set[str], int, dict]:
-    doc = yaml.safe_load(udb_yaml.read_text())
+    doc = make_config.load_yaml(udb_yaml.read_text())
     names = set()
     for e in doc.get("implemented_extensions", []):
         names.add(e["name"] if isinstance(e, dict) else str(e))
@@ -73,20 +42,7 @@ def expected_extensions(udb_yaml: Path) -> tuple[set[str], int, dict]:
 
 def compare_params(text: str, expected: dict) -> Params:
     """Compare the params section of the extracted yaml with the configuration's."""
-    # Simulators that print to stdout surround the yaml with their own messages, and some
-    # prefix every line with a timestamp such as "[123 ns] "
-    text = "\n".join(re.sub(r"^\[\s*\d+ [a-z]+\] ", "", l) for l in text.splitlines())
-    yaml_text = "\n".join(l for l in text.splitlines() if re.match(r"^(#|params:|implemented_extensions:|  )", l))
-    # A simulator that stops on a cycle limit can cut the last line; drop a truncated tail
-    extracted = None
-    for _ in range(8):
-        try:
-            extracted = (yaml.safe_load(yaml_text) or {}).get("params") or {}
-            break
-        except yaml.YAMLError:
-            yaml_text = yaml_text[: yaml_text.rstrip("\n").rfind("\n")]
-    if extracted is None:
-        return NO_PARAMS
+    extracted = make_config.parse_output(text)[1]
     matched, mismatched = set(), {}
     for name, value in extracted.items():
         if name in expected:
@@ -97,68 +53,29 @@ def compare_params(text: str, expected: dict) -> Params:
     return matched, mismatched, set(expected) - set(extracted), set(extracted) - set(expected)
 
 
-def run_config(root: Path, build: Path, makefile: Path, config_dir: Path, udb_yaml: Path, timeout: int) -> Result:
+def run_config(build: Path, config_dir: Path, udb_yaml: Path, timeout: int) -> Result:
     name = config_dir.name
     expected, xlen, expected_params = expected_extensions(udb_yaml)
     work = build / name
-    work.mkdir(parents=True, exist_ok=True)
-    log = work / "build.log"
-    with log.open("w") as f:
-        rc = subprocess.run(
-            ["make", "-f", str(makefile), "elf", f"XLEN={xlen}", f"CONFIG_DIR={config_dir}", f"BUILD_DIR={work}"],
-            stdout=f,
-            stderr=subprocess.STDOUT,
-            cwd=root,
-            check=False,
-        ).returncode
-    if rc:
-        return name, "FAIL", f"build failed, see {log}", set(), expected, set(), NO_PARAMS
-    elf = work / f"feature_extractor{xlen}.elf"
-
-    # A run_cmd.txt may start with VAR=value environment settings, as the shell would accept
-    command = DEBUG_PLACEHOLDER_RE.sub("", (config_dir / "run_cmd.txt").read_text()).split()
-    env = dict(os.environ)
-    while command and re.match(r"^[A-Za-z_][A-Za-z0-9_]*=", command[0]):
-        var, value = command.pop(0).split("=", 1)
-        env[var] = value
-    if not command or shutil.which(command[0]) is None:
-        return (
-            name,
-            "skip",
-            f"{command[0] if command else 'run_cmd.txt'} not on PATH",
-            set(),
-            expected,
-            set(),
-            NO_PARAMS,
-        )
-    out = work / "extracted_config.yaml"
-    out.unlink(missing_ok=True)
-    # Console flags go right after the executable: some commands end with the option that takes
-    # the ELF (wsim --elf, qemu -bios)
-    flags = CONSOLE_FLAGS.get(Path(command[0]).name)
-    if flags:
-        command[1:1] = shlex.split(flags.format(out=out))
-    command.append(str(elf))
-    log = work / "run.log"
+    test_config = make_config.load_yaml((config_dir / "test_config.yaml").read_text())
     try:
-        with log.open("w") as f:
-            proc = subprocess.run(
-                command, stdout=f, stderr=subprocess.STDOUT, cwd=root, env=env, timeout=timeout, check=False
-            )
-        rc = proc.returncode
-    except subprocess.TimeoutExpired:
+        elf = make_config.make("elf", work, test_config, config_dir, xlen)
+    except subprocess.CalledProcessError:
+        return name, "FAIL", "build failed", set(), expected, set(), NO_PARAMS
+    out = work / "extracted_config.yaml"
+    try:
+        text, timed_out = make_config.run_on_dut_ex(config_dir, elf, out, timeout)
+    except FileNotFoundError as e:
+        return name, "skip", str(e), set(), expected, set(), NO_PARAMS
+    log = out.with_suffix(".log")
+    if timed_out:
         return name, "FAIL", f"timed out after {timeout}s, see {log}", set(), expected, set(), NO_PARAMS
-    # A console that bypasses the log file (Wally's HTIF console without a UART) leaves it empty
-    text = out.read_text() if out.exists() and out.stat().st_size else log.read_text()
     out.write_text(text)
-    text = "\n".join(re.sub(r"^\[\s*\d+ [a-z]+\] ", "", l) for l in text.splitlines())
     reported = set(re.findall(r"^\s*- \{ name: (\w+),", text, re.MULTILINE))
-    untested = set()
-    for m in re.finditer(r"^# untested: (.*)$", text, re.MULTILINE):
-        untested |= set(m.group(1).split())
+    untested = make_config.untested_extensions(text)
     problems = [l for l in text.splitlines() if l.startswith(("# warning", "# FATAL"))]
     if not reported:
-        return name, "FAIL", f"nothing reported (exit {rc}), see {log}", set(), expected, set(), NO_PARAMS
+        return name, "FAIL", f"nothing reported, see {log}", set(), expected, set(), NO_PARAMS
     status = "ok"
     notes = []
     if problems:
@@ -169,24 +86,21 @@ def run_config(root: Path, build: Path, makefile: Path, config_dir: Path, udb_ya
 
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("--repo-root", required=True)
     p.add_argument("--build-dir", required=True)
     p.add_argument("--jobs", "-j", type=int, default=1, help="configurations to run in parallel")
     p.add_argument("--timeout", type=int, default=3600, help="seconds allowed per simulator run")
     p.add_argument("--configs", default="", help="comma-separated configuration names to run (default all)")
     args = p.parse_args()
 
-    root = Path(args.repo_root).resolve()
     build = Path(args.build_dir).resolve()
-    makefile = root / "tests-dev/priv/UDBFeatureExtractor/Makefile"
     wanted = set(args.configs.split(",")) if args.configs else None
-    configs = [(d, y) for d, y in find_configs(root) if wanted is None or d.name in wanted]
+    configs = [(d, y) for d, y in make_config.find_configs() if wanted is None or d.name in wanted]
     if not configs:
         print("no configurations found")
         sys.exit(1)
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=args.jobs) as pool:
-        futures = [pool.submit(run_config, root, build, makefile, d, y, args.timeout) for d, y in configs]
+        futures = [pool.submit(run_config, build, d, y, args.timeout) for d, y in configs]
         results = [f.result() for f in futures]
 
     width = max(len(r[0]) for r in results)
@@ -200,7 +114,7 @@ def main() -> None:
         matched = expected & reported
         missing = expected - reported - untested
         extra = reported - expected
-        implied = {n for n in extra if n in IMPLIED and IMPLIED[n] <= expected}
+        implied = {n for n in extra if n in make_config.IMPLIED and make_config.IMPLIED[n] <= expected}
         extra -= implied
         untested_expected = expected & untested
         if missing or extra:

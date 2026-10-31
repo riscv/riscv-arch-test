@@ -20,6 +20,11 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pyjson5
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import make_config
+
 # name -> Sail override (a partial configuration merged over the base one)
 CASES = {
     "max": {},
@@ -175,36 +180,9 @@ CASES = {
 VECTOR_DERIVED = ["V", "Zve32x", "Zve32f", "Zve64x", "Zve64f", "Zve64d"]
 
 # Sail keys the extractor cannot be expected to report: privileged extensions (S, H, U, Sm*, Ss*,
-# Sh*, Sv*), the unprivileged extensions that no instruction can detect by trapping (listed in
-# NOT_DETECTABLE_EXTENSIONS in extensions.h), and extensions that are not yet ratified
-NOT_CHECKED = {
-    "Zihintpause",
-    "Zihintntl",
-    "Zicbop",
-    "Zicclsm",
-    "Ztso",
-    "Zkt",
-    "Zvkt",
-    "Zic64b",
-    "Ziccif",
-    "Ziccamoa",
-    "Ziccamoc",
-    "Ziccrse",
-    "Za64rs",
-    "Za128rs",
-    "Zama16b",
-    "Zibi",
-    "Zvabd",
-}
-
-
-def checked(name: str) -> bool:
-    return name not in NOT_CHECKED and not re.match(r"^(S|H$|U$)", name)
-
-
-def load_config(path: Path) -> dict:
-    text = re.sub(r"^\s*//.*$", "", Path(path).read_text(), flags=re.MULTILINE)
-    return json.loads(text)
+# Sh*, Sv*), the extensions its output lists as untested (UNTESTED_EXTENSIONS in extensions.h),
+# and extensions that are not yet ratified
+NOT_RATIFIED = {"Zibi", "Zvabd"}
 
 
 def merge(base: dict, override: dict) -> dict:
@@ -214,12 +192,13 @@ def merge(base: dict, override: dict) -> dict:
     return out
 
 
-def expected_extensions(config: dict, reported: set[str]) -> dict[str, bool]:
+def expected_extensions(config: dict, untested: set[str]) -> dict[str, bool]:
     """Return {name: expected} for every reported or configured extension the config can decide."""
     exp = {}
     ext = config["extensions"]
     for name, entry in ext.items():
-        if isinstance(entry, dict) and "supported" in entry and checked(name):
+        checked = name not in untested | NOT_RATIFIED and not re.match(r"^(S|H$|U$)", name)
+        if isinstance(entry, dict) and "supported" in entry and checked:
             exp[name] = bool(entry["supported"])
     exp["E"] = bool(config["base"]["E"])
     exp["I"] = not exp["E"]
@@ -260,7 +239,7 @@ def main() -> None:
     failures = 0
     for xlen in [int(x) for x in args.xlen.split(",")]:
         config_dir = root / f"config/sail/sail-rv{xlen}-max"
-        base = load_config(config_dir / "sail.json")
+        base = pyjson5.loads((config_dir / "sail.json").read_text())
         elf = build / f"feature_extractor{xlen}.elf"
         if subprocess.run(
             ["make", "-f", str(makefile), "elf", f"XLEN={xlen}", f"CONFIG_DIR={config_dir}", f"BUILD_DIR={build}"],
@@ -295,7 +274,7 @@ def main() -> None:
                 print(f"FAIL rv{xlen} {case}: sail exit {rc}, {len(reported)} extensions reported; see {log}")
                 failures += 1
                 continue
-            exp = expected_extensions(merge(base, override), reported)
+            exp = expected_extensions(merge(base, override), make_config.untested_extensions(text))
             wrong = {n: e for n, e in exp.items() if e != (n in reported)}
             unchecked = sorted(reported - set(exp))
             status = "ok  " if not wrong and not warnings else "FAIL"

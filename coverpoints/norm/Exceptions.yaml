@@ -178,7 +178,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Exceptions_S_cg/{cp_breakpoint, cp_load_access_fault, cp_store_access_fault}",
-        "Exceptions_Sm_cg/{cp_medeleg_msu_illegalinstruction, cp_medeleg_msu_ebreak, cp_medeleg_msu_loadaccessfault}",
+        "Exceptions_SmS_cg/{cp_medeleg_msu_illegalinstruction, cp_medeleg_msu_ebreak, cp_medeleg_msu_loadaccessfault}",
         "Exceptions_U_cg/{cp_breakpoint, cp_load_access_fault, cp_store_access_fault}",
       ]
   # When a trap is taken, SPP is set to 0 if the trap originated from user mode, or 1
@@ -192,7 +192,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Exceptions_S_cg/{cp_illegal_instruction, cp_breakpoint}",
-        "Exceptions_Sm_cg/{cp_medeleg_msu_illegalinstruction, cp_medeleg_msu_ebreak, cp_medeleg_msu_loadaccessfault}",
+        "Exceptions_SmS_cg/{cp_medeleg_msu_illegalinstruction, cp_medeleg_msu_ebreak, cp_medeleg_msu_loadaccessfault}",
         "Exceptions_U_cg/{cp_illegal_instruction, cp_breakpoint}",
       ]
   # When a trap is taken from privilege mode y into privilege mode x, xPIE is set to the
@@ -201,7 +201,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Exceptions_S_cg/{cp_illegal_instruction, cp_breakpoint}",
-        "Exceptions_Sm_cg/{cp_medeleg_msu_illegalinstruction, cp_medeleg_msu_ebreak, cp_medeleg_msu_loadaccessfault}",
+        "Exceptions_SmS_cg/{cp_medeleg_msu_illegalinstruction, cp_medeleg_msu_ebreak, cp_medeleg_msu_loadaccessfault}",
         "Exceptions_U_cg/{cp_illegal_instruction, cp_breakpoint}",
       ]
   # When a trap is taken into M-mode, mepc is written with the virtual address of the
@@ -354,7 +354,7 @@ normative_rule_definitions:
     # Representative coverpoints; also the other cp_medeleg_msu_* coverpoints
     coverpoint:
       [
-        "Exceptions_Sm_cg/{cp_medeleg_msu_illegalinstruction, cp_medeleg_msu_ecall, cp_medeleg_msu_ebreak, cp_medeleg_msu_loadaccessfault}",
+        "Exceptions_SmS_cg/{cp_medeleg_msu_illegalinstruction, cp_medeleg_msu_ecall, cp_medeleg_msu_ebreak, cp_medeleg_msu_loadaccessfault}",
       ]
   # csr:medeleg[] has a bit position allocated for every synchronous exception shown in
   # &lt;&lt;norm:mcause_exccode_enc_img&gt;&gt;, with the index of the bit position equal
@@ -363,7 +363,7 @@ normative_rule_definitions:
     # Representative coverpoints; also the other cp_medeleg_msu_* coverpoints
     coverpoint:
       [
-        "Exceptions_Sm_cg/{cp_medeleg_msu_illegalinstruction, cp_medeleg_msu_ecall, cp_medeleg_msu_ebreak, cp_medeleg_msu_loadaccessfault}",
+        "Exceptions_SmS_cg/{cp_medeleg_msu_illegalinstruction, cp_medeleg_msu_ecall, cp_medeleg_msu_ebreak, cp_medeleg_msu_loadaccessfault}",
       ]
   # Traps never transition from a more-privileged mode to a less-privileged mode.
   # For example, if M-mode has delegated illegal-instruction exceptions to S-mode,
@@ -373,7 +373,7 @@ normative_rule_definitions:
     # Representative coverpoints; also the other cp_medeleg_msu_* coverpoints
     coverpoint:
       [
-        "Exceptions_Sm_cg/{cp_medeleg_msu_illegalinstruction, cp_medeleg_msu_ecall, cp_medeleg_msu_ebreak, cp_medeleg_msu_loadaccessfault}",
+        "Exceptions_SmS_cg/{cp_medeleg_msu_illegalinstruction, cp_medeleg_msu_ecall, cp_medeleg_msu_ebreak, cp_medeleg_msu_loadaccessfault}",
       ]
   # traps may be taken horizontally. Using the same example, if M-mode has delegated
   # illegal-instruction exceptions to S-mode, and S-mode software later executes an
@@ -382,13 +382,13 @@ normative_rule_definitions:
     # Representative coverpoints; also the other cp_medeleg_msu_* coverpoints
     coverpoint:
       [
-        "Exceptions_Sm_cg/{cp_medeleg_msu_illegalinstruction, cp_medeleg_msu_ecall, cp_medeleg_msu_ebreak, cp_medeleg_msu_loadaccessfault}",
+        "Exceptions_SmS_cg/{cp_medeleg_msu_illegalinstruction, cp_medeleg_msu_ecall, cp_medeleg_msu_ebreak, cp_medeleg_msu_loadaccessfault}",
       ]
   # PMAs do not vary by execution context.
   - name: pma_indep_exec_context
     coverpoint:
       [
-        "Exceptions_Sm_cg/{cp_medeleg_msu_instraccessfault, cp_medeleg_msu_loadaccessfault, cp_medeleg_msu_storeaccessfault}",
+        "Exceptions_SmS_cg/{cp_medeleg_msu_instraccessfault, cp_medeleg_msu_loadaccessfault, cp_medeleg_msu_storeaccessfault}",
       ]
   # Precisely trapped PMA violations manifest as instruction, load, or store access-fault
   # exceptions, distinct from virtual-memory page-fault exceptions.

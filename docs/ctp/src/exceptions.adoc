@@ -1,7 +1,7 @@
 
 === Exceptions
 
-The Exceptions suite has one covergroup and test plan per privilege mode or extension supported, named Exceptions_<group>_cg.  For example, a configuration with Machine, Supervisor, User, and Floating-Point supported should run <<t-Exceptions_Sm-coverpoints,Exceptions_Sm>>, <<t-Exceptions_S-coverpoints,Exceptions_S>>, <<t-Exceptions_U-coverpoints,Exceptions_U>>, and <<t-Exceptions_F-coverpoints,Exceptions_F>>.
+The Exceptions suite has one covergroup and test plan per privilege mode or extension supported, named Exceptions_<group>_cg.  For example, a configuration with Machine, Supervisor, User, and Floating-Point supported should run <<t-Exceptions_Sm-coverpoints,Exceptions_Sm>>, <<t-Exceptions_SmS-coverpoints,Exceptions_SmS>>, <<t-Exceptions_S-coverpoints,Exceptions_S>>, <<t-Exceptions_U-coverpoints,Exceptions_U>>, and <<t-Exceptions_F-coverpoints,Exceptions_F>>.
 Note that vector exceptions are in <<Vector Privileged Test Suites>>.
 
 ==== Exceptions_Sm Machine-Mode Exceptions
@@ -9,6 +9,12 @@ Note that vector exceptions are in <<Vector Privileged Test Suites>>.
 These tests are run on any configuration with machine mode that supports exceptions.
 
 include::{testplansdir}/priv/Exceptions_Sm.adoc[]
+
+==== Exceptions_SmS Machine-Mode Exceptions with Supervisor Mode
+
+These tests are run on configurations with machine and supervisor modes.  They boot to M-mode, set medeleg, and raise exceptions in M-, S- and U-mode.
+
+include::{testplansdir}/priv/Exceptions_SmS.adoc[]
 
 ==== Exceptions_S Supervisor-Mode Exceptions
 

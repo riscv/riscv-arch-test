@@ -25,7 +25,7 @@
       // This bits in this value control whether the corresponding
       // bits of the CSR are writable.  Note that bit 1 cannot be written
       // to as it is read-only zero.
-      "writable_bits": { "len": 32, "value": "0xFFFF_FFFD" }
+      "writable_bits": { "len": 32, "value": "0x0000_0005" }
     },
     "writable_fiom": true,
     // The top 29 bits in this value control whether the corresponding

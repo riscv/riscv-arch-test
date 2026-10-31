@@ -518,6 +518,21 @@ def _mbe_check(test_data: TestData, covergroup: str, coverpoint: str) -> list[st
     return lines
 
 
+def _mcountinhibit_checked_defines() -> list[str]:
+    """Define MCOUNTINHIBIT_CHECKED: the mcountinhibit bits of CY, IR and each implemented mhpmcounter."""
+    lines = []
+    for n in range(3, 32):
+        lines += [
+            f"#ifdef UDB_HPM_COUNTER_EN_{n}",
+            f"  #define MCOUNTINHIBIT_HPM{n} {1 << n:#x}",
+            "#else",
+            f"  #define MCOUNTINHIBIT_HPM{n} 0",
+            "#endif",
+        ]
+    hpm = " | ".join(f"MCOUNTINHIBIT_HPM{n}" for n in range(3, 32))
+    return [*lines, f"#define MCOUNTINHIBIT_CHECKED (0x5 | {hpm})"]
+
+
 def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     """Generate CSR tests"""
     covergroup = "Sm_mcsr_cg"
@@ -614,8 +629,10 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     # so leave them untouched and let their coverage report missing.
     # TODO: access and walk them everywhere when Sail gets an mhpmevent writable-bits parameter.
     mhpmevents = [(f"UDB_HPM_COUNTER_EN_{n}", (f"mhpmevent{n}", None)) for n in range(3, 32)]
-    # mcountinhibit is optional, so it is accessed under UDB_MCOUNTINHIBIT_IMPLEMENTED
-    csr_mcountinhibit = ("mcountinhibit", None)
+    # mcountinhibit is optional, so it is accessed under UDB_MCOUNTINHIBIT_IMPLEMENTED.  Every bit is
+    # written, but only the bits of implemented counters are checked: the spec leaves the inhibit
+    # bits of absent counters unconstrained (they may be writable, read-only zero or read-only one).
+    csr_mcountinhibit = ("mcountinhibit", "MCOUNTINHIBIT_CHECKED")
     csr_menvcfg = ("menvcfg", menvcfg_mask)
     # TODO: Walk menvcfg.CDE everywhere (and add it to menvcfg_mask) once Sail implements Smcdeleg.
     # The walks skip it where Smcdeleg is implemented, so its coverage reports missing, and check it
@@ -664,6 +681,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
 
     tc = test_data.new_test_chunk(test_chunks)
     tc.code.append("\n#ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED")
+    tc.code.extend(_mcountinhibit_checked_defines())
     tc.code.extend(csr_access_test(test_data, csr_mcountinhibit, covergroup, coverpoint))
     tc.code.append("#endif // UDB_MCOUNTINHIBIT_IMPLEMENTED")
 
@@ -788,6 +806,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
 
     tc = test_data.new_test_chunk(test_chunks)
     tc.code.append("\n#ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED")
+    tc.code.extend(_mcountinhibit_checked_defines())
     tc.code.extend(csr_walk_test(test_data, csr_mcountinhibit, covergroup, coverpoint))
     tc.code.append("#endif // UDB_MCOUNTINHIBIT_IMPLEMENTED")
 

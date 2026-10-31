@@ -40,9 +40,9 @@
     `include "general/RISCV_coverage_pmm_coverpoints.svh"
 
     `ifdef S_SUPPORTED  //As MXR is read-only zero if S mode is not supported
-        mxr_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mxr") {
-            bins mxr_1 = {1'b1};   // MXR=1: execute-only pages readable
-            bins mxr_0 = {1'b0};   // MXR=0: normal permission checks
+        mxr_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mxr")[0] {
+            // MXR=1: execute-only pages readable
+            // MXR=0: normal permission checks
         }
     `endif
 

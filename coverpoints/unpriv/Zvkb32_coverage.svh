@@ -197,16 +197,14 @@ covergroup Zvkb32_vandn_vv_cg with function sample(ins_t ins);
     // cr_vtype_agnostic
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -377,16 +375,14 @@ covergroup Zvkb32_vandn_vx_cg with function sample(ins_t ins);
     // cr_vtype_agnostic
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -507,16 +503,14 @@ covergroup Zvkb32_vbrev8_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -637,16 +631,14 @@ covergroup Zvkb32_vrev8_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -839,16 +831,14 @@ covergroup Zvkb32_vrol_vv_cg with function sample(ins_t ins);
     // cr_vtype_agnostic
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -1019,16 +1009,14 @@ covergroup Zvkb32_vrol_vx_cg with function sample(ins_t ins);
     // cr_vtype_agnostic
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -1199,16 +1187,14 @@ covergroup Zvkb32_vror_vi_cg with function sample(ins_t ins);
     // cr_vtype_agnostic
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -1401,16 +1387,14 @@ covergroup Zvkb32_vror_vv_cg with function sample(ins_t ins);
     // cr_vtype_agnostic
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -1581,16 +1565,14 @@ covergroup Zvkb32_vror_vx_cg with function sample(ins_t ins);
     // cr_vtype_agnostic
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {

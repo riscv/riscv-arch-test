@@ -98,12 +98,8 @@ covergroup SdtrigSm_tcontrol_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_sdtrig_coverpoints.svh"
 
     mte: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tcontrol", "mte")[0] {
-        bins disabled = {1'b0};
-        bins enabled  = {1'b1};
     }
     mpte: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tcontrol", "mpte")[0] {
-        bins disabled = {1'b0};
-        bins enabled  = {1'b1};
     }
     tcontrol_exec_outcome: coverpoint sdtrig_tcontrol_exec_outcome(ins) {
         bins mte_0_not_fired = {2'd1};

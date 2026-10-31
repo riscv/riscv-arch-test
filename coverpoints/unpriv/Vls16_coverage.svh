@@ -127,16 +127,14 @@ covergroup Vls16_vl1re16_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_nomask
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     not_maskable: coverpoint ins.current.insn[25] {
@@ -260,16 +258,14 @@ covergroup Vls16_vl1re32_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_nomask
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     not_maskable: coverpoint ins.current.insn[25] {
@@ -393,16 +389,14 @@ covergroup Vls16_vl1re64_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_nomask
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     not_maskable: coverpoint ins.current.insn[25] {
@@ -526,16 +520,14 @@ covergroup Vls16_vl1re8_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_nomask
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     not_maskable: coverpoint ins.current.insn[25] {
@@ -670,16 +662,14 @@ covergroup Vls16_vl2re16_v_cg with function sample(ins_t ins);
 
     //// end cr_vl_lmul_lmul4max_sew16////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
     // Value of VTYPE.vta (vector tail agnostic)
-    bins undisturbed = {0};
-        bins agnostic    = {1};
+    // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     cr_vtype_agnostic_lmul4max_nomask : cross cp_csr_vtype_vta,cp_csr_vtype_vma iff (ins.trap == 0 )  {
@@ -807,16 +797,14 @@ covergroup Vls16_vl2re32_v_cg with function sample(ins_t ins);
 
     //// end cr_vl_lmul_lmul4max_sew16////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
     // Value of VTYPE.vta (vector tail agnostic)
-    bins undisturbed = {0};
-        bins agnostic    = {1};
+    // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     cr_vtype_agnostic_lmul4max_nomask : cross cp_csr_vtype_vta,cp_csr_vtype_vma iff (ins.trap == 0 )  {
@@ -944,16 +932,14 @@ covergroup Vls16_vl2re64_v_cg with function sample(ins_t ins);
 
     //// end cr_vl_lmul_lmul4max_sew16////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
     // Value of VTYPE.vta (vector tail agnostic)
-    bins undisturbed = {0};
-        bins agnostic    = {1};
+    // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     cr_vtype_agnostic_lmul4max_nomask : cross cp_csr_vtype_vta,cp_csr_vtype_vma iff (ins.trap == 0 )  {
@@ -1081,16 +1067,14 @@ covergroup Vls16_vl2re8_v_cg with function sample(ins_t ins);
 
     //// end cr_vl_lmul_lmul4max_sew16////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
     // Value of VTYPE.vta (vector tail agnostic)
-    bins undisturbed = {0};
-        bins agnostic    = {1};
+    // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     cr_vtype_agnostic_lmul4max_nomask : cross cp_csr_vtype_vta,cp_csr_vtype_vma iff (ins.trap == 0 )  {
@@ -1225,16 +1209,14 @@ covergroup Vls16_vl4re16_v_cg with function sample(ins_t ins);
 
     //// end cr_vl_lmul_lmul2max_sew16////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
     // Value of VTYPE.vta (vector tail agnostic)
-    bins undisturbed = {0};
-        bins agnostic    = {1};
+    // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     cr_vtype_agnostic_lmul2max_nomask : cross cp_csr_vtype_vta,cp_csr_vtype_vma iff (ins.trap == 0 )  {
@@ -1369,16 +1351,14 @@ covergroup Vls16_vl4re32_v_cg with function sample(ins_t ins);
 
     //// end cr_vl_lmul_lmul2max_sew16////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
     // Value of VTYPE.vta (vector tail agnostic)
-    bins undisturbed = {0};
-        bins agnostic    = {1};
+    // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     cr_vtype_agnostic_lmul2max_nomask : cross cp_csr_vtype_vta,cp_csr_vtype_vma iff (ins.trap == 0 )  {
@@ -1513,16 +1493,14 @@ covergroup Vls16_vl4re64_v_cg with function sample(ins_t ins);
 
     //// end cr_vl_lmul_lmul2max_sew16////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
     // Value of VTYPE.vta (vector tail agnostic)
-    bins undisturbed = {0};
-        bins agnostic    = {1};
+    // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     cr_vtype_agnostic_lmul2max_nomask : cross cp_csr_vtype_vta,cp_csr_vtype_vma iff (ins.trap == 0 )  {
@@ -1657,16 +1635,14 @@ covergroup Vls16_vl4re8_v_cg with function sample(ins_t ins);
 
     //// end cr_vl_lmul_lmul2max_sew16////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
     // Value of VTYPE.vta (vector tail agnostic)
-    bins undisturbed = {0};
-        bins agnostic    = {1};
+    // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     cr_vtype_agnostic_lmul2max_nomask : cross cp_csr_vtype_vta,cp_csr_vtype_vma iff (ins.trap == 0 )  {
@@ -1804,16 +1780,14 @@ covergroup Vls16_vl8re16_v_cg with function sample(ins_t ins);
 
     //// end cr_vl_lmul_lmul1max_sew16////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
     // Value of VTYPE.vta (vector tail agnostic)
-    bins undisturbed = {0};
-        bins agnostic    = {1};
+    // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     cr_vtype_agnostic_lmul1max_nomask : cross cp_csr_vtype_vta,cp_csr_vtype_vma iff (ins.trap == 0 )  {
@@ -1951,16 +1925,14 @@ covergroup Vls16_vl8re32_v_cg with function sample(ins_t ins);
 
     //// end cr_vl_lmul_lmul1max_sew16////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
     // Value of VTYPE.vta (vector tail agnostic)
-    bins undisturbed = {0};
-        bins agnostic    = {1};
+    // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     cr_vtype_agnostic_lmul1max_nomask : cross cp_csr_vtype_vta,cp_csr_vtype_vma iff (ins.trap == 0 )  {
@@ -2098,16 +2070,14 @@ covergroup Vls16_vl8re64_v_cg with function sample(ins_t ins);
 
     //// end cr_vl_lmul_lmul1max_sew16////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
     // Value of VTYPE.vta (vector tail agnostic)
-    bins undisturbed = {0};
-        bins agnostic    = {1};
+    // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     cr_vtype_agnostic_lmul1max_nomask : cross cp_csr_vtype_vta,cp_csr_vtype_vma iff (ins.trap == 0 )  {
@@ -2245,16 +2215,14 @@ covergroup Vls16_vl8re8_v_cg with function sample(ins_t ins);
 
     //// end cr_vl_lmul_lmul1max_sew16////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
     // Value of VTYPE.vta (vector tail agnostic)
-    bins undisturbed = {0};
-        bins agnostic    = {1};
+    // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     cr_vtype_agnostic_lmul1max_nomask : cross cp_csr_vtype_vta,cp_csr_vtype_vma iff (ins.trap == 0 )  {
@@ -2346,16 +2314,14 @@ covergroup Vls16_vle16_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_e16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -2530,16 +2496,14 @@ covergroup Vls16_vle16ff_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_e16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -2637,16 +2601,14 @@ covergroup Vls16_vle32_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_e32
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -2821,16 +2783,14 @@ covergroup Vls16_vle32ff_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_e32
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -2928,16 +2888,14 @@ covergroup Vls16_vle64_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_e64
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -3112,16 +3070,14 @@ covergroup Vls16_vle64ff_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_e64
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -3219,16 +3175,14 @@ covergroup Vls16_vle8_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_e8
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -3403,16 +3357,14 @@ covergroup Vls16_vle8ff_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_e8
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -3538,16 +3490,14 @@ covergroup Vls16_vlm_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_nomask
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     not_maskable: coverpoint ins.current.insn[25] {
@@ -3688,9 +3638,7 @@ covergroup Vls16_vloxei16_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -3783,16 +3731,14 @@ covergroup Vls16_vloxei16_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_e16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -3919,9 +3865,7 @@ covergroup Vls16_vloxei32_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -4014,16 +3958,14 @@ covergroup Vls16_vloxei32_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_e32
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -4149,9 +4091,7 @@ covergroup Vls16_vloxei64_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -4244,16 +4184,14 @@ covergroup Vls16_vloxei64_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_e64
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -4373,9 +4311,7 @@ covergroup Vls16_vloxei8_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -4468,16 +4404,14 @@ covergroup Vls16_vloxei8_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_e8
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -4539,9 +4473,7 @@ covergroup Vls16_vloxseg2ei16_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -4636,16 +4568,14 @@ covergroup Vls16_vloxseg2ei16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -4708,9 +4638,7 @@ covergroup Vls16_vloxseg2ei32_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -4805,16 +4733,14 @@ covergroup Vls16_vloxseg2ei32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -4867,9 +4793,7 @@ covergroup Vls16_vloxseg2ei64_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -4964,16 +4888,14 @@ covergroup Vls16_vloxseg2ei64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -5035,9 +4957,7 @@ covergroup Vls16_vloxseg2ei8_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -5132,16 +5052,14 @@ covergroup Vls16_vloxseg2ei8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -5179,9 +5097,7 @@ covergroup Vls16_vloxseg3ei16_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -5276,16 +5192,14 @@ covergroup Vls16_vloxseg3ei16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -5324,9 +5238,7 @@ covergroup Vls16_vloxseg3ei32_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -5421,16 +5333,14 @@ covergroup Vls16_vloxseg3ei32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -5483,9 +5393,7 @@ covergroup Vls16_vloxseg3ei64_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -5579,16 +5487,14 @@ covergroup Vls16_vloxseg3ei64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -5626,9 +5532,7 @@ covergroup Vls16_vloxseg3ei8_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -5723,16 +5627,14 @@ covergroup Vls16_vloxseg3ei8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -5794,9 +5696,7 @@ covergroup Vls16_vloxseg4ei16_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -5892,16 +5792,14 @@ covergroup Vls16_vloxseg4ei16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -5964,9 +5862,7 @@ covergroup Vls16_vloxseg4ei32_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -6062,16 +5958,14 @@ covergroup Vls16_vloxseg4ei32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -6148,9 +6042,7 @@ covergroup Vls16_vloxseg4ei64_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -6245,16 +6137,14 @@ covergroup Vls16_vloxseg4ei64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -6316,9 +6206,7 @@ covergroup Vls16_vloxseg4ei8_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -6414,16 +6302,14 @@ covergroup Vls16_vloxseg4ei8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -6461,9 +6347,7 @@ covergroup Vls16_vloxseg5ei16_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -6559,16 +6443,14 @@ covergroup Vls16_vloxseg5ei16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -6607,9 +6489,7 @@ covergroup Vls16_vloxseg5ei32_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -6706,16 +6586,14 @@ covergroup Vls16_vloxseg5ei32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -6768,9 +6646,7 @@ covergroup Vls16_vloxseg5ei64_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -6864,16 +6740,14 @@ covergroup Vls16_vloxseg5ei64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -6911,9 +6785,7 @@ covergroup Vls16_vloxseg5ei8_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -7011,16 +6883,14 @@ covergroup Vls16_vloxseg5ei8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -7058,9 +6928,7 @@ covergroup Vls16_vloxseg6ei16_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -7157,16 +7025,14 @@ covergroup Vls16_vloxseg6ei16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -7205,9 +7071,7 @@ covergroup Vls16_vloxseg6ei32_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -7305,16 +7169,14 @@ covergroup Vls16_vloxseg6ei32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -7367,9 +7229,7 @@ covergroup Vls16_vloxseg6ei64_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -7464,16 +7324,14 @@ covergroup Vls16_vloxseg6ei64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -7511,9 +7369,7 @@ covergroup Vls16_vloxseg6ei8_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -7612,16 +7468,14 @@ covergroup Vls16_vloxseg6ei8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -7659,9 +7513,7 @@ covergroup Vls16_vloxseg7ei16_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -7759,16 +7611,14 @@ covergroup Vls16_vloxseg7ei16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -7807,9 +7657,7 @@ covergroup Vls16_vloxseg7ei32_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -7908,16 +7756,14 @@ covergroup Vls16_vloxseg7ei32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -7970,9 +7816,7 @@ covergroup Vls16_vloxseg7ei64_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -8068,16 +7912,14 @@ covergroup Vls16_vloxseg7ei64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -8115,9 +7957,7 @@ covergroup Vls16_vloxseg7ei8_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -8217,16 +8057,14 @@ covergroup Vls16_vloxseg7ei8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -8288,9 +8126,7 @@ covergroup Vls16_vloxseg8ei16_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -8389,16 +8225,14 @@ covergroup Vls16_vloxseg8ei16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -8461,9 +8295,7 @@ covergroup Vls16_vloxseg8ei32_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -8563,16 +8395,14 @@ covergroup Vls16_vloxseg8ei32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -8649,9 +8479,7 @@ covergroup Vls16_vloxseg8ei64_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -8748,16 +8576,14 @@ covergroup Vls16_vloxseg8ei64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -8819,9 +8645,7 @@ covergroup Vls16_vloxseg8ei8_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -8922,16 +8746,14 @@ covergroup Vls16_vloxseg8ei8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -9042,16 +8864,14 @@ covergroup Vls16_vlse16_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_e16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -9162,16 +8982,14 @@ covergroup Vls16_vlse32_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_e32
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -9282,16 +9100,14 @@ covergroup Vls16_vlse64_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_e64
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -9402,16 +9218,14 @@ covergroup Vls16_vlse8_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_e8
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -9511,16 +9325,14 @@ covergroup Vls16_vlseg2e16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -9697,16 +9509,14 @@ covergroup Vls16_vlseg2e16ff_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -9806,16 +9616,14 @@ covergroup Vls16_vlseg2e32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -9992,16 +9800,14 @@ covergroup Vls16_vlseg2e32ff_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -10101,16 +9907,14 @@ covergroup Vls16_vlseg2e64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -10257,16 +10061,14 @@ covergroup Vls16_vlseg2e64ff_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -10366,16 +10168,14 @@ covergroup Vls16_vlseg2e8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -10552,16 +10352,14 @@ covergroup Vls16_vlseg2e8ff_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -10661,16 +10459,14 @@ covergroup Vls16_vlseg3e16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -10847,16 +10643,14 @@ covergroup Vls16_vlseg3e16ff_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -10947,16 +10741,14 @@ covergroup Vls16_vlseg3e32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -11094,16 +10886,14 @@ covergroup Vls16_vlseg3e32ff_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -11202,16 +10992,14 @@ covergroup Vls16_vlseg3e64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -11357,16 +11145,14 @@ covergroup Vls16_vlseg3e64ff_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -11466,16 +11252,14 @@ covergroup Vls16_vlseg3e8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -11652,16 +11436,14 @@ covergroup Vls16_vlseg3e8ff_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -11762,16 +11544,14 @@ covergroup Vls16_vlseg4e16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -11949,16 +11729,14 @@ covergroup Vls16_vlseg4e16ff_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -12050,16 +11828,14 @@ covergroup Vls16_vlseg4e32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -12207,16 +11983,14 @@ covergroup Vls16_vlseg4e32ff_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -12316,16 +12090,14 @@ covergroup Vls16_vlseg4e64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -12472,16 +12244,14 @@ covergroup Vls16_vlseg4e64ff_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -12582,16 +12352,14 @@ covergroup Vls16_vlseg4e8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -12769,16 +12537,14 @@ covergroup Vls16_vlseg4e8ff_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -12879,16 +12645,14 @@ covergroup Vls16_vlseg5e16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -13032,16 +12796,14 @@ covergroup Vls16_vlseg5e16ff_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -13143,16 +12905,14 @@ covergroup Vls16_vlseg5e32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -13301,16 +13061,14 @@ covergroup Vls16_vlseg5e32ff_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -13409,16 +13167,14 @@ covergroup Vls16_vlseg5e64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -13564,16 +13320,14 @@ covergroup Vls16_vlseg5e64ff_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -13676,16 +13430,14 @@ covergroup Vls16_vlseg5e8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -13865,16 +13617,14 @@ covergroup Vls16_vlseg5e8ff_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -13976,16 +13726,14 @@ covergroup Vls16_vlseg6e16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -14130,16 +13878,14 @@ covergroup Vls16_vlseg6e16ff_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -14242,16 +13988,14 @@ covergroup Vls16_vlseg6e32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -14401,16 +14145,14 @@ covergroup Vls16_vlseg6e32ff_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -14510,16 +14252,14 @@ covergroup Vls16_vlseg6e64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -14666,16 +14406,14 @@ covergroup Vls16_vlseg6e64ff_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -14779,16 +14517,14 @@ covergroup Vls16_vlseg6e8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -14969,16 +14705,14 @@ covergroup Vls16_vlseg6e8ff_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -15081,16 +14815,14 @@ covergroup Vls16_vlseg7e16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -15236,16 +14968,14 @@ covergroup Vls16_vlseg7e16ff_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -15349,16 +15079,14 @@ covergroup Vls16_vlseg7e32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -15509,16 +15237,14 @@ covergroup Vls16_vlseg7e32ff_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -15619,16 +15345,14 @@ covergroup Vls16_vlseg7e64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -15776,16 +15500,14 @@ covergroup Vls16_vlseg7e64ff_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -15890,16 +15612,14 @@ covergroup Vls16_vlseg7e8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -16081,16 +15801,14 @@ covergroup Vls16_vlseg7e8ff_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -16194,16 +15912,14 @@ covergroup Vls16_vlseg8e16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -16350,16 +16066,14 @@ covergroup Vls16_vlseg8e16ff_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -16464,16 +16178,14 @@ covergroup Vls16_vlseg8e32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -16625,16 +16337,14 @@ covergroup Vls16_vlseg8e32ff_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -16736,16 +16446,14 @@ covergroup Vls16_vlseg8e64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -16894,16 +16602,14 @@ covergroup Vls16_vlseg8e64ff_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -17009,16 +16715,14 @@ covergroup Vls16_vlseg8e8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -17201,16 +16905,14 @@ covergroup Vls16_vlseg8e8ff_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -17323,16 +17025,14 @@ covergroup Vls16_vlsseg2e16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -17445,16 +17145,14 @@ covergroup Vls16_vlsseg2e32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -17567,16 +17265,14 @@ covergroup Vls16_vlsseg2e64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -17689,16 +17385,14 @@ covergroup Vls16_vlsseg2e8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -17811,16 +17505,14 @@ covergroup Vls16_vlsseg3e16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -17933,16 +17625,14 @@ covergroup Vls16_vlsseg3e32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -18054,16 +17744,14 @@ covergroup Vls16_vlsseg3e64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -18176,16 +17864,14 @@ covergroup Vls16_vlsseg3e8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -18299,16 +17985,14 @@ covergroup Vls16_vlsseg4e16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -18422,16 +18106,14 @@ covergroup Vls16_vlsseg4e32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -18544,16 +18226,14 @@ covergroup Vls16_vlsseg4e64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -18667,16 +18347,14 @@ covergroup Vls16_vlsseg4e8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -18790,16 +18468,14 @@ covergroup Vls16_vlsseg5e16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -18914,16 +18590,14 @@ covergroup Vls16_vlsseg5e32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -19035,16 +18709,14 @@ covergroup Vls16_vlsseg5e64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -19160,16 +18832,14 @@ covergroup Vls16_vlsseg5e8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -19284,16 +18954,14 @@ covergroup Vls16_vlsseg6e16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -19409,16 +19077,14 @@ covergroup Vls16_vlsseg6e32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -19531,16 +19197,14 @@ covergroup Vls16_vlsseg6e64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -19657,16 +19321,14 @@ covergroup Vls16_vlsseg6e8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -19782,16 +19444,14 @@ covergroup Vls16_vlsseg7e16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -19908,16 +19568,14 @@ covergroup Vls16_vlsseg7e32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -20031,16 +19689,14 @@ covergroup Vls16_vlsseg7e64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -20158,16 +19814,14 @@ covergroup Vls16_vlsseg7e8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -20284,16 +19938,14 @@ covergroup Vls16_vlsseg8e16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -20411,16 +20063,14 @@ covergroup Vls16_vlsseg8e32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -20535,16 +20185,14 @@ covergroup Vls16_vlsseg8e64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -20663,16 +20311,14 @@ covergroup Vls16_vlsseg8e8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -20894,16 +20540,14 @@ covergroup Vls16_vluxei16_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_e16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -21112,16 +20756,14 @@ covergroup Vls16_vluxei32_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_e32
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -21329,16 +20971,14 @@ covergroup Vls16_vluxei64_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_e64
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -21540,16 +21180,14 @@ covergroup Vls16_vluxei8_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_e8
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -21695,16 +21333,14 @@ covergroup Vls16_vluxseg2ei16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -21851,16 +21487,14 @@ covergroup Vls16_vluxseg2ei32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -21997,16 +21631,14 @@ covergroup Vls16_vluxseg2ei64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -22152,16 +21784,14 @@ covergroup Vls16_vluxseg2ei8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -22283,16 +21913,14 @@ covergroup Vls16_vluxseg3ei16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -22415,16 +22043,14 @@ covergroup Vls16_vluxseg3ei32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -22560,16 +22186,14 @@ covergroup Vls16_vluxseg3ei64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -22691,16 +22315,14 @@ covergroup Vls16_vluxseg3ei8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -22847,16 +22469,14 @@ covergroup Vls16_vluxseg4ei16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -23004,16 +22624,14 @@ covergroup Vls16_vluxseg4ei32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -23174,16 +22792,14 @@ covergroup Vls16_vluxseg4ei64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -23330,16 +22946,14 @@ covergroup Vls16_vluxseg4ei8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -23462,16 +23076,14 @@ covergroup Vls16_vluxseg5ei16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -23596,16 +23208,14 @@ covergroup Vls16_vluxseg5ei32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -23741,16 +23351,14 @@ covergroup Vls16_vluxseg5ei64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -23875,16 +23483,14 @@ covergroup Vls16_vluxseg5ei8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -24008,16 +23614,14 @@ covergroup Vls16_vluxseg6ei16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -24143,16 +23747,14 @@ covergroup Vls16_vluxseg6ei32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -24289,16 +23891,14 @@ covergroup Vls16_vluxseg6ei64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -24424,16 +24024,14 @@ covergroup Vls16_vluxseg6ei8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -24558,16 +24156,14 @@ covergroup Vls16_vluxseg7ei16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -24694,16 +24290,14 @@ covergroup Vls16_vluxseg7ei32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -24841,16 +24435,14 @@ covergroup Vls16_vluxseg7ei64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -24977,16 +24569,14 @@ covergroup Vls16_vluxseg7ei8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -25136,16 +24726,14 @@ covergroup Vls16_vluxseg8ei16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -25297,16 +24885,14 @@ covergroup Vls16_vluxseg8ei32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -25469,16 +25055,14 @@ covergroup Vls16_vluxseg8ei64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -25630,16 +25214,14 @@ covergroup Vls16_vluxseg8ei8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -25762,16 +25344,14 @@ covergroup Vls16_vs1r_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_nomask
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     not_maskable: coverpoint ins.current.insn[25] {
@@ -25911,16 +25491,14 @@ covergroup Vls16_vs2r_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_nomask
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     not_maskable: coverpoint ins.current.insn[25] {
@@ -26068,16 +25646,14 @@ covergroup Vls16_vs4r_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_nomask
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     not_maskable: coverpoint ins.current.insn[25] {
@@ -26229,16 +25805,14 @@ covergroup Vls16_vs8r_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_nomask
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     not_maskable: coverpoint ins.current.insn[25] {
@@ -26337,16 +25911,14 @@ covergroup Vls16_vse16_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_e16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -26444,16 +26016,14 @@ covergroup Vls16_vse32_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_e32
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -26551,16 +26121,14 @@ covergroup Vls16_vse64_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_e64
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -26658,16 +26226,14 @@ covergroup Vls16_vse8_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_e8
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -26793,16 +26359,14 @@ covergroup Vls16_vsm_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_nomask
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     not_maskable: coverpoint ins.current.insn[25] {
@@ -26852,9 +26416,7 @@ covergroup Vls16_vsoxei16_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -26947,16 +26509,14 @@ covergroup Vls16_vsoxei16_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_e16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -26995,9 +26555,7 @@ covergroup Vls16_vsoxei32_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -27090,16 +26648,14 @@ covergroup Vls16_vsoxei32_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_e32
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -27152,9 +26708,7 @@ covergroup Vls16_vsoxei64_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -27247,16 +26801,14 @@ covergroup Vls16_vsoxei64_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_e64
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -27294,9 +26846,7 @@ covergroup Vls16_vsoxei8_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -27389,16 +26939,14 @@ covergroup Vls16_vsoxei8_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_e8
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -27470,9 +27018,7 @@ covergroup Vls16_vsoxseg2ei16_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -27567,16 +27113,14 @@ covergroup Vls16_vsoxseg2ei16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -27639,9 +27183,7 @@ covergroup Vls16_vsoxseg2ei32_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -27736,16 +27278,14 @@ covergroup Vls16_vsoxseg2ei32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -27798,9 +27338,7 @@ covergroup Vls16_vsoxseg2ei64_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -27895,16 +27433,14 @@ covergroup Vls16_vsoxseg2ei64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -27966,9 +27502,7 @@ covergroup Vls16_vsoxseg2ei8_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -28063,16 +27597,14 @@ covergroup Vls16_vsoxseg2ei8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -28121,9 +27653,7 @@ covergroup Vls16_vsoxseg3ei16_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -28218,16 +27748,14 @@ covergroup Vls16_vsoxseg3ei16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -28266,9 +27794,7 @@ covergroup Vls16_vsoxseg3ei32_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -28363,16 +27889,14 @@ covergroup Vls16_vsoxseg3ei32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -28425,9 +27949,7 @@ covergroup Vls16_vsoxseg3ei64_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -28521,16 +28043,14 @@ covergroup Vls16_vsoxseg3ei64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -28568,9 +28088,7 @@ covergroup Vls16_vsoxseg3ei8_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -28665,16 +28183,14 @@ covergroup Vls16_vsoxseg3ei8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -28748,9 +28264,7 @@ covergroup Vls16_vsoxseg4ei16_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -28846,16 +28360,14 @@ covergroup Vls16_vsoxseg4ei16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -28918,9 +28430,7 @@ covergroup Vls16_vsoxseg4ei32_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -29016,16 +28526,14 @@ covergroup Vls16_vsoxseg4ei32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -29102,9 +28610,7 @@ covergroup Vls16_vsoxseg4ei64_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -29199,16 +28705,14 @@ covergroup Vls16_vsoxseg4ei64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -29270,9 +28774,7 @@ covergroup Vls16_vsoxseg4ei8_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -29368,16 +28870,14 @@ covergroup Vls16_vsoxseg4ei8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -29428,9 +28928,7 @@ covergroup Vls16_vsoxseg5ei16_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -29526,16 +29024,14 @@ covergroup Vls16_vsoxseg5ei16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -29574,9 +29070,7 @@ covergroup Vls16_vsoxseg5ei32_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -29673,16 +29167,14 @@ covergroup Vls16_vsoxseg5ei32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -29735,9 +29227,7 @@ covergroup Vls16_vsoxseg5ei64_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -29831,16 +29321,14 @@ covergroup Vls16_vsoxseg5ei64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -29878,9 +29366,7 @@ covergroup Vls16_vsoxseg5ei8_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -29978,16 +29464,14 @@ covergroup Vls16_vsoxseg5ei8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -30039,9 +29523,7 @@ covergroup Vls16_vsoxseg6ei16_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -30138,16 +29620,14 @@ covergroup Vls16_vsoxseg6ei16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -30186,9 +29666,7 @@ covergroup Vls16_vsoxseg6ei32_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -30286,16 +29764,14 @@ covergroup Vls16_vsoxseg6ei32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -30348,9 +29824,7 @@ covergroup Vls16_vsoxseg6ei64_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -30445,16 +29919,14 @@ covergroup Vls16_vsoxseg6ei64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -30492,9 +29964,7 @@ covergroup Vls16_vsoxseg6ei8_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -30593,16 +30063,14 @@ covergroup Vls16_vsoxseg6ei8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -30655,9 +30123,7 @@ covergroup Vls16_vsoxseg7ei16_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -30755,16 +30221,14 @@ covergroup Vls16_vsoxseg7ei16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -30803,9 +30267,7 @@ covergroup Vls16_vsoxseg7ei32_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -30904,16 +30366,14 @@ covergroup Vls16_vsoxseg7ei32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -30966,9 +30426,7 @@ covergroup Vls16_vsoxseg7ei64_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -31064,16 +30522,14 @@ covergroup Vls16_vsoxseg7ei64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -31111,9 +30567,7 @@ covergroup Vls16_vsoxseg7ei8_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -31213,16 +30667,14 @@ covergroup Vls16_vsoxseg7ei8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -31300,9 +30752,7 @@ covergroup Vls16_vsoxseg8ei16_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -31401,16 +30851,14 @@ covergroup Vls16_vsoxseg8ei16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -31473,9 +30921,7 @@ covergroup Vls16_vsoxseg8ei32_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -31575,16 +31021,14 @@ covergroup Vls16_vsoxseg8ei32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -31661,9 +31105,7 @@ covergroup Vls16_vsoxseg8ei64_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -31760,16 +31202,14 @@ covergroup Vls16_vsoxseg8ei64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -31831,9 +31271,7 @@ covergroup Vls16_vsoxseg8ei8_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
-        bins no_overlap = {0};
-        bins overlap = {1};
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val)[0] iff (ins.trap == 0) {
     }
 
     //// end cp_custom_ordered_index_overlap ////////////////////////////////////////////////
@@ -31934,16 +31372,14 @@ covergroup Vls16_vsoxseg8ei8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -32054,16 +31490,14 @@ covergroup Vls16_vsse16_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_e16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -32174,16 +31608,14 @@ covergroup Vls16_vsse32_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_e32
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -32294,16 +31726,14 @@ covergroup Vls16_vsse64_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_e64
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -32414,16 +31844,14 @@ covergroup Vls16_vsse8_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_e8
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -32523,16 +31951,14 @@ covergroup Vls16_vsseg2e16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -32632,16 +32058,14 @@ covergroup Vls16_vsseg2e32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -32741,16 +32165,14 @@ covergroup Vls16_vsseg2e64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -32850,16 +32272,14 @@ covergroup Vls16_vsseg2e8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -32959,16 +32379,14 @@ covergroup Vls16_vsseg3e16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -33059,16 +32477,14 @@ covergroup Vls16_vsseg3e32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -33158,16 +32574,14 @@ covergroup Vls16_vsseg3e64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -33267,16 +32681,14 @@ covergroup Vls16_vsseg3e8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -33377,16 +32789,14 @@ covergroup Vls16_vsseg4e16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -33487,16 +32897,14 @@ covergroup Vls16_vsseg4e32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -33596,16 +33004,14 @@ covergroup Vls16_vsseg4e64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -33706,16 +33112,14 @@ covergroup Vls16_vsseg4e8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -33816,16 +33220,14 @@ covergroup Vls16_vsseg5e16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -33927,16 +33329,14 @@ covergroup Vls16_vsseg5e32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -34035,16 +33435,14 @@ covergroup Vls16_vsseg5e64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -34147,16 +33545,14 @@ covergroup Vls16_vsseg5e8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -34258,16 +33654,14 @@ covergroup Vls16_vsseg6e16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -34370,16 +33764,14 @@ covergroup Vls16_vsseg6e32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -34479,16 +33871,14 @@ covergroup Vls16_vsseg6e64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -34592,16 +33982,14 @@ covergroup Vls16_vsseg6e8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -34704,16 +34092,14 @@ covergroup Vls16_vsseg7e16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -34817,16 +34203,14 @@ covergroup Vls16_vsseg7e32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -34927,16 +34311,14 @@ covergroup Vls16_vsseg7e64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -35041,16 +34423,14 @@ covergroup Vls16_vsseg7e8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -35154,16 +34534,14 @@ covergroup Vls16_vsseg8e16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -35268,16 +34646,14 @@ covergroup Vls16_vsseg8e32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -35379,16 +34755,14 @@ covergroup Vls16_vsseg8e64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -35494,16 +34868,14 @@ covergroup Vls16_vsseg8e8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -35616,16 +34988,14 @@ covergroup Vls16_vssseg2e16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -35738,16 +35108,14 @@ covergroup Vls16_vssseg2e32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -35860,16 +35228,14 @@ covergroup Vls16_vssseg2e64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -35982,16 +35348,14 @@ covergroup Vls16_vssseg2e8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -36104,16 +35468,14 @@ covergroup Vls16_vssseg3e16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -36226,16 +35588,14 @@ covergroup Vls16_vssseg3e32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -36347,16 +35707,14 @@ covergroup Vls16_vssseg3e64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -36469,16 +35827,14 @@ covergroup Vls16_vssseg3e8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -36592,16 +35948,14 @@ covergroup Vls16_vssseg4e16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -36715,16 +36069,14 @@ covergroup Vls16_vssseg4e32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -36837,16 +36189,14 @@ covergroup Vls16_vssseg4e64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -36960,16 +36310,14 @@ covergroup Vls16_vssseg4e8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -37083,16 +36431,14 @@ covergroup Vls16_vssseg5e16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -37207,16 +36553,14 @@ covergroup Vls16_vssseg5e32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -37328,16 +36672,14 @@ covergroup Vls16_vssseg5e64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -37453,16 +36795,14 @@ covergroup Vls16_vssseg5e8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -37577,16 +36917,14 @@ covergroup Vls16_vssseg6e16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -37702,16 +37040,14 @@ covergroup Vls16_vssseg6e32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -37824,16 +37160,14 @@ covergroup Vls16_vssseg6e64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -37950,16 +37284,14 @@ covergroup Vls16_vssseg6e8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -38075,16 +37407,14 @@ covergroup Vls16_vssseg7e16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -38201,16 +37531,14 @@ covergroup Vls16_vssseg7e32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -38324,16 +37652,14 @@ covergroup Vls16_vssseg7e64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -38451,16 +37777,14 @@ covergroup Vls16_vssseg7e8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -38577,16 +37901,14 @@ covergroup Vls16_vssseg8e16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -38704,16 +38026,14 @@ covergroup Vls16_vssseg8e32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -38828,16 +38148,14 @@ covergroup Vls16_vssseg8e64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -38956,16 +38274,14 @@ covergroup Vls16_vssseg8e8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -39096,16 +38412,14 @@ covergroup Vls16_vsuxei16_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_e16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -39226,16 +38540,14 @@ covergroup Vls16_vsuxei32_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_e32
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -39370,16 +38682,14 @@ covergroup Vls16_vsuxei64_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_e64
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -39499,16 +38809,14 @@ covergroup Vls16_vsuxei8_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_e8
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -39664,16 +38972,14 @@ covergroup Vls16_vsuxseg2ei16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -39820,16 +39126,14 @@ covergroup Vls16_vsuxseg2ei32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -39966,16 +39270,14 @@ covergroup Vls16_vsuxseg2ei64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -40121,16 +39423,14 @@ covergroup Vls16_vsuxseg2ei8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -40263,16 +39563,14 @@ covergroup Vls16_vsuxseg3ei16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -40395,16 +39693,14 @@ covergroup Vls16_vsuxseg3ei32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -40540,16 +39836,14 @@ covergroup Vls16_vsuxseg3ei64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -40671,16 +39965,14 @@ covergroup Vls16_vsuxseg3ei8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -40839,16 +40131,14 @@ covergroup Vls16_vsuxseg4ei16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -40996,16 +40286,14 @@ covergroup Vls16_vsuxseg4ei32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -41166,16 +40454,14 @@ covergroup Vls16_vsuxseg4ei64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -41322,16 +40608,14 @@ covergroup Vls16_vsuxseg4ei8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -41467,16 +40751,14 @@ covergroup Vls16_vsuxseg5ei16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -41601,16 +40883,14 @@ covergroup Vls16_vsuxseg5ei32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -41746,16 +41026,14 @@ covergroup Vls16_vsuxseg5ei64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -41880,16 +41158,14 @@ covergroup Vls16_vsuxseg5ei8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -42027,16 +41303,14 @@ covergroup Vls16_vsuxseg6ei16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -42162,16 +41436,14 @@ covergroup Vls16_vsuxseg6ei32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -42308,16 +41580,14 @@ covergroup Vls16_vsuxseg6ei64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -42443,16 +41713,14 @@ covergroup Vls16_vsuxseg6ei8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -42592,16 +41860,14 @@ covergroup Vls16_vsuxseg7ei16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -42728,16 +41994,14 @@ covergroup Vls16_vsuxseg7ei32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -42875,16 +42139,14 @@ covergroup Vls16_vsuxseg7ei64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -43011,16 +42273,14 @@ covergroup Vls16_vsuxseg7ei8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -43186,16 +42446,14 @@ covergroup Vls16_vsuxseg8ei16_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -43347,16 +42605,14 @@ covergroup Vls16_vsuxseg8ei32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -43519,16 +42775,14 @@ covergroup Vls16_vsuxseg8ei64_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -43680,16 +42934,14 @@ covergroup Vls16_vsuxseg8ei8_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
+        // 0: undisturbed, 1: agnostic
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {

@@ -44,12 +44,8 @@ covergroup Zkr_Sm_cg with function sample(ins_t ins);
     }
 
     mseccfg_sseed: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mseccfg", "sseed")[0] {
-        bins set   = {1};
-        bins clear = {0};
     }
     mseccfg_useed: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mseccfg", "useed")[0] {
-        bins set   = {1};
-        bins clear = {0};
     }
 
     // Main coverpoints (M-mode)
@@ -91,12 +87,8 @@ covergroup Zkr_S_cg with function sample(ins_t ins);
     }
 
     mseccfg_sseed: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mseccfg", "sseed")[0] {
-        bins set   = {1};
-        bins clear = {0};
     }
     mseccfg_useed: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mseccfg", "useed")[0] {
-        bins set   = {1};
-        bins clear = {0};
     }
 
     // Main coverpoints (S-mode)
@@ -138,12 +130,8 @@ covergroup Zkr_U_cg with function sample(ins_t ins);
     }
 
     mseccfg_sseed: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mseccfg", "sseed")[0] {
-        bins set   = {1};
-        bins clear = {0};
     }
     mseccfg_useed: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mseccfg", "useed")[0] {
-        bins set   = {1};
-        bins clear = {0};
     }
 
     // Main coverpoints (U-mode)

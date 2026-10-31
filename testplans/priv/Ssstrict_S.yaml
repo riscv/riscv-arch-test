@@ -13,7 +13,7 @@ coverpoints:
       Switch to S-mode (ecall with a0=1) before CSR sweep.
       Fast trap handler must be installed from M-mode first.
       Excludes satp to avoid activating virtual memory.
-  - name: cp_csrw_corners
+  - name: cp_csrw_edges
     goal: CSR Accesses
     description: Write all-zeros and all-ones to every CSR from S-mode. Skips satp and same custom CSRs as cp_csrr.
     expectation: S-mode writable CSRs accept writes; read-only or higher-privilege CSRs trap.
@@ -22,7 +22,7 @@ coverpoints:
   - name: cp_csrcs
     goal: CSR Accesses
     description: Set and clear all bits of every CSR from S-mode using CSRRS/CSRRC with rs1=all-ones.
-    expectation: Same as cp_csrw_corners.
+    expectation: Same as cp_csrw_edges.
     bins: "Two bins per CSR: CSRRS all-ones and CSRRC all-ones from S-mode"
     notes: CSRRS/CSRRC with x=−1 from S-mode.
   - name: cp_shadow_m

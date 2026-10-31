@@ -766,6 +766,8 @@ A suite can also hold tests that need an extension beyond the suite's own, such 
 
 After writing initial drafts of coverpoints and tests, run them with `make coverage EXTENSIONS=ExceptionsZc`. Omit the `--jobs` flag so they run in order and it is easier to localize which one failed. By giving the name of the test suite (e.g. ExceptionsZc), you only run the new suite of interest, saving runtime.
 
+Set `COVERAGE_SIMULATOR=verilator` to collect coverage with Verilator:
+
 You can expect syntax errors in the tests that are easy to locate based on the compiler messages.
 
 Once those are resolved, you may have bugs that cause an infinite loop. If the test is taking a long time to run, halt it. Look at the log file in (e.g.) `work/sail-rv64-max/build/priv/ExceptionsZc/ExceptionsZc.sig.trace`. Scroll through until you find the misbehavior that put the system into an infinite loop.

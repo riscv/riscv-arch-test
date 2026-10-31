@@ -14862,9 +14862,8 @@ covergroup Vf16_vfredosum_vs_cg with function sample(ins_t ins);
 `else
         `ifdef D_SUPPORTED
         vs1_0_qNAN : coverpoint
-                (get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val) inside {
-                        [64'h7FF8_0000_0000_0000:64'h7FFF_FFFF_FFFF_FFFF]
-                })
+                (get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val) >= 64'h7FF8_0000_0000_0000
+                 && get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val) <= 64'h7FFF_FFFF_FFFF_FFFF)
         {
                 bins posQNaN = {1};
         }
@@ -25955,9 +25954,8 @@ covergroup Vf16_vfwredosum_vs_cg with function sample(ins_t ins);
 `else
         `ifdef D_SUPPORTED
         vs1_0_qNAN : coverpoint
-                (get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val) inside {
-                        [64'h7FF8_0000_0000_0000:64'h7FFF_FFFF_FFFF_FFFF]
-                })
+                (get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val) >= 64'h7FF8_0000_0000_0000
+                 && get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val) <= 64'h7FFF_FFFF_FFFF_FFFF)
         {
                 bins posQNaN = {1};
         }
@@ -31329,12 +31327,14 @@ covergroup Vf16_vmfne_vv_cg with function sample(ins_t ins);
 endgroup
 // ---------------------
 function void vf16_sample(int hart, int issue, ins_t ins);
+    string inst_name = traceDataQ[hart][issue][0].inst_name;
+
     // Want to sample only if the SEW matches the target SEW of the file, some tests require
     // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
     // associated sew with these tests
     if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1 ||
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
-        case (traceDataQ[hart][issue][0].inst_name)
+        case (inst_name)
             "vfadd.vf"     : begin
                 Vf16_vfadd_vf_cg.sample(ins);
             end

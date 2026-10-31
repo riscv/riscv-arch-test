@@ -41,6 +41,10 @@ include::{testplansdir}/priv/PMP_Sv.adoc[]
 
 include::{testplansdir}/priv/PMP_SvZicbo.adoc[]
 
+==== PMP_HSvZicbo Hypervisor Virtual Memory + CBOM/CBOZ
+
+include::{testplansdir}/priv/PMP_HSvZicbo.adoc[]
+
 ==== PMP_Svadu Page Table Update
 
 include::{testplansdir}/priv/PMP_Svadu.adoc[]

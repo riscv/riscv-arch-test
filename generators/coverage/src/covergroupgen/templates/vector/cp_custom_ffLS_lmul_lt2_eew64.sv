@@ -34,7 +34,7 @@
                 bins ge2 = {[2:$]};
             }
 
-            ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+            ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
                 bins at_fault_addr = {1'b1};
             }
 

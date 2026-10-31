@@ -373,7 +373,7 @@ normative_rule_definitions:
 
   # With V=0, S CSRs and their VS replicas are separate registers, but vsstatus applies to HLV, HLVX and HSV
   - names: [H_vscsrs_v0, vsstatus_v0]
-    coverpoint: ["H_hscsr_cg/cp_replica", "SvH_hlv_cg/cp_hlv_priv"]
+    coverpoint: ["H_hscsr_cg/cp_replica", "Sv_H_hlv_cg/cp_hlv_priv"]
 
   # When V=1, the VS CSRs substitute for the corresponding supervisor CSRs, taking over
   # all functions of the usual supervisor CSRs except as specified otherwise. Instructions
@@ -433,7 +433,7 @@ normative_rule_definitions:
       ]
 
   # hfence.vvma and hfence.gvma execute in HS-mode with mstatus.TVM = 0, raise virtual instruction in VS-mode and
-  # VU-mode, and raise illegal instruction in U-mode.  Sm_H adds mstatus.TVM, and SvH the
+  # VU-mode, and raise illegal instruction in U-mode.  Sm_H adds mstatus.TVM, and Sv_H the
   # translations the fences remove.
   - names:
       [
@@ -644,7 +644,8 @@ normative_rule_definitions:
 
   # With Ssnpm, henvcfg.PMM enables pointer masking for VS-mode; PMM is read-only zero without Ssnpm and on RV32
   - names: [henvcfg_pmm_op]
-    coverpoint: ["SsnpmH_cg/{cp_vs_pmm,cp_hlv_hs_pmm,cp_hlv_u_pmm}"]
+    coverpoint:
+      ["Ssnpm_H_cg/{cp_vs_pmm,cp_hlv_hs_spvp1_pmm,cp_hlv_u_spvp1_pmm}"]
 
   # With Ssdbltrp, henvcfg.DTE = 0 disables Ssdbltrp for VS-mode and makes vsstatus.SDT read-only zero
   - names: [henvcfg_dte_op]

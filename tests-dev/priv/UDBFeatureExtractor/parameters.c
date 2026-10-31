@@ -608,6 +608,8 @@ static void concat(char *out, const char *a, const char *b, const char *c)
 #define PTE_LEAF 0xCF          // V R W X A D
 #define PTE_U 0x10
 #define PTE_D 0x80
+#define WAIT_TICKS (1ul << 16)   // mtime ticks a wfi or wrs.nto probe waits at most
+#define NOP_CYCLES 50            // a wrs.nto taking this many more cycles than an mcycle pair is not a no-op
 #if __riscv_xlen == 64
 #define ADUE_CSR "menvcfg"
 #define ADUE_BIT "61"
@@ -1889,6 +1891,20 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
         cfi_active = 0;
     }
 
+    // wfi and wrs.nto in M-mode with nothing pending, ended by a machine-timer interrupt WAIT_TICKS
+    // mtime ticks later (or the watchdog timeout, if shorter) if not before.  wfi that has not
+    // resumed by then is taken to wait for an event (WFI_FINITE false), though it may only have a
+    // longer limit.  wrs.nto, with a reservation held, is a no-op when it takes fewer than
+    // NOP_CYCLES cycles more than an empty mcycle pair.  Neither is probed without a timer, since a
+    // wait could last forever.
+    {
+        unsigned long ticks = watchdog_ticks < WAIT_TICKS ? watchdog_ticks : WAIT_TICKS, elapsed, cycles;
+        if (timed_wait(false, ticks, &elapsed, &cycles))
+            param_bool("WFI_FINITE", elapsed < ticks);
+        if (have("Zawrs") && timed_wait(true, ticks, &elapsed, &cycles) && cycles != ~0ul)
+            param_bool("ZAWRS_NTO_IS_NOP", cycles < NOP_CYCLES);
+    }
+
     // Probes in U-, S- and VS-mode: PMP must let the lower modes run, the exceptions the probes
     // take are delegated so the lower mode's tval registers can be seen, and address translation
     // is Bare
@@ -2234,6 +2250,54 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
             unsigned long r = PROBE_VALUE("zve32f", VFREDUSUM_MASKED("0x7FC12345"));   // a quiet NaN with a payload
             if (PROBE_OK())
                 param_str("VFREDUSUM_NAN", (r & 0xFFFFFFFF) == 0x7FC12345 ? "no_change" : "custom");
+        }
+        // vfredusum rounding at a reduction node.  With vl = 2 the scalar s and the elements a and b
+        // can only be summed as (s+a)+b, (s+b)+a or s+(a+b), and for these inputs all three give
+        // the first result when the inner sum is rounded to SEW precision and the second when it
+        // keeps 3 or more extra bits, whatever the final rounding (exhaustive search with exact
+        // arithmetic, round to nearest even).  A node 1 or 2 bits wider gives either.
+        {
+            static const struct {
+                const char *ext;
+                unsigned sew;
+                unsigned long long in[3], sew_precision, wider;
+            } nodes[] = {
+                { "Zvfh", 16, { 0xc011, 0xbcf3, 0xc6f0 }, 0xc91a, 0xc91b },
+                { "Zve32f", 32, { 0xc0f1149e, 0xbfc0b511, 0xc012aea6 }, 0xc1354c9a, 0xc1354c9b },
+                { "Zve64d", 64, { 0x401d1d6e44583b62, 0x3ffcc1ad126689d5, 0x4006678dddf688cf },
+                  0x4027c0d03bf69120, 0x4027c0d03bf6911f },
+            };
+#define VFREDUSUM_NODE(arch, e)                                                                 \
+    PROBE_VALUE_IN(arch, "vsetivli x0, 1, e" #e ", m1, ta, ma\n\tvle" #e ".v v1, (%[in])\n\t"   \
+                         "addi t1, %[in], " #e " / 8\n\tvsetivli x0, 2, e" #e ", m1, ta, ma\n\t"   \
+                         "vle" #e ".v v2, (t1)\n\tcsrrwi s0, frm, 0\n\tvfredusum.vs v3, v2, v1\n\t" \
+                         "csrw frm, s0\n\tvmv.x.s a3, v3", buf)
+            static unsigned long long buf64[3];               // packed operands: s, then a and b
+            unsigned char *buf = (unsigned char *)buf64;
+            const char *found = 0;
+            for (unsigned i = 0; i < sizeof nodes / sizeof nodes[0]; i++) {
+                if (!have(nodes[i].ext))
+                    continue;
+                unsigned sew = nodes[i].sew;
+                for (unsigned j = 0; j < 3; j++)
+                    for (unsigned k = 0; k < sew / 8; k++)
+                        buf[j * (sew / 8) + k] = (unsigned char)(nodes[i].in[j] >> (8 * k));
+                unsigned long r = sew == 16 ? VFREDUSUM_NODE("zve32f, +zfhmin, +zvfh", 16)
+                                : sew == 32 ? VFREDUSUM_NODE("zve32f", 32)
+                                            : VFREDUSUM_NODE("zve64d", 64);
+                if (!PROBE_OK())
+                    continue;
+                // compare the low bits only: vmv.x.s gives the low XLEN bits, and the two
+                // results differ in the last
+                unsigned bits = sew < __riscv_xlen ? sew : __riscv_xlen;
+                unsigned long mask = bits == __riscv_xlen ? ~0ul : (1ul << bits) - 1;
+                if ((r & mask) == (nodes[i].wider & mask))
+                    found = "custom";
+                else if ((r & mask) == (nodes[i].sew_precision & mask) && !found)
+                    found = "SEW_precision";
+            }
+            if (found)
+                param_str("VFREDUSUM_NODE_ROUNDING_BEHAVIOR", found);
         }
         PROBE("zve32x", "csrwi vstart, 0\n\tvsetivli x0, 1, e32, m1, ta, ma");     // leave vtype legal
         if (has_h) {

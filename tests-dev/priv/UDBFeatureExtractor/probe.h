@@ -54,6 +54,7 @@ extern unsigned char probe_scratch[PROBE_SCRATCH_SIZE];
 extern unsigned long watchdog_ticks;   // the timeout in mtime ticks, 0 without a watchdog
 void watchdog_arm(unsigned long ticks);
 void watchdog_disarm(void);
+bool timed_wait(bool wrs, unsigned long ticks, unsigned long *elapsed, unsigned long *cycles);
 
 #define STR_(x) #x
 #define STR(x) STR_(x)

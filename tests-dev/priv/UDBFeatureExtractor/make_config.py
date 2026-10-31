@@ -368,8 +368,19 @@ def schema_value(name: str, xlen: int) -> object:
     return None
 
 
+# Parameters no probe can measure that get a fixed value instead of the one most configurations
+# use: imprecise exceptions cannot be told from precise ones, and the bit that would select
+# imprecise vector traps is not a standard CSR field.
+FIXED = {
+    "PRECISE_SYNCHRONOUS_EXCEPTIONS": False,
+    "IMPRECISE_VECTOR_TRAP_SETTABLE": False,
+}
+
+
 def fill_values(name: str, xlen: int) -> list[tuple[Any, str]]:
     """Candidate values for a parameter the extractor did not determine, most likely first."""
+    if name in FIXED:
+        return [(FIXED[name], "assumed: not measurable; the extractor's fixed value")]
     counts = typical_values(xlen).get(name, Counter())
     total = sum(counts.values())
     out = [

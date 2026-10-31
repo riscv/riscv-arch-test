@@ -157,6 +157,39 @@ void watchdog_disarm(void)
     probe_cause = cause;
 }
 
+// Execute one wait instruction (wfi, or wrs.nto with a reservation held) with only mie.MTIE set,
+// mstatus.MIE clear and mtimecmp at now + ticks, so that a wait still going at that point is ended
+// by the pending machine-timer interrupt, without a trap.  Gives the mtime ticks the instruction
+// took and its mcycle count less that of two back-to-back mcycle reads (~0 when mcycle cannot be
+// read).  False when there is no usable timer, because the wait could then last forever.
+bool timed_wait(bool wrs, unsigned long ticks, unsigned long *elapsed, unsigned long *cycles)
+{
+    unsigned long long t0, t1;
+    if (!watchdog_ticks || !mtime_read(&t0))
+        return false;
+    unsigned long mie = PROBE_VALUE("zicsr", "csrr a3, mie");
+    __asm__ volatile("csrc mstatus, %0\n\tcsrw mie, %1" : : "r"(1ul << 3), "r"(1ul << 7));
+    unsigned long base = PROBE_VALUE("zicsr", "csrr t2, mcycle\n\tcsrr a3, mcycle\n\tsub a3, a3, t2");
+    mtime_read(&t0);
+    mtimecmp_write(t0 + ticks);
+    unsigned long c;
+    if (base == PROBE_TRAPPED)
+        c = wrs ? PROBE_VALUE("zicsr, +zalrsc, +zawrs", "lr.w t1, 0(a1)\n\twrs.nto\n\tsc.w a3, t1, 0(a1)")
+                : PROBE_VALUE("zicsr", "wfi");
+    else if (wrs)
+        c = PROBE_VALUE("zicsr, +zalrsc, +zawrs", "lr.w t1, 0(a1)\n\tcsrr t2, mcycle\n\twrs.nto\n\t"
+                                                  "csrr a3, mcycle\n\tsc.w s0, t1, 0(a1)\n\tsub a3, a3, t2");
+    else
+        c = PROBE_VALUE("zicsr", "csrr t2, mcycle\n\twfi\n\tcsrr a3, mcycle\n\tsub a3, a3, t2");
+    bool ok = PROBE_OK();
+    mtime_read(&t1);
+    mtimecmp_write(~0ull);
+    __asm__ volatile("csrw mie, %0" : : "r"(mie));
+    *elapsed = (unsigned long)(t1 - t0);
+    *cycles = base == PROBE_TRAPPED ? ~0ul : c - base;
+    return ok;
+}
+
 #define WATCHDOG_CALIBRATE 4096        // loop iterations timed at boot
 #define WATCHDOG_FACTOR 64             // the timeout, in multiples of that loop (about 0.5M instructions)
 

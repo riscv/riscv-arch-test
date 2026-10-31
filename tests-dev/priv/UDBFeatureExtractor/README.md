@@ -110,7 +110,10 @@ Memory-model and reduction parameters: LR/SC behavior comes from an `sc.w` insid
 reservation (non-exact), from SCs at increasing offsets from the LR (the reservation set), and from
 an SC through a second virtual address of the scratch area (VA synonym); the misaligned exception
 priority and split strategy from a misaligned access straddling the mapped page's edge; `VFREDUSUM_NAN`
-from a reduction with all elements masked off and a NaN payload as the scalar; `HPM_EVENTS` from writing event numbers to `mhpmevent3`; `TRAP_ON_ILLEGAL_WLRL`
+from a reduction with all elements masked off and a NaN payload as the scalar;
+`VFREDUSUM_NODE_ROUNDING_BEHAVIOR` from a two-element reduction whose three operands give one
+result under every reduction tree when the inner sum is rounded to SEW precision and another when
+it is kept wider; `HPM_EVENTS` from writing event numbers to `mhpmevent3`; `TRAP_ON_ILLEGAL_WLRL`
 from writing an exception code no hart implements to `mcause`; and `FORCE_UPGRADE_CBO_INVAL_TO_FLUSH`
 from whether `menvcfg.CBIE` accepts 11.
 
@@ -126,7 +129,10 @@ highest bit of `mhpmcounter<n>` that holds a one), `NON_STANDARD_EXTENSION_IMPLE
 (`misa.X`), `SSEED_READ_ONLY_ZERO` and `USEED_READ_ONLY_ZERO`, and `SUPPORTED_PMLEN_*` (the
 `PMM` values each pointer-masking field accepts). `WFI_U_MODE` is whether `wfi` in U-mode with
 `mstatus.TW` clear retires or traps; it is probed only with S-mode present, where the spec bounds
-the wait. The Sdtrig parameters come from walking `tselect` (a value that does not stick, or a
+the wait. With the watchdog's timer, `wfi` and `wrs.nto` (with a reservation held) run in M-mode
+with only `mie.MTIE` set and an interrupt due 2^16 `mtime` ticks later: `WFI_FINITE` is whether
+`wfi` resumed before then, and `ZAWRS_NTO_IS_NOP` whether `wrs.nto` took fewer than 50 cycles more
+than two back-to-back `mcycle` reads. The Sdtrig parameters come from walking `tselect` (a value that does not stick, or a
 `tinfo` with only type 0, ends the walk), `tinfo` or a type written to `tdata1` for each trigger's
 types, inert `mcontrol6` values written to `tdata1` (never a privilege bit together with an access
 type, so no trigger can fire) for the writable bits and the `MATCH` and `SIZE` values, an all-ones

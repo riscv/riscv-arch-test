@@ -14,25 +14,18 @@ that are measured only under some condition.
 
 - `MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE`: atomicity of a misaligned access is only visible to
   another observer (a second hart or a device).
-- `ZAWRS_NTO_IS_NOP`: `wrs.nto` with a valid reservation stalls until an interrupt or another
-  hart's store, which the extractor has no way to arrange, and on a hart that stalls the probe
-  would hang (the Imperas ISS does).
 - `PMA_GRANULARITY`: the PMA map is a platform property with no CSR; finding region boundaries
   would mean probing arbitrary addresses, including device registers.
 - `PRECISE_SYNCHRONOUS_EXCEPTIONS`: imprecision is defined as unpredictable state, which no probe
-  can distinguish from a precise trap.
+  can distinguish from a precise trap. `make_config.py` sets it false.
 - `IMPRECISE_VECTOR_TRAP_SETTABLE`: the "privileged configuration bit" it refers to is not a
-  standard CSR field, so there is nothing to write.
-- `VFREDUSUM_NODE_ROUNDING_BEHAVIOR`: a per-node rounding difference can only be provoked with a
-  known reduction tree, and the tree shape is left to the implementation; any input set that shows
-  the difference under one tree shows a tree-shape difference under another.
+  standard CSR field, so there is nothing to write. `make_config.py` sets it false.
 - `VFREDUSUM_FINAL_NODE_ELEMENT_BEHAVIOR` and `VFREDUSUM_INACTIVE_NODE_ELEMENT_BEHAVIOR`: the
   additive identity is -0.0 (+0.0 under RDN), chosen so that adding it never changes a non-NaN
   result (RVV 1.0 section 14.3), so copying and adding the identity give the same value; only a
   NaN payload could differ, which `VFREDUSUM_NAN` already measures.
 - `DCSR_MPRVEN_TYPE`, `DCSR_STEPIE_TYPE`, `DCSR_STOPCOUNT_TYPE`, `DCSR_STOPTIME_TYPE`: `dcsr` is
   accessible only in debug mode.
-- `WFI_FINITE`: whether `wfi` in M-mode ever waits forever cannot be told from a wait that is long.
 - `SDTRIG_BREAKPOINT_REENTRANCY` and `SDTRIG_ICOUNT_SELF_WRITE_SETS_PENDING`: both need a trigger to
   fire, in M-mode or on the instruction that writes it; a hart that gets either wrong would take
   a breakpoint the extractor cannot attribute, and could loop on it.
@@ -41,7 +34,8 @@ that are measured only under some condition.
 
 - `base.hpmcounter_increments_in_self_hpmevent_write` and `platform.event_selectors`: they need to
   know which event number counts what, and HPM event numbers are implementation-defined.
-- `extensions.Zawrs.sto.is_nop`: like `ZAWRS_NTO_IS_NOP`, a stall cannot be told from a slow retire.
+- `extensions.Zawrs.sto.is_nop`: `wrs.sto` may stall for a short time, so unlike `wrs.nto` a
+  stall cannot be told from a slow retire.
 - `platform.clock_frequency`, `instructions_per_tick`, `max_time_to_wait`, `wfi_is_nop`: timing of
   the model, not of the hart.
 - The memory map (`memory.regions`, `clint`, the interrupt generator): it comes from the
@@ -57,6 +51,12 @@ that are measured only under some condition.
 - `LRSC_MISALIGNED_BEHAVIOR` applies only when misaligned AMOs trap.
 - `extensions.H.implicit_vs_pte_access_sets_gstage_d` (Sail) needs H and Svadu: only hardware A/D
   updating lets the VS-stage walk set a clear G-stage D bit instead of faulting.
+- `WFI_FINITE` and `ZAWRS_NTO_IS_NOP` need a machine timer that interrupts (the watchdog), which
+  ends a wait that is still going after 2^16 mtime ticks (or the watchdog timeout, if shorter);
+  without one the probe could wait forever. `wfi` in M-mode with nothing pending that has not
+  resumed by then is reported as `WFI_FINITE` false, though it may only have a longer limit.
+  `wrs.nto` with a reservation held is a no-op when it takes fewer than 50 cycles more than two
+  back-to-back `mcycle` reads; it needs `mcycle`.
 - `WFI_U_MODE` is probed only on a hart with S-mode; without S, `wfi` in U-mode may wait forever.
 - `SDTRIG_MCONTROL6_MASKMAX6` needs NAPOT matching (`MATCH` 1) and a `tdata2` that clears a bit of
   an all-ones write; the field and chain probes use the first `mcontrol6` trigger, and the chain
@@ -96,6 +96,12 @@ that are measured only under some condition.
   as the configuration yamls do, so a yaml that writes `"64"` on RV64 shows as a mismatch.
 - `SUPPORT_FRACTIONAL_LMUL_BEYOND_REQUIRED` is the complement of `VILL_SET_ON_RESERVED_VTYPE`, and
   `RESERVED_VSET_X0X0_VILL_SET` needs `vill` to be settable through a reserved vtype first.
+- `VFREDUSUM_NODE_ROUNDING_BEHAVIOR` comes from `vfredusum.vs` with `vl` 2 on three operands for
+  which all three possible reduction trees give one result when the inner sum is rounded to SEW
+  precision and another when it keeps 3 or more extra bits (one set per SEW: 16 with Zvfh, 32, 64
+  with Zve64d). An inner node only 1 or 2 bits wider gives either, so `SEW_precision` can be
+  reported for it; a wider exponent range alone cannot be seen; and only the node of a two-element
+  reduction is tested.
 - `ARCH_ID_VALUE` and `IMP_ID_VALUE` are printed as 0 when `marchid`/`mimpid` read as zero, with
   `MARCHID_IMPLEMENTED`/`MIMPID_IMPLEMENTED` false saying the value is not meaningful.
 - `TRAP_ON_ILLEGAL_WLRL` writes the exception code 0x3FF, which no hart implements, to `mcause`.

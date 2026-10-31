@@ -26,8 +26,6 @@ TODO: Plan how to check WARL, WPRI, WLRL fields.  It seems every CSR needs param
 
 include::norm/Sm_norm_rules.adoc[]
 
-TODO: Many new normative rules have been added since this was written.  Update Sm.yaml.
-
 ==== S Supervisor-Mode CSRs and Instructions
 
 These test additional CSRs that exist in supervisor mode, and privileged instructions in supervisor mode.

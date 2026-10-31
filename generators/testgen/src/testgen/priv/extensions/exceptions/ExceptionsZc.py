@@ -448,21 +448,6 @@ def make_exceptionszc(test_data: TestData) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
     tc = test_data.begin_test_chunk("Zc")
 
-    addr_reg = test_data.int_regs.get_register()
-
-    tc.code.extend(
-        [
-            "# Load FP test data from scratch if FP is supported",
-            f"LA(x{addr_reg}, scratch)",
-            "#ifdef F_SUPPORTED",
-            f"FLREG f8, 0(x{addr_reg})",
-            "#endif",
-            "",
-        ]
-    )
-
-    test_data.int_regs.return_registers([addr_reg])
-
     tc.code.extend(_generate_load_address_misaligned_tests(test_data))
     tc.code.extend(_generate_store_address_misaligned_tests(test_data))
     tc.code.extend(_generate_load_access_fault_tests(test_data))

@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # CI configuration for the OpenHW CVA6 Verilator testharness.
-# cv32a65x and cv32a60x share this file: one ci.yaml covers every run_cmd.txt in this directory.
+# cv32a65x, cv32a60x and cv32a6_imac_sv32 share this file: one ci.yaml covers every run_cmd.txt
+# in this directory.
 
 ci_enabled: true
 
@@ -9,12 +10,58 @@ exclude_extensions:
   # address 0 is the debug module (DebugBase=0x0, DebugLength=0x1000), which answers every
   # access with OKAY, while Sail expects an access fault because there is no memory at 0.
   # CVA6 has no data-side PMA check, so the DUT raises no fault and the load returns 0.
+  # Only cv32a6_imac_sv32 has PMP entries, so only it runs this test.
   # Remove this exclusion once riscv-arch-test#2963 drops the address-0 probes.
-  # The exclusion is preemptive: both configs declare NUM_PMP_ENTRIES: 0, so no PMP test
-  # runs yet. It takes effect once cv32a65x declares its PMP entries (riscv-arch-test#2904).
   # https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/corev_apu/tb/ariane_soc_pkg.sv#L58
   # https://github.com/riscv/riscv-arch-test/issues/2963
   - PMP_Sm_cfg_A_tor_zero
+  # LR faults use store causes: a misaligned lr.w raises cause 6 instead of 4, an lr.w page fault
+  # cause 15 instead of 13, and an lr.w PMP fault cause 7 instead of 5. The decoder sends every
+  # A instruction, LR included, to the store unit, and the LSU and MMU pick the cause from that unit.
+  # https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/decoder.sv#L1621-L1623
+  # https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/load_store_unit.sv#L788-L805
+  # https://github.com/openhwfoundation/cva6/issues/2455
+  # https://github.com/openhwfoundation/cva6/issues/3394
+  # https://github.com/openhwfoundation/cva6/issues/3606
+  - Exceptions_Zalrsc
+  - PMP_Zalrsc_cfg_wr
+  - Sv_ExceptionsZalrsc_sv32
+  - Sv_ExceptionsZalrscSm_sv32
+  # A write to mie does not flush the pipeline, so the 2-3 already decoded instructions retire
+  # before the newly enabled interrupt is taken. Here they clear mip.SEIP first, so the handler
+  # sees the wrong mip or takes STI instead of SEI. mstatus writes flush; mie, mip and mideleg
+  # writes do not, and the decoder attaches interrupts at decode time.
+  # https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/csr_regfile.sv#L1695-L1786
+  # https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/decoder.sv#L1854-L2008
+  # https://github.com/openhwfoundation/cva6/issues/3175
+  # https://github.com/openhwfoundation/cva6/issues/3651
+  - InterruptsSm_priority_mip_M
+  - InterruptsSm_priority_mideleg_M
+  # With a delegated SEI and a non-delegated STI both pending in S- or U-mode, CVA6 takes SEI to
+  # S-mode, but the M-level STI must be taken first. The decoder picks one cause in a fixed order
+  # and only then applies mideleg.
+  # https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/decoder.sv#L1947-L2008
+  # https://github.com/openhwfoundation/cva6/issues/3199
+  - InterruptsSm_priority_mideleg_S
+  - InterruptsSm_priority_mideleg_U
+  # With pmpcfg.A = NAPOT, pmpaddr bit 0 reads as 1. With G = 1 no bit is forced, so a written 0
+  # must read back as 0. CVA6 applies the G = 2 rule in NAPOT mode and the G = 1 rule otherwise.
+  # The trailing "-" keeps PMP_Sm_grain_check, which passes.
+  # https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/csr_regfile.sv#L995-L1001
+  # https://github.com/openhwfoundation/cva6/issues/2656
+  - PMP_Sm_grain-
+  # A PMP fault on a PTE read during a store raises a load access fault (5) instead of a store
+  # access fault (7). The store cause is used only for Sv39 (PtLevels == 3).
+  # https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/cva6_mmu/cva6_mmu.sv#L747-L771
+  # https://github.com/openhwfoundation/cva6/issues/3299
+  - PMP_Sv_sv32_pmp_on_pte
+  # A fetch from a page with X = 0 executes when a load or store has put the page in the shared
+  # TLB. The ITLB hit check tests the U bit but not X.
+  # https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/cva6_mmu/cva6_mmu.sv#L389-L391
+  # https://github.com/openhwfoundation/cva6/issues/3573
+  - Sv_sv32_spage_Smode
+  - Sv_sv32_spage_mstatus_sum_set_Smode
+  - Sv_sv32_upage_Umode
 
 # device-tree-compiler and the Boost libraries are required by CVA6's Spike build
 # (verif/regress/install-spike.sh). Without them fesvr is not installed and the

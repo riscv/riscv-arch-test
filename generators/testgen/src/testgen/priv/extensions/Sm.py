@@ -191,6 +191,8 @@ def _generate_mret_tests(test_data: TestData) -> list[str]:
     for mpp, guard in mpp_guard.items():
         if guard:
             lines.append(f"#ifdef {guard}")
+        # mret to M-mode reads mstatus directly.  S and U get back to M with an ecall, which overwrites MPIE and MPP.
+        goto_m = [] if mpp == 3 else ["RVTEST_TSBI_GOTO_MMODE       # back to M for the readback"]
         for mprv in (0, 1):
             for mpie in (0, 1):
                 for mie in (0, 1):
@@ -212,7 +214,7 @@ def _generate_mret_tests(test_data: TestData) -> list[str]:
                             f"addi x{check_reg}, zero, -1       # should not be executed",
                             "1:                         # mret should return to here",
                             write_sigupd(check_reg, test_data),
-                            "RVTEST_TSBI_GOTO_MMODE       # mret may have returned to S or U mode; get back to M for the readback",
+                            *goto_m,
                             # Test the read value
                             test_data.add_testcase(f"{binname}_rval", coverpoint, covergroup),
                             gen_csr_read_sigupd(check_reg, ("mstatus", None), test_data),

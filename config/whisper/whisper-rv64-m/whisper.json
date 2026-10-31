@@ -111,9 +111,6 @@
     "always_mark_dirty": true,
     "bytes_per_vec": 32,
     "fp_usum_nan_canonicalize": ["e16", "e32", "e64"],
-    "legalize_for_egs": false,
-    "legalize_vsetvl_avl": true,
-    "legalize_vsetvli_avl": true,
     "mask_agnostic_policy": "ones",
     "max_bytes_per_elem": 8,
     "max_bytes_per_lmul": {

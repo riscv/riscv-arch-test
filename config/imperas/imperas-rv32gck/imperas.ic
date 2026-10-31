@@ -56,6 +56,9 @@
 --override cpu*/Zimop=T
 --override cpu*/Zcmop=T
 --override cpu*/Smstateen=T
+--override cpu*/Smaia=T # Smaia and Ssaia CSRs; no IMSIC, so the *topei CSRs and the stateen IMSIC bit are absent
+--override cpu*/Smcsrind=T # also Sscsrind
+--override cpu*/Smcdeleg=T # also Ssccfg
 --override cpu*/Ssstateen=T
 --override cpu*/Sscofpmf=T
 

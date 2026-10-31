@@ -18,3 +18,6 @@
 `ifdef U_SUPPORTED
     Zkr_U_cg = new();       Zkr_U_cg.set_inst_name("obj_Zkr_U");
 `endif
+`ifdef H_SUPPORTED
+    Zkr_H_cg = new();       Zkr_H_cg.set_inst_name("obj_Zkr_H");
+`endif

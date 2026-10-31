@@ -69,11 +69,7 @@ RVTEST_BEGIN
   PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
   LA(x14, rvtest_data_1)
-  LI(x6, MSTATUS_MPP)
-  csrc mstatus, x6
-  LI(x6, MSTATUS_MPP)
-  csrs mstatus, x6
-  LI(x6, MSTATUS_MPRV)
+  LI(x6, MSTATUS_MPRV | MSTATUS_MPP)
   csrs mstatus, x6
 Sv_Sm_mstatus_mprv_cg_cp_mprv_cbo_u0_mpp_m_cbo_zero:
   cbo.zero (x14)
@@ -84,11 +80,11 @@ Sv_Sm_mstatus_mprv_cg_cp_mprv_cbo_u0_mpp_m_cbo_zero:
   slli x6, x6, 52
   srli x6, x6, 52
   add x14, x14, x6
-  LI(x6, MSTATUS_MPP)
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
   csrc mstatus, x6
   LI(x6, 0x800)
-  csrs mstatus, x6
-  LI(x6, MSTATUS_MPRV)
   csrs mstatus, x6
 Sv_Sm_mstatus_mprv_cg_cp_mprv_cbo_u0_mpp_s_cbo_zero:
   cbo.zero (x14)
@@ -99,10 +95,10 @@ Sv_Sm_mstatus_mprv_cg_cp_mprv_cbo_u0_mpp_s_cbo_zero:
   slli x6, x6, 52
   srli x6, x6, 52
   add x14, x14, x6
-  LI(x6, MSTATUS_MPP)
-  csrc mstatus, x6
   LI(x6, MSTATUS_MPRV)
   csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
 Sv_Sm_mstatus_mprv_cg_cp_mprv_cbo_u0_mpp_u_cbo_zero:
   cbo.zero (x14)
   LI(x6, MSTATUS_MPRV)
@@ -112,11 +108,7 @@ Sv_Sm_mstatus_mprv_cg_cp_mprv_cbo_u0_mpp_u_cbo_zero:
   PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
   LA(x14, rvtest_data_1)
-  LI(x6, MSTATUS_MPP)
-  csrc mstatus, x6
-  LI(x6, MSTATUS_MPP)
-  csrs mstatus, x6
-  LI(x6, MSTATUS_MPRV)
+  LI(x6, MSTATUS_MPRV | MSTATUS_MPP)
   csrs mstatus, x6
 Sv_Sm_mstatus_mprv_cg_cp_mprv_cbo_u1_mpp_m_cbo_zero:
   cbo.zero (x14)
@@ -127,11 +119,11 @@ Sv_Sm_mstatus_mprv_cg_cp_mprv_cbo_u1_mpp_m_cbo_zero:
   slli x6, x6, 52
   srli x6, x6, 52
   add x14, x14, x6
-  LI(x6, MSTATUS_MPP)
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
   csrc mstatus, x6
   LI(x6, 0x800)
-  csrs mstatus, x6
-  LI(x6, MSTATUS_MPRV)
   csrs mstatus, x6
 Sv_Sm_mstatus_mprv_cg_cp_mprv_cbo_u1_mpp_s_cbo_zero:
   cbo.zero (x14)
@@ -142,10 +134,10 @@ Sv_Sm_mstatus_mprv_cg_cp_mprv_cbo_u1_mpp_s_cbo_zero:
   slli x6, x6, 52
   srli x6, x6, 52
   add x14, x14, x6
-  LI(x6, MSTATUS_MPP)
-  csrc mstatus, x6
   LI(x6, MSTATUS_MPRV)
   csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
 Sv_Sm_mstatus_mprv_cg_cp_mprv_cbo_u1_mpp_u_cbo_zero:
   cbo.zero (x14)
   LI(x6, MSTATUS_MPRV)

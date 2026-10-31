@@ -129,23 +129,14 @@ def _t_mprv_vsatp(test_data: TestData, test_chunks: list[TestChunk], vs: SvMode)
     test_chunks.append(test_data.end_test_chunk())
 
 
-def _t_mprv_hgatp(test_data: TestData, test_chunks: list[TestChunk], g: SvMode) -> None:
-    """HLV and HSV use the G-stage whatever MPRV is; loads and stores use it only with MPRV = 1 and MPV = 1."""
-    chunk = begin_chunk(
-        test_data,
-        f"HSm_{g.name}_mprv_hgatp",
-        "cp_hgatp_mprv_effects",
-        "In M-mode with vsatp and satp Bare and a G-stage identity map that makes svh_page execute-only, execute\n"
-        "lw, sw, hlv.w and hsv.w on svh_page with mstatus.MPRV = 0, 1 and MPP/MPV = M, M with MPV = 1, HS, VS, U,\n"
-        "VU.  Only hlv.w, hsv.w, and lw and sw with MPRV = 1, MPV = 1 and MPP = S or U, raise guest-page faults",
-    )
+def _g_stage_svh_page(test_data: TestData, g: SvMode, flags: PteFlags) -> list[str]:
+    """Map svh_page to itself with a G-stage kilopage leaf with ``flags``, with vsatp and satp Bare."""
     pte, addr, tmp = test_data.int_regs.get_registers(3)
-    # M-mode makes every access, so no guest code alias is needed
-    code = [
+    lines = [
         *create_page_mapping(
             g,
             leaf_level=0,
-            leaf_flags=perm_flags("x", True),
+            leaf_flags=flags,
             virtual_address="svh_page",
             physical_address="svh_page",
             regs=(pte, addr, tmp),
@@ -159,6 +150,21 @@ def _t_mprv_hgatp(test_data: TestData, test_chunks: list[TestChunk], g: SvMode) 
         "hfence.vvma",
     ]
     test_data.int_regs.return_registers([pte, addr, tmp])
+    return lines
+
+
+def _t_mprv_hgatp(test_data: TestData, test_chunks: list[TestChunk], g: SvMode) -> None:
+    """HLV and HSV use the G-stage whatever MPRV is; loads and stores use it only with MPRV = 1 and MPV = 1."""
+    chunk = begin_chunk(
+        test_data,
+        f"HSm_{g.name}_mprv_hgatp",
+        "cp_hgatp_mprv_effects",
+        "In M-mode with vsatp and satp Bare and a G-stage identity map that makes svh_page execute-only, execute\n"
+        "lw, sw, hlv.w and hsv.w on svh_page with mstatus.MPRV = 0, 1 and MPP/MPV = M, M with MPV = 1, HS, VS, U,\n"
+        "VU.  Only hlv.w, hsv.w, and lw and sw with MPRV = 1, MPV = 1 and MPP = S or U, raise guest-page faults",
+    )
+    # M-mode makes every access, so no guest code alias is needed
+    code = _g_stage_svh_page(test_data, g, perm_flags("x", True))
     for mprv in (0, 1):
         for mode, mpp, mpv in MPP_MPV:
             name = f"mprv{mprv}_{mode}"
@@ -273,27 +279,7 @@ def _t_mprv_cbo(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs
     code.extend(guest_chunk_teardown(test_data, vs.xlen))
     # G-stage translation, which only MPRV = 1 with MPV = 1 uses.  Every G-stage access is a user access, so a leaf
     # with U = 0 faults.
-    pte, addr, tmp = test_data.int_regs.get_registers(3)
-    code.extend(
-        [
-            *create_page_mapping(
-                g,
-                leaf_level=0,
-                leaf_flags=PteFlags(),
-                virtual_address="svh_page",
-                physical_address="svh_page",
-                regs=(pte, addr, tmp),
-                va_is_label=True,
-            ),
-            *set_atp(g, pte, addr),
-            "csrw vsatp, zero",
-            "csrw satp, zero",
-            "sfence.vma",
-            "hfence.gvma",
-            "hfence.vvma",
-        ]
-    )
-    test_data.int_regs.return_registers([pte, addr, tmp])
+    code.extend(_g_stage_svh_page(test_data, g, PteFlags()))
     for mprv in (0, 1):
         for mode, mpp, mpv in MPP_MPV:
             code.extend(

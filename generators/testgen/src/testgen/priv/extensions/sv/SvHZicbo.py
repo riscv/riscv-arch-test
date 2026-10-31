@@ -41,14 +41,10 @@ from testgen.priv.extensions.sv.page_tables import (
     write_pte,
 )
 from testgen.priv.extensions.sv.SvH import henvcfg_bits, menvcfg_bits, read_pte
-from testgen.priv.extensions.sv.SvZicbo import cbo_leaves
+from testgen.priv.extensions.sv.SvZicbo import CBOS, cbo_leaves
 from testgen.priv.registry import add_priv_test_generator
 
-OPS = {
-    "zicbom": ("cbo.clean", "cbo.flush", "cbo.inval"),
-    "zicboz": ("cbo.zero",),
-    "zicbop": ("prefetch.i", "prefetch.r", "prefetch.w"),
-}
+OPS = {**CBOS, "zicbop": ("prefetch.i", "prefetch.r", "prefetch.w")}
 _FIELDS = {"zicbom": ("cbie", "cbcfe"), "zicboz": ("cbze",)}
 DATA = "svhzicbo_data"
 _DATA_REGION = [".p2align 12", f"{DATA}:", f".fill 1024, 4, {CBO_ZERO_FILL:#x}"]

@@ -75,7 +75,7 @@ RVTEST_BEGIN
 Svadu_cg_Abit_unset_cbm_s_l1_a0_d0_cbo_clean:
   cbo.clean (x8)
   LA(x6, rvtest_Sroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
-  lw x15, 0(x6)
+  LREG x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Abit_unset_cbm_s_l1_a0_d0_cbo_clean, Svadu_cg_Abit_unset_cbm_s_l1_a0_d0_cbo_clean_str)
 
@@ -90,7 +90,7 @@ Svadu_cg_Abit_unset_cbm_s_l1_a0_d0_cbo_clean:
 Svadu_cg_Abit_unset_cbm_s_l1_a0_d0_cbo_flush:
   cbo.flush (x8)
   LA(x6, rvtest_Sroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
-  lw x15, 0(x6)
+  LREG x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Abit_unset_cbm_s_l1_a0_d0_cbo_flush, Svadu_cg_Abit_unset_cbm_s_l1_a0_d0_cbo_flush_str)
 
@@ -105,7 +105,7 @@ Svadu_cg_Abit_unset_cbm_s_l1_a0_d0_cbo_flush:
 Svadu_cg_Abit_unset_cbm_s_l1_a0_d0_cbo_inval:
   cbo.inval (x8)
   LA(x6, rvtest_Sroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
-  lw x15, 0(x6)
+  LREG x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Abit_unset_cbm_s_l1_a0_d0_cbo_inval, Svadu_cg_Abit_unset_cbm_s_l1_a0_d0_cbo_inval_str)
 
@@ -120,7 +120,7 @@ Svadu_cg_Abit_unset_cbm_s_l1_a0_d0_cbo_inval:
 Svadu_cg_Dbit_unset_cbm_s_l1_a1_d0_cbo_clean:
   cbo.clean (x8)
   LA(x6, rvtest_Sroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
-  lw x15, 0(x6)
+  LREG x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Dbit_unset_cbm_s_l1_a1_d0_cbo_clean, Svadu_cg_Dbit_unset_cbm_s_l1_a1_d0_cbo_clean_str)
 
@@ -135,7 +135,7 @@ Svadu_cg_Dbit_unset_cbm_s_l1_a1_d0_cbo_clean:
 Svadu_cg_Dbit_unset_cbm_s_l1_a1_d0_cbo_flush:
   cbo.flush (x8)
   LA(x6, rvtest_Sroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
-  lw x15, 0(x6)
+  LREG x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Dbit_unset_cbm_s_l1_a1_d0_cbo_flush, Svadu_cg_Dbit_unset_cbm_s_l1_a1_d0_cbo_flush_str)
 
@@ -150,7 +150,7 @@ Svadu_cg_Dbit_unset_cbm_s_l1_a1_d0_cbo_flush:
 Svadu_cg_Dbit_unset_cbm_s_l1_a1_d0_cbo_inval:
   cbo.inval (x8)
   LA(x6, rvtest_Sroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
-  lw x15, 0(x6)
+  LREG x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Dbit_unset_cbm_s_l1_a1_d0_cbo_inval, Svadu_cg_Dbit_unset_cbm_s_l1_a1_d0_cbo_inval_str)
 
@@ -162,7 +162,7 @@ Svadu_cg_Dbit_unset_cbm_s_l1_a1_d0_cbo_inval:
 Svadu_cg_Abit_unset_cbm_s_l0_a0_d0_cbo_clean:
   cbo.clean (x8)
   LA(x6, rvtest_slvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  lw x15, 0(x6)
+  LREG x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Abit_unset_cbm_s_l0_a0_d0_cbo_clean, Svadu_cg_Abit_unset_cbm_s_l0_a0_d0_cbo_clean_str)
 
@@ -174,7 +174,7 @@ Svadu_cg_Abit_unset_cbm_s_l0_a0_d0_cbo_clean:
 Svadu_cg_Abit_unset_cbm_s_l0_a0_d0_cbo_flush:
   cbo.flush (x8)
   LA(x6, rvtest_slvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  lw x15, 0(x6)
+  LREG x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Abit_unset_cbm_s_l0_a0_d0_cbo_flush, Svadu_cg_Abit_unset_cbm_s_l0_a0_d0_cbo_flush_str)
 
@@ -186,7 +186,7 @@ Svadu_cg_Abit_unset_cbm_s_l0_a0_d0_cbo_flush:
 Svadu_cg_Abit_unset_cbm_s_l0_a0_d0_cbo_inval:
   cbo.inval (x8)
   LA(x6, rvtest_slvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  lw x15, 0(x6)
+  LREG x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Abit_unset_cbm_s_l0_a0_d0_cbo_inval, Svadu_cg_Abit_unset_cbm_s_l0_a0_d0_cbo_inval_str)
 
@@ -198,7 +198,7 @@ Svadu_cg_Abit_unset_cbm_s_l0_a0_d0_cbo_inval:
 Svadu_cg_Dbit_unset_cbm_s_l0_a1_d0_cbo_clean:
   cbo.clean (x8)
   LA(x6, rvtest_slvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  lw x15, 0(x6)
+  LREG x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Dbit_unset_cbm_s_l0_a1_d0_cbo_clean, Svadu_cg_Dbit_unset_cbm_s_l0_a1_d0_cbo_clean_str)
 
@@ -210,7 +210,7 @@ Svadu_cg_Dbit_unset_cbm_s_l0_a1_d0_cbo_clean:
 Svadu_cg_Dbit_unset_cbm_s_l0_a1_d0_cbo_flush:
   cbo.flush (x8)
   LA(x6, rvtest_slvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  lw x15, 0(x6)
+  LREG x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Dbit_unset_cbm_s_l0_a1_d0_cbo_flush, Svadu_cg_Dbit_unset_cbm_s_l0_a1_d0_cbo_flush_str)
 
@@ -222,7 +222,7 @@ Svadu_cg_Dbit_unset_cbm_s_l0_a1_d0_cbo_flush:
 Svadu_cg_Dbit_unset_cbm_s_l0_a1_d0_cbo_inval:
   cbo.inval (x8)
   LA(x6, rvtest_slvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  lw x15, 0(x6)
+  LREG x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Dbit_unset_cbm_s_l0_a1_d0_cbo_inval, Svadu_cg_Dbit_unset_cbm_s_l0_a1_d0_cbo_inval_str)
 

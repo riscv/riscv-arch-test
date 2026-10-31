@@ -163,8 +163,6 @@ Svadu_H_cg_cp_vsatp_adue_cbo_madue1_hadue1_a0_d0_cbo_zero_pte:
   csrc henvcfg, x9
   RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFG, MENVCFG_ADUE | MENVCFG_PBMTE)
   csrw hedeleg, zero
-  LI(x13, HENVCFG_CBIE | HENVCFG_CBCFE | HENVCFG_CBZE)
-  csrs henvcfg, x13
 // Identity map the test image in both stages
   LA(x8, rvtest_code_begin)
   srli x8, x8, 30

@@ -110,13 +110,12 @@ def _cbo_chunk(test_data: TestData, g: SvMode, vs: SvMode, family: str) -> TestC
         stages=(g, vs),
     )
     reg = test_data.int_regs.get_register()
-    enables = [f"LI(x{reg}, HENVCFG_CBIE | HENVCFG_CBCFE | HENVCFG_CBZE)", f"csrs henvcfg, x{reg}"]
     code = [
-        *enables,
+        f"LI(x{reg}, HENVCFG_CBIE | HENVCFG_CBCFE | HENVCFG_CBZE)",
+        f"csrs henvcfg, x{reg}",
         *guest_chunk_setup(test_data, None, vs, "VS"),
         *vs_ad_accesses(test_data, vs, ((1, 1, VS_NO_AD, ops),), CG, "cp_vsatp_adue_cbo"),
         *guest_chunk_teardown(test_data, vs.xlen),
-        *enables,
         *guest_chunk_setup(test_data, g, None, "VS"),
         *g_ad_accesses(test_data, g, ((1, G_NO_AD, ops),), CG, "cp_hgatp_adue_cbo"),
         *guest_chunk_teardown(test_data, g.xlen),

@@ -69,31 +69,19 @@ RVTEST_BEGIN
   PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
   LA(x13, rvtest_data_1)
-  LI(x9, MSTATUS_MPP)
-  csrc mstatus, x9
-  LI(x9, MSTATUS_MPP)
-  csrs mstatus, x9
-  LI(x9, MSTATUS_MPRV)
+  LI(x9, MSTATUS_MPRV | MSTATUS_MPP)
   csrs mstatus, x9
 Sv_Sm_mstatus_mprv_cg_cp_mprv_cbo_u0_mpp_m_cbo_clean:
   cbo.clean (x13)
   LI(x9, MSTATUS_MPRV)
   csrc mstatus, x9
-  LI(x9, MSTATUS_MPP)
-  csrc mstatus, x9
-  LI(x9, MSTATUS_MPP)
-  csrs mstatus, x9
-  LI(x9, MSTATUS_MPRV)
+  LI(x9, MSTATUS_MPRV | MSTATUS_MPP)
   csrs mstatus, x9
 Sv_Sm_mstatus_mprv_cg_cp_mprv_cbo_u0_mpp_m_cbo_flush:
   cbo.flush (x13)
   LI(x9, MSTATUS_MPRV)
   csrc mstatus, x9
-  LI(x9, MSTATUS_MPP)
-  csrc mstatus, x9
-  LI(x9, MSTATUS_MPP)
-  csrs mstatus, x9
-  LI(x9, MSTATUS_MPRV)
+  LI(x9, MSTATUS_MPRV | MSTATUS_MPP)
   csrs mstatus, x9
 Sv_Sm_mstatus_mprv_cg_cp_mprv_cbo_u0_mpp_m_cbo_inval:
   cbo.inval (x13)
@@ -104,31 +92,31 @@ Sv_Sm_mstatus_mprv_cg_cp_mprv_cbo_u0_mpp_m_cbo_inval:
   slli x9, x9, 52
   srli x9, x9, 52
   add x13, x13, x9
-  LI(x9, MSTATUS_MPP)
+  LI(x9, MSTATUS_MPRV)
+  csrs mstatus, x9
+  LI(x9, 0x1800)
   csrc mstatus, x9
   LI(x9, 0x800)
-  csrs mstatus, x9
-  LI(x9, MSTATUS_MPRV)
   csrs mstatus, x9
 Sv_Sm_mstatus_mprv_cg_cp_mprv_cbo_u0_mpp_s_cbo_clean:
   cbo.clean (x13)
   LI(x9, MSTATUS_MPRV)
   csrc mstatus, x9
-  LI(x9, MSTATUS_MPP)
+  LI(x9, MSTATUS_MPRV)
+  csrs mstatus, x9
+  LI(x9, 0x1800)
   csrc mstatus, x9
   LI(x9, 0x800)
-  csrs mstatus, x9
-  LI(x9, MSTATUS_MPRV)
   csrs mstatus, x9
 Sv_Sm_mstatus_mprv_cg_cp_mprv_cbo_u0_mpp_s_cbo_flush:
   cbo.flush (x13)
   LI(x9, MSTATUS_MPRV)
   csrc mstatus, x9
-  LI(x9, MSTATUS_MPP)
+  LI(x9, MSTATUS_MPRV)
+  csrs mstatus, x9
+  LI(x9, 0x1800)
   csrc mstatus, x9
   LI(x9, 0x800)
-  csrs mstatus, x9
-  LI(x9, MSTATUS_MPRV)
   csrs mstatus, x9
 Sv_Sm_mstatus_mprv_cg_cp_mprv_cbo_u0_mpp_s_cbo_inval:
   cbo.inval (x13)
@@ -139,26 +127,26 @@ Sv_Sm_mstatus_mprv_cg_cp_mprv_cbo_u0_mpp_s_cbo_inval:
   slli x9, x9, 52
   srli x9, x9, 52
   add x13, x13, x9
-  LI(x9, MSTATUS_MPP)
-  csrc mstatus, x9
   LI(x9, MSTATUS_MPRV)
   csrs mstatus, x9
+  LI(x9, 0x1800)
+  csrc mstatus, x9
 Sv_Sm_mstatus_mprv_cg_cp_mprv_cbo_u0_mpp_u_cbo_clean:
   cbo.clean (x13)
   LI(x9, MSTATUS_MPRV)
   csrc mstatus, x9
-  LI(x9, MSTATUS_MPP)
-  csrc mstatus, x9
   LI(x9, MSTATUS_MPRV)
   csrs mstatus, x9
+  LI(x9, 0x1800)
+  csrc mstatus, x9
 Sv_Sm_mstatus_mprv_cg_cp_mprv_cbo_u0_mpp_u_cbo_flush:
   cbo.flush (x13)
   LI(x9, MSTATUS_MPRV)
   csrc mstatus, x9
-  LI(x9, MSTATUS_MPP)
-  csrc mstatus, x9
   LI(x9, MSTATUS_MPRV)
   csrs mstatus, x9
+  LI(x9, 0x1800)
+  csrc mstatus, x9
 Sv_Sm_mstatus_mprv_cg_cp_mprv_cbo_u0_mpp_u_cbo_inval:
   cbo.inval (x13)
   LI(x9, MSTATUS_MPRV)
@@ -168,31 +156,19 @@ Sv_Sm_mstatus_mprv_cg_cp_mprv_cbo_u0_mpp_u_cbo_inval:
   PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
   LA(x13, rvtest_data_1)
-  LI(x9, MSTATUS_MPP)
-  csrc mstatus, x9
-  LI(x9, MSTATUS_MPP)
-  csrs mstatus, x9
-  LI(x9, MSTATUS_MPRV)
+  LI(x9, MSTATUS_MPRV | MSTATUS_MPP)
   csrs mstatus, x9
 Sv_Sm_mstatus_mprv_cg_cp_mprv_cbo_u1_mpp_m_cbo_clean:
   cbo.clean (x13)
   LI(x9, MSTATUS_MPRV)
   csrc mstatus, x9
-  LI(x9, MSTATUS_MPP)
-  csrc mstatus, x9
-  LI(x9, MSTATUS_MPP)
-  csrs mstatus, x9
-  LI(x9, MSTATUS_MPRV)
+  LI(x9, MSTATUS_MPRV | MSTATUS_MPP)
   csrs mstatus, x9
 Sv_Sm_mstatus_mprv_cg_cp_mprv_cbo_u1_mpp_m_cbo_flush:
   cbo.flush (x13)
   LI(x9, MSTATUS_MPRV)
   csrc mstatus, x9
-  LI(x9, MSTATUS_MPP)
-  csrc mstatus, x9
-  LI(x9, MSTATUS_MPP)
-  csrs mstatus, x9
-  LI(x9, MSTATUS_MPRV)
+  LI(x9, MSTATUS_MPRV | MSTATUS_MPP)
   csrs mstatus, x9
 Sv_Sm_mstatus_mprv_cg_cp_mprv_cbo_u1_mpp_m_cbo_inval:
   cbo.inval (x13)
@@ -203,31 +179,31 @@ Sv_Sm_mstatus_mprv_cg_cp_mprv_cbo_u1_mpp_m_cbo_inval:
   slli x9, x9, 52
   srli x9, x9, 52
   add x13, x13, x9
-  LI(x9, MSTATUS_MPP)
+  LI(x9, MSTATUS_MPRV)
+  csrs mstatus, x9
+  LI(x9, 0x1800)
   csrc mstatus, x9
   LI(x9, 0x800)
-  csrs mstatus, x9
-  LI(x9, MSTATUS_MPRV)
   csrs mstatus, x9
 Sv_Sm_mstatus_mprv_cg_cp_mprv_cbo_u1_mpp_s_cbo_clean:
   cbo.clean (x13)
   LI(x9, MSTATUS_MPRV)
   csrc mstatus, x9
-  LI(x9, MSTATUS_MPP)
+  LI(x9, MSTATUS_MPRV)
+  csrs mstatus, x9
+  LI(x9, 0x1800)
   csrc mstatus, x9
   LI(x9, 0x800)
-  csrs mstatus, x9
-  LI(x9, MSTATUS_MPRV)
   csrs mstatus, x9
 Sv_Sm_mstatus_mprv_cg_cp_mprv_cbo_u1_mpp_s_cbo_flush:
   cbo.flush (x13)
   LI(x9, MSTATUS_MPRV)
   csrc mstatus, x9
-  LI(x9, MSTATUS_MPP)
+  LI(x9, MSTATUS_MPRV)
+  csrs mstatus, x9
+  LI(x9, 0x1800)
   csrc mstatus, x9
   LI(x9, 0x800)
-  csrs mstatus, x9
-  LI(x9, MSTATUS_MPRV)
   csrs mstatus, x9
 Sv_Sm_mstatus_mprv_cg_cp_mprv_cbo_u1_mpp_s_cbo_inval:
   cbo.inval (x13)
@@ -238,26 +214,26 @@ Sv_Sm_mstatus_mprv_cg_cp_mprv_cbo_u1_mpp_s_cbo_inval:
   slli x9, x9, 52
   srli x9, x9, 52
   add x13, x13, x9
-  LI(x9, MSTATUS_MPP)
-  csrc mstatus, x9
   LI(x9, MSTATUS_MPRV)
   csrs mstatus, x9
+  LI(x9, 0x1800)
+  csrc mstatus, x9
 Sv_Sm_mstatus_mprv_cg_cp_mprv_cbo_u1_mpp_u_cbo_clean:
   cbo.clean (x13)
   LI(x9, MSTATUS_MPRV)
   csrc mstatus, x9
-  LI(x9, MSTATUS_MPP)
-  csrc mstatus, x9
   LI(x9, MSTATUS_MPRV)
   csrs mstatus, x9
+  LI(x9, 0x1800)
+  csrc mstatus, x9
 Sv_Sm_mstatus_mprv_cg_cp_mprv_cbo_u1_mpp_u_cbo_flush:
   cbo.flush (x13)
   LI(x9, MSTATUS_MPRV)
   csrc mstatus, x9
-  LI(x9, MSTATUS_MPP)
-  csrc mstatus, x9
   LI(x9, MSTATUS_MPRV)
   csrs mstatus, x9
+  LI(x9, 0x1800)
+  csrc mstatus, x9
 Sv_Sm_mstatus_mprv_cg_cp_mprv_cbo_u1_mpp_u_cbo_inval:
   cbo.inval (x13)
   LI(x9, MSTATUS_MPRV)

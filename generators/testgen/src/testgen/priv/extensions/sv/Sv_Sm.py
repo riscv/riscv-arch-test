@@ -31,10 +31,13 @@ from testgen.priv.extensions.sv.Sv import (
     change_pte_to_be,
     emit_access,
     level_header,
+    mprv_cleanup,
+    mstatus_setup,
     satp_access_ops,
     satp_csr_read,
     satp_mode_value,
 )
+from testgen.priv.extensions.sv.SvZicbo import CBOS
 from testgen.priv.registry import add_priv_test_generator
 
 MPRV_CG = "Sv_Sm_mstatus_mprv_cg"
@@ -222,16 +225,13 @@ def _t_satp_access(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode
     test_chunks.append(test_data.end_test_chunk())
 
 
-_CBOS = {"zicbom": ("cbo.clean", "cbo.flush", "cbo.inval"), "zicboz": ("cbo.zero",)}
-
-
 def _t_mprv_cbo(test_data: TestData, sv: SvMode, family: str) -> TestChunk:
     """CBOs in M-mode with mstatus.MPRV = 1 are translated and checked with the privilege in MPP, like stores
     (cmo.adoc), but menvcfg enables them by the mode that executes them, which is M-mode.  The menvcfg CBO fields
     are clear throughout."""
     regs = SvRegs.allocate(test_data)
     chunk = begin_sv_test(test_data, regs, sv, "Smode", f"Sm_{sv.name}_mprv_{family}", coverpoint="cp_mprv_cbo")
-    ops = _CBOS[family]
+    ops = CBOS[family]
     t = f"x{regs.scratch}"
     enables = "MENVCFG_CBIE | MENVCFG_CBCFE | MENVCFG_CBZE"
     code = [
@@ -241,32 +241,21 @@ def _t_mprv_cbo(test_data: TestData, sv: SvMode, family: str) -> TestChunk:
         f"LI({t}, {enables})",
         f"csrc menvcfg, {t}",
     ]
+    mprv_m = (f"LI({t}, MSTATUS_MPRV | MSTATUS_MPP)", f"csrs mstatus, {t}")
     faults = 0
     for user in (False, True):
         code.extend([*create_page_mapping(sv, leaf_level=0, leaf_flags=PteFlags(user=user)), "sfence.vma"])
-        for mpp, mpp_bits in (("m", "MSTATUS_MPP"), ("s", "0x800"), ("u", None)):
+        for mpp in ("m", "s", "u"):
             if mpp == "m":
                 code.append(f"LA(x{regs.addr}, rvtest_data_1)")
             else:
                 code.extend(virtual_address(sv, "va_data", 0, destination=regs.addr, scratch=regs.scratch))
                 faults += len(ops) if user == (mpp == "s") else 0
+            # The mret that ends a trap handler changes MPP and clears MPRV, so both are set before each CBO
+            setup = mprv_m if mpp == "m" else mstatus_setup(f"mprv_{mpp}", regs.scratch)
             for op in ops:
-                # The mret that ends a trap handler changes MPP and clears MPRV, so both are set before each CBO
-                code.extend(
-                    [
-                        f"LI({t}, MSTATUS_MPP)",
-                        f"csrc mstatus, {t}",
-                        *([f"LI({t}, {mpp_bits})", f"csrs mstatus, {t}"] if mpp_bits else []),
-                        f"LI({t}, MSTATUS_MPRV)",
-                        f"csrs mstatus, {t}",
-                        test_data.add_testcase(
-                            f"u{int(user)}_mpp_{mpp}_{op.replace('.', '_')}", "cp_mprv_cbo", MPRV_CG
-                        ),
-                        f"{op} (x{regs.addr})",
-                        f"LI({t}, MSTATUS_MPRV)",
-                        f"csrc mstatus, {t}",
-                    ]
-                )
+                label = test_data.add_testcase(f"u{int(user)}_mpp_{mpp}_{op.replace('.', '_')}", "cp_mprv_cbo", MPRV_CG)
+                code.extend([*setup, label, f"{op} (x{regs.addr})", *mprv_cleanup(regs.scratch)])
     code.extend([f"LI({t}, {enables})", f"csrs menvcfg, {t}"])
     chunk.code.extend(code)
     chunk.raw_data.extend(sv_data(sv, regs))

@@ -20,13 +20,6 @@
     `define SV_ZICBO_ANY
 `endif
 
-// Cache-block management or zero instructions, which MPRV translates like stores
-`ifdef ZICBOM_SUPPORTED
-    `define SV_CBO_MZ
-`elsif ZICBOZ_SUPPORTED
-    `define SV_CBO_MZ
-`endif
-
 covergroup Sv_satp_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include  "general/RISCV_coverage_standard_coverpoints.svh"
@@ -1108,7 +1101,7 @@ covergroup Sv_Sm_mstatus_mprv_cg with function sample(ins_t ins);
 
     // CBOs in M-mode with MPRV = 1 are translated and checked with the privilege in MPP, like stores, but menvcfg
     // enables them by the mode that executes them, which is M-mode, so they run with its CBO fields clear
-    `ifdef SV_CBO_MZ
+    `ifdef CBO_SUPPORTED
         cbo: coverpoint ins.current.insn {
             `ifdef ZICBOM_SUPPORTED
                 wildcard bins clean = {CBO_CLEAN};
@@ -2538,7 +2531,7 @@ covergroup Sv_HSm_mprv_cg with function sample(ins_t ins);
 
     // CBOs follow MPRV, MPP and MPV like stores, but menvcfg enables them by the mode that executes them, which is
     // M-mode, so they run with its CBO fields clear
-    `ifdef SV_CBO_MZ
+    `ifdef CBO_SUPPORTED
         cbo : coverpoint ins.current.insn {
             `ifdef ZICBOM_SUPPORTED
                 wildcard bins clean = {CBO_CLEAN};

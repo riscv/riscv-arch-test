@@ -31,6 +31,9 @@ from testgen.priv.extensions.sv.page_tables import (
 )
 from testgen.priv.registry import add_priv_test_generator
 
+# The cache-block management and zero instructions of each family
+CBOS = {"zicbom": ("cbo.clean", "cbo.flush", "cbo.inval"), "zicboz": ("cbo.zero",)}
+
 
 class CboLeaf(NamedTuple):
     """A leaf PTE case for a CBO: a short name, a description, the leaf's flags, whether the CBO faults, and whether

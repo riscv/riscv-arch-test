@@ -167,12 +167,6 @@ covergroup Svadu_cg with function sample(ins_t ins);
 endgroup
 
 `ifdef H_SUPPORTED
-`ifdef ZICBOM_SUPPORTED
-    `define SVADU_H_CBO
-`elsif ZICBOZ_SUPPORTED
-    `define SVADU_H_CBO
-`endif
-
 // Svadu in the VS-stage and G-stage: menvcfg.ADUE selects Svade or Svadu for the G-stage, and henvcfg.ADUE for the
 // VS-stage.  The ADUE = 0 crosses repeat Sv_H_cg's Svade crosses.
 covergroup Svadu_H_cg with function sample(ins_t ins);
@@ -303,7 +297,7 @@ covergroup Svadu_H_cg with function sample(ins_t ins);
 
     // CBOs with ADUE = 1 through leaves with A = D = 0: A is set in each stage, and D too for cbo.zero; a
     // cache-block management instruction never checks or sets D (cmo.adoc).  The tests read each leaf back.
-    `ifdef SVADU_H_CBO
+    `ifdef CBO_SUPPORTED
         cbo : coverpoint ins.current.insn {
             `ifdef ZICBOM_SUPPORTED
                 wildcard bins clean = {CBO_CLEAN};

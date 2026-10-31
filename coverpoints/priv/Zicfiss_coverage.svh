@@ -202,7 +202,8 @@ covergroup Zicfiss_Sm_cg with function sample(ins_t ins);
     // checks that they read back 0 whenever menvcfg.SSE is 0.
     cp_envcfg_sse_rdonly0_senvcfg: cross priv_mode_m, senvcfg_csr, menvcfg_sse, sse_bit_write;
     // The V=1 leg, henvcfg.SSE=0 forcing senvcfg.SSE read-only zero, belongs to
-    // Zicfiss_H_cg (cp_envcfg_sse_rdonly0_virt).
+    // Zicfiss_H_cg (cp_envcfg_sse_rdonly0_virt), and so does the HS-mode counterpart of the
+    // henvcfg leg (cp_henvcfg_sse_rdonly0_hs).
     `ifdef H_SUPPORTED
         cp_envcfg_sse_rdonly0_henvcfg: cross priv_mode_m, henvcfg_csr, menvcfg_sse, sse_bit_write;
     `endif
@@ -733,6 +734,9 @@ covergroup Zicfiss_H_cg with function sample(ins_t ins);
         bins senvcfg = {CSR_SENVCFG};
         bins henvcfg = {CSR_HENVCFG};
     }
+    henvcfg_csr: coverpoint ins.current.insn[31:20] {
+        bins henvcfg = {CSR_HENVCFG};
+    }
     csr_write_ops: coverpoint ins.current.insn {
         wildcard bins csrrw = {CSRRW};
         wildcard bins csrrs = {CSRRS};
@@ -849,6 +853,9 @@ covergroup Zicfiss_H_cg with function sample(ins_t ins);
     // Read-only-zero chain through henvcfg, and through senvcfg at V=1.
     cp_envcfg_sse_rdonly0_virt:    cross priv_mode_hs_vs, csr_write_ops, envcfg_child_csr,
                                          sse_bit_written, senvcfg_sse_readback, henvcfg_sse_readback;
+    // Set and clear henvcfg.SSE from HS-mode under both values of menvcfg.SSE; the signature
+    // checks that it reads back 0 whenever menvcfg.SSE is 0.
+    cp_henvcfg_sse_rdonly0_hs:     cross priv_mode_hs, henvcfg_csr, menvcfg_sse, sse_bit_write;
 
     // All eight m/s/h enable combinations against every SS instruction, in every mode.
     cp_ss_enable_chain_cross:      cross priv_mode_hs_vs_vu, ss_all_instr, sse_chain;

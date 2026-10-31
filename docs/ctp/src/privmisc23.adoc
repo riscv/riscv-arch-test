@@ -146,7 +146,7 @@ include::norm/Zicfilp_norm_rules.adoc[]
 
 ==== Zicfiss Shadow Stack
 
-In Privileged section because it has both unpriv and privileged behaviors.  The Zicfiss suite has one group per privilege mode: Zicfiss_U, Zicfiss_S, Zicfiss_Sm and Zicfiss_H.  Zicfiss_U holds the instruction-behavior coverpoints, which Zicfiss_S and Zicfiss_H re-run in their own modes; Zicfiss_S and Zicfiss_Sm add the supervisor and machine gating coverpoints.  Zicfiss_H covers VS/VU-mode.  Zicfiss_U also covers vector accesses to a shadow stack page when Zve32x is implemented.
+In Privileged section because it has both unpriv and privileged behaviors.  The Zicfiss suite has one group per privilege mode: Zicfiss_U, Zicfiss_S, Zicfiss_Sm and Zicfiss_H.  Zicfiss_U holds the instruction-behavior coverpoints, which Zicfiss_S and Zicfiss_H re-run in their own modes; Zicfiss_S and Zicfiss_Sm add the supervisor and machine gating coverpoints.  Zicfiss_H covers VS/VU-mode, and HS-mode access to henvcfg.SSE.  Zicfiss_U also covers vector accesses to a shadow stack page when Zve32x is implemented.
 The Zicfiss_Sm tests require Sm, so they are not part of a certificate without Sm, such as RVA23.
 
 include::{testplansdir}/priv/Zicfiss_common.adoc[]

@@ -42,6 +42,7 @@ normative_rule_definitions:
       [
         "{Zicfiss_Sm_cg}/{cp_envcfg_sse_rdonly0_senvcfg,cp_envcfg_sse_rdonly0_henvcfg}",
         "{Zicfiss_S_cg}/{cp_senvcfg_sse_rdonly0_s}",
+        "{Zicfiss_H_cg}/{cp_henvcfg_sse_rdonly0_hs}",
       ]
 
   # The Zicfiss extension adds the SSE field in henvcfg. If the SSE field is set to

@@ -93,8 +93,9 @@ normative_rule_definitions:
   - name: vsstatus_vs_mstatus_vs_op_active
     coverpoint:
       [
-        "Sm_V_cg/cp_mstatus_vs_set_dirty_arithmetic",
-        "Sm_V_cg/cp_mstatus_vs_set_dirty_csr",
+        "H_V_cg/cp_vsstatus_vs_set_dirty_arithmetic",
+        "H_V_cg/cp_vsstatus_vs_set_dirty_csr",
+        "H_V_cg/cp_vsstatus_vs_set_dirty_vcsr",
       ]
 
   # Similarly, when V=1, both vsstatus.VS and the HS-level sstatus.VS are in effect.

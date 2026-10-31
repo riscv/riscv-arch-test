@@ -13,6 +13,32 @@ from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
 
+# Bytes reached by the misaligned tests: amocas.q at offset 31 touches bytes 31-46
+WINDOW_BYTES = 48
+
+
+def _window_word(offset: int, word: int) -> int:
+    """Return a fill word with distinct bytes in the window and a distinct pattern per offset."""
+    return sum(((5 * (4 * word + i) + 7 * offset + 0x11) & 0xFF) << (8 * i) for i in range(4))
+
+
+def _fill_window(base_reg: int, data_reg: int, offset: int) -> list[str]:
+    lines = []
+    for word in range(WINDOW_BYTES // 4):
+        lines.extend(
+            [f"LI(x{data_reg}, {_window_word(offset, word):#010x})", f"sw x{data_reg}, {4 * word}(x{base_reg})"]
+        )
+    return lines
+
+
+def _check_window(base_reg: int, check_reg: int, test_data: TestData) -> list[str]:
+    """Read back the window with XLEN-wide loads and record each value in the signature."""
+    lines = []
+    for word in range(WINDOW_BYTES // 4):
+        check = [f"LREG x{check_reg}, {4 * word}(x{base_reg})", write_sigupd(check_reg, test_data)]
+        lines.extend(check if word % 2 == 0 else ["#if __riscv_xlen == 32", *check, "#endif"])
+    return lines
+
 
 def _generate_amo_address_misaligned_tests(test_data: TestData) -> list[str]:
     covergroup, coverpoint = "Exceptions_Zaamo_cg", "cp_amo_address_misaligned"
@@ -20,7 +46,7 @@ def _generate_amo_address_misaligned_tests(test_data: TestData) -> list[str]:
     # Reserve dest/source as AMOCAS-capable register pairs for use later
     dest_reg = test_data.int_regs.get_register_pair()
     source_reg = test_data.int_regs.get_register_pair()
-    addr_reg = test_data.int_regs.get_register()
+    addr_reg, base_reg = test_data.int_regs.get_registers(2)
 
     lines = [
         comment_banner(
@@ -36,17 +62,11 @@ def _generate_amo_address_misaligned_tests(test_data: TestData) -> list[str]:
             [
                 "",
                 f"# Offset {offset} (LSBs: {offset:05b})",
-                f"LA(x{addr_reg}, scratch)",
-                "",
-                f"LI(x{source_reg}, 0xDEADBEEF)",
-                "",
-                f"sw x{source_reg}, 0(x{addr_reg})",
-                f"sw x{source_reg}, 4(x{addr_reg})",
-                f"sw x{source_reg}, 8(x{addr_reg})",
-                f"sw x{source_reg}, 12(x{addr_reg})",
+                f"LA(x{base_reg}, scratch)",
+                *_fill_window(base_reg, source_reg, offset),
                 "",
                 f"# Update scratch address to be misaligned with offset {offset}",
-                f"addi x{addr_reg}, x{addr_reg}, {offset}",
+                f"addi x{addr_reg}, x{base_reg}, {offset}",
                 "",
                 f"LI(x{source_reg}, 1)",
             ]
@@ -125,9 +145,17 @@ def _generate_amo_address_misaligned_tests(test_data: TestData) -> list[str]:
         lines.append("#endif")
         lines.append("#endif")
 
+        lines.extend(
+            [
+                f"# Check memory after offset {offset}",
+                test_data.add_testcase(f"memory_offset_{offset}", coverpoint, covergroup),
+                *_check_window(base_reg, dest_reg, test_data),
+            ]
+        )
+
     test_data.int_regs.return_register_pair(dest_reg)
     test_data.int_regs.return_register_pair(source_reg)
-    test_data.int_regs.return_register(addr_reg)
+    test_data.int_regs.return_registers([addr_reg, base_reg])
 
     return lines
 

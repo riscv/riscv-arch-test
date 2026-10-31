@@ -36,7 +36,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "InterruptsS_cg/cp_trigger_tsbi",
-        "Exceptions_Sm_cg/cp_medeleg_msu_illegalinstruction",
+        "Exceptions_SmS_cg/cp_medeleg_msu_illegalinstruction",
         "S_sprivinst_cg/cp_sret_s",
         "Sm_mprivinst_cg/cp_sret_s",
       ]

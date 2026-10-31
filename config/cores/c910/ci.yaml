@@ -28,6 +28,7 @@ exclude_extensions:
   - Exceptions_F
   - Exceptions_S
   - Exceptions_Sm
+  - Exceptions_SmS
   - Exceptions_U
   - Exceptions_Zc
   # The same imprecise load fault, and a store bus error raises no fault.

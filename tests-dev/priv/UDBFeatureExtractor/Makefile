@@ -47,6 +47,9 @@ CFLAGS := -march=$(ARCH) -mabi=$(ABI) -mcmodel=medany \
           -Wl,--no-relax -Wl,--no-warn-rwx-segments \
           -I$(SRC_DIR) -I$(DUT_INCLUDE_DIR)
 
+# make_config.py adds -DTRACE_PROBES and -DSKIP_PROBES='"name,..."' when a probe stopped the simulation
+EXTRA_CFLAGS ?=
+
 SRCS := start.S feature_extractor.c parameters.c console.c
 DEPS := extensions.h probe.h udb_parameters.h console.h
 ELF  := $(BUILD_DIR)/feature_extractor$(XLEN).elf
@@ -59,7 +62,7 @@ $(BUILD_DIR):
 
 elf: $(ELF)
 $(ELF): $(addprefix $(SRC_DIR)/,$(SRCS) $(DEPS)) $(LINKER_SCRIPT) $(DUT_INCLUDE_DIR)/rvmodel_macros.h | $(BUILD_DIR)
-	$(CC) $(CFLAGS) -T $(LINKER_SCRIPT) $(addprefix $(SRC_DIR)/,$(SRCS)) -o $@
+	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) -T $(LINKER_SCRIPT) $(addprefix $(SRC_DIR)/,$(SRCS)) -o $@
 
 # xlen_probe prints the hart's XLEN; its code is the same for both builds, which differ only in
 # ELF class (simulators refuse an ELF of the other class)

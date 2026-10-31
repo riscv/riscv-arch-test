@@ -41,8 +41,6 @@ that are measured only under some condition.
 
 - `base.hpmcounter_increments_in_self_hpmevent_write` and `platform.event_selectors`: they need to
   know which event number counts what, and HPM event numbers are implementation-defined.
-- `extensions.H.implicit_vs_pte_access_sets_gstage_d`: needs a two-stage walk whose VS-stage PTE
-  access is checked for the G-stage D bit, which a single-region G-stage table cannot show.
 - `extensions.Zawrs.sto.is_nop`: like `ZAWRS_NTO_IS_NOP`, a stall cannot be told from a slow retire.
 - `platform.clock_frequency`, `instructions_per_tick`, `max_time_to_wait`, `wfi_is_nop`: timing of
   the model, not of the hart.
@@ -57,6 +55,8 @@ that are measured only under some condition.
 - `MISALIGNED_LDST_EXCEPTION_PRIORITY` likewise needs a misaligned access that traps (a load, or an
   AMO when loads do not trap); `MISALIGNED_SPLIT_STRATEGY` needs one that does not.
 - `LRSC_MISALIGNED_BEHAVIOR` applies only when misaligned AMOs trap.
+- `extensions.H.implicit_vs_pte_access_sets_gstage_d` (Sail) needs H and Svadu: only hardware A/D
+  updating lets the VS-stage walk set a clear G-stage D bit instead of faulting.
 - `WFI_U_MODE` is probed only on a hart with S-mode; without S, `wfi` in U-mode may wait forever.
 - `SDTRIG_MCONTROL6_MASKMAX6` needs NAPOT matching (`MATCH` 1) and a `tdata2` that clears a bit of
   an all-ones write; the field and chain probes use the first `mcontrol6` trigger, and the chain

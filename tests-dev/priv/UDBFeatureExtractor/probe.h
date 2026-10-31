@@ -45,6 +45,16 @@ extern unsigned char probe_scratch[PROBE_SCRATCH_SIZE];
 #define CAUSE_ECALL_S 9
 #define CAUSE_ECALL_M 11
 
+// A probe the watchdog ended: the machine-timer interrupt
+#define CAUSE_TIMEOUT ((1ul << (__riscv_xlen - 1)) | 7)
+
+// The watchdog (feature_extractor.c).  On a DUT with a machine timer that interrupts, a probe run
+// between watchdog_arm() and watchdog_disarm() that does not finish within the timeout ends with
+// probe_cause = CAUSE_TIMEOUT; both are no-ops when there is no usable timer.
+extern unsigned long watchdog_ticks;   // the timeout in mtime ticks, 0 without a watchdog
+void watchdog_arm(unsigned long ticks);
+void watchdog_disarm(void);
+
 #define STR_(x) #x
 #define STR(x) STR_(x)
 

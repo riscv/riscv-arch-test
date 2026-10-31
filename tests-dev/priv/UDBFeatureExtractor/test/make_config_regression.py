@@ -114,6 +114,8 @@ def run_one(config_dir: Path, udb_yaml: Path, build: Path, timeout: int) -> dict
     result["sail_error"] = r["sail_error"]
     result["dropped"] = r["dropped"]
     result["assumed_params"] = sorted(r["assumed"])
+    result["skipped_probes"] = r["skipped_probes"]
+    result["incomplete"] = r["incomplete"]
 
     # 1. Extensions and measured parameters against the configuration's yaml
     gen = load_yaml(r["yaml"].read_text())
@@ -188,6 +190,10 @@ def main() -> None:
             print(f"{r.get('status', 'FAIL'):4} {r['name']}  {r.get('note', '')}")
             continue
         print(f"---- {r['name']} (RV{r['xlen']})")
+        if r["skipped_probes"]:
+            print(f"  probes left out because they stopped the run: {', '.join(r['skipped_probes'])}")
+        if r["incomplete"]:
+            print(f"  the extractor did not finish: {r['incomplete']}")
         if r["udb_errors"]:
             print("  UDB rejects the generated yaml: " + " | ".join(e[:160] for e in r["udb_errors"]))
         if r["sail_error"]:

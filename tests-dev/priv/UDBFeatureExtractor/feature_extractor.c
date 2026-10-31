@@ -88,14 +88,171 @@ static void print_extension(const char *name, const char *version)
     printf("  - { name: %s, version: \"= %s\" }\n", name, version);
 }
 
+// The watchdog.  A hart with a buggy implementation of an extension may hang on its probe
+// instruction instead of retiring it or trapping.  When rvmodel_macros.h names the machine timer
+// (RVMODEL_MTIME_ADDRESS and RVMODEL_MTIMECMP_ADDRESS), every probe that check() runs, and every
+// lower-mode probe, is armed with a machine-timer interrupt: a probe still running when it fires
+// is ended by the trap handler and its feature is reported as not implemented.  The timeout is
+// calibrated against a counted loop at boot, so it means about the same number of instructions
+// whatever rate mtime counts at, and the interrupt is tested before it is relied on.
+extern unsigned long watchdog_mtime_addr, watchdog_mtimecmp_addr;    // start.S
+unsigned long watchdog_ticks;
+static const char *watchdog_none;      // why there is no watchdog
+static bool watchdog_armed;
+static volatile unsigned long wd_args[3];
+
+static bool mtime_read(unsigned long long *t)
+{
+    wd_args[0] = watchdog_mtime_addr;
+#if __riscv_xlen == 64
+    unsigned long v = PROBE_VALUE_IN("zicsr", "ld t1, 0(%[in])\n\tld a3, 0(t1)", wd_args);
+    *t = v;
+#else
+    unsigned long v = PROBE_VALUE_IN("zicsr", "lw t1, 0(%[in])\n"
+                                              "3:\tlw s0, 4(t1)\n\tlw a3, 0(t1)\n\tlw t2, 4(t1)\n\t"
+                                              "bne s0, t2, 3b\n\tsw t2, 8(%[in])", wd_args);
+    *t = ((unsigned long long)wd_args[2] << 32) | v;
+#endif
+    return PROBE_OK();
+}
+
+static bool mtimecmp_write(unsigned long long t)
+{
+    wd_args[0] = watchdog_mtimecmp_addr;
+    wd_args[1] = (unsigned long)t;
+#if __riscv_xlen == 64
+    PROBE_VALUE_IN("zicsr", "ld t1, 0(%[in])\n\tld t2, 8(%[in])\n\tsd t2, 0(t1)", wd_args);
+#else
+    wd_args[2] = (unsigned long)(t >> 32);
+    PROBE_VALUE_IN("zicsr", "lw t1, 0(%[in])\n\tlw t2, 4(%[in])\n\tlw s0, 8(%[in])\n\t"
+                            "li a2, -1\n\tsw a2, 4(t1)\n\tsw t2, 0(t1)\n\tsw s0, 4(t1)", wd_args);
+#endif
+    return PROBE_OK();
+}
+
+// Count n down to zero: two instructions per iteration
+static unsigned long spin(unsigned long n)
+{
+    PROBE_VALUE_IN("zicsr", "mv t1, %[in]\n3:\taddi t1, t1, -1\n\tbnez t1, 3b", n);
+    return probe_cause;
+}
+
+void watchdog_arm(unsigned long ticks)
+{
+    unsigned long long now;
+    if (!ticks || !mtime_read(&now) || !mtimecmp_write(now + ticks))
+        return;
+    watchdog_armed = true;
+    __asm__ volatile("csrs mie, %0\n\tcsrs mstatus, %1" : : "r"(1ul << 7), "r"(1ul << 3));
+}
+
+void watchdog_disarm(void)
+{
+    if (!watchdog_armed)
+        return;
+    watchdog_armed = false;
+    unsigned long cause = probe_cause;
+    __asm__ volatile("csrc mstatus, %1\n\tcsrc mie, %0" : : "r"(1ul << 7), "r"(1ul << 3));
+    mtimecmp_write(~0ull);
+    probe_cause = cause;
+}
+
+#define WATCHDOG_CALIBRATE 4096        // loop iterations timed at boot
+#define WATCHDOG_FACTOR 64             // the timeout, in multiples of that loop (about 0.5M instructions)
+
+static void watchdog_init(void)
+{
+    unsigned long long t0, t1;
+#ifdef WATCHDOG_DISABLE
+    watchdog_none = "built with WATCHDOG_DISABLE";
+    return;
+#endif
+    if (!watchdog_mtime_addr || !watchdog_mtimecmp_addr) {
+        watchdog_none = "rvmodel_macros.h defines no RVMODEL_MTIME_ADDRESS and RVMODEL_MTIMECMP_ADDRESS";
+        return;
+    }
+    if (!mtime_read(&t0) || !mtimecmp_write(~0ull)) {
+        watchdog_none = "mtime or mtimecmp cannot be accessed";
+        return;
+    }
+    spin(WATCHDOG_CALIBRATE);
+    mtime_read(&t1);
+    unsigned long d = (unsigned long)(t1 - t0);
+    if (d == 0) {                                   // a slow timer: time a loop 16 times longer
+        spin(16 * WATCHDOG_CALIBRATE);
+        mtime_read(&t0);
+        d = (unsigned long)(t0 - t1) >> 4;
+        if (d == 0 && t0 != t1)
+            d = 1;
+    }
+    if (d == 0) {
+        watchdog_none = "mtime does not advance";
+        return;
+    }
+    unsigned long mie = PROBE_VALUE("zicsr", "li t1, 1 << 7\n\tcsrs mie, t1\n\tcsrr a3, mie\n\tcsrc mie, t1");
+    if (mie == PROBE_TRAPPED || !(mie & (1ul << 7))) {
+        watchdog_none = "mie.MTIE cannot be set";
+        return;
+    }
+    // The interrupt must end a loop that runs for about eight timeouts of one calibration loop
+    watchdog_arm(d);
+    unsigned long cause = spin(8 * WATCHDOG_CALIBRATE);
+    watchdog_disarm();
+    if (cause != CAUSE_TIMEOUT) {
+        watchdog_none = "the machine-timer interrupt did not arrive";
+        return;
+    }
+    watchdog_ticks = d * WATCHDOG_FACTOR;
+}
+
+// Probes named in SKIP_PROBES (a comma-separated list, given by make_config.py after a probe
+// stopped the simulation on an earlier run) are not run, and their features are reported absent
+#ifndef SKIP_PROBES
+#define SKIP_PROBES ""
+#endif
+static bool skipped(const char *name)
+{
+    for (const char *s = SKIP_PROBES; *s; ) {
+        const char *n = name;
+        while (*n && *s == *n) { s++; n++; }
+        if (*n == '\0' && (*s == ',' || *s == '\0'))
+            return true;
+        while (*s && *s != ',') s++;
+        if (*s == ',') s++;
+    }
+    return false;
+}
+
 // Run one probe, report a trap that is not an illegal-instruction exception (which would mean the
-// probe itself is wrong, for example a scratch address the implementation cannot access).
+// probe itself is wrong, for example a scratch address the implementation cannot access).  Under
+// the watchdog, a probe that times out is tried once more with a timeout 16 times longer, so that
+// a simulator whose mtime follows the host's clock cannot fail a probe by being descheduled.
 volatile unsigned long unimplemented_seen;      // some probe's instruction raised an illegal-instruction exception
 
 static bool check(const char *name, bool (*probe)(void))
 {
-    probe_cause = CAUSE_NONE;
-    bool ok = probe();
+    if (skipped(name)) {
+        printf("# warning: the %s probe was not run because it stopped the simulation on an earlier run;\n"
+               "#          %s is reported as not implemented\n", name, name);
+        return false;
+    }
+#ifdef TRACE_PROBES
+    printf("# probe: %s\n", name);
+#endif
+    bool ok = false;
+    for (unsigned attempt = 0; attempt < 2; attempt++) {
+        watchdog_arm(watchdog_ticks << (4 * attempt));
+        probe_cause = CAUSE_NONE;
+        ok = probe();
+        watchdog_disarm();
+        if (probe_cause != CAUSE_TIMEOUT)
+            break;
+    }
+    if (probe_cause == CAUSE_TIMEOUT) {
+        printf("# warning: the %s probe did not finish within %u mtime ticks (twice), so the watchdog\n"
+               "#          stopped it; %s is reported as not implemented\n", name, watchdog_ticks << 4, name);
+        return false;
+    }
     if (!ok && probe_cause == CAUSE_ILLEGAL_INSTRUCTION)
         unimplemented_seen = 1;
     if (!ok && probe_cause != CAUSE_NONE && probe_cause != CAUSE_ILLEGAL_INSTRUCTION)
@@ -110,6 +267,13 @@ static bool probe_I(void)
 {
     return PROBE("zicsr", ".word 0x00080813");
 }
+
+#ifdef WATCHDOG_SELFTEST
+static bool probe_hang(void)
+{
+    return PROBE("zicsr", "3:\tj 3b");
+}
+#endif
 
 static unsigned long read_vlenb(void)
 {
@@ -169,6 +333,7 @@ void main_no_zicsr(void)
     print_extension("Sm", "1.11.0");
     printf("params:\n");
     printf("  MXLEN: %u\n", (unsigned long)__riscv_xlen);
+    printf("# end of extractor output\n");
 }
 
 // Called from the trap handler for a trap that no probe expected
@@ -176,6 +341,28 @@ void report_unexpected_trap(unsigned long cause, unsigned long epc, unsigned lon
 {
     printf("# FATAL: unexpected trap: mcause = 0x%x, mepc = 0x%x, mtval = 0x%x\n", cause, epc, tval);
 }
+
+#ifdef ONLY_PROBE
+// make_config.py builds with -DONLY_PROBE='"NAME"' to run one probe by itself: when a run stopped
+// in that probe but the probe alone finishes, the run ran into a cycle or time limit instead
+static void run_only(void)
+{
+    static const struct { const char *name; bool (*probe)(void); } named[] = {
+        { "I", probe_I }, { "fadd.s", probe_fadd_s }, { "fadd.d", probe_fadd_d }, { "fadd.h", probe_fadd_h },
+        { "fcvt.s.h", probe_fcvt_s_h }, { "Zcmp", probe_cm_mvsa01 },
+    };
+    for (unsigned i = 0; i < COUNT(named); i++)
+        if (streq(named[i].name, ONLY_PROBE))
+            printf("# only: %s %d\n", ONLY_PROBE, (long)check(named[i].name, named[i].probe));
+    for (unsigned i = 0; i < NUM_EXTENSIONS; i++)
+        if (streq(extensions[i].name, ONLY_PROBE))
+            printf("# only: %s %d\n", ONLY_PROBE, (long)check(extensions[i].name, extensions[i].probe));
+    for (unsigned i = 0; i < NUM_PRIV_EXTENSIONS; i++)
+        if (streq(priv_extensions[i].name, ONLY_PROBE))
+            printf("# only: %s %d\n", ONLY_PROBE, (long)check(priv_extensions[i].name, priv_extensions[i].probe));
+    printf("# end of extractor output\n");
+}
+#endif
 
 int main(void)
 {
@@ -193,10 +380,25 @@ int main(void)
 #endif
     PROBE("zicsr", "li t1, 8\n\tcsrs 0x744, t1");
 
+    watchdog_init();
+    if (watchdog_ticks)
+        printf("# watchdog: a probe that runs for %u mtime ticks is stopped and its feature reported absent\n",
+               watchdog_ticks);
+    else
+        printf("# watchdog: none (%s); a probe that hangs stops the run\n", watchdog_none);
+#ifdef ONLY_PROBE
+    run_only();
+    return 0;
+#endif
+
     // vtype and vl as left by reset, before any probe touches the vector unit
     unsigned long reset_vtype = PROBE_VALUE("zicsr", "csrr a3, vtype");
     unsigned long reset_vl = PROBE_VALUE("zicsr", "csrr a3, vl");
 
+#ifdef WATCHDOG_SELFTEST
+    // make ... EXTRA_CFLAGS=-DWATCHDOG_SELFTEST: a probe that never finishes, for the watchdog to stop
+    check("WatchdogSelftest", probe_hang);
+#endif
     bool has_i = check("I", probe_I);
     for (unsigned i = 0; i < NUM_EXTENSIONS; i++)
         extensions[i].supported = check(extensions[i].name, extensions[i].probe);
@@ -403,5 +605,6 @@ int main(void)
         print_extension("Sha", "1.0.0");      // Shtvala and Shvstvala are assumed
 
     print_parameters(vlen, reset_vtype, reset_vl);
+    printf("# end of extractor output\n");    // make_config.py's sign that the run finished
     return 0;
 }

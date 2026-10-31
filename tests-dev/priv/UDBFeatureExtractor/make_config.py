@@ -12,7 +12,9 @@
 # directory.  The steps are:
 #   1. Run xlen_probe on the DUT to learn XLEN (the run command only decides which ELF class to try
 #      first).
-#   2. Build the extractor for that XLEN and run it with run_cmd.txt.
+#   2. Build the extractor for that XLEN and run it with run_cmd.txt.  If the run stops before the
+#      extractor's last line (a probe hung, or the simulator stopped on an assertion), rebuild it to
+#      name each probe as it starts, then leave out the probe the run stopped in, until it finishes.
 #   3. Write <name>.yaml: the extensions and parameters the extractor reported, then every parameter
 #      UDB still requires, filled with the value most ACT configurations use and marked as assumed,
 #      until `udb validate cfg` accepts the file.
@@ -22,15 +24,18 @@
 from __future__ import annotations
 
 import argparse
+import contextlib
 import datetime
 import json
 import os
 import re
 import shlex
 import shutil
+import signal
 import subprocess
 import sys
 from collections import Counter
+from collections.abc import Callable
 from functools import cache
 from pathlib import Path
 from typing import Any
@@ -64,6 +69,11 @@ def load_yaml(text: str) -> dict[str, Any]:
 
 def run_on_dut(config_dir: Path, elf: Path, out: Path, timeout: int) -> str:
     """Run an ELF with the configuration's run_cmd.txt and return its console output."""
+    return run_on_dut_ex(config_dir, elf, out, timeout)[0]
+
+
+def run_on_dut_ex(config_dir: Path, elf: Path, out: Path, timeout: int) -> tuple[str, bool]:
+    """run_on_dut, also saying whether the run was stopped for taking longer than timeout seconds."""
     command = DEBUG_PLACEHOLDER_RE.sub("", (config_dir / "run_cmd.txt").read_text()).split()
     env = dict(os.environ)
     while command and re.match(r"^[A-Za-z_][A-Za-z0-9_]*=", command[0]):
@@ -77,23 +87,33 @@ def run_on_dut(config_dir: Path, elf: Path, out: Path, timeout: int) -> str:
         command[1:1] = shlex.split(flags.format(out=out))
     command.append(str(elf))
     log = out.with_suffix(".log")
-    try:
-        with log.open("w") as f:
-            subprocess.run(
-                command, stdout=f, stderr=subprocess.STDOUT, cwd=REPO_ROOT, env=env, timeout=timeout, check=False
-            )
-    except subprocess.TimeoutExpired:
-        pass
+    timed_out = False
+    # The run command is often a script that starts the simulator as a child, so a timeout stops
+    # the whole process group; otherwise the simulator keeps running after the script is killed.
+    with log.open("w") as f:
+        proc = subprocess.Popen(
+            command, stdout=f, stderr=subprocess.STDOUT, cwd=REPO_ROOT, env=env, start_new_session=True
+        )
+        try:
+            proc.wait(timeout=timeout)
+        except subprocess.TimeoutExpired:
+            timed_out = True
+            os.killpg(proc.pid, signal.SIGTERM)
+            with contextlib.suppress(subprocess.TimeoutExpired):
+                proc.wait(timeout=10)
+            with contextlib.suppress(ProcessLookupError):
+                os.killpg(proc.pid, signal.SIGKILL)
+            proc.wait()
     text = out.read_text(errors="replace") if out.exists() and out.stat().st_size else log.read_text(errors="replace")
     if (
         re.search(r"no simulator at|not found|No such file or directory", log.read_text(errors="replace"))
         and "# " not in text
     ):
         raise FileNotFoundError(f"{command[0]} could not start its simulator; see {log}")
-    return "\n".join(TIMESTAMP_RE.sub("", line) for line in text.splitlines())
+    return "\n".join(TIMESTAMP_RE.sub("", line) for line in text.splitlines()), timed_out
 
 
-def make(target: str, build: Path, test_config: dict[str, Any], config_dir: Path, xlen: int) -> Path:
+def make(target: str, build: Path, test_config: dict[str, Any], config_dir: Path, xlen: int, cflags: str = "") -> Path:
     linker = (config_dir / test_config.get("linker_script", "link.ld")).resolve()
     include = (config_dir / test_config.get("dut_include_dir", ".")).resolve()
     build.mkdir(parents=True, exist_ok=True)
@@ -109,6 +129,7 @@ def make(target: str, build: Path, test_config: dict[str, Any], config_dir: Path
             f"LINKER_SCRIPT={linker}",
             f"DUT_INCLUDE_DIR={include}",
             f"BUILD_DIR={build}",
+            f"EXTRA_CFLAGS={cflags}",
         ],
         cwd=REPO_ROOT,
         check=True,
@@ -141,6 +162,72 @@ def detect_xlen(config_dir: Path, test_config: dict[str, Any], build: Path, time
     raise RuntimeError(f"xlen_probe printed nothing on {config_dir}; see {build}/xlen_probe*.log")
 
 
+END_MARK = "# end of extractor output"
+MAX_SKIPS = 8
+
+
+def stopped_after(text: str, out_dir: Path) -> str:
+    """Where a run that got past the extension probes stopped."""
+    last = next((line.strip() for line in reversed(text.splitlines()) if re.match(r"^  [A-Z0-9_]+: ", line)), "")
+    return (
+        "the run stopped after the extension probes"
+        + (f", after printing {last.split(':')[0]}" if last else "")
+        + f" (a hang there, or a cycle or time limit); see {out_dir / 'extractor_output.log'}"
+    )
+
+
+def run_extractor(
+    config_dir: Path, test_config: dict[str, Any], xlen: int, out_dir: Path, timeout: int
+) -> tuple[str, list[str], str]:
+    """Run the extractor until it finishes, leaving out each probe that stops the run.
+
+    Returns its output, the probes left out, and why it did not finish ("" when it did).  The first
+    run is untraced; when it stops early the extractor is rebuilt with TRACE_PROBES, which prints
+    "# probe: NAME" before each extension probe, so the last such line names the probe the run
+    stopped in.  That probe is then run by itself (ONLY_PROBE): if it finishes alone, the run
+    ran into a cycle or time limit rather than a hang, and nothing is left out.  A run that stops
+    after the extension probes cannot be helped this way, and neither can one that took longer
+    than the timeout on a DUT with the watchdog, which would have stopped a hanging probe.
+    """
+    limit = "the simulator probably hit a cycle or time limit; raise it (run_cmd.txt, or --timeout)"
+    skips: list[str] = []
+    trace = False
+    text = first = ""
+    for attempt in range(MAX_SKIPS + 2):
+        flags = ["-DTRACE_PROBES"] if trace else []
+        if skips:
+            flags.append(f"-DSKIP_PROBES='\"{','.join(skips)}\"'")
+        build = out_dir / "build" / ("extractor" if attempt == 0 else f"extractor-retry{attempt}")
+        elf = make("elf", build, test_config, config_dir, xlen, " ".join(flags))
+        text, timed_out = run_on_dut_ex(config_dir, elf, out_dir / "extractor_output.txt", timeout)
+        if END_MARK in text:
+            return text, skips, ""
+        if timed_out and "# watchdog: a probe" in text:
+            return text, skips, f"the run took longer than {timeout} s with the watchdog on, so {limit}"
+        if not trace:
+            if "implemented_extensions:" in text:  # past every probe that can be left out
+                return text, skips, stopped_after(text, out_dir)
+            first = text
+            trace = True
+            continue
+        lines = text.splitlines()
+        started = [i for i, line in enumerate(lines) if line.startswith("# probe: ")]
+        if not started or any(line.startswith("implemented_extensions:") for line in lines[started[-1] :]):
+            # tracing slows a run down, so a run that stops on a limit may get less far traced
+            best = max((text, first), key=lambda t: len(re.findall(r"^  [A-Z0-9_]+: ", t, re.MULTILINE)))
+            return best, skips, stopped_after(best, out_dir)
+        name = lines[started[-1]].split()[2]
+        if name in skips:
+            break
+        alone = make(
+            "elf", out_dir / "build" / f"only-{name}", test_config, config_dir, xlen, f"-DONLY_PROBE='\"{name}\"'"
+        )
+        if END_MARK in run_on_dut(config_dir, alone, out_dir / f"only-{name}.txt", timeout):
+            return text, skips, f"the run stopped in the {name} probe, which finishes when run alone, so {limit}"
+        skips.append(name)
+    return text, skips, f"the run still stops after leaving out {', '.join(skips)}"
+
+
 # ---------------------------------------------------------------------------------------------
 # The extractor's output
 
@@ -152,7 +239,9 @@ def parse_output(text: str) -> tuple[list[str], dict[str, Any], dict[str, Any], 
     for key, value in re.findall(r"^# sail: ([\w.]+): (.*)$", text, re.MULTILINE):
         sail[key] = json.loads(value)
     comments = [
-        line for line in text.splitlines() if re.match(r"^# (untested|note|warning|FATAL|sail-unmodelled)", line)
+        line
+        for line in text.splitlines()
+        if re.match(r"^# (untested|watchdog|note|warning|FATAL|sail-unmodelled|  )", line)
     ]
     yaml_text = "\n".join(line for line in text.splitlines() if re.match(r"^(params:|  [A-Z0-9_]+: )", line))
     params: dict[str, Any] = {}
@@ -183,10 +272,16 @@ def bundle_env() -> dict[str, str]:
     return env
 
 
+def bundle(*args: str) -> list[str]:
+    """A bundle command line.  The repository's mise configuration chooses the Ruby, and mise puts
+    it on PATH only inside the repository, so go through `mise exec` when mise is installed."""
+    return ["mise", "exec", "--", "bundle", *args] if shutil.which("mise") else ["bundle", *args]
+
+
 @cache
 def udb_param_dir() -> Path:
     path = subprocess.run(
-        ["bundle", "info", "udb", "--path"], env=bundle_env(), capture_output=True, text=True, check=True
+        bundle("info", "udb", "--path"), env=bundle_env(), cwd=REPO_ROOT, capture_output=True, text=True, check=True
     ).stdout.strip()
     return Path(path) / ".data/spec/std/isa/param"
 
@@ -194,8 +289,9 @@ def udb_param_dir() -> Path:
 def udb_validate(path: Path) -> list[tuple[str, list[str]]]:
     """UDB's complaints about a configuration, each with its failing conditions."""
     r = subprocess.run(
-        ["bundle", "exec", "udb", "validate", "cfg", str(path)],
+        bundle("exec", "udb", "validate", "cfg", str(path.resolve())),
         env=bundle_env(),
+        cwd=REPO_ROOT,  # mise chooses the Ruby by directory
         capture_output=True,
         text=True,
         check=False,
@@ -283,6 +379,113 @@ def fill_values(name: str, xlen: int) -> list[tuple[Any, str]]:
     return out + [(schema_value(name, xlen), "assumed: not extracted; a legal value from the UDB schema")]
 
 
+@cache
+def never_measurable() -> tuple[frozenset[str], frozenset[str]]:
+    """The UDB parameters and Sail keys parameters_not_extracted.md says no probe measures."""
+    text = (SRC_DIR / "parameters_not_extracted.md").read_text()
+
+    def section(title: str) -> str:
+        return text.split(f"## {title}", 1)[1].split("\n## ", 1)[0]
+
+    udb = frozenset(re.findall(r"`([A-Z][A-Z0-9_]+)`", section("Not measurable from a single hart in M-mode")))
+    sail = frozenset(re.findall(r"`([a-z][\w.]+)`", section("Sail keys not measured")))
+    return udb, sail
+
+
+def json_key_lines(text: str) -> dict[str, int]:
+    """Line number of each key in JSON written with two-space indentation, by dotted path."""
+    out: dict[str, int] = {}
+    stack: list[str] = []
+    for number, line in enumerate(text.splitlines(), 1):
+        if m := re.match(r'^( +)"([^"]+)":', line):
+            depth = len(m.group(1)) // 2
+            stack = [*stack[: depth - 1], m.group(2)]
+            out.setdefault(".".join(stack), number)
+    return out
+
+
+def ranges(numbers: list[int]) -> str:
+    """1,2,3,7 -> 1-3,7"""
+    out: list[str] = []
+    for n in sorted(numbers):
+        if out and int(out[-1].split("-")[-1]) == n - 1:
+            out[-1] = f"{out[-1].split('-')[0]}-{n}"
+        else:
+            out.append(str(n))
+    return ",".join(out)
+
+
+def manual_checks(r: dict[str, Any]) -> list[str]:
+    """Where in the generated files a person has to check or fix something, one line each."""
+    out: list[str] = []
+    yaml_path, sail_path = Path(r["yaml"]), Path(r["sail"])
+    try:
+        yp, sp = yaml_path.relative_to(Path.cwd()), sail_path.relative_to(Path.cwd())
+    except ValueError:
+        yp, sp = yaml_path, sail_path
+    lines = yaml_path.read_text().splitlines()
+    never_udb, never_sail = never_measurable()
+
+    def where(pred: Callable[[str], bool]) -> list[int]:
+        return [i for i, line in enumerate(lines, 1) if pred(line)]
+
+    def names(nums: list[int]) -> str:
+        found = [re.match(r"^\s*#?\s*-?\s*\{?\s*(?:name: )?(\w+)", lines[i - 1]) for i in nums]
+        return ", ".join(m.group(1) for m in found if m)
+
+    for i in where(lambda line: line.startswith("# warning:")):
+        warning = lines[i - 1][len("# warning: ") :]
+        j = i
+        while j < len(lines) and re.match(r"^#  {2,}\S", lines[j]):
+            warning += " " + lines[j][1:].strip()
+            j += 1
+        out.append(f"{yp}:{i}: {warning}")
+    for i in where(lambda line: line.startswith("# watchdog: none")):
+        reason = re.sub(r"^# watchdog: none \((.*)\);.*$", r"\1", lines[i - 1])
+        out.append(f"{yp}:{i}: no watchdog ({reason}), so a probe that hangs costs a rerun")
+    for i in where(lambda line: line.startswith("# untested:")):
+        out.append(f"{yp}:{i}: extensions the extractor cannot detect: add any the DUT implements")
+    for i in where(lambda line: line.startswith("# UDB rejects")):
+        out.append(f"{yp}:{i}: {lines[i - 1][2:]}")
+    nums = where(lambda line: line.startswith("  - {") and "# assumed:" in line)
+    if nums:
+        out.append(f"{yp}:{ranges(nums)}: extensions added because another requires them: {names(nums)}")
+    nums = where(lambda line: "# assumed:" in line and line.split(":")[0].strip() in never_udb)
+    if nums:
+        out.append(
+            f"{yp}:{ranges(nums)}: no probe can measure these; set them from the DUT's documentation: {names(nums)}"
+        )
+    nums = where(
+        lambda line: (
+            "# assumed:" in line and not line.startswith("  - {") and line.split(":")[0].strip() not in never_udb
+        )
+    )
+    if nums:
+        out.append(
+            f"{yp}:{ranges(nums)}: {len(nums)} parameters not determined on this DUT, given typical values; check each"
+        )
+    nums = where(lambda line: re.match(r"^  # [A-Z0-9_]+: ", line) is not None)
+    if nums:
+        out.append(
+            f"{yp}:{ranges(nums)}: measured values UDB did not accept (the DUT may disagree with UDB): {names(nums)}"
+        )
+
+    out.sort(key=lambda item: int(re.split(r"[-,]", item[len(str(yp)) + 1 :].split(":")[0])[0]))
+    text = sail_path.read_text()
+    keys = json_key_lines(text)
+    header = [i for i, line in enumerate(text.splitlines(), 1) if line.startswith("//")]
+    if r["sail_defaulted"]:
+        out.append(
+            f"{sp}:{ranges(header)}: {len(r['sail_defaulted'])} keys left at Sail's default (listed there); check each"
+        )
+    for key in r["sail_defaulted"]:
+        if any(key == k or key.startswith(k + ".") or key.endswith("." + k) for k in never_sail):
+            out.append(f"{sp}:{keys.get(key, header[-1] if header else 1)}: {key}: no probe can measure it")
+    if r["sail_unmodelled"]:
+        out.append(f"{sp}:{ranges(header)}: UDB values Sail cannot express (listed there)")
+    return out
+
+
 def yaml_value(v: object) -> str:
     return (
         json.dumps(v)
@@ -318,9 +521,16 @@ def render_yaml(
     measured = [n for n in params if n not in notes]
     assumed = [n for n in params if n in notes]
     lines += [f"  {n}: {yaml_value(params[n])}" for n in measured]
-    if assumed:
-        lines.append("  # The extractor could not determine these; check each against the DUT")
-        lines += [f"  {n}: {yaml_value(params[n])}  # {notes[n]}" for n in assumed]
+    never = [n for n in assumed if n in never_measurable()[0]]
+    rest = [n for n in assumed if n not in never]
+    if never:
+        lines.append(
+            "  # No probe can measure these (see parameters_not_extracted.md); set each from the DUT's documentation"
+        )
+        lines += [f"  {n}: {yaml_value(params[n])}  # {notes[n]}" for n in never]
+    if rest:
+        lines.append("  # The extractor did not determine these on this DUT; check each against the DUT")
+        lines += [f"  {n}: {yaml_value(params[n])}  # {notes[n]}" for n in rest]
     if dropped:
         lines.append("  # Extracted but not accepted by UDB:")
         lines += [f"  # {d}" for d in dropped]
@@ -403,6 +613,7 @@ def complete_yaml(
 def make_config(config_dir: Path, out_dir: Path, timeout: int, sim: str = "sail_riscv_sim") -> dict[str, Any]:
     global UDB_DATA_HOME
     config_dir = config_dir.resolve()
+    out_dir = out_dir.resolve()  # the DUT runs in the repository root
     out_dir.mkdir(parents=True, exist_ok=True)
     if UDB_DATA_HOME is None:
         UDB_DATA_HOME = out_dir.resolve() / "udb-data"
@@ -411,11 +622,12 @@ def make_config(config_dir: Path, out_dir: Path, timeout: int, sim: str = "sail_
     build = out_dir / "build"
 
     xlen = detect_xlen(config_dir, test_config, build, timeout)
-    elf = make("elf", build / "extractor", test_config, config_dir, xlen)
-    text = run_on_dut(config_dir, elf, out_dir / "extractor_output.txt", timeout)
+    text, skipped, incomplete = run_extractor(config_dir, test_config, xlen, out_dir, timeout)
     ext_lines, params, sail_extra, comments = parse_output(text)
     if not ext_lines:
-        raise RuntimeError(f"the extractor reported nothing; see {out_dir}/extractor_output.txt")
+        raise RuntimeError(f"the extractor reported nothing ({incomplete}); see {out_dir}/extractor_output.txt")
+    if incomplete:
+        comments.append(f"# warning: the extractor did not finish: {incomplete}; parameters after that are assumed")
 
     header = [
         (
@@ -453,6 +665,8 @@ def make_config(config_dir: Path, out_dir: Path, timeout: int, sim: str = "sail_
         "sail_defaulted": conv.defaulted(),
         "sail_unmodelled": conv.unmodelled,
         "sail_extra": sail_extra,
+        "skipped_probes": skipped,
+        "incomplete": incomplete,
     }
 
 
@@ -472,6 +686,11 @@ def main() -> None:
     )
     if r["sail_error"]:
         print(f"  Sail rejects it: {r['sail_error']}")
+    checks = manual_checks(r)
+    if checks:
+        print("\nCheck or fix these by hand:")
+        for c in checks:
+            print(f"  {c}")
     sys.exit(1 if r["udb_errors"] or r["sail_error"] else 0)
 
 

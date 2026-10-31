@@ -222,6 +222,25 @@ make -f tests-dev/priv/UDBFeatureExtractor/Makefile elf CONFIG_DIR=config/cores/
 for running on a DUT with its own simulator. The console output is the YAML, so any target whose
 `RVMODEL_IO_WRITE_STR` reaches a log works.
 
+### The watchdog
+
+A hart with a buggy implementation of an extension may hang on its probe instead of retiring the
+instruction or trapping. When `rvmodel_macros.h` defines `RVMODEL_MTIME_ADDRESS` and
+`RVMODEL_MTIMECMP_ADDRESS`, the extractor arms a machine-timer interrupt around every extension
+probe and every probe run in a lower mode. A probe still running when the interrupt arrives is
+stopped, and its feature is reported as not implemented with a `# warning:` line. At boot the
+extractor times a counted loop against `mtime` and sets the timeout to 64 such loops, about half a
+million instructions whatever rate `mtime` counts at. It then checks that the interrupt really
+arrives before relying on it. A probe that times out is tried once more with a timeout 16 times
+longer, so a simulator whose `mtime` follows the host's clock cannot fail a probe by being
+descheduled. The `# watchdog:` line at the top of the output gives the timeout, or the reason there
+is none. `EXTRA_CFLAGS=-DWATCHDOG_SELFTEST` adds a probe that never finishes, to check the watchdog
+on a new DUT.
+
+The watchdog cannot help when the hart has no machine timer or the simulator itself stops; the
+Sargantana testbench, for example, ends the run when 200 cycles pass without an instruction
+committing. `make_config.py` handles those runs: see below.
+
 ## Testing
 
 ```
@@ -274,7 +293,15 @@ and `rvmodel_macros.h` — and writes `<name>.yaml` and `sail.json` to `OUT` (th
 1. `xlen_probe.S` runs on the DUT to find XLEN. Its instructions behave the same on RV32 and RV64,
    but simulators refuse an ELF of the wrong class, so both classes are tried; the run command only
    decides which goes first.
-2. The extractor is built for that XLEN and run with `run_cmd.txt`.
+2. The extractor is built for that XLEN and run with `run_cmd.txt`. If the run ends without the
+   extractor's last line (`# end of extractor output`), the extractor is rebuilt with
+   `-DTRACE_PROBES`, which prints `# probe: NAME` as each extension probe starts, and run again.
+   The probe the run stopped in is then run by itself (`-DONLY_PROBE='"NAME"'`). If it finishes
+   alone, the run hit a cycle or time limit, not a hang, so nothing is left out. Otherwise it is
+   left out with `-DSKIP_PROBES='"NAME,..."'` and reported as not implemented, and this repeats
+   until the run finishes. A run that stops after the extension probes, or that takes longer than
+   `--timeout` while the watchdog is on, is used as far as it got, and the parameters it did not
+   reach are assumed.
 3. The yaml gets the extensions and parameters the extractor reported. `udb validate cfg` then says
    what is still wrong, and the script repeats until UDB accepts the file: a missing parameter gets
    the value most ACT configurations of the same XLEN use; a parameter that does not apply, or that
@@ -282,8 +309,15 @@ and `rvmodel_macros.h` — and writes `<name>.yaml` and `sail.json` to `OUT` (th
    probe (such as Shtvala for Sha) is added; and an extension's version is raised when another one
    requires a later one (Ssqosid needs S 1.13, which the extractor cannot tell from 1.12 on RV64).
    Every such value carries an `# assumed:` comment, so the file says exactly what was measured.
+   Assumed parameters that no probe can measure on any hart (the list in
+   `parameters_not_extracted.md`) are grouped apart from those not determined on this DUT.
 4. `udb_to_sail.py` turns the yaml into `sail.json`, adding the Sail-only values the extractor
    measured (its `# sail:` lines).
+5. The script ends with a list of what to check or fix by hand, each item as `file:lines` in the
+   generated files: probes the watchdog stopped or that were left out, the untested extensions,
+   UDB's remaining complaints, the extensions added because another requires them, the parameters
+   no probe can measure, the parameters assumed on this DUT, measured values UDB rejected, the Sail
+   keys left at Sail's default, and those of them no probe can measure.
 
 UDB keeps a cache of every configuration it has resolved, under the configuration's name, and
 reuses it while it is newer than the yaml. A generated yaml has the same name as the checked-in

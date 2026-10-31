@@ -80,12 +80,35 @@ park:
 // rather than .text.init so the alignment does not move the entry point off the reset address.
 .section .text, "ax", @progbits
 .balign 256
+// It starts with a table of jumps, so that a hart whose mtvec is in vectored mode (Ibex's is fixed
+// that way) reaches the handler for an interrupt, which enters at base + 4 * cause, as well as for
+// an exception, which enters at the base.
 trap_handler:
+    .option push
+    .option norvc
+    .rept   32
+    j       trap_entry
+    .endr
+    .option pop
+trap_entry:
     li      t0, 1 << 17                 // clear mstatus.MPRV: a probe may have set it to take a
     csrc    mstatus, t0                 // fault, and the handler's own accesses must be M-mode ones
+    csrr    t0, mcause
+    bgez    t0, 4f
+    // An interrupt: the watchdog's machine timer, the only one enabled.  Disarm it (mie.MTIE, and
+    // mstatus.MPIE so the mret leaves interrupts off).  Inside a probe, end the probe with the
+    // interrupt as its cause; outside one (it fired just after a probe finished), carry on.
+    li      t0, 1 << 7
+    csrc    mie, t0
+    csrc    mstatus, t0
     la      t0, probe_resume
     LREG    t1, 0(t0)
+    bnez    t1, 5f
+    mret
+4:  la      t0, probe_resume
+    LREG    t1, 0(t0)
     beqz    t1, unexpected_trap
+5:
     SREG    zero, 0(t0)
     csrr    t2, mcause
     la      t0, probe_cause
@@ -146,6 +169,24 @@ s_trap_handler:
     la      t1, s_epc
     SREG    t0, 0(t1)
     ecall
+
+// The machine timer the watchdog uses, from rvmodel_macros.h; zero when the DUT names none.  Kept
+// as data so that .EQU symbols and expressions in the macros work.
+.section .data
+.balign REGBYTES
+.globl watchdog_mtime_addr, watchdog_mtimecmp_addr
+#if defined(RVMODEL_MTIME_ADDRESS) && defined(RVMODEL_MTIMECMP_ADDRESS)
+#if __riscv_xlen == 64
+watchdog_mtime_addr:    .dword RVMODEL_MTIME_ADDRESS
+watchdog_mtimecmp_addr: .dword RVMODEL_MTIMECMP_ADDRESS
+#else
+watchdog_mtime_addr:    .word RVMODEL_MTIME_ADDRESS
+watchdog_mtimecmp_addr: .word RVMODEL_MTIMECMP_ADDRESS
+#endif
+#else
+watchdog_mtime_addr:    .zero REGBYTES
+watchdog_mtimecmp_addr: .zero REGBYTES
+#endif
 
 // void console_write(const char *s): print a NUL-terminated string with the DUT's mechanism
 .section .text

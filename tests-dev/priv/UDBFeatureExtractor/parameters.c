@@ -513,13 +513,28 @@ static unsigned long run_in_mode(char *stub, unsigned long mpp, bool virt, unsig
     if (virt)
         PROBE("zicsr", "li t1, 1 << 7\n\tcsrs mstatush, t1");
 #endif
-    PROBE_VALUE_IN("zicsr", "csrw mstatus, %[in]\n\tla a2, lower_stub\n\t" LREG_ASM " a2, 0(a2)\n\t"
-                            "csrw mepc, a2\n\tmret\n\tli a3, 0", ms);
+    // Under the watchdog (feature_extractor.c), a stub that neither traps nor reaches its ecall is
+    // stopped; tried twice, as in check(), and reported as CAUSE_TIMEOUT
+    for (unsigned attempt = 0; attempt < 2; attempt++) {
+        s_cause = CAUSE_NONE;
+        watchdog_arm(watchdog_ticks << (4 * attempt));
+        PROBE_VALUE_IN("zicsr", "csrw mstatus, %[in]\n\tla a2, lower_stub\n\t" LREG_ASM " a2, 0(a2)\n\t"
+                                "csrw mepc, a2\n\tmret\n\tli a3, 0", ms);
+        watchdog_disarm();
+        if (probe_cause != CAUSE_TIMEOUT)
+            break;
+    }
+    if (probe_cause == CAUSE_TIMEOUT) {
+        printf("# warning: a lower-mode probe (the stub at 0x%x) did not finish within %u mtime ticks (twice),\n"
+               "#          so the watchdog stopped it\n", (unsigned long)stub, watchdog_ticks << 4);
+        s_cause = CAUSE_NONE;
+    }
+    unsigned long cause = s_cause != CAUSE_NONE ? s_cause : probe_cause;
 #if __riscv_xlen == 32
-    if (virt)
+    if (virt)                       // (a probe, so it resets probe_cause: hence cause saved first)
         PROBE("zicsr", "li t1, 1 << 7\n\tcsrc mstatush, t1");
 #endif
-    return s_cause != CAUSE_NONE ? s_cause : probe_cause;
+    return cause;
 }
 
 DEFINE_CSR_SET(medeleg_set, medeleg)
@@ -592,6 +607,14 @@ static void concat(char *out, const char *a, const char *b, const char *c)
 #define HFENCE_GVMA ".insn r 0x73, 0, 0x31, x0, x0, x0"
 #define PTE_LEAF 0xCF          // V R W X A D
 #define PTE_U 0x10
+#define PTE_D 0x80
+#if __riscv_xlen == 64
+#define ADUE_CSR "menvcfg"
+#define ADUE_BIT "61"
+#else
+#define ADUE_CSR "menvcfgh"
+#define ADUE_BIT "29"
+#endif
 static const struct { unsigned long mode; unsigned shift; } atp_levels[] = {
 #if __riscv_xlen == 64
     { 8, 30 }, { 9, 39 }, { 10, 48 }
@@ -620,6 +643,25 @@ static bool build_page_table_ex(unsigned long (*wr)(unsigned long), bool gstage,
             table[fault_idx] = ((((idx << shift) >> 12)) << 10) | alias_flags;
         *atp = ATP_MODE(atp_levels[i].mode) | (base >> 12);
         *fault = fault_idx << shift;
+        return true;
+    }
+    return false;
+}
+
+// A VS-stage root table outside probe_scratch (which a G-stage root fills), whose entry for the
+// program's region maps it to itself
+static unsigned long vs_root[4096 / sizeof(unsigned long)] __attribute__((aligned(4096)));
+static bool build_vs_root(unsigned long *atp)
+{
+    for (unsigned i = 0; i < COUNT(atp_levels); i++) {
+        if (!atp_accepts(vsatp_wr, ATP_MODE(atp_levels[i].mode)))
+            continue;
+        unsigned shift = atp_levels[i].shift;
+        unsigned long idx = (unsigned long)probe_scratch >> shift;
+        for (unsigned j = 0; j < COUNT(vs_root); j++)
+            vs_root[j] = 0;
+        vs_root[idx] = ((((idx << shift) >> 12)) << 10) | PTE_LEAF;
+        *atp = ATP_MODE(atp_levels[i].mode) | ((unsigned long)vs_root >> 12);
         return true;
     }
     return false;
@@ -1945,6 +1987,32 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
                         param_bool("REPORT_GPA_IN_TVAL_ON_INSTRUCTION_GUEST_PAGE_FAULT", guest_pa() == fva >> 2);
                     hgatp_set(0);
                     PROBE("zicsr", HFENCE_GVMA);
+                }
+                // Does an implicit access to a VS-stage PTE set the D bit of a writable G-stage
+                // PTE?  The spec allows it either way.  The G-stage leaf maps the program's region
+                // writable with A set and D clear, and the VS-stage leaf maps it with A and D set,
+                // so a VS-mode load makes no access that is a store: a D bit set afterwards was set
+                // by the VS-stage walk's read of its PTE.  Needs Svadu with menvcfg.ADUE set, so a
+                // clear D bit is updated by hardware rather than reported as a fault.
+                unsigned long vatp;
+                if (have("Svadu") && build_page_table(hgatp_wr, true, &atp, &fva, &gshift) && build_vs_root(&vatp)) {
+                    volatile unsigned long *groot = (volatile unsigned long *)probe_scratch;
+                    unsigned long gidx = (unsigned long)probe_scratch >> gshift;
+                    groot[gidx] &= ~(unsigned long)PTE_D;
+                    unsigned long envcfg = PROBE_VALUE("zicsr", "csrr a3, " ADUE_CSR "\n\tli t1, 1 << " ADUE_BIT "\n\t"
+                                                                "csrs " ADUE_CSR ", t1");
+                    hgatp_set(atp);
+                    PROBE("zicsr", HFENCE_GVMA);
+                    vsatp_set(vatp);
+                    PROBE("zicsr", HFENCE_VVMA);
+                    if (run_in_mode(stub_lw_scratch, 1, true, mstatus) == CAUSE_ECALL_VS)
+                        sail_bool("extensions.H.implicit_vs_pte_access_sets_gstage_d", (groot[gidx] & PTE_D) != 0);
+                    vsatp_set(0);
+                    PROBE("zicsr", HFENCE_VVMA);
+                    hgatp_set(0);
+                    PROBE("zicsr", HFENCE_GVMA);
+                    if (envcfg != PROBE_TRAPPED)
+                        PROBE_VALUE_IN("zicsr", "csrw " ADUE_CSR ", %[in]", envcfg);
                 }
                 // Intermediate guest page fault: the VS-stage root in a guest-physical region the
                 // G-stage table does not map, so the walk's first PTE fetch is the fault

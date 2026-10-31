@@ -15,7 +15,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 45
+#define SIGUPD_COUNT 48
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_SMODE
@@ -141,8 +141,8 @@ Sv_Zicbo_cg_cp_PTE_w_unset_zicboz_u_test4_zero:
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_PTE_w_unset_zicboz_u_test4_zero, Sv_Zicbo_cg_cp_PTE_w_unset_zicboz_u_test4_zero_str)
 
-  // Test case 5: Supervisor page from U-Mode | Test in U-Mode | expected = Store page fault
-  SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
+  // Test case 5: Execute-only page | Test in U-Mode | expected = Store page fault
+  SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_V), va_data, LEVEL2)
   sfence.vma
 
   LI(x9, (va_data >> 30) << 30)
@@ -152,12 +152,12 @@ Sv_Zicbo_cg_cp_PTE_w_unset_zicboz_u_test4_zero:
   add x9, x9, x6
   RVTEST_TSBI_GOTO_UMODE
   addi x13, x13, 16
-Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test5_zero:
+Sv_Zicbo_cg_cp_PTE_w_unset_zicboz_u_test5_zero:
   cbo.zero (x9)
   addi x8, x13, 4
   RVTEST_TSBI_GOTO_SMODE
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test5_zero, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test5_zero_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_PTE_w_unset_zicboz_u_test5_zero, Sv_Zicbo_cg_cp_PTE_w_unset_zicboz_u_test5_zero_str)
 
   // Test case 6: PTE.A unset | Test in U-Mode | expected = Store page fault
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
@@ -177,7 +177,7 @@ Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test6_zero:
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test6_zero, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test6_zero_str)
 
-  // Test case 7: PTE.D unset | Test in U-Mode | expected = No fault
+  // Test case 7: PTE.D unset | Test in U-Mode | expected = Store page fault
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
@@ -195,7 +195,25 @@ Sv_Zicbo_cg_cp_Dbit_unset_zicboz_u_test7_zero:
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_Dbit_unset_zicboz_u_test7_zero, Sv_Zicbo_cg_cp_Dbit_unset_zicboz_u_test7_zero_str)
 
-  // Test case 8: Misaligned superpage | Test in U-Mode | expected = Store page fault
+  // Test case 8: Supervisor page from U-Mode | Test in U-Mode | expected = Store page fault
+  SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
+  sfence.vma
+
+  LI(x9, (va_data >> 30) << 30)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 34
+  srli x6, x6, 34
+  add x9, x9, x6
+  RVTEST_TSBI_GOTO_UMODE
+  addi x13, x13, 16
+Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test8_zero:
+  cbo.zero (x9)
+  addi x8, x13, 4
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test8_zero, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test8_zero_str)
+
+  // Test case 9: Misaligned superpage | Test in U-Mode | expected = Store page fault
   PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
@@ -206,15 +224,15 @@ Sv_Zicbo_cg_cp_Dbit_unset_zicboz_u_test7_zero:
   add x9, x9, x6
   RVTEST_TSBI_GOTO_UMODE
   addi x13, x13, 16
-Sv_Zicbo_cg_cp_misaligned_page_cbo_u_test8_zero:
+Sv_Zicbo_cg_cp_misaligned_page_cbo_u_test9_zero:
   cbo.zero (x9)
   addi x8, x13, 4
   RVTEST_TSBI_GOTO_SMODE
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_misaligned_page_cbo_u_test8_zero, Sv_Zicbo_cg_cp_misaligned_page_cbo_u_test8_zero_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_misaligned_page_cbo_u_test9_zero, Sv_Zicbo_cg_cp_misaligned_page_cbo_u_test9_zero_str)
 
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-  // Test case 9: Leaf PTE points to the access-fault region | Test in U-Mode | expected = Store access fault
+  // Test case 10: Leaf PTE points to the access-fault region | Test in U-Mode | expected = Store access fault
   SUPERPAGE_PTE_SETUP_SV39(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
@@ -225,15 +243,15 @@ Sv_Zicbo_cg_cp_misaligned_page_cbo_u_test8_zero:
   add x9, x9, x6
   RVTEST_TSBI_GOTO_UMODE
   addi x13, x13, 16
-Sv_Zicbo_cg_cp_leaf_PTE_to_nonexistent_pa_cbo_u_test9_zero:
+Sv_Zicbo_cg_cp_leaf_PTE_to_nonexistent_pa_cbo_u_test10_zero:
   cbo.zero (x9)
   addi x8, x13, 4
   RVTEST_TSBI_GOTO_SMODE
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_leaf_PTE_to_nonexistent_pa_cbo_u_test9_zero, Sv_Zicbo_cg_cp_leaf_PTE_to_nonexistent_pa_cbo_u_test9_zero_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_leaf_PTE_to_nonexistent_pa_cbo_u_test10_zero, Sv_Zicbo_cg_cp_leaf_PTE_to_nonexistent_pa_cbo_u_test10_zero_str)
 #endif
 
-  // Test case 10: PTE.V unset | Test in U-Mode | expected = Store page fault
+  // Test case 11: PTE.V unset | Test in U-Mode | expected = Store page fault
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_data, LEVEL1)
   sfence.vma
@@ -245,38 +263,17 @@ Sv_Zicbo_cg_cp_leaf_PTE_to_nonexistent_pa_cbo_u_test9_zero:
   add x9, x9, x6
   RVTEST_TSBI_GOTO_UMODE
   addi x13, x13, 16
-Sv_Zicbo_cg_cp_PTE_inv_cbo_u_test10_zero:
+Sv_Zicbo_cg_cp_PTE_inv_cbo_u_test11_zero:
   cbo.zero (x9)
   addi x8, x13, 4
   RVTEST_TSBI_GOTO_SMODE
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_PTE_inv_cbo_u_test10_zero, Sv_Zicbo_cg_cp_PTE_inv_cbo_u_test10_zero_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_PTE_inv_cbo_u_test11_zero, Sv_Zicbo_cg_cp_PTE_inv_cbo_u_test11_zero_str)
 
 #ifdef S1P12P0_OR_LATER_SUPPORTED
-  // Test case 11: Reserved W+X without R | Test in U-Mode | expected = Store page fault
+  // Test case 12: Reserved W+X without R | Test in U-Mode | expected = Store page fault
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_V), va_data, LEVEL1)
-  sfence.vma
-
-  LI(x9, (va_data >> 21) << 21)
-  LA(x6, rvtest_data_1)
-  slli x6, x6, 43
-  srli x6, x6, 43
-  add x9, x9, x6
-  RVTEST_TSBI_GOTO_UMODE
-  addi x13, x13, 16
-Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test11_zero:
-  cbo.zero (x9)
-  addi x8, x13, 4
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test11_zero, Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test11_zero_str)
-#endif
-
-#ifdef S1P12P0_OR_LATER_SUPPORTED
-  // Test case 12: Reserved W without R | Test in U-Mode | expected = Store page fault
-  PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
-  SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_W | PTE_V), va_data, LEVEL1)
   sfence.vma
 
   LI(x9, (va_data >> 21) << 21)
@@ -294,7 +291,28 @@ Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test12_zero:
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test12_zero, Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test12_zero_str)
 #endif
 
-  // Test case 13: RX permissions | Test in U-Mode | expected = Store page fault
+#ifdef S1P12P0_OR_LATER_SUPPORTED
+  // Test case 13: Reserved W without R | Test in U-Mode | expected = Store page fault
+  PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
+  SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_W | PTE_V), va_data, LEVEL1)
+  sfence.vma
+
+  LI(x9, (va_data >> 21) << 21)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 43
+  srli x6, x6, 43
+  add x9, x9, x6
+  RVTEST_TSBI_GOTO_UMODE
+  addi x13, x13, 16
+Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test13_zero:
+  cbo.zero (x9)
+  addi x8, x13, 4
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test13_zero, Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test13_zero_str)
+#endif
+
+  // Test case 14: RX permissions | Test in U-Mode | expected = Store page fault
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
@@ -306,16 +324,16 @@ Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test12_zero:
   add x9, x9, x6
   RVTEST_TSBI_GOTO_UMODE
   addi x13, x13, 16
-Sv_Zicbo_cg_cp_PTE_w_unset_zicboz_u_test13_zero:
+Sv_Zicbo_cg_cp_PTE_w_unset_zicboz_u_test14_zero:
   cbo.zero (x9)
   addi x8, x13, 4
   RVTEST_TSBI_GOTO_SMODE
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_PTE_w_unset_zicboz_u_test13_zero, Sv_Zicbo_cg_cp_PTE_w_unset_zicboz_u_test13_zero_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_PTE_w_unset_zicboz_u_test14_zero, Sv_Zicbo_cg_cp_PTE_w_unset_zicboz_u_test14_zero_str)
 
-  // Test case 14: Supervisor page from U-Mode | Test in U-Mode | expected = Store page fault
+  // Test case 15: Execute-only page | Test in U-Mode | expected = Store page fault
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
-  SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
+  SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_V), va_data, LEVEL1)
   sfence.vma
 
   LI(x9, (va_data >> 21) << 21)
@@ -325,14 +343,14 @@ Sv_Zicbo_cg_cp_PTE_w_unset_zicboz_u_test13_zero:
   add x9, x9, x6
   RVTEST_TSBI_GOTO_UMODE
   addi x13, x13, 16
-Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test14_zero:
+Sv_Zicbo_cg_cp_PTE_w_unset_zicboz_u_test15_zero:
   cbo.zero (x9)
   addi x8, x13, 4
   RVTEST_TSBI_GOTO_SMODE
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test14_zero, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test14_zero_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_PTE_w_unset_zicboz_u_test15_zero, Sv_Zicbo_cg_cp_PTE_w_unset_zicboz_u_test15_zero_str)
 
-  // Test case 15: PTE.A unset | Test in U-Mode | expected = Store page fault
+  // Test case 16: PTE.A unset | Test in U-Mode | expected = Store page fault
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
@@ -344,14 +362,14 @@ Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test14_zero:
   add x9, x9, x6
   RVTEST_TSBI_GOTO_UMODE
   addi x13, x13, 16
-Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test15_zero:
+Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test16_zero:
   cbo.zero (x9)
   addi x8, x13, 4
   RVTEST_TSBI_GOTO_SMODE
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test15_zero, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test15_zero_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test16_zero, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test16_zero_str)
 
-  // Test case 16: PTE.D unset | Test in U-Mode | expected = No fault
+  // Test case 17: PTE.D unset | Test in U-Mode | expected = Store page fault
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
@@ -363,14 +381,33 @@ Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test15_zero:
   add x9, x9, x6
   RVTEST_TSBI_GOTO_UMODE
   addi x13, x13, 16
-Sv_Zicbo_cg_cp_Dbit_unset_zicboz_u_test16_zero:
+Sv_Zicbo_cg_cp_Dbit_unset_zicboz_u_test17_zero:
   cbo.zero (x9)
   addi x8, x13, 4
   RVTEST_TSBI_GOTO_SMODE
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_Dbit_unset_zicboz_u_test16_zero, Sv_Zicbo_cg_cp_Dbit_unset_zicboz_u_test16_zero_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_Dbit_unset_zicboz_u_test17_zero, Sv_Zicbo_cg_cp_Dbit_unset_zicboz_u_test17_zero_str)
 
-  // Test case 17: Misaligned superpage | Test in U-Mode | expected = Store page fault
+  // Test case 18: Supervisor page from U-Mode | Test in U-Mode | expected = Store page fault
+  PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
+  SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
+  sfence.vma
+
+  LI(x9, (va_data >> 21) << 21)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 43
+  srli x6, x6, 43
+  add x9, x9, x6
+  RVTEST_TSBI_GOTO_UMODE
+  addi x13, x13, 16
+Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test18_zero:
+  cbo.zero (x9)
+  addi x8, x13, 4
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test18_zero, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test18_zero_str)
+
+  // Test case 19: Misaligned superpage | Test in U-Mode | expected = Store page fault
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
@@ -382,15 +419,15 @@ Sv_Zicbo_cg_cp_Dbit_unset_zicboz_u_test16_zero:
   add x9, x9, x6
   RVTEST_TSBI_GOTO_UMODE
   addi x13, x13, 16
-Sv_Zicbo_cg_cp_misaligned_page_cbo_u_test17_zero:
+Sv_Zicbo_cg_cp_misaligned_page_cbo_u_test19_zero:
   cbo.zero (x9)
   addi x8, x13, 4
   RVTEST_TSBI_GOTO_SMODE
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_misaligned_page_cbo_u_test17_zero, Sv_Zicbo_cg_cp_misaligned_page_cbo_u_test17_zero_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_misaligned_page_cbo_u_test19_zero, Sv_Zicbo_cg_cp_misaligned_page_cbo_u_test19_zero_str)
 
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-  // Test case 18: Access fault on the page-table walk | Test in U-Mode | expected = Store access fault
+  // Test case 20: Access fault on the page-table walk | Test in U-Mode | expected = Store access fault
   PTE_SETUP_SV39(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_V), va_data, LEVEL2)
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_A | PTE_D | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
@@ -402,16 +439,16 @@ Sv_Zicbo_cg_cp_misaligned_page_cbo_u_test17_zero:
   add x9, x9, x6
   RVTEST_TSBI_GOTO_UMODE
   addi x13, x13, 16
-Sv_Zicbo_cg_cp_nonleaf_PTE_to_nonexistent_pa_cbo_test18_zero:
+Sv_Zicbo_cg_cp_nonleaf_PTE_to_nonexistent_pa_cbo_test20_zero:
   cbo.zero (x9)
   addi x8, x13, 4
   RVTEST_TSBI_GOTO_SMODE
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_nonleaf_PTE_to_nonexistent_pa_cbo_test18_zero, Sv_Zicbo_cg_cp_nonleaf_PTE_to_nonexistent_pa_cbo_test18_zero_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_nonleaf_PTE_to_nonexistent_pa_cbo_test20_zero, Sv_Zicbo_cg_cp_nonleaf_PTE_to_nonexistent_pa_cbo_test20_zero_str)
 #endif
 
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-  // Test case 19: Leaf PTE points to the access-fault region | Test in U-Mode | expected = Store access fault
+  // Test case 21: Leaf PTE points to the access-fault region | Test in U-Mode | expected = Store access fault
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   SUPERPAGE_PTE_SETUP_SV39(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
@@ -423,59 +460,17 @@ Sv_Zicbo_cg_cp_nonleaf_PTE_to_nonexistent_pa_cbo_test18_zero:
   add x9, x9, x6
   RVTEST_TSBI_GOTO_UMODE
   addi x13, x13, 16
-Sv_Zicbo_cg_cp_leaf_PTE_to_nonexistent_pa_cbo_u_test19_zero:
+Sv_Zicbo_cg_cp_leaf_PTE_to_nonexistent_pa_cbo_u_test21_zero:
   cbo.zero (x9)
   addi x8, x13, 4
   RVTEST_TSBI_GOTO_SMODE
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_leaf_PTE_to_nonexistent_pa_cbo_u_test19_zero, Sv_Zicbo_cg_cp_leaf_PTE_to_nonexistent_pa_cbo_u_test19_zero_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_leaf_PTE_to_nonexistent_pa_cbo_u_test21_zero, Sv_Zicbo_cg_cp_leaf_PTE_to_nonexistent_pa_cbo_u_test21_zero_str)
 #endif
 
 #ifdef S1P12P0_OR_LATER_SUPPORTED
-  // Test case 20: Non-leaf PTE with D bit set | Test in U-Mode | expected = Store page fault
+  // Test case 22: Non-leaf PTE with D bit set | Test in U-Mode | expected = Store page fault
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_D | PTE_V), va_data, LEVEL2)
-  SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
-  sfence.vma
-
-  LI(x9, (va_data >> 21) << 21)
-  LA(x6, rvtest_data_1)
-  slli x6, x6, 43
-  srli x6, x6, 43
-  add x9, x9, x6
-  RVTEST_TSBI_GOTO_UMODE
-  addi x13, x13, 16
-Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test20_zero:
-  cbo.zero (x9)
-  addi x8, x13, 4
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test20_zero, Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test20_zero_str)
-#endif
-
-#ifdef S1P12P0_OR_LATER_SUPPORTED
-  // Test case 21: Non-leaf PTE with A bit set | Test in U-Mode | expected = Store page fault
-  PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_A | PTE_V), va_data, LEVEL2)
-  PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
-  sfence.vma
-
-  LI(x9, (va_data >> 21) << 21)
-  LA(x6, rvtest_data_1)
-  slli x6, x6, 43
-  srli x6, x6, 43
-  add x9, x9, x6
-  RVTEST_TSBI_GOTO_UMODE
-  addi x13, x13, 16
-Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test21_zero:
-  cbo.zero (x9)
-  addi x8, x13, 4
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test21_zero, Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test21_zero_str)
-#endif
-
-#ifdef S1P12P0_OR_LATER_SUPPORTED
-  // Test case 22: Non-leaf PTE with U bit set | Test in U-Mode | expected = Store page fault
-  PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_U | PTE_V), va_data, LEVEL2)
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
@@ -494,7 +489,49 @@ Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test22_zero:
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test22_zero, Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test22_zero_str)
 #endif
 
-  // Test case 23: PTE.V unset | Test in U-Mode | expected = Store page fault
+#ifdef S1P12P0_OR_LATER_SUPPORTED
+  // Test case 23: Non-leaf PTE with A bit set | Test in U-Mode | expected = Store page fault
+  PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_A | PTE_V), va_data, LEVEL2)
+  PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
+  sfence.vma
+
+  LI(x9, (va_data >> 21) << 21)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 43
+  srli x6, x6, 43
+  add x9, x9, x6
+  RVTEST_TSBI_GOTO_UMODE
+  addi x13, x13, 16
+Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test23_zero:
+  cbo.zero (x9)
+  addi x8, x13, 4
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test23_zero, Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test23_zero_str)
+#endif
+
+#ifdef S1P12P0_OR_LATER_SUPPORTED
+  // Test case 24: Non-leaf PTE with U bit set | Test in U-Mode | expected = Store page fault
+  PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_U | PTE_V), va_data, LEVEL2)
+  SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
+  sfence.vma
+
+  LI(x9, (va_data >> 21) << 21)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 43
+  srli x6, x6, 43
+  add x9, x9, x6
+  RVTEST_TSBI_GOTO_UMODE
+  addi x13, x13, 16
+Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test24_zero:
+  cbo.zero (x9)
+  addi x8, x13, 4
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test24_zero, Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test24_zero_str)
+#endif
+
+  // Test case 25: PTE.V unset | Test in U-Mode | expected = Store page fault
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   PTE_SETUP_SV39(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_data, LEVEL0)
@@ -507,15 +544,15 @@ Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test22_zero:
   add x9, x9, x6
   RVTEST_TSBI_GOTO_UMODE
   addi x13, x13, 16
-Sv_Zicbo_cg_cp_PTE_inv_cbo_u_test23_zero:
+Sv_Zicbo_cg_cp_PTE_inv_cbo_u_test25_zero:
   cbo.zero (x9)
   addi x8, x13, 4
   RVTEST_TSBI_GOTO_SMODE
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_PTE_inv_cbo_u_test23_zero, Sv_Zicbo_cg_cp_PTE_inv_cbo_u_test23_zero_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_PTE_inv_cbo_u_test25_zero, Sv_Zicbo_cg_cp_PTE_inv_cbo_u_test25_zero_str)
 
 #ifdef S1P12P0_OR_LATER_SUPPORTED
-  // Test case 24: Reserved W+X without R | Test in U-Mode | expected = Store page fault
+  // Test case 26: Reserved W+X without R | Test in U-Mode | expected = Store page fault
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   PTE_SETUP_SV39(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_V), va_data, LEVEL0)
@@ -528,16 +565,16 @@ Sv_Zicbo_cg_cp_PTE_inv_cbo_u_test23_zero:
   add x9, x9, x6
   RVTEST_TSBI_GOTO_UMODE
   addi x13, x13, 16
-Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test24_zero:
+Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test26_zero:
   cbo.zero (x9)
   addi x8, x13, 4
   RVTEST_TSBI_GOTO_SMODE
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test24_zero, Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test24_zero_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test26_zero, Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test26_zero_str)
 #endif
 
 #ifdef S1P12P0_OR_LATER_SUPPORTED
-  // Test case 25: Reserved W without R | Test in U-Mode | expected = Store page fault
+  // Test case 27: Reserved W without R | Test in U-Mode | expected = Store page fault
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   PTE_SETUP_SV39(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_W | PTE_V), va_data, LEVEL0)
@@ -550,15 +587,15 @@ Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test24_zero:
   add x9, x9, x6
   RVTEST_TSBI_GOTO_UMODE
   addi x13, x13, 16
-Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test25_zero:
+Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test27_zero:
   cbo.zero (x9)
   addi x8, x13, 4
   RVTEST_TSBI_GOTO_SMODE
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test25_zero, Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test25_zero_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test27_zero, Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test27_zero_str)
 #endif
 
-  // Test case 26: RX permissions | Test in U-Mode | expected = Store page fault
+  // Test case 28: RX permissions | Test in U-Mode | expected = Store page fault
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   PTE_SETUP_SV39(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_R | PTE_V), va_data, LEVEL0)
@@ -571,17 +608,17 @@ Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test25_zero:
   add x9, x9, x6
   RVTEST_TSBI_GOTO_UMODE
   addi x13, x13, 16
-Sv_Zicbo_cg_cp_PTE_w_unset_zicboz_u_test26_zero:
+Sv_Zicbo_cg_cp_PTE_w_unset_zicboz_u_test28_zero:
   cbo.zero (x9)
   addi x8, x13, 4
   RVTEST_TSBI_GOTO_SMODE
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_PTE_w_unset_zicboz_u_test26_zero, Sv_Zicbo_cg_cp_PTE_w_unset_zicboz_u_test26_zero_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_PTE_w_unset_zicboz_u_test28_zero, Sv_Zicbo_cg_cp_PTE_w_unset_zicboz_u_test28_zero_str)
 
-  // Test case 27: Supervisor page from U-Mode | Test in U-Mode | expected = Store page fault
+  // Test case 29: Execute-only page | Test in U-Mode | expected = Store page fault
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   PTE_SETUP_SV39(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
-  PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
+  PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_V), va_data, LEVEL0)
   sfence.vma
 
   LI(x9, (va_data >> 12) << 12)
@@ -591,14 +628,14 @@ Sv_Zicbo_cg_cp_PTE_w_unset_zicboz_u_test26_zero:
   add x9, x9, x6
   RVTEST_TSBI_GOTO_UMODE
   addi x13, x13, 16
-Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test27_zero:
+Sv_Zicbo_cg_cp_PTE_w_unset_zicboz_u_test29_zero:
   cbo.zero (x9)
   addi x8, x13, 4
   RVTEST_TSBI_GOTO_SMODE
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test27_zero, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test27_zero_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_PTE_w_unset_zicboz_u_test29_zero, Sv_Zicbo_cg_cp_PTE_w_unset_zicboz_u_test29_zero_str)
 
-  // Test case 28: PTE.A unset | Test in U-Mode | expected = Store page fault
+  // Test case 30: PTE.A unset | Test in U-Mode | expected = Store page fault
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   PTE_SETUP_SV39(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
@@ -611,14 +648,14 @@ Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test27_zero:
   add x9, x9, x6
   RVTEST_TSBI_GOTO_UMODE
   addi x13, x13, 16
-Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test28_zero:
+Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test30_zero:
   cbo.zero (x9)
   addi x8, x13, 4
   RVTEST_TSBI_GOTO_SMODE
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test28_zero, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test28_zero_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test30_zero, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test30_zero_str)
 
-  // Test case 29: PTE.D unset | Test in U-Mode | expected = No fault
+  // Test case 31: PTE.D unset | Test in U-Mode | expected = Store page fault
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   PTE_SETUP_SV39(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV39(rvtest_data_1, (PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
@@ -631,14 +668,34 @@ Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test28_zero:
   add x9, x9, x6
   RVTEST_TSBI_GOTO_UMODE
   addi x13, x13, 16
-Sv_Zicbo_cg_cp_Dbit_unset_zicboz_u_test29_zero:
+Sv_Zicbo_cg_cp_Dbit_unset_zicboz_u_test31_zero:
   cbo.zero (x9)
   addi x8, x13, 4
   RVTEST_TSBI_GOTO_SMODE
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_Dbit_unset_zicboz_u_test29_zero, Sv_Zicbo_cg_cp_Dbit_unset_zicboz_u_test29_zero_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_Dbit_unset_zicboz_u_test31_zero, Sv_Zicbo_cg_cp_Dbit_unset_zicboz_u_test31_zero_str)
 
-  // Test case 30: Pointer encoding (V only) in the leaf | Test in U-Mode | expected = Store page fault
+  // Test case 32: Supervisor page from U-Mode | Test in U-Mode | expected = Store page fault
+  PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
+  PTE_SETUP_SV39(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
+  PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
+  sfence.vma
+
+  LI(x9, (va_data >> 12) << 12)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 52
+  srli x6, x6, 52
+  add x9, x9, x6
+  RVTEST_TSBI_GOTO_UMODE
+  addi x13, x13, 16
+Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test32_zero:
+  cbo.zero (x9)
+  addi x8, x13, 4
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test32_zero, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test32_zero_str)
+
+  // Test case 33: Pointer encoding (V only) in the leaf | Test in U-Mode | expected = Store page fault
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   PTE_SETUP_SV39(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV39(rvtest_data_1, (PTE_U | PTE_V), va_data, LEVEL0)
@@ -651,15 +708,15 @@ Sv_Zicbo_cg_cp_Dbit_unset_zicboz_u_test29_zero:
   add x9, x9, x6
   RVTEST_TSBI_GOTO_UMODE
   addi x13, x13, 16
-Sv_Zicbo_cg_cp_PTE_nonleaf_lvl0_cbo_u_test30_zero:
+Sv_Zicbo_cg_cp_PTE_nonleaf_lvl0_cbo_u_test33_zero:
   cbo.zero (x9)
   addi x8, x13, 4
   RVTEST_TSBI_GOTO_SMODE
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_PTE_nonleaf_lvl0_cbo_u_test30_zero, Sv_Zicbo_cg_cp_PTE_nonleaf_lvl0_cbo_u_test30_zero_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_PTE_nonleaf_lvl0_cbo_u_test33_zero, Sv_Zicbo_cg_cp_PTE_nonleaf_lvl0_cbo_u_test33_zero_str)
 
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-  // Test case 31: Access fault on the page-table walk | Test in U-Mode | expected = Store access fault
+  // Test case 34: Access fault on the page-table walk | Test in U-Mode | expected = Store access fault
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   PTE_SETUP_SV39(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
@@ -672,16 +729,16 @@ Sv_Zicbo_cg_cp_PTE_nonleaf_lvl0_cbo_u_test30_zero:
   add x9, x9, x6
   RVTEST_TSBI_GOTO_UMODE
   addi x13, x13, 16
-Sv_Zicbo_cg_cp_nonleaf_PTE_to_nonexistent_pa_cbo_test31_zero:
+Sv_Zicbo_cg_cp_nonleaf_PTE_to_nonexistent_pa_cbo_test34_zero:
   cbo.zero (x9)
   addi x8, x13, 4
   RVTEST_TSBI_GOTO_SMODE
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_nonleaf_PTE_to_nonexistent_pa_cbo_test31_zero, Sv_Zicbo_cg_cp_nonleaf_PTE_to_nonexistent_pa_cbo_test31_zero_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_nonleaf_PTE_to_nonexistent_pa_cbo_test34_zero, Sv_Zicbo_cg_cp_nonleaf_PTE_to_nonexistent_pa_cbo_test34_zero_str)
 #endif
 
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-  // Test case 32: Leaf PTE points to the access-fault region | Test in U-Mode | expected = Store access fault
+  // Test case 35: Leaf PTE points to the access-fault region | Test in U-Mode | expected = Store access fault
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   PTE_SETUP_SV39(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV39(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
@@ -694,16 +751,16 @@ Sv_Zicbo_cg_cp_nonleaf_PTE_to_nonexistent_pa_cbo_test31_zero:
   add x9, x9, x6
   RVTEST_TSBI_GOTO_UMODE
   addi x13, x13, 16
-Sv_Zicbo_cg_cp_leaf_PTE_to_nonexistent_pa_cbo_u_test32_zero:
+Sv_Zicbo_cg_cp_leaf_PTE_to_nonexistent_pa_cbo_u_test35_zero:
   cbo.zero (x9)
   addi x8, x13, 4
   RVTEST_TSBI_GOTO_SMODE
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_leaf_PTE_to_nonexistent_pa_cbo_u_test32_zero, Sv_Zicbo_cg_cp_leaf_PTE_to_nonexistent_pa_cbo_u_test32_zero_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_leaf_PTE_to_nonexistent_pa_cbo_u_test35_zero, Sv_Zicbo_cg_cp_leaf_PTE_to_nonexistent_pa_cbo_u_test35_zero_str)
 #endif
 
 #ifdef S1P12P0_OR_LATER_SUPPORTED
-  // Test case 33: Non-leaf PTE with D bit set | Test in U-Mode | expected = Store page fault
+  // Test case 36: Non-leaf PTE with D bit set | Test in U-Mode | expected = Store page fault
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   PTE_SETUP_SV39(rvtest_slvl0_pg_tbl, (PTE_D | PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
@@ -716,16 +773,16 @@ Sv_Zicbo_cg_cp_leaf_PTE_to_nonexistent_pa_cbo_u_test32_zero:
   add x9, x9, x6
   RVTEST_TSBI_GOTO_UMODE
   addi x13, x13, 16
-Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test33_zero:
+Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test36_zero:
   cbo.zero (x9)
   addi x8, x13, 4
   RVTEST_TSBI_GOTO_SMODE
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test33_zero, Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test33_zero_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test36_zero, Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test36_zero_str)
 #endif
 
 #ifdef S1P12P0_OR_LATER_SUPPORTED
-  // Test case 34: Non-leaf PTE with A bit set | Test in U-Mode | expected = Store page fault
+  // Test case 37: Non-leaf PTE with A bit set | Test in U-Mode | expected = Store page fault
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   PTE_SETUP_SV39(rvtest_slvl0_pg_tbl, (PTE_A | PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
@@ -738,16 +795,16 @@ Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test33_zero:
   add x9, x9, x6
   RVTEST_TSBI_GOTO_UMODE
   addi x13, x13, 16
-Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test34_zero:
+Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test37_zero:
   cbo.zero (x9)
   addi x8, x13, 4
   RVTEST_TSBI_GOTO_SMODE
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test34_zero, Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test34_zero_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test37_zero, Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test37_zero_str)
 #endif
 
 #ifdef S1P12P0_OR_LATER_SUPPORTED
-  // Test case 35: Non-leaf PTE with U bit set | Test in U-Mode | expected = Store page fault
+  // Test case 38: Non-leaf PTE with U bit set | Test in U-Mode | expected = Store page fault
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   PTE_SETUP_SV39(rvtest_slvl0_pg_tbl, (PTE_U | PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
@@ -760,12 +817,12 @@ Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test34_zero:
   add x9, x9, x6
   RVTEST_TSBI_GOTO_UMODE
   addi x13, x13, 16
-Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test35_zero:
+Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test38_zero:
   cbo.zero (x9)
   addi x8, x13, 4
   RVTEST_TSBI_GOTO_SMODE
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test35_zero, Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test35_zero_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test38_zero, Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test38_zero_str)
 #endif
 
 
@@ -799,41 +856,44 @@ rvtest_slvl1_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_Zicbo_cg_cp_PTE_inv_cbo_u_test1_zero_str: .string "\"test: 39; cg: Sv_Zicbo_cg; cp: cp_PTE_inv_cbo_u; bin: test1_zero\""
-Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test2_zero_str: .string "\"test: 40; cg: Sv_Zicbo_cg; cp: cp_PTE_res_rwx_cbo_u; bin: test2_zero\""
-Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test3_zero_str: .string "\"test: 41; cg: Sv_Zicbo_cg; cp: cp_PTE_res_rwx_cbo_u; bin: test3_zero\""
-Sv_Zicbo_cg_cp_PTE_w_unset_zicboz_u_test4_zero_str: .string "\"test: 42; cg: Sv_Zicbo_cg; cp: cp_PTE_w_unset_zicboz_u; bin: test4_zero\""
-Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test5_zero_str: .string "\"test: 43; cg: Sv_Zicbo_cg; cp: cp_spage_rwx_cbo_u; bin: test5_zero\""
-Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test6_zero_str: .string "\"test: 44; cg: Sv_Zicbo_cg; cp: cp_Abit_unset_cbo_u; bin: test6_zero\""
-Sv_Zicbo_cg_cp_Dbit_unset_zicboz_u_test7_zero_str: .string "\"test: 45; cg: Sv_Zicbo_cg; cp: cp_Dbit_unset_zicboz_u; bin: test7_zero\""
-Sv_Zicbo_cg_cp_misaligned_page_cbo_u_test8_zero_str: .string "\"test: 46; cg: Sv_Zicbo_cg; cp: cp_misaligned_page_cbo_u; bin: test8_zero\""
-Sv_Zicbo_cg_cp_leaf_PTE_to_nonexistent_pa_cbo_u_test9_zero_str: .string "\"test: 47; cg: Sv_Zicbo_cg; cp: cp_leaf_PTE_to_nonexistent_pa_cbo_u; bin: test9_zero\""
-Sv_Zicbo_cg_cp_PTE_inv_cbo_u_test10_zero_str: .string "\"test: 48; cg: Sv_Zicbo_cg; cp: cp_PTE_inv_cbo_u; bin: test10_zero\""
-Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test11_zero_str: .string "\"test: 49; cg: Sv_Zicbo_cg; cp: cp_PTE_res_rwx_cbo_u; bin: test11_zero\""
-Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test12_zero_str: .string "\"test: 50; cg: Sv_Zicbo_cg; cp: cp_PTE_res_rwx_cbo_u; bin: test12_zero\""
-Sv_Zicbo_cg_cp_PTE_w_unset_zicboz_u_test13_zero_str: .string "\"test: 51; cg: Sv_Zicbo_cg; cp: cp_PTE_w_unset_zicboz_u; bin: test13_zero\""
-Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test14_zero_str: .string "\"test: 52; cg: Sv_Zicbo_cg; cp: cp_spage_rwx_cbo_u; bin: test14_zero\""
-Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test15_zero_str: .string "\"test: 53; cg: Sv_Zicbo_cg; cp: cp_Abit_unset_cbo_u; bin: test15_zero\""
-Sv_Zicbo_cg_cp_Dbit_unset_zicboz_u_test16_zero_str: .string "\"test: 54; cg: Sv_Zicbo_cg; cp: cp_Dbit_unset_zicboz_u; bin: test16_zero\""
-Sv_Zicbo_cg_cp_misaligned_page_cbo_u_test17_zero_str: .string "\"test: 55; cg: Sv_Zicbo_cg; cp: cp_misaligned_page_cbo_u; bin: test17_zero\""
-Sv_Zicbo_cg_cp_nonleaf_PTE_to_nonexistent_pa_cbo_test18_zero_str: .string "\"test: 56; cg: Sv_Zicbo_cg; cp: cp_nonleaf_PTE_to_nonexistent_pa_cbo; bin: test18_zero\""
-Sv_Zicbo_cg_cp_leaf_PTE_to_nonexistent_pa_cbo_u_test19_zero_str: .string "\"test: 57; cg: Sv_Zicbo_cg; cp: cp_leaf_PTE_to_nonexistent_pa_cbo_u; bin: test19_zero\""
-Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test20_zero_str: .string "\"test: 58; cg: Sv_Zicbo_cg; cp: cp_PTE_nonleaf_DAU_cbo; bin: test20_zero\""
-Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test21_zero_str: .string "\"test: 59; cg: Sv_Zicbo_cg; cp: cp_PTE_nonleaf_DAU_cbo; bin: test21_zero\""
-Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test22_zero_str: .string "\"test: 60; cg: Sv_Zicbo_cg; cp: cp_PTE_nonleaf_DAU_cbo; bin: test22_zero\""
-Sv_Zicbo_cg_cp_PTE_inv_cbo_u_test23_zero_str: .string "\"test: 61; cg: Sv_Zicbo_cg; cp: cp_PTE_inv_cbo_u; bin: test23_zero\""
-Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test24_zero_str: .string "\"test: 62; cg: Sv_Zicbo_cg; cp: cp_PTE_res_rwx_cbo_u; bin: test24_zero\""
-Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test25_zero_str: .string "\"test: 63; cg: Sv_Zicbo_cg; cp: cp_PTE_res_rwx_cbo_u; bin: test25_zero\""
-Sv_Zicbo_cg_cp_PTE_w_unset_zicboz_u_test26_zero_str: .string "\"test: 64; cg: Sv_Zicbo_cg; cp: cp_PTE_w_unset_zicboz_u; bin: test26_zero\""
-Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test27_zero_str: .string "\"test: 65; cg: Sv_Zicbo_cg; cp: cp_spage_rwx_cbo_u; bin: test27_zero\""
-Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test28_zero_str: .string "\"test: 66; cg: Sv_Zicbo_cg; cp: cp_Abit_unset_cbo_u; bin: test28_zero\""
-Sv_Zicbo_cg_cp_Dbit_unset_zicboz_u_test29_zero_str: .string "\"test: 67; cg: Sv_Zicbo_cg; cp: cp_Dbit_unset_zicboz_u; bin: test29_zero\""
-Sv_Zicbo_cg_cp_PTE_nonleaf_lvl0_cbo_u_test30_zero_str: .string "\"test: 68; cg: Sv_Zicbo_cg; cp: cp_PTE_nonleaf_lvl0_cbo_u; bin: test30_zero\""
-Sv_Zicbo_cg_cp_nonleaf_PTE_to_nonexistent_pa_cbo_test31_zero_str: .string "\"test: 69; cg: Sv_Zicbo_cg; cp: cp_nonleaf_PTE_to_nonexistent_pa_cbo; bin: test31_zero\""
-Sv_Zicbo_cg_cp_leaf_PTE_to_nonexistent_pa_cbo_u_test32_zero_str: .string "\"test: 70; cg: Sv_Zicbo_cg; cp: cp_leaf_PTE_to_nonexistent_pa_cbo_u; bin: test32_zero\""
-Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test33_zero_str: .string "\"test: 71; cg: Sv_Zicbo_cg; cp: cp_PTE_nonleaf_DAU_cbo; bin: test33_zero\""
-Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test34_zero_str: .string "\"test: 72; cg: Sv_Zicbo_cg; cp: cp_PTE_nonleaf_DAU_cbo; bin: test34_zero\""
-Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test35_zero_str: .string "\"test: 73; cg: Sv_Zicbo_cg; cp: cp_PTE_nonleaf_DAU_cbo; bin: test35_zero\""
+Sv_Zicbo_cg_cp_PTE_inv_cbo_u_test1_zero_str: .string "\"test: 42; cg: Sv_Zicbo_cg; cp: cp_PTE_inv_cbo_u; bin: test1_zero\""
+Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test2_zero_str: .string "\"test: 43; cg: Sv_Zicbo_cg; cp: cp_PTE_res_rwx_cbo_u; bin: test2_zero\""
+Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test3_zero_str: .string "\"test: 44; cg: Sv_Zicbo_cg; cp: cp_PTE_res_rwx_cbo_u; bin: test3_zero\""
+Sv_Zicbo_cg_cp_PTE_w_unset_zicboz_u_test4_zero_str: .string "\"test: 45; cg: Sv_Zicbo_cg; cp: cp_PTE_w_unset_zicboz_u; bin: test4_zero\""
+Sv_Zicbo_cg_cp_PTE_w_unset_zicboz_u_test5_zero_str: .string "\"test: 46; cg: Sv_Zicbo_cg; cp: cp_PTE_w_unset_zicboz_u; bin: test5_zero\""
+Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test6_zero_str: .string "\"test: 47; cg: Sv_Zicbo_cg; cp: cp_Abit_unset_cbo_u; bin: test6_zero\""
+Sv_Zicbo_cg_cp_Dbit_unset_zicboz_u_test7_zero_str: .string "\"test: 48; cg: Sv_Zicbo_cg; cp: cp_Dbit_unset_zicboz_u; bin: test7_zero\""
+Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test8_zero_str: .string "\"test: 49; cg: Sv_Zicbo_cg; cp: cp_spage_rwx_cbo_u; bin: test8_zero\""
+Sv_Zicbo_cg_cp_misaligned_page_cbo_u_test9_zero_str: .string "\"test: 50; cg: Sv_Zicbo_cg; cp: cp_misaligned_page_cbo_u; bin: test9_zero\""
+Sv_Zicbo_cg_cp_leaf_PTE_to_nonexistent_pa_cbo_u_test10_zero_str: .string "\"test: 51; cg: Sv_Zicbo_cg; cp: cp_leaf_PTE_to_nonexistent_pa_cbo_u; bin: test10_zero\""
+Sv_Zicbo_cg_cp_PTE_inv_cbo_u_test11_zero_str: .string "\"test: 52; cg: Sv_Zicbo_cg; cp: cp_PTE_inv_cbo_u; bin: test11_zero\""
+Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test12_zero_str: .string "\"test: 53; cg: Sv_Zicbo_cg; cp: cp_PTE_res_rwx_cbo_u; bin: test12_zero\""
+Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test13_zero_str: .string "\"test: 54; cg: Sv_Zicbo_cg; cp: cp_PTE_res_rwx_cbo_u; bin: test13_zero\""
+Sv_Zicbo_cg_cp_PTE_w_unset_zicboz_u_test14_zero_str: .string "\"test: 55; cg: Sv_Zicbo_cg; cp: cp_PTE_w_unset_zicboz_u; bin: test14_zero\""
+Sv_Zicbo_cg_cp_PTE_w_unset_zicboz_u_test15_zero_str: .string "\"test: 56; cg: Sv_Zicbo_cg; cp: cp_PTE_w_unset_zicboz_u; bin: test15_zero\""
+Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test16_zero_str: .string "\"test: 57; cg: Sv_Zicbo_cg; cp: cp_Abit_unset_cbo_u; bin: test16_zero\""
+Sv_Zicbo_cg_cp_Dbit_unset_zicboz_u_test17_zero_str: .string "\"test: 58; cg: Sv_Zicbo_cg; cp: cp_Dbit_unset_zicboz_u; bin: test17_zero\""
+Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test18_zero_str: .string "\"test: 59; cg: Sv_Zicbo_cg; cp: cp_spage_rwx_cbo_u; bin: test18_zero\""
+Sv_Zicbo_cg_cp_misaligned_page_cbo_u_test19_zero_str: .string "\"test: 60; cg: Sv_Zicbo_cg; cp: cp_misaligned_page_cbo_u; bin: test19_zero\""
+Sv_Zicbo_cg_cp_nonleaf_PTE_to_nonexistent_pa_cbo_test20_zero_str: .string "\"test: 61; cg: Sv_Zicbo_cg; cp: cp_nonleaf_PTE_to_nonexistent_pa_cbo; bin: test20_zero\""
+Sv_Zicbo_cg_cp_leaf_PTE_to_nonexistent_pa_cbo_u_test21_zero_str: .string "\"test: 62; cg: Sv_Zicbo_cg; cp: cp_leaf_PTE_to_nonexistent_pa_cbo_u; bin: test21_zero\""
+Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test22_zero_str: .string "\"test: 63; cg: Sv_Zicbo_cg; cp: cp_PTE_nonleaf_DAU_cbo; bin: test22_zero\""
+Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test23_zero_str: .string "\"test: 64; cg: Sv_Zicbo_cg; cp: cp_PTE_nonleaf_DAU_cbo; bin: test23_zero\""
+Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test24_zero_str: .string "\"test: 65; cg: Sv_Zicbo_cg; cp: cp_PTE_nonleaf_DAU_cbo; bin: test24_zero\""
+Sv_Zicbo_cg_cp_PTE_inv_cbo_u_test25_zero_str: .string "\"test: 66; cg: Sv_Zicbo_cg; cp: cp_PTE_inv_cbo_u; bin: test25_zero\""
+Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test26_zero_str: .string "\"test: 67; cg: Sv_Zicbo_cg; cp: cp_PTE_res_rwx_cbo_u; bin: test26_zero\""
+Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test27_zero_str: .string "\"test: 68; cg: Sv_Zicbo_cg; cp: cp_PTE_res_rwx_cbo_u; bin: test27_zero\""
+Sv_Zicbo_cg_cp_PTE_w_unset_zicboz_u_test28_zero_str: .string "\"test: 69; cg: Sv_Zicbo_cg; cp: cp_PTE_w_unset_zicboz_u; bin: test28_zero\""
+Sv_Zicbo_cg_cp_PTE_w_unset_zicboz_u_test29_zero_str: .string "\"test: 70; cg: Sv_Zicbo_cg; cp: cp_PTE_w_unset_zicboz_u; bin: test29_zero\""
+Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test30_zero_str: .string "\"test: 71; cg: Sv_Zicbo_cg; cp: cp_Abit_unset_cbo_u; bin: test30_zero\""
+Sv_Zicbo_cg_cp_Dbit_unset_zicboz_u_test31_zero_str: .string "\"test: 72; cg: Sv_Zicbo_cg; cp: cp_Dbit_unset_zicboz_u; bin: test31_zero\""
+Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test32_zero_str: .string "\"test: 73; cg: Sv_Zicbo_cg; cp: cp_spage_rwx_cbo_u; bin: test32_zero\""
+Sv_Zicbo_cg_cp_PTE_nonleaf_lvl0_cbo_u_test33_zero_str: .string "\"test: 74; cg: Sv_Zicbo_cg; cp: cp_PTE_nonleaf_lvl0_cbo_u; bin: test33_zero\""
+Sv_Zicbo_cg_cp_nonleaf_PTE_to_nonexistent_pa_cbo_test34_zero_str: .string "\"test: 75; cg: Sv_Zicbo_cg; cp: cp_nonleaf_PTE_to_nonexistent_pa_cbo; bin: test34_zero\""
+Sv_Zicbo_cg_cp_leaf_PTE_to_nonexistent_pa_cbo_u_test35_zero_str: .string "\"test: 76; cg: Sv_Zicbo_cg; cp: cp_leaf_PTE_to_nonexistent_pa_cbo_u; bin: test35_zero\""
+Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test36_zero_str: .string "\"test: 77; cg: Sv_Zicbo_cg; cp: cp_PTE_nonleaf_DAU_cbo; bin: test36_zero\""
+Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test37_zero_str: .string "\"test: 78; cg: Sv_Zicbo_cg; cp: cp_PTE_nonleaf_DAU_cbo; bin: test37_zero\""
+Sv_Zicbo_cg_cp_PTE_nonleaf_DAU_cbo_test38_zero_str: .string "\"test: 79; cg: Sv_Zicbo_cg; cp: cp_PTE_nonleaf_DAU_cbo; bin: test38_zero\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

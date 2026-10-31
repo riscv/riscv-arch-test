@@ -252,18 +252,21 @@ normative_rule_definitions:
     coverpoint:
       [
         "Exceptions_Sm_cg/{cp_instr_access_fault, cp_illegal_instruction, cp_breakpoint, cp_load_access_fault}",
+        "Exceptions_Sm_cg/cp_mtvec_vectored_exc",
       ]
   # When MODE=Direct, all traps into machine mode cause the pc to be set to the
   # address in the BASE field.
   - name: mtvec_mode_direct_op
+    # The trap handler uses Direct when the hart supports it. Representative coverpoints.
     coverpoint:
-      ["TODO: add a coverpoint for exceptions using mtvec direct and vectored"]
+      [
+        "Exceptions_Sm_cg/{cp_instr_access_fault, cp_illegal_instruction, cp_breakpoint, cp_load_access_fault}",
+      ]
   # When MODE=Vectored, all synchronous exceptions into machine mode cause the pc to
   # be set to the address in the BASE field, whereas interrupts cause the pc to be
   # set to the address in the BASE field plus four times the interrupt cause number.
   - name: mtvec_mode_vectored_op
-    coverpoint:
-      ["TODO: add a coverpoint for exceptions using mtvec direct and vectored"]
+    coverpoint: ["Exceptions_Sm_cg/cp_mtvec_vectored_exc"]
   # By default, all traps at any privilege level are handled in machine mode
   - name: trap_def_m_mode
     # Representative coverpoints; also the misaligned-address and store access-fault ones.
@@ -829,7 +832,12 @@ normative_rule_definitions:
 
   # A trap into VS-mode writes vsstatus.SPP/SPIE/SIE and goes through vstvec
   - names: [H_trap_vs_csrwrites, vstvec_sz_acc_op]
-    coverpoint: ["Exceptions_H_cg/cp_ecall_to_vs", "Exceptions_H_cg/cp_vstvec"]
+    coverpoint:
+      [
+        "Exceptions_H_cg/cp_ecall_to_vs",
+        "Exceptions_H_cg/cp_vstvec",
+        "Exceptions_H_cg/cp_vstvec_vectored_exc",
+      ]
 
   # The hypervisor extension augments the trap cause encoding. lists the possible M-mode
   # and HS-mode trap cause codes when the hypervisor extension is implemented. Codes are

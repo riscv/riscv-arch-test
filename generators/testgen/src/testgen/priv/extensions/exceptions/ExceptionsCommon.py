@@ -795,3 +795,26 @@ def generate_misaligned_priority_fetch_tests(
 
     test_data.int_regs.return_registers([addr_reg])
     return lines
+
+
+def generate_vectored_exception_tests(test_data: TestData, covergroup: str, coverpoint: str, tag: str) -> list[str]:
+    """Illegal instruction, ebreak and load access fault for a cp_*tvec_vectored_exc coverpoint.
+
+    The caller sets xtvec.MODE = Vectored.  Each exception must enter the trap vector at BASE.  Word 0 of the
+    trap record holds the trampoline entry taken, so a hart that jumps to BASE + 4 * cause fails.
+    """
+    addr_reg, check_reg = test_data.int_regs.get_registers(2)
+    lines = [
+        ".p2align 2",
+        test_data.add_testcase(f"illegal_{tag}", coverpoint, covergroup),
+        ".word 0x00000000",
+        test_data.add_testcase(f"ebreak_{tag}", coverpoint, covergroup),
+        "ebreak",
+        "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
+        f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+        test_data.add_testcase(f"load_access_fault_{tag}", coverpoint, covergroup),
+        f"lw x{check_reg}, 0(x{addr_reg})",
+        "#endif",
+    ]
+    test_data.int_regs.return_registers([addr_reg, check_reg])
+    return lines

@@ -29,10 +29,29 @@ from testgen.priv.extensions.exceptions.ExceptionsCommon import (
     generate_misaligned_priority_store_tests,
     generate_store_access_fault_tests,
     generate_store_address_misaligned_tests,
+    generate_vectored_exception_tests,
 )
 from testgen.priv.registry import add_priv_test_generator
 
 _CG = "Exceptions_S_cg"
+
+
+def _generate_stvec_vectored_tests(test_data: TestData) -> list[str]:
+    """Delegated synchronous exceptions from S-mode and U-mode with stvec.MODE = Vectored."""
+    covergroup, coverpoint = _CG, "cp_stvec_vectored_exc"
+    return [
+        comment_banner(coverpoint, "Delegated synchronous exceptions with stvec.MODE = Vectored go to BASE"),
+        "#if defined(UDB_STVEC_MODES_0) && defined(UDB_STVEC_MODES_1)",
+        "csrsi stvec, 1  # stvec.MODE = Vectored",
+        *generate_vectored_exception_tests(test_data, covergroup, coverpoint, "s"),
+        "RVTEST_TSBI_GOTO_UMODE",
+        *generate_vectored_exception_tests(test_data, covergroup, coverpoint, "u"),
+        test_data.add_testcase("ecall_u", coverpoint, covergroup),
+        "RVTEST_TSBI_ECALL_TEST  # ecall to the execution environment, recorded in the trap signature",
+        "RVTEST_TSBI_GOTO_SMODE",
+        "csrci stvec, 1  # stvec.MODE = Direct",
+        "#endif",
+    ]
 
 
 def _generate_illegal_instruction_csr_tests(test_data: TestData) -> list[str]:
@@ -150,6 +169,10 @@ def _generate_xstatus_ie_tests(test_data: TestData, mode_tag: str, priv_mode: in
 def make_exceptionss(test_data: TestData) -> list[TestChunk]:
     """Main entry point for S-mode exception test generation (refactored)."""
     test_chunks: list[TestChunk] = []
+    tc = test_data.begin_test_chunk("S_stvec_vectored")
+    tc.code.extend(_generate_stvec_vectored_tests(test_data))
+    test_chunks.append(test_data.end_test_chunk())
+
     tc = test_data.begin_test_chunk("S")
 
     tc.code.extend(generate_instr_adr_misaligned_jal_tests(test_data, _CG))

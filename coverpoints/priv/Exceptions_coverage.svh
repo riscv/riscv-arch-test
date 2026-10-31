@@ -278,6 +278,29 @@ covergroup Exceptions_S_cg with function sample(ins_t ins);
     `ifdef ZCA_SUPPORTED
         cp_ebreak_straddle64:                cross priv_mode_s, ebreak, straddle64;
     `endif
+    // Synchronous exceptions taken with stvec.MODE = Vectored. The trap handler uses Direct when the hart supports it.
+    `ifdef UDB_STVEC_MODES_0
+        `ifdef UDB_STVEC_MODES_1
+            stvec_vectored: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "stvec", "mode") {
+                bins mode_vectored = {1};
+            }
+            trap_to_s: coverpoint (ins.current.trap && get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sepc", "sepc") == ins.current.pc_rdata) {
+                bins taken = {1};
+            }
+            scause_vectored_exc: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause") {
+                bins illegal_instruction = {ILLEGAL_INSTRUCTION};
+                bins breakpoint = {BREAKPOINT};
+                `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+                    bins load_access_fault = {LOAD_ACCESS_FAULT};
+                `endif
+                bins ecall_u = {ENVIRONMENT_CALL_FROM_U_MODE};
+            }
+            cp_stvec_vectored_exc: cross priv_mode_s_u, stvec_vectored, trap_to_s, scause_vectored_exc {
+                // An ecall from S-mode raises environment call from S-mode
+                ignore_bins s_ecall = binsof(priv_mode_s_u.S_mode) && binsof(scause_vectored_exc.ecall_u);
+            }
+        `endif
+    `endif
     cp_load_address_misaligned:              cross priv_mode_s, loadops, adr_LSBs;
     cp_store_address_misaligned:             cross priv_mode_s, storeops, adr_LSBs;
     cp_ecall_s:                              cross priv_mode_s, ecall;
@@ -462,6 +485,26 @@ covergroup Exceptions_Sm_cg with function sample(ins_t ins);
     cp_breakpoint:                           cross priv_mode_m, ebreak;
     `ifdef ZCA_SUPPORTED
         cp_ebreak_straddle64:                cross priv_mode_m, ebreak, straddle64;
+    `endif
+    // Synchronous exceptions taken with mtvec.MODE = Vectored. The trap handler uses Direct when the hart supports it.
+    `ifdef UDB_MTVEC_MODES_0
+        `ifdef UDB_MTVEC_MODES_1
+            mtvec_vectored: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mtvec", "mode") {
+                bins mode_vectored = {1};
+            }
+            trap_to_m: coverpoint (ins.current.trap && get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mepc", "mepc") == ins.current.pc_rdata) {
+                bins taken = {1};
+            }
+            mcause_vectored_exc: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "mcause") {
+                bins illegal_instruction = {ILLEGAL_INSTRUCTION};
+                bins breakpoint = {BREAKPOINT};
+                `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+                    bins load_access_fault = {LOAD_ACCESS_FAULT};
+                `endif
+                bins ecall_m = {ENVIRONMENT_CALL_FROM_M_MODE};
+            }
+            cp_mtvec_vectored_exc: cross priv_mode_m, mtvec_vectored, trap_to_m, mcause_vectored_exc;
+        `endif
     `endif
     cp_load_address_misaligned:              cross priv_mode_m, loadops, adr_LSBs;
     cp_store_address_misaligned:             cross priv_mode_m, storeops, adr_LSBs;
@@ -1465,6 +1508,30 @@ covergroup Exceptions_H_cg with function sample(ins_t ins);
         // An ecall from VS-mode is never delegated to VS-mode: hedeleg[10] is read-only 0
         ignore_bins vs_ecall = binsof(priv_mode_vs_vu.VS_mode) && binsof(vstvec_trap.ecall);
     }
+
+    // Synchronous exceptions taken with vstvec.MODE = Vectored. The trap handler uses Direct when the hart supports it.
+    `ifdef UDB_VSTVEC_MODES_0
+        `ifdef UDB_VSTVEC_MODES_1
+            vstvec_vectored: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstvec", "mode") {
+                bins mode_vectored = {1};
+            }
+            trap_to_vs: coverpoint (ins.current.trap && get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vsepc", "vsepc") == ins.current.pc_rdata) {
+                bins taken = {1};
+            }
+            vscause_vectored_exc: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vscause", "vscause") {
+                bins illegal_instruction = {ILLEGAL_INSTRUCTION};
+                bins breakpoint = {BREAKPOINT};
+                `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+                    bins load_access_fault = {LOAD_ACCESS_FAULT};
+                `endif
+                bins ecall_u = {ENVIRONMENT_CALL_FROM_U_MODE};
+            }
+            cp_vstvec_vectored_exc: cross priv_mode_vs_vu, vstvec_vectored, trap_to_vs, vscause_vectored_exc {
+                // An ecall from VS-mode raises environment call from VS-mode and is never delegated to VS-mode
+                ignore_bins vs_ecall = binsof(priv_mode_vs_vu.VS_mode) && binsof(vscause_vectored_exc.ecall_u);
+            }
+        `endif
+    `endif
 
     // Virtual-instruction exceptions from VS-mode
     cp_virtual_instr_vs_execute_hypervisor: cross priv_mode_vs, hlvw_hlvxwu_hsvw_hfencevvma_hfencegvma_instr;

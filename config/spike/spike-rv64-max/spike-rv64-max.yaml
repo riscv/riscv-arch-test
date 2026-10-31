@@ -67,6 +67,7 @@ implemented_extensions:
   - { name: Svinval, version: "= 1.0.0" }
   - { name: Svnapot, version: "= 1.0.0" }
   - { name: Svpbmt, version: "= 1.0.0" }
+  # - { name: Svrsw60t59b, version: "= 1.0.0" } # Spike parses svrsw60t59b once riscv-isa-sim#2505 merges; then enable it here, in sail.json and in the --isa string
   - { name: Svvptc, version: "= 1.0.0" }
   - { name: U, version: "= 1.0.0" }
   - { name: V, version: "= 1.0.0" }

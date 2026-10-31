@@ -348,7 +348,7 @@ static void tvec_params(const char *prefix_modes, const char *align_direct, cons
                         unsigned long (*set)(unsigned long))
 {
     unsigned long base = (unsigned long)probe_scratch;
-    unsigned long modes[2], nmodes = 0;
+    unsigned long modes[2], nmodes = 0, alignment[2] = { 4, 4 };
     if (access) {
         // BASE is writable when two different bases both read back; MODE may be hardwired
         // (Ibex keeps it at vectored), so only BASE is compared
@@ -365,17 +365,29 @@ static void tvec_params(const char *prefix_modes, const char *align_direct, cons
         if ((v & 3) == m)
             modes[nmodes++] = m;
         const char *align = m ? align_vectored : align_direct;
-        if ((v & 3) == m && align) {
+        if ((v & 3) == m) {
             unsigned long low = set((base | (PROBE_SCRATCH_SIZE - 4)) | m) & (PROBE_SCRATCH_SIZE - 4);
-            param_int(align, low ? BIT(ctz(low)) : PROBE_SCRATCH_SIZE);
+            alignment[m] = low ? BIT(ctz(low)) : PROBE_SCRATCH_SIZE;
+            if (align)
+                param_int(align, alignment[m]);
         }
     }
     if (nmodes)
         param_ints(prefix_modes, modes, nmodes);
     if (illegal) {
-        unsigned long before = set(base | modes[nmodes ? nmodes - 1 : 0]);
-        unsigned long v = set(base | 2);            // MODE = 2 is reserved
-        param_str(illegal, v == before ? "retain" : "custom");
+        // "retain" means the CSR keeps its old value when MODE or BASE is illegal.  MODE = 2 is
+        // reserved.  A BASE below the mode's alignment is illegal too; the write starts from a
+        // different aligned base, so a hart that clears the low bits (Ibex) is not mistaken for one
+        // that keeps the old value
+        unsigned long mode = modes[nmodes ? nmodes - 1 : 0];
+        unsigned long before = set(base | mode);
+        bool retain = set(base | 2) == before;
+        unsigned long other = base + PROBE_SCRATCH_SIZE / 2;
+        if (alignment[mode] > 4 && alignment[mode] <= PROBE_SCRATCH_SIZE / 2) {
+            before = set(other | mode);
+            retain = retain && set((base + 4) | mode) == before;
+        }
+        param_str(illegal, retain ? "retain" : "custom");
     }
     set(orig);
 }

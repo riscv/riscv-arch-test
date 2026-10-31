@@ -653,10 +653,10 @@ normative_rule_definitions:
         "U_F_cg/{cp_fcsr_access, cp_mstatus_FS_transition}",
         "S_F_cg/{cp_fcsr_access, cp_sstatus_FS_transition}",
         "H_F_cg/{cp_fcsr_access, cp_vsstatus_FS_transition}",
-        "Sm_V_cg/{cp_mstatus_vs_off_arithmetic, cp_mstatus_vs_off_csr}",
-        "U_V_cg/{cp_mstatus_vs_off_arithmetic, cp_mstatus_vs_off_csr}",
-        "S_V_cg/{cp_sstatus_vs_off_arithmetic, cp_sstatus_vs_off_csr}",
-        "H_V_cg/{cp_vsstatus_vs_off_arithmetic, cp_vsstatus_vs_off_csr}",
+        "Sm_V_cg/{cp_mstatus_vs_off_arithmetic, cp_mstatus_vs_off_csr, cp_mstatus_vs_off_vector_instruction, cp_mstatus_vs_off_vcsr_read, cp_mstatus_vs_off_vcsr_write}",
+        "U_V_cg/{cp_mstatus_vs_off_arithmetic, cp_mstatus_vs_off_csr, cp_mstatus_vs_off_vector_instruction, cp_mstatus_vs_off_vcsr_read, cp_mstatus_vs_off_vcsr_write}",
+        "S_V_cg/{cp_sstatus_vs_off_arithmetic, cp_sstatus_vs_off_csr, cp_sstatus_vs_off_vector_instruction, cp_sstatus_vs_off_vcsr_read, cp_sstatus_vs_off_vcsr_write}",
+        "H_V_cg/{cp_vsstatus_vs_off_arithmetic, cp_vsstatus_vs_off_csr, cp_vsstatus_vs_off_vector_instruction, cp_vsstatus_vs_off_vcsr_read, cp_vsstatus_vs_off_vcsr_write}",
       ]
 
   # When the status is Initial, the corresponding state should have an initial constant

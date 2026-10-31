@@ -81,10 +81,10 @@ normative_rule_definitions:
   - name: mstatus_vs_op_off
     coverpoint:
       [
-        "Sm_V_cg/cp_mstatus_vs_off_arithmetic",
-        "U_V_cg/cp_mstatus_vs_off_arithmetic",
-        "S_V_cg/cp_sstatus_vs_off_arithmetic",
-        "H_V_cg/cp_vsstatus_vs_off_arithmetic",
+        "Sm_V_cg/{cp_mstatus_vs_off_arithmetic, cp_mstatus_vs_off_csr, cp_mstatus_vs_off_vector_instruction, cp_mstatus_vs_off_vcsr_read, cp_mstatus_vs_off_vcsr_write}",
+        "U_V_cg/{cp_mstatus_vs_off_arithmetic, cp_mstatus_vs_off_csr, cp_mstatus_vs_off_vector_instruction, cp_mstatus_vs_off_vcsr_read, cp_mstatus_vs_off_vcsr_write}",
+        "S_V_cg/{cp_sstatus_vs_off_arithmetic, cp_sstatus_vs_off_csr, cp_sstatus_vs_off_vector_instruction, cp_sstatus_vs_off_vcsr_read, cp_sstatus_vs_off_vcsr_write}",
+        "H_V_cg/{cp_vsstatus_vs_off_arithmetic, cp_vsstatus_vs_off_csr, cp_vsstatus_vs_off_vector_instruction, cp_vsstatus_vs_off_vcsr_read, cp_vsstatus_vs_off_vcsr_write}",
       ]
 
   # When V=1 and neither csr:vsstatus[vs] nor csr:mstatus[vs] is set to Off, executing any
@@ -104,7 +104,7 @@ normative_rule_definitions:
   - name: vsstatus_vs_op
     coverpoint:
       [
-        "Untestable: requires the H extension configured; see mstatus_vs_op_off for the non-hypervisor form",
+        "H_V_cg/{cp_vsstatus_vs_set_dirty_arithmetic, cp_vsstatus_vs_set_dirty_csr, cp_vsstatus_vs_off_arithmetic, cp_vsstatus_vs_off_csr, cp_vsstatus_vs_off_vector_instruction, cp_vsstatus_vs_off_vcsr_read, cp_vsstatus_vs_off_vcsr_write}",
       ]
 
   # If vsstatus.VS is Dirty, vsstatus.SD is 1; otherwise, vsstatus.SD is set in

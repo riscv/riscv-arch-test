@@ -182,6 +182,48 @@ def _gen_status_vs_off(test_data: TestData, temp_reg: int, covergroup: str, priv
     return lines
 
 
+def _gen_status_vs_off_more(test_data: TestData, temp_reg: int, covergroup: str, priv: str) -> list[str]:
+    """cp_xstatus_vs_off_vector_instruction / _vcsr_read / _vcsr_write: other vector instructions and CSR accesses trap."""
+    status = STATUS_CSR[priv]
+    base_reg, data_reg = test_data.int_regs.get_registers(2)
+    instrs = {
+        "vle32_v": f"vle32.v v1, (x{base_reg})",
+        "vse32_v": f"vse32.v v1, (x{base_reg})",
+        "vl1re32_v": f"vl1re32.v v1, (x{base_reg})",
+        "vs1r_v": f"vs1r.v v1, (x{base_reg})",
+        "vmv1r_v": "vmv1r.v v2, v1",
+        "vmv_x_s": f"vmv.x.s x{data_reg}, v1",
+        "vsetivli": f"vsetivli x{data_reg}, 1, e8, m1, tu, mu",
+        "vsetvl": f"vsetvl x{data_reg}, x{data_reg}, x0",
+    }
+    accesses = [(f"{csr}_csrr", f"csrr x{data_reg}, {csr}", "vcsr_read") for csr in _VECTOR_CSRS]
+    for csr in _VECTOR_CSRS_WR:
+        accesses.append((f"{csr}_csrw", f"csrw {csr}, x{data_reg}", "vcsr_write"))
+        accesses.append((f"{csr}_csrwi", f"csrwi {csr}, 1", "vcsr_write"))
+    cases = [(name, instr, "vector_instruction") for name, instr in instrs.items()] + accesses
+    lines = [
+        comment_banner(
+            f"cp_{status}_vs_off_vector_instruction / vcsr_read / vcsr_write",
+            "VS=Off -> vector loads/stores, moves, vset* and vector CSR accesses trap illegal-instruction",
+        ),
+    ]
+    for vs, hs in off_status_pairs(priv):
+        lines.extend(set_status_fields(temp_reg, priv, vs=3))
+        lines.append(_VSET_M1)
+        lines.append(f"LA(x{base_reg}, scratch)")
+        lines.append(f"LI(x{data_reg}, 1)")
+        lines.extend(set_status_fields(temp_reg, priv, vs=vs, hs_vs=hs))
+        for name, instr, cp in cases:
+            lines.append(
+                test_data.add_testcase(f"{name}_vs_off{off_tag(vs, hs)}", f"cp_{status}_vs_off_{cp}", covergroup)
+            )
+            lines.append(f"{instr}  # traps: VS=Off")
+        lines.extend(set_status_fields(temp_reg, priv, vs=3))
+        lines.append("")
+    test_data.int_regs.return_registers([base_reg, data_reg])
+    return lines
+
+
 # All (sew, lmul) combinations matching the coverage definition
 # sew encoding: 000=8, 001=16, 010=32, 011=64
 # lmul encoding: 000=1, 001=2, 010=4, 011=8, 101=1/8, 110=1/4, 111=1/2 (100=reserved)
@@ -635,6 +677,7 @@ def gen_v_tests(test_data: TestData, priv: str, covergroup: str) -> list[TestChu
     for gen in (
         _gen_status_vs_dirty,
         _gen_status_vs_off,
+        _gen_status_vs_off_more,
         _gen_sew_lmul_vsetvl,
         _gen_sew_lmul_vset_i_vli,
         _gen_vill_vsetvl,

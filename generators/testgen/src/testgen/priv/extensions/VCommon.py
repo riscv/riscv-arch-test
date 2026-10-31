@@ -162,28 +162,47 @@ def _gen_status_vs_off(test_data: TestData, temp_reg: int, covergroup: str, priv
             "VS=Off -> vector arithmetic traps illegal-instruction",
         ),
     ]
+    rd_reg, check_reg = test_data.int_regs.get_registers(2)
     for vs, hs in off_status_pairs(priv):
         lines.extend(set_status_fields(temp_reg, priv, vs=3))
         lines.append(_VSET_M1)
         lines.append("vmv.v.i v1, 1")
         lines.append("vmv.v.i v2, 2")
+        lines.append("vmv.v.i v3, 7  # preset so a vadd.vv that runs shows in the signature")
         lines.extend(set_status_fields(temp_reg, priv, vs=vs, hs_vs=hs))
         lines.append(
             test_data.add_testcase(f"vadd_vs_off{off_tag(vs, hs)}", f"cp_{status}_vs_off_arithmetic", covergroup)
         )
         lines.append("vadd.vv v3, v1, v2  # traps: VS=Off")
         lines.extend(set_status_fields(temp_reg, priv, vs=3))
+        lines.extend(_check_vector_state_kept(check_reg, test_data))
         lines.append("")
 
     lines.append(comment_banner(f"cp_{status}_vs_off_csr", "VS=Off -> vsetvli traps illegal-instruction"))
     for vs, hs in off_status_pairs(priv):
         lines.extend(set_status_fields(temp_reg, priv, vs=3))
+        lines.append(_VSET_M1)
+        lines.append(f"LI(x{rd_reg}, 0x5a)  # preset so a vsetvli that runs shows in the signature")
         lines.extend(set_status_fields(temp_reg, priv, vs=vs, hs_vs=hs))
         lines.append(test_data.add_testcase(f"vsetvli_vs_off{off_tag(vs, hs)}", f"cp_{status}_vs_off_csr", covergroup))
-        lines.append(f"vsetvli x{temp_reg}, x0, e8, m1, tu, mu  # traps: VS=Off")
+        lines.append(f"vsetvli x{rd_reg}, x0, e8, m1, tu, mu  # traps: VS=Off")
         lines.extend(set_status_fields(temp_reg, priv, vs=3))
+        lines.append(write_sigupd(rd_reg, test_data))
+        lines.extend(_check_vector_state_kept(check_reg, test_data))
         lines.append("")
+    test_data.int_regs.return_registers([rd_reg, check_reg])
     return lines
+
+
+def _check_vector_state_kept(check_reg: int, test_data: TestData) -> list[str]:
+    """After a trapped vector instruction, commit v3 element 0, vl, vtype and vstart."""
+    return [
+        f"vmv.x.s x{check_reg}, v3",
+        write_sigupd(check_reg, test_data),
+        gen_csr_read_sigupd(check_reg, ("vl", None), test_data),
+        gen_csr_read_sigupd(check_reg, ("vtype", None), test_data),
+        write_sigupd(None, test_data, "vstart"),
+    ]
 
 
 def _gen_status_vs_off_more(test_data: TestData, temp_reg: int, covergroup: str, priv: str) -> list[str]:

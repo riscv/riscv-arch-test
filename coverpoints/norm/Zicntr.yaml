@@ -25,8 +25,7 @@ normative_rule_definitions:
     coverpoint: ["Zicntr_csrrs_cg/{cp_cntr}"]
 
   - name: Zicntr_rdcycleh_op
-    # The test only checks that the upper half does not change across a few instructions
-    coverpoint: ["Zicntr_csrrs_cg/{cp_cntr}"]
+    coverpoint: ["Sm_Zicntr_cg/cp_cntrh_shadow"]
 
   - name: Zicntr_rdtime_op
     coverpoint: ["Zicntr_csrrs_cg/{cp_cntr}"]
@@ -39,8 +38,7 @@ normative_rule_definitions:
     coverpoint: ["Zicntr_csrrs_cg/{cp_cntr}", "U_Zicntr_cg/cp_instret_add"]
 
   - name: Zicntr_rdinstreth_op
-    # The test only checks that the upper half does not change across a few instructions
-    coverpoint: ["Zicntr_csrrs_cg/{cp_cntr}"]
+    coverpoint: ["Sm_Zicntr_cg/cp_cntrh_shadow"]
 
   - name: Zicntr_time_hart_sync
     coverpoint: ["OUT-OF-SCOPE for single hart"]

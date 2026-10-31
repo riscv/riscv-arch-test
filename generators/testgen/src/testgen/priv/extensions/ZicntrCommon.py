@@ -10,6 +10,7 @@
 
 from typing import Literal
 
+from testgen.asm.csr import gen_csr_read_sigupd
 from testgen.asm.helpers import comment_banner, write64_csr, write_sigupd
 from testgen.asm.tsbi import tsbi_call_or_direct
 from testgen.data.state import TestData
@@ -248,6 +249,83 @@ def _counter_prep(test_data: TestData, mode: Mode) -> list[str]:
         r_tmp = test_data.int_regs.get_register()
         lines += [f"LI(x{r_tmp}, -1)", *_set_counterens(f"x{r_tmp}", mode)]
         test_data.int_regs.return_register(r_tmp)
+    return lines
+
+
+def counter_shadow_tests(test_data: TestData, covergroup: str) -> list[str]:
+    """In M-mode, write each machine counter, then read its unprivileged shadow.
+
+    cycle can increment between the write and the read, so the test checks only that it is less than 100 above
+    the written value. instret and the frozen hpmcounters (mhpmevent = 0) must read the written value. On RV32,
+    the test also writes the high half of each counter (low half 0, so no carry) and reads it through the h shadow.
+    """
+    r_val, r_read = test_data.int_regs.get_registers(2)
+    hpms = [(n, f"#if defined(ZIHPM_SUPPORTED) && defined(UDB_HPM_COUNTER_EN_{n})") for n in range(3, 32)]
+
+    def exact(bin_name: str, coverpoint: str, mcsr: str, csr: str) -> list[str]:
+        return [
+            test_data.add_testcase(bin_name, coverpoint, covergroup),
+            f"csrw {mcsr}, x{r_val}",
+            gen_csr_read_sigupd(r_read, (csr, None), test_data),
+        ]
+
+    coverpoint = "cp_cntr_shadow"
+    lines = [
+        comment_banner(
+            coverpoint, "Write mcycle, minstret and mhpmcounters. Then read cycle, instret and hpmcounters."
+        ),
+        *_counter_prep(test_data, "M"),
+        "#if __riscv_xlen == 64",
+        f"LI(x{r_val}, 0x0123456789abcdef)",
+        "#else",
+        f"LI(x{r_val}, 0x12345678)",
+        "#endif",
+        test_data.add_testcase("cycle", coverpoint, covergroup),
+        f"csrw mcycle, x{r_val}",
+        f"csrr x{r_read}, cycle",
+        f"sub x{r_read}, x{r_read}, x{r_val}",
+        f"sltiu x{r_read}, x{r_read}, 100  # 1 if cycle is less than 100 above the written value",
+        write_sigupd(r_read, test_data),
+        "#if __riscv_xlen == 64",
+        f"LI(x{r_val}, 0x0fedcba987654321)",
+        "#else",
+        f"LI(x{r_val}, 0x76543210)",
+        "#endif",
+        *exact("instret", coverpoint, "minstret", "instret"),
+    ]
+    for n, cond in hpms:
+        lines += [
+            cond,
+            "#if __riscv_xlen == 64",
+            f"LI(x{r_val}, {((0x2000 + n) << 32) | (0x1000 + n):#x})",
+            "#else",
+            f"LI(x{r_val}, {0x1000 + n:#x})",
+            "#endif",
+            *exact(f"hpmcounter{n}", coverpoint, f"mhpmcounter{n}", f"hpmcounter{n}"),
+            "#endif",
+        ]
+
+    coverpoint = "cp_cntrh_shadow"
+    lines += [
+        "#if __riscv_xlen == 32",
+        comment_banner(
+            coverpoint, "Write mcycleh, minstreth and mhpmcounterhs. Then read cycleh, instreth and hpmcounterhs."
+        ),
+    ]
+    for name, mcsr, csr, val, cond in [
+        ("cycleh", "mcycle", "cycle", 0x89ABCDEF, None),
+        ("instreth", "minstret", "instret", 0x13579BDF, None),
+        *((f"hpmcounter{n}h", f"mhpmcounter{n}", f"hpmcounter{n}", 0x2000 + n, cond) for n, cond in hpms),
+    ]:
+        lines += [
+            *([cond] if cond else []),
+            f"csrw {mcsr}, zero  # low half 0, so no carry into the high half",
+            f"LI(x{r_val}, {val:#x})",
+            *exact(name, coverpoint, f"{mcsr}h", f"{csr}h"),
+            *(["#endif"] if cond else []),
+        ]
+    lines.append("#endif // __riscv_xlen == 32")
+    test_data.int_regs.return_registers([r_val, r_read])
     return lines
 
 

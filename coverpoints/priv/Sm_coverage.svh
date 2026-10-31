@@ -1792,6 +1792,206 @@ covergroup Sm_Zicntr_cg with function sample(ins_t ins);
 
     `endif // S_SUPPORTED
 
+    // ---- unprivileged counter reads directly after a write to the machine counter ----
+
+    shadow_csrr: coverpoint ins.current.insn {
+        wildcard bins csrr = {CSRR};
+    }
+    shadow_csrw_prev: coverpoint ins.prev.insn {
+        wildcard bins csrw = {CSRW};
+    }
+    // {CSR written by the previous instruction, CSR read by this instruction}
+    cntr_shadow: coverpoint {ins.prev.insn[31:20], ins.current.insn[31:20]} {
+        bins mcycle_cycle     = { {CSR_MCYCLE, CSR_CYCLE} };
+        bins minstret_instret = { {CSR_MINSTRET, CSR_INSTRET} };
+        `ifdef ZIHPM_SUPPORTED
+          `ifdef UDB_HPM_COUNTER_EN_3
+            bins mhpmcounter3_hpmcounter3 = { {CSR_MHPMCOUNTER3, CSR_HPMCOUNTER3} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_4
+            bins mhpmcounter4_hpmcounter4 = { {CSR_MHPMCOUNTER4, CSR_HPMCOUNTER4} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_5
+            bins mhpmcounter5_hpmcounter5 = { {CSR_MHPMCOUNTER5, CSR_HPMCOUNTER5} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_6
+            bins mhpmcounter6_hpmcounter6 = { {CSR_MHPMCOUNTER6, CSR_HPMCOUNTER6} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_7
+            bins mhpmcounter7_hpmcounter7 = { {CSR_MHPMCOUNTER7, CSR_HPMCOUNTER7} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_8
+            bins mhpmcounter8_hpmcounter8 = { {CSR_MHPMCOUNTER8, CSR_HPMCOUNTER8} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_9
+            bins mhpmcounter9_hpmcounter9 = { {CSR_MHPMCOUNTER9, CSR_HPMCOUNTER9} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_10
+            bins mhpmcounter10_hpmcounter10 = { {CSR_MHPMCOUNTER10, CSR_HPMCOUNTER10} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_11
+            bins mhpmcounter11_hpmcounter11 = { {CSR_MHPMCOUNTER11, CSR_HPMCOUNTER11} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_12
+            bins mhpmcounter12_hpmcounter12 = { {CSR_MHPMCOUNTER12, CSR_HPMCOUNTER12} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_13
+            bins mhpmcounter13_hpmcounter13 = { {CSR_MHPMCOUNTER13, CSR_HPMCOUNTER13} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_14
+            bins mhpmcounter14_hpmcounter14 = { {CSR_MHPMCOUNTER14, CSR_HPMCOUNTER14} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_15
+            bins mhpmcounter15_hpmcounter15 = { {CSR_MHPMCOUNTER15, CSR_HPMCOUNTER15} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_16
+            bins mhpmcounter16_hpmcounter16 = { {CSR_MHPMCOUNTER16, CSR_HPMCOUNTER16} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_17
+            bins mhpmcounter17_hpmcounter17 = { {CSR_MHPMCOUNTER17, CSR_HPMCOUNTER17} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_18
+            bins mhpmcounter18_hpmcounter18 = { {CSR_MHPMCOUNTER18, CSR_HPMCOUNTER18} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_19
+            bins mhpmcounter19_hpmcounter19 = { {CSR_MHPMCOUNTER19, CSR_HPMCOUNTER19} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_20
+            bins mhpmcounter20_hpmcounter20 = { {CSR_MHPMCOUNTER20, CSR_HPMCOUNTER20} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_21
+            bins mhpmcounter21_hpmcounter21 = { {CSR_MHPMCOUNTER21, CSR_HPMCOUNTER21} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_22
+            bins mhpmcounter22_hpmcounter22 = { {CSR_MHPMCOUNTER22, CSR_HPMCOUNTER22} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_23
+            bins mhpmcounter23_hpmcounter23 = { {CSR_MHPMCOUNTER23, CSR_HPMCOUNTER23} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_24
+            bins mhpmcounter24_hpmcounter24 = { {CSR_MHPMCOUNTER24, CSR_HPMCOUNTER24} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_25
+            bins mhpmcounter25_hpmcounter25 = { {CSR_MHPMCOUNTER25, CSR_HPMCOUNTER25} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_26
+            bins mhpmcounter26_hpmcounter26 = { {CSR_MHPMCOUNTER26, CSR_HPMCOUNTER26} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_27
+            bins mhpmcounter27_hpmcounter27 = { {CSR_MHPMCOUNTER27, CSR_HPMCOUNTER27} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_28
+            bins mhpmcounter28_hpmcounter28 = { {CSR_MHPMCOUNTER28, CSR_HPMCOUNTER28} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_29
+            bins mhpmcounter29_hpmcounter29 = { {CSR_MHPMCOUNTER29, CSR_HPMCOUNTER29} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_30
+            bins mhpmcounter30_hpmcounter30 = { {CSR_MHPMCOUNTER30, CSR_HPMCOUNTER30} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_31
+            bins mhpmcounter31_hpmcounter31 = { {CSR_MHPMCOUNTER31, CSR_HPMCOUNTER31} };
+          `endif
+        `endif // ZIHPM_SUPPORTED
+    }
+    cp_cntr_shadow: cross priv_mode_m, shadow_csrw_prev, cntr_shadow, shadow_csrr;
+    `ifdef UDB_MXLEN_32
+      cntrh_shadow: coverpoint {ins.prev.insn[31:20], ins.current.insn[31:20]} {
+        bins mcycleh_cycleh     = { {CSR_MCYCLEH, CSR_CYCLEH} };
+        bins minstreth_instreth = { {CSR_MINSTRETH, CSR_INSTRETH} };
+        `ifdef ZIHPM_SUPPORTED
+          `ifdef UDB_HPM_COUNTER_EN_3
+            bins mhpmcounter3h_hpmcounter3h = { {CSR_MHPMCOUNTER3H, CSR_HPMCOUNTER3H} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_4
+            bins mhpmcounter4h_hpmcounter4h = { {CSR_MHPMCOUNTER4H, CSR_HPMCOUNTER4H} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_5
+            bins mhpmcounter5h_hpmcounter5h = { {CSR_MHPMCOUNTER5H, CSR_HPMCOUNTER5H} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_6
+            bins mhpmcounter6h_hpmcounter6h = { {CSR_MHPMCOUNTER6H, CSR_HPMCOUNTER6H} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_7
+            bins mhpmcounter7h_hpmcounter7h = { {CSR_MHPMCOUNTER7H, CSR_HPMCOUNTER7H} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_8
+            bins mhpmcounter8h_hpmcounter8h = { {CSR_MHPMCOUNTER8H, CSR_HPMCOUNTER8H} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_9
+            bins mhpmcounter9h_hpmcounter9h = { {CSR_MHPMCOUNTER9H, CSR_HPMCOUNTER9H} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_10
+            bins mhpmcounter10h_hpmcounter10h = { {CSR_MHPMCOUNTER10H, CSR_HPMCOUNTER10H} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_11
+            bins mhpmcounter11h_hpmcounter11h = { {CSR_MHPMCOUNTER11H, CSR_HPMCOUNTER11H} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_12
+            bins mhpmcounter12h_hpmcounter12h = { {CSR_MHPMCOUNTER12H, CSR_HPMCOUNTER12H} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_13
+            bins mhpmcounter13h_hpmcounter13h = { {CSR_MHPMCOUNTER13H, CSR_HPMCOUNTER13H} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_14
+            bins mhpmcounter14h_hpmcounter14h = { {CSR_MHPMCOUNTER14H, CSR_HPMCOUNTER14H} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_15
+            bins mhpmcounter15h_hpmcounter15h = { {CSR_MHPMCOUNTER15H, CSR_HPMCOUNTER15H} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_16
+            bins mhpmcounter16h_hpmcounter16h = { {CSR_MHPMCOUNTER16H, CSR_HPMCOUNTER16H} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_17
+            bins mhpmcounter17h_hpmcounter17h = { {CSR_MHPMCOUNTER17H, CSR_HPMCOUNTER17H} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_18
+            bins mhpmcounter18h_hpmcounter18h = { {CSR_MHPMCOUNTER18H, CSR_HPMCOUNTER18H} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_19
+            bins mhpmcounter19h_hpmcounter19h = { {CSR_MHPMCOUNTER19H, CSR_HPMCOUNTER19H} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_20
+            bins mhpmcounter20h_hpmcounter20h = { {CSR_MHPMCOUNTER20H, CSR_HPMCOUNTER20H} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_21
+            bins mhpmcounter21h_hpmcounter21h = { {CSR_MHPMCOUNTER21H, CSR_HPMCOUNTER21H} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_22
+            bins mhpmcounter22h_hpmcounter22h = { {CSR_MHPMCOUNTER22H, CSR_HPMCOUNTER22H} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_23
+            bins mhpmcounter23h_hpmcounter23h = { {CSR_MHPMCOUNTER23H, CSR_HPMCOUNTER23H} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_24
+            bins mhpmcounter24h_hpmcounter24h = { {CSR_MHPMCOUNTER24H, CSR_HPMCOUNTER24H} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_25
+            bins mhpmcounter25h_hpmcounter25h = { {CSR_MHPMCOUNTER25H, CSR_HPMCOUNTER25H} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_26
+            bins mhpmcounter26h_hpmcounter26h = { {CSR_MHPMCOUNTER26H, CSR_HPMCOUNTER26H} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_27
+            bins mhpmcounter27h_hpmcounter27h = { {CSR_MHPMCOUNTER27H, CSR_HPMCOUNTER27H} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_28
+            bins mhpmcounter28h_hpmcounter28h = { {CSR_MHPMCOUNTER28H, CSR_HPMCOUNTER28H} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_29
+            bins mhpmcounter29h_hpmcounter29h = { {CSR_MHPMCOUNTER29H, CSR_HPMCOUNTER29H} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_30
+            bins mhpmcounter30h_hpmcounter30h = { {CSR_MHPMCOUNTER30H, CSR_HPMCOUNTER30H} };
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_31
+            bins mhpmcounter31h_hpmcounter31h = { {CSR_MHPMCOUNTER31H, CSR_HPMCOUNTER31H} };
+          `endif
+        `endif // ZIHPM_SUPPORTED
+      }
+      cp_cntrh_shadow: cross priv_mode_m, shadow_csrw_prev, cntrh_shadow, shadow_csrr;
+    `endif // UDB_MXLEN_32
+
     // ---- minstret delta coverpoints ----
 
     ecall: coverpoint ins.current.insn {

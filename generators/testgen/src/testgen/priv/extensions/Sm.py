@@ -47,6 +47,7 @@ from testgen.priv.extensions.PrivCommon import (
 from testgen.priv.extensions.VCommon import gen_v_tests
 from testgen.priv.extensions.VFCommon import gen_vf_tests
 from testgen.priv.extensions.ZicntrCommon import (
+    counter_shadow_tests,
     counteren_walk_tests,
     htimedelta_tests,
     instret_exception_tests,
@@ -1879,6 +1880,7 @@ def make_zicntrsm(test_data: TestData) -> list[TestChunk]:
         )
     tc.code.append("#endif // S_SUPPORTED")
 
+    tc.code.extend(counter_shadow_tests(test_data, _ZICNTR_CG))
     tc.code.extend(instret_retire_tests(test_data, _ZICNTR_CG, "M"))
     tc.code.extend(instret_exception_tests(test_data, _ZICNTR_CG, "M"))
     tc.code.extend(instret_interrupt_tests(test_data, _ZICNTR_CG, "M"))

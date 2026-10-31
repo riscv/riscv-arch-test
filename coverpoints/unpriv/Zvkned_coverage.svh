@@ -224,7 +224,7 @@ covergroup Zvkned_vaesdf_vs_cg with function sample(ins_t ins);
             bins one    = {0};   // LMUL=1: needs VLEN>=256 for >=2 element groups
         `endif
         `ifdef ZVL256B_SUPPORTED
-            `ifdef LMULf2_SUPPORTED
+            `ifdef UDB_ELEN_64
                 bins half    = {7};   // LMUL=1/2: needs VLEN>=512
             `endif
         `endif
@@ -578,7 +578,7 @@ covergroup Zvkned_vaesdf_vv_cg with function sample(ins_t ins);
             bins one    = {0};   // LMUL=1: needs VLEN>=256 for >=2 element groups
         `endif
         `ifdef ZVL256B_SUPPORTED
-            `ifdef LMULf2_SUPPORTED
+            `ifdef UDB_ELEN_64
                 bins half    = {7};   // LMUL=1/2: needs VLEN>=512
             `endif
         `endif
@@ -893,7 +893,7 @@ covergroup Zvkned_vaesdm_vs_cg with function sample(ins_t ins);
             bins one    = {0};   // LMUL=1: needs VLEN>=256 for >=2 element groups
         `endif
         `ifdef ZVL256B_SUPPORTED
-            `ifdef LMULf2_SUPPORTED
+            `ifdef UDB_ELEN_64
                 bins half    = {7};   // LMUL=1/2: needs VLEN>=512
             `endif
         `endif
@@ -1247,7 +1247,7 @@ covergroup Zvkned_vaesdm_vv_cg with function sample(ins_t ins);
             bins one    = {0};   // LMUL=1: needs VLEN>=256 for >=2 element groups
         `endif
         `ifdef ZVL256B_SUPPORTED
-            `ifdef LMULf2_SUPPORTED
+            `ifdef UDB_ELEN_64
                 bins half    = {7};   // LMUL=1/2: needs VLEN>=512
             `endif
         `endif
@@ -1562,7 +1562,7 @@ covergroup Zvkned_vaesef_vs_cg with function sample(ins_t ins);
             bins one    = {0};   // LMUL=1: needs VLEN>=256 for >=2 element groups
         `endif
         `ifdef ZVL256B_SUPPORTED
-            `ifdef LMULf2_SUPPORTED
+            `ifdef UDB_ELEN_64
                 bins half    = {7};   // LMUL=1/2: needs VLEN>=512
             `endif
         `endif
@@ -1916,7 +1916,7 @@ covergroup Zvkned_vaesef_vv_cg with function sample(ins_t ins);
             bins one    = {0};   // LMUL=1: needs VLEN>=256 for >=2 element groups
         `endif
         `ifdef ZVL256B_SUPPORTED
-            `ifdef LMULf2_SUPPORTED
+            `ifdef UDB_ELEN_64
                 bins half    = {7};   // LMUL=1/2: needs VLEN>=512
             `endif
         `endif
@@ -2231,7 +2231,7 @@ covergroup Zvkned_vaesem_vs_cg with function sample(ins_t ins);
             bins one    = {0};   // LMUL=1: needs VLEN>=256 for >=2 element groups
         `endif
         `ifdef ZVL256B_SUPPORTED
-            `ifdef LMULf2_SUPPORTED
+            `ifdef UDB_ELEN_64
                 bins half    = {7};   // LMUL=1/2: needs VLEN>=512
             `endif
         `endif
@@ -2585,7 +2585,7 @@ covergroup Zvkned_vaesem_vv_cg with function sample(ins_t ins);
             bins one    = {0};   // LMUL=1: needs VLEN>=256 for >=2 element groups
         `endif
         `ifdef ZVL256B_SUPPORTED
-            `ifdef LMULf2_SUPPORTED
+            `ifdef UDB_ELEN_64
                 bins half    = {7};   // LMUL=1/2: needs VLEN>=512
             `endif
         `endif
@@ -2931,7 +2931,7 @@ covergroup Zvkned_vaeskf1_vi_cg with function sample(ins_t ins);
             bins one    = {0};   // LMUL=1: needs VLEN>=256 for >=2 element groups
         `endif
         `ifdef ZVL256B_SUPPORTED
-            `ifdef LMULf2_SUPPORTED
+            `ifdef UDB_ELEN_64
                 bins half    = {7};   // LMUL=1/2: needs VLEN>=512
             `endif
         `endif
@@ -3270,7 +3270,7 @@ covergroup Zvkned_vaeskf2_vi_cg with function sample(ins_t ins);
             bins one    = {0};   // LMUL=1: needs VLEN>=256 for >=2 element groups
         `endif
         `ifdef ZVL256B_SUPPORTED
-            `ifdef LMULf2_SUPPORTED
+            `ifdef UDB_ELEN_64
                 bins half    = {7};   // LMUL=1/2: needs VLEN>=512
             `endif
         `endif
@@ -3516,7 +3516,7 @@ covergroup Zvkned_vaesz_vs_cg with function sample(ins_t ins);
             bins one    = {0};   // LMUL=1: needs VLEN>=256 for >=2 element groups
         `endif
         `ifdef ZVL256B_SUPPORTED
-            `ifdef LMULf2_SUPPORTED
+            `ifdef UDB_ELEN_64
                 bins half    = {7};   // LMUL=1/2: needs VLEN>=512
             `endif
         `endif

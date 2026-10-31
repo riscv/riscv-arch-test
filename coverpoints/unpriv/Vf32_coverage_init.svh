@@ -39,14 +39,30 @@
     Vf32_vfmv_f_s_cg = new(); Vf32_vfmv_f_s_cg.set_inst_name("obj_Vf32_vfmv_f_s");
     Vf32_vfmv_s_f_cg = new(); Vf32_vfmv_s_f_cg.set_inst_name("obj_Vf32_vfmv_s_f");
     Vf32_vfmv_v_f_cg = new(); Vf32_vfmv_v_f_cg.set_inst_name("obj_Vf32_vfmv_v_f");
+`ifdef ZVE64D_SUPPORTED
     Vf32_vfncvt_f_f_w_cg = new(); Vf32_vfncvt_f_f_w_cg.set_inst_name("obj_Vf32_vfncvt_f_f_w");
+`endif
+`ifdef ZVE64F_SUPPORTED
     Vf32_vfncvt_f_x_w_cg = new(); Vf32_vfncvt_f_x_w_cg.set_inst_name("obj_Vf32_vfncvt_f_x_w");
+`endif
+`ifdef ZVE64F_SUPPORTED
     Vf32_vfncvt_f_xu_w_cg = new(); Vf32_vfncvt_f_xu_w_cg.set_inst_name("obj_Vf32_vfncvt_f_xu_w");
+`endif
+`ifdef ZVE64D_SUPPORTED
     Vf32_vfncvt_rod_f_f_w_cg = new(); Vf32_vfncvt_rod_f_f_w_cg.set_inst_name("obj_Vf32_vfncvt_rod_f_f_w");
+`endif
+`ifdef ZVE64D_SUPPORTED
     Vf32_vfncvt_rtz_x_f_w_cg = new(); Vf32_vfncvt_rtz_x_f_w_cg.set_inst_name("obj_Vf32_vfncvt_rtz_x_f_w");
+`endif
+`ifdef ZVE64D_SUPPORTED
     Vf32_vfncvt_rtz_xu_f_w_cg = new(); Vf32_vfncvt_rtz_xu_f_w_cg.set_inst_name("obj_Vf32_vfncvt_rtz_xu_f_w");
+`endif
+`ifdef ZVE64D_SUPPORTED
     Vf32_vfncvt_x_f_w_cg = new(); Vf32_vfncvt_x_f_w_cg.set_inst_name("obj_Vf32_vfncvt_x_f_w");
+`endif
+`ifdef ZVE64D_SUPPORTED
     Vf32_vfncvt_xu_f_w_cg = new(); Vf32_vfncvt_xu_f_w_cg.set_inst_name("obj_Vf32_vfncvt_xu_f_w");
+`endif
     Vf32_vfnmacc_vf_cg = new(); Vf32_vfnmacc_vf_cg.set_inst_name("obj_Vf32_vfnmacc_vf");
     Vf32_vfnmacc_vv_cg = new(); Vf32_vfnmacc_vv_cg.set_inst_name("obj_Vf32_vfnmacc_vv");
     Vf32_vfnmadd_vf_cg = new(); Vf32_vfnmadd_vf_cg.set_inst_name("obj_Vf32_vfnmadd_vf");
@@ -74,33 +90,87 @@
     Vf32_vfsqrt_v_cg = new(); Vf32_vfsqrt_v_cg.set_inst_name("obj_Vf32_vfsqrt_v");
     Vf32_vfsub_vf_cg = new(); Vf32_vfsub_vf_cg.set_inst_name("obj_Vf32_vfsub_vf");
     Vf32_vfsub_vv_cg = new(); Vf32_vfsub_vv_cg.set_inst_name("obj_Vf32_vfsub_vv");
+`ifdef ZVE64D_SUPPORTED
     Vf32_vfwadd_vf_cg = new(); Vf32_vfwadd_vf_cg.set_inst_name("obj_Vf32_vfwadd_vf");
+`endif
+`ifdef ZVE64D_SUPPORTED
     Vf32_vfwadd_vv_cg = new(); Vf32_vfwadd_vv_cg.set_inst_name("obj_Vf32_vfwadd_vv");
+`endif
+`ifdef ZVE64D_SUPPORTED
     Vf32_vfwadd_wf_cg = new(); Vf32_vfwadd_wf_cg.set_inst_name("obj_Vf32_vfwadd_wf");
+`endif
+`ifdef ZVE64D_SUPPORTED
     Vf32_vfwadd_wv_cg = new(); Vf32_vfwadd_wv_cg.set_inst_name("obj_Vf32_vfwadd_wv");
+`endif
+`ifdef ZVE64D_SUPPORTED
     Vf32_vfwcvt_f_f_v_cg = new(); Vf32_vfwcvt_f_f_v_cg.set_inst_name("obj_Vf32_vfwcvt_f_f_v");
+`endif
+`ifdef ZVE64D_SUPPORTED
     Vf32_vfwcvt_f_x_v_cg = new(); Vf32_vfwcvt_f_x_v_cg.set_inst_name("obj_Vf32_vfwcvt_f_x_v");
+`endif
+`ifdef ZVE64D_SUPPORTED
     Vf32_vfwcvt_f_xu_v_cg = new(); Vf32_vfwcvt_f_xu_v_cg.set_inst_name("obj_Vf32_vfwcvt_f_xu_v");
+`endif
+`ifdef ZVE64F_SUPPORTED
     Vf32_vfwcvt_rtz_x_f_v_cg = new(); Vf32_vfwcvt_rtz_x_f_v_cg.set_inst_name("obj_Vf32_vfwcvt_rtz_x_f_v");
+`endif
+`ifdef ZVE64F_SUPPORTED
     Vf32_vfwcvt_rtz_xu_f_v_cg = new(); Vf32_vfwcvt_rtz_xu_f_v_cg.set_inst_name("obj_Vf32_vfwcvt_rtz_xu_f_v");
+`endif
+`ifdef ZVE64F_SUPPORTED
     Vf32_vfwcvt_x_f_v_cg = new(); Vf32_vfwcvt_x_f_v_cg.set_inst_name("obj_Vf32_vfwcvt_x_f_v");
+`endif
+`ifdef ZVE64F_SUPPORTED
     Vf32_vfwcvt_xu_f_v_cg = new(); Vf32_vfwcvt_xu_f_v_cg.set_inst_name("obj_Vf32_vfwcvt_xu_f_v");
+`endif
+`ifdef ZVE64D_SUPPORTED
     Vf32_vfwmacc_vf_cg = new(); Vf32_vfwmacc_vf_cg.set_inst_name("obj_Vf32_vfwmacc_vf");
+`endif
+`ifdef ZVE64D_SUPPORTED
     Vf32_vfwmacc_vv_cg = new(); Vf32_vfwmacc_vv_cg.set_inst_name("obj_Vf32_vfwmacc_vv");
+`endif
+`ifdef ZVE64D_SUPPORTED
     Vf32_vfwmsac_vf_cg = new(); Vf32_vfwmsac_vf_cg.set_inst_name("obj_Vf32_vfwmsac_vf");
+`endif
+`ifdef ZVE64D_SUPPORTED
     Vf32_vfwmsac_vv_cg = new(); Vf32_vfwmsac_vv_cg.set_inst_name("obj_Vf32_vfwmsac_vv");
+`endif
+`ifdef ZVE64D_SUPPORTED
     Vf32_vfwmul_vf_cg = new(); Vf32_vfwmul_vf_cg.set_inst_name("obj_Vf32_vfwmul_vf");
+`endif
+`ifdef ZVE64D_SUPPORTED
     Vf32_vfwmul_vv_cg = new(); Vf32_vfwmul_vv_cg.set_inst_name("obj_Vf32_vfwmul_vv");
+`endif
+`ifdef ZVE64D_SUPPORTED
     Vf32_vfwnmacc_vf_cg = new(); Vf32_vfwnmacc_vf_cg.set_inst_name("obj_Vf32_vfwnmacc_vf");
+`endif
+`ifdef ZVE64D_SUPPORTED
     Vf32_vfwnmacc_vv_cg = new(); Vf32_vfwnmacc_vv_cg.set_inst_name("obj_Vf32_vfwnmacc_vv");
+`endif
+`ifdef ZVE64D_SUPPORTED
     Vf32_vfwnmsac_vf_cg = new(); Vf32_vfwnmsac_vf_cg.set_inst_name("obj_Vf32_vfwnmsac_vf");
+`endif
+`ifdef ZVE64D_SUPPORTED
     Vf32_vfwnmsac_vv_cg = new(); Vf32_vfwnmsac_vv_cg.set_inst_name("obj_Vf32_vfwnmsac_vv");
+`endif
+`ifdef ZVE64D_SUPPORTED
     Vf32_vfwredosum_vs_cg = new(); Vf32_vfwredosum_vs_cg.set_inst_name("obj_Vf32_vfwredosum_vs");
+`endif
+`ifdef ZVE64D_SUPPORTED
     Vf32_vfwredusum_vs_cg = new(); Vf32_vfwredusum_vs_cg.set_inst_name("obj_Vf32_vfwredusum_vs");
+`endif
+`ifdef ZVE64D_SUPPORTED
     Vf32_vfwsub_vf_cg = new(); Vf32_vfwsub_vf_cg.set_inst_name("obj_Vf32_vfwsub_vf");
+`endif
+`ifdef ZVE64D_SUPPORTED
     Vf32_vfwsub_vv_cg = new(); Vf32_vfwsub_vv_cg.set_inst_name("obj_Vf32_vfwsub_vv");
+`endif
+`ifdef ZVE64D_SUPPORTED
     Vf32_vfwsub_wf_cg = new(); Vf32_vfwsub_wf_cg.set_inst_name("obj_Vf32_vfwsub_wf");
+`endif
+`ifdef ZVE64D_SUPPORTED
     Vf32_vfwsub_wv_cg = new(); Vf32_vfwsub_wv_cg.set_inst_name("obj_Vf32_vfwsub_wv");
+`endif
     Vf32_vmfeq_vf_cg = new(); Vf32_vmfeq_vf_cg.set_inst_name("obj_Vf32_vmfeq_vf");
     Vf32_vmfeq_vv_cg = new(); Vf32_vmfeq_vv_cg.set_inst_name("obj_Vf32_vmfeq_vv");
     Vf32_vmfge_vf_cg = new(); Vf32_vmfge_vf_cg.set_inst_name("obj_Vf32_vmfge_vf");

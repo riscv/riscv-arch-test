@@ -1,7 +1,7 @@
 """Priv coverpoint handler for cp_exceptionsv_ffLS.
 
-Generates tests for fault-first load instructions with rs1=0 (address 0)
-and masking disabled (vm=1), triggering a fault on the first element.
+Generates tests for fault-first load instructions with rs1 at
+RVMODEL_ACCESS_FAULT_ADDRESS and masking disabled (vm=1), triggering a fault on the first element.
 """
 
 from __future__ import annotations
@@ -16,7 +16,7 @@ CP = "cp_exceptionsv_ffLS"
 
 @register(CP)
 def make_exceptionsv_ffLS(instruction: str) -> None:
-    """Execute ff instruction with rs1=0, unmasked → faults on element 0."""
+    """Execute ff instruction with rs1 at the access-fault address, unmasked → faults on element 0."""
     set_seed(common.myhash(instruction + CP))
 
     # Use SEW=EEW so EMUL=LMUL=1, avoiding register overlap issues
@@ -58,7 +58,7 @@ def make_exceptionsv_ffLS(instruction: str) -> None:
             testline += f"v{vec_data[arg]['reg']}"
         elif arg[0] == "r":
             if arg == "rs1":
-                # rs1 = 0 for fault-first: load address 0
+                # rs1 was loaded with RVMODEL_ACCESS_FAULT_ADDRESS above
                 scalar_data[arg]["val"] = 0
                 testline += f"(x{scalar_data[arg]['reg']})"
             else:

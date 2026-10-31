@@ -197,7 +197,7 @@ covergroup Zvksed_vsm4k_vi_cg with function sample(ins_t ins);
             bins one    = {0};   // LMUL=1: needs VLEN>=256 for >=2 element groups
         `endif
         `ifdef ZVL256B_SUPPORTED
-            `ifdef LMULf2_SUPPORTED
+            `ifdef UDB_ELEN_64
                 bins half    = {7};   // LMUL=1/2: needs VLEN>=512
             `endif
         `endif
@@ -431,7 +431,7 @@ covergroup Zvksed_vsm4r_vs_cg with function sample(ins_t ins);
             bins one    = {0};   // LMUL=1: needs VLEN>=256 for >=2 element groups
         `endif
         `ifdef ZVL256B_SUPPORTED
-            `ifdef LMULf2_SUPPORTED
+            `ifdef UDB_ELEN_64
                 bins half    = {7};   // LMUL=1/2: needs VLEN>=512
             `endif
         `endif
@@ -716,7 +716,7 @@ covergroup Zvksed_vsm4r_vv_cg with function sample(ins_t ins);
             bins one    = {0};   // LMUL=1: needs VLEN>=256 for >=2 element groups
         `endif
         `ifdef ZVL256B_SUPPORTED
-            `ifdef LMULf2_SUPPORTED
+            `ifdef UDB_ELEN_64
                 bins half    = {7};   // LMUL=1/2: needs VLEN>=512
             `endif
         `endif

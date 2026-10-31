@@ -2,6 +2,8 @@
     // cp_exceptionsv_address_fault
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+
     // Helper: valid vector type (vill=0)
     vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
@@ -34,5 +36,7 @@
 
     // Cross: valid vtype AND trap occurred
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+    `endif
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////

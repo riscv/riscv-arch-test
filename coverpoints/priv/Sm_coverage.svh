@@ -908,17 +908,7 @@ covergroup Sm_V_cg with function sample(ins_t ins);
     cp_vill_vsetvl_rs2_vill     : cross priv_mode_m, vsetvl_instruction, vtype_prev_vill_set, rs2_vtype_legal_no_msb, rs2_sew_all_supported, rs2_lmul_8, rs2_vill_set;
     cp_vsetvl_rs2_vill          : cross priv_mode_m, vsetvl_instruction, rs2_vill_set, rs2_sew_supported, rs2_lmul_1, rs2_vtype_legal_no_msb, vtype_prev_vill_clear;
     cp_vtype_vill_set_vl_0      : cross priv_mode_m, vsetvl_instruction, rs1_non_zero, rs2_vill_set, vl_nonzero;
-    cp_vsetvl_i_rd_nx0_rs1_x0   : cross priv_mode_m, vsetvl_i_instructions, vl_not_max, rd_n0, rs1_x0, vtype_all_sew_supported, vtype_all_lmul_supported {
-        // SEW > LMUL*ELEN sets vill=1 and forces vtype.vsew/vlmul to 0,
-        // so these BEFORE-state (sew, lmul) pairs are architecturally unreachable.
-        ignore_bins illegal_sew_lmul =
-            (binsof(vtype_all_sew_supported.sixtyfour) && binsof(vtype_all_lmul_supported.half))   ||
-            (binsof(vtype_all_sew_supported.sixtyfour) && binsof(vtype_all_lmul_supported.fourth)) ||
-            (binsof(vtype_all_sew_supported.sixtyfour) && binsof(vtype_all_lmul_supported.eighth)) ||
-            (binsof(vtype_all_sew_supported.thirtytwo) && binsof(vtype_all_lmul_supported.fourth)) ||
-            (binsof(vtype_all_sew_supported.thirtytwo) && binsof(vtype_all_lmul_supported.eighth)) ||
-            (binsof(vtype_all_sew_supported.sixteen)   && binsof(vtype_all_lmul_supported.eighth));
-    }
+    cp_vsetvl_i_rd_nx0_rs1_x0   : cross priv_mode_m, vsetvl_i_instructions, vl_not_max, rd_n0, rs1_x0, vtype_sew_lmul_legal;
     cp_vsetvl_i_rd_x0_rs1_x0    : cross priv_mode_m, vsetvl_i_instructions, vl_nonzero, rd_x0, rs1_x0, vset_i_vli_vlmax_unchanged;
     cp_vsetvl_i_avl_eq_zero     : cross priv_mode_m, vsetvl_i_instructions, rs1_eq_zero;
     cp_vsetvl_i_avl_eq_vlmax    : cross priv_mode_m, vsetvl_i_instructions, rs1_eq_vlmax;

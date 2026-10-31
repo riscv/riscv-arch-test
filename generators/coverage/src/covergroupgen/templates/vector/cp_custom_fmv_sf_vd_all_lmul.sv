@@ -12,12 +12,15 @@
 `ifndef COVER_VFCUSTOM64
     vtype_all_lmul: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         `ifdef COVER_VFCUSTOM16
-            `ifdef LMULf4_SUPPORTED
+            `ifdef UDB_ELEN_64
                 bins fourth = {6};
             `endif
-        `endif
-        `ifdef LMULf2_SUPPORTED
             bins half   = {7};
+        `endif
+        `ifdef COVER_VFCUSTOM32
+            `ifdef UDB_ELEN_64
+                bins half   = {7};
+            `endif
         `endif
         bins one    = {0};
         bins two    = {1};

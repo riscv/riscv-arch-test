@@ -10,103 +10,291 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
+`ifdef ZVFH_SUPPORTED
     Vf16_vfadd_vf_cg = new(); Vf16_vfadd_vf_cg.set_inst_name("obj_Vf16_vfadd_vf");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfadd_vv_cg = new(); Vf16_vfadd_vv_cg.set_inst_name("obj_Vf16_vfadd_vv");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfclass_v_cg = new(); Vf16_vfclass_v_cg.set_inst_name("obj_Vf16_vfclass_v");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfcvt_f_x_v_cg = new(); Vf16_vfcvt_f_x_v_cg.set_inst_name("obj_Vf16_vfcvt_f_x_v");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfcvt_f_xu_v_cg = new(); Vf16_vfcvt_f_xu_v_cg.set_inst_name("obj_Vf16_vfcvt_f_xu_v");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfcvt_rtz_x_f_v_cg = new(); Vf16_vfcvt_rtz_x_f_v_cg.set_inst_name("obj_Vf16_vfcvt_rtz_x_f_v");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfcvt_rtz_xu_f_v_cg = new(); Vf16_vfcvt_rtz_xu_f_v_cg.set_inst_name("obj_Vf16_vfcvt_rtz_xu_f_v");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfcvt_x_f_v_cg = new(); Vf16_vfcvt_x_f_v_cg.set_inst_name("obj_Vf16_vfcvt_x_f_v");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfcvt_xu_f_v_cg = new(); Vf16_vfcvt_xu_f_v_cg.set_inst_name("obj_Vf16_vfcvt_xu_f_v");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfdiv_vf_cg = new(); Vf16_vfdiv_vf_cg.set_inst_name("obj_Vf16_vfdiv_vf");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfdiv_vv_cg = new(); Vf16_vfdiv_vv_cg.set_inst_name("obj_Vf16_vfdiv_vv");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfmacc_vf_cg = new(); Vf16_vfmacc_vf_cg.set_inst_name("obj_Vf16_vfmacc_vf");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfmacc_vv_cg = new(); Vf16_vfmacc_vv_cg.set_inst_name("obj_Vf16_vfmacc_vv");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfmadd_vf_cg = new(); Vf16_vfmadd_vf_cg.set_inst_name("obj_Vf16_vfmadd_vf");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfmadd_vv_cg = new(); Vf16_vfmadd_vv_cg.set_inst_name("obj_Vf16_vfmadd_vv");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfmax_vf_cg = new(); Vf16_vfmax_vf_cg.set_inst_name("obj_Vf16_vfmax_vf");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfmax_vv_cg = new(); Vf16_vfmax_vv_cg.set_inst_name("obj_Vf16_vfmax_vv");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfmerge_vfm_cg = new(); Vf16_vfmerge_vfm_cg.set_inst_name("obj_Vf16_vfmerge_vfm");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfmin_vf_cg = new(); Vf16_vfmin_vf_cg.set_inst_name("obj_Vf16_vfmin_vf");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfmin_vv_cg = new(); Vf16_vfmin_vv_cg.set_inst_name("obj_Vf16_vfmin_vv");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfmsac_vf_cg = new(); Vf16_vfmsac_vf_cg.set_inst_name("obj_Vf16_vfmsac_vf");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfmsac_vv_cg = new(); Vf16_vfmsac_vv_cg.set_inst_name("obj_Vf16_vfmsac_vv");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfmsub_vf_cg = new(); Vf16_vfmsub_vf_cg.set_inst_name("obj_Vf16_vfmsub_vf");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfmsub_vv_cg = new(); Vf16_vfmsub_vv_cg.set_inst_name("obj_Vf16_vfmsub_vv");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfmul_vf_cg = new(); Vf16_vfmul_vf_cg.set_inst_name("obj_Vf16_vfmul_vf");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfmul_vv_cg = new(); Vf16_vfmul_vv_cg.set_inst_name("obj_Vf16_vfmul_vv");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfmv_f_s_cg = new(); Vf16_vfmv_f_s_cg.set_inst_name("obj_Vf16_vfmv_f_s");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfmv_s_f_cg = new(); Vf16_vfmv_s_f_cg.set_inst_name("obj_Vf16_vfmv_s_f");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfmv_v_f_cg = new(); Vf16_vfmv_v_f_cg.set_inst_name("obj_Vf16_vfmv_v_f");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfncvt_f_x_w_cg = new(); Vf16_vfncvt_f_x_w_cg.set_inst_name("obj_Vf16_vfncvt_f_x_w");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfncvt_f_xu_w_cg = new(); Vf16_vfncvt_f_xu_w_cg.set_inst_name("obj_Vf16_vfncvt_f_xu_w");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfncvt_rod_f_f_w_cg = new(); Vf16_vfncvt_rod_f_f_w_cg.set_inst_name("obj_Vf16_vfncvt_rod_f_f_w");
+`endif
     Vf16_vfncvt_rtz_x_f_w_cg = new(); Vf16_vfncvt_rtz_x_f_w_cg.set_inst_name("obj_Vf16_vfncvt_rtz_x_f_w");
     Vf16_vfncvt_rtz_xu_f_w_cg = new(); Vf16_vfncvt_rtz_xu_f_w_cg.set_inst_name("obj_Vf16_vfncvt_rtz_xu_f_w");
     Vf16_vfncvt_x_f_w_cg = new(); Vf16_vfncvt_x_f_w_cg.set_inst_name("obj_Vf16_vfncvt_x_f_w");
     Vf16_vfncvt_xu_f_w_cg = new(); Vf16_vfncvt_xu_f_w_cg.set_inst_name("obj_Vf16_vfncvt_xu_f_w");
+`ifdef ZVFH_SUPPORTED
     Vf16_vfnmacc_vf_cg = new(); Vf16_vfnmacc_vf_cg.set_inst_name("obj_Vf16_vfnmacc_vf");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfnmacc_vv_cg = new(); Vf16_vfnmacc_vv_cg.set_inst_name("obj_Vf16_vfnmacc_vv");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfnmadd_vf_cg = new(); Vf16_vfnmadd_vf_cg.set_inst_name("obj_Vf16_vfnmadd_vf");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfnmadd_vv_cg = new(); Vf16_vfnmadd_vv_cg.set_inst_name("obj_Vf16_vfnmadd_vv");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfnmsac_vf_cg = new(); Vf16_vfnmsac_vf_cg.set_inst_name("obj_Vf16_vfnmsac_vf");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfnmsac_vv_cg = new(); Vf16_vfnmsac_vv_cg.set_inst_name("obj_Vf16_vfnmsac_vv");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfnmsub_vf_cg = new(); Vf16_vfnmsub_vf_cg.set_inst_name("obj_Vf16_vfnmsub_vf");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfnmsub_vv_cg = new(); Vf16_vfnmsub_vv_cg.set_inst_name("obj_Vf16_vfnmsub_vv");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfrdiv_vf_cg = new(); Vf16_vfrdiv_vf_cg.set_inst_name("obj_Vf16_vfrdiv_vf");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfrec7_v_cg = new(); Vf16_vfrec7_v_cg.set_inst_name("obj_Vf16_vfrec7_v");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfredmax_vs_cg = new(); Vf16_vfredmax_vs_cg.set_inst_name("obj_Vf16_vfredmax_vs");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfredmin_vs_cg = new(); Vf16_vfredmin_vs_cg.set_inst_name("obj_Vf16_vfredmin_vs");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfredosum_vs_cg = new(); Vf16_vfredosum_vs_cg.set_inst_name("obj_Vf16_vfredosum_vs");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfredusum_vs_cg = new(); Vf16_vfredusum_vs_cg.set_inst_name("obj_Vf16_vfredusum_vs");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfrsqrt7_v_cg = new(); Vf16_vfrsqrt7_v_cg.set_inst_name("obj_Vf16_vfrsqrt7_v");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfrsub_vf_cg = new(); Vf16_vfrsub_vf_cg.set_inst_name("obj_Vf16_vfrsub_vf");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfsgnj_vf_cg = new(); Vf16_vfsgnj_vf_cg.set_inst_name("obj_Vf16_vfsgnj_vf");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfsgnj_vv_cg = new(); Vf16_vfsgnj_vv_cg.set_inst_name("obj_Vf16_vfsgnj_vv");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfsgnjn_vf_cg = new(); Vf16_vfsgnjn_vf_cg.set_inst_name("obj_Vf16_vfsgnjn_vf");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfsgnjn_vv_cg = new(); Vf16_vfsgnjn_vv_cg.set_inst_name("obj_Vf16_vfsgnjn_vv");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfsgnjx_vf_cg = new(); Vf16_vfsgnjx_vf_cg.set_inst_name("obj_Vf16_vfsgnjx_vf");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfsgnjx_vv_cg = new(); Vf16_vfsgnjx_vv_cg.set_inst_name("obj_Vf16_vfsgnjx_vv");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfslide1down_vf_cg = new(); Vf16_vfslide1down_vf_cg.set_inst_name("obj_Vf16_vfslide1down_vf");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfslide1up_vf_cg = new(); Vf16_vfslide1up_vf_cg.set_inst_name("obj_Vf16_vfslide1up_vf");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfsqrt_v_cg = new(); Vf16_vfsqrt_v_cg.set_inst_name("obj_Vf16_vfsqrt_v");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfsub_vf_cg = new(); Vf16_vfsub_vf_cg.set_inst_name("obj_Vf16_vfsub_vf");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfsub_vv_cg = new(); Vf16_vfsub_vv_cg.set_inst_name("obj_Vf16_vfsub_vv");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfwadd_vf_cg = new(); Vf16_vfwadd_vf_cg.set_inst_name("obj_Vf16_vfwadd_vf");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfwadd_vv_cg = new(); Vf16_vfwadd_vv_cg.set_inst_name("obj_Vf16_vfwadd_vv");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfwadd_wf_cg = new(); Vf16_vfwadd_wf_cg.set_inst_name("obj_Vf16_vfwadd_wf");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfwadd_wv_cg = new(); Vf16_vfwadd_wv_cg.set_inst_name("obj_Vf16_vfwadd_wv");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfwcvt_f_f_v_cg = new(); Vf16_vfwcvt_f_f_v_cg.set_inst_name("obj_Vf16_vfwcvt_f_f_v");
+`endif
     Vf16_vfwcvt_f_x_v_cg = new(); Vf16_vfwcvt_f_x_v_cg.set_inst_name("obj_Vf16_vfwcvt_f_x_v");
     Vf16_vfwcvt_f_xu_v_cg = new(); Vf16_vfwcvt_f_xu_v_cg.set_inst_name("obj_Vf16_vfwcvt_f_xu_v");
+`ifdef ZVFH_SUPPORTED
     Vf16_vfwcvt_rtz_x_f_v_cg = new(); Vf16_vfwcvt_rtz_x_f_v_cg.set_inst_name("obj_Vf16_vfwcvt_rtz_x_f_v");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfwcvt_rtz_xu_f_v_cg = new(); Vf16_vfwcvt_rtz_xu_f_v_cg.set_inst_name("obj_Vf16_vfwcvt_rtz_xu_f_v");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfwcvt_x_f_v_cg = new(); Vf16_vfwcvt_x_f_v_cg.set_inst_name("obj_Vf16_vfwcvt_x_f_v");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfwcvt_xu_f_v_cg = new(); Vf16_vfwcvt_xu_f_v_cg.set_inst_name("obj_Vf16_vfwcvt_xu_f_v");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfwmacc_vf_cg = new(); Vf16_vfwmacc_vf_cg.set_inst_name("obj_Vf16_vfwmacc_vf");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfwmacc_vv_cg = new(); Vf16_vfwmacc_vv_cg.set_inst_name("obj_Vf16_vfwmacc_vv");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfwmsac_vf_cg = new(); Vf16_vfwmsac_vf_cg.set_inst_name("obj_Vf16_vfwmsac_vf");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfwmsac_vv_cg = new(); Vf16_vfwmsac_vv_cg.set_inst_name("obj_Vf16_vfwmsac_vv");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfwmul_vf_cg = new(); Vf16_vfwmul_vf_cg.set_inst_name("obj_Vf16_vfwmul_vf");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfwmul_vv_cg = new(); Vf16_vfwmul_vv_cg.set_inst_name("obj_Vf16_vfwmul_vv");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfwnmacc_vf_cg = new(); Vf16_vfwnmacc_vf_cg.set_inst_name("obj_Vf16_vfwnmacc_vf");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfwnmacc_vv_cg = new(); Vf16_vfwnmacc_vv_cg.set_inst_name("obj_Vf16_vfwnmacc_vv");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfwnmsac_vf_cg = new(); Vf16_vfwnmsac_vf_cg.set_inst_name("obj_Vf16_vfwnmsac_vf");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfwnmsac_vv_cg = new(); Vf16_vfwnmsac_vv_cg.set_inst_name("obj_Vf16_vfwnmsac_vv");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfwredosum_vs_cg = new(); Vf16_vfwredosum_vs_cg.set_inst_name("obj_Vf16_vfwredosum_vs");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfwredusum_vs_cg = new(); Vf16_vfwredusum_vs_cg.set_inst_name("obj_Vf16_vfwredusum_vs");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfwsub_vf_cg = new(); Vf16_vfwsub_vf_cg.set_inst_name("obj_Vf16_vfwsub_vf");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfwsub_vv_cg = new(); Vf16_vfwsub_vv_cg.set_inst_name("obj_Vf16_vfwsub_vv");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfwsub_wf_cg = new(); Vf16_vfwsub_wf_cg.set_inst_name("obj_Vf16_vfwsub_wf");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vfwsub_wv_cg = new(); Vf16_vfwsub_wv_cg.set_inst_name("obj_Vf16_vfwsub_wv");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vmfeq_vf_cg = new(); Vf16_vmfeq_vf_cg.set_inst_name("obj_Vf16_vmfeq_vf");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vmfeq_vv_cg = new(); Vf16_vmfeq_vv_cg.set_inst_name("obj_Vf16_vmfeq_vv");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vmfge_vf_cg = new(); Vf16_vmfge_vf_cg.set_inst_name("obj_Vf16_vmfge_vf");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vmfgt_vf_cg = new(); Vf16_vmfgt_vf_cg.set_inst_name("obj_Vf16_vmfgt_vf");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vmfle_vf_cg = new(); Vf16_vmfle_vf_cg.set_inst_name("obj_Vf16_vmfle_vf");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vmfle_vv_cg = new(); Vf16_vmfle_vv_cg.set_inst_name("obj_Vf16_vmfle_vv");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vmflt_vf_cg = new(); Vf16_vmflt_vf_cg.set_inst_name("obj_Vf16_vmflt_vf");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vmflt_vv_cg = new(); Vf16_vmflt_vv_cg.set_inst_name("obj_Vf16_vmflt_vv");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vmfne_vf_cg = new(); Vf16_vmfne_vf_cg.set_inst_name("obj_Vf16_vmfne_vf");
+`endif
+`ifdef ZVFH_SUPPORTED
     Vf16_vmfne_vv_cg = new(); Vf16_vmfne_vv_cg.set_inst_name("obj_Vf16_vmfne_vv");
+`endif

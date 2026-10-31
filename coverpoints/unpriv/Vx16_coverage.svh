@@ -157,29 +157,44 @@ covergroup Vx16_vaadd_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -358,29 +373,44 @@ covergroup Vx16_vaadd_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -581,29 +611,44 @@ covergroup Vx16_vaaddu_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -782,29 +827,44 @@ covergroup Vx16_vaaddu_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -950,29 +1010,44 @@ covergroup Vx16_vadc_vim_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -1174,29 +1249,44 @@ covergroup Vx16_vadc_vvm_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -1360,29 +1450,44 @@ covergroup Vx16_vadc_vxm_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -1507,29 +1612,44 @@ covergroup Vx16_vadd_vi_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -1724,29 +1844,44 @@ covergroup Vx16_vadd_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -1907,29 +2042,44 @@ covergroup Vx16_vadd_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -2054,29 +2204,44 @@ covergroup Vx16_vand_vi_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -2271,29 +2436,44 @@ covergroup Vx16_vand_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -2454,29 +2634,44 @@ covergroup Vx16_vand_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -2659,29 +2854,44 @@ covergroup Vx16_vasub_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -2860,29 +3070,44 @@ covergroup Vx16_vasub_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -3083,29 +3308,44 @@ covergroup Vx16_vasubu_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -3284,29 +3524,44 @@ covergroup Vx16_vasubu_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -3458,29 +3713,44 @@ covergroup Vx16_vcompress_vm_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -3621,29 +3891,44 @@ covergroup Vx16_vcpop_m_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -3816,29 +4101,44 @@ covergroup Vx16_vdiv_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -3999,29 +4299,44 @@ covergroup Vx16_vdiv_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -4204,29 +4519,44 @@ covergroup Vx16_vdivu_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -4387,29 +4717,44 @@ covergroup Vx16_vdivu_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -4549,29 +4894,44 @@ covergroup Vx16_vfirst_m_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -4640,29 +5000,44 @@ covergroup Vx16_vid_v_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -4763,29 +5138,44 @@ covergroup Vx16_viota_m_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -4958,29 +5348,44 @@ covergroup Vx16_vmacc_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -5141,29 +5546,44 @@ covergroup Vx16_vmacc_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -5302,29 +5722,44 @@ covergroup Vx16_vmadc_vi_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -5495,29 +5930,44 @@ covergroup Vx16_vmadc_vim_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -5706,29 +6156,44 @@ covergroup Vx16_vmadc_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -5927,29 +6392,44 @@ covergroup Vx16_vmadc_vvm_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -6124,29 +6604,44 @@ covergroup Vx16_vmadc_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -6341,29 +6836,44 @@ covergroup Vx16_vmadc_vxm_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -6546,29 +7056,44 @@ covergroup Vx16_vmadd_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -6729,29 +7254,44 @@ covergroup Vx16_vmadd_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -6958,29 +7498,44 @@ covergroup Vx16_vmand_mm_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -7188,29 +7743,44 @@ covergroup Vx16_vmandn_mm_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -7394,29 +7964,44 @@ covergroup Vx16_vmax_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -7577,29 +8162,44 @@ covergroup Vx16_vmax_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -7782,29 +8382,44 @@ covergroup Vx16_vmaxu_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -7965,29 +8580,44 @@ covergroup Vx16_vmaxu_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -8115,29 +8745,44 @@ covergroup Vx16_vmerge_vim_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -8339,29 +8984,44 @@ covergroup Vx16_vmerge_vvm_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -8525,29 +9185,44 @@ covergroup Vx16_vmerge_vxm_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -8730,29 +9405,44 @@ covergroup Vx16_vmin_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -8913,29 +9603,44 @@ covergroup Vx16_vmin_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -9118,29 +9823,44 @@ covergroup Vx16_vminu_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -9301,29 +10021,44 @@ covergroup Vx16_vminu_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -9530,29 +10265,44 @@ covergroup Vx16_vmnand_mm_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -9760,29 +10510,44 @@ covergroup Vx16_vmnor_mm_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -9990,29 +10755,44 @@ covergroup Vx16_vmor_mm_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -10220,29 +11000,44 @@ covergroup Vx16_vmorn_mm_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -10420,29 +11215,44 @@ covergroup Vx16_vmsbc_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -10641,29 +11451,44 @@ covergroup Vx16_vmsbc_vvm_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -10838,29 +11663,44 @@ covergroup Vx16_vmsbc_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -11055,29 +11895,44 @@ covergroup Vx16_vmsbc_vxm_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -11221,29 +12076,44 @@ covergroup Vx16_vmsbf_m_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -11390,29 +12260,44 @@ covergroup Vx16_vmseq_vi_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -11619,29 +12504,44 @@ covergroup Vx16_vmseq_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -11834,29 +12734,44 @@ covergroup Vx16_vmseq_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -12013,29 +12928,44 @@ covergroup Vx16_vmsgt_vi_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -12240,29 +13170,44 @@ covergroup Vx16_vmsgt_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -12419,29 +13364,44 @@ covergroup Vx16_vmsgtu_vi_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -12646,29 +13606,44 @@ covergroup Vx16_vmsgtu_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -12812,29 +13787,44 @@ covergroup Vx16_vmsif_m_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -12981,29 +13971,44 @@ covergroup Vx16_vmsle_vi_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -13210,29 +14215,44 @@ covergroup Vx16_vmsle_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -13425,29 +14445,44 @@ covergroup Vx16_vmsle_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -13604,29 +14639,44 @@ covergroup Vx16_vmsleu_vi_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -13833,29 +14883,44 @@ covergroup Vx16_vmsleu_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -14048,29 +15113,44 @@ covergroup Vx16_vmsleu_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -14265,29 +15345,44 @@ covergroup Vx16_vmslt_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -14480,29 +15575,44 @@ covergroup Vx16_vmslt_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -14697,29 +15807,44 @@ covergroup Vx16_vmsltu_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -14912,29 +16037,44 @@ covergroup Vx16_vmsltu_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -15091,29 +16231,44 @@ covergroup Vx16_vmsne_vi_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -15320,29 +16475,44 @@ covergroup Vx16_vmsne_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -15535,29 +16705,44 @@ covergroup Vx16_vmsne_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -15701,29 +16886,44 @@ covergroup Vx16_vmsof_m_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -15896,29 +17096,44 @@ covergroup Vx16_vmul_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -16079,29 +17294,44 @@ covergroup Vx16_vmul_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -16284,29 +17514,44 @@ covergroup Vx16_vmulh_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -16467,29 +17712,44 @@ covergroup Vx16_vmulh_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -16672,29 +17932,44 @@ covergroup Vx16_vmulhsu_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -16855,29 +18130,44 @@ covergroup Vx16_vmulhsu_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -17060,29 +18350,44 @@ covergroup Vx16_vmulhu_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -17243,29 +18548,44 @@ covergroup Vx16_vmulhu_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -17422,29 +18742,44 @@ covergroup Vx16_vmv_s_x_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -17509,29 +18844,44 @@ covergroup Vx16_vmv_v_i_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -17634,29 +18984,44 @@ covergroup Vx16_vmv_v_v_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -17757,29 +19122,44 @@ covergroup Vx16_vmv_v_x_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -17935,29 +19315,44 @@ covergroup Vx16_vmv_x_s_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -18038,29 +19433,44 @@ covergroup Vx16_vmv1r_v_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -18189,29 +19599,44 @@ covergroup Vx16_vmv2r_v_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -18348,29 +19773,44 @@ covergroup Vx16_vmv4r_v_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -18511,29 +19951,44 @@ covergroup Vx16_vmv8r_v_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -18731,29 +20186,44 @@ covergroup Vx16_vmxnor_mm_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -18961,29 +20431,44 @@ covergroup Vx16_vmxor_mm_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -19250,28 +20735,41 @@ covergroup Vx16_vnclip_wi_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -19539,28 +21037,41 @@ covergroup Vx16_vnclip_wv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -19820,28 +21331,41 @@ covergroup Vx16_vnclip_wx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -20125,28 +21649,41 @@ covergroup Vx16_vnclipu_wi_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -20414,28 +21951,41 @@ covergroup Vx16_vnclipu_wv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -20695,28 +22245,41 @@ covergroup Vx16_vnclipu_wx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -20917,29 +22480,44 @@ covergroup Vx16_vnmsac_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -21100,29 +22678,44 @@ covergroup Vx16_vnmsac_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -21305,29 +22898,44 @@ covergroup Vx16_vnmsub_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -21488,29 +23096,44 @@ covergroup Vx16_vnmsub_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -21776,28 +23399,41 @@ covergroup Vx16_vnsra_wi_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -22046,28 +23682,41 @@ covergroup Vx16_vnsra_wv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -22309,28 +23958,41 @@ covergroup Vx16_vnsra_wx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -22596,28 +24258,41 @@ covergroup Vx16_vnsrl_wi_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -22866,28 +24541,41 @@ covergroup Vx16_vnsrl_wv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -23129,28 +24817,41 @@ covergroup Vx16_vnsrl_wx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -23275,29 +24976,44 @@ covergroup Vx16_vor_vi_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -23492,29 +25208,44 @@ covergroup Vx16_vor_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -23675,29 +25406,44 @@ covergroup Vx16_vor_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -24006,29 +25752,44 @@ covergroup Vx16_vredand_vs_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -24337,29 +26098,44 @@ covergroup Vx16_vredmax_vs_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -24668,29 +26444,44 @@ covergroup Vx16_vredmaxu_vs_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -24999,29 +26790,44 @@ covergroup Vx16_vredmin_vs_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -25330,29 +27136,44 @@ covergroup Vx16_vredminu_vs_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -25661,29 +27482,44 @@ covergroup Vx16_vredor_vs_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -25992,29 +27828,44 @@ covergroup Vx16_vredsum_vs_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -26323,29 +28174,44 @@ covergroup Vx16_vredxor_vs_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -26528,29 +28394,44 @@ covergroup Vx16_vrem_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -26711,29 +28592,44 @@ covergroup Vx16_vrem_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -26916,29 +28812,44 @@ covergroup Vx16_vremu_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -27099,29 +29010,44 @@ covergroup Vx16_vremu_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -27236,29 +29162,44 @@ covergroup Vx16_vrgather_vi_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -27492,29 +29433,44 @@ covergroup Vx16_vrgather_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -27706,29 +29662,44 @@ covergroup Vx16_vrgather_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -27956,29 +29927,44 @@ covergroup Vx16_vrgatherei16_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_e16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_le_8_e16 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul"){
-        // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_e16_sew16 : cross cp_csr_vtype_lmul_all_le_8_e16, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_e16_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 8 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping)
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -28103,29 +30089,44 @@ covergroup Vx16_vrsub_vi_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -28298,29 +30299,44 @@ covergroup Vx16_vrsub_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -28457,29 +30473,44 @@ covergroup Vx16_vsadd_vi_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -28686,29 +30717,44 @@ covergroup Vx16_vsadd_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -28881,29 +30927,44 @@ covergroup Vx16_vsadd_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -29040,29 +31101,44 @@ covergroup Vx16_vsaddu_vi_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -29269,29 +31345,44 @@ covergroup Vx16_vsaddu_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -29464,29 +31555,44 @@ covergroup Vx16_vsaddu_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -29676,29 +31782,44 @@ covergroup Vx16_vsbc_vvm_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -29862,29 +31983,44 @@ covergroup Vx16_vsbc_vxm_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -30054,29 +32190,44 @@ covergroup Vx16_vsext_vf2_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -30227,29 +32378,44 @@ covergroup Vx16_vslide1down_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -30400,29 +32566,44 @@ covergroup Vx16_vslide1up_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -30547,29 +32728,44 @@ covergroup Vx16_vslidedown_vi_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -30781,29 +32977,44 @@ covergroup Vx16_vslidedown_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -30918,29 +33129,44 @@ covergroup Vx16_vslideup_vi_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -31101,29 +33327,44 @@ covergroup Vx16_vslideup_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -31248,29 +33489,44 @@ covergroup Vx16_vsll_vi_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -31489,29 +33745,44 @@ covergroup Vx16_vsll_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -31703,29 +33974,44 @@ covergroup Vx16_vsll_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -31920,29 +34206,44 @@ covergroup Vx16_vsmul_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -32139,29 +34440,44 @@ covergroup Vx16_vsmul_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -32304,29 +34620,44 @@ covergroup Vx16_vsra_vi_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -32545,29 +34876,44 @@ covergroup Vx16_vsra_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -32759,29 +35105,44 @@ covergroup Vx16_vsra_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -32906,29 +35267,44 @@ covergroup Vx16_vsrl_vi_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -33147,29 +35523,44 @@ covergroup Vx16_vsrl_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -33361,29 +35752,44 @@ covergroup Vx16_vsrl_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -33508,29 +35914,44 @@ covergroup Vx16_vssra_vi_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -33767,29 +36188,44 @@ covergroup Vx16_vssra_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -33999,29 +36435,44 @@ covergroup Vx16_vssra_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -34164,29 +36615,44 @@ covergroup Vx16_vssrl_vi_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -34423,29 +36889,44 @@ covergroup Vx16_vssrl_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -34655,29 +37136,44 @@ covergroup Vx16_vssrl_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -34890,29 +37386,44 @@ covergroup Vx16_vssub_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -35085,29 +37596,44 @@ covergroup Vx16_vssub_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -35302,29 +37828,44 @@ covergroup Vx16_vssubu_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -35497,29 +38038,44 @@ covergroup Vx16_vssubu_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -35702,29 +38258,44 @@ covergroup Vx16_vsub_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -35885,29 +38456,44 @@ covergroup Vx16_vsub_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -36207,28 +38793,41 @@ covergroup Vx16_vwadd_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -36474,28 +39073,41 @@ covergroup Vx16_vwadd_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -36787,28 +39399,41 @@ covergroup Vx16_vwadd_wv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -37017,28 +39642,41 @@ covergroup Vx16_vwadd_wx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -37327,28 +39965,41 @@ covergroup Vx16_vwaddu_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -37586,28 +40237,41 @@ covergroup Vx16_vwaddu_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -37891,28 +40555,41 @@ covergroup Vx16_vwaddu_wv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -38121,28 +40798,41 @@ covergroup Vx16_vwaddu_wx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -38311,28 +41001,41 @@ covergroup Vx16_vwmacc_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -38499,28 +41202,41 @@ covergroup Vx16_vwmacc_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -38689,28 +41405,41 @@ covergroup Vx16_vwmaccsu_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -38877,28 +41606,41 @@ covergroup Vx16_vwmaccsu_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -39067,28 +41809,41 @@ covergroup Vx16_vwmaccu_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -39255,28 +42010,41 @@ covergroup Vx16_vwmaccu_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -39443,28 +42211,41 @@ covergroup Vx16_vwmaccus_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -39753,28 +42534,41 @@ covergroup Vx16_vwmul_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -40012,28 +42806,41 @@ covergroup Vx16_vwmul_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -40322,28 +43129,41 @@ covergroup Vx16_vwmulsu_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -40581,28 +43401,41 @@ covergroup Vx16_vwmulsu_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -40891,28 +43724,41 @@ covergroup Vx16_vwmulu_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -41150,28 +43996,41 @@ covergroup Vx16_vwmulu_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -41506,28 +44365,41 @@ covergroup Vx16_vwredsum_vs_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -41862,28 +44734,41 @@ covergroup Vx16_vwredsumu_vs_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -42172,28 +45057,41 @@ covergroup Vx16_vwsub_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -42431,28 +45329,41 @@ covergroup Vx16_vwsub_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -42736,28 +45647,41 @@ covergroup Vx16_vwsub_wv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -42966,28 +45890,41 @@ covergroup Vx16_vwsub_wx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -43276,28 +46213,41 @@ covergroup Vx16_vwsubu_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -43535,28 +46485,41 @@ covergroup Vx16_vwsubu_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -43840,28 +46803,41 @@ covergroup Vx16_vwsubu_wv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -44070,28 +47046,41 @@ covergroup Vx16_vwsubu_wx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -44216,29 +47205,44 @@ covergroup Vx16_vxor_vi_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -44433,29 +47437,44 @@ covergroup Vx16_vxor_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -44616,29 +47635,44 @@ covergroup Vx16_vxor_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -44808,29 +47842,44 @@ covergroup Vx16_vzext_vf2_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins fourth_one = {6'b110_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins fourth_vlmax = {6'b110_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins fourth_legal = {6'b110_011};
+            `endif
+        `endif
+        bins half_one = {6'b111_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins half_vlmax = {6'b111_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins half_legal = {6'b111_011};
+        `endif
+        bins one_one = {6'b000_001};
+        bins one_vlmax = {6'b000_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
+        bins two_one = {6'b001_001};
+        bins two_vlmax = {6'b001_010};
+        bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////

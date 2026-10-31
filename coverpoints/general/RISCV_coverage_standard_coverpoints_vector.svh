@@ -124,15 +124,11 @@
     }
 
     vtype_all_lmul_supported_sew8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
         bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
         bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
         bins half   = {7};
-        `endif
         bins one    = {0};
         bins two    = {1};
         bins four   = {2};
@@ -140,12 +136,10 @@
     }
 
     vtype_all_lmul_supported_sew16 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
         bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
         bins half   = {7};
-        `endif
         bins one    = {0};
         bins two    = {1};
         bins four   = {2};
@@ -153,7 +147,7 @@
     }
 
     vtype_all_lmul_supported_sew32 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
         bins half   = {7};
         `endif
         bins one    = {0};

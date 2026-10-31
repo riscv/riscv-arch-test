@@ -92,12 +92,24 @@
     Vx64_vmsof_m_cg = new(); Vx64_vmsof_m_cg.set_inst_name("obj_Vx64_vmsof_m");
     Vx64_vmul_vv_cg = new(); Vx64_vmul_vv_cg.set_inst_name("obj_Vx64_vmul_vv");
     Vx64_vmul_vx_cg = new(); Vx64_vmul_vx_cg.set_inst_name("obj_Vx64_vmul_vx");
+`ifdef V_SUPPORTED
     Vx64_vmulh_vv_cg = new(); Vx64_vmulh_vv_cg.set_inst_name("obj_Vx64_vmulh_vv");
+`endif
+`ifdef V_SUPPORTED
     Vx64_vmulh_vx_cg = new(); Vx64_vmulh_vx_cg.set_inst_name("obj_Vx64_vmulh_vx");
+`endif
+`ifdef V_SUPPORTED
     Vx64_vmulhsu_vv_cg = new(); Vx64_vmulhsu_vv_cg.set_inst_name("obj_Vx64_vmulhsu_vv");
+`endif
+`ifdef V_SUPPORTED
     Vx64_vmulhsu_vx_cg = new(); Vx64_vmulhsu_vx_cg.set_inst_name("obj_Vx64_vmulhsu_vx");
+`endif
+`ifdef V_SUPPORTED
     Vx64_vmulhu_vv_cg = new(); Vx64_vmulhu_vv_cg.set_inst_name("obj_Vx64_vmulhu_vv");
+`endif
+`ifdef V_SUPPORTED
     Vx64_vmulhu_vx_cg = new(); Vx64_vmulhu_vx_cg.set_inst_name("obj_Vx64_vmulhu_vx");
+`endif
     Vx64_vmv_s_x_cg = new(); Vx64_vmv_s_x_cg.set_inst_name("obj_Vx64_vmv_s_x");
     Vx64_vmv_v_i_cg = new(); Vx64_vmv_v_i_cg.set_inst_name("obj_Vx64_vmv_v_i");
     Vx64_vmv_v_v_cg = new(); Vx64_vmv_v_v_cg.set_inst_name("obj_Vx64_vmv_v_v");
@@ -154,8 +166,12 @@
     Vx64_vsll_vi_cg = new(); Vx64_vsll_vi_cg.set_inst_name("obj_Vx64_vsll_vi");
     Vx64_vsll_vv_cg = new(); Vx64_vsll_vv_cg.set_inst_name("obj_Vx64_vsll_vv");
     Vx64_vsll_vx_cg = new(); Vx64_vsll_vx_cg.set_inst_name("obj_Vx64_vsll_vx");
+`ifdef V_SUPPORTED
     Vx64_vsmul_vv_cg = new(); Vx64_vsmul_vv_cg.set_inst_name("obj_Vx64_vsmul_vv");
+`endif
+`ifdef V_SUPPORTED
     Vx64_vsmul_vx_cg = new(); Vx64_vsmul_vx_cg.set_inst_name("obj_Vx64_vsmul_vx");
+`endif
     Vx64_vsra_vi_cg = new(); Vx64_vsra_vi_cg.set_inst_name("obj_Vx64_vsra_vi");
     Vx64_vsra_vv_cg = new(); Vx64_vsra_vv_cg.set_inst_name("obj_Vx64_vsra_vv");
     Vx64_vsra_vx_cg = new(); Vx64_vsra_vx_cg.set_inst_name("obj_Vx64_vsra_vx");

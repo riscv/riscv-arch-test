@@ -61,7 +61,8 @@ def make_vtype_agnostic(instr_name: str, instr_type: str, coverpoint: str, test_
         max_lmul = max_emul
 
     max_lmul = int(math.log2(max_lmul))
-    min_lmul = min(get_legal_lmuls(sew))
+    # Fractional LMUL is legal only when SEW / LMUL <= ELEN, which the test cannot know, so prefer LMUL >= 1
+    min_lmul = min(max(min(get_legal_lmuls(sew)), 0), max_lmul)
 
     if egs != 1:
         # The minlmul for a crypto instruction must assume SEW=32, so lmul >= egs

@@ -24,11 +24,12 @@ _MIRRORED_INDEX_DEFINES: list[str] = [
     "RVMODEL_HPM_COUNTER",
 ]
 
-# Defines mirrored without a value, only so coverpoints can test them with `ifdef. The value may be
-# any expression, such as (CLINT_BASE_ADDRESS + 0x0).
-_MIRRORED_FLAG_DEFINES: list[str] = [
-    "RVMODEL_MSIP_ADDRESS",
-]
+# Defines emitted without a value, only so coverpoints can test them with `ifdef. Each is emitted when any of
+# its listed rvmodel_macros.h macros has an active #define, whatever its value or parameters.
+_MIRRORED_FLAG_DEFINES: dict[str, list[str]] = {
+    # The value may be any expression, such as (CLINT_BASE_ADDRESS + 0x0)
+    "RVMODEL_MSIP_ADDRESS": ["RVMODEL_MSIP_ADDRESS"],
+}
 
 _DEFINE_RE = re.compile(r"^\s*#define\s+(\w+)(?:\s+(0[xX][0-9a-fA-F]+|\d+)\b)?")
 
@@ -60,7 +61,8 @@ def generate_rvmodel_svh(dut_include_dir: Path, output_dir: Path) -> None:
     if not input_h.exists():
         raise FileNotFoundError(f"rvmodel_macros.h not found at {input_h}")
 
-    defines = _scan_h_defines(input_h, _MIRRORED_DEFINES + _MIRRORED_INDEX_DEFINES + _MIRRORED_FLAG_DEFINES)
+    flag_sources = [source for sources in _MIRRORED_FLAG_DEFINES.values() for source in sources]
+    defines = _scan_h_defines(input_h, _MIRRORED_DEFINES + _MIRRORED_INDEX_DEFINES + flag_sources)
 
     guard = f"_RVMODEL_MACROS_SVH_{dut_include_dir.name.upper().replace('-', '_')}_"
     lines = [
@@ -80,8 +82,8 @@ def generate_rvmodel_svh(dut_include_dir: Path, output_dir: Path) -> None:
         value = defines.get(name)
         if value is not None:
             lines.append(f"`define {name} {int(value, 0)}")
-    for name in _MIRRORED_FLAG_DEFINES:
-        if name in defines:
+    for name, sources in _MIRRORED_FLAG_DEFINES.items():
+        if any(source in defines for source in sources):
             lines.append(f"`define {name}")
     lines += ["", f"`endif // {guard}", ""]
 

@@ -586,7 +586,7 @@ covergroup H_inst_cg with function sample(ins_t ins);
 
     // hfence.vvma and hfence.gvma execute in HS-mode and raise virtual instruction in VS-mode and VU-mode and illegal
     // instruction in U-mode, as S_sprivinst_cg executes sfence.vma.  Sm_H_tvm_cg/cp_hfence adds mstatus.TVM and
-    // hstatus.VTVM, and SvH checks the translations they remove.
+    // hstatus.VTVM, and Sv_H_fence_cg checks the translations they remove.
     hfence : coverpoint ins.current.insn {
         wildcard bins hfence_vvma = {HFENCE_VVMA};
         wildcard bins hfence_gvma = {HFENCE_GVMA};

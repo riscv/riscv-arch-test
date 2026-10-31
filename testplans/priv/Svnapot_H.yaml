@@ -1,0 +1,23 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Svnapot_H
+source: https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=747120884#gid=747120884
+notes: |-
+  Svnapot_H uses the Sv_H test environment (see Sv_H).  The tests run on RV64 with Sv39 and Sv39x4.
+coverpoints:
+  - name: cp_vsatp_napot
+    goal: Svnapot in the VS-stage
+    description: |-
+      In VS-mode and VU-mode with hgatp = Bare, store, load and fetch in pages 0, 2 and 15 of a 64 KiB NAPOT mapping (16 kilopage leaves with N = 1 and PPN[3:0] = 1000) to a 64 KiB region whose pages hold distinct words.
+      In VS-mode, also access through a VS-stage leaf with N = 1 on a superpage at each level above 0, and with N = 1 and PPN[3:0] = 0000, 0001, 0010 and 0100.
+    expectation: Each NAPOT access reaches the page of the region with the same page number.  The reserved encodings raise page faults.
+    bins: "{VS, VU} x {sw, lw, jalr} x vsatp paged x hgatp Bare x NAPOT page {0, 2, 15}"
+  - name: cp_hgatp_napot
+    goal: Svnapot in the G-stage
+    description: As cp_vsatp_napot, with the NAPOT leaves (and, in VS-mode, the reserved N encodings) in the G-stage and vsatp = Bare.
+    expectation: Each NAPOT access reaches the page of the region with the same page number.  The reserved encodings raise guest-page faults.
+    bins: "{VS, VU} x {sw, lw, jalr} x vsatp Bare x hgatp paged x NAPOT page {0, 2, 15}"
+  - name: cp_twostage_napot
+    goal: Svnapot in both stages
+    description: As cp_vsatp_napot, with a 64 KiB NAPOT mapping in the VS-stage to a guest physical NAPOT region that a G-stage NAPOT mapping maps to the physical region.
+    expectation: Each access reaches the page of the region with the same page number.
+    bins: "{VS, VU} x {sw, lw, jalr} x vsatp paged x hgatp paged x NAPOT page {0, 2, 15}"

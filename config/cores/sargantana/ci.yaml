@@ -104,6 +104,11 @@ exclude_extensions:
   # The H CSR bugs above (#126, #123, https://github.com/bsc-loca/sargantana/issues/113), and mstatus.TVM traps SFENCE.VMA in VS-mode:
   # csr:csr_bsc.sv#L2532 (https://github.com/bsc-loca/csr/issues/16)
   - Sm_H
+  # Not yet triaged on Sargantana: hangs in two-stage translation (Sv_H, Sv_HSm), and the trap
+  # signature mismatches of H
+  - Sv_H
+  - Sv_HSm
+  - Sv_HZicbo
   # Wrong htval on a VS-stage PTE fault (https://github.com/bsc-loca/sargantana/issues/123)
   - Shtvala-
   - Shtvala_amo

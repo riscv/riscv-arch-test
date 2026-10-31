@@ -29,7 +29,7 @@ from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from random import randint, seed
 
-from testgen.asm.helpers import comment_banner, reproducible_hash
+from testgen.asm.helpers import comment_banner, gated, reproducible_hash
 from testgen.constants import INDENT
 from testgen.data.registers import IntegerRegisterFile
 from testgen.data.state import TestData
@@ -257,10 +257,7 @@ def _emit_raw_words(
         lines.append(f"# {comment}{part}  ({len(group)} of {total} encodings) template {template}")
         for enc in group:
             cond = _sail_gap_condition(enc)
-            if cond is None:
-                lines.append(f"\t{directive} 0b{enc}")
-            else:
-                lines += [f"#if !({cond})", f"\t{directive} 0b{enc}", "#endif"]
+            lines += gated([f"\t{directive} 0b{enc}"], None if cond is None else f"!({cond})")
         if length == 16:
             # Without Zca (IALIGN=32) the hart can reach only 4-byte-aligned code after an odd count of halfwords
             lines.append("\t.balign 4")

@@ -131,6 +131,7 @@ def _gen_status_vs_dirty(test_data: TestData, temp_reg: int, covergroup: str, pr
         lines.append(_VSET_M1)
         lines.append("vmv.v.i v1, 1")
         lines.append("vmv.v.i v2, 2")
+        lines.append("vmv.v.i v3, 0  # so the vadd.vv changes v3")
         lines.extend(set_status_fields(temp_reg, priv, vs=vs, hs_vs=hs))
         lines.append(
             test_data.add_testcase(f"vadd_vs{vs}{hs_tag(hs)}", f"cp_{status}_vs_set_dirty_arithmetic", covergroup)
@@ -141,6 +142,7 @@ def _gen_status_vs_dirty(test_data: TestData, temp_reg: int, covergroup: str, pr
     lines.append(comment_banner(f"cp_{status}_vs_set_dirty_csr", "VS=Initial/Clean/Dirty -> vsetvli -> expect Dirty"))
     for vs, hs in itertools.product((1, 2, 3), hs_status_values(priv, include_off=False)):
         lines.extend(set_status_fields(temp_reg, priv, vs=3))
+        lines.append(f"{_VSET_M1}  # so the vsetvli changes vtype and vl")
         lines.extend(set_status_fields(temp_reg, priv, vs=vs, hs_vs=hs))
         lines.append(test_data.add_testcase(f"vsetvli_vs{vs}{hs_tag(hs)}", f"cp_{status}_vs_set_dirty_csr", covergroup))
         lines.append(f"vsetvli x{temp_reg}, x0, e16, m2, tu, mu")

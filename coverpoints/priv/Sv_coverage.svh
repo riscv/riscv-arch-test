@@ -12,14 +12,6 @@
 
 `define COVER_SV
 
-`ifdef ZICBOM_SUPPORTED
-    `define SV_ZICBO_ANY
-`elsif ZICBOZ_SUPPORTED
-    `define SV_ZICBO_ANY
-`elsif ZICBOP_SUPPORTED
-    `define SV_ZICBO_ANY
-`endif
-
 covergroup Sv_satp_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include  "general/RISCV_coverage_standard_coverpoints.svh"
@@ -1102,7 +1094,6 @@ covergroup Sv_Sm_mstatus_mprv_cg with function sample(ins_t ins);
 endgroup
 `endif // EXCLUDE_SM
 
-`ifdef SV_ZICBO_ANY
 covergroup Sv_Zicbo_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include  "general/RISCV_coverage_standard_coverpoints.svh"
@@ -1251,6 +1242,9 @@ covergroup Sv_Zicbo_cg with function sample(ins_t ins);
         bins set = {1};
     }
 
+    // cbo_ins feeds the crosses that apply to every cbo.* instruction; the Zicbom-only and Zicboz-only
+    // crosses use zicbom_ins and zicboz_ins.
+    `ifdef CBO_SUPPORTED
     cbo_ins: coverpoint ins.current.insn {
         `ifdef ZICBOM_SUPPORTED
             wildcard bins any_zicbom_ins = {CBO_INVAL, CBO_CLEAN, CBO_FLUSH};
@@ -1259,6 +1253,19 @@ covergroup Sv_Zicbo_cg with function sample(ins_t ins);
             wildcard bins zicboz_ins = {CBO_ZERO};
         `endif
     }
+    `endif
+
+    `ifdef ZICBOM_SUPPORTED
+    zicbom_ins: coverpoint ins.current.insn {
+        wildcard bins any_zicbom_ins = {CBO_INVAL, CBO_CLEAN, CBO_FLUSH};
+    }
+    `endif
+
+    `ifdef ZICBOZ_SUPPORTED
+    zicboz_ins: coverpoint ins.current.insn {
+        wildcard bins zicboz_ins = {CBO_ZERO};
+    }
+    `endif
 
     zicbop_ins: coverpoint ins.current.insn {
         wildcard bins any_prefetch_ins = {PREFETCH_I, PREFETCH_R, PREFETCH_W};
@@ -1268,6 +1275,7 @@ covergroup Sv_Zicbo_cg with function sample(ins_t ins);
     cp_zicbop_no_fault_s: cross zicbop_ins, mode, priv_mode_s iff (ins.trap == 0);
     cp_zicbop_no_fault_u: cross zicbop_ins, mode, priv_mode_u iff (ins.trap == 0);
 
+    `ifdef CBO_SUPPORTED
     cp_PTE_inv_cbo_s: cross PTE_d_inv, PageType_d, store_page_fault, cbo_ins, priv_mode_s {
         ignore_bins ig1 = binsof(PTE_d_inv.leaflvl_u_w);
     }
@@ -1291,23 +1299,21 @@ covergroup Sv_Zicbo_cg with function sample(ins_t ins);
     cp_PTE_nonleaf_lvl0_cbo_u: cross PTE_nonleaf_lvl0_d, kilo_page, mode, store_page_fault, cbo_ins, priv_mode_u {
         ignore_bins ig1 = binsof(PTE_nonleaf_lvl0_d.lvl0_s);
     }
+    `endif
 
     // A Zicbom instruction is allowed if a load or store instruction is permitted to access the corresponding physical addresses
-    cp_PTE_r_set_w_unset_zicbom_s: cross PTE_r_set_w_unset_spage_d, PageType_d, cbo_ins, priv_mode_s, sum_sstatus {
-        ignore_bins ig1 = binsof(cbo_ins.zicboz_ins);
-    }
-    cp_PTE_r_set_w_unset_zicbom_u: cross PTE_r_set_w_unset_upage_d, PageType_d, cbo_ins, priv_mode_u {
-        ignore_bins ig1 = binsof(cbo_ins.zicboz_ins);
-    }
+    `ifdef ZICBOM_SUPPORTED
+    cp_PTE_r_set_w_unset_zicbom_s: cross PTE_r_set_w_unset_spage_d, PageType_d, zicbom_ins, priv_mode_s, sum_sstatus;
+    cp_PTE_r_set_w_unset_zicbom_u: cross PTE_r_set_w_unset_upage_d, PageType_d, zicbom_ins, priv_mode_u;
+    `endif
 
     // A Zicboz instruction is allowed if a store instruction is permitted to access the corresponding physical addresses
-    cp_PTE_w_unset_zicboz_s: cross PTE_w_unset_spage_d, PageType_d, store_page_fault, cbo_ins, priv_mode_s, sum_sstatus {
-        ignore_bins ig1 = binsof(cbo_ins.any_zicbom_ins);
-    }
-    cp_PTE_w_unset_zicboz_u: cross PTE_w_unset_upage_d, PageType_d, store_page_fault, cbo_ins, priv_mode_u {
-        ignore_bins ig1 = binsof(cbo_ins.any_zicbom_ins);
-    }
+    `ifdef ZICBOZ_SUPPORTED
+    cp_PTE_w_unset_zicboz_s: cross PTE_w_unset_spage_d, PageType_d, store_page_fault, zicboz_ins, priv_mode_s, sum_sstatus;
+    cp_PTE_w_unset_zicboz_u: cross PTE_w_unset_upage_d, PageType_d, store_page_fault, zicboz_ins, priv_mode_u;
+    `endif
 
+    `ifdef CBO_SUPPORTED
     cp_spage_rwx_cbo_u: cross PTE_spage_d, PageType_d, store_page_fault, cbo_ins, priv_mode_u;
 
     cp_upage_sumunset_cbo_s: cross PTE_upage_d, PageType_d, store_page_fault, cbo_ins, priv_mode_s, sum_sstatus {
@@ -1320,26 +1326,28 @@ covergroup Sv_Zicbo_cg with function sample(ins_t ins);
     cp_Abit_unset_cbo_u: cross PTE_Abit_unset_d, PageType_d, store_page_fault, cbo_ins, priv_mode_u {
         ignore_bins ig1 = binsof(PTE_Abit_unset_d.leaflvl_s);
     }
+    `endif
 
     // A Zicbom instruction does not check the dirty bit and neither raises an exception nor sets the bit
-    cp_Dbit_unset_zicbom_s: cross PTE_Dbit_unset_d, PageType_d, cbo_ins, priv_mode_s {
+    `ifdef ZICBOM_SUPPORTED
+    cp_Dbit_unset_zicbom_s: cross PTE_Dbit_unset_d, PageType_d, zicbom_ins, priv_mode_s {
         ignore_bins ig1 = binsof(PTE_Dbit_unset_d.leaflvl_u);
-        ignore_bins ig2 = binsof(cbo_ins.zicboz_ins);
     }
-    cp_Dbit_unset_zicbom_u: cross PTE_Dbit_unset_d, PageType_d, cbo_ins, priv_mode_u {
+    cp_Dbit_unset_zicbom_u: cross PTE_Dbit_unset_d, PageType_d, zicbom_ins, priv_mode_u {
         ignore_bins ig1 = binsof(PTE_Dbit_unset_d.leaflvl_s);
-        ignore_bins ig2 = binsof(cbo_ins.zicboz_ins);
     }
+    `endif
     // A Zicboz instruction checks the dirty bit and may raise an exception and set the bit as required
-    cp_Dbit_unset_zicboz_s: cross PTE_Dbit_unset_d, PageType_d, store_page_fault, cbo_ins, priv_mode_s {
+    `ifdef ZICBOZ_SUPPORTED
+    cp_Dbit_unset_zicboz_s: cross PTE_Dbit_unset_d, PageType_d, store_page_fault, zicboz_ins, priv_mode_s {
         ignore_bins ig1 = binsof(PTE_Dbit_unset_d.leaflvl_u);
-        ignore_bins ig2 = binsof(cbo_ins.any_zicbom_ins);
     }
-    cp_Dbit_unset_zicboz_u: cross PTE_Dbit_unset_d, PageType_d, store_page_fault, cbo_ins, priv_mode_u {
+    cp_Dbit_unset_zicboz_u: cross PTE_Dbit_unset_d, PageType_d, store_page_fault, zicboz_ins, priv_mode_u {
         ignore_bins ig1 = binsof(PTE_Dbit_unset_d.leaflvl_s);
-        ignore_bins ig2 = binsof(cbo_ins.any_zicbom_ins);
     }
+    `endif
 
+    `ifdef CBO_SUPPORTED
     cp_misaligned_page_cbo_s: cross PTE_RWX_d, misaligned_PPN_d, store_page_fault, cbo_ins, priv_mode_s  {
         ignore_bins ig1 = binsof(PTE_RWX_d.leaflvl_u);
     }
@@ -1352,6 +1360,7 @@ covergroup Sv_Zicbo_cg with function sample(ins_t ins);
         `ifdef SV39_SUPPORTED ignore_bins ig2 = binsof(PageType_d.sv39_kilo); `endif
         `ifdef UDB_MXLEN_32   ignore_bins ig3 = binsof(PageType_d.sv32_kilo); `endif
     }
+    `endif
 
     // access fault coverpoints
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
@@ -1365,6 +1374,7 @@ covergroup Sv_Zicbo_cg with function sample(ins_t ins);
             }
         `endif
         // PTE points to a non existent physical address
+        `ifdef CBO_SUPPORTED
         cp_leaf_PTE_to_nonexistent_pa_cbo_s: cross PTE_RWX_d, d_phys_address_nonexistent, PageType_d, store_acc_fault, cbo_ins, priv_mode_s {
             ignore_bins ig1 = binsof(PTE_RWX_d.leaflvl_u);
         }
@@ -1389,10 +1399,10 @@ covergroup Sv_Zicbo_cg with function sample(ins_t ins);
             `ifdef SV39_SUPPORTED ignore_bins ig2 = binsof(PageType_d.sv39_giga); `endif
             `ifdef UDB_MXLEN_32   ignore_bins ig3 = binsof(PageType_d.sv32_mega); `endif
         }
+        `endif
     `endif
 
 endgroup
-`endif // SV_ZICBO_ANY
 
 covergroup Sv_Exceptions_cg with function sample(ins_t ins);
     option.per_instance = 0;
@@ -2736,9 +2746,7 @@ function void sv_sample(int hart, int issue, ins_t ins);
     Sv_Sm_satp_cg.sample(ins);
     Sv_Sm_mstatus_mprv_cg.sample(ins);
 `endif // EXCLUDE_SM
-`ifdef SV_ZICBO_ANY
     Sv_Zicbo_cg.sample(ins);
-`endif // SV_ZICBO_ANY
     Sv_Exceptions_cg.sample(ins);
 `ifndef EXCLUDE_SM
     Sv_ExceptionsSm_cg.sample(ins);

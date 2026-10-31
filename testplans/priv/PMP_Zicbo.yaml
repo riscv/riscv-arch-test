@@ -4,7 +4,7 @@ source: https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iN
 coverpoints:
   - heading: |-
       General Test Environment (PMP_Zicbo):
-      - Runs when Sm and NUM_PMP_ENTRIES > 0, with Zicbom and Zicboz for the cbo rows and Zicbop for the prefetch rows. M-mode only.
+      - Runs when Sm and NUM_PMP_ENTRIES > 0, with Zicbom for the cbo.clean, cbo.flush and cbo.inval rows, and Zicboz for the cbo.zero rows. The prefetch rows run on every hart: prefetch.i/r/w are HINTs (ORI with rd = x0). M-mode only.
       - menvcfg.CBIE = 11, CBCFE = 1, CBZE = 1.
       - The region under test is a 4 KiB-aligned NAPOT region much larger than a cache block, so every byte of the block has the same permissions. Misaligned or partially covered cache blocks are not tested: their behavior is unspecified (pmp_same).
   - name: cp_cbo_zero

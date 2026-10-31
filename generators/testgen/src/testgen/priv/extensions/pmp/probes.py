@@ -562,8 +562,9 @@ def gen_compressed_execute(test_data: TestData, case: str, coverpoint: Cross, re
     ]
 
 
-def gen_cbo(test_data: TestData, case: str, coverpoint: Cross, region: str = "TEST_FOR_EXECUTION") -> list[str]:
-    instructions = ("cbo.zero", "cbo.clean", "cbo.flush", "cbo.inval")
+def _gen_cbo(
+    test_data: TestData, case: str, coverpoint: Cross, region: str, instructions: tuple[str, ...]
+) -> list[str]:
     lines = ["", f"LA(a4, {region})"]
     for number, instruction in enumerate(instructions, start=1):
         lines.extend(
@@ -574,6 +575,14 @@ def gen_cbo(test_data: TestData, case: str, coverpoint: Cross, region: str = "TE
             ]
         )
     return lines
+
+
+def gen_cbom(test_data: TestData, case: str, coverpoint: Cross, region: str = "TEST_FOR_EXECUTION") -> list[str]:
+    return _gen_cbo(test_data, case, coverpoint, region, ("cbo.clean", "cbo.flush", "cbo.inval"))
+
+
+def gen_cboz(test_data: TestData, case: str, coverpoint: Cross, region: str = "TEST_FOR_EXECUTION") -> list[str]:
+    return _gen_cbo(test_data, case, coverpoint, region, ("cbo.zero",))
 
 
 def gen_prefetch(test_data: TestData, case: str, coverpoint: Cross, region: str = "TEST_FOR_EXECUTION") -> list[str]:

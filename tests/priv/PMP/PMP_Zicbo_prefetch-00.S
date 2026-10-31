@@ -9,7 +9,7 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I', 'Sm', 'Zicbop']
+# REQUIRED_EXTENSIONS: ['I', 'Sm']
 # params:
 #   NUM_PMP_ENTRIES: '>0'
 # MARCH: rv${XLEN}i_zicbop_zicsr_zifencei
@@ -64,9 +64,6 @@ RVTEST_BEGIN
 #define PMP_MASK        ~PMP_REGION_SIZE
 
   RVTEST_PMP_SET_BACKGROUND x4
-
-  LI(t0, 0xF0)
-  csrrs zero, menvcfg, t0
 
 // PMP configuration 1: L = 1, No permissions, entry 5
   LA(x5, REGIONSTART)

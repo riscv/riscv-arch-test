@@ -18,9 +18,7 @@
     Sv_Sm_satp_cg = new(); Sv_Sm_satp_cg.set_inst_name("obj_Sv_Sm_satp");
     Sv_Sm_mstatus_mprv_cg = new(); Sv_Sm_mstatus_mprv_cg.set_inst_name("obj_Sv_Sm_mstatus_mprv");
 `endif // EXCLUDE_SM
-`ifdef SV_ZICBO_ANY
     Sv_Zicbo_cg = new(); Sv_Zicbo_cg.set_inst_name("obj_Sv_Zicbo");
-`endif // SV_ZICBO_ANY
     Sv_Exceptions_cg = new(); Sv_Exceptions_cg.set_inst_name("obj_Sv_Exceptions");
 `ifndef EXCLUDE_SM
     Sv_ExceptionsSm_cg = new(); Sv_ExceptionsSm_cg.set_inst_name("obj_Sv_ExceptionsSm");

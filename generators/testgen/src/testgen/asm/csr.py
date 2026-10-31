@@ -270,7 +270,7 @@ def csr_walk_test(
         unwalked_bits: Optional (bits, cond) pairs for state the reference model cannot model. `cond` is a
             define name, or an #if expression. Where it holds, the bits are neither written nor checked,
             so their coverage reports missing; elsewhere they are walked and checked (read-only). Implies
-            maskedwrites, starting from the csr mask, or all ones if None.
+            maskedwrites, with the bits added to the csr mask, or all ones if None.
     """
     assert 0 <= start_bit < 32, f"start_bit must be in 0..31, got {start_bit}"
     csr_name, mask = csr
@@ -278,7 +278,9 @@ def csr_walk_test(
         maskedwrites = True
         if mask is None:
             mask = (1 << 64) - 1
-            csr = (csr_name, mask)
+        for bits, _cond in unwalked_bits:
+            mask |= bits
+        csr = (csr_name, mask)
     if maskedwrites:
         assert mask is not None, f"maskedwrites requires a csr mask (got None for {csr_name})"
     if mask is not None:

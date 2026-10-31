@@ -1,0 +1,40 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Svadu_H
+source: https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=530717859#gid=530717859
+notes: |-
+  Svadu_H uses the Sv_H test environment (see Sv_H).  menvcfg.ADUE selects Svade or Svadu for the G-stage, and henvcfg.ADUE for the VS-stage.  The ADUE = 0 cases are also in Sv_H; they are repeated here so that each cross has every ADUE value.
+coverpoints:
+  - name: cp_vsatp_adue
+    goal: henvcfg.ADUE selects Svade or Svadu for the VS-stage
+    description: In VS-mode with hgatp = Bare, store, load and fetch through VS-stage leaves with A = D = 0 and with D = 0, with (menvcfg.ADUE, henvcfg.ADUE) = (0, 1 written) and (1, 0); and with (1, 1), load and fetch through an A = D = 0 leaf and store through a D = 0 leaf.  The leaf is read back after the accesses.
+    expectation: henvcfg.ADUE is read-only zero while menvcfg.ADUE = 0.  With henvcfg.ADUE = 0 (Svade), an access with A = 0, or a store with D = 0, raises a page fault and the PTE is unchanged.  With henvcfg.ADUE = 1 (Svadu), the hart sets A, and D for a store, and the access succeeds.
+    bins: VS x {sw, lw, jalr} x vsatp_mode x hgatp Bare x (menvcfg.ADUE, henvcfg.ADUE) {00, 10, 11}
+  - name: cp_hgatp_adue
+    goal: menvcfg.ADUE selects Svade or Svadu for the G-stage
+    description: In VS-mode with vsatp = Bare, store, load and fetch through G-stage leaves with A = D = 0 and with D = 0 with menvcfg.ADUE = 0; and with menvcfg.ADUE = 1, load and fetch through an A = D = 0 leaf and store through a D = 0 leaf.  The leaf is read back after the accesses.
+    expectation: With menvcfg.ADUE = 0 (Svade), an access with A = 0, or a store with D = 0, raises a guest-page fault for the original access type and the PTE is unchanged.  With menvcfg.ADUE = 1 (Svadu), the hart sets A, and D for a store, and the access succeeds.
+    bins: VS x {sw, lw, jalr} x vsatp Bare x hgatp_mode x menvcfg.ADUE {0, 1}
+  - name: cp_twostage_adue
+    goal: A/D bits in both stages, including the G-stage leaf of a VS-stage page table
+    description: In VS-mode, store, load and fetch through VS-stage leaves with A = D = 0 or D = 0 with menvcfg.ADUE = 1 and henvcfg.ADUE = 0 and 1, and through G-stage leaves with A = D = 0 or D = 0 with menvcfg.ADUE = 0 and 1.  The VS-stage leaf is in a level-0 page table at a guest physical address whose G-stage leaf has A = D = 0 or D = 0 in the hardware-update cases.  Updated PTEs, including the G-stage leaf of the VS-stage leaf table, are read back.
+    expectation: |-
+      With ADUE = 0 for a stage (Svade), an access with A = 0, or a store with D = 0, raises a page fault (VS-stage) or guest-page fault (G-stage).  With ADUE = 1 (Svadu), the hart sets the bits.
+      The G-stage checks and updates the leaf of a VS-stage page table as for an implicit access: the PTE read sets A, and a VS-stage A/D update is an implicit store that also sets D.
+    bins: VS x {sw, lw, jalr} x stage_modes x (menvcfg.ADUE, henvcfg.ADUE) {00, 10, 11}
+  - name: cp_implicit_gpf
+    goal: Guest-page faults on implicit VS-stage A/D updates
+    description: In VS-mode with menvcfg.ADUE = henvcfg.ADUE = 1, store, load and fetch through a VS-stage leaf with A = D = 0 in a level-0 page table at a guest physical address whose G-stage leaf is read-only.
+    expectation: The VS-stage A/D update is an implicit store, so it needs G-stage write permission.  Each access raises a guest-page fault reported for the original access type (instruction, load or store/AMO), with htval = the guest physical address of the VS-stage PTE >> 2 and, if htval is nonzero, htinst = the write pseudoinstruction 0x3020 on RV64, 0x2020 on RV32.
+    bins: VS x {sw, lw, jalr} x stage_modes x htinst write pseudoinstruction
+    notes: Sv_H cp_implicit_gpf has the read pseudoinstruction cases.
+  - name: cp_hlv_implicit
+    goal: Guest-page faults on the implicit VS-stage A/D updates of HLV, HLVX and HSV
+    description: In HS-mode with hstatus.SPVP = 1 and menvcfg.ADUE = henvcfg.ADUE = 1, execute hlv.w, hlvx.wu and hsv.w through a VS-stage leaf with A = D = 0 in a level-0 page table at a guest physical address whose G-stage leaf is read-only.
+    expectation: The A/D update raises a load or store guest-page fault with htinst = the write pseudoinstruction.
+    bins: HS x {hlv.w, hlvx.wu, hsv.w} x stage_modes x htinst write pseudoinstruction
+    notes: Sv_H cp_hlv_implicit has the read pseudoinstruction cases.
+  - name: cp_henvcfg_menvcfg
+    goal: henvcfg.ADUE is read-only zero while menvcfg.ADUE = 0
+    description: In HS-mode with menvcfg.ADUE = 0, then 1, set henvcfg.ADUE (henvcfgh on RV32) and read it back.
+    expectation: henvcfg.ADUE reads as zero while menvcfg.ADUE = 0, and reads back as written while menvcfg.ADUE = 1.
+    bins: HS x csrrs henvcfg (henvcfgh on RV32) x menvcfg.ADUE {0, 1}

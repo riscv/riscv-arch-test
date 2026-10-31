@@ -44,13 +44,11 @@ include::{testplansdir}/priv/H_Zicntr.adoc[]
 
 include::{testplansdir}/priv/PMPH.adoc[]
 
-==== SvH Hypervisor 2-Stage Virtual Memory
+==== Hypervisor 2-Stage Virtual Memory
 
-include::{testplansdir}/priv/SvH.adoc[]
-
-==== SvHZicbo Hypervisor VirtMem + Cache Block Operations
-
-include::{testplansdir}/priv/SvHZicbo.adoc[]
+The hypervisor virtual memory tests are the <<t-Sv_H-coverpoints,Sv_H>>, <<t-Sv_HSm-coverpoints,Sv_HSm>> and
+<<t-Sv_HZicbo-coverpoints,Sv_HZicbo>> groups of the Sv suite.  PMP on their cache-block operations is in the
+<<t-PMP_HSvZicbo-coverpoints,PMP_HSvZicbo>> group of the PMP suite.
 
 ==== Shcounterenw Writable Counter Enables
 
@@ -118,13 +116,14 @@ include::{testplansdir}/priv/SmctrH.adoc[]
 
 The hypervisor TLB invalidation tests are the H and SmH groups of the Svinval suite: see <<t-Svinval_H-coverpoints>> and <<t-Svinval_SmH-coverpoints>>.
 
-==== SvaduH Hypervisor Hardware Page Table A/D Updates
+==== Svadu, Svpbmt and Svnapot Hypervisor Virtual Memory
 
-include::{testplansdir}/priv/SvaduH.adoc[]
+The hypervisor tests of these extensions are the H groups of their suites: see <<t-Svadu_H-coverpoints>>,
+<<t-Svpbmt_H-coverpoints>> and <<t-Svnapot_H-coverpoints>>.
 
-==== ZicfilpH Hypervisor Landing Pads
+==== Hypervisor Landing Pads
 
-include::{testplansdir}/priv/ZicfilpH.adoc[]
+The hypervisor landing pad tests are the <<t-Zicfilp_H-coverpoints,Zicfilp_H>> and <<t-Zicfilp_SmH-coverpoints,Zicfilp_SmH>> groups of the Zicfilp suite.
 
 ==== SsdbltrpH Hypervisor Double Trap
 

@@ -1845,6 +1845,886 @@ endgroup
 `endif // EXCLUDE_SM
 `endif // ZALRSC_SUPPORTED
 
+// H groups: two-stage address translation.  sail_to_rvvi.py records one PTE per walk (PTE_I, PTE_D) and does not
+// tell the VS-stage leaf from the G-stage leaf, so the coverpoints record each guest access with its privilege mode,
+// the translation modes, the controls that affect it and the trap it takes; the PTE a testcase uses is in the test,
+// and its effect is checked by the signature.
+// TODO: once sail_to_rvvi.py records the VS-stage and G-stage leaf PTEs of each walk separately, bin the leaf's V,
+// U, R, W, X, A, D, N, PBMT, RSW and reserved bits in cp_vsatp_perm, cp_hgatp_perm and cp_twostage_perm.
+`ifdef H_SUPPORTED
+
+`ifdef ZICBOM_SUPPORTED
+    `define SV_HZICBO_ANY
+`elsif ZICBOZ_SUPPORTED
+    `define SV_HZICBO_ANY
+`elsif ZICBOP_SUPPORTED
+    `define SV_HZICBO_ANY
+`endif
+
+covergroup Sv_H_vsstage_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    access : coverpoint ins.current.insn {
+        wildcard bins lw   = {LW};
+        wildcard bins sw   = {SW};
+        wildcard bins jalr = {JALR};
+    }
+    lw : coverpoint ins.current.insn {
+        wildcard bins lw = {LW};
+    }
+    // Each supported VS-stage mode
+    vsatp_mode : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
+        `ifdef UDB_SV39_VSMODE_TRANSLATION
+            bins sv39 = {8};
+        `endif
+        `ifdef UDB_SV48_VSMODE_TRANSLATION
+            bins sv48 = {9};
+        `endif
+        `ifdef UDB_SV57_VSMODE_TRANSLATION
+            bins sv57 = {10};
+        `endif
+        `ifdef UDB_SV32_VSMODE_TRANSLATION
+            bins sv32 = {1};
+        `endif
+    }
+    hgatp_bare : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode") {
+        bins bare = {0};
+    }
+    // The trap into HS-mode that the access takes, if any.  Only a trap writes scause on these instructions.
+    trap : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[4:0]} {
+        wildcard bins none = {6'b0?????};
+        bins page_fault    = {6'b101100, 6'b101101, 6'b101111};
+    }
+    vsstatus_sum : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "sum") {
+        bins off = {0};
+        bins on  = {1};
+    }
+    vsstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "mxr") {
+        bins off = {0};
+        bins on  = {1};
+    }
+    `ifdef UDB_MXLEN_64
+        menvcfg_adue : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "adue") {
+            bins off = {0};
+        }
+        henvcfg_adue : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "adue") {
+            bins off = {0};
+        }
+    `else
+        menvcfg_adue : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfgh", "adue") {
+            bins off = {0};
+        }
+        henvcfg_adue : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfgh", "adue") {
+            bins off = {0};
+        }
+    `endif
+
+    // VS-stage leaf permissions and formats (hgatp = Bare), with vsstatus.SUM and vsstatus.MXR
+    cp_vsatp_perm   : cross priv_mode_vs_vu, access, vsatp_mode, hgatp_bare, trap;
+    cp_vsatp_sum    : cross priv_mode_vs_vu, access, vsatp_mode, hgatp_bare, vsstatus_sum;
+    cp_vsstatus_mxr : cross priv_mode_vs_vu, lw, vsatp_mode, hgatp_bare, vsstatus_sum, vsstatus_mxr;
+    // VS-stage A/D bits: Svade faults with menvcfg.ADUE = henvcfg.ADUE = 0.  Svadu_H_cg has the ADUE = 1 cases.
+    cp_vsatp_svade  : cross priv_mode_vs, access, vsatp_mode, hgatp_bare, menvcfg_adue, henvcfg_adue;
+endgroup
+
+covergroup Sv_H_gstage_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    access : coverpoint ins.current.insn {
+        wildcard bins lw   = {LW};
+        wildcard bins sw   = {SW};
+        wildcard bins jalr = {JALR};
+    }
+    lw : coverpoint ins.current.insn {
+        wildcard bins lw = {LW};
+    }
+    vsatp_bare : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
+        bins bare = {0};
+    }
+    // Each supported G-stage mode
+    hgatp_mode : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode") {
+        `ifdef UDB_SV39X4_TRANSLATION
+            bins sv39x4 = {8};
+        `endif
+        `ifdef UDB_SV48X4_TRANSLATION
+            bins sv48x4 = {9};
+        `endif
+        `ifdef UDB_SV57X4_TRANSLATION
+            bins sv57x4 = {10};
+        `endif
+        `ifdef UDB_SV32X4_TRANSLATION
+            bins sv32x4 = {1};
+        `endif
+    }
+    trap : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[4:0]} {
+        wildcard bins none     = {6'b0?????};
+        bins guest_page_fault  = {6'b110100, 6'b110101, 6'b110111};
+    }
+    // HS-level MXR: mret into the guest logs mstatus
+    mstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mxr") {
+        bins off = {0};
+        bins on  = {1};
+    }
+    vsstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "mxr") {
+        bins off = {0};
+        bins on  = {1};
+    }
+    `ifdef UDB_MXLEN_64
+        menvcfg_adue : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "adue") {
+            bins off = {0};
+        }
+        // The one set bit above bit 36 of the guest physical address (vsatp = Bare)
+        gpa_bit : coverpoint ($clog2(ins.current.rs1_val + 1) - 1) {
+            bins b[] = {[37:63]};
+        }
+    `else
+        menvcfg_adue : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfgh", "adue") {
+            bins off = {0};
+        }
+    `endif
+
+    // G-stage leaf permissions and formats (vsatp = Bare); the U bit is checked as for U-mode
+    cp_hgatp_perm : cross priv_mode_vs_vu, access, vsatp_bare, hgatp_mode, trap;
+    // Only the HS-level MXR makes G-stage execute-only pages readable
+    cp_hgatp_mxr  : cross priv_mode_vs_vu, lw, vsatp_bare, hgatp_mode, mstatus_mxr, vsstatus_mxr;
+    // G-stage A/D bits: Svade faults with menvcfg.ADUE = 0.  Svadu_H_cg has the ADUE = 1 cases.
+    cp_hgatp_svade : cross priv_mode_vs, access, vsatp_bare, hgatp_mode, menvcfg_adue;
+    `ifdef UDB_MXLEN_64
+        // Guest physical address bits above the mode's width raise guest-page faults
+        cp_hgatp_gpa_width : cross priv_mode_vs, lw, vsatp_bare, hgatp_mode, gpa_bit;
+    `endif
+endgroup
+
+covergroup Sv_H_twostage_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    access : coverpoint ins.current.insn {
+        wildcard bins lw   = {LW};
+        wildcard bins sw   = {SW};
+        wildcard bins jalr = {JALR};
+    }
+    lw : coverpoint ins.current.insn {
+        wildcard bins lw = {LW};
+    }
+    jalr : coverpoint ins.current.insn {
+        wildcard bins jalr = {JALR};
+    }
+    vsatp_paged : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
+        bins paged = {[1:15]};
+    }
+    hgatp_paged : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode") {
+        bins paged = {[1:15]};
+    }
+    vsatp_bare : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
+        bins bare = {0};
+    }
+    hgatp_bare : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode") {
+        bins bare = {0};
+    }
+    // Each pair of VS-stage and G-stage modes with the same number of levels that the hart supports
+    stage_modes : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode")[3:0],
+                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode")[3:0]} {
+        `ifdef UDB_SV39_VSMODE_TRANSLATION
+            `ifdef UDB_SV39X4_TRANSLATION
+                bins sv39_sv39x4 = {8'h88};
+            `endif
+        `endif
+        `ifdef UDB_SV48_VSMODE_TRANSLATION
+            `ifdef UDB_SV48X4_TRANSLATION
+                bins sv48_sv48x4 = {8'h99};
+            `endif
+        `endif
+        `ifdef UDB_SV57_VSMODE_TRANSLATION
+            `ifdef UDB_SV57X4_TRANSLATION
+                bins sv57_sv57x4 = {8'haa};
+            `endif
+        `endif
+        `ifdef UDB_SV32_VSMODE_TRANSLATION
+            `ifdef UDB_SV32X4_TRANSLATION
+                bins sv32_sv32x4 = {8'h11};
+            `endif
+        `endif
+    }
+    trap : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[4:0]} {
+        wildcard bins none     = {6'b0?????};
+        bins page_fault        = {6'b101100, 6'b101101, 6'b101111};
+        bins guest_page_fault  = {6'b110100, 6'b110101, 6'b110111};
+    }
+    guest_page_fault : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[4:0]} {
+        bins guest_page_fault  = {6'b110100, 6'b110101, 6'b110111};
+    }
+    page_fault : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[4:0]} {
+        bins page_fault = {6'b101100, 6'b101101, 6'b101111};
+    }
+    access_fault : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[4:0]} {
+        bins access_fault = {6'b100001, 6'b100101, 6'b100111};
+    }
+    // A page fault delegated to VS-mode
+    vs_page_fault : coverpoint {ins.current.csr_wb[CSR_VSCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vscause", "vscause")[4:0]} {
+        bins page_fault = {6'b101100, 6'b101101, 6'b101111};
+    }
+    hedeleg_page_faults : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hedeleg", "deleg")[15:12] {
+        bins delegated = {4'b1011};
+    }
+    mstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mxr") {
+        bins off = {0};
+        bins on  = {1};
+    }
+    vsstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "mxr") {
+        bins off = {0};
+        bins on  = {1};
+    }
+    htinst_read : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htinst", "htinst") iff (ins.current.csr_wb[CSR_HTINST]) {
+        `ifdef UDB_MXLEN_64
+            bins read = {'h3000};
+        `else
+            bins read = {'h2000};
+        `endif
+    }
+    // A fetch at the last halfword of a page
+    page_end : coverpoint ins.current.rs1_val[11:0] {
+        bins page_end = {12'hffe};
+    }
+    ldst : coverpoint ins.current.insn {
+        wildcard bins lw = {LW};
+        wildcard bins sw = {SW};
+    }
+    // A word two bytes below the end of a page
+    ldst_page_end : coverpoint ((ins.current.rs1_val + ins.current.imm) & 'hFFF) {
+        bins page_end = {'hFFE};
+    }
+    `ifdef UDB_MXLEN_64
+        menvcfg_adue : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "adue") {
+            bins off = {0};
+        }
+        henvcfg_adue : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "adue") {
+            bins off = {0};
+        }
+        // A guest virtual address whose bits 63 down to the VS-stage mode's top address bit are not all equal
+        va_noncanonical : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
+            `ifdef UDB_SV39_VSMODE_TRANSLATION
+                `ifdef UDB_SV39X4_TRANSLATION
+                    bins sv39 = {8} iff (ins.current.rs1_val[63:38] != 0 && ins.current.rs1_val[63:38] != '1);
+                `endif
+            `endif
+            `ifdef UDB_SV48_VSMODE_TRANSLATION
+                `ifdef UDB_SV48X4_TRANSLATION
+                    bins sv48 = {9} iff (ins.current.rs1_val[63:47] != 0 && ins.current.rs1_val[63:47] != '1);
+                `endif
+            `endif
+            `ifdef UDB_SV57_VSMODE_TRANSLATION
+                `ifdef UDB_SV57X4_TRANSLATION
+                    bins sv57 = {10} iff (ins.current.rs1_val[63:56] != 0 && ins.current.rs1_val[63:56] != '1);
+                `endif
+            `endif
+        }
+        `ifdef UDB_REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT
+            // A guest-page fault on a guest physical address above the G-stage mode's width: htval holds it shifted
+            // right by 2, so bits 63:39 (Sv39x4) or 63:48 (Sv48x4) of htval are not all zero.  A VS-stage PPN reaches
+            // guest physical address bit 55 at most, which is within Sv57x4.
+            htval_gpa_wide : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode")
+                             iff (ins.current.csr_wb[CSR_HTVAL]) {
+                `ifdef UDB_SV39X4_TRANSLATION
+                    bins sv39x4 = {8} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htval", "htval")[63:39] != 0);
+                `endif
+                `ifdef UDB_SV48X4_TRANSLATION
+                    bins sv48x4 = {9} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htval", "htval")[63:48] != 0);
+                `endif
+            }
+        `endif
+    `else
+        menvcfg_adue : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfgh", "adue") {
+            bins off = {0};
+        }
+        henvcfg_adue : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfgh", "adue") {
+            bins off = {0};
+        }
+        `ifdef UDB_REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT
+            // Guest physical address bits 33:32, which htval reports as bits 31:30 after a guest-page fault
+            htval_gpa_high : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htval", "htval")[31:30] iff (ins.current.csr_wb[CSR_HTVAL]) {
+                bins bit32 = {1};
+                bins bit33 = {2};
+                bins both  = {3};
+            }
+        `endif
+    `endif
+
+    // VS-stage and G-stage permissions combined: a VS-stage denial is a page fault, a G-stage one a guest-page fault
+    cp_twostage_perm   : cross priv_mode_vs_vu, access, stage_modes, trap;
+    // vsstatus.MXR affects only the VS-stage; the HS-level MXR affects both
+    cp_twostage_mxr    : cross priv_mode_vs_vu, lw, stage_modes, vsstatus_mxr, mstatus_mxr;
+    // Svade in both stages.  Svadu_H_cg has the ADUE = 1 cases.
+    cp_twostage_svade  : cross priv_mode_vs, access, stage_modes, menvcfg_adue, henvcfg_adue;
+    // Guest-page faults on implicit VS-stage page-table reads
+    cp_implicit_gpf    : cross priv_mode_vs, access, stage_modes, htinst_read;
+    // MXR does not make an execute-only G-stage leaf of a VS-stage page table readable to an implicit read
+    cp_implicit_mxr    : cross priv_mode_vs, lw, stage_modes, vsstatus_mxr, mstatus_mxr, htinst_read;
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        // An access fault on the final address or on a VS-stage or G-stage page-table read reports the original access
+        cp_twostage_access_fault : cross priv_mode_vs, access, stage_modes, access_fault;
+    `endif
+    // Page faults go to VS-mode when hedeleg delegates them; guest-page faults cannot be delegated
+    cp_hedeleg_page_fault       : cross priv_mode_vs_vu, access, vsatp_paged, hgatp_paged, hedeleg_page_faults, vs_page_fault;
+    cp_hedeleg_guest_page_fault : cross priv_mode_vs_vu, access, vsatp_paged, hgatp_paged, hedeleg_page_faults, guest_page_fault;
+    cp_stage_both_bare : cross priv_mode_vs_vu, access, vsatp_bare, hgatp_bare;
+    `ifdef ZCA_SUPPORTED
+        // A fetch straddling a page boundary faults on the second page
+        cp_straddle    : cross priv_mode_vs, jalr, vsatp_paged, hgatp_paged, page_end, trap;
+    `endif
+    `ifdef UDB_MISALIGNED_LDST
+    `ifdef UDB_MISALIGNED_SPLIT_STRATEGY_SEQUENTIAL_BYTES
+        // A misaligned store or load straddling a page boundary, performed byte by byte, faults on the second page
+        cp_ldst_straddle : cross priv_mode_vs, ldst, vsatp_paged, hgatp_paged, ldst_page_end, trap;
+    `endif
+    `endif
+    `ifdef UDB_MXLEN_64
+        // A non-canonical guest virtual address raises a page fault, not a guest-page fault
+        cp_twostage_canonical : cross priv_mode_vs_vu, access, va_noncanonical, page_fault;
+        `ifdef UDB_REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT
+            // A guest physical address from a VS-stage leaf or non-leaf PPN that is wider than the G-stage mode allows
+            cp_twostage_gpa_width : cross priv_mode_vs, access, vsatp_paged, htval_gpa_wide, guest_page_fault;
+        `endif
+    `else
+        `ifdef UDB_REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT
+            // Sv32x4 translates 34-bit guest physical addresses
+            cp_hgatp_sv32x4_gpa : cross priv_mode_vs, lw, vsatp_paged, hgatp_paged, htval_gpa_high;
+        `endif
+    `endif
+endgroup
+
+covergroup Sv_H_hlv_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    hlv : coverpoint ins.current.insn {
+        wildcard bins hlv_w   = {HLV_W};
+        wildcard bins hlvx_wu = {HLVX_WU};
+        wildcard bins hsv_w   = {HSV_W};
+    }
+    hlv_load : coverpoint ins.current.insn {
+        wildcard bins hlv_w   = {HLV_W};
+        wildcard bins hlvx_wu = {HLVX_WU};
+    }
+    hlvx : coverpoint ins.current.insn {
+        wildcard bins hlvx_wu = {HLVX_WU};
+    }
+    // Each pair of VS-stage and G-stage modes with the same number of levels that the hart supports
+    stage_modes : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode")[3:0],
+                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode")[3:0]} {
+        `ifdef UDB_SV39_VSMODE_TRANSLATION
+            `ifdef UDB_SV39X4_TRANSLATION
+                bins sv39_sv39x4 = {8'h88};
+            `endif
+        `endif
+        `ifdef UDB_SV48_VSMODE_TRANSLATION
+            `ifdef UDB_SV48X4_TRANSLATION
+                bins sv48_sv48x4 = {8'h99};
+            `endif
+        `endif
+        `ifdef UDB_SV57_VSMODE_TRANSLATION
+            `ifdef UDB_SV57X4_TRANSLATION
+                bins sv57_sv57x4 = {8'haa};
+            `endif
+        `endif
+        `ifdef UDB_SV32_VSMODE_TRANSLATION
+            `ifdef UDB_SV32X4_TRANSLATION
+                bins sv32_sv32x4 = {8'h11};
+            `endif
+        `endif
+    }
+    // The load page fault (VS-stage) or load guest-page fault (G-stage) that HLVX takes on a non-executable page
+    load_fault : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[4:0]} {
+        bins page_fault       = {6'b101101};
+        bins guest_page_fault = {6'b110101};
+    }
+    hstatus_spvp : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "spvp") {
+        bins vu = {0};
+        bins vs = {1};
+    }
+    vsstatus_sum : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "sum") {
+        bins off = {0};
+        bins on  = {1};
+    }
+    sstatus_sum : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "sum") {
+        bins off = {0};
+        bins on  = {1};
+    }
+    vsstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "mxr") {
+        bins off = {0};
+        bins on  = {1};
+    }
+    sstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "mxr") {
+        bins off = {0};
+        bins on  = {1};
+    }
+    htinst_read : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htinst", "htinst") iff (ins.current.csr_wb[CSR_HTINST]) {
+        `ifdef UDB_MXLEN_64
+            bins read = {'h3000};
+        `else
+            bins read = {'h2000};
+        `endif
+    }
+    `ifdef UDB_REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT
+        // htval holds the guest physical address of the VS-stage root PTE, shifted right by 2
+        htval_root : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htval", "htval") iff (ins.current.csr_wb[CSR_HTVAL]) {
+            `ifdef UDB_MXLEN_64
+                bins root = {[0:$]} iff ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htval", "htval") >> 10) ==
+                                         (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "vsatp") & 64'h00000fffffffffff));
+            `else
+                bins root = {[0:$]} iff ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htval", "htval") >> 10) ==
+                                         (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "vsatp") & 32'h003fffff));
+            `endif
+        }
+    `endif
+
+    // hstatus.SPVP selects VU-level or VS-level access; vsstatus.SUM applies and sstatus.SUM does not
+    cp_hlv_priv  : cross priv_mode_hs, hlv, stage_modes, hstatus_spvp, vsstatus_sum, sstatus_sum;
+    // sstatus.MXR affects both stages, vsstatus.MXR only the VS-stage
+    cp_hlv_mxr   : cross priv_mode_hs, hlv_load, stage_modes, vsstatus_mxr, sstatus_mxr;
+    // HLVX needs execute permission in both stages, which neither MXR grants
+    cp_hlvx_perm : cross priv_mode_hs, hlvx, stage_modes, vsstatus_mxr, sstatus_mxr, load_fault;
+    // Guest-page faults on the implicit VS-stage page-table reads of HLV, HLVX and HSV
+    cp_hlv_implicit : cross priv_mode_hs, hlv, stage_modes, htinst_read;
+    `ifdef UDB_REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT
+        // A guest-page fault on the read of the VS-stage root table
+        cp_hlv_root_gpf : cross priv_mode_hs, hlv, stage_modes, htinst_read, htval_root;
+    `endif
+endgroup
+
+// vsatp, hgatp and satp MODE writes (RV64)
+`ifdef UDB_MXLEN_64
+covergroup Sv_H_csr_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    csrrw : coverpoint ins.current.insn {
+        wildcard bins csrrw = {CSRRW};
+    }
+    vsatp : coverpoint ins.current.insn[31:20] {
+        bins vsatp = {CSR_VSATP};
+    }
+    hgatp : coverpoint ins.current.insn[31:20] {
+        bins hgatp = {CSR_HGATP};
+    }
+    satp : coverpoint ins.current.insn[31:20] {
+        bins satp = {CSR_SATP};
+    }
+    mode_written : coverpoint ins.current.rs1_val[63:60] {
+        bins b[] = {[0:15]};
+    }
+    vsatp_mode : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
+        bins bare = {0};
+        bins sv39 = {8};
+    }
+    hgatp_mode : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode") {
+        bins bare   = {0};
+        bins sv39x4 = {8};
+    }
+    // In VS-mode, satp is vsatp
+    satp_mode : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "satp", "mode") {
+        bins bare = {0};
+        bins sv39 = {8};
+    }
+
+    // Each MODE written starting from Bare and Sv39 (Sv39x4)
+    `ifdef UDB_SV39_VSMODE_TRANSLATION
+        cp_vsatp_mode_field : cross priv_mode_hs, csrrw, vsatp, vsatp_mode, mode_written;
+        cp_satp_mode_field  : cross priv_mode_vs, csrrw, satp, satp_mode, mode_written;
+    `endif
+    `ifdef UDB_SV39X4_TRANSLATION
+        cp_hgatp_mode_field : cross priv_mode_hs, csrrw, hgatp, hgatp_mode, mode_written;
+    `endif
+endgroup
+`endif // UDB_MXLEN_64
+
+// A fence after a VS-stage or G-stage leaf change, with x0 or a register in rs1 and rs2.  The test checks that the
+// next guest access uses the new leaf.
+covergroup Sv_H_fence_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    hfence_vvma : coverpoint ins.current.insn {
+        wildcard bins hfence_vvma = {HFENCE_VVMA};
+    }
+    hfence_gvma : coverpoint ins.current.insn {
+        wildcard bins hfence_gvma = {HFENCE_GVMA};
+    }
+    sfence_vma : coverpoint ins.current.insn {
+        wildcard bins sfence_vma = {SFENCE_VMA};
+    }
+    rs1 : coverpoint ins.current.insn[19:15] {
+        bins x0       = {0};
+        bins register = {[1:31]};
+    }
+    rs2 : coverpoint ins.current.insn[24:20] {
+        bins x0       = {0};
+        bins register = {[1:31]};
+    }
+    // An ID in rs2: the current vsatp.ASID or hgatp.VMID, or every ASIDMAX or VMIDMAX bit set
+    rs2_asid : coverpoint ins.current.rs2_val iff (ins.current.insn[24:20] != 0) {
+        bins current  = {[0:$]} iff (ins.current.rs2_val == get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "asid"));
+        `ifdef UDB_MXLEN_64
+            bins all_bits = {'hffff};
+        `else
+            bins all_bits = {'h1ff};
+        `endif
+    }
+    rs2_vmid : coverpoint ins.current.rs2_val iff (ins.current.insn[24:20] != 0) {
+        bins current  = {[0:$]} iff (ins.current.rs2_val == get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "vmid"));
+        `ifdef UDB_MXLEN_64
+            bins all_bits = {'h3fff};
+        `else
+            bins all_bits = {'h7f};
+        `endif
+    }
+    vsatp_paged : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
+        bins paged = {[1:15]};
+    }
+    hgatp_paged : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode") {
+        bins paged = {[1:15]};
+    }
+
+    cp_hfence_vvma   : cross priv_mode_hs, hfence_vvma, vsatp_paged, hgatp_paged, rs1, rs2;
+    cp_hfence_gvma   : cross priv_mode_hs, hfence_gvma, vsatp_paged, hgatp_paged, rs1, rs2;
+    cp_sfence_vma_vs : cross priv_mode_vs, sfence_vma, vsatp_paged, hgatp_paged, rs1, rs2;
+    cp_hfence_vvma_asid   : cross priv_mode_hs, hfence_vvma, vsatp_paged, hgatp_paged, rs2_asid;
+    cp_hfence_gvma_vmid   : cross priv_mode_hs, hfence_gvma, vsatp_paged, hgatp_paged, rs2_vmid;
+    cp_sfence_vma_vs_asid : cross priv_mode_vs, sfence_vma, vsatp_paged, hgatp_paged, rs2_asid;
+endgroup
+
+// HSm group: two-stage address translation seen from M-mode through MPRV and MPV, and guest traps taken in M-mode
+`ifndef EXCLUDE_SM
+covergroup Sv_HSm_mprv_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    load_store : coverpoint ins.current.insn {
+        wildcard bins lw = {LW};
+        wildcard bins sw = {SW};
+    }
+    lw : coverpoint ins.current.insn {
+        wildcard bins lw = {LW};
+    }
+    hlv_access : coverpoint ins.current.insn {
+        wildcard bins lw    = {LW};
+        wildcard bins sw    = {SW};
+        wildcard bins hlv_w = {HLV_W};
+        wildcard bins hsv_w = {HSV_W};
+    }
+    mprv : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv") {
+        bins off = {0};
+        bins on  = {1};
+    }
+    mprv_on : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv") {
+        bins on = {1};
+    }
+    // {MPV, MPP}: the mode whose translation MPRV = 1 selects
+    `ifdef UDB_MXLEN_64
+        mpp_mpv : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpv")[0],
+                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0]} {
+    `else
+        mpp_mpv : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatush", "mpv")[0],
+                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0]} {
+    `endif
+        bins m      = {3'b011};
+        bins m_mpv1 = {3'b111};
+        bins hs     = {3'b001};
+        bins vs     = {3'b101};
+        bins u      = {3'b000};
+        bins vu     = {3'b100};
+    }
+    `ifdef UDB_MXLEN_64
+        mpp_mpv_guest : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpv")[0],
+                                    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0]} {
+    `else
+        mpp_mpv_guest : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatush", "mpv")[0],
+                                    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0]} {
+    `endif
+        bins vs = {3'b101};
+        bins vu = {3'b100};
+    }
+    vsatp_paged : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
+        bins paged = {[1:15]};
+    }
+    vsatp_bare : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
+        bins bare = {0};
+    }
+    hgatp_paged : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode") {
+        bins paged = {[1:15]};
+    }
+    hgatp_bare : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode") {
+        bins bare = {0};
+    }
+    // The trap into M-mode that the access takes, if any.  Only a trap writes mcause on these instructions.
+    trap : coverpoint {ins.current.csr_wb[CSR_MCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "mcause")[4:0]} {
+        wildcard bins none = {6'b0?????};
+        bins page_fault    = {6'b101101, 6'b101111};
+    }
+    vsstatus_sum : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "sum") {
+        bins off = {0};
+        bins on  = {1};
+    }
+    mstatus_sum : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sum") {
+        bins off = {0};
+        bins on  = {1};
+    }
+    vsstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "mxr") {
+        bins off = {0};
+        bins on  = {1};
+    }
+    mstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mxr") {
+        bins off = {0};
+        bins on  = {1};
+    }
+
+    // MPRV = 1 and MPV = 1 translate M-mode loads and stores through the VS-stage
+    cp_vsatp_mprv_effects : cross priv_mode_m, load_store, mprv_on, mpp_mpv_guest, vsatp_paged, hgatp_bare, trap;
+    // Loads and stores use the G-stage only with MPRV = 1 and MPV = 1; HLV and HSV always do
+    cp_hgatp_mprv_effects : cross priv_mode_m, hlv_access, mprv, mpp_mpv, vsatp_bare, hgatp_paged;
+    // With MPV = 1, vsstatus.SUM applies instead of mstatus.SUM
+    cp_mprv_sum           : cross priv_mode_m, load_store, mprv_on, mpp_mpv_guest, vsatp_paged, hgatp_paged, vsstatus_sum, mstatus_sum;
+    // mstatus.MXR makes execute-only pages readable in both stages, vsstatus.MXR only in the VS-stage
+    cp_mprv_mxr           : cross priv_mode_m, lw, mprv_on, mpp_mpv_guest, vsatp_paged, hgatp_paged, vsstatus_mxr, mstatus_mxr;
+endgroup
+
+covergroup Sv_HSm_trap_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    access : coverpoint ins.current.insn {
+        wildcard bins lw   = {LW};
+        wildcard bins sw   = {SW};
+        wildcard bins jalr = {JALR};
+    }
+    vsatp_paged : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
+        bins paged = {[1:15]};
+    }
+    hgatp_paged : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode") {
+        bins paged = {[1:15]};
+    }
+    trap : coverpoint {ins.current.csr_wb[CSR_MCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "mcause")[4:0]} {
+        bins page_fault       = {6'b101100, 6'b101101, 6'b101111};
+        bins guest_page_fault = {6'b110100, 6'b110101, 6'b110111};
+    }
+    // The trap records a guest virtual address and that it came from V = 1
+    `ifdef UDB_MXLEN_64
+        gva_mpv : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "gva")[0],
+                              get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "mpv")[0]} {
+    `else
+        gva_mpv : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatush", "gva")[0],
+                              get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatush", "mpv")[0]} {
+    `endif
+        bins guest = {2'b11};
+    }
+    // The pseudoinstruction that mtinst holds after a guest-page fault on an implicit VS-stage access
+    mtinst_pseudo : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mtinst", "mtinst") iff (ins.current.csr_wb[CSR_MTINST]) {
+        `ifdef UDB_MXLEN_64
+            bins read = {'h3000};
+        `else
+            bins read = {'h2000};
+        `endif
+    }
+
+    jalr : coverpoint ins.current.insn {
+        wildcard bins jalr = {JALR};
+    }
+    ldst : coverpoint ins.current.insn {
+        wildcard bins lw = {LW};
+        wildcard bins sw = {SW};
+    }
+    // A fetch at the last halfword of a page, or a word two bytes below the end of a page
+    page_end : coverpoint ((ins.current.rs1_val + ins.current.imm) & 'hFFF) {
+        bins page_end = {'hFFE};
+    }
+    guest_page_fault : coverpoint {ins.current.csr_wb[CSR_MCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "mcause")[4:0]} {
+        bins guest_page_fault = {6'b110100, 6'b110101, 6'b110111};
+    }
+    // A nonzero mtval2 holding the guest physical address of a page boundary >> 2: the faulting second portion
+    mtval2_page_boundary : coverpoint ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mtval2", "mtval2") << 2) & 'hFFF)
+                           iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mtval2", "mtval2") != 0) {
+        bins page_boundary = {0};
+    }
+
+    // Guest page faults and guest-page faults taken in M-mode (mtval2 and mtinst are in the trap signature)
+    cp_guest_page_fault_m : cross priv_mode_vs_vu, access, vsatp_paged, hgatp_paged, trap, gva_mpv;
+    cp_implicit_gpf_m     : cross priv_mode_vs_vu, access, vsatp_paged, hgatp_paged, mtinst_pseudo;
+    // A fetch, or a misaligned store or load performed byte by byte, whose second page has an invalid G-stage leaf
+    `ifdef ZCA_SUPPORTED
+        cp_straddle_m      : cross priv_mode_vs_vu, jalr, vsatp_paged, hgatp_paged, page_end, guest_page_fault, mtval2_page_boundary;
+    `endif
+    `ifdef UDB_MISALIGNED_LDST
+    `ifdef UDB_MISALIGNED_SPLIT_STRATEGY_SEQUENTIAL_BYTES
+        cp_ldst_straddle_m : cross priv_mode_vs_vu, ldst, vsatp_paged, hgatp_paged, page_end, guest_page_fault, mtval2_page_boundary;
+    `endif
+    `endif
+endgroup
+`endif // EXCLUDE_SM
+
+`ifdef SV_HZICBO_ANY
+// HZicbo group: cache-block operations from VS-mode and VU-mode, the henvcfg enables, and each VS-stage and G-stage
+// PTE under two-stage translation
+covergroup Sv_HZicbo_cg with function sample(ins_t ins);
+  option.per_instance = 0;
+  `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+  cbo: coverpoint ins.current.insn {
+    `ifdef ZICBOM_SUPPORTED
+      wildcard bins clean = {CBO_CLEAN};
+      wildcard bins flush = {CBO_FLUSH};
+      wildcard bins inval = {CBO_INVAL};
+    `endif
+    `ifdef ZICBOZ_SUPPORTED
+      wildcard bins zero = {CBO_ZERO};
+    `endif
+  }
+  vsatp_paged: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
+    bins paged = {[1:15]};
+  }
+  hgatp_paged: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode") {
+    bins paged = {[1:15]};
+  }
+  // The superpage of the guest virtual address: VS-stage cases use VS_SV39/VS_SV32 data_va, and G-stage cases
+  // SV39X4/SV32X4 data_va through a VS-stage identity superpage
+  `ifdef UDB_MXLEN_64
+    vs_stage: coverpoint ins.current.rs1_val[63:30] {
+      bins vs = {5};
+    }
+    g_stage: coverpoint ins.current.rs1_val[63:30] {
+      bins g = {11};
+    }
+  `else
+    vs_stage: coverpoint ins.current.rs1_val[31:22] {
+      bins vs = {'h241};
+    }
+    g_stage: coverpoint ins.current.rs1_val[31:22] {
+      bins g = {'h341};
+    }
+  `endif
+
+  // The trap the CBO takes, from the scause the trace shows it writing
+  vs_pte_outcome: coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[4:0]} {
+    wildcard bins no_fault = {6'b0?????};
+    bins store_page_fault  = {6'b101111};
+  }
+  g_pte_outcome: coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[4:0]} {
+    wildcard bins no_fault       = {6'b0?????};
+    bins store_guest_page_fault  = {6'b110111};
+  }
+  gpa_outcome: coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[4:0]} {
+    bins store_guest_page_fault = {6'b110111};
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+      bins store_access_fault   = {6'b100111};
+    `endif
+  }
+  no_fault: coverpoint ins.current.csr_wb[CSR_SCAUSE] {
+    bins no_fault = {0};
+  }
+  store_access_fault: coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[4:0]} {
+    bins store_access_fault = {6'b100111};
+  }
+  // htinst holds the pseudoinstruction of a guest-page fault on an implicit VS-stage page-table read
+  pseudoinstruction: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htinst", "htinst") iff (ins.current.csr_wb[CSR_HTINST]) {
+    bins read = {'h2000, 'h3000};
+  }
+  // In VS-mode the trace logs vsstatus as sstatus
+  vsstatus_sum: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "sum") {
+    bins set = {1};
+  }
+
+  cp_vs_pte:          cross priv_mode_vs_vu, cbo, vs_stage, vs_pte_outcome, vsatp_paged, hgatp_paged;
+  cp_vs_sum:          cross priv_mode_vs, cbo, vs_stage, vsstatus_sum, no_fault;
+  cp_vs_gpa:          cross priv_mode_vs_vu, cbo, vs_stage, gpa_outcome;
+  cp_vs_gpa_implicit: cross priv_mode_vs_vu, cbo, vs_stage, pseudoinstruction;
+  cp_g_pte:           cross priv_mode_vs_vu, cbo, g_stage, g_pte_outcome, vsatp_paged, hgatp_paged;
+  `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    cp_g_pa:          cross priv_mode_vs_vu, cbo, g_stage, store_access_fault;
+  `endif
+
+  // A prefetch is a HINT, so it raises no exception even where a load or store would fault in either stage
+  `ifdef ZICBOP_SUPPORTED
+    prefetch: coverpoint ins.current.insn {
+      wildcard bins prefetch_i = {PREFETCH_I};
+      wildcard bins prefetch_r = {PREFETCH_R};
+      wildcard bins prefetch_w = {PREFETCH_W};
+    }
+    cp_vs_prefetch: cross priv_mode_vs_vu, prefetch, vs_stage, vsatp_paged, hgatp_paged, no_fault;
+    cp_g_prefetch:  cross priv_mode_vs_vu, prefetch, g_stage, vsatp_paged, hgatp_paged, no_fault;
+  `endif
+
+  // CBOs in VS-mode and VU-mode across the menvcfg, henvcfg and senvcfg enables, with translation Bare
+  inval: coverpoint ins.current.insn {
+    wildcard bins inval = {CBO_INVAL};
+  }
+  clean_flush: coverpoint ins.current.insn {
+    wildcard bins clean = {CBO_CLEAN};
+    wildcard bins flush = {CBO_FLUSH};
+  }
+  zero: coverpoint ins.current.insn {
+    wildcard bins zero = {CBO_ZERO};
+  }
+  menvcfg_cbie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "cbie") {
+    bins off   = {2'b00};
+    bins flush = {2'b01};
+    bins inval = {2'b11};
+  }
+  henvcfg_cbie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "cbie") {
+    bins off   = {2'b00};
+    bins flush = {2'b01};
+    bins inval = {2'b11};
+  }
+  senvcfg_cbie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "cbie") {
+    bins off   = {2'b00};
+    bins flush = {2'b01};
+    bins inval = {2'b11};
+  }
+  menvcfg_cbcfe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "cbcfe") {
+    bins off = {0};
+    bins on  = {1};
+  }
+  henvcfg_cbcfe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "cbcfe") {
+    bins off = {0};
+    bins on  = {1};
+  }
+  senvcfg_cbcfe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "cbcfe") {
+    bins off = {0};
+    bins on  = {1};
+  }
+  menvcfg_cbze: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "cbze") {
+    bins off = {0};
+    bins on  = {1};
+  }
+  henvcfg_cbze: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "cbze") {
+    bins off = {0};
+    bins on  = {1};
+  }
+  senvcfg_cbze: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "cbze") {
+    bins off = {0};
+    bins on  = {1};
+  }
+  vsatp_bare: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
+    bins bare = {0};
+  }
+
+  `ifdef ZICBOM_SUPPORTED
+    cp_cbie_vs:  cross priv_mode_vs, inval, menvcfg_cbie, henvcfg_cbie, vsatp_bare;
+    cp_cbie_vu:  cross priv_mode_vu, inval, menvcfg_cbie, henvcfg_cbie, senvcfg_cbie, vsatp_bare;
+    cp_cbcfe_vs: cross priv_mode_vs, clean_flush, menvcfg_cbcfe, henvcfg_cbcfe, vsatp_bare;
+    cp_cbcfe_vu: cross priv_mode_vu, clean_flush, menvcfg_cbcfe, henvcfg_cbcfe, senvcfg_cbcfe, vsatp_bare;
+  `endif
+  `ifdef ZICBOZ_SUPPORTED
+    cp_cbze_vs:  cross priv_mode_vs, zero, menvcfg_cbze, henvcfg_cbze, vsatp_bare;
+    cp_cbze_vu:  cross priv_mode_vu, zero, menvcfg_cbze, henvcfg_cbze, senvcfg_cbze, vsatp_bare;
+  `endif
+endgroup
+
+
+`endif // SV_HZICBO_ANY
+
+`endif // H_SUPPORTED
+
 function void sv_sample(int hart, int issue, ins_t ins);
     Sv_satp_cg.sample(ins);
     Sv_VA_cg.sample(ins);
@@ -1875,4 +2755,21 @@ function void sv_sample(int hart, int issue, ins_t ins);
         Sv_ExceptionsZalrscSm_cg.sample(ins);
     `endif // EXCLUDE_SM
 `endif // ZALRSC_SUPPORTED
+`ifdef H_SUPPORTED
+    Sv_H_vsstage_cg.sample(ins);
+    Sv_H_gstage_cg.sample(ins);
+    Sv_H_twostage_cg.sample(ins);
+    Sv_H_hlv_cg.sample(ins);
+    `ifdef UDB_MXLEN_64
+        Sv_H_csr_cg.sample(ins);
+    `endif
+    Sv_H_fence_cg.sample(ins);
+    `ifndef EXCLUDE_SM
+        Sv_HSm_mprv_cg.sample(ins);
+        Sv_HSm_trap_cg.sample(ins);
+    `endif // EXCLUDE_SM
+    `ifdef SV_HZICBO_ANY
+        Sv_HZicbo_cg.sample(ins);
+    `endif // SV_HZICBO_ANY
+`endif // H_SUPPORTED
 endfunction

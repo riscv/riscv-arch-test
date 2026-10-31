@@ -1005,6 +1005,15 @@
   #error "SCRATCH_SIZE must be at least 264"
 #endif
 
+// Offsets of the CSRs saved at reset in rvtest_reset_csrs when RESET_TEST is defined
+#define RESET_MSTATUS_OFFSET  (0*REGWIDTH)
+#define RESET_MSTATUSH_OFFSET (1*REGWIDTH)
+#define RESET_MISA_OFFSET     (2*REGWIDTH)
+#define RESET_HGATP_OFFSET    (3*REGWIDTH)
+#define RESET_VSATP_OFFSET    (4*REGWIDTH)
+#define RESET_MSECCFG_OFFSET  (5*REGWIDTH)
+#define RESET_CSR_COUNT       6
+
 .macro RVTEST_DATA_BEGIN
   // Scratch region of memory for tests (ie for loads/stores that are not part of signature)
   // The first 264 bytes are initialized with distinct values so tests can detect unintended
@@ -1049,6 +1058,13 @@
   .p2align 3
   rvtest_current_mode:
     .dword 0
+
+  #ifdef RESET_TEST
+    // CSR values captured at reset by RVTEST_BOOT_TO_MMODE, checked by the Sm reset test
+    .p2align 3
+    rvtest_reset_csrs:
+      .fill RESET_CSR_COUNT, REGWIDTH, 0
+  #endif
 
   .p2align 4
 
@@ -1185,6 +1201,31 @@
 
     // Do setup that requires a standard M-mode
     #ifdef STANDARD_SM_SUPPORTED
+
+      #ifdef RESET_TEST
+        // Capture CSRs with architectural reset values before any boot code writes them.
+        // The signature pointer is not set up yet, so the test body checks the saved values.
+        // The trap prologs write vsatp, so this must precede them.
+        LA(T1, rvtest_reset_csrs)
+        csrr T2, mstatus
+        SREG T2, RESET_MSTATUS_OFFSET(T1)
+        #if __riscv_xlen == 32 && defined(SM1P12P0_OR_LATER_SUPPORTED)
+          csrr T2, mstatush
+          SREG T2, RESET_MSTATUSH_OFFSET(T1)
+        #endif
+        csrr T2, misa
+        SREG T2, RESET_MISA_OFFSET(T1)
+        #ifdef H_SUPPORTED
+          csrr T2, hgatp
+          SREG T2, RESET_HGATP_OFFSET(T1)
+          csrr T2, vsatp
+          SREG T2, RESET_VSATP_OFFSET(T1)
+        #endif
+        #ifdef ZICFILP_SUPPORTED
+          csrr T2, mseccfg
+          SREG T2, RESET_MSECCFG_OFFSET(T1)
+        #endif
+      #endif
 
       // Disable interrupts
       csrw mie, zero

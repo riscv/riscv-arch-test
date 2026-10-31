@@ -18,6 +18,8 @@
 
 #include <stdbool.h>
 
+#include "encoding.h"
+
 #if __riscv_xlen == 64
 #define SREG "sd"
 #else
@@ -33,17 +35,6 @@ extern volatile unsigned long probe_epc;      // mepc of the most recent probe t
 extern unsigned char probe_scratch[PROBE_SCRATCH_SIZE];
 
 #define CAUSE_NONE (~0ul)
-#define CAUSE_INSTRUCTION_MISALIGNED 0
-#define CAUSE_INSTRUCTION_ACCESS_FAULT 1
-#define CAUSE_ILLEGAL_INSTRUCTION 2
-#define CAUSE_BREAKPOINT 3
-#define CAUSE_LOAD_MISALIGNED 4
-#define CAUSE_LOAD_ACCESS_FAULT 5
-#define CAUSE_STORE_MISALIGNED 6
-#define CAUSE_STORE_ACCESS_FAULT 7
-#define CAUSE_ECALL_U 8
-#define CAUSE_ECALL_S 9
-#define CAUSE_ECALL_M 11
 
 // A probe the watchdog ended: the machine-timer interrupt
 #define CAUSE_TIMEOUT ((1ul << (__riscv_xlen - 1)) | 7)
@@ -58,6 +49,7 @@ bool timed_wait(bool wrs, unsigned long ticks, unsigned long *elapsed, unsigned 
 
 #define STR_(x) #x
 #define STR(x) STR_(x)
+#define COUNT(a) (sizeof(a) / sizeof((a)[0]))
 
 // Register convention inside a probe's instructions: a1 points at probe_scratch (aligned to
 // PROBE_SCRATCH_SIZE); t1, t2, a2, a3, s0, s1, ft0-ft4, fs0 and every vector register may be
@@ -121,5 +113,55 @@ bool timed_wait(bool wrs, unsigned long ticks, unsigned long *elapsed, unsigned 
 // Read a CSR; PROBE_TRAPPED if it does not exist
 #define DEFINE_CSR_READ(name, csr)                                                          \
     static unsigned long name(void) { return PROBE_VALUE("zicsr", "csrr a3, " #csr); }
+
+// The CSRs both extractors write and read back
+DEFINE_CSR_WRITE_READ(satp_wr, satp)
+DEFINE_CSR_WRITE_READ(hgatp_wr, hgatp)
+DEFINE_CSR_WRITE_READ(vsatp_wr, vsatp)
+DEFINE_CSR_WRITE_READ(mcounteren_wr, mcounteren)
+DEFINE_CSR_WRITE_READ(scounteren_wr, scounteren)
+DEFINE_CSR_WRITE_READ(hcounteren_wr, hcounteren)
+
+// Write a translation mode to satp/hgatp/vsatp, then Bare, and report whether Bare stuck
+#define DEFINE_BARE_AFTER(name, csr)                                                        \
+    static bool name(unsigned long mode)                                                    \
+    {                                                                                       \
+        unsigned long v = PROBE_VALUE_IN("zicsr", "csrw " #csr ", %[in]\n\tcsrw " #csr ", zero\n\t" \
+                                                  "csrr a3, " #csr "\n\tseqz a3, a3", mode); \
+        return v != PROBE_TRAPPED && v != 0;                                                \
+    }
+DEFINE_BARE_AFTER(satp_bare_after, satp)
+DEFINE_BARE_AFTER(hgatp_bare_after, hgatp)
+DEFINE_BARE_AFTER(vsatp_bare_after, vsatp)
+
+// Address translation modes: satp.MODE values; hgatp uses the same values for the x4 modes
+#if __riscv_xlen == 64
+#define ATP_MODE(m) ((unsigned long)(m) << 60)
+#define SATP_ASID SATP64_ASID
+#define HGATP_VMID HGATP64_VMID
+static const struct { const char *name; unsigned long mode; } atp_modes[] =
+    { { "Sv39", SATP_MODE_SV39 }, { "Sv48", SATP_MODE_SV48 }, { "Sv57", SATP_MODE_SV57 } };
+#else
+#define ATP_MODE(m) ((unsigned long)(m) << 31)
+#define SATP_ASID SATP32_ASID
+#define HGATP_VMID HGATP32_VMID
+static const struct { const char *name; unsigned long mode; } atp_modes[] = { { "Sv32", SATP_MODE_SV32 } };
+#endif
+
+// The atp_modes a translation CSR accepts, bit i for atp_modes[i]; *last is the last one accepted
+// (0 if none), the mode to try Bare after
+static unsigned atp_accepted(unsigned long (*wr)(unsigned long), unsigned long *last)
+{
+    unsigned modes = 0;
+    *last = 0;
+    for (unsigned i = 0; i < COUNT(atp_modes); i++) {
+        unsigned long m = ATP_MODE(atp_modes[i].mode);
+        if (wr(m) == m) {
+            modes |= 1u << i;
+            *last = m;
+        }
+    }
+    return modes;
+}
 
 #endif

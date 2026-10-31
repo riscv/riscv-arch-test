@@ -32,7 +32,6 @@ DUT_INCLUDE_DIR ?= $(CONFIG_DIR)
 
 CC      := riscv64-unknown-elf-gcc
 OBJDUMP := riscv64-unknown-elf-objdump
-PYTHON  ?= python3
 
 # Compiled for the E base so the extractor itself runs on RV32E and RV64E harts; each probe enables
 # its own extension with `.option arch`.  GCC warns that the lp64e ABI may be deprecated, hence
@@ -45,7 +44,7 @@ CFLAGS := -march=$(ARCH) -mabi=$(ABI) -mcmodel=medany \
           -O2 -g -std=gnu11 -ffreestanding -fno-builtin -nostdlib -nostartfiles -static \
           -Wall -Wextra -Wno-deprecated \
           -Wl,--no-relax -Wl,--no-warn-rwx-segments \
-          -I$(SRC_DIR) -I$(DUT_INCLUDE_DIR)
+          -I$(SRC_DIR) -I$(REPO_ROOT)/tests/env -I$(DUT_INCLUDE_DIR)
 
 # make_config.py adds -DTRACE_PROBES and -DSKIP_PROBES='"name,..."' when a probe stopped the simulation
 EXTRA_CFLAGS ?=
@@ -84,14 +83,14 @@ dump: $(ELF)
 # Run the extractor on the Sail max configurations with extensions switched off in turn and check
 # that the output matches each configuration
 test:
-	$(PYTHON) $(SRC_DIR)/test/run_sail_tests.py --repo-root $(REPO_ROOT) --sim $(SIM) --build-dir $(BUILD_DIR)
+	uv run $(SRC_DIR)/test/run_sail_tests.py --repo-root $(REPO_ROOT) --sim $(SIM) --build-dir $(BUILD_DIR)
 
 # Run the extractor on every configuration under config/ that has a run_cmd.txt, using that
 # command, and compare the result with the configuration's UDB yaml.  JOBS configurations run in
 # parallel; configurations whose simulator is not installed are skipped.
 JOBS ?= 1
 regression:
-	$(PYTHON) $(SRC_DIR)/test/regression.py --repo-root $(REPO_ROOT) --build-dir $(BUILD_DIR)/regression --jobs $(JOBS)
+	uv run $(SRC_DIR)/test/regression.py --build-dir $(BUILD_DIR)/regression --jobs $(JOBS)
 
 # Generate CONFIG_DIR's UDB yaml and sail.json in CONFIG_OUT from its test_config.yaml, run_cmd.txt,
 # link.ld and rvmodel_macros.h; config-regression does that for every configuration and compares

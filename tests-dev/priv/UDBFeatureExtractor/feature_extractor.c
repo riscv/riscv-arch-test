@@ -62,7 +62,6 @@ struct extension {
 #define TABLE_ROW(name, version, arch, insn) { #name, version, probe_##name, false },
 static struct extension extensions[] = { EXTENSIONS(TABLE_ROW) };
 static struct extension priv_extensions[] = { PRIV_EXTENSIONS(TABLE_ROW) };
-#define COUNT(a) (sizeof(a) / sizeof((a)[0]))
 #define NUM_EXTENSIONS COUNT(extensions)
 #define NUM_PRIV_EXTENSIONS COUNT(priv_extensions)
 
@@ -315,36 +314,7 @@ static unsigned long read_vlenb(void)
     return v;
 }
 
-DEFINE_CSR_WRITE_READ(write_read_satp, satp)
-DEFINE_CSR_WRITE_READ(write_read_hgatp, hgatp)
-DEFINE_CSR_WRITE_READ(write_read_vsatp, vsatp)
-DEFINE_CSR_WRITE_READ(write_read_mcounteren, mcounteren)
-DEFINE_CSR_WRITE_READ(write_read_medeleg, medeleg)
-DEFINE_CSR_WRITE_READ(write_read_scounteren, scounteren)
-DEFINE_CSR_WRITE_READ(write_read_hcounteren, hcounteren)
-
-// Write a translation mode to satp/hgatp/vsatp, then Bare, and report whether Bare stuck
-#define DEFINE_BARE_AFTER(name, csr)                                                        \
-    static bool name(unsigned long mode)                                                    \
-    {                                                                                       \
-        unsigned long v = PROBE_VALUE_IN("zicsr", "csrw " #csr ", %[in]\n\tcsrw " #csr ", zero\n\t" \
-                                                  "csrr a3, " #csr "\n\tseqz a3, a3", mode); \
-        return v != PROBE_TRAPPED && v != 0;                                                \
-    }
-DEFINE_BARE_AFTER(satp_bare_after, satp)
-DEFINE_BARE_AFTER(hgatp_bare_after, hgatp)
-DEFINE_BARE_AFTER(vsatp_bare_after, vsatp)
-
-// Address translation modes: satp.MODE values; hgatp uses the same values for the x4 modes
-#if __riscv_xlen == 64
-#define ATP_MODE(m) ((unsigned long)(m) << 60)
-static const struct { const char *name; unsigned long mode; } atp_modes[] =
-    { { "Sv39", 8 }, { "Sv48", 9 }, { "Sv57", 10 } };
-#else
-#define ATP_MODE(m) ((unsigned long)(m) << 31)
-static const struct { const char *name; unsigned long mode; } atp_modes[] = { { "Sv32", 1 } };
-#endif
-#define NUM_ATP_MODES COUNT(atp_modes)
+DEFINE_CSR_WRITE_READ(medeleg_wr, medeleg)
 
 // Entered from start.S instead of main() when a CSR written with a value does not read it back:
 // the hart ignores CSR instructions rather than trapping on them, so it has no Zicsr and takes no
@@ -490,7 +460,7 @@ int main(void)
     // Zicfilp or Zicfiss, the software-check exception (18), whose medeleg bits are reserved
     // before 1.13; a hart that lets either be delegated is 1.13
     if (has_mconfigptr && has_mstatush) {
-        unsigned long deleg = has_s ? write_read_medeleg(~0ul) : 0;
+        unsigned long deleg = has_s ? medeleg_wr(~0ul) : 0;
         if (deleg == PROBE_TRAPPED)
             deleg = 0;
         bool v113 = (deleg >> 19) & 1 || ((deleg >> 18) & 1 && !zicfilp && !have("Zicfiss"));
@@ -502,47 +472,34 @@ int main(void)
     }
 
     // Address translation: which modes satp accepts, and whether hgatp and vsatp accept the same
-    bool atp_ok[NUM_ATP_MODES], any_atp = false;
-    unsigned long last_atp = 0;
-    bool shgatpa = has_h, shvsatpa = has_h;
-    for (unsigned i = 0; i < NUM_ATP_MODES; i++) {
-        unsigned long m = ATP_MODE(atp_modes[i].mode);
-        atp_ok[i] = has_s && write_read_satp(m) == m;
-        if (atp_ok[i]) {
-            any_atp = true;
-            last_atp = m;
-            shgatpa = shgatpa && write_read_hgatp(m) == m;
-            shvsatpa = shvsatpa && write_read_vsatp(m) == m;
-        }
-    }
-    bool svbare = has_s && (!any_atp || satp_bare_after(last_atp));
-    if (any_atp) {
-        shgatpa = shgatpa && hgatp_bare_after(last_atp);
-        shvsatpa = shvsatpa && vsatp_bare_after(last_atp);
-    }
+    unsigned long last_atp = 0, unused;
+    unsigned satp_modes = has_s ? atp_accepted(satp_wr, &last_atp) : 0;
+    bool svbare = has_s && (!satp_modes || satp_bare_after(last_atp));
+    bool shgatpa = has_h && (atp_accepted(hgatp_wr, &unused) & satp_modes) == satp_modes &&
+                   (!satp_modes || hgatp_bare_after(last_atp));
+    bool shvsatpa = has_h && (atp_accepted(vsatp_wr, &unused) & satp_modes) == satp_modes &&
+                    (!satp_modes || vsatp_bare_after(last_atp));
 
     // Ssccfg: scountinhibit is accessible only while menvcfg.CDE is set, so set it, try the
     // access, and clear it again afterwards whether or not the access trapped
     bool ssccfg = false;
     if (have("Smcdeleg")) {
 #if __riscv_xlen == 64
-#define CDE_CSR menvcfg
-#define CDE_BIT 60
+#define CDE_CSR "menvcfg"
 #else
-#define CDE_CSR menvcfgh
-#define CDE_BIT 28
+#define CDE_CSR "menvcfgh"
 #endif
-        unsigned long v = PROBE_VALUE("zicsr", "li t1, 1 << " STR(CDE_BIT) "\n\tcsrs " STR(CDE_CSR) ", t1\n\t"
-                                               "csrr a3, 0x120\n\tli a3, 1");
-        PROBE_VALUE("zicsr", "li t1, 1 << " STR(CDE_BIT) "\n\tcsrc " STR(CDE_CSR) ", t1\n\tli a3, 1");
+        unsigned long cde = MENVCFG_CDE >> (64 - __riscv_xlen);
+        unsigned long v = PROBE_VALUE_IN("zicsr", "csrs " CDE_CSR ", %[in]\n\tcsrr a3, 0x120\n\tli a3, 1", cde);
+        PROBE_VALUE_IN("zicsr", "csrc " CDE_CSR ", %[in]\n\tli a3, 1", cde);
         ssccfg = v != PROBE_TRAPPED && v != 0;
     }
 
     // Counter enables: every bit writable in mcounteren must be writable in scounteren/hcounteren
-    unsigned long m_writable = write_read_mcounteren(~0ul);
+    unsigned long m_writable = mcounteren_wr(~0ul);
     // (both are defined only with Zihpm)
-    bool sscounterenw = has_s && have("Zihpm") && (write_read_scounteren(~0ul) & m_writable) == m_writable;
-    bool shcounterenw = has_h && have("Zihpm") && (write_read_hcounteren(~0ul) & m_writable) == m_writable;
+    bool sscounterenw = has_s && have("Zihpm") && (scounteren_wr(~0ul) & m_writable) == m_writable;
+    bool shcounterenw = has_h && have("Zihpm") && (hcounteren_wr(~0ul) & m_writable) == m_writable;
 
     printf("# Generated by the riscv-arch-test UDB feature extractor (tests-dev/priv/UDBFeatureExtractor)\n");
     printf("# Extensions are detected by executing an instruction or CSR access that only the extension\n");
@@ -613,8 +570,8 @@ int main(void)
         if (priv_extensions[i].supported)
             print_extension(priv_extensions[i].name,
                             streq(priv_extensions[i].name, "S") ? sm_version : priv_extensions[i].version);
-    for (unsigned i = 0; i < NUM_ATP_MODES; i++)
-        if (atp_ok[i])
+    for (unsigned i = 0; i < COUNT(atp_modes); i++)
+        if ((satp_modes >> i) & 1)
             print_extension(atp_modes[i].name, "1.0");
     if (svbare)
         print_extension("Svbare", "1.0.0");

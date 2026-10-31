@@ -25,7 +25,6 @@ extern volatile unsigned long unimplemented_seen;
 extern unsigned long reset_mseccfg;     // mseccfg as found at boot, PROBE_TRAPPED if absent
 extern bool has_zdinx;
 
-#define COUNT(a) (sizeof(a) / sizeof((a)[0]))
 #define BIT(n) (1ul << (n))
 
 // ---------------------------------------------------------------------------------------------
@@ -212,12 +211,6 @@ DEFINE_CSR_WRITE_READ(mtval_wr, mtval)
 DEFINE_CSR_WRITE_READ(stval_wr, stval)
 DEFINE_CSR_READ(mcountinhibit_rd, mcountinhibit)
 DEFINE_CSR_WRITE_READ(mcountinhibit_wr, mcountinhibit)
-DEFINE_CSR_WRITE_READ(mcounteren_wr, mcounteren)
-DEFINE_CSR_WRITE_READ(scounteren_wr, scounteren)
-DEFINE_CSR_WRITE_READ(hcounteren_wr, hcounteren)
-DEFINE_CSR_WRITE_READ(satp_wr, satp)
-DEFINE_CSR_WRITE_READ(hgatp_wr, hgatp)
-DEFINE_CSR_WRITE_READ(vsatp_wr, vsatp)
 DEFINE_CSR_WRITE_READ(hgeie_wr, hgeie)
 DEFINE_CSR_WRITE_READ(srmcfg_wr, 0x181)
 DEFINE_CSR_READ(mcontext_rd, 0x7A8)
@@ -281,21 +274,22 @@ static bool marchid_impl, mimpid_impl, mcontext_impl, scontext_impl, tdata3_impl
 static bool trig_mcontrol6, trig_icount, trig_itrigger, trig_etrigger;
 
 // Set a bit, read it back and restore; and the same clearing the bit.  Both return the bit.
+// STR expands its argument, so csr may be an encoding.h CSR_* name.
 #define BIT_SET_READ(csr, mask)                                                             \
-    "csrr t2, " #csr "\n\tli t1, " #mask "\n\tor a2, t2, t1\n\tcsrw " #csr ", a2\n\t"      \
-    "csrr a3, " #csr "\n\tcsrw " #csr ", t2\n\tand a3, a3, t1"
+    "csrr t2, " STR(csr) "\n\tli t1, " #mask "\n\tor a2, t2, t1\n\tcsrw " STR(csr) ", a2\n\t" \
+    "csrr a3, " STR(csr) "\n\tcsrw " STR(csr) ", t2\n\tand a3, a3, t1"
 #define BIT_CLEAR_READ(csr, mask)                                                           \
-    "csrr t2, " #csr "\n\tli t1, " #mask "\n\tnot a2, t1\n\tand a2, t2, a2\n\t"            \
-    "csrw " #csr ", a2\n\tcsrr a3, " #csr "\n\tcsrw " #csr ", t2\n\tand a3, a3, t1"
+    "csrr t2, " STR(csr) "\n\tli t1, " #mask "\n\tnot a2, t1\n\tand a2, t2, a2\n\t"        \
+    "csrw " STR(csr) ", a2\n\tcsrr a3, " STR(csr) "\n\tcsrw " STR(csr) ", t2\n\tand a3, a3, t1"
 
 // The same for a bit of hstateen0/sstateen0, which is writable only while the same bit of
 // mstateen0 is set: set the mstateen0 bit around the test and restore it afterwards
 #define GATED_SET_READ(mst, hst, mask)                                                      \
-    "csrr s0, " #mst "\n\tli t1, " #mask "\n\tor a2, s0, t1\n\tcsrw " #mst ", a2\n\t"      \
-    BIT_SET_READ(hst, mask) "\n\tcsrw " #mst ", s0"
+    "csrr s0, " STR(mst) "\n\tli t1, " #mask "\n\tor a2, s0, t1\n\tcsrw " STR(mst) ", a2\n\t" \
+    BIT_SET_READ(hst, mask) "\n\tcsrw " STR(mst) ", s0"
 #define GATED_CLEAR_READ(mst, hst, mask)                                                    \
-    "csrr s0, " #mst "\n\tli t1, " #mask "\n\tor a2, s0, t1\n\tcsrw " #mst ", a2\n\t"      \
-    BIT_CLEAR_READ(hst, mask) "\n\tcsrw " #mst ", s0"
+    "csrr s0, " STR(mst) "\n\tli t1, " #mask "\n\tor a2, s0, t1\n\tcsrw " STR(mst) ", a2\n\t" \
+    BIT_CLEAR_READ(hst, mask) "\n\tcsrw " STR(mst) ", s0"
 
 // ---------------------------------------------------------------------------------------------
 // Measurements that several parameters share
@@ -392,29 +386,6 @@ static bool atp_accepts(unsigned long (*wr)(unsigned long), unsigned long mode)
     return wr(mode) == mode;
 }
 
-// Whether Bare can be written after mode was
-#define DEFINE_BARE_AFTER(name, csr)                                                        \
-    static bool name(unsigned long mode)                                                    \
-    {                                                                                       \
-        unsigned long v = PROBE_VALUE_IN("zicsr", "csrw " #csr ", %[in]\n\tcsrw " #csr ", zero\n\t" \
-                                                  "csrr a3, " #csr "\n\tseqz a3, a3", mode); \
-        return v != PROBE_TRAPPED && v != 0;                                                \
-    }
-DEFINE_BARE_AFTER(satp_bare_after, satp)
-DEFINE_BARE_AFTER(hgatp_bare_after, hgatp)
-DEFINE_BARE_AFTER(vsatp_bare_after, vsatp)
-
-#if __riscv_xlen == 64
-#define ATP_MODE(m) ((unsigned long)(m) << 60)
-#define ATP_MODE_MASK ATP_MODE(0xF)
-static const struct { const char *sv; unsigned long mode; } atp_modes[] =
-    { { "SV39", 8 }, { "SV48", 9 }, { "SV57", 10 } };
-#else
-#define ATP_MODE(m) ((unsigned long)(m) << 31)
-#define ATP_MODE_MASK ATP_MODE(1)
-static const struct { const char *sv; unsigned long mode; } atp_modes[] = { { "SV32", 1 } };
-#endif
-
 // ---------------------------------------------------------------------------------------------
 // Probes run in U-, S- or VS-mode.  The mode is entered with mret into a stub that executes one
 // instruction and then an ecall; the ecall (or the trap the instruction takes, when it is not
@@ -499,8 +470,8 @@ DEFINE_STUB(stub_virtual_insn, "zicsr", ".word 0x68002373")
 
 // Enter privilege mode mpp (0 = U, 1 = S; with virt, VS) at stub and return the cause of the
 // trap that ended it: s_cause if the lower-mode handler took it, else the cause the M-mode handler
-// saw (CAUSE_ECALL_S or _U, or CAUSE_ECALL_VS = 10, when the stub ran to its ecall)
-#define CAUSE_ECALL_VS 10
+// saw (CAUSE_SUPERVISOR_ECALL, CAUSE_USER_ECALL or CAUSE_VIRTUAL_SUPERVISOR_ECALL, when the stub ran
+// to its ecall)
 static unsigned long run_in_mode(char *stub, unsigned long mpp, bool virt, unsigned long mstatus)
 {
     s_cause = CAUSE_NONE;
@@ -550,13 +521,11 @@ DEFINE_CSR_READ(vstvec_rd, vstvec)
 
 // Exceptions delegated to the lower mode: everything but the ecalls, which must reach M-mode.
 // The guest-page-fault bits (20, 21, 23) only exist with H and are ignored otherwise.
-#define PAGE_FAULTS ((1ul << 12) | (1ul << 13) | (1ul << 15))
-#define GUEST_PAGE_FAULTS ((1ul << 20) | (1ul << 21) | (1ul << 23))
-#define VIRTUAL_INSTRUCTION (1ul << 22)
-#define SOFTWARE_CHECK (1ul << 18)
-#define CAUSE_SOFTWARE_CHECK 18
-#define TVAL_LANDING_PAD 2
-#define TVAL_SHADOW_STACK 3
+#define PAGE_FAULTS (BIT(CAUSE_FETCH_PAGE_FAULT) | BIT(CAUSE_LOAD_PAGE_FAULT) | BIT(CAUSE_STORE_PAGE_FAULT))
+#define GUEST_PAGE_FAULTS (BIT(CAUSE_FETCH_GUEST_PAGE_FAULT) | BIT(CAUSE_LOAD_GUEST_PAGE_FAULT) | \
+                           BIT(CAUSE_STORE_GUEST_PAGE_FAULT))
+#define VIRTUAL_INSTRUCTION BIT(CAUSE_VIRTUAL_INSTRUCTION)
+#define SOFTWARE_CHECK BIT(CAUSE_SOFTWARE_CHECK_FAULT)
 #define DELEGATED ((1ul << 0) | (1ul << 1) | (1ul << 2) | (1ul << 3) | (1ul << 4) | (1ul << 5) |   \
                    (1ul << 6) | (1ul << 7) | PAGE_FAULTS | GUEST_PAGE_FAULTS | VIRTUAL_INSTRUCTION | \
                    SOFTWARE_CHECK)
@@ -605,27 +574,23 @@ static void concat(char *out, const char *a, const char *b, const char *c)
 // hfence.vvma zero, zero and hfence.gvma zero, zero; the assembler will not enable H on an E base
 #define HFENCE_VVMA ".insn r 0x73, 0, 0x11, x0, x0, x0"
 #define HFENCE_GVMA ".insn r 0x73, 0, 0x31, x0, x0, x0"
-#define PTE_LEAF 0xCF          // V R W X A D
-#define PTE_U 0x10
-#define PTE_D 0x80
+#define PTE_LEAF (PTE_V | PTE_R | PTE_W | PTE_X | PTE_A | PTE_D)
 #define WAIT_TICKS (1ul << 16)   // mtime ticks a wfi or wrs.nto probe waits at most
 #define NOP_CYCLES 50            // a wrs.nto taking this many more cycles than an mcycle pair is not a no-op
 #if __riscv_xlen == 64
 #define ADUE_CSR "menvcfg"
-#define ADUE_BIT "61"
 #else
 #define ADUE_CSR "menvcfgh"
-#define ADUE_BIT "29"
 #endif
 static const struct { unsigned long mode; unsigned shift; } atp_levels[] = {
 #if __riscv_xlen == 64
-    { 8, 30 }, { 9, 39 }, { 10, 48 }
+    { SATP_MODE_SV39, 30 }, { SATP_MODE_SV48, 39 }, { SATP_MODE_SV57, 48 }
 #else
-    { 1, 22 }
+    { SATP_MODE_SV32, 22 }
 #endif
 };
 
-#define PTE_SHADOW 0xC5        // V W A D: the shadow-stack page encoding (writable, not readable)
+#define PTE_SHADOW (PTE_V | PTE_W | PTE_A | PTE_D)    // the shadow-stack page encoding (writable, not readable)
 static bool build_page_table_ex(unsigned long (*wr)(unsigned long), bool gstage, unsigned long alias_flags,
                                 unsigned long *atp, unsigned long *fault, unsigned *shift_out)
 {
@@ -741,13 +706,13 @@ static void vector_fault_params(unsigned long mstatus)
     fill_v1_v2(0xEE, 0xEE);
     fault_va = page_va;
     s_result = 0;
-    if (run_in_mode(stub_vle8ff, 1, false, mstatus) == CAUSE_ECALL_S)
+    if (run_in_mode(stub_vle8ff, 1, false, mstatus) == CAUSE_SUPERVISOR_ECALL)
         param_bool("VECTOR_FF_NO_EXCEPTION_TRIM", s_result < 16);
     // One crossing into the invalid page at element 8: vl is trimmed; are elements past it written?
     fill_v1_v2(0xEE, 0xEE);
     fault_va = page_va + 4096 - 8;
     s_result = 0;
-    if (run_in_mode(stub_vle8ff, 1, false, mstatus) == CAUSE_ECALL_S && s_result == 8) {
+    if (run_in_mode(stub_vle8ff, 1, false, mstatus) == CAUSE_SUPERVISOR_ECALL && s_result == 8) {
         dump_v1_v2(page_pa + 2048);
         bool untouched = true;
         for (unsigned i = 8; i < 16; i++)
@@ -769,7 +734,7 @@ static void vector_fault_params(unsigned long mstatus)
     fill_v1_v2(0xEE, 0xEE);
     fault_va = page_va + 4096 - 7;
     s_result = 0;
-    if (run_in_mode(stub_vlseg2e8ff, 1, false, mstatus) == CAUSE_ECALL_S && s_result == 3) {
+    if (run_in_mode(stub_vlseg2e8ff, 1, false, mstatus) == CAUSE_SUPERVISOR_ECALL && s_result == 3) {
         dump_v1_v2(page_pa + 2048);
         param_str("VECTOR_FF_SEG_EXCEPTION_PARTIAL_LOAD", dump[3] == 0xEE ? "no_subsegment_loaded" : "custom");
         bool untouched = dump[16 + 3] == 0xEE;
@@ -804,20 +769,20 @@ static void misaligned_edge_params(bool misaligned_ldst, bool misaligned_amo, un
     fault_va = page_va + 4094;
     if (!misaligned_ldst) {
         unsigned long cause = run_in_mode(stub_lw_at_va, 1, false, mstatus);
-        if (cause == CAUSE_LOAD_MISALIGNED)
+        if (cause == CAUSE_MISALIGNED_LOAD)
             param_str("MISALIGNED_LDST_EXCEPTION_PRIORITY", "high");
-        else if (cause == 13)
+        else if (cause == CAUSE_LOAD_PAGE_FAULT)
             param_str("MISALIGNED_LDST_EXCEPTION_PRIORITY", "low");
     } else {
         if (have("Zaamo") && !misaligned_amo) {
             unsigned long cause = run_in_mode(stub_amo_at_va, 1, false, mstatus);
-            if (cause == CAUSE_STORE_MISALIGNED)
+            if (cause == CAUSE_MISALIGNED_STORE)
                 param_str("MISALIGNED_LDST_EXCEPTION_PRIORITY", "high");
-            else if (cause == 15)
+            else if (cause == CAUSE_STORE_PAGE_FAULT)
                 param_str("MISALIGNED_LDST_EXCEPTION_PRIORITY", "low");
         }
         // A misaligned store performed in pieces leaves the bytes before the edge written
-        if (run_in_mode(stub_sw_at_va, 1, false, mstatus) == 15)
+        if (run_in_mode(stub_sw_at_va, 1, false, mstatus) == CAUSE_STORE_PAGE_FAULT)
             param_str("MISALIGNED_SPLIT_STRATEGY", page[4094] == 0x5A && page[4095] == 0x5A ? "sequential_bytes" : "custom");
     }
     satp_set(0);
@@ -836,7 +801,7 @@ static void lrsc_synonym_param(unsigned long mstatus)
     s_result = ~0ul;
     satp_set(atp);
     PROBE("zicsr", "sfence.vma");
-    if (run_in_mode(stub_sc_synonym, 1, false, mstatus) == CAUSE_ECALL_S && s_result != ~0ul)
+    if (run_in_mode(stub_sc_synonym, 1, false, mstatus) == CAUSE_SUPERVISOR_ECALL && s_result != ~0ul)
         param_bool("LRSC_FAIL_ON_VA_SYNONYM", s_result != 0);
     satp_set(0);
     PROBE("zicsr", "sfence.vma");
@@ -894,8 +859,6 @@ static void tinst_param(const char *name, unsigned long cause, unsigned long exp
 // Software-check exceptions in S-mode or VS-mode: landing pads enabled with menvcfg.LPE (henvcfg
 // for VS), shadow stacks with menvcfg.SSE (henvcfg); delegated they are recorded by the mode's
 // handler, undelegated by M-mode.  cfi_active covers the resume after a landing-pad fault.
-#define ENVCFG_LPE (1ul << 2)
-#define ENVCFG_SSE (1ul << 3)
 DEFINE_CSR_READ(menvcfg_rd, menvcfg)
 DEFINE_CSR_SET(menvcfg_set, menvcfg)
 DEFINE_CSR_READ(henvcfg_rd, henvcfg)
@@ -908,11 +871,11 @@ static void cfi_params(const char *tval, bool virt, bool delegated, bool zicfilp
     unsigned long (*set)(unsigned long) = virt ? henvcfg_set : menvcfg_set;
     cfi_active = 1;
     if (zicfilp) {
-        set(envcfg | ENVCFG_LPE);
+        set(envcfg | MENVCFG_LPE);
         unsigned long cause = run_in_mode(stub_landing_pad, 1, virt, mstatus);
-        if (cause == CAUSE_SOFTWARE_CHECK) {
+        if (cause == CAUSE_SOFTWARE_CHECK_FAULT) {
             concat(name, "REPORT_CAUSE_IN_", tval, "_ON_LANDING_PAD_SOFTWARE_CHECK");
-            param_bool(name, (delegated ? s_tval : probe_tval) == TVAL_LANDING_PAD);
+            param_bool(name, (delegated ? s_tval : probe_tval) == LANDING_PAD_FAULT);
         }
         set(envcfg);
     }
@@ -929,15 +892,15 @@ static void cfi_params(const char *tval, bool virt, bool delegated, bool zicfilp
             unsigned long base = (unsigned long)probe_scratch;
             shadow_ssp = region + (base + 1024 - ((base >> shift) << shift));
             unsigned long menvcfg = menvcfg_rd();
-            set(envcfg | ENVCFG_SSE);
+            set(envcfg | MENVCFG_SSE);
             if (virt)
-                menvcfg_set(menvcfg | ENVCFG_SSE);
+                menvcfg_set(menvcfg | MENVCFG_SSE);
             atp_set(atp);
             PROBE("zicsr", "sfence.vma");
             unsigned long cause = run_in_mode(stub_shadow_stack, 1, virt, mstatus);
-            if (cause == CAUSE_SOFTWARE_CHECK) {
+            if (cause == CAUSE_SOFTWARE_CHECK_FAULT) {
                 concat(name, "REPORT_CAUSE_IN_", tval, "_ON_SHADOW_STACK_SOFTWARE_CHECK");
-                param_bool(name, (delegated ? s_tval : probe_tval) == TVAL_SHADOW_STACK);
+                param_bool(name, (delegated ? s_tval : probe_tval) == SHADOW_STACK_FAULT);
             }
             atp_set(0);
             PROBE("zicsr", "sfence.vma");
@@ -953,7 +916,7 @@ static void cfi_params(const char *tval, bool virt, bool delegated, bool zicfilp
 static void ecall_from(const char *name, unsigned long mpp, bool virt, unsigned long mstatus)
 {
     unsigned long cause = run_in_mode(ecall_stub, mpp, virt, mstatus);
-    if (cause == (virt ? CAUSE_ECALL_VS : mpp ? CAUSE_ECALL_S : CAUSE_ECALL_U))
+    if (cause == (virt ? CAUSE_VIRTUAL_SUPERVISOR_ECALL : mpp ? CAUSE_SUPERVISOR_ECALL : CAUSE_USER_ECALL))
         param_bool(name, true);
     else if (cause == CAUSE_BREAKPOINT)           // the ecall did not trap, the ebreak after it did
         param_bool(name, false);
@@ -978,18 +941,18 @@ static void lower_mode_tval_params(const char *tval, bool virt, unsigned usable_
         param_bool(name, s_tval == s_epc);
     }
     cause = run_in_mode(stub_lw_misaligned, mpp, virt, mstatus);
-    if (cause == CAUSE_LOAD_MISALIGNED) {
+    if (cause == CAUSE_MISALIGNED_LOAD) {
         concat(name, "REPORT_VA_IN_", tval, "_ON_LOAD_MISALIGNED");
         param_bool(name, s_tval == scratch + 1);
     }
     cause = run_in_mode(stub_sw_misaligned, mpp, virt, mstatus);
-    if (cause == CAUSE_STORE_MISALIGNED) {
+    if (cause == CAUSE_MISALIGNED_STORE) {
         concat(name, "REPORT_VA_IN_", tval, "_ON_STORE_AMO_MISALIGNED");
         param_bool(name, s_tval == scratch + 1);
     }
     if (!have("Zca")) {
         cause = run_in_mode(stub_jump_misaligned, mpp, virt, mstatus);
-        if (cause == CAUSE_INSTRUCTION_MISALIGNED) {
+        if (cause == CAUSE_MISALIGNED_FETCH) {
             concat(name, "REPORT_VA_IN_", tval, "_ON_INSTRUCTION_MISALIGNED");
             param_bool(name, s_tval == scratch + 2);
         }
@@ -997,17 +960,17 @@ static void lower_mode_tval_params(const char *tval, bool virt, unsigned usable_
     if (usable_pmp >= 2) {
         pmp_deny_scratch();
         cause = run_in_mode(stub_lw_scratch, mpp, virt, mstatus);
-        if (cause == CAUSE_LOAD_ACCESS_FAULT) {
+        if (cause == CAUSE_LOAD_ACCESS) {
             concat(name, "REPORT_VA_IN_", tval, "_ON_LOAD_ACCESS_FAULT");
             param_bool(name, s_tval == scratch);
         }
         cause = run_in_mode(stub_sw_scratch, mpp, virt, mstatus);
-        if (cause == CAUSE_STORE_ACCESS_FAULT) {
+        if (cause == CAUSE_STORE_ACCESS) {
             concat(name, "REPORT_VA_IN_", tval, "_ON_STORE_AMO_ACCESS_FAULT");
             param_bool(name, s_tval == scratch);
         }
         cause = run_in_mode(stub_jump_scratch, mpp, virt, mstatus);
-        if (cause == CAUSE_INSTRUCTION_ACCESS_FAULT) {
+        if (cause == CAUSE_FETCH_ACCESS) {
             concat(name, "REPORT_VA_IN_", tval, "_ON_INSTRUCTION_ACCESS_FAULT");
             param_bool(name, s_tval == scratch);
         }
@@ -1710,7 +1673,7 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
                 unsigned pa = msb(ones) + 3;
 #if __riscv_xlen == 32
                 // Without Sv32 nothing can address beyond 32 bits, and UDB caps the width there
-                if (pa > 32 && !(has_s && atp_accepts(satp_wr, ATP_MODE(1)))) {
+                if (pa > 32 && !(has_s && atp_accepts(satp_wr, ATP_MODE(SATP_MODE_SV32)))) {
                     printf("# note: pmpaddr keeps bits 33:32 of the address writable, but without Sv32\n"
                            "#       physical addresses are 32 bits, so PHYS_ADDR_WIDTH is given as 32.\n");
                     pa = 32;
@@ -1755,29 +1718,29 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
     param_bool("MISALIGNED_LDST", lw_ok);
     bool amo_ok = false;
     unsigned long lw_cause = probe_cause;
-    if (!lw_ok && probe_cause == CAUSE_LOAD_MISALIGNED)
+    if (!lw_ok && probe_cause == CAUSE_MISALIGNED_LOAD)
         param_bool("REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED", probe_tval == scratch + 1);
     probe_cause = CAUSE_NONE;
     bool sw_ok = PROBE("zicsr", "sw t1, 1(a1)");
-    if (!sw_ok && probe_cause == CAUSE_STORE_MISALIGNED)
+    if (!sw_ok && probe_cause == CAUSE_MISALIGNED_STORE)
         param_bool("REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED", probe_tval == scratch + 1);
     if (lw_ok == sw_ok)
         sail_misaligned("memory.misaligned.exceptions.load_store", lw_ok, lw_ok ? CAUSE_NONE : lw_cause,
-                        CAUSE_LOAD_MISALIGNED, CAUSE_LOAD_ACCESS_FAULT);
+                        CAUSE_MISALIGNED_LOAD, CAUSE_LOAD_ACCESS);
     if (have("Zaamo")) {
         probe_cause = CAUSE_NONE;
         amo_ok = PROBE("zaamo", "addi a2, a1, 2\n\tamoadd.w t1, t2, (a2)");
         param_bool("MISALIGNED_AMO", amo_ok);
-        sail_misaligned("memory.misaligned.exceptions.amo", amo_ok, probe_cause, CAUSE_STORE_MISALIGNED,
-                        CAUSE_STORE_ACCESS_FAULT);
-        if (sw_ok && !amo_ok && probe_cause == CAUSE_STORE_MISALIGNED)
+        sail_misaligned("memory.misaligned.exceptions.amo", amo_ok, probe_cause, CAUSE_MISALIGNED_STORE,
+                        CAUSE_STORE_ACCESS);
+        if (sw_ok && !amo_ok && probe_cause == CAUSE_MISALIGNED_STORE)
             param_bool("REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED", probe_tval == scratch + 2);
         if (!amo_ok && have("Zalrsc")) {
             probe_cause = CAUSE_NONE;
             if (!PROBE("zalrsc", "addi a2, a1, 2\n\tlr.w t1, (a2)\n\tsc.w t2, t1, (a2)")) {
-                if (probe_cause == CAUSE_LOAD_MISALIGNED)
+                if (probe_cause == CAUSE_MISALIGNED_LOAD)
                     param_str("LRSC_MISALIGNED_BEHAVIOR", "always raise misaligned exception");
-                else if (probe_cause == CAUSE_LOAD_ACCESS_FAULT)
+                else if (probe_cause == CAUSE_LOAD_ACCESS)
                     param_str("LRSC_MISALIGNED_BEHAVIOR", "always raise access fault");
             }
         }
@@ -1786,7 +1749,7 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
         // Without C, a jump to a 2-byte-aligned address must trap; the resume address is restored
         // by the trap handler, so the jump never lands
         probe_cause = CAUSE_NONE;
-        if (!PROBE("zicsr", "jalr zero, 2(a1)") && probe_cause == CAUSE_INSTRUCTION_MISALIGNED)
+        if (!PROBE("zicsr", "jalr zero, 2(a1)") && probe_cause == CAUSE_MISALIGNED_FETCH)
             param_bool("REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED", probe_tval == scratch + 2);
     }
     if (has_u && num_pmp) {
@@ -1796,13 +1759,13 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
         bool ok = PROBE("zicsr", "csrr t2, mstatus\n\tli t1, 3 << 11\n\tnot a2, t1\n\tand a2, t2, a2\n\t"
                                  "li t1, 1 << 17\n\tor a2, a2, t1\n\tcsrw mstatus, a2\n\t"
                                  "lw t1, 0(a1)\n\tcsrw mstatus, t2");
-        if (!ok && probe_cause == CAUSE_LOAD_ACCESS_FAULT)
+        if (!ok && probe_cause == CAUSE_LOAD_ACCESS)
             param_bool("REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT", probe_tval == scratch);
         probe_cause = CAUSE_NONE;
         ok = PROBE("zicsr", "csrr t2, mstatus\n\tli t1, 3 << 11\n\tnot a2, t1\n\tand a2, t2, a2\n\t"
                             "li t1, 1 << 17\n\tor a2, a2, t1\n\tcsrw mstatus, a2\n\t"
                             "sw t1, 0(a1)\n\tcsrw mstatus, t2");
-        if (!ok && probe_cause == CAUSE_STORE_ACCESS_FAULT)
+        if (!ok && probe_cause == CAUSE_STORE_ACCESS)
             param_bool("REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT", probe_tval == scratch);
         mstatus_set(mstatus);                       // MPP back to M in case a probe left it at U
     }
@@ -1859,7 +1822,7 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
     if (ebreak_traps && probe_cause == CAUSE_BREAKPOINT)
         param_bool("REPORT_VA_IN_MTVAL_ON_BREAKPOINT", probe_tval == probe_epc);
     probe_cause = CAUSE_NONE;
-    param_bool("TRAP_ON_ECALL_FROM_M", !PROBE("zicsr", "ecall") && probe_cause == CAUSE_ECALL_M);
+    param_bool("TRAP_ON_ECALL_FROM_M", !PROBE("zicsr", "ecall") && probe_cause == CAUSE_MACHINE_ECALL);
     probe_cause = CAUSE_NONE;
     bool reserved_traps = !PROBE("zicsr", ".word 0x00004073");     // SYSTEM with funct3 = 100
     param_bool("TRAP_ON_RESERVED_INSTRUCTION", reserved_traps && probe_cause == CAUSE_ILLEGAL_INSTRUCTION);
@@ -1885,8 +1848,8 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
         bool ok = PROBE("zicsr", "li t1, 1 << 10\n\tcsrs 0x747, t1\n\tla a2, lower_stub\n\t" LREG_ASM " a2, 0(a2)\n\t"
                                  "jalr zero, 0(a2)");
         // the stub ends in an ecall, which is the trap seen when no landing-pad fault occurred
-        if (!ok && probe_cause == CAUSE_SOFTWARE_CHECK)
-            param_bool("REPORT_CAUSE_IN_MTVAL_ON_LANDING_PAD_SOFTWARE_CHECK", probe_tval == TVAL_LANDING_PAD);
+        if (!ok && probe_cause == CAUSE_SOFTWARE_CHECK_FAULT)
+            param_bool("REPORT_CAUSE_IN_MTVAL_ON_LANDING_PAD_SOFTWARE_CHECK", probe_tval == LANDING_PAD_FAULT);
         PROBE("zicsr", "li t1, 1 << 10\n\tcsrc 0x747, t1");
         cfi_active = 0;
     }
@@ -1916,7 +1879,7 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
         // a bounded time, so the probe cannot hang; without S it may wait forever, so it is not
         // probed.  Only retiring is conclusive: a hart may wait and then raise the same
         // illegal-instruction exception as one that does not let U-mode execute wfi (Sail does).
-        if (has_u && has_s && run_in_mode(stub_wfi, 0, false, mstatus & ~(1ul << 21)) == CAUSE_ECALL_U)
+        if (has_u && has_s && run_in_mode(stub_wfi, 0, false, mstatus & ~(1ul << 21)) == CAUSE_USER_ECALL)
             param_bool("WFI_U_MODE", true);
         if (has_s) {
             unsigned long stvec = stvec_rd();
@@ -1956,9 +1919,9 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
             medeleg_set(DELEGATED);
             if (usable_pmp >= 2) {
                 // An instruction access fault not delegated: the M-mode tval after a jump from S
-                medeleg_set(DELEGATED & ~(1ul << CAUSE_INSTRUCTION_ACCESS_FAULT));
+                medeleg_set(DELEGATED & ~(1ul << CAUSE_FETCH_ACCESS));
                 pmp_deny_scratch();
-                if (run_in_mode(stub_jump_scratch, 1, false, mstatus) == CAUSE_INSTRUCTION_ACCESS_FAULT)
+                if (run_in_mode(stub_jump_scratch, 1, false, mstatus) == CAUSE_FETCH_ACCESS)
                     param_bool("REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT", probe_tval == scratch);
                 pmp_open(2);
                 medeleg_set(DELEGATED);
@@ -2015,13 +1978,13 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
                     volatile unsigned long *groot = (volatile unsigned long *)probe_scratch;
                     unsigned long gidx = (unsigned long)probe_scratch >> gshift;
                     groot[gidx] &= ~(unsigned long)PTE_D;
-                    unsigned long envcfg = PROBE_VALUE("zicsr", "csrr a3, " ADUE_CSR "\n\tli t1, 1 << " ADUE_BIT "\n\t"
-                                                                "csrs " ADUE_CSR ", t1");
+                    unsigned long envcfg = PROBE_VALUE_IN("zicsr", "csrr a3, " ADUE_CSR "\n\tcsrs " ADUE_CSR ", %[in]",
+                                                          (unsigned long)(MENVCFG_ADUE >> (64 - __riscv_xlen)));
                     hgatp_set(atp);
                     PROBE("zicsr", HFENCE_GVMA);
                     vsatp_set(vatp);
                     PROBE("zicsr", HFENCE_VVMA);
-                    if (run_in_mode(stub_lw_scratch, 1, true, mstatus) == CAUSE_ECALL_VS)
+                    if (run_in_mode(stub_lw_scratch, 1, true, mstatus) == CAUSE_VIRTUAL_SUPERVISOR_ECALL)
                         sail_bool("extensions.H.implicit_vs_pte_access_sets_gstage_d", (groot[gidx] & PTE_D) != 0);
                     vsatp_set(0);
                     PROBE("zicsr", HFENCE_VVMA);
@@ -2035,12 +1998,13 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
                 if (build_page_table(hgatp_wr, true, &atp, &fva, &gshift)) {
                     hgatp_set(atp);
                     PROBE("zicsr", HFENCE_GVMA);
-                    vsatp_set((atp & ATP_MODE_MASK) | (fva >> 12));
+                    vsatp_set((atp & SATP_MODE) | (fva >> 12));
                     PROBE("zicsr", HFENCE_VVMA);
                     unsigned long cause = run_in_mode(ecall_stub, 1, true, mstatus);
                     unsigned long entries = 4096 / sizeof(unsigned long);
                     unsigned long pte_gpa = fva + (((unsigned long)ecall_stub >> gshift) & (entries - 1)) * sizeof(unsigned long);
-                    if (cause == 20 || cause == 21 || cause == 23)
+                    if (cause == CAUSE_FETCH_GUEST_PAGE_FAULT || cause == CAUSE_LOAD_GUEST_PAGE_FAULT ||
+                        cause == CAUSE_STORE_GUEST_PAGE_FAULT)
                         param_bool("REPORT_GPA_IN_TVAL_ON_INTERMEDIATE_GUEST_PAGE_FAULT", guest_pa() == pte_gpa >> 2);
                     vsatp_set(0);
                     PROBE("zicsr", HFENCE_VVMA);
@@ -2054,21 +2018,21 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
                 tinst_param("TINST_VALUE_ON_BREAKPOINT", run_in_mode(stub_ebreak, 1, true, mstatus), CAUSE_BREAKPOINT, false);
                 if (!have("Zca"))
                     tinst_param("TINST_VALUE_ON_INSTRUCTION_ADDRESS_MISALIGNED",
-                                run_in_mode(stub_jump_misaligned, 1, true, mstatus), CAUSE_INSTRUCTION_MISALIGNED, false);
-                tinst_param("TINST_VALUE_ON_LOAD_ADDRESS_MISALIGNED", run_in_mode(stub_lw_misaligned, 1, true, mstatus), CAUSE_LOAD_MISALIGNED, true);
-                tinst_param("TINST_VALUE_ON_STORE_AMO_ADDRESS_MISALIGNED", run_in_mode(stub_sw_misaligned, 1, true, mstatus), CAUSE_STORE_MISALIGNED, true);
+                                run_in_mode(stub_jump_misaligned, 1, true, mstatus), CAUSE_MISALIGNED_FETCH, false);
+                tinst_param("TINST_VALUE_ON_LOAD_ADDRESS_MISALIGNED", run_in_mode(stub_lw_misaligned, 1, true, mstatus), CAUSE_MISALIGNED_LOAD, true);
+                tinst_param("TINST_VALUE_ON_STORE_AMO_ADDRESS_MISALIGNED", run_in_mode(stub_sw_misaligned, 1, true, mstatus), CAUSE_MISALIGNED_STORE, true);
                 if (usable_pmp >= 2) {
                     pmp_deny_scratch();
-                    tinst_param("TINST_VALUE_ON_LOAD_ACCESS_FAULT", run_in_mode(stub_lw_scratch, 1, true, mstatus), CAUSE_LOAD_ACCESS_FAULT, true);
-                    tinst_param("TINST_VALUE_ON_STORE_AMO_ACCESS_FAULT", run_in_mode(stub_sw_scratch, 1, true, mstatus), CAUSE_STORE_ACCESS_FAULT, true);
+                    tinst_param("TINST_VALUE_ON_LOAD_ACCESS_FAULT", run_in_mode(stub_lw_scratch, 1, true, mstatus), CAUSE_LOAD_ACCESS, true);
+                    tinst_param("TINST_VALUE_ON_STORE_AMO_ACCESS_FAULT", run_in_mode(stub_sw_scratch, 1, true, mstatus), CAUSE_STORE_ACCESS, true);
                     pmp_open(2);
                 }
                 if (have_table && build_page_table(vsatp_wr, false, &atp, &fva, 0)) {
                     fault_va = fva;
                     vsatp_set(atp);
                     PROBE("zicsr", HFENCE_VVMA);
-                    tinst_param("TINST_VALUE_ON_LOAD_PAGE_FAULT", run_in_mode(stub_load_fault_va, 1, true, mstatus), 13, true);
-                    tinst_param("TINST_VALUE_ON_STORE_AMO_PAGE_FAULT", run_in_mode(stub_store_fault_va, 1, true, mstatus), 15, true);
+                    tinst_param("TINST_VALUE_ON_LOAD_PAGE_FAULT", run_in_mode(stub_load_fault_va, 1, true, mstatus), CAUSE_LOAD_PAGE_FAULT, true);
+                    tinst_param("TINST_VALUE_ON_STORE_AMO_PAGE_FAULT", run_in_mode(stub_store_fault_va, 1, true, mstatus), CAUSE_STORE_PAGE_FAULT, true);
                     vsatp_set(0);
                     PROBE("zicsr", HFENCE_VVMA);
                 }
@@ -2076,9 +2040,9 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
                     fault_va = fva;
                     hgatp_set(atp);
                     PROBE("zicsr", HFENCE_GVMA);
-                    tinst_param("TINST_VALUE_ON_FINAL_LOAD_GUEST_PAGE_FAULT", run_in_mode(stub_load_fault_va, 1, true, mstatus), 21, true);
-                    tinst_param("TINST_VALUE_ON_FINAL_STORE_AMO_GUEST_PAGE_FAULT", run_in_mode(stub_store_fault_va, 1, true, mstatus), 23, true);
-                    tinst_param("TINST_VALUE_ON_FINAL_INSTRUCTION_GUEST_PAGE_FAULT", run_in_mode(stub_jump_fault_va, 1, true, mstatus), 20, false);
+                    tinst_param("TINST_VALUE_ON_FINAL_LOAD_GUEST_PAGE_FAULT", run_in_mode(stub_load_fault_va, 1, true, mstatus), CAUSE_LOAD_GUEST_PAGE_FAULT, true);
+                    tinst_param("TINST_VALUE_ON_FINAL_STORE_AMO_GUEST_PAGE_FAULT", run_in_mode(stub_store_fault_va, 1, true, mstatus), CAUSE_STORE_GUEST_PAGE_FAULT, true);
+                    tinst_param("TINST_VALUE_ON_FINAL_INSTRUCTION_GUEST_PAGE_FAULT", run_in_mode(stub_jump_fault_va, 1, true, mstatus), CAUSE_FETCH_GUEST_PAGE_FAULT, false);
                     hgatp_set(0);
                     PROBE("zicsr", HFENCE_GVMA);
                 }
@@ -2086,17 +2050,17 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
                 // names vstval for its encoding although VS-mode never takes the trap, so the
                 // encoding is checked in the tval of the mode that did
                 unsigned long cause = run_in_mode(stub_virtual_insn, 1, true, mstatus);
-                if (cause == 22) {
-                    tinst_param("TINST_VALUE_ON_VIRTUAL_INSTRUCTION", cause, 22, false);
+                if (cause == CAUSE_VIRTUAL_INSTRUCTION) {
+                    tinst_param("TINST_VALUE_ON_VIRTUAL_INSTRUCTION", cause, CAUSE_VIRTUAL_INSTRUCTION, false);
                     param_bool("REPORT_ENCODING_IN_VSTVAL_ON_VIRTUAL_INSTRUCTION",
                                (s_cause != CAUSE_NONE ? s_tval : probe_tval) == CSRR_HGATP);
                 }
                 // ecalls: VS and VU reach M-mode (mtinst); S and M likewise
-                tinst_param("TINST_VALUE_ON_VSCALL", run_in_mode(ecall_stub, 1, true, mstatus), CAUSE_ECALL_VS, false);
-                tinst_param("TINST_VALUE_ON_UCALL", run_in_mode(ecall_stub, 0, true, mstatus), CAUSE_ECALL_U, false);
-                tinst_param("TINST_VALUE_ON_SCALL", run_in_mode(ecall_stub, 1, false, mstatus), CAUSE_ECALL_S, false);
+                tinst_param("TINST_VALUE_ON_VSCALL", run_in_mode(ecall_stub, 1, true, mstatus), CAUSE_VIRTUAL_SUPERVISOR_ECALL, false);
+                tinst_param("TINST_VALUE_ON_UCALL", run_in_mode(ecall_stub, 0, true, mstatus), CAUSE_USER_ECALL, false);
+                tinst_param("TINST_VALUE_ON_SCALL", run_in_mode(ecall_stub, 1, false, mstatus), CAUSE_SUPERVISOR_ECALL, false);
                 PROBE("zicsr", "ecall");
-                tinst_param("TINST_VALUE_ON_MCALL", probe_cause, CAUSE_ECALL_M, false);
+                tinst_param("TINST_VALUE_ON_MCALL", probe_cause, CAUSE_MACHINE_ECALL, false);
                 PROBE("zicsr", "li t1, 1 << 7\n\tcsrc hstatus, t1");
                 hedeleg_set(0);
                 vstvec_set(vstvec);
@@ -2109,44 +2073,34 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
 
     // Address translation
     if (has_s) {
-        bool any = false;
-        unsigned long last = 0;
-        for (unsigned i = 0; i < COUNT(atp_modes); i++)
-            if (atp_accepts(satp_wr, ATP_MODE(atp_modes[i].mode))) {
-                any = true;
-                last = ATP_MODE(atp_modes[i].mode);
-            }
-        param_bool("SATP_MODE_BARE", !any || satp_bare_after(last));
-        v = satp_wr(ATP_MODE_MASK == ATP_MODE(1) ? 0x7FC00000ul : 0x0FFFF00000000000ul);   // ASID all ones
+        unsigned long last;
+        param_bool("SATP_MODE_BARE", !atp_accepted(satp_wr, &last) || satp_bare_after(last));
+        v = satp_wr(SATP_ASID);   // ASID all ones
         if (v != PROBE_TRAPPED)
-            param_int("ASID_WIDTH", popcount(v & (__riscv_xlen == 64 ? 0x0FFFF00000000000ul : 0x7FC00000ul)));
+            param_int("ASID_WIDTH", popcount(v & SATP_ASID));
         if (has_h) {
-            bool gany = false, vany = false;
-            unsigned long glast = 0, vlast = 0;
+            unsigned long glast, vlast;
+            unsigned gmodes = atp_accepted(hgatp_wr, &glast), vmodes = atp_accepted(vsatp_wr, &vlast);
             char name[32];
             for (unsigned i = 0; i < COUNT(atp_modes); i++) {
-                unsigned long m = ATP_MODE(atp_modes[i].mode);
-                bool g = atp_accepts(hgatp_wr, m), vs = atp_accepts(vsatp_wr, m);
                 // SV39X4_TRANSLATION and SV39_VSMODE_TRANSLATION, built from the mode name
-                const char *sv = atp_modes[i].sv;
+                const char *sv = atp_modes[i].name;
                 unsigned k = 0;
-                for (; sv[k]; k++) name[k] = sv[k];
+                for (; sv[k]; k++) name[k] = sv[k] >= 'a' && sv[k] <= 'z' ? sv[k] - 'a' + 'A' : sv[k];
                 const char *tail = "X4_TRANSLATION";
                 for (unsigned j = 0; tail[j]; j++) name[k + j] = tail[j];
                 name[k + 14] = '\0';
-                param_bool(name, g);
+                param_bool(name, (gmodes >> i) & 1);
                 tail = "_VSMODE_TRANSLATION";
                 for (unsigned j = 0; tail[j]; j++) name[k + j] = tail[j];
                 name[k + 19] = '\0';
-                param_bool(name, vs);
-                if (g) { gany = true; glast = m; }
-                if (vs) { vany = true; vlast = m; }
+                param_bool(name, (vmodes >> i) & 1);
             }
-            param_bool("GSTAGE_MODE_BARE", !gany || hgatp_bare_after(glast));
-            param_bool("VSSTAGE_MODE_BARE", !vany || vsatp_bare_after(vlast));
-            v = hgatp_wr(__riscv_xlen == 64 ? 0x03FFF00000000000ul : 0x1FC00000ul);   // VMID all ones
+            param_bool("GSTAGE_MODE_BARE", !gmodes || hgatp_bare_after(glast));
+            param_bool("VSSTAGE_MODE_BARE", !vmodes || vsatp_bare_after(vlast));
+            v = hgatp_wr(HGATP_VMID);   // VMID all ones
             if (v != PROBE_TRAPPED)
-                param_int("VMID_WIDTH", popcount(v & (__riscv_xlen == 64 ? 0x03FFF00000000000ul : 0x1FC00000ul)));
+                param_int("VMID_WIDTH", popcount(v & HGATP_VMID));
             // Writing a reserved mode to vsatp while V = 0: ignored (retained) or not
             unsigned long reserved = ATP_MODE(__riscv_xlen == 64 ? 2 : 1);
             if (__riscv_xlen == 64) {
@@ -2191,8 +2145,8 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
             param_bool("VILL_SET_ON_RESERVED_VTYPE", vill_reserved != 0);
         bool vmis = PROBE("zve32x", "vsetivli x0, 1, e32, m1, ta, ma\n\taddi a2, a1, 1\n\tvle32.v v1, (a2)");
         param_bool("VECTOR_LS_MISALIGNED_LEGAL", vmis);
-        sail_misaligned("memory.misaligned.exceptions.vector", vmis, probe_cause, CAUSE_LOAD_MISALIGNED,
-                        CAUSE_LOAD_ACCESS_FAULT);
+        sail_misaligned("memory.misaligned.exceptions.vector", vmis, probe_cause, CAUSE_MISALIGNED_LOAD,
+                        CAUSE_LOAD_ACCESS);
         param_bool("VECTOR_LS_WHOLEREG_MISALIGNED_LEGAL",
                    PROBE("zve32x", "vsetivli x0, 1, e32, m1, ta, ma\n\taddi a2, a1, 1\n\tvl1re32.v v1, (a2)"));
         // Reserved fractional LMUL (SEW > LMUL * ELEN) supported at all: the complement of vill
@@ -2313,34 +2267,34 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
     if (have("Smstateen") || have("Ssstateen")) {
 #if __riscv_xlen == 64
 #define STATEEN_BIT(csr, n) PROBE_VALUE("zicsr", BIT_SET_READ(csr, 1 << (n))), PROBE_VALUE("zicsr", BIT_CLEAR_READ(csr, 1 << (n)))
-#define HSTATEEN_BIT(n) PROBE_VALUE("zicsr", GATED_SET_READ(0x30C, 0x60C, 1 << (n))), \
-                        PROBE_VALUE("zicsr", GATED_CLEAR_READ(0x30C, 0x60C, 1 << (n)))
-#define MSTATEEN0 0x30C
+#define HSTATEEN_BIT(n) PROBE_VALUE("zicsr", GATED_SET_READ(CSR_MSTATEEN0, CSR_HSTATEEN0, 1 << (n))), \
+                        PROBE_VALUE("zicsr", GATED_CLEAR_READ(CSR_MSTATEEN0, CSR_HSTATEEN0, 1 << (n)))
+#define MSTATEEN(n) CSR_MSTATEEN##n
 #else
 #define STATEEN_BIT(csr, n) PROBE_VALUE("zicsr", BIT_SET_READ(csr, 1 << ((n) - 32))), PROBE_VALUE("zicsr", BIT_CLEAR_READ(csr, 1 << ((n) - 32)))
-#define HSTATEEN_BIT(n) PROBE_VALUE("zicsr", GATED_SET_READ(0x31C, 0x61C, 1 << ((n) - 32))), \
-                        PROBE_VALUE("zicsr", GATED_CLEAR_READ(0x31C, 0x61C, 1 << ((n) - 32)))
-#define MSTATEEN0 0x31C
+#define HSTATEEN_BIT(n) PROBE_VALUE("zicsr", GATED_SET_READ(CSR_MSTATEEN0H, CSR_HSTATEEN0H, 1 << ((n) - 32))), \
+                        PROBE_VALUE("zicsr", GATED_CLEAR_READ(CSR_MSTATEEN0H, CSR_HSTATEEN0H, 1 << ((n) - 32)))
+#define MSTATEEN(n) CSR_MSTATEEN##n##H
 #endif
         if (has_s)
-            bit_type("MSTATEEN_ENVCFG_TYPE", STATEEN_BIT(MSTATEEN0, 62));
+            bit_type("MSTATEEN_ENVCFG_TYPE", STATEEN_BIT(MSTATEEN(0), 62));
         if (have("Sscsrind"))
-            bit_type("MSTATEEN_CSRIND_TYPE", STATEEN_BIT(MSTATEEN0, 60));
+            bit_type("MSTATEEN_CSRIND_TYPE", STATEEN_BIT(MSTATEEN(0), 60));
         if (have("Ssaia")) {
-            bit_type("MSTATEEN_AIA_TYPE", STATEEN_BIT(MSTATEEN0, 59));
-            bit_type("MSTATEEN_IMSIC_TYPE", STATEEN_BIT(MSTATEEN0, 58));
+            bit_type("MSTATEEN_AIA_TYPE", STATEEN_BIT(MSTATEEN(0), 59));
+            bit_type("MSTATEEN_IMSIC_TYPE", STATEEN_BIT(MSTATEEN(0), 58));
         }
         if (have("Sdtrig"))
-            bit_type("MSTATEEN_CONTEXT_TYPE", STATEEN_BIT(MSTATEEN0, 57));
+            bit_type("MSTATEEN_CONTEXT_TYPE", STATEEN_BIT(MSTATEEN(0), 57));
         if (have("Zcmt")) {
-            bit_type("MSTATEEN_JVT_TYPE", PROBE_VALUE("zicsr", BIT_SET_READ(0x30C, 4)),
-                     PROBE_VALUE("zicsr", BIT_CLEAR_READ(0x30C, 4)));
+            bit_type("MSTATEEN_JVT_TYPE", PROBE_VALUE("zicsr", BIT_SET_READ(CSR_MSTATEEN0, 4)),
+                     PROBE_VALUE("zicsr", BIT_CLEAR_READ(CSR_MSTATEEN0, 4)));
             if (has_s)
-                bit_type("SSTATEEN_JVT_TYPE", PROBE_VALUE("zicsr", GATED_SET_READ(0x30C, 0x10C, 4)),
-                         PROBE_VALUE("zicsr", GATED_CLEAR_READ(0x30C, 0x10C, 4)));
+                bit_type("SSTATEEN_JVT_TYPE", PROBE_VALUE("zicsr", GATED_SET_READ(CSR_MSTATEEN0, CSR_SSTATEEN0, 4)),
+                         PROBE_VALUE("zicsr", GATED_CLEAR_READ(CSR_MSTATEEN0, CSR_SSTATEEN0, 4)));
             if (has_h)
-                bit_type("HSTATEEN_JVT_TYPE", PROBE_VALUE("zicsr", GATED_SET_READ(0x30C, 0x60C, 4)),
-                         PROBE_VALUE("zicsr", GATED_CLEAR_READ(0x30C, 0x60C, 4)));
+                bit_type("HSTATEEN_JVT_TYPE", PROBE_VALUE("zicsr", GATED_SET_READ(CSR_MSTATEEN0, CSR_HSTATEEN0, 4)),
+                         PROBE_VALUE("zicsr", GATED_CLEAR_READ(CSR_MSTATEEN0, CSR_HSTATEEN0, 4)));
         }
         if (has_h && have("Ssstateen")) {
             bit_type("HSTATEEN_ENVCFG_TYPE", HSTATEEN_BIT(62));
@@ -2355,32 +2309,27 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
         }
         // Enable bits Sail configures that have no UDB parameter
         if (have("Smstateen")) {
-#if __riscv_xlen == 64
-#define MSTATEEN(n) 0x30C + n
-#else
-#define MSTATEEN(n) 0x31C + n
-#endif
             sail_bit_type("extensions.Stateen.mstateen0.SE0", STATEEN_BIT(MSTATEEN(0), 63));
             sail_bit_type("extensions.Stateen.mstateen0.P1P13", STATEEN_BIT(MSTATEEN(0), 56));
             sail_bit_type("extensions.Stateen.mstateen0.SRMCFG", STATEEN_BIT(MSTATEEN(0), 55));
-            sail_bit_type("extensions.Stateen.mstateen0.C", PROBE_VALUE("zicsr", BIT_SET_READ(0x30C, 1)),
-                          PROBE_VALUE("zicsr", BIT_CLEAR_READ(0x30C, 1)));
-            sail_bit_type("extensions.Stateen.mstateen0.FCSR", PROBE_VALUE("zicsr", BIT_SET_READ(0x30C, 2)),
-                          PROBE_VALUE("zicsr", BIT_CLEAR_READ(0x30C, 2)));
+            sail_bit_type("extensions.Stateen.mstateen0.C", PROBE_VALUE("zicsr", BIT_SET_READ(CSR_MSTATEEN0, 1)),
+                          PROBE_VALUE("zicsr", BIT_CLEAR_READ(CSR_MSTATEEN0, 1)));
+            sail_bit_type("extensions.Stateen.mstateen0.FCSR", PROBE_VALUE("zicsr", BIT_SET_READ(CSR_MSTATEEN0, 2)),
+                          PROBE_VALUE("zicsr", BIT_CLEAR_READ(CSR_MSTATEEN0, 2)));
             sail_bit_type("extensions.Stateen.mstateen1.SE1", STATEEN_BIT(MSTATEEN(1), 63));
             sail_bit_type("extensions.Stateen.mstateen2.SE2", STATEEN_BIT(MSTATEEN(2), 63));
             sail_bit_type("extensions.Stateen.mstateen3.SE3", STATEEN_BIT(MSTATEEN(3), 63));
             if (has_h && have("Ssstateen")) {
-                sail_bit_type("extensions.Stateen.hstateen0.C", PROBE_VALUE("zicsr", GATED_SET_READ(0x30C, 0x60C, 1)),
-                              PROBE_VALUE("zicsr", GATED_CLEAR_READ(0x30C, 0x60C, 1)));
-                sail_bit_type("extensions.Stateen.hstateen0.FCSR", PROBE_VALUE("zicsr", GATED_SET_READ(0x30C, 0x60C, 2)),
-                              PROBE_VALUE("zicsr", GATED_CLEAR_READ(0x30C, 0x60C, 2)));
+                sail_bit_type("extensions.Stateen.hstateen0.C", PROBE_VALUE("zicsr", GATED_SET_READ(CSR_MSTATEEN0, CSR_HSTATEEN0, 1)),
+                              PROBE_VALUE("zicsr", GATED_CLEAR_READ(CSR_MSTATEEN0, CSR_HSTATEEN0, 1)));
+                sail_bit_type("extensions.Stateen.hstateen0.FCSR", PROBE_VALUE("zicsr", GATED_SET_READ(CSR_MSTATEEN0, CSR_HSTATEEN0, 2)),
+                              PROBE_VALUE("zicsr", GATED_CLEAR_READ(CSR_MSTATEEN0, CSR_HSTATEEN0, 2)));
             }
             if (has_s && have("Ssstateen")) {
-                sail_bit_type("extensions.Stateen.sstateen0.C", PROBE_VALUE("zicsr", GATED_SET_READ(0x30C, 0x10C, 1)),
-                              PROBE_VALUE("zicsr", GATED_CLEAR_READ(0x30C, 0x10C, 1)));
-                sail_bit_type("extensions.Stateen.sstateen0.FCSR", PROBE_VALUE("zicsr", GATED_SET_READ(0x30C, 0x10C, 2)),
-                              PROBE_VALUE("zicsr", GATED_CLEAR_READ(0x30C, 0x10C, 2)));
+                sail_bit_type("extensions.Stateen.sstateen0.C", PROBE_VALUE("zicsr", GATED_SET_READ(CSR_MSTATEEN0, CSR_SSTATEEN0, 1)),
+                              PROBE_VALUE("zicsr", GATED_CLEAR_READ(CSR_MSTATEEN0, CSR_SSTATEEN0, 1)));
+                sail_bit_type("extensions.Stateen.sstateen0.FCSR", PROBE_VALUE("zicsr", GATED_SET_READ(CSR_MSTATEEN0, CSR_SSTATEEN0, 2)),
+                              PROBE_VALUE("zicsr", GATED_CLEAR_READ(CSR_MSTATEEN0, CSR_SSTATEEN0, 2)));
             }
         }
     }

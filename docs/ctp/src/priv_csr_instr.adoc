@@ -59,6 +59,7 @@ include::norm/U_norm_rules.adoc[]
 
 These test CSRs when the Zkr entropy extension is supported.  The seed CSR tests run once per
 privilege mode: Zkr_Sm in M-mode, Zkr_S in S-mode, and Zkr_U in U-mode.
+With the H extension, Zkr_H repeats the seed accesses from VS-mode and VU-mode.
 
 ===== Zkr_Sm
 
@@ -71,5 +72,9 @@ include::{testplansdir}/priv/Zkr_S.adoc[]
 ===== Zkr_U
 
 include::{testplansdir}/priv/Zkr_U.adoc[]
+
+===== Zkr_H
+
+include::{testplansdir}/priv/Zkr_H.adoc[]
 
 include::norm/Zkr_norm_rules.adoc[]

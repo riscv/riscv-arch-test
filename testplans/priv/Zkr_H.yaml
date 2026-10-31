@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Zkr_H
+source: https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=443731814#gid=443731814
+notes: |
+  covergroup Zkr_H
+  The tests boot to HS-mode, enter VS-mode and then VU-mode, and write mseccfg through T-SBI.
+  At V=1 every seed access traps, and only mseccfg.SSEED decides which exception.
+coverpoints:
+  - name: cp_zkr_seed_access_h
+    goal: seed accesses from VS-mode and VU-mode raise virtual instruction when HS-qualified, otherwise illegal instruction
+    description: "For each op in {CSRRS, CSRRC, CSRRW, CSRRWI, CSRRSI, CSRRCI} crossed with rs1/imm in {0/nonzero} crossed with {mseccfg.sseed = 0/1, mseccfg.useed = 0/1} crossed with {mode = VS, VU}: attempt the instruction on the seed CSR, then record rd."
+    expectation: "sseed = 0: illegal-instruction exception for every access. sseed = 1: virtual-instruction exception for the read-write forms (CSRRW, CSRRWI, and CSRRS/C, CSRRSI/CI with nonzero rs1/imm), illegal-instruction exception for the read-only forms (CSRRS/C with x0, CSRRSI/CI with imm 0). useed has no effect. rd is not written."
+    bins: 6 ops * 2 rs1 * 4 mseccfg * 2 modes = 96 bins

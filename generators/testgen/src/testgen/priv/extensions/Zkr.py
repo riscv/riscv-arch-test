@@ -1,10 +1,16 @@
 ##################################
 # priv/extensions/Zkr.py
-# Zkr privileged test generators: seed CSR tests for the Sm, S and U groups.
+# Zkr privileged test generators: seed CSR tests for the Sm, S, U and H groups.
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-"""Zkr test generators. Shared test-case generators are called with mode in {"M", "S", "U"}."""
+"""Zkr test generators.
+
+The shared test-case generators are called with mode in {"M", "S", "U"}. The H group runs the seed accesses in
+VS-mode and VU-mode, where every access traps.
+"""
+
+from collections.abc import Iterator
 
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.asm.tsbi import tsbi_call_or_direct
@@ -20,6 +26,25 @@ def _record_seed_reserved(dest_reg: int, test_data: TestData) -> list[str]:
         f"andi x{dest_reg}, x{dest_reg}, 0x3f",
         write_sigupd(dest_reg, test_data),
     ]
+
+
+# (op, is_immediate) for each CSR op to test on seed
+_SEED_CSR_OPS = (
+    ("csrrs", False),
+    ("csrrc", False),
+    ("csrrwi", True),  # not a read of seed, so it does not trap where seed is accessible
+    ("csrrsi", True),
+    ("csrrci", True),
+    ("csrrw", False),  # not a read of seed, so it does not trap where seed is accessible
+)
+
+
+def _seed_csr_ops(dest_reg: int, rs1_reg: int) -> Iterator[tuple[str, int, str]]:
+    """(op, rs1/uimm value, instruction) for each op in _SEED_CSR_OPS with rs1/uimm = 0 and nonzero."""
+    for op, is_imm in _SEED_CSR_OPS:
+        for rs1_imm_val in (0, 1):
+            rs1 = rs1_imm_val if is_imm else ("x0" if rs1_imm_val == 0 else f"x{rs1_reg}")
+            yield op, rs1_imm_val, f"{op} x{dest_reg}, seed, {rs1}"
 
 
 def _gate(mode: str, lines: list[str]) -> list[str]:
@@ -96,31 +121,13 @@ def gen_seed_illegal_csr_op_tests(test_data: TestData, covergroup: str, mode: st
         f"LI(x{rs1_reg}, 0)",
     ]
 
-    # (op, is_immediate) for each CSR op to test on seed
-    csr_ops: list[tuple[str, bool]] = [
-        ("csrrs", False),
-        ("csrrc", False),
-        ("csrrwi", True),  # not a read of seed, so it does not trap
-        ("csrrsi", True),
-        ("csrrci", True),
-        ("csrrw", False),  # not a read of seed, so it does not trap
-    ]
-
-    for op, is_imm in csr_ops:
-        for rs1_imm_val in (0, 1):
-            tag = f"{op}_rs1imm{rs1_imm_val}"
-
-            if is_imm:
-                instr = f"{op} x{dest_reg}, seed, {rs1_imm_val}"
-            else:
-                instr = f"{op} x{dest_reg}, seed, {'x0' if rs1_imm_val == 0 else f'x{rs1_reg}'}"
-
-            lines.extend(
-                [
-                    test_data.add_testcase(f"{mode}_{tag}", coverpoint, covergroup),
-                    instr,
-                ]
-            )
+    for op, rs1_imm_val, instr in _seed_csr_ops(dest_reg, rs1_reg):
+        lines.extend(
+            [
+                test_data.add_testcase(f"{mode}_{op}_rs1imm{rs1_imm_val}", coverpoint, covergroup),
+                instr,
+            ]
+        )
 
     lines.extend(_gate(mode, [tsbi_call_or_direct(f"csrw mseccfg, x{save_reg}", mode)]))
 
@@ -193,6 +200,52 @@ def gen_seed_entropy_zero_non_es16_tests(test_data: TestData, covergroup: str, m
     return lines
 
 
+def gen_seed_virtual_access_tests(test_data: TestData, covergroup: str, mode: str) -> list[str]:
+    """CSR ops on seed in VS-mode or VU-mode for each of the 4 mseccfg (sseed x useed) combinations.
+
+    At V=1 only mseccfg.sseed matters and every access traps. With sseed=0 the access is not HS-qualified,
+    so it raises an illegal-instruction exception. With sseed=1 the read-write forms are HS-qualified and
+    raise a virtual-instruction exception, while the read-only forms (csrrs/csrrc with rs1=x0,
+    csrrsi/csrrci with uimm=0) still raise an illegal-instruction exception. rd is recorded to check that
+    the trapping access leaves it unchanged.
+    """
+    coverpoint = "cp_zkr_seed_access_h"
+
+    dest_reg, mseccfg_reg, rs1_reg, save_reg = test_data.int_regs.get_registers(4)
+
+    lines = [
+        comment_banner(coverpoint, f"CSR ops on seed in {mode}-mode across mseccfg.sseed/useed; every access traps"),
+        tsbi_call_or_direct(f"csrr x{save_reg}, mseccfg", mode),
+        f"LI(x{rs1_reg}, 0)",
+    ]
+
+    for sseed in (0, 1):
+        for useed in (0, 1):
+            mseccfg_val = (sseed << 9) | (useed << 8)
+            lines.extend(
+                [
+                    f"# mseccfg: sseed={sseed}, useed={useed}",
+                    f"LI(x{mseccfg_reg}, {mseccfg_val})",
+                    tsbi_call_or_direct(f"csrw mseccfg, x{mseccfg_reg}", mode),
+                ]
+            )
+            for op, rs1_imm_val, instr in _seed_csr_ops(dest_reg, rs1_reg):
+                tag = f"{mode}_{op}_rs1imm{rs1_imm_val}_sseed{sseed}_useed{useed}"
+                lines.extend(
+                    [
+                        f"LI(x{dest_reg}, -1)",
+                        test_data.add_testcase(tag, coverpoint, covergroup),
+                        instr,
+                        write_sigupd(dest_reg, test_data),
+                    ]
+                )
+
+    lines.append(tsbi_call_or_direct(f"csrw mseccfg, x{save_reg}", mode))
+
+    test_data.int_regs.return_registers([dest_reg, mseccfg_reg, rs1_reg, save_reg])
+    return lines
+
+
 @add_priv_test_generator(
     "Zkr",
     required_extensions=["Zkr", "Sm"],
@@ -241,6 +294,29 @@ def make_zkru(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(gen_seed_csrrw_tests(test_data, "Zkr_U_cg", "U"))
     tc.code.extend(gen_seed_illegal_csr_op_tests(test_data, "Zkr_U_cg", "U"))
     tc.code.extend(gen_seed_entropy_zero_non_es16_tests(test_data, "Zkr_U_cg", "U"))
+
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks
+
+
+@add_priv_test_generator(
+    "Zkr",
+    required_extensions=["Zkr", "H"],
+    extra_defines=["#define BOOT_TO_SMODE"],
+)
+def make_zkrh(test_data: TestData) -> list[TestChunk]:
+    """Generate the Zkr seed tests in VS-mode and VU-mode, entered from HS-mode.
+
+    Boot delegates illegal-instruction and virtual-instruction exceptions to HS-mode and leaves hedeleg = 0,
+    so the HS-mode trap handler records every trap from VS and VU.
+    """
+    test_chunks: list[TestChunk] = []
+    tc = test_data.begin_test_chunk("H")
+
+    for mode in ("VS", "VU"):
+        tc.code.append(f"RVTEST_TSBI_GOTO_{mode}MODE")
+        tc.code.extend(gen_seed_virtual_access_tests(test_data, "Zkr_H_cg", mode))
+        tc.code.append("RVTEST_TSBI_GOTO_SMODE")
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

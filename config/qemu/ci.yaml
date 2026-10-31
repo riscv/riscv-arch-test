@@ -112,6 +112,9 @@ exclude_extensions:
   # The same mstatus.MPV bug keeps the VS-mode and VU-mode sweeps in HS-mode
   # (https://gitlab.com/qemu-project/qemu/-/work_items/4588).
   - Ssstrict_H
+  # The same mstatus.MPV bug keeps the VS-mode and VU-mode seed accesses in HS-mode
+  # (https://gitlab.com/qemu-project/qemu/-/work_items/4588).
+  - Zkr_H
   # mret never enters VS/VU (https://gitlab.com/qemu-project/qemu/-/issues/4620), so the VS/VU
   # accesses and the VS timer interrupts fail, and M-mode writes of hvip.VSTIP are dropped while
   # menvcfg.STCE = henvcfg.STCE = 1 (https://gitlab.com/qemu-project/qemu/-/work_items/4593).

@@ -154,6 +154,43 @@ covergroup Zkr_U_cg with function sample(ins_t ins);
 endgroup
 `endif
 
+`ifdef H_SUPPORTED
+// The H group accesses seed from VS-mode and VU-mode, where every access traps: only mseccfg.sseed matters.
+// sseed = 0 raises illegal instruction; sseed = 1 raises virtual instruction for the read-write forms and
+// illegal instruction for the read-only forms. useed is crossed to show it has no effect at V=1.
+covergroup Zkr_H_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    csrops: coverpoint ins.current.insn {
+        wildcard bins csrrs  = {CSRRS};
+        wildcard bins csrrc  = {CSRRC};
+        wildcard bins csrrwi = {CSRRWI};
+        wildcard bins csrrsi = {CSRRSI};
+        wildcard bins csrrci = {CSRRCI};
+        wildcard bins csrrw  = {CSRRW};
+    }
+
+    seed_csr: coverpoint ins.current.insn[31:20] {
+        bins seed = {CSR_SEED};
+    }
+
+    rs1_imm_0_1: coverpoint ins.current.insn[19:15] {
+        bins zero    = {5'b00000};
+        bins nonzero = {[5'b00001:5'b11111]};
+    }
+
+    mseccfg_sseed: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mseccfg", "sseed")[0] {
+    }
+    mseccfg_useed: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mseccfg", "useed")[0] {
+    }
+
+    // Main coverpoint (VS-mode and VU-mode)
+    cp_zkr_seed_access_h: cross priv_mode_vs_vu, csrops, seed_csr, rs1_imm_0_1, mseccfg_sseed, mseccfg_useed;
+
+endgroup
+`endif
+
 function void zkr_sample(int hart, int issue, ins_t ins);
     `ifndef EXCLUDE_SM
         Zkr_Sm_cg.sample(ins);
@@ -163,5 +200,8 @@ function void zkr_sample(int hart, int issue, ins_t ins);
     `endif
     `ifdef U_SUPPORTED
         Zkr_U_cg.sample(ins);
+    `endif
+    `ifdef H_SUPPORTED
+        Zkr_H_cg.sample(ins);
     `endif
 endfunction

@@ -24,6 +24,7 @@ from testgen.priv.extensions.exceptions.ExceptionsCommon import (
     generate_instr_adr_misaligned_jalr_tests,
     generate_load_access_fault_tests,
     generate_load_address_misaligned_tests,
+    generate_misaligned_priority_fetch_tests,
     generate_misaligned_priority_load_tests,
     generate_misaligned_priority_store_tests,
     generate_store_access_fault_tests,
@@ -79,6 +80,11 @@ def make_exceptionsu(test_data: TestData) -> list[TestChunk]:
     )
     tc.code.extend(
         generate_misaligned_priority_store_tests(test_data, _CG, "cp_misaligned_priority_store", name_infix="_")
+    )
+    tc.code.extend(
+        generate_misaligned_priority_fetch_tests(
+            test_data, _CG, "cp_misaligned_priority_fetch", name_prefix="", name_suffix=""
+        )
     )
     tc.code.extend(generate_ecall_tests(test_data, _CG, "cp_ecall_u", "ecall_u", "Ecall"))
     tc.code.extend(_generate_mstatus_ie_tests(test_data))

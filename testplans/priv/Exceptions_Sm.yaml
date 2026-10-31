@@ -88,21 +88,19 @@ coverpoints:
     bins: "1"
   - name: cp_misaligned_priority_load
     goal: Priority of exceptions
-    description: Attempt lb, lbu, lh, lhu, lw, (lwu, ld) from memory location causing  access fault and misaligned. Also exercised in PMP, VM.
-    expectation: Highest priority exception should be taken.
+    description: In machine mode, attempt lb, lbu, lh, lhu, lw, (lwu, ld) at each of the 8 offsets from the access-fault address. Offsets misaligned for the op cause both access fault and address misaligned. Aligned offsets cause only access fault. Also exercised in PMP, VM.
+    expectation: Misaligned offsets take access fault or address misaligned. Aligned offsets take access fault.
     bins: 7 ops * 8 lsbs
   - name: cp_misaligned_priority_store
     goal: Priority of exceptions
-    description: Attempt sb, sh, sw (sd) from memory location causing  access fault and misaligned}. Also exercised in PMP, VM.
-    expectation: Highest priority exception should be taken.
+    description: In machine mode, attempt sb, sh, sw, (sd) at each of the 8 offsets from the access-fault address. Offsets misaligned for the op cause both access fault and address misaligned. Aligned offsets cause only access fault. Also exercised in PMP, VM.
+    expectation: Misaligned offsets take access fault or address misaligned. Aligned offsets take access fault.
     bins: 4 ops * 8 lsbs
   - name: cp_misaligned_priority_fetch
     goal: Priority of exceptions
-    description: Attempt fetch from memory location causing  access fault and misaligned}. Also exercised in PMP, VM.
-    expectation: Highest priority exception should be taken.
-    bins: "***"
-    rules:
-      - "*** missing from ExceptionsM. Split other Exceptions* test plans by type of cp_misaligned_priority as well"
+    description: In machine mode, jalr to aligned and misaligned (+2) targets at an existent address and at the access-fault address. Also exercised in PMP, VM.
+    expectation: Without C, a misaligned target takes instruction address misaligned. With C, a misaligned target at the access-fault address takes instruction access fault.
+    bins: 2 alignments * 2 address types
   - name: cp_mstatus_ie
     goal: Interrupt Enables
     description: ecall with mstatus.MIE = {0/1}

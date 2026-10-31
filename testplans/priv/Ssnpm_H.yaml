@@ -1,77 +1,593 @@
 # yaml-language-server: $schema=testplan.schema.json
 suite: Ssnpm_H
+title: Ssnpm_H Coverpoints (pointer masking in VS-mode, VU-mode )
 source: https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=669410459#gid=669410459
-notes: |
-  The H group boots to HS-mode.  Each test runs with vsatp = Bare and hgatp = Sv57x4 or Sv48x4 identity mapping the
-  test image, so a guest address is a guest physical address and pointer masking zero-extends it.  A tagged address
-  sets one bit that PMLEN = 7 and 16 both mask (58 for Sv57x4, 57 for Sv48x4) or one that only PMLEN = 16 masks (48
-  for Sv57x4, 49 for Sv48x4).  When masking clears the tag, the access reaches the test data.  Otherwise the tagged
-  guest physical address has no G-stage mapping or is wider than hgatp allows, so it raises a guest-page fault in
-  HS-mode, and a load leaves its destination unchanged.  The PMM fields that do not apply to a case are enabled when
-  the one that applies is 00, and 00 otherwise; the HLVX and MXR cases enable every PMM field.  A PMM value selects
-  PMLEN = 7 (10) or 16 (11) only when the configuration supports that PMLEN.
+description: |-
+  Ssnpm with the H extension provides pointer masking for VS-mode (henvcfg.PMM), VU-mode (senvcfg.PMM), and for the
+  explicit accesses of HLV.* and HSV.* (henvcfg.PMM as VS; senvcfg.PMM from HS-mode or hstatus.HUPMM from U-mode as VU).
+  HLVX.* and accesses with MXR in effect are never masked.
+
+  Whether the ignore transformation zero-extends or sign-extends is chosen by vsatp.MODE (not satp, not hgatp):
+  vsatp = Bare means the address is a guest physical address (GPA) and is zero-extended.  When vsatp is not Bare, the
+  address in rs1 is a guest virtual address (GVA), and the sequence is:
+
+  * Mask: the top PMLEN bits are replaced with copies of bit XLEN-PMLEN-1 (bit 56 for PMLEN 7, bit 47 for PMLEN 16),
+    the same sign extension as in Ssnpm with Sv39/48/57.
+  * VS stage: the masked GVA is translated to a GPA using vsatp.
+  * G stage: that GPA is translated to a host physical address using hgatp.
+notes: |-
+  *Groups.*  Ssnpm_H boots to HS-mode (BOOT_TO_SMODE) and enters VS/VU with RVTEST_TSBI_GOTO_VSMODE/VUMODE.
+  Every coverpoint is RV64 only (pm_rv64_only).  PMM = 10 bins exist only with UDB_SUPPORTED_PMLEN_SSNPM_7 and
+  PMM = 11 bins only with UDB_SUPPORTED_PMLEN_SSNPM_16.
+
+  *PMM fields.*  The PMM fields are henvcfg.PMM, senvcfg.PMM, hstatus.HUPMM, menvcfg.PMM and mseccfg.PMM.  When one
+  field is under test, the others are set to a different value, so a hart that reads the wrong field gives a different
+  result: the others are 11 when the field under test is 00, and 00 when it is 10 or 11.  The HLVX and MXR coverpoints
+  enable every field, so a masked result can only mean HLVX or MXR was ignored.  The HFENCE coverpoints leave the
+  others at 00 while the field under test switches between 00 and PMM.  All configuration (the PMM
+  fields, vsatp, hgatp, hstatus.SPVP and the HFENCEs they need) is set in the outer loops, with the PMM values outermost
+  because menvcfg and mseccfg need a T-SBI call.  The inner loops only step through the tag patterns and instructions.
+
+  *Translation modes.*  (vsatp.MODE, hgatp.MODE) is swept over six pairs, each bin guarded by its own support macro.
+  With vsatp = Bare the tag bits are GPA bits, so hgatp decides what an unmasked tag does: Bare, Sv48x4 and Sv57x4 are
+  swept.  With vsatp paged, an unmasked tag is stopped by the VS stage before the G stage, so hgatp cannot change the
+  masking result and only the matching width is used: (Sv39, Sv39x4), (Sv48, Sv48x4), (Sv57, Sv57x4).
+
+  *Tag patterns(A_upper_bits) (bits 63:48 replaced in the base address).*  Five patterns:
+
+  * 0x0000 - no tag (the untagged control)
+  * 0x0002 - bit 49: masked by PMLEN 16 only; extra GPA bit of Sv48x4, inside Sv57x4
+  * 0x0400 - bit 58: masked by PMLEN 7 and 16; extra GPA bit of Sv57x4
+  * 0xFF00 - bits 63:56: all masked by PMLEN 16, only 63:57 by PMLEN 7
+  * 0xFFFF - bits 63:48: all masked by PMLEN 16, only 63:57 by PMLEN 7
+
+  The partially masked patterns (0xFFFF and 0xFF00 with PMLEN 7) keep some tag bits after masking.  Those bits can lie
+  inside the Sv57 address width, so the access may reach another mapped page instead of faulting.  When it faults, the
+  test also checks that stval/htval hold the transformed address (pm_csr_hw_apply), which the trap handler already
+  writes to the signature.
+
+  *Why do we need a different page than the test data page?*
+
+  A' = pm_lo_page, the test data page (tag bits = 0x0000), pre-loaded with value_old.
+  A tagged address whose tag is NOT cleared by masking must never reach A'.  It is either left unmapped (so the
+  access faults), or mapped to a separate page, pm_gpa_alias_page, pre-loaded with value_diff.
+  If both the tagged and the untagged address reached A', a read would return value_old whether or not the
+  hardware masked the tag, so the test could not tell the difference.
+
+  With a separate page holding a distinct value, the outcome is unambiguous: value_old proves the tag was stripped
+  and A' was reached through masking; value_diff or a fault proves the tag was used as-is.
+
+  This matters most when the tag bits are inside the GPA width (bits 49:48 with Sv48x4, bits 58:48 with Sv57x4).
+  There the unmasked tagged GPA is a valid address, so the G-stage page tables decide where it goes, and they must
+  not send it to A'.  With vsatp paged, the VS stage does the same job: a tagged VA must not translate to A'.
+
 coverpoints:
   - name: cp_vs_pmm
-    goal: henvcfg.PMM masks loads and stores in VS-mode
-    description: For each henvcfg.PMM value (00, 10, 11), ld and sd in VS-mode at the test data with each tag bit set.
-    expectation: The access reaches the test data when PMLEN masks the tag bit; otherwise load or store/AMO guest-page fault.
+    goal: henvcfg.PMM masks loads and stores in VS-mode, for guest physical (vsatp = Bare) and guest virtual (vsatp paged) addresses
+    description: |-
+      Test Environment:
+       In HS-mode, identity map the test image in both stages.  Seed pm_lo_page with value_old.
+       Set henvcfg.PMM and the other PMM fields as in the notes, then HFENCE.GVMA x0, x0 and HFENCE.VVMA x0, x0.
+       Switch to VS-mode and execute the following loop:
+      For each henvcfg.PMM in {00, 10, 11} (outermost loop; the other PMM fields as in the notes) under (vsatp.MODE, hgatp.MODE) in {(Bare, Bare), (Bare, Sv48x4), (Bare, Sv57x4), (Sv39, Sv39x4), (Sv48, Sv48x4), (Sv57, Sv57x4)}:
+      For each A_upper_bits:
+      Set A = A' with upper bits replaced by A_upper_bits
+       ld from A, sigupd(value) + record any traps.
+       sd unique value_new to A, then read back from A' (untagged), sigupd(value) + record any traps.
+    expectation: |-
+      When henvcfg.PMM = 10/11 and every tag bit is within PMLEN: the access reaches A' (ld returns value_old, the readback
+      returns value_new), no trap.
+       vsatp = Bare: A is a guest physical address, so the top PMLEN bits are zero-extended.
+       vsatp paged: A is a guest virtual address, so the top PMLEN bits are sign-extended from bit XLEN-PMLEN-1.
+      Otherwise (PMM = 00, or a tag bit outside PMLEN): the access faults, or reaches a page other than A':
+       vsatp = Bare: load or store/AMO guest-page fault (hgatp paged), or load or store/AMO access fault (hgatp Bare).
+       vsatp paged: load or store/AMO page fault (non-canonical or unmapped VA).
     bins: |-
-      priv_mode VS x {ld, sd} x henvcfg.PMM {00, 10, 11} x tag {PMLEN 7, PMLEN 16 only} x vsatp Bare x hgatp {Sv48x4, Sv57x4}
-      PMM 10 and 11 only when PMLEN 7 and 16 are supported
+      priv_mode VS x {ld, sd} x henvcfg.PMM {00, 10, 11} x tag {5 patterns} x (vsatp, hgatp) {(Bare, Bare), (Bare, Sv48x4), (Bare, Sv57x4), (Sv39, Sv39x4), (Sv48, Sv48x4), (Sv57, Sv57x4)}
+      PMM 10 and 11 only when PMLEN 7 and 16 are supported; each vsatp and hgatp mode only when supported
+    rules:
+      - henvcfg_pmm_op
+      - ssnpm_definition
+      - pm_ignore_upper_bits
+      - pm_ignore_pa
+      - pm_ignore_va
+      - pm_apply_explicit
+      - pm_per_mode_control
+      - pm_config_next_higher
+      - pm_mode_only_dependency
+      - pm_deterministic_effect
+      - pmlen_supported_values
+      - pm_csr_hw_apply
   - name: cp_vu_pmm
-    goal: senvcfg.PMM masks loads and stores in VU-mode
-    description: For each senvcfg.PMM value (00, 10, 11), ld and sd in VU-mode at the test data with each tag bit set.
-    expectation: The access reaches the test data when PMLEN masks the tag bit; otherwise load or store/AMO guest-page fault.
+    goal: senvcfg.PMM masks loads and stores in VU-mode, for guest physical (vsatp = Bare) and guest virtual (vsatp paged) addresses
+    description: |-
+      Same test environment and loop as cp_vs_pmm, except:
+       - the field under test is senvcfg.PMM;
+       - the VS-stage data pages have PTE.U = 1;
+       - the accesses run in VU-mode.
+    expectation: As cp_vs_pmm, with the PMLEN of senvcfg.PMM.
     bins: |-
-      priv_mode VU x {ld, sd} x senvcfg.PMM {00, 10, 11} x tag {PMLEN 7, PMLEN 16 only} x vsatp Bare x hgatp {Sv48x4, Sv57x4}
-      PMM 10 and 11 only when PMLEN 7 and 16 are supported
+      priv_mode VU x {ld, sd} x senvcfg.PMM {00, 10, 11} x tag {5 patterns} x (vsatp, hgatp) {(Bare, Bare), (Bare, Sv48x4), (Bare, Sv57x4), (Sv39, Sv39x4), (Sv48, Sv48x4), (Sv57, Sv57x4)}
+      PMM 10 and 11 only when PMLEN 7 and 16 are supported; each vsatp and hgatp mode only when supported
+    rules:
+      - senvcfg_pmm_ssnpm
+      - senvcfg_pmm_enc
+      - ssnpm_definition
+      - pm_ignore_pa
+      - pm_ignore_va
+      - pm_per_mode_control
+  - name: cp_vs_gstage_no_pmm
+    goal: henvcfg.PMM masks the address of a VS-mode access, never the guest physical address that the VS stage produces
+    description: |-
+      Pointer masking applies to the address an instruction computes.  The GPA that the VS stage produces and the G stage
+      that translates it are implicit steps, so neither is masked.  The test maps an untagged guest virtual address to a GPA
+      whose top bit b lies in the masked range.  If the GPA were masked, bit b would be cleared and the access would reach
+      A' instead of the alias page.
+
+      Test Environment:
+       In HS-mode, vsatp paged.  b is the top GPA bit: 49 for Sv48x4, 58 for Sv57x4.
+       G = GPA(A') with bit b set.  The VS stage maps the untagged VA V to G.
+       The G stage maps GPA(A') to pm_lo_page (value_old) and G to pm_gpa_alias_page (value_diff).
+       Set henvcfg.PMM and the other PMM fields as in the notes, then HFENCE.GVMA x0, x0 and HFENCE.VVMA x0, x0.
+       Switch to VS-mode and execute the following loop:
+      For each (vsatp.MODE, hgatp.MODE) in {(Sv48, Sv48x4), (Sv57, Sv57x4)}:
+      For each henvcfg.PMM in {10, 11} (outermost loop; the other PMM fields as in the notes):
+       ld from V, sigupd(value) + record any traps.
+       sd unique value_new to V, then read back from A' and from the alias page, sigupd(value) + record any traps.
+    expectation: |-
+      No trap.  ld returns value_diff, sd writes the alias page, and A' still holds value_old.  A hart that masks the GPA
+      would clear bit b, reach A', and return value_old.
+    bins: |-
+      priv_mode VS x {ld, sd} x henvcfg.PMM {11 (Sv48x4: bit 49), 10 and 11 (Sv57x4: bit 58)} x (vsatp, hgatp) {(Sv48, Sv48x4), (Sv57, Sv57x4)}
+      PMM 10 and 11 only when PMLEN 7 and 16 are supported; each vsatp and hgatp mode only when supported
+    rules:
+      - pm_not_apply_implicit
+      - henvcfg_pmm_op
+    notes: With PMLEN 7, bit 49 is not masked, so Sv48x4 is tested with PMM = 11 only.
   - name: cp_hlv_hs_spvp1_pmm
-    goal: HLV and HSV in HS-mode with hstatus.SPVP = 1 take henvcfg.PMM
-    description: With hstatus.SPVP = 1, for each henvcfg.PMM value, hlv.d and hsv.d in HS-mode at the test data with each tag bit set.
-    expectation: The access reaches the test data when PMLEN masks the tag bit; otherwise load or store/AMO guest-page fault.
+    goal: HLV and HSV in HS-mode with hstatus.SPVP = 1 (access as VS) take henvcfg.PMM
+    description: |-
+      With hstatus.SPVP = 1, for each henvcfg.PMM value, hlv.d and hsv.d in HS-mode at the test data with each tag set.
+
+      Test Environment:
+       In HS-mode, identity map the test image in both stages; the VS-stage data pages have PTE.U = 0.
+       Seed pm_lo_page with value_old.
+       HLV/HSV run with V = 0, but the address type (GPA or GVA) still comes from vsatp.
+       HFENCE.GVMA x0, x0 and HFENCE.VVMA x0, x0 after each PMM, vsatp or hgatp change.
+      For each henvcfg.PMM in {00, 10, 11} (outermost loop; the other PMM fields as in the notes) under (vsatp.MODE, hgatp.MODE) in {(Bare, Bare), (Bare, Sv48x4), (Bare, Sv57x4), (Sv39, Sv39x4), (Sv48, Sv48x4), (Sv57, Sv57x4)}:
+      For each A_upper_bits in the 5 tag patterns:
+      Set A = A' with upper bits replaced by A_upper_bits
+       hlv.d from A, sigupd(value) + record any traps.
+       hsv.d value_new to A, then hlv.d from A' (untagged), sigupd(value) + record any traps.
+    expectation: |-
+      As cp_vs_pmm, with the PMLEN of henvcfg.PMM: when every tag bit is within PMLEN, hlv.d returns value_old
+      and the readback after hsv.d returns value_new; otherwise the access faults or reaches a
+      page other than A'.  Faults are taken in HS-mode with hstatus.GVA = 1.
     bins: |-
-      priv_mode HS x {hlv.d, hsv.d} x hstatus.SPVP = 1 x henvcfg.PMM {00, 10, 11} x tag {PMLEN 7, PMLEN 16 only} x vsatp Bare x hgatp {Sv48x4, Sv57x4}
-      PMM 10 and 11 only when PMLEN 7 and 16 are supported
+      priv_mode HS x {hlv.d, hsv.d} x hstatus.SPVP = 1 x henvcfg.PMM {00, 10, 11} x tag {5 patterns} x (vsatp, hgatp) {(Bare, Bare), (Bare, Sv48x4), (Bare, Sv57x4), (Sv39, Sv39x4), (Sv48, Sv48x4), (Sv57, Sv57x4)}
+      PMM 10 and 11 only when PMLEN 7 and 16 are supported; each vsatp and hgatp mode only when supported
+    rules:
+      - pm_mprv_spvp
+      - henvcfg_pmm_op
+      - pm_ignore_pa
+      - pm_ignore_va
+      - pm_apply_explicit
+  - name: cp_hlv_hs_spvp1_mxr_pmm
+    goal: vsstatus.MXR = 1 or sstatus.MXR = 1 turns henvcfg.PMM pointer masking off for HLV and HSV in HS-mode with hstatus.SPVP = 1 (access as VS)
+    description: |-
+      Same test environment and loop as cp_hlv_hs_spvp1_pmm, except:
+       - for each (vsstatus.MXR, sstatus.MXR) in {(0,1), (1,0), (1,1)}, HS-mode sets both bits;
+       - all PMM fields are set to the same value in {10, 11} (outermost loop), so a masked result can only mean MXR was ignored.
+    expectation: |-
+      No masking for every MXR combination.  Tag 0x0000 reaches the test data (the control).  Every other tag is used
+      unmasked: the access faults or reaches a page other than A'.
+    bins: |-
+      priv_mode HS x {hlv.d, hsv.d} x hstatus.SPVP = 1 x (vsstatus.MXR, sstatus.MXR) {(0,1), (1,0), (1,1)} x henvcfg.PMM {10, 11} x tag {5 patterns} x (vsatp, hgatp) {(Bare, Bare), (Bare, Sv48x4), (Bare, Sv57x4), (Sv39, Sv39x4), (Sv48, Sv48x4), (Sv57, Sv57x4)}
+      PMM 10 and 11 only when PMLEN 7 and 16 are supported; each vsatp and hgatp mode only when supported
+    rules:
+      - pm_mxr_exception
+      - pm_mprv_spvp
+    notes: vsstatus.MXR = 0 and sstatus.MXR = 0 is cp_hlv_hs_spvp1_pmm.
   - name: cp_hlv_hs_spvp0_pmm
-    goal: HLV and HSV in HS-mode with hstatus.SPVP = 0 take senvcfg.PMM
-    description: With hstatus.SPVP = 0, for each senvcfg.PMM value, hlv.d and hsv.d in HS-mode at the test data with each tag bit set.
-    expectation: The access reaches the test data when PMLEN masks the tag bit; otherwise load or store/AMO guest-page fault.
+    goal: HLV and HSV in HS-mode with hstatus.SPVP = 0 (access as VU) take senvcfg.PMM
+    description: |-
+      Same test environment and loop as cp_hlv_hs_spvp1_pmm, except:
+       - hstatus.SPVP = 0;
+       - the field under test is senvcfg.PMM;
+       - the VS-stage data pages have PTE.U = 1.
+    expectation: As cp_hlv_hs_spvp1_pmm, with the PMLEN of senvcfg.PMM.
     bins: |-
-      priv_mode HS x {hlv.d, hsv.d} x hstatus.SPVP = 0 x senvcfg.PMM {00, 10, 11} x tag {PMLEN 7, PMLEN 16 only} x vsatp Bare x hgatp {Sv48x4, Sv57x4}
-      PMM 10 and 11 only when PMLEN 7 and 16 are supported
+      priv_mode HS x {hlv.d, hsv.d} x hstatus.SPVP = 0 x senvcfg.PMM {00, 10, 11} x tag {5 patterns} x (vsatp, hgatp) {(Bare, Bare), (Bare, Sv48x4), (Bare, Sv57x4), (Sv39, Sv39x4), (Sv48, Sv48x4), (Sv57, Sv57x4)}
+      PMM 10 and 11 only when PMLEN 7 and 16 are supported; each vsatp and hgatp mode only when supported
+    rules:
+      - pm_mprv_spvp
+      - senvcfg_pmm_ssnpm
+      - pm_ignore_pa
+      - pm_ignore_va
+      - pm_apply_explicit
+  - name: cp_hlv_hs_spvp0_mxr_pmm
+    goal: vsstatus.MXR = 1 or sstatus.MXR = 1 turns senvcfg.PMM pointer masking off for HLV and HSV in HS-mode with hstatus.SPVP = 0 (access as VU)
+    description: |-
+      Same test environment and loop as cp_hlv_hs_spvp0_pmm, except:
+       - for each (vsstatus.MXR, sstatus.MXR) in {(0,1), (1,0), (1,1)}, HS-mode sets both bits;
+       - all PMM fields are set to the same value in {10, 11} (outermost loop), so a masked result can only mean MXR was ignored.
+    expectation: |-
+      No masking for every MXR combination.  Tag 0x0000 reaches the test data (the control).  Every other tag is used
+      unmasked: the access faults or reaches a page other than A'.
+    bins: |-
+      priv_mode HS x {hlv.d, hsv.d} x hstatus.SPVP = 0 x (vsstatus.MXR, sstatus.MXR) {(0,1), (1,0), (1,1)} x senvcfg.PMM {10, 11} x tag {5 patterns} x (vsatp, hgatp) {(Bare, Bare), (Bare, Sv48x4), (Bare, Sv57x4), (Sv39, Sv39x4), (Sv48, Sv48x4), (Sv57, Sv57x4)}
+      PMM 10 and 11 only when PMLEN 7 and 16 are supported; each vsatp and hgatp mode only when supported
+    rules:
+      - pm_mxr_exception
+      - pm_mprv_spvp
+    notes: vsstatus.MXR = 0 and sstatus.MXR = 0 is cp_hlv_hs_spvp0_pmm.
   - name: cp_hlv_u_spvp1_pmm
-    goal: HLV and HSV in U-mode with hstatus.SPVP = 1 take henvcfg.PMM
-    description: With hstatus.HU = 1 and hstatus.SPVP = 1, for each henvcfg.PMM value, hlv.d and hsv.d in U-mode at the test data with each tag bit set.
-    expectation: The access reaches the test data when PMLEN masks the tag bit; otherwise load or store/AMO guest-page fault.
+    goal: HLV and HSV in U-mode with hstatus.SPVP = 1 (access as VS) take henvcfg.PMM
+    description: |-
+      Same test environment and loop as cp_hlv_hs_spvp1_pmm, except:
+       - hstatus.HU = 1; HS-mode sets hstatus.SPVP and henvcfg.PMM, then switches to U-mode for the accesses.
+    expectation: As cp_hlv_hs_spvp1_pmm, with the PMLEN of henvcfg.PMM.
     bins: |-
-      priv_mode U x hstatus.HU = 1 x {hlv.d, hsv.d} x hstatus.SPVP = 1 x henvcfg.PMM {00, 10, 11} x tag {PMLEN 7, PMLEN 16 only} x vsatp Bare x hgatp {Sv48x4, Sv57x4}
-      PMM 10 and 11 only when PMLEN 7 and 16 are supported
+      priv_mode U x hstatus.HU = 1 x {hlv.d, hsv.d} x hstatus.SPVP = 1 x henvcfg.PMM {00, 10, 11} x tag {5 patterns} x (vsatp, hgatp) {(Bare, Bare), (Bare, Sv48x4), (Bare, Sv57x4), (Sv39, Sv39x4), (Sv48, Sv48x4), (Sv57, Sv57x4)}
+      PMM 10 and 11 only when PMLEN 7 and 16 are supported; each vsatp and hgatp mode only when supported
+    rules:
+      - pm_mprv_spvp
+      - henvcfg_pmm_op
+      - hstatus_hu_op
+  - name: cp_hlv_u_spvp1_mxr_pmm
+    goal: vsstatus.MXR = 1 or sstatus.MXR = 1 turns henvcfg.PMM pointer masking off for HLV and HSV in U-mode with hstatus.SPVP = 1 (access as VS)
+    description: |-
+      Same test environment and loop as cp_hlv_u_spvp1_pmm, except:
+       - for each (vsstatus.MXR, sstatus.MXR) in {(0,1), (1,0), (1,1)}, HS-mode sets both bits;
+       - all PMM fields are set to the same value in {10, 11} (outermost loop), so a masked result can only mean MXR was ignored.
+    expectation: |-
+      No masking for every MXR combination.  Tag 0x0000 reaches the test data (the control).  Every other tag is used
+      unmasked: the access faults or reaches a page other than A'.
+    bins: |-
+      priv_mode U x hstatus.HU = 1 x {hlv.d, hsv.d} x hstatus.SPVP = 1 x (vsstatus.MXR, sstatus.MXR) {(0,1), (1,0), (1,1)} x henvcfg.PMM {10, 11} x tag {5 patterns} x (vsatp, hgatp) {(Bare, Bare), (Bare, Sv48x4), (Bare, Sv57x4), (Sv39, Sv39x4), (Sv48, Sv48x4), (Sv57, Sv57x4)}
+      PMM 10 and 11 only when PMLEN 7 and 16 are supported; each vsatp and hgatp mode only when supported
+    rules:
+      - pm_mxr_exception
+      - pm_mprv_spvp
+    notes: vsstatus.MXR = 0 and sstatus.MXR = 0 is cp_hlv_u_spvp1_pmm.
   - name: cp_hlv_u_spvp0_pmm
-    goal: HLV and HSV in U-mode with hstatus.SPVP = 0 take hstatus.HUPMM
-    description: With hstatus.HU = 1 and hstatus.SPVP = 0, for each hstatus.HUPMM value, hlv.d and hsv.d in U-mode at the test data with each tag bit set.
-    expectation: The access reaches the test data when PMLEN masks the tag bit; otherwise load or store/AMO guest-page fault.
+    goal: HLV and HSV in U-mode with hstatus.SPVP = 0 (access as VU) take hstatus.HUPMM
+    description: |-
+      Same test environment and loop as cp_hlv_hs_spvp1_pmm, except:
+       - hstatus.HU = 1 and hstatus.SPVP = 0; HS-mode sets hstatus.HUPMM, then switches to U-mode for the accesses;
+       - the field under test is hstatus.HUPMM;
+       - the VS-stage data pages have PTE.U = 1.
+    expectation: As cp_hlv_hs_spvp1_pmm, with the PMLEN of hstatus.HUPMM.
     bins: |-
-      priv_mode U x hstatus.HU = 1 x {hlv.d, hsv.d} x hstatus.SPVP = 0 x hstatus.HUPMM {00, 10, 11} x tag {PMLEN 7, PMLEN 16 only} x vsatp Bare x hgatp {Sv48x4, Sv57x4}
-      PMM 10 and 11 only when PMLEN 7 and 16 are supported
+      priv_mode U x hstatus.HU = 1 x {hlv.d, hsv.d} x hstatus.SPVP = 0 x hstatus.HUPMM {00, 10, 11} x tag {5 patterns} x (vsatp, hgatp) {(Bare, Bare), (Bare, Sv48x4), (Bare, Sv57x4), (Sv39, Sv39x4), (Sv48, Sv48x4), (Sv57, Sv57x4)}
+      PMM 10 and 11 only when PMLEN 7 and 16 are supported; each vsatp and hgatp mode only when supported
+    rules:
+      - pm_mprv_spvp
+      - hstatus_hu_op
+    notes: |-
+      This is the one VU access that does not use senvcfg.PMM: in U-mode senvcfg.PMM holds the host's own U-mode
+      setting, so the guest's VU setting is copied into hstatus.HUPMM.  The HUPMM paragraph has no normative tag.
+  - name: cp_hlv_u_spvp0_mxr_pmm
+    goal: vsstatus.MXR = 1 or sstatus.MXR = 1 turns hstatus.HUPMM pointer masking off for HLV and HSV in U-mode with hstatus.SPVP = 0 (access as VU)
+    description: |-
+      Same test environment and loop as cp_hlv_u_spvp0_pmm, except:
+       - for each (vsstatus.MXR, sstatus.MXR) in {(0,1), (1,0), (1,1)}, HS-mode sets both bits;
+       - all PMM fields are set to the same value in {10, 11} (outermost loop), so a masked result can only mean MXR was ignored.
+    expectation: |-
+      No masking for every MXR combination.  Tag 0x0000 reaches the test data (the control).  Every other tag is used
+      unmasked: the access faults or reaches a page other than A'.
+    bins: |-
+      priv_mode U x hstatus.HU = 1 x {hlv.d, hsv.d} x hstatus.SPVP = 0 x (vsstatus.MXR, sstatus.MXR) {(0,1), (1,0), (1,1)} x hstatus.HUPMM {10, 11} x tag {5 patterns} x (vsatp, hgatp) {(Bare, Bare), (Bare, Sv48x4), (Bare, Sv57x4), (Sv39, Sv39x4), (Sv48, Sv48x4), (Sv57, Sv57x4)}
+      PMM 10 and 11 only when PMLEN 7 and 16 are supported; each vsatp and hgatp mode only when supported
+    rules:
+      - pm_mxr_exception
+      - pm_mprv_spvp
+    notes: vsstatus.MXR = 0 and sstatus.MXR = 0 is cp_hlv_u_spvp0_pmm.
   - name: cp_hlvx_hs_pmm
     goal: HLVX in HS-mode is never masked
-    description: With henvcfg.PMM and senvcfg.PMM enabled, hlvx.wu in HS-mode for hstatus.SPVP = 0 and 1 at the test data with each tag bit set.
-    expectation: Load guest-page fault in every case.
+    description: |-
+      With every PMM field enabled (henvcfg.PMM = senvcfg.PMM = hstatus.HUPMM), hlvx.hu and hlvx.wu in HS-mode for
+      hstatus.SPVP = 0 and 1 at the test data with each tag set.
+
+      Test Environment:
+       Identity map the test image in both stages, with the data page executable (X = 1) in both stages so the
+       untagged HLVX succeeds; the VS-stage page has PTE.U = 1 when SPVP = 0 and PTE.U = 0 when SPVP = 1.
+       Seed pm_lo_page with value_old.
+      For each PMM in {10, 11} under (vsatp.MODE, hgatp.MODE) in {(Bare, Bare), (Bare, Sv48x4), (Bare, Sv57x4), (Sv39, Sv39x4), (Sv48, Sv48x4), (Sv57, Sv57x4)}:
+      For each hstatus.SPVP in {0, 1}:
+      For each A_upper_bits in the 5 tag patterns:
+      Set A = A' with upper bits replaced by A_upper_bits
+       For each of {hlvx.hu, hlvx.wu}: read from A, sigupd(value) + record any traps.
+    expectation: |-
+      Tag 0x0000 returns the data (the control: without it a hart where HLVX always faults would pass).
+      Every other tag is used unmasked: the access faults or reaches a page other than A', and stval holds the
+      untransformed address.
     bins: |-
-      priv_mode HS x hlvx.wu x hstatus.SPVP {0, 1} x henvcfg.PMM enabled x senvcfg.PMM enabled x tag {PMLEN 7, PMLEN 16 only} x vsatp Bare x hgatp {Sv48x4, Sv57x4}
-    notes: |-
-      hypervisor.adoc defines henvcfg.PMM, senvcfg.PMM and hstatus.HUPMM masking only for HLV.* and HSV.*, which Sail and Spike read as excluding HLVX.
+      priv_mode HS x {hlvx.hu, hlvx.wu} x hstatus.SPVP {0, 1} x henvcfg.PMM = senvcfg.PMM = hstatus.HUPMM {10, 11} x tag {5 patterns} x (vsatp, hgatp) {(Bare, Bare), (Bare, Sv48x4), (Bare, Sv57x4), (Sv39, Sv39x4), (Sv48, Sv48x4), (Sv57, Sv57x4)}
+      PMM 10 and 11 only when PMLEN 7 and 16 are supported; each vsatp and hgatp mode only when supported
+    notes: The HLVX sentence in hypervisor.adoc ("not subject to pointer masking") has no normative tag.
   - name: cp_hlvx_u_pmm
     goal: HLVX in U-mode is never masked
-    description: With hstatus.HU = 1 and henvcfg.PMM and hstatus.HUPMM enabled, hlvx.wu in U-mode for hstatus.SPVP = 0 and 1 at the test data with each tag bit set.
-    expectation: Load guest-page fault in every case.
+    description: |-
+      Same test environment and loop as cp_hlvx_hs_pmm, except hstatus.HU = 1 and the accesses run in U-mode
+      (HS-mode sets hstatus.SPVP and the PMM fields, then switches to U-mode).
+    expectation: As cp_hlvx_hs_pmm.
     bins: |-
-      priv_mode U x hstatus.HU = 1 x hlvx.wu x hstatus.SPVP {0, 1} x henvcfg.PMM enabled x hstatus.HUPMM enabled x tag {PMLEN 7, PMLEN 16 only} x vsatp Bare x hgatp {Sv48x4, Sv57x4}
-    notes: |-
-      The HUPMM paragraph has no normative tag, so the row maps no rule.
-  - name: cp_mxr_pmm
-    goal: vsstatus.MXR = 1 turns pointer masking off in VS-mode and VU-mode
-    description: With vsstatus.MXR = 1 and henvcfg.PMM and senvcfg.PMM enabled, ld in VS-mode and VU-mode at the test data with each tag bit set.
-    expectation: Load guest-page fault in every case.
+      priv_mode U x hstatus.HU = 1 x {hlvx.hu, hlvx.wu} x hstatus.SPVP {0, 1} x henvcfg.PMM = senvcfg.PMM = hstatus.HUPMM {10, 11} x tag {5 patterns} x (vsatp, hgatp) {(Bare, Bare), (Bare, Sv48x4), (Bare, Sv57x4), (Sv39, Sv39x4), (Sv48, Sv48x4), (Sv57, Sv57x4)}
+      PMM 10 and 11 only when PMLEN 7 and 16 are supported; each vsatp and hgatp mode only when supported
+    rules:
+      - hstatus_hu_op
+  - name: cp_vs_mxr_pmm
+    goal: vsstatus.MXR = 1 or sstatus.MXR = 1 turns henvcfg.PMM pointer masking off in VS-mode
+    description: |-
+      With vsstatus.MXR = 1 or sstatus.MXR = 1 (or both) and henvcfg.PMM enabled, ld and sd in VS-mode at the test data
+      with each tag set.  vsstatus.MXR applies to the VS stage only; sstatus.MXR applies to both stages.  Either one is
+      MXR in effect for a guest access.
+
+      Test Environment:
+       In HS-mode, identity map the test image in both stages; the VS-stage data pages have PTE.U = 0.
+       Seed pm_lo_page with value_old.
+      For each (vsstatus.MXR, sstatus.MXR) in {(0,1), (1,0), (1,1)}: set both bits in HS-mode.
+      For each PMM in {10, 11}, written to henvcfg.PMM, senvcfg.PMM, hstatus.HUPMM, menvcfg.PMM and mseccfg.PMM (outermost loop), under (vsatp.MODE, hgatp.MODE) in {(Bare, Bare), (Bare, Sv48x4), (Bare, Sv57x4), (Sv39, Sv39x4), (Sv48, Sv48x4), (Sv57, Sv57x4)}:
+      Switch to VS-mode and execute the following loop:
+      For each A_upper_bits in the 5 tag patterns:
+      Set A = A' with upper bits replaced by A_upper_bits
+       ld from A, sigupd(value) + record any traps.
+       sd unique value_new to A, then read back from A' (untagged), sigupd(value) + record any traps.
+    expectation: |-
+      No masking for every MXR combination.  Tag 0x0000 reaches the test data (the control).  Every other tag is used
+      unmasked: the access faults or reaches a page other than A'.
     bins: |-
-      priv_mode {VS, VU} x ld x vsstatus.MXR = 1 x henvcfg.PMM enabled x senvcfg.PMM enabled x tag {PMLEN 7, PMLEN 16 only} x vsatp Bare x hgatp {Sv48x4, Sv57x4}
+      priv_mode VS x {ld, sd} x (vsstatus.MXR, sstatus.MXR) {(0,1), (1,0), (1,1)} x henvcfg.PMM {10, 11} x tag {5 patterns} x (vsatp, hgatp) {(Bare, Bare), (Bare, Sv48x4), (Bare, Sv57x4), (Sv39, Sv39x4), (Sv48, Sv48x4), (Sv57, Sv57x4)}
+      PMM 10 and 11 only when PMLEN 7 and 16 are supported; each vsatp and hgatp mode only when supported
+    rules:
+      - pm_mxr_exception
+    notes: vsstatus.MXR = 0 and sstatus.MXR = 0 is cp_vs_pmm.
+  - name: cp_vu_mxr_pmm
+    goal: vsstatus.MXR = 1 or sstatus.MXR = 1 turns senvcfg.PMM pointer masking off in VU-mode
+    description: |-
+      Same test environment and loop as cp_vs_mxr_pmm, except:
+       - the VS-stage data pages have PTE.U = 1;
+       - the accesses run in VU-mode.
+    expectation: As cp_vs_mxr_pmm.
+    bins: |-
+      priv_mode VU x {ld, sd} x (vsstatus.MXR, sstatus.MXR) {(0,1), (1,0), (1,1)} x senvcfg.PMM {10, 11} x tag {5 patterns} x (vsatp, hgatp) {(Bare, Bare), (Bare, Sv48x4), (Bare, Sv57x4), (Sv39, Sv39x4), (Sv48, Sv48x4), (Sv57, Sv57x4)}
+      PMM 10 and 11 only when PMLEN 7 and 16 are supported; each vsatp and hgatp mode only when supported
+    rules:
+      - pm_mxr_exception
+    notes: vsstatus.MXR = 0 and sstatus.MXR = 0 is cp_vu_pmm.
+  - name: cp_vs_pmlen_masking
+    goal: henvcfg.PMM ignores the upper PMLEN bits of the address for every kind of memory-accessing instruction in VS-mode
+    description: |-
+      If pointer masking is enabled, addresses differing only in upper PMLEN bits access the same location.  This is
+      cp_pmlen_masking of Ssnpm run in VS-mode with henvcfg.PMM.  Each instruction is tested in one variant only, the .D
+      form where there is one.
+
+      Test Environment:
+       In HS-mode, identity map the test image in both stages; the VS-stage data pages have PTE.U = 0.
+       Seed pm_lo_page with value_old.
+       Enable the state the instruction groups need: FS and VS in mstatus and vsstatus, henvcfg.CBZE and henvcfg.CBCFE.
+       Set henvcfg.PMM and the other PMM fields as in the notes, then HFENCE.GVMA x0, x0 and HFENCE.VVMA x0, x0.
+       Switch to VS-mode and execute the following loop:
+      For each henvcfg.PMM in {00, 10, 11} (outermost loop; the other PMM fields as in the notes) under (vsatp.MODE, hgatp.MODE) in {(Bare, Bare), (Bare, Sv48x4), (Bare, Sv57x4), (Sv39, Sv39x4), (Sv48, Sv48x4), (Sv57, Sv57x4)}:
+      For each A_upper_bits in the 5 tag patterns:
+      Set A = A' with upper bits replaced by A_upper_bits
+      For each read instruction: read from A, sigupd(value) + record any traps.
+      For each write instruction: write unique value_new to A, then read back from A' (untagged), sigupd(value) + record any traps.
+      Instructions covered under this loop:
+
+      (LOAD/STORE): Read: ld.  Write: sd.
+
+      (ATOMIC OPS): Each AMO is both a read and a write, so treat it as a write: perform the AMO at A, read back from A'.
+       If RV64A: amoadd.d.  If Zacas: amocas.d.  If Zabha: amoadd.h (Zabha has only byte and halfword forms).
+
+      (FLOATING POINT OPS): If D, Read: fld.  Write: fsd.
+
+      (COMPRESSED OPS): If Zca, Reads: c.ld, c.ldsp.  Writes: c.sd, c.sdsp.  If Zcd, Read: c.fldsp.  Write: c.fsdsp.
+
+      (CACHE MANAGEMENT OPS): If Zicboz: cbo.zero at A (write), read back from A'.
+       If Zicbom: cbo.clean at A (write), read back from A'.
+       If Zicbop: prefetch.w at A, then a normal load or store at A' to observe the cache effect.
+
+      (VECTOR OPS): If RVV 1.0, Reads: vle64.v, vlse64.v, vluxei64.v, vloxei64.v, vlseg2e64.v, vl1re64.v, vle64ff.v from A, sigupd.
+       Writes: vse64.v, vsse64.v, vsuxei64.v, vsoxei64.v, vsseg2e64.v, vs1r.v to A, read back from A', sigupd(value) + record any traps.
+    expectation: As cp_vs_pmm, with the PMLEN of henvcfg.PMM, for every instruction in the loop.
+    bins: |-
+      priv_mode VS x {{ld, sd} + {amoadd.d (RV64A), amocas.d (Zacas), amoadd.h (Zabha)} + {fld, fsd (D)} + {c.ld, c.sd, c.ldsp, c.sdsp (Zca), c.fldsp, c.fsdsp (Zcd)} + {cbo.zero (Zicboz), cbo.clean (Zicbom), prefetch.w (Zicbop)} + {vle64.v, vlse64.v, vluxei64.v, vloxei64.v, vlseg2e64.v, vl1re64.v, vle64ff.v, vse64.v, vsse64.v, vsuxei64.v, vsoxei64.v, vsseg2e64.v, vs1r.v (RVV)}} x henvcfg.PMM {00, 10, 11} x tag {5 patterns} x (vsatp, hgatp) {(Bare, Bare), (Bare, Sv48x4), (Bare, Sv57x4), (Sv39, Sv39x4), (Sv48, Sv48x4), (Sv57, Sv57x4)}
+      PMM 10 and 11 only when PMLEN 7 and 16 are supported; each vsatp and hgatp mode only when supported; each instruction group only when its extension is implemented
+    rules:
+      - henvcfg_pmm_op
+      - ssnpm_definition
+      - pm_ignore_upper_bits
+      - pm_deterministic_effect
+      - pm_per_mode_control
+      - pm_apply_explicit
+      - pm_cpu_only
+      - pm_mode_only_dependency
+      - pm_rv64_only
+      - pmlen_supported_values
+      - pm_ignore_va
+      - pm_ignore_pa
+  - name: cp_vu_pmlen_masking
+    goal: senvcfg.PMM ignores the upper PMLEN bits of the address for every kind of memory-accessing instruction in VU-mode
+    description: |-
+      Same test environment and loop as cp_vs_pmlen_masking, except:
+       - the field under test is senvcfg.PMM;
+       - the VS-stage data pages have PTE.U = 1;
+       - senvcfg.CBZE and senvcfg.CBCFE are also enabled;
+       - the accesses run in VU-mode.
+    expectation: As cp_vs_pmlen_masking, with the PMLEN of senvcfg.PMM.
+    bins: |-
+      priv_mode VU x {{ld, sd} + {amoadd.d (RV64A), amocas.d (Zacas), amoadd.h (Zabha)} + {fld, fsd (D)} + {c.ld, c.sd, c.ldsp, c.sdsp (Zca), c.fldsp, c.fsdsp (Zcd)} + {cbo.zero (Zicboz), cbo.clean (Zicbom), prefetch.w (Zicbop)} + {vle64.v, vlse64.v, vluxei64.v, vloxei64.v, vlseg2e64.v, vl1re64.v, vle64ff.v, vse64.v, vsse64.v, vsuxei64.v, vsoxei64.v, vsseg2e64.v, vs1r.v (RVV)}} x senvcfg.PMM {00, 10, 11} x tag {5 patterns} x (vsatp, hgatp) {(Bare, Bare), (Bare, Sv48x4), (Bare, Sv57x4), (Sv39, Sv39x4), (Sv48, Sv48x4), (Sv57, Sv57x4)}
+      PMM 10 and 11 only when PMLEN 7 and 16 are supported; each vsatp and hgatp mode only when supported; each instruction group only when its extension is implemented
+    rules:
+      - senvcfg_pmm_ssnpm
+      - senvcfg_pmm_enc
+      - ssnpm_definition
+      - pm_ignore_upper_bits
+      - pm_ignore_pa
+      - pm_ignore_va
+      - pm_apply_explicit
+      - pm_per_mode_control
+  - name: cp_vs_pmm_jalr
+    goal: Pointer masking never applies to instruction fetch, so a JALR through a tagged pointer in VS-mode is not masked
+    description: |-
+      For implicit memory accesses such as instruction fetches, pointer masking does not apply.
+
+      Test Environment:
+       In HS-mode, identity map the test image in both stages; the VS-stage code pages have PTE.U = 0.
+       Place valid executable instructions at A'.
+       Set henvcfg.PMM and the other PMM fields as in the notes, then HFENCE.GVMA x0, x0 and HFENCE.VVMA x0, x0.
+       Switch to VS-mode and execute the following loop:
+      For each henvcfg.PMM in {00, 10, 11} (outermost loop; the other PMM fields as in the notes) under (vsatp.MODE, hgatp.MODE) in {(Bare, Bare), (Bare, Sv48x4), (Bare, Sv57x4), (Sv39, Sv39x4), (Sv48, Sv48x4), (Sv57, Sv57x4)}:
+      For each A_upper_bits in the 5 tag patterns:
+      Set A = A' with upper bits replaced by A_upper_bits
+       jalr to A, sigupd(result) + record any traps.
+    expectation: |-
+      No masking for any henvcfg.PMM.  Tag 0x0000 reaches the code at A' (the control).  Every other tag is fetched
+      unmasked: instruction page fault (vsatp paged), instruction guest-page fault (vsatp = Bare, hgatp paged), or
+      instruction access fault (hgatp Bare), or the fetch reaches a page other than A'.
+    bins: |-
+      priv_mode VS x jalr x henvcfg.PMM {00, 10, 11} x tag {5 patterns} x (vsatp, hgatp) {(Bare, Bare), (Bare, Sv48x4), (Bare, Sv57x4), (Sv39, Sv39x4), (Sv48, Sv48x4), (Sv57, Sv57x4)}
+      PMM 10 and 11 only when PMLEN 7 and 16 are supported; each vsatp and hgatp mode only when supported
+    rules:
+      - pm_not_apply_implicit
+  - name: cp_vu_pmm_jalr
+    goal: Pointer masking never applies to instruction fetch, so a JALR through a tagged pointer in VU-mode is not masked
+    description: |-
+      Same test environment and loop as cp_vs_pmm_jalr, except:
+       - the field under test is senvcfg.PMM;
+       - the VS-stage code pages have PTE.U = 1;
+       - the jalr runs in VU-mode.
+    expectation: As cp_vs_pmm_jalr.
+    bins: |-
+      priv_mode VU x jalr x senvcfg.PMM {00, 10, 11} x tag {5 patterns} x (vsatp, hgatp) {(Bare, Bare), (Bare, Sv48x4), (Bare, Sv57x4), (Sv39, Sv39x4), (Sv48, Sv48x4), (Sv57, Sv57x4)}
+      PMM 10 and 11 only when PMLEN 7 and 16 are supported; each vsatp and hgatp mode only when supported
+    rules:
+      - pm_not_apply_implicit
+  - name: cp_vs_pmlen_misaligned_word
+    goal: Pointer masking is applied to the address of a misaligned access in VS-mode
+    description: |-
+      Test Environment:
+       In HS-mode, identity map the test image in both stages; the VS-stage data pages have PTE.U = 0.
+       Place known value_old at pm_lo_page+1, which is misaligned for a word access.  Let A' = pm_lo_page+1.
+       Set henvcfg.PMM and the other PMM fields as in the notes, then HFENCE.GVMA x0, x0 and HFENCE.VVMA x0, x0.
+       Switch to VS-mode and execute the following loop:
+      For each henvcfg.PMM in {00, 10, 11} (outermost loop; the other PMM fields as in the notes) under (vsatp.MODE, hgatp.MODE) in {(Bare, Bare), (Bare, Sv48x4), (Bare, Sv57x4), (Sv39, Sv39x4), (Sv48, Sv48x4), (Sv57, Sv57x4)}:
+      For each A_upper_bits in the 5 tag patterns:
+      Set A = A' with upper bits replaced by A_upper_bits
+       lw from A, sigupd(value) + record any traps.
+       sw unique value_new to A, then read back from A' (untagged), sigupd(value) + record any traps.
+    expectation: |-
+      As cp_vs_pmm, with the PMLEN of henvcfg.PMM.  When every tag bit is within PMLEN there is no trap: masking is applied
+      to the misaligned address before the access, so A and A' resolve to the same location, lw returns value_old and the
+      readback returns value_new.  Misalignment does not interfere with pointer masking.
+    bins: |-
+      priv_mode VS x {lw, sw} x misaligned (address + 1) x henvcfg.PMM {00, 10, 11} x tag {5 patterns} x (vsatp, hgatp) {(Bare, Bare), (Bare, Sv48x4), (Bare, Sv57x4), (Sv39, Sv39x4), (Sv48, Sv48x4), (Sv57, Sv57x4)}
+      PMM 10 and 11 only when PMLEN 7 and 16 are supported; each vsatp and hgatp mode only when supported
+    rules:
+      - pm_misaligned_equivalence
+  - name: cp_vu_pmlen_misaligned_word
+    goal: Pointer masking is applied to the address of a misaligned access in VU-mode
+    description: |-
+      Same test environment and loop as cp_vs_pmlen_misaligned_word, except:
+       - the field under test is senvcfg.PMM;
+       - the VS-stage data pages have PTE.U = 1;
+       - the accesses run in VU-mode.
+    expectation: As cp_vs_pmlen_misaligned_word, with the PMLEN of senvcfg.PMM.
+    bins: |-
+      priv_mode VU x {lw, sw} x misaligned (address + 1) x senvcfg.PMM {00, 10, 11} x tag {5 patterns} x (vsatp, hgatp) {(Bare, Bare), (Bare, Sv48x4), (Bare, Sv57x4), (Sv39, Sv39x4), (Sv48, Sv48x4), (Sv57, Sv57x4)}
+      PMM 10 and 11 only when PMLEN 7 and 16 are supported; each vsatp and hgatp mode only when supported
+    rules:
+      - pm_misaligned_equivalence
+  - name: cp_vs_hardware_csr_writes_fault
+    goal: Pointer masking is applied to the addresses that hardware writes to stval and htval on a faulting access in VS-mode
+    description: |-
+      When a fault occurs on an explicit memory access under pointer masking, the stval written by hardware holds the
+      masked effective address, not the raw tagged address.  On a guest-page fault, htval holds the GPA of that address
+      shifted right by 2.  htval is not an address on other faults (zero unless the implementation says otherwise),
+      so it is read on every fault and the signature records which case it was.
+
+      Test Environment:
+       In HS-mode, identity map the test image in both stages; the VS-stage data pages have PTE.U = 0.
+       Set henvcfg.PMM and the other PMM fields as in the notes, then HFENCE.GVMA x0, x0 and HFENCE.VVMA x0, x0.
+       Leave hedeleg clear and delegate the load and store access faults to HS-mode with medeleg, so every fault is taken in HS-mode.
+       Use two base addresses and construct the addresses by applying the 5 tag patterns to each:
+        - fault base: RVMODEL_ACCESS_FAULT_ADDRESS, if defined, identity mapped in both stages; the accesses take a
+          load or store access fault.
+        - guest-page-fault base: an address with no G-stage mapping (hgatp paged only); the accesses take a load or store
+          guest-page fault.
+       Switch to VS-mode and execute the following loop:
+      For each henvcfg.PMM in {10, 11} (outermost loop; the other PMM fields as in the notes) under (vsatp.MODE, hgatp.MODE) in {(Bare, Bare), (Bare, Sv48x4), (Bare, Sv57x4), (Sv39, Sv39x4), (Sv48, Sv48x4), (Sv57, Sv57x4)}:
+      For each A_upper_bits in the 5 tag patterns:
+       lw from the constructed address, then sw to it.
+       In the HS-mode trap handler, read stval and htval and sigupd both.
+    expectation: |-
+      A fault is taken in HS-mode.  stval holds the masked effective address (upper PMLEN bits zero-extended with
+      vsatp = Bare, sign-extended with vsatp paged), not the tagged address the program used.
+      Guest-page fault: htval holds the GPA of the masked address shifted right by 2.
+      Access fault: htval is not an address and is zero unless the implementation says otherwise.
+    bins: |-
+      priv_mode VS x {lw, sw} x base {fault, guest-page-fault (hgatp paged only)} x henvcfg.PMM {10, 11} x tag {5 patterns} x (vsatp, hgatp) {(Bare, Bare), (Bare, Sv48x4), (Bare, Sv57x4), (Sv39, Sv39x4), (Sv48, Sv48x4), (Sv57, Sv57x4)}
+      PMM 10 and 11 only when PMLEN 7 and 16 are supported; each vsatp and hgatp mode only when supported
+    rules:
+      - pm_csr_hw_apply
+      - pm_no_trap_vector_mask
+  - name: cp_vu_hardware_csr_writes_fault
+    goal: Pointer masking is applied to the addresses that hardware writes to stval and htval on a faulting access in VU-mode
+    description: |-
+      Same test environment and loop as cp_vs_hardware_csr_writes_fault, except:
+       - the field under test is senvcfg.PMM;
+       - the VS-stage data pages have PTE.U = 1;
+       - the accesses run in VU-mode.
+    expectation: As cp_vs_hardware_csr_writes_fault, with the PMLEN of senvcfg.PMM.
+    bins: |-
+      priv_mode VU x {lw, sw} x base {fault, guest-page-fault (hgatp paged only)} x senvcfg.PMM {10, 11} x tag {5 patterns} x (vsatp, hgatp) {(Bare, Bare), (Bare, Sv48x4), (Bare, Sv57x4), (Sv39, Sv39x4), (Sv48, Sv48x4), (Sv57, Sv57x4)}
+      PMM 10 and 11 only when PMLEN 7 and 16 are supported; each vsatp and hgatp mode only when supported
+    rules:
+      - pm_csr_hw_apply
+      - pm_no_trap_vector_mask
+  - name: cp_henvcfg_pmm_change_hfence
+    goal: After henvcfg.PMM changes to or from a PMLEN where (XLEN - PMLEN) < GPA width, HFENCE.GVMA x0 makes VS-mode accesses follow the new PMLEN
+    description: |-
+      In these cases some GPA bits are also masked bits, so the hart may keep TLB entries that are wrong after the
+      PMM change.  The hypervisor must execute HFENCE.GVMA with rs1 = x0; this test checks that no stale entry is used
+      after that fence.
+
+      Test Environment:
+       vsatp = Bare.  senvcfg.PMM = hstatus.HUPMM = 00.  A' = pm_lo_page, pre-loaded with value_old.
+       Ti = A' with bits 63:48 replaced by the tag:
+         Case 1: PMLEN 7  (PMM = 10), hgatp = Sv57x4    tags {0x0400}           (bit 58)
+         Case 2: PMLEN 16 (PMM = 11), hgatp = Sv57x4    tags {0x0002, 0x0400}   (bits 49, 58)
+         Case 3: PMLEN 16 (PMM = 11), hgatp = Sv48x4    tags {0x0002}           (bit 49)
+       In the G stage, identity map the test image and map each Ti to its own page alias_i (pre-loaded with
+       value_alias_i), so an unmasked access to Ti succeeds and is cached instead of faulting.
+
+      For each case, for each direction {00 -> PMM, PMM -> 00}:
+       1. In HS-mode set henvcfg.PMM = old, HFENCE.GVMA x0, x0.  In VS-mode: ld from each Ti, sigupd(value).
+       2. In HS-mode set henvcfg.PMM = new, HFENCE.GVMA x0, x0.
+       3. In VS-mode: ld from each Ti, sigupd(value).
+       4. In VS-mode: sd value_new to each Ti, read back A' and alias_i untagged, sigupd(value); restore both.
+    expectation: |-
+      No traps.  PMM = 00: Ti reaches alias_i (value_alias_i).  PMM = 10/11: Ti reaches A' (value_old).
+      So step 3 always differs from step 1; getting the step 1 value again means a stale entry survived the fence.
+    bins: |-
+      priv_mode VS x {ld, sd} x case {1, 2, 3} x direction {00 -> PMM, PMM -> 00} x tag (case 1 {0x0400}, case 2 {0x0002, 0x0400}, case 3 {0x0002})
+      Each case only when its PMLEN and hgatp mode are supported
+    rules:
+      - henvcfg_pmm_op
+    notes: The HFENCE.GVMA paragraph (hypervisor.adoc, Interaction with Pointer Masking) has no normative tag.
+  - name: cp_hupmm_change_hfence
+    goal: After hstatus.HUPMM changes to or from a PMLEN where (XLEN - PMLEN) < GPA width, HFENCE.GVMA x0 makes HLV/HSV in U-mode follow the new PMLEN
+    description: |-
+      Same test environment, cases, addresses and steps as cp_henvcfg_pmm_change_hfence, except:
+       - the field changed is hstatus.HUPMM, with henvcfg.PMM = senvcfg.PMM = 00;
+       - hstatus.HU = 1 and hstatus.SPVP = 0;
+       - the accesses run in U-mode, with hlv.d in place of ld and hsv.d in place of sd.
+    expectation: Same as cp_henvcfg_pmm_change_hfence, with hstatus.HUPMM in place of henvcfg.PMM.
+    bins: |-
+      priv_mode U x hstatus.HU = 1 x hstatus.SPVP = 0 x {hlv.d, hsv.d} x case {1, 2, 3} x direction {00 -> HUPMM, HUPMM -> 00} x tag (case 1 {0x0400}, case 2 {0x0002, 0x0400}, case 3 {0x0002})
+      Each case only when its PMLEN and hgatp mode are supported
+    rules:
+      - pm_mprv_spvp
+    notes: The HUPMM paragraph and the HFENCE.GVMA paragraph have no normative tags.

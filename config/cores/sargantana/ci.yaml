@@ -20,6 +20,9 @@ exclude_extensions:
   - F-fnmsub.s
   # fmul.s has the same UF bug: cvfpu:fpnew_fma_multi.sv#L801-L803 (https://github.com/openhwfoundation/cvfpu/issues/182)
   - ZicsrF
+  # fcvt.w.d sets NV, not NX, when a value in (-2^31-1, -2^31) rounds to INT32_MIN:
+  # cvfpu:fpnew_cast_multi.sv#L450-L456, fixed in cvfpu 792e1151 (https://github.com/bsc-loca/sargantana/issues/115)
+  - D-fcvt.w.d
   # fleq/fltq raise NV on a quiet NaN: fpu:zfa_post_process.sv#L88-L98; fround.s/froundnx.s and
   # fmaxm.s/fminm.s ignore NaN-boxing; fcvtmod.w.d drops NX (https://github.com/bsc-loca/sargantana/issues/113 items 10, 11 and 14; fixed in BSC's
   # internal version)

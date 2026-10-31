@@ -551,6 +551,7 @@ normative_rule_definitions:
       [
         "Exceptions_Sm_cg/cp_illegal_instruction",
         "Exceptions_Zc_cg/cp_illegal_instruction",
+        "Ssstrict_Sm_comp_instr_cg/{cp_compressed00, cp_compressed01, cp_compressed10}",
       ]
   # The value loaded into mtval on an illegal-instruction exception is right-justified and all
   # unused upper bits are cleared to zero.
@@ -559,6 +560,7 @@ normative_rule_definitions:
       [
         "Exceptions_Sm_cg/cp_illegal_instruction",
         "Exceptions_Zc_cg/cp_illegal_instruction",
+        "Ssstrict_Sm_comp_instr_cg/{cp_compressed00, cp_compressed01, cp_compressed10}",
       ]
   # For AMOs, the Zaamo extension requires that the address held in rs1 be
   # naturally aligned to the size of the operand (i.e., eight-byte aligned

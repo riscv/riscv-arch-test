@@ -704,6 +704,124 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
             ignore_bins ig1 = binsof(PTE_canonical_i.leaflvl_s);
         }
     `endif
+
+    // An access that spans the end of a page into the next page, with neither page faulting, the first page faulting,
+    // or the next page faulting.  The outcome is {completes, faults in the first page (stval = the access address),
+    // faults in the next page (stval = the page boundary)}.  A hart that writes zero to stval on a page fault (no
+    // UDB_REPORT_VA_IN_STVAL_ON_*_PAGE_FAULT) has one faults bin instead.
+    //
+    // A fetch is a jalr to a 32-bit instruction (addi x0, x0, 0) at page offset 0xFFE, and on RV64 also at the end of a
+    // 2 MiB megapage.  Sail logs the trap CSRs of a faulting fetch with the jalr, so the jalr samples a fault (and
+    // sepc, the start of the instruction); the instruction itself, at pc 0xFFE, samples a fetch that completes.
+    `ifdef ZCA_SUPPORTED
+        straddle_fetch_page: coverpoint ((((ins.current.insn ==? JALR) ? ins.current.rs1_val + ins.current.imm : ins.current.pc_rdata) & 'h1FFFFF) == 'h1FFFFE)
+                             iff ((((ins.current.insn ==? JALR) ? ins.current.rs1_val + ins.current.imm : ins.current.pc_rdata) & 'hFFF) == 'hFFE) {
+            bins kilopage = {0};
+            `ifdef UDB_MXLEN_64
+                bins megapage = {1};
+            `endif
+        }
+        // 0: completes, 1: faults in the first page, 2: faults in the next page, 3: faults with another stval,
+        // 7: neither (another instruction, or a jalr that does not take an instruction page fault at its target)
+        straddle_fetch_outcome: coverpoint ((ins.current.insn == 32'h00000013) && !ins.current.trap ? 3'd0 :
+                                            !(ins.current.insn ==? JALR) ||
+                                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") != INSTRUCTION_PAGE_FAULT ||
+                                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sepc", "sepc") != ins.current.rs1_val + ins.current.imm ? 3'd7 :
+                                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") == ins.current.rs1_val + ins.current.imm ? 3'd1 :
+                                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") == ins.current.rs1_val + ins.current.imm + 2 ? 3'd2 : 3'd3) {
+            bins completes = {0};
+            `ifdef UDB_REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT
+                bins first_faults = {1};
+                bins next_faults  = {2};
+            `else
+                bins faults = {[1:3]};
+            `endif
+        }
+        cp_straddle_exec_s: cross priv_mode_s, straddle_fetch_page, straddle_fetch_outcome, mode;
+        cp_straddle_exec_u: cross priv_mode_u, straddle_fetch_page, straddle_fetch_outcome, mode;
+    `endif
+
+    // A load or store that spans the end of a kilopage, at every offset from 1 to its size - 1 below the boundary, and
+    // on RV64 a word two bytes below the end of a 2 MiB megapage.  The access coverpoint is {megapage, floating point
+    // (opcode bit 2), funct3 (the size), bytes below the boundary}, so a bin is one instruction at one offset.  A load or
+    // store samples its own record: the trap flag marks a fault, and stval says which part faulted.  A hart that does
+    // not perform misaligned accesses raises address-misaligned instead, so these need MISALIGNED_LDST.
+    `ifdef UDB_MISALIGNED_LDST
+        straddle_load: coverpoint {((ins.current.rs1_val + ins.current.imm) & 'h1FFFFF) > 'h1FFFF0, ins.current.insn[2], ins.current.insn[14:12],
+                                   4'('h1000 - ((ins.current.rs1_val + ins.current.imm) & 'hFFF))}
+                                   iff (ins.current.insn[6:0] inside {7'b0000011, 7'b0000111} && ((ins.current.rs1_val + ins.current.imm) & 'hFFF) > 'hFF0) {
+            bins lh    = {'h011};
+            bins lw[]  = {['h021:'h023]};
+            `ifdef UDB_MXLEN_64
+                bins ld[]        = {['h031:'h037]};
+                bins lw_megapage = {'h122};
+            `endif
+            `ifdef ZFHMIN_SUPPORTED
+                bins flh   = {'h091};
+            `endif
+            `ifdef F_SUPPORTED
+                bins flw[] = {['h0A1:'h0A3]};
+            `endif
+            `ifdef D_SUPPORTED
+                bins fld[] = {['h0B1:'h0B7]};
+            `endif
+            `ifdef Q_SUPPORTED
+                bins flq[] = {['h0C1:'h0CF]};
+            `endif
+        }
+        straddle_store: coverpoint {((ins.current.rs1_val + ins.current.imm) & 'h1FFFFF) > 'h1FFFF0, ins.current.insn[2], ins.current.insn[14:12],
+                                    4'('h1000 - ((ins.current.rs1_val + ins.current.imm) & 'hFFF))}
+                                    iff (ins.current.insn[6:0] inside {7'b0100011, 7'b0100111} && ((ins.current.rs1_val + ins.current.imm) & 'hFFF) > 'hFF0) {
+            bins sh    = {'h011};
+            bins sw[]  = {['h021:'h023]};
+            `ifdef UDB_MXLEN_64
+                bins sd[]        = {['h031:'h037]};
+                bins sw_megapage = {'h122};
+            `endif
+            `ifdef ZFHMIN_SUPPORTED
+                bins fsh   = {'h091};
+            `endif
+            `ifdef F_SUPPORTED
+                bins fsw[] = {['h0A1:'h0A3]};
+            `endif
+            `ifdef D_SUPPORTED
+                bins fsd[] = {['h0B1:'h0B7]};
+            `endif
+            `ifdef Q_SUPPORTED
+                bins fsq[] = {['h0C1:'h0CF]};
+            `endif
+        }
+        // 0: completes, 1: faults in the first page, 2: faults in the next page, 3: faults with another stval,
+        // 7: another trap
+        straddle_load_outcome: coverpoint (!ins.current.trap ? 3'd0 :
+                                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") != LOAD_PAGE_FAULT ? 3'd7 :
+                                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") == ins.current.rs1_val + ins.current.imm ? 3'd1 :
+                                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") == (((ins.current.rs1_val + ins.current.imm) >> 12) + 1) << 12 ? 3'd2 : 3'd3) {
+            bins completes = {0};
+            `ifdef UDB_REPORT_VA_IN_STVAL_ON_LOAD_PAGE_FAULT
+                bins first_faults = {1};
+                bins next_faults  = {2};
+            `else
+                bins faults = {[1:3]};
+            `endif
+        }
+        straddle_store_outcome: coverpoint (!ins.current.trap ? 3'd0 :
+                                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") != STORE_AMO_PAGE_FAULT ? 3'd7 :
+                                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") == ins.current.rs1_val + ins.current.imm ? 3'd1 :
+                                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") == (((ins.current.rs1_val + ins.current.imm) >> 12) + 1) << 12 ? 3'd2 : 3'd3) {
+            bins completes = {0};
+            `ifdef UDB_REPORT_VA_IN_STVAL_ON_STORE_AMO_PAGE_FAULT
+                bins first_faults = {1};
+                bins next_faults  = {2};
+            `else
+                bins faults = {[1:3]};
+            `endif
+        }
+        cp_straddle_read_s:  cross priv_mode_s, straddle_load,  straddle_load_outcome,  mode;
+        cp_straddle_read_u:  cross priv_mode_u, straddle_load,  straddle_load_outcome,  mode;
+        cp_straddle_write_s: cross priv_mode_s, straddle_store, straddle_store_outcome, mode;
+        cp_straddle_write_u: cross priv_mode_u, straddle_store, straddle_store_outcome, mode;
+    `endif
 endgroup
 
 covergroup Sv_res_global_pte_cg with function sample(ins_t ins);
@@ -1428,44 +1546,14 @@ covergroup Sv_Exceptions_cg with function sample(ins_t ins);
         wildcard bins sw       = {SW};
         wildcard bins lw       = {LW};
     }
-    lw: coverpoint ins.current.insn {
-        wildcard bins lw = {LW};
-    }
-    sw: coverpoint ins.current.insn {
-        wildcard bins sw = {SW};
-    }
     jalr: coverpoint ins.prev.insn {
         wildcard bins jalr = {JALR};
     }
-
-    d_page_table_entry_bad: coverpoint ins.current.pte_d[7:0] {
-        bins invalid = {8'b00000000}; // invalid
-    }
-
-    d_phys_address: coverpoint ins.current.phys_adr_d[11:0] {
-        // check that fault occurs on the last halfword of the first page and the first halfword of the second page
-        bins first  = {12'b111111111110};
-        bins second = {12'b000000000000};
-    }
-
-    i_page_table_entry_bad: coverpoint ins.current.pte_i[7:0] {
-        bins invalid = {8'b00000000}; // invalid
-    }
-
-    i_phys_address: coverpoint ins.current.phys_adr_i[11:0] {
-        // check that fault occurs on the last halfword of the first page and the first halfword of the second page
-        bins first  = {12'b111111111110};
-        bins second = {12'b000000000000};
-    }
-
 
     // Main Coverpoints
     cp_instr_page_fault_s:           cross priv_mode_s, instr_page_fault;
     cp_load_page_fault_s:            cross priv_mode_s, load_page_fault;
     cp_store_page_fault_s:           cross priv_mode_s, store_page_fault;
-    cp_misaligned_load_page_fault_s: cross priv_mode_s, d_page_table_entry_bad, d_phys_address, lw;
-    cp_misaligned_store_page_fault_s:cross priv_mode_s, d_page_table_entry_bad, d_phys_address, sw;
-    cp_misaligned_inst_page_fault_s: cross priv_mode_s, i_page_table_entry_bad, i_phys_address, jalr;
     cp_instr_page_fault_u:           cross priv_mode_u, instr_page_fault;
     cp_load_page_fault_u:            cross priv_mode_u, load_page_fault;
     cp_store_page_fault_u:           cross priv_mode_u, store_page_fault;

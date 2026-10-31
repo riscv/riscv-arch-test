@@ -737,7 +737,8 @@ covergroup Exceptions_Zaamo_cg with function sample(ins_t ins);
         }
         cp_amo_access_fault:        cross amo_instrs, illegal_address;
 
-        amo_instrs_wd: coverpoint ins.current.insn {
+        // AMOs that are misaligned at RVMODEL_ACCESS_FAULT_ADDRESS + 1 (all except .b)
+        amo_instrs_misaligned: coverpoint ins.current.insn {
             wildcard bins amoswap_w = {AMOSWAP_W};
             wildcard bins amoadd_w  = {AMOADD_W};
             wildcard bins amoand_w  = {AMOAND_W};
@@ -747,6 +748,10 @@ covergroup Exceptions_Zaamo_cg with function sample(ins_t ins);
             wildcard bins amomaxu_w = {AMOMAXU_W};
             wildcard bins amomin_w  = {AMOMIN_W};
             wildcard bins amominu_w = {AMOMINU_W};
+            `ifdef ZACAS_SUPPORTED
+                wildcard bins amocas_w  = {AMOCAS_W};
+                wildcard bins amocas_d  = {AMOCAS_D};
+            `endif
             `ifdef UDB_MXLEN_64
                 wildcard bins amoswap_d = {AMOSWAP_D};
                 wildcard bins amoadd_d  = {AMOADD_D};
@@ -757,12 +762,26 @@ covergroup Exceptions_Zaamo_cg with function sample(ins_t ins);
                 wildcard bins amomaxu_d = {AMOMAXU_D};
                 wildcard bins amomin_d  = {AMOMIN_D};
                 wildcard bins amominu_d = {AMOMINU_D};
+                `ifdef ZACAS_SUPPORTED
+                    wildcard bins amocas_q  = {AMOCAS_Q};
+                `endif
+            `endif
+            `ifdef ZABHA_SUPPORTED
+                wildcard bins amoswap_h = {AMOSWAP_H};
+                wildcard bins amoadd_h  = {AMOADD_H};
+                wildcard bins amoand_h  = {AMOAND_H};
+                wildcard bins amoor_h   = {AMOOR_H};
+                wildcard bins amoxor_h  = {AMOXOR_H};
+                wildcard bins amomax_h  = {AMOMAX_H};
+                wildcard bins amomaxu_h = {AMOMAXU_H};
+                wildcard bins amomin_h  = {AMOMIN_H};
+                wildcard bins amominu_h = {AMOMINU_H};
             `endif
         }
         illegal_address_misaligned: coverpoint ins.current.rs1_val {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS + 1};
         }
-        cp_amo_access_misaligned_priority: cross amo_instrs_wd, illegal_address_misaligned;
+        cp_amo_access_misaligned_priority: cross amo_instrs_misaligned, illegal_address_misaligned;
     `endif
 
 endgroup

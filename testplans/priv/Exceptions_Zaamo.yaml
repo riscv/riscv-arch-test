@@ -17,6 +17,6 @@ coverpoints:
     bins: up to (9*4) instr
   - name: cp_amo_access_misaligned_priority
     goal: AMO Misaligned Access Fault Priority
-    description: "amoswap.w, amoadd.w, amoxor.w, amoand.w, amoor.w, amomin.w, amomax.w, amominu.w, amomaxu.w at RVMODEL_ACCESS_FAULT_ADDRESS+1.  RV64: also .d."
+    description: "amoswap.w, amoadd.w, amoxor.w, amoand.w, amoor.w, amomin.w, amomax.w, amominu.w, amomaxu.w at RVMODEL_ACCESS_FAULT_ADDRESS+1.  RV64: also .d.  Zabha: also .h.  Zacas: also amocas.w, amocas.d, and RV64 amocas.q."
     expectation: Address misaligned or access fault, depending on the implementation priority.  rd is unchanged.
-    bins: up to (9*2) instr
+    bins: up to (9*3+3) instr

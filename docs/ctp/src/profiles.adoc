@@ -168,7 +168,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Shvstvala|vstval Addresses|<<t-Shvstvala-coverpoints>>|||o|o|x
 |Shtvala|htval Addresses|<<t-Shtvala-coverpoints>>|||o|o|x
 |Shlcofideleg|Counter Overflow Delegation|<<t-Shlcofideleg-coverpoints>>|||o|o|x
-|ZkrH|Hypervisor Entropy|<<t-ZkrH-coverpoints>>|||o|o|x
 8+^|Miscellaneous RV{A/B}23 Extensions
 |Ss1p13|Supervisor 1p13|<<t-Ss1p13-coverpoints>>||||x|x
 |Ssnpm|Pointer Masking|<<t-Ssnpm-coverpoints>>||||x|x

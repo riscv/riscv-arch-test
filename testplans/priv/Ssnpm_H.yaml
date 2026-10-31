@@ -106,7 +106,6 @@ coverpoints:
       - pm_ignore_pa
       - pm_ignore_va
       - pm_per_mode_control
-
   - name: cp_hlv_hs_spvp1_pmm
     goal: HLV and HSV in HS-mode with hstatus.SPVP = 1 (access as VS) take henvcfg.PMM
     description: |-
@@ -135,6 +134,22 @@ coverpoints:
       - pm_ignore_pa
       - pm_ignore_va
       - pm_apply_explicit
+  - name: cp_hlv_hs_spvp1_mxr_pmm
+    goal: vsstatus.MXR = 1 or sstatus.MXR = 1 turns henvcfg.PMM pointer masking off for HLV and HSV in HS-mode with hstatus.SPVP = 1 (access as VS)
+    description: |-
+      Same test environment and loop as cp_hlv_hs_spvp1_pmm, except:
+       - for each (vsstatus.MXR, sstatus.MXR) in {(0,1), (1,0), (1,1)}, HS-mode sets both bits;
+       - henvcfg.PMM takes only {10, 11}.
+    expectation: |-
+      No masking for every MXR combination.  Tag 0x0000 reaches the test data (the control).  Every other tag is used
+      unmasked: the access faults or reaches a page other than A'.
+    bins: |-
+      priv_mode HS x {hlv.d, hsv.d} x hstatus.SPVP = 1 x (vsstatus.MXR, sstatus.MXR) {(0,1), (1,0), (1,1)} x henvcfg.PMM {10, 11} x tag {5 patterns} x vsatp {Bare, Sv39, Sv48, Sv57} x hgatp {Bare, Sv39x4, Sv48x4, Sv57x4}
+      PMM 10 and 11 only when PMLEN 7 and 16 are supported; each vsatp and hgatp mode only when supported
+    rules:
+      - pm_mxr_exception
+      - pm_mprv_spvp
+    notes: vsstatus.MXR = 0 and sstatus.MXR = 0 is cp_hlv_hs_spvp1_pmm.
   - name: cp_hlv_hs_spvp0_pmm
     goal: HLV and HSV in HS-mode with hstatus.SPVP = 0 (access as VU) take senvcfg.PMM
     description: |-
@@ -152,6 +167,22 @@ coverpoints:
       - pm_ignore_pa
       - pm_ignore_va
       - pm_apply_explicit
+  - name: cp_hlv_hs_spvp0_mxr_pmm
+    goal: vsstatus.MXR = 1 or sstatus.MXR = 1 turns senvcfg.PMM pointer masking off for HLV and HSV in HS-mode with hstatus.SPVP = 0 (access as VU)
+    description: |-
+      Same test environment and loop as cp_hlv_hs_spvp0_pmm, except:
+       - for each (vsstatus.MXR, sstatus.MXR) in {(0,1), (1,0), (1,1)}, HS-mode sets both bits;
+       - senvcfg.PMM takes only {10, 11}.
+    expectation: |-
+      No masking for every MXR combination.  Tag 0x0000 reaches the test data (the control).  Every other tag is used
+      unmasked: the access faults or reaches a page other than A'.
+    bins: |-
+      priv_mode HS x {hlv.d, hsv.d} x hstatus.SPVP = 0 x (vsstatus.MXR, sstatus.MXR) {(0,1), (1,0), (1,1)} x senvcfg.PMM {10, 11} x tag {5 patterns} x vsatp {Bare, Sv39, Sv48, Sv57} x hgatp {Bare, Sv39x4, Sv48x4, Sv57x4}
+      PMM 10 and 11 only when PMLEN 7 and 16 are supported; each vsatp and hgatp mode only when supported
+    rules:
+      - pm_mxr_exception
+      - pm_mprv_spvp
+    notes: vsstatus.MXR = 0 and sstatus.MXR = 0 is cp_hlv_hs_spvp0_pmm.
   - name: cp_hlv_u_spvp1_pmm
     goal: HLV and HSV in U-mode with hstatus.SPVP = 1 (access as VS) take henvcfg.PMM
     description: |-
@@ -165,6 +196,22 @@ coverpoints:
       - pm_mprv_spvp
       - henvcfg_pmm_op
       - hstatus_hu_op
+  - name: cp_hlv_u_spvp1_mxr_pmm
+    goal: vsstatus.MXR = 1 or sstatus.MXR = 1 turns henvcfg.PMM pointer masking off for HLV and HSV in U-mode with hstatus.SPVP = 1 (access as VS)
+    description: |-
+      Same test environment and loop as cp_hlv_u_spvp1_pmm, except:
+       - for each (vsstatus.MXR, sstatus.MXR) in {(0,1), (1,0), (1,1)}, HS-mode sets both bits;
+       - henvcfg.PMM takes only {10, 11}.
+    expectation: |-
+      No masking for every MXR combination.  Tag 0x0000 reaches the test data (the control).  Every other tag is used
+      unmasked: the access faults or reaches a page other than A'.
+    bins: |-
+      priv_mode U x hstatus.HU = 1 x {hlv.d, hsv.d} x hstatus.SPVP = 1 x (vsstatus.MXR, sstatus.MXR) {(0,1), (1,0), (1,1)} x henvcfg.PMM {10, 11} x tag {5 patterns} x vsatp {Bare, Sv39, Sv48, Sv57} x hgatp {Bare, Sv39x4, Sv48x4, Sv57x4}
+      PMM 10 and 11 only when PMLEN 7 and 16 are supported; each vsatp and hgatp mode only when supported
+    rules:
+      - pm_mxr_exception
+      - pm_mprv_spvp
+    notes: vsstatus.MXR = 0 and sstatus.MXR = 0 is cp_hlv_u_spvp1_pmm.
   - name: cp_hlv_u_spvp0_pmm
     goal: HLV and HSV in U-mode with hstatus.SPVP = 0 (access as VU) take hstatus.HUPMM
     description: |-
@@ -182,6 +229,22 @@ coverpoints:
     notes: |-
       This is the one VU access that does not use senvcfg.PMM: in U-mode senvcfg.PMM holds the host's own U-mode
       setting, so the guest's VU setting is copied into hstatus.HUPMM.  The HUPMM paragraph has no normative tag.
+  - name: cp_hlv_u_spvp0_mxr_pmm
+    goal: vsstatus.MXR = 1 or sstatus.MXR = 1 turns hstatus.HUPMM pointer masking off for HLV and HSV in U-mode with hstatus.SPVP = 0 (access as VU)
+    description: |-
+      Same test environment and loop as cp_hlv_u_spvp0_pmm, except:
+       - for each (vsstatus.MXR, sstatus.MXR) in {(0,1), (1,0), (1,1)}, HS-mode sets both bits;
+       - hstatus.HUPMM takes only {10, 11}.
+    expectation: |-
+      No masking for every MXR combination.  Tag 0x0000 reaches the test data (the control).  Every other tag is used
+      unmasked: the access faults or reaches a page other than A'.
+    bins: |-
+      priv_mode U x hstatus.HU = 1 x {hlv.d, hsv.d} x hstatus.SPVP = 0 x (vsstatus.MXR, sstatus.MXR) {(0,1), (1,0), (1,1)} x hstatus.HUPMM {10, 11} x tag {5 patterns} x vsatp {Bare, Sv39, Sv48, Sv57} x hgatp {Bare, Sv39x4, Sv48x4, Sv57x4}
+      PMM 10 and 11 only when PMLEN 7 and 16 are supported; each vsatp and hgatp mode only when supported
+    rules:
+      - pm_mxr_exception
+      - pm_mprv_spvp
+    notes: vsstatus.MXR = 0 and sstatus.MXR = 0 is cp_hlv_u_spvp0_pmm.
   - name: cp_hlvx_hs_pmm
     goal: HLVX in HS-mode is never masked
     description: |-
@@ -256,70 +319,6 @@ coverpoints:
     rules:
       - pm_mxr_exception
     notes: vsstatus.MXR = 0 and sstatus.MXR = 0 is cp_vu_pmm.
-  - name: cp_hlv_hs_spvp1_mxr_pmm
-    goal: vsstatus.MXR = 1 or sstatus.MXR = 1 turns henvcfg.PMM pointer masking off for HLV and HSV in HS-mode with hstatus.SPVP = 1 (access as VS)
-    description: |-
-      Same test environment and loop as cp_hlv_hs_spvp1_pmm, except:
-       - for each (vsstatus.MXR, sstatus.MXR) in {(0,1), (1,0), (1,1)}, HS-mode sets both bits;
-       - henvcfg.PMM takes only {10, 11}.
-    expectation: |-
-      No masking for every MXR combination.  Tag 0x0000 reaches the test data (the control).  Every other tag is used
-      unmasked: the access faults or reaches a page other than A'.
-    bins: |-
-      priv_mode HS x {hlv.d, hsv.d} x hstatus.SPVP = 1 x (vsstatus.MXR, sstatus.MXR) {(0,1), (1,0), (1,1)} x henvcfg.PMM {10, 11} x tag {5 patterns} x vsatp {Bare, Sv39, Sv48, Sv57} x hgatp {Bare, Sv39x4, Sv48x4, Sv57x4}
-      PMM 10 and 11 only when PMLEN 7 and 16 are supported; each vsatp and hgatp mode only when supported
-    rules:
-      - pm_mxr_exception
-      - pm_mprv_spvp
-    notes: vsstatus.MXR = 0 and sstatus.MXR = 0 is cp_hlv_hs_spvp1_pmm.
-  - name: cp_hlv_hs_spvp0_mxr_pmm
-    goal: vsstatus.MXR = 1 or sstatus.MXR = 1 turns senvcfg.PMM pointer masking off for HLV and HSV in HS-mode with hstatus.SPVP = 0 (access as VU)
-    description: |-
-      Same test environment and loop as cp_hlv_hs_spvp0_pmm, except:
-       - for each (vsstatus.MXR, sstatus.MXR) in {(0,1), (1,0), (1,1)}, HS-mode sets both bits;
-       - senvcfg.PMM takes only {10, 11}.
-    expectation: |-
-      No masking for every MXR combination.  Tag 0x0000 reaches the test data (the control).  Every other tag is used
-      unmasked: the access faults or reaches a page other than A'.
-    bins: |-
-      priv_mode HS x {hlv.d, hsv.d} x hstatus.SPVP = 0 x (vsstatus.MXR, sstatus.MXR) {(0,1), (1,0), (1,1)} x senvcfg.PMM {10, 11} x tag {5 patterns} x vsatp {Bare, Sv39, Sv48, Sv57} x hgatp {Bare, Sv39x4, Sv48x4, Sv57x4}
-      PMM 10 and 11 only when PMLEN 7 and 16 are supported; each vsatp and hgatp mode only when supported
-    rules:
-      - pm_mxr_exception
-      - pm_mprv_spvp
-    notes: vsstatus.MXR = 0 and sstatus.MXR = 0 is cp_hlv_hs_spvp0_pmm.
-  - name: cp_hlv_u_spvp1_mxr_pmm
-    goal: vsstatus.MXR = 1 or sstatus.MXR = 1 turns henvcfg.PMM pointer masking off for HLV and HSV in U-mode with hstatus.SPVP = 1 (access as VS)
-    description: |-
-      Same test environment and loop as cp_hlv_u_spvp1_pmm, except:
-       - for each (vsstatus.MXR, sstatus.MXR) in {(0,1), (1,0), (1,1)}, HS-mode sets both bits;
-       - henvcfg.PMM takes only {10, 11}.
-    expectation: |-
-      No masking for every MXR combination.  Tag 0x0000 reaches the test data (the control).  Every other tag is used
-      unmasked: the access faults or reaches a page other than A'.
-    bins: |-
-      priv_mode U x hstatus.HU = 1 x {hlv.d, hsv.d} x hstatus.SPVP = 1 x (vsstatus.MXR, sstatus.MXR) {(0,1), (1,0), (1,1)} x henvcfg.PMM {10, 11} x tag {5 patterns} x vsatp {Bare, Sv39, Sv48, Sv57} x hgatp {Bare, Sv39x4, Sv48x4, Sv57x4}
-      PMM 10 and 11 only when PMLEN 7 and 16 are supported; each vsatp and hgatp mode only when supported
-    rules:
-      - pm_mxr_exception
-      - pm_mprv_spvp
-    notes: vsstatus.MXR = 0 and sstatus.MXR = 0 is cp_hlv_u_spvp1_pmm.
-  - name: cp_hlv_u_spvp0_mxr_pmm
-    goal: vsstatus.MXR = 1 or sstatus.MXR = 1 turns hstatus.HUPMM pointer masking off for HLV and HSV in U-mode with hstatus.SPVP = 0 (access as VU)
-    description: |-
-      Same test environment and loop as cp_hlv_u_spvp0_pmm, except:
-       - for each (vsstatus.MXR, sstatus.MXR) in {(0,1), (1,0), (1,1)}, HS-mode sets both bits;
-       - hstatus.HUPMM takes only {10, 11}.
-    expectation: |-
-      No masking for every MXR combination.  Tag 0x0000 reaches the test data (the control).  Every other tag is used
-      unmasked: the access faults or reaches a page other than A'.
-    bins: |-
-      priv_mode U x hstatus.HU = 1 x {hlv.d, hsv.d} x hstatus.SPVP = 0 x (vsstatus.MXR, sstatus.MXR) {(0,1), (1,0), (1,1)} x hstatus.HUPMM {10, 11} x tag {5 patterns} x vsatp {Bare, Sv39, Sv48, Sv57} x hgatp {Bare, Sv39x4, Sv48x4, Sv57x4}
-      PMM 10 and 11 only when PMLEN 7 and 16 are supported; each vsatp and hgatp mode only when supported
-    rules:
-      - pm_mxr_exception
-      - pm_mprv_spvp
-    notes: vsstatus.MXR = 0 and sstatus.MXR = 0 is cp_hlv_u_spvp0_pmm.
   - name: cp_henvcfg_pmm_change_hfence
     goal: After henvcfg.PMM changes to or from a PMLEN where (XLEN - PMLEN) < GPA width, HFENCE.GVMA x0 makes VS-mode accesses follow the new PMLEN
     description: |-

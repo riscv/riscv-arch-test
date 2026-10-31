@@ -10,7 +10,7 @@ coverpoints:
     description: |-
       ecall cross {mode = user/supervisor, medeleg[8] = {0/1}, mstatus.mie = {0/1}, mstatus.sie = {0/1}}
     expectation: xpie gets xie, xie gets 0
-    bins: 3 modes * 2 medleg * 2 mie * 2 sie
+    bins: 2 modes * 2 medeleg * 2 mie * 2 sie
   - name: cp_medeleg_msu
     goal: Delegation to supervisor mode
     description: |-

@@ -75,10 +75,7 @@
     }
 
     // Current instruction
-    lpad_dest: coverpoint (ins.current.insn ==? LPAD) {
-        bins not_lpad = {1'b0};
-        bins lpad     = {1'b1};
-    }
+    lpad_dest: coverpoint (ins.current.insn ==? LPAD) {}
     not_lpad: coverpoint (ins.current.insn ==? LPAD) {
         bins not_lpad = {1'b0};
     }
@@ -124,10 +121,7 @@
         bins label_zero    = {20'h0};
         bins label_nonzero = {[20'h1:20'hFFFFF]};
     }
-    lpl_match: coverpoint (ins.current.insn[31:12] == ins.prev.x_wdata[7][31:12]) {
-        bins mismatch = {1'b0};
-        bins match    = {1'b1};
-    }
+    lpl_match: coverpoint (ins.current.insn[31:12] == ins.prev.x_wdata[7][31:12]) {}
     lpl_match_only: coverpoint (ins.current.insn[31:12] == ins.prev.x_wdata[7][31:12]) {
         bins match    = {1'b1};
     }

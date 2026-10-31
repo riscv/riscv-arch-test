@@ -353,10 +353,7 @@ covergroup PMP_S_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
     wildcard bins csrrw  = {CSRRW};
   }
 
-  mprv_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv")[0]{
-    bins set   = {1};
-    bins unset = {0};
-  }
+  mprv_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv")[0]{}
 
   mpp_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0] {
     bins S_mode = {2'b01};
@@ -1149,10 +1146,7 @@ covergroup PMP_Sm_cg with function sample(
   }
 
   // L = {0/1} pmp_region_1 and check the writes on pmp_region_1 and pmp_region_0
-  lock_checking: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "pmpcfg0", "pmp1cfg_l")[0] {
-    bins locked_region = {1};
-    bins unlocked_region = {0};
-  }
+  lock_checking: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "pmpcfg0", "pmp1cfg_l")[0] {}
 
   // Attempt to write values in given PMP CSRs when A = {OFF/TOR/NAPOT} and L = {0/1}
   // rs1 should be x0 while writing to pmpaddr1 & pmp1cfg0 in order to write all 0s.
@@ -2469,10 +2463,7 @@ covergroup PMP_U_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
     wildcard bins csrrw  = {CSRRW};
   }
 
-  mprv_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv")[0]{
-    bins set   = {1};
-    bins unset = {0};
-  }
+  mprv_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv")[0]{}
 
   mpp_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0] {
     bins U_mode = {2'b00};

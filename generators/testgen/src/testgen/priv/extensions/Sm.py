@@ -1166,7 +1166,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         comment_banner(
             coverpoint,
             "Sm1p13: write all 1s / all 0s to memory-mapped msip register.\n"
-            "Read back msip, wait, then read mip.MSIP; must reflect the written value.",
+            "Read back msip (bits 31-1 read as 0), wait, then read mip.MSIP.",
         ),
     )
 
@@ -1177,12 +1177,11 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
             "#ifdef RVMODEL_MSIP_ADDRESS",
             f"LI(x{r_msipaddr}, RVMODEL_MSIP_ADDRESS)   # load address of memory-mapped msip register",
             "",
-            "# Write 1 to msip (set MSIP) and check mip.MSIP is set",
-            f"LI(x{r_msip}, 1)                         # value 1: assert msip",
+            "# Write all 1s to msip (set MSIP) and check mip.MSIP is set",
+            f"LI(x{r_msip}, 0xFFFFFFFF)                # all 1s: assert msip",
             test_data.add_testcase("msip_mmio_1", coverpoint, covergroup),
-            f"SW x{r_msip}, 0(x{r_msipaddr})           # write msip = 1 via memory-mapped I/O",
-            f"LW x{r_msip}, 0(x{r_msipaddr})            # read back memory-mapped msip register",
-            f"andi x{r_msip}, x{r_msip}, 1              # isolate bit 0",
+            f"SW x{r_msip}, 0(x{r_msipaddr})           # write msip = all 1s via memory-mapped I/O",
+            f"LW x{r_msip}, 0(x{r_msipaddr})            # read back msip; bits 31-1 must read as 0",
             write_sigupd(r_msip, test_data),
             f"RVTEST_IDLE_FOR_INTERRUPT(x{r_msip})",
             test_data.add_testcase("msip_set", coverpoint, covergroup),
@@ -1196,7 +1195,6 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
             test_data.add_testcase("msip_mmio_0", coverpoint, covergroup),
             f"SW x{r_msip}, 0(x{r_msipaddr})           # write msip = 0 via memory-mapped I/O",
             f"LW x{r_msip}, 0(x{r_msipaddr})            # read back memory-mapped msip register",
-            f"andi x{r_msip}, x{r_msip}, 1              # isolate bit 0",
             write_sigupd(r_msip, test_data),
             f"RVTEST_IDLE_FOR_INTERRUPT(x{r_msip})",
             test_data.add_testcase("msip_clear", coverpoint, covergroup),

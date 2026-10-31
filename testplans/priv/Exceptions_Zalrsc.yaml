@@ -35,3 +35,8 @@ coverpoints:
     description: Access fault and missalign of sc.w and sc.d cross match lr address cross rd having an initial value > 1
     expectation: Faulting sc should not change rd
     bins: 2 instr
+  - name: cp_sc_after_faulted_lr
+    goal: Faulted LR sets no reservation
+    description: Clear any reservation, then misaligned lr.w, lr.d traps and the trap handler returns to an aligned sc.w, sc.d with no new lr cross rd having an initial value > 1
+    expectation: sc fails (rd nonzero) and memory is unchanged
+    bins: 2 instr

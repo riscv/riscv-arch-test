@@ -256,6 +256,43 @@ def _generate_store_misaligned_priority_tests(test_data: TestData) -> list[str]:
     return lines
 
 
+def _generate_sc_after_faulted_lr_tests(test_data: TestData) -> list[str]:
+    """Generate tests that check a faulted LR does not set a reservation."""
+    covergroup, coverpoint = "Exceptions_Zalrsc_cg", "cp_sc_after_faulted_lr"
+    base_reg, addr_reg, data_reg, rd_reg, temp_reg, check_reg = test_data.int_regs.get_registers(6)
+
+    lines = [comment_banner(coverpoint)]
+
+    for width in ["w", "d"]:
+        lines.extend(
+            [
+                *(["#if __riscv_xlen == 64"] if width == "d" else []),
+                f"LA(x{base_reg}, scratch)",
+                f"addi x{addr_reg}, x{base_reg}, 1",
+                f"lw x{temp_reg}, 0(x{base_reg})",
+                # Clear any old reservation; if this SC succeeds, it stores the value already in memory
+                f"sc.w x{temp_reg}, x{temp_reg}, (x{base_reg})",
+                f"LI(x{data_reg}, 0xDECAFCAB)",
+                f"addi x{rd_reg}, x0, {SC_RD_PRESET}",
+                test_data.add_testcase(f"lr.{width}", coverpoint, covergroup),
+                f"lr.{width} x{temp_reg}, (x{addr_reg})",  # misaligned, so it traps and sets no reservation
+                # The trap handler returns to the SC, which has no reservation and must fail
+                test_data.add_testcase(f"sc.{width}", coverpoint, covergroup),
+                f"sc.{width} x{rd_reg}, x{data_reg}, (x{base_reg})",
+                write_sigupd(rd_reg, test_data),
+                f"{INDENT}# Check scratch region",
+            ]
+        )
+        for word in range(4):
+            lines.extend([f"lw x{check_reg}, {4 * word}(x{base_reg})", write_sigupd(check_reg, test_data)])
+        if width == "d":
+            lines.append("#endif")
+    lines.append("")
+
+    test_data.int_regs.return_registers([base_reg, addr_reg, data_reg, rd_reg, temp_reg, check_reg])
+    return lines
+
+
 @add_priv_test_generator(
     "Exceptions",
     required_extensions=["Zalrsc", ["Sm", "U"]],
@@ -271,6 +308,7 @@ def make_exceptionszalrsc(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(_generate_store_address_misaligned_tests(test_data))
     tc.code.extend(_generate_store_access_fault_tests(test_data))
     tc.code.extend(_generate_store_misaligned_priority_tests(test_data))
+    tc.code.extend(_generate_sc_after_faulted_lr_tests(test_data))
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

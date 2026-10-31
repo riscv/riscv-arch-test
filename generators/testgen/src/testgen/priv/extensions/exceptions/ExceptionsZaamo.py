@@ -8,10 +8,17 @@
 
 """Zaamo extension exception test generator."""
 
+from collections.abc import Callable
+
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
+
+AMO_OPS = ["amoswap", "amoadd", "amoxor", "amoand", "amoor", "amomin", "amomax", "amominu", "amomaxu"]
+
+# Sentinel values for the rd pair (even, odd)
+RD_SENTINELS = (0xBAD, 0xBAD1)
 
 # Bytes reached by the misaligned tests: amocas.q at offset 31 touches bytes 31-46
 WINDOW_BYTES = 48
@@ -40,6 +47,62 @@ def _check_window(base_reg: int, check_reg: int, test_data: TestData) -> list[st
     return lines
 
 
+def _amo_test(
+    test_data: TestData,
+    instr: str,
+    bin_name: str,
+    coverpoint: str,
+    regs: tuple[int, int, int],
+    pair: bool = False,
+) -> list[str]:
+    """Run one AMO with sentinel rd and check rd. For pair instructions, also check the odd rd register."""
+    dest_reg, source_reg, addr_reg = regs
+    dest_regs = [dest_reg, dest_reg + 1] if pair else [dest_reg]
+    return [
+        *[f"LI(x{reg}, 0x{sentinel:X})" for reg, sentinel in zip(dest_regs, RD_SENTINELS)],
+        test_data.add_testcase(bin_name, coverpoint, "Exceptions_Zaamo_cg"),
+        f"{instr} x{dest_reg}, x{source_reg}, (x{addr_reg})",
+        *[write_sigupd(reg, test_data) for reg in dest_regs],
+    ]
+
+
+def _init_source_pair(source_reg: int) -> list[str]:
+    return [f"LI(x{source_reg}, 1)", f"LI(x{source_reg + 1}, 2)"]
+
+
+def _amo_tests(
+    test_data: TestData,
+    coverpoint: str,
+    regs: tuple[int, int, int],
+    bin_name: Callable[[str], str],
+    include_b: bool = True,
+) -> list[str]:
+    """Run each AMO op at each width, then amocas, with the gating for each extension and XLEN."""
+
+    def ops(width: str) -> list[str]:
+        lines = []
+        for op in AMO_OPS:
+            lines.extend(_amo_test(test_data, f"{op}.{width}", bin_name(f"{op}_{width}"), coverpoint, regs))
+        return lines
+
+    lines = [*ops("w"), "#if __riscv_xlen == 64", *ops("d"), "#endif", "#ifdef ZABHA_SUPPORTED", *ops("h")]
+    if include_b:
+        lines.extend(ops("b"))
+    lines.extend(
+        [
+            "#endif",
+            "#ifdef ZACAS_SUPPORTED",
+            *_amo_test(test_data, "amocas.w", bin_name("amocas_w"), coverpoint, regs),
+            *_amo_test(test_data, "amocas.d", bin_name("amocas_d"), coverpoint, regs, pair=True),
+            "#if __riscv_xlen == 64",
+            *_amo_test(test_data, "amocas.q", bin_name("amocas_q"), coverpoint, regs, pair=True),
+            "#endif",
+            "#endif",
+        ]
+    )
+    return lines
+
+
 def _generate_amo_address_misaligned_tests(test_data: TestData) -> list[str]:
     covergroup, coverpoint = "Exceptions_Zaamo_cg", "cp_amo_address_misaligned"
 
@@ -47,6 +110,7 @@ def _generate_amo_address_misaligned_tests(test_data: TestData) -> list[str]:
     dest_reg = test_data.int_regs.get_register_pair()
     source_reg = test_data.int_regs.get_register_pair()
     addr_reg, base_reg = test_data.int_regs.get_registers(2)
+    regs = (dest_reg, source_reg, addr_reg)
 
     lines = [
         comment_banner(
@@ -56,7 +120,6 @@ def _generate_amo_address_misaligned_tests(test_data: TestData) -> list[str]:
         ),
     ]
 
-    ops = ["amoswap.", "amoadd.", "amoxor.", "amoand.", "amoor.", "amomin.", "amomax.", "amominu.", "amomaxu."]
     for offset in range(32):
         lines.extend(
             [
@@ -68,85 +131,8 @@ def _generate_amo_address_misaligned_tests(test_data: TestData) -> list[str]:
                 f"# Update scratch address to be misaligned with offset {offset}",
                 f"addi x{addr_reg}, x{base_reg}, {offset}",
                 "",
-                f"LI(x{source_reg}, 1)",
-            ]
-        )
-        for op in ops:
-            lines.extend(
-                [
-                    f"LI(x{dest_reg}, 0xBAD)",
-                    test_data.add_testcase(f"{op[:-1]}_w_offset_{offset}", coverpoint, covergroup),
-                    f"{op}w x{dest_reg}, x{source_reg}, (x{addr_reg})",
-                    write_sigupd(dest_reg, test_data),
-                ]
-            )
-
-        lines.append("#if __riscv_xlen == 64")
-        for op in ops:
-            lines.extend(
-                [
-                    f"LI(x{dest_reg}, 0xBAD)",
-                    test_data.add_testcase(f"{op[:-1]}_d_offset_{offset}", coverpoint, covergroup),
-                    f"{op}d x{dest_reg}, x{source_reg}, (x{addr_reg})",
-                    write_sigupd(dest_reg, test_data),
-                ]
-            )
-        lines.append("#endif")
-
-        lines.append("#ifdef ZABHA_SUPPORTED")
-        for op in ops:
-            lines.extend(
-                [
-                    f"LI(x{dest_reg}, 0xBAD)",
-                    test_data.add_testcase(f"{op[:-1]}_h_offset_{offset}", coverpoint, covergroup),
-                    f"{op}h x{dest_reg}, x{source_reg}, (x{addr_reg})",
-                    write_sigupd(dest_reg, test_data),
-                ]
-            )
-        for op in ops:
-            lines.extend(
-                [
-                    f"LI(x{dest_reg}, 0xBAD)",
-                    test_data.add_testcase(f"{op[:-1]}_b_offset_{offset}", coverpoint, covergroup),
-                    f"{op}b x{dest_reg}, x{source_reg}, (x{addr_reg})",
-                    write_sigupd(dest_reg, test_data),
-                ]
-            )
-        lines.append("#endif")
-
-        lines.append("#ifdef ZACAS_SUPPORTED")
-        lines.extend(
-            [
-                f"LI(x{dest_reg}, 0xBAD)",
-                test_data.add_testcase(f"amocas_w_offset_{offset}", coverpoint, covergroup),
-                f"amocas.w x{dest_reg}, x{source_reg}, (x{addr_reg})",
-                write_sigupd(dest_reg, test_data),
-            ]
-        )
-
-        lines.extend(
-            [
-                f"LI(x{dest_reg}, 0xBAD)",
-                test_data.add_testcase(f"amocas_d_offset_{offset}", coverpoint, covergroup),
-                f"amocas.d x{dest_reg}, x{source_reg}, (x{addr_reg})",
-                write_sigupd(dest_reg, test_data),
-            ]
-        )
-
-        lines.append("#if __riscv_xlen == 64")
-        lines.extend(
-            [
-                f"LI(x{dest_reg}, 0xBAD)",
-                test_data.add_testcase(f"amocas_q_offset_{offset}", coverpoint, covergroup),
-                f"amocas.q x{dest_reg}, x{source_reg}, (x{addr_reg})",
-                write_sigupd(dest_reg, test_data),
-            ]
-        )
-        lines.append("#endif")
-        lines.append("#endif")
-
-        lines.extend(
-            [
+                *_init_source_pair(source_reg),
+                *_amo_tests(test_data, coverpoint, regs, lambda name, offset=offset: f"{name}_offset_{offset}"),
                 f"# Check memory after offset {offset}",
                 test_data.add_testcase(f"memory_offset_{offset}", coverpoint, covergroup),
                 *_check_window(base_reg, dest_reg, test_data),
@@ -161,7 +147,7 @@ def _generate_amo_address_misaligned_tests(test_data: TestData) -> list[str]:
 
 
 def _generate_amo_access_fault_tests(test_data: TestData) -> list[str]:
-    covergroup, coverpoint = "Exceptions_Zaamo_cg", "cp_amo_access_fault"
+    coverpoint = "cp_amo_access_fault"
 
     # Reserve dest/source as AMOCAS-capable register pairs before choosing the
     # long-lived address register so addr_reg cannot break either even/odd pair.
@@ -172,90 +158,12 @@ def _generate_amo_access_fault_tests(test_data: TestData) -> list[str]:
     lines = [
         "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
         comment_banner(coverpoint, "Test amo instructions on restricted memory and check for access fault"),
+        *_init_source_pair(source_reg),
+        f"LI(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+        *_amo_tests(test_data, coverpoint, (dest_reg, source_reg, addr_reg), lambda name: f"amo_access_fault_{name}"),
+        "#endif",
     ]
 
-    lines.extend(
-        [
-            f"LI(x{source_reg}, 1)",
-            "",
-            f"LI(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
-        ]
-    )
-
-    ops = ["amoswap.", "amoadd.", "amoxor.", "amoand.", "amoor.", "amomin.", "amomax.", "amominu.", "amomaxu."]
-    for op in ops:
-        lines.extend(
-            [
-                f"LI(x{dest_reg}, 0xBAD)",
-                test_data.add_testcase(f"amo_access_fault_{op[:-1]}_w", coverpoint, covergroup),
-                f"{op}w x{dest_reg}, x{source_reg}, (x{addr_reg})",
-                write_sigupd(dest_reg, test_data),
-            ]
-        )
-    lines.append("#if __riscv_xlen == 64")
-    for op in ops:
-        lines.extend(
-            [
-                f"LI(x{dest_reg}, 0xBAD)",
-                test_data.add_testcase(f"amo_access_fault_{op[:-1]}_d", coverpoint, covergroup),
-                f"{op}d x{dest_reg}, x{source_reg}, (x{addr_reg})",
-                write_sigupd(dest_reg, test_data),
-            ]
-        )
-    lines.append("#endif")
-
-    # Zabha
-    lines.append("#ifdef ZABHA_SUPPORTED")
-    for op in ops:
-        lines.extend(
-            [
-                f"LI(x{dest_reg}, 0xBAD)",
-                test_data.add_testcase(f"amo_access_fault_{op[:-1]}_h", coverpoint, covergroup),
-                f"{op}h x{dest_reg}, x{source_reg}, (x{addr_reg})",
-                write_sigupd(dest_reg, test_data),
-            ]
-        )
-    for op in ops:
-        lines.extend(
-            [
-                f"LI(x{dest_reg}, 0xBAD)",
-                test_data.add_testcase(f"amo_access_fault_{op[:-1]}_b", coverpoint, covergroup),
-                f"{op}b x{dest_reg}, x{source_reg}, (x{addr_reg})",
-                write_sigupd(dest_reg, test_data),
-            ]
-        )
-    lines.append("#endif")
-
-    lines.append("#ifdef ZACAS_SUPPORTED")
-    lines.extend(
-        [
-            f"LI(x{dest_reg}, 0xBAD)",
-            test_data.add_testcase("amo_access_fault_amocas_w", coverpoint, covergroup),
-            f"amocas.w x{dest_reg}, x{source_reg}, (x{addr_reg})",
-            write_sigupd(dest_reg, test_data),
-        ]
-    )
-    lines.extend(
-        [
-            f"LI(x{dest_reg}, 0xBAD)",
-            test_data.add_testcase("amo_access_fault_amocas_d", coverpoint, covergroup),
-            f"amocas.d x{dest_reg}, x{source_reg}, (x{addr_reg})",
-            write_sigupd(dest_reg, test_data),
-        ]
-    )
-    lines.append("#if __riscv_xlen == 64")
-    lines.extend(
-        [
-            f"LI(x{dest_reg}, 0xBAD)",
-            test_data.add_testcase("amo_access_fault_amocas_q", coverpoint, covergroup),
-            f"amocas.q x{dest_reg}, x{source_reg}, (x{addr_reg})",
-            write_sigupd(dest_reg, test_data),
-        ]
-    )
-    lines.append("#endif")
-    lines.append("#endif")
-
-    lines.append("#endif")
     test_data.int_regs.return_register_pair(dest_reg)
     test_data.int_regs.return_register_pair(source_reg)
     test_data.int_regs.return_register(addr_reg)
@@ -263,56 +171,28 @@ def _generate_amo_access_fault_tests(test_data: TestData) -> list[str]:
 
 
 def _generate_amo_access_misaligned_priority_tests(test_data: TestData) -> list[str]:
-    covergroup, coverpoint = "Exceptions_Zaamo_cg", "cp_amo_access_misaligned_priority"
+    coverpoint = "cp_amo_access_misaligned_priority"
 
-    # Register pairs for amocas.d on RV32 and amocas.q on RV64
     dest_reg = test_data.int_regs.get_register_pair()
     source_reg = test_data.int_regs.get_register_pair()
     addr_reg = test_data.int_regs.get_register()
 
-    def amo_test(instr: str, pair: bool = False) -> list[str]:
-        dest_regs = [dest_reg, dest_reg + 1] if pair else [dest_reg]
-        return [
-            *[f"LI(x{reg}, 0xBAD)" for reg in dest_regs],
-            test_data.add_testcase(f"amo_access_misaligned_priority_{instr.replace('.', '_')}", coverpoint, covergroup),
-            f"{instr} x{dest_reg}, x{source_reg}, (x{addr_reg})",
-            *[write_sigupd(reg, test_data) for reg in dest_regs],
-        ]
-
+    # .b is never misaligned, so it is not tested here
     lines = [
         "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
         comment_banner(coverpoint, "Test misaligned amo instructions on restricted memory for exception priority"),
-        f"LI(x{source_reg}, 1)",
-        f"LI(x{source_reg + 1}, 0)",
+        *_init_source_pair(source_reg),
         f"LI(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
         f"addi x{addr_reg}, x{addr_reg}, 1",
+        *_amo_tests(
+            test_data,
+            coverpoint,
+            (dest_reg, source_reg, addr_reg),
+            lambda name: f"amo_access_misaligned_priority_{name}",
+            include_b=False,
+        ),
+        "#endif",
     ]
-
-    ops = ["amoswap.", "amoadd.", "amoxor.", "amoand.", "amoor.", "amomin.", "amomax.", "amominu.", "amomaxu."]
-    for op in ops:
-        lines.extend(amo_test(f"{op}w"))
-    lines.append("#if __riscv_xlen == 64")
-    for op in ops:
-        lines.extend(amo_test(f"{op}d"))
-    lines.append("#endif")
-
-    lines.append("#ifdef ZABHA_SUPPORTED")
-    for op in ops:
-        lines.extend(amo_test(f"{op}h"))
-    lines.append("#endif")
-
-    lines.extend(
-        [
-            "#ifdef ZACAS_SUPPORTED",
-            *amo_test("amocas.w"),
-            *amo_test("amocas.d", pair=True),
-            "#if __riscv_xlen == 64",
-            *amo_test("amocas.q", pair=True),
-            "#endif",
-            "#endif",
-            "#endif",
-        ]
-    )
 
     test_data.int_regs.return_register_pair(dest_reg)
     test_data.int_regs.return_register_pair(source_reg)

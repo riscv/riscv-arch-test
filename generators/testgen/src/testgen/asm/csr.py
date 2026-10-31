@@ -14,6 +14,11 @@ from testgen.constants import INDENT
 from testgen.data.state import TestData
 
 
+def _mask_str(mask: int | str) -> str:
+    """Format a csr mask for a comment: hex for a number, as written for a preprocessor macro."""
+    return mask if isinstance(mask, str) else f"{mask:#x}"
+
+
 def gen_csr_read_sigupd(check_reg: int, csr: tuple, test_data: TestData, mask_reg: int | None = None) -> str:
     """
     Generate assembly for CSR read SIGUPD and increment sigupd_count.
@@ -45,7 +50,7 @@ def gen_csr_read_sigupd(check_reg: int, csr: tuple, test_data: TestData, mask_re
         return (
             f"{INDENT}# Read {csr_name} into x{check_reg}, keep only bits specified by mask, and check against expected.\n"
             f"csrr x{check_reg}, {csr_name}    # Read CSR\n"
-            f"and x{check_reg}, x{check_reg}, x{mask_reg}    # keep only masked bits {mask:#x}\n"
+            f"and x{check_reg}, x{check_reg}, x{mask_reg}    # keep only masked bits {_mask_str(mask)}\n"
             + write_sigupd(check_reg, test_data)
         )
 
@@ -103,7 +108,8 @@ def csr_access_test(
     Args:
         test_data: TestData object to track signature updates
         csr: Tuple of (csr_name, mask) where csr_name is the CSR name string and
-             mask is either None or an integer representing a binary mask of bits to keep
+             mask is None, an integer representing a binary mask of bits to keep, or the name of a
+             preprocessor macro that expands to such a mask (readback only; not with maskedwrites)
         covergroup: Covergroup name for testcase strings
         coverpoint: Coverpoint name for testcase strings
         maskedwrites: If True, the CSR is written with a mask applied to the value being written.
@@ -126,7 +132,9 @@ def csr_access_test(
         f"# CSR Access Tests for {csr_name}",
         f"csrr x{save_reg}, {csr_name}    # Save CSR",
     ]
-    if mask is not None:
+    if isinstance(mask, str):
+        lines.append(f"LI(x{mask_reg}, {mask})    # Load mask")
+    elif mask is not None:
         mask32 = mask & 0xFFFFFFFF
         if mask32 != mask:
             lines.extend(
@@ -240,7 +248,7 @@ def csr_walk_test(
     warl_fields: list[tuple] | None = None,
     maskedwrites: bool = False,
     bin_prefix: str = "",
-    unchecked_bits: list[tuple[int, str]] | None = None,
+    unwalked_bits: list[tuple[int, str]] | None = None,
 ) -> list[str]:
     """
     Generate a CSR walking-ones test: set and (optionally) clear each bit individually.
@@ -248,7 +256,8 @@ def csr_walk_test(
     Args:
         test_data: TestData object to track signature updates
         csr: Tuple of (csr_name, mask) where csr_name is the CSR name string and
-             mask is either None or an integer representing a binary mask of bits to keep
+             mask is None, an integer representing a binary mask of bits to keep, or the name of a
+             preprocessor macro that expands to such a mask (masks the readback only)
         covergroup: Covergroup name for testcase strings
         coverpoint: Coverpoint name for testcase strings
         start_bit: First bit position to walk; must be in 0..31 so the initial LI
@@ -267,13 +276,22 @@ def csr_walk_test(
             other iterations check the field exactly as usual (see _warl_reserved_check).
         maskedwrites: If True, the CSR is written with a mask applied to the value being written.
         bin_prefix: Prefix for testcase bin names, to walk the same CSR more than once under one coverpoint.
-        unchecked_bits: Optional (bits, define) pairs. The bits are walked but removed from the readback
-            mask only when `define` is defined for the config. Starts from the csr mask, or all ones if None.
+        unwalked_bits: Optional (bits, cond) pairs for state the reference model cannot model. `cond` is a
+            define name, or an #if expression. Where it holds, the bits are neither written nor checked,
+            so their coverage reports missing; elsewhere they are walked and checked (read-only). Implies
+            maskedwrites, with the bits added to the csr mask, or all ones if None.
     """
     assert 0 <= start_bit < 32, f"start_bit must be in 0..31, got {start_bit}"
     csr_name, mask = csr
-    if unchecked_bits and mask is None:
-        mask = (1 << 64) - 1
+    if isinstance(mask, str):
+        assert not (maskedwrites or warl_fields or unwalked_bits), "a macro mask only masks the readback"
+    if unwalked_bits:
+        assert not isinstance(mask, str)
+        maskedwrites = True
+        if mask is None:
+            mask = (1 << 64) - 1
+        for bits, _cond in unwalked_bits:
+            mask |= bits
         csr = (csr_name, mask)
     if maskedwrites:
         assert mask is not None, f"maskedwrites requires a csr mask (got None for {csr_name})"
@@ -300,6 +318,7 @@ def csr_walk_test(
 
     def warl_mask_for(reserved_fields: list[tuple]) -> int:
         """CSR mask with the given fields' bits excluded."""
+        assert not isinstance(mask, str)
         warl_mask = (1 << 64) - 1 if mask is None else mask
         for f in reserved_fields:
             lsb, width = f[1], f[2]
@@ -358,13 +377,13 @@ def csr_walk_test(
         f"LI(x{walk_reg}, {1 << start_bit})              # 1 in bit {start_bit}",
     ]
     if mask is not None:
-        lines.append(f"LI(x{mask_reg}, {mask})    # Load mask ({mask:#x})")
-        for bits, define in unchecked_bits or []:
+        lines.append(f"LI(x{mask_reg}, {mask})    # Load mask ({_mask_str(mask)})")
+        for bits, cond in unwalked_bits or []:
             lines += [
-                f"#ifdef {define}",
-                f"LI(x{check_reg}, {~bits & ((1 << 64) - 1)})    # Do not check bits {bits:#x}",
+                f"#ifdef {cond}" if cond.isidentifier() else f"#if {cond}",
+                f"LI(x{check_reg}, {~bits & ((1 << 64) - 1)})    # Do not walk bits {bits:#x}",
                 f"and x{mask_reg}, x{mask_reg}, x{check_reg}",
-                f"#endif // {define}",
+                f"#endif // {cond}",
             ]
     if walk_zeros:
         lines.append(f"LI(x{temp_reg}, -1)             # x{temp_reg} = all 1s")

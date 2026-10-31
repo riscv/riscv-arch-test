@@ -672,7 +672,6 @@ def generate_misaligned_priority_load_tests(
     test_data: TestData,
     covergroup: str,
     coverpoint: str,
-    name_infix: str = "_load_",
 ) -> list[str]:
     """Generate misaligned-priority load testcases."""
     addr_reg, temp_reg, check_reg = test_data.int_regs.get_registers(3)
@@ -690,7 +689,7 @@ def generate_misaligned_priority_load_tests(
             lines.extend(
                 [
                     f"\n# Testcase: {op} with offset {offset} (LSBs: {offset:03b}) - Access fault Misaligned",
-                    test_data.add_testcase(f"{op}{name_infix}off{offset}_priority", coverpoint, covergroup),
+                    test_data.add_testcase(f"{op}_off{offset}_priority", coverpoint, covergroup),
                     f"{op} x{check_reg}, 0(x{temp_reg})",
                 ]
             )
@@ -700,7 +699,7 @@ def generate_misaligned_priority_load_tests(
             lines.extend(
                 [
                     f"\n# Testcase: {op} with offset {offset} (LSBs: {offset:03b}) - Access fault Misaligned",
-                    test_data.add_testcase(f"{op}{name_infix}off{offset}_priority", coverpoint, covergroup),
+                    test_data.add_testcase(f"{op}_off{offset}_priority", coverpoint, covergroup),
                     f"{op} x{check_reg}, 0(x{temp_reg})",
                 ]
             )
@@ -715,7 +714,6 @@ def generate_misaligned_priority_store_tests(
     test_data: TestData,
     covergroup: str,
     coverpoint: str,
-    name_infix: str = "_store_",
 ) -> list[str]:
     """Generate misaligned-priority store testcases."""
     addr_reg, data_reg = test_data.int_regs.get_registers(2)
@@ -736,7 +734,7 @@ def generate_misaligned_priority_store_tests(
             lines.extend(
                 [
                     f"\n# Testcase: {op} with offset {offset} (LSBs: {offset:03b}) - Access fault Misaligned",
-                    test_data.add_testcase(f"{op}{name_infix}off{offset}_priority", coverpoint, covergroup),
+                    test_data.add_testcase(f"{op}_off{offset}_priority", coverpoint, covergroup),
                     f"{op} x{data_reg}, 0(x{addr_reg})",
                 ]
             )
@@ -746,7 +744,7 @@ def generate_misaligned_priority_store_tests(
                 "",
                 "#if __riscv_xlen == 64",
                 f"\n# Testcase: sd with offset {offset} (LSBs: {offset:03b}) - Access fault Misaligned",
-                test_data.add_testcase(f"sd{name_infix}off{offset}_priority", coverpoint, covergroup),
+                test_data.add_testcase(f"sd_off{offset}_priority", coverpoint, covergroup),
                 f"sd x{data_reg}, 0(x{addr_reg})",
                 "",
                 "#endif",
@@ -763,8 +761,6 @@ def generate_misaligned_priority_fetch_tests(
     test_data: TestData,
     covergroup: str,
     coverpoint: str,
-    name_prefix: str = "fetch_",
-    name_suffix: str = "_priority",
 ) -> list[str]:
     """Generate misaligned-priority fetch testcases."""
     addr_reg = test_data.int_regs.get_register()
@@ -777,7 +773,7 @@ def generate_misaligned_priority_fetch_tests(
             "\n# misaligned fetch - existent address",
             f"LA(x{addr_reg}, {target_label})",
             f"addi x{addr_reg}, x{addr_reg}, 2",
-            test_data.add_testcase(f"{name_prefix}misaligned_existent{name_suffix}", coverpoint, covergroup),
+            test_data.add_testcase("misaligned_existent", coverpoint, covergroup),
             f"jalr x1, 0(x{addr_reg})",
             ".p2align 4",
             f"{target_label}:",
@@ -787,7 +783,7 @@ def generate_misaligned_priority_fetch_tests(
             "\n# misaligned fetch - non-existent (fault) address",
             f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
             f"addi x{addr_reg}, x{addr_reg}, 2",
-            test_data.add_testcase(f"{name_prefix}misaligned_nonexistent{name_suffix}", coverpoint, covergroup),
+            test_data.add_testcase("misaligned_nonexistent", coverpoint, covergroup),
             f"jalr x1, 0(x{addr_reg})",
             "#endif",
         ]

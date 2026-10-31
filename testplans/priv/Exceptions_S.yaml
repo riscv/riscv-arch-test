@@ -83,11 +83,21 @@ coverpoints:
     description: ecall from supervisor mode throws ecall supervisor exception (trap and mcause)
     expectation: ecall to M-mode (should not be delegated to S-mode because there would be no path to M-mode)
     bins: "1"
-  - name: cp_misaligned_priority
+  - name: cp_misaligned_priority_load
     goal: Priority of exceptions
-    description: Attempt lw and sw and fetch from memory location causing  access fault and misaligned
-    expectation: System-dependent
-    bins: 3 ops
+    description: In supervisor mode, attempt lb, lbu, lh, lhu, lw, (lwu, ld) at each of the 8 offsets from the access-fault address. Offsets misaligned for the op cause both access fault and address misaligned. Aligned offsets cause only access fault.
+    expectation: Misaligned offsets take access fault or address misaligned. Aligned offsets take access fault.
+    bins: 7 ops * 8 lsbs
+  - name: cp_misaligned_priority_store
+    goal: Priority of exceptions
+    description: In supervisor mode, attempt sb, sh, sw, (sd) at each of the 8 offsets from the access-fault address. Offsets misaligned for the op cause both access fault and address misaligned. Aligned offsets cause only access fault.
+    expectation: Misaligned offsets take access fault or address misaligned. Aligned offsets take access fault.
+    bins: 4 ops * 8 lsbs
+  - name: cp_misaligned_priority_fetch
+    goal: Priority of exceptions
+    description: In supervisor mode, jalr to aligned and misaligned (+2) targets at an existent address and at the access-fault address.
+    expectation: Without C, a misaligned target takes instruction address misaligned. With C, a misaligned target at the access-fault address takes instruction access fault.
+    bins: 2 alignments * 2 address types
   - name: cp_stvec
     description: Cause delegated exception in s and u mode with stvec != mtvec
     expectation: Delegates to stvec handler
@@ -98,4 +108,4 @@ coverpoints:
     expectation: xpie gets xie, xie gets 0
     bins: 3 modes * 2 medleg * 2 mie * 2 sie
   - heading: "Note: instruction/load/store fault pages are being tested in Sv_Exceptions"
-  - heading: "Note: tests that differ from Exceptions_Sm are cp_medeleg_mu and cp_stvec.  Also, cp_misaligned_priority is not split here."
+  - heading: "Note: tests that differ from Exceptions_Sm are cp_medeleg_mu and cp_stvec."

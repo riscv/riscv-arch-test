@@ -1010,15 +1010,18 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
                 covergroup,
                 test_data,
             ),
+            # A misa that is all read-only zero reads I = E = 0
+            "#ifdef UDB_MISA_CSR_IMPLEMENTED",
             _gen_misa_dependencies(
                 "0b00000000000000000000000000",
-                "0b00000000000000000000000000",
+                "0b00000000000000000100010000",
                 "i0e0",
                 "I = 0, E = 0",
                 coverpoint,
                 covergroup,
                 test_data,
             ),
+            "#endif // UDB_MISA_CSR_IMPLEMENTED",
             _gen_misa_dependencies(
                 "0b00000000000000000000001000",
                 "0b00000000000000000000101000",

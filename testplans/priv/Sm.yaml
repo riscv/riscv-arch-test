@@ -24,7 +24,7 @@ coverpoints:
   - name: cp_misa_dependencies
     description: |-
       Attempt to write I, E = 1.  E should read 0 if I reads 1
-      Attempt to write I, E = 0.  One should read 1
+      Attempt to write I, E = 0.  One should read 1.  Only if misa is implemented (not all read-only zero)
       Attempt to write F=0, D=1.  D should read 0 if F reads 0
       Attempt to write F = 1, D = 0, Q = 1. Q should read 0 if D reads 0
       Attempt to write S = 1, U = 0.  S should read 0 if U = 0

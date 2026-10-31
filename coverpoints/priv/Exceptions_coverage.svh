@@ -299,6 +299,27 @@ covergroup Exceptions_S_cg with function sample(ins_t ins);
         cp_misaligned_priority:                  cross priv_mode_s, sw_lw_jalr, illegal_address_misaligned;
     `endif
 
+    // loads with rd = x0 must still trap
+    rd_x0: coverpoint ins.current.insn[11:7] {
+        bins x0 = {5'b00000};
+    }
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        cp_load_x0_access_fault:                 cross priv_mode_s, loadops, rd_x0, illegal_address;
+    `endif
+    misaligned_loadops: coverpoint ins.current.insn {
+        wildcard bins lh  = {LH};
+        wildcard bins lhu = {LHU};
+        wildcard bins lw  = {LW};
+        `ifdef UDB_MXLEN_64
+            wildcard bins ld  = {LD};
+            wildcard bins lwu = {LWU};
+        `endif
+    }
+    adr_odd: coverpoint {ins.current.rs1_val + ins.current.imm}[0] {
+        bins odd = {1'b1};
+    }
+    cp_load_x0_address_misaligned:           cross priv_mode_s, misaligned_loadops, rd_x0, adr_odd;
+
 endgroup
 
 `endif // S_SUPPORTED
@@ -511,6 +532,27 @@ covergroup Exceptions_Sm_cg with function sample(ins_t ins);
         `endif
     `endif
 
+    // loads with rd = x0 must still trap
+    rd_x0: coverpoint ins.current.insn[11:7] {
+        bins x0 = {5'b00000};
+    }
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        cp_load_x0_access_fault:                 cross priv_mode_m, loadops, rd_x0, illegal_address;
+    `endif
+    misaligned_loadops: coverpoint ins.current.insn {
+        wildcard bins lh  = {LH};
+        wildcard bins lhu = {LHU};
+        wildcard bins lw  = {LW};
+        `ifdef UDB_MXLEN_64
+            wildcard bins ld  = {LD};
+            wildcard bins lwu = {LWU};
+        `endif
+    }
+    adr_odd: coverpoint {ins.current.rs1_val + ins.current.imm}[0] {
+        bins odd = {1'b1};
+    }
+    cp_load_x0_address_misaligned:           cross priv_mode_m, misaligned_loadops, rd_x0, adr_odd;
+
 endgroup
 
 
@@ -663,6 +705,27 @@ covergroup Exceptions_U_cg with function sample(ins_t ins);
         cp_misaligned_priority_store:            cross priv_mode_u, storeops, adr_LSBs, illegal_address_priority;
         cp_store_access_fault:                   cross priv_mode_u, storeops, illegal_address;
     `endif
+
+    // loads with rd = x0 must still trap
+    rd_x0: coverpoint ins.current.insn[11:7] {
+        bins x0 = {5'b00000};
+    }
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        cp_load_x0_access_fault:                 cross priv_mode_u, loadops, rd_x0, illegal_address;
+    `endif
+    misaligned_loadops: coverpoint ins.current.insn {
+        wildcard bins lh  = {LH};
+        wildcard bins lhu = {LHU};
+        wildcard bins lw  = {LW};
+        `ifdef UDB_MXLEN_64
+            wildcard bins ld  = {LD};
+            wildcard bins lwu = {LWU};
+        `endif
+    }
+    adr_odd: coverpoint {ins.current.rs1_val + ins.current.imm}[0] {
+        bins odd = {1'b1};
+    }
+    cp_load_x0_address_misaligned:           cross priv_mode_u, misaligned_loadops, rd_x0, adr_odd;
 
 
 endgroup
@@ -1571,6 +1634,27 @@ covergroup Exceptions_H_cg with function sample(ins_t ins);
         cp_xtinst_load_access:  cross priv_mode_vs, lw, illegal_address, medeleg_delegation, hedeleg_disabled, htval_htinst_nonzero;
         cp_xtinst_store_access: cross priv_mode_vs, sw, illegal_address, medeleg_delegation, hedeleg_disabled, htval_htinst_nonzero;
     `endif
+
+    // loads with rd = x0 must still trap
+    rd_x0: coverpoint ins.current.insn[11:7] {
+        bins x0 = {5'b00000};
+    }
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        cp_load_x0_access_fault: cross priv_mode_vs_vu, loadops, rd_x0, illegal_address;
+    `endif
+    misaligned_loadops: coverpoint ins.current.insn {
+        wildcard bins lh  = {LH};
+        wildcard bins lhu = {LHU};
+        wildcard bins lw  = {LW};
+        `ifdef UDB_MXLEN_64
+            wildcard bins ld  = {LD};
+            wildcard bins lwu = {LWU};
+        `endif
+    }
+    adr_odd: coverpoint {ins.current.rs1_val + ins.current.imm}[0] {
+        bins odd = {1'b1};
+    }
+    cp_load_x0_address_misaligned: cross priv_mode_vs_vu, misaligned_loadops, rd_x0, adr_odd;
 endgroup
 `endif // H_SUPPORTED
 

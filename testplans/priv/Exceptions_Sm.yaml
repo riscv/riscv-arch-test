@@ -71,6 +71,20 @@ coverpoints:
     description: Attempt lb, lbu, lh, lhu, lw, lwu, ld from an illegal address (parameterized). Also exercised in PMP, VM.
     expectation: Load Access Fault
     bins: 7 ops
+  - name: cp_load_x0_access_fault
+    goal: Load Access Fault with rd = x0
+    description: Attempt lb, lbu, lh, lhu, lw, lwu, ld with rd = x0 from an illegal address (parameterized)
+    expectation: Load access fault, even though the load value is discarded
+    bins: 7 ops
+    rules:
+      - load_exc_x0
+  - name: cp_load_x0_address_misaligned
+    goal: Load Misaligned with rd = x0
+    description: Attempt lh, lhu, lw, lwu, ld with rd = x0 from an odd address.
+    expectation: Load address misaligned exception if the hart does not perform misaligned loads, even though the load value is discarded
+    bins: 5 ops
+    rules:
+      - load_exc_x0
   - name: cp_store_address_misaligned
     goal: Store Misaligned
     description: "Attempt sb, sh, sw, (sd) with every combination of three lsbs: 000-111"

@@ -14,7 +14,6 @@ from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.exceptions.ExceptionsCommon import (
     generate_breakpoint_tests,
     generate_ecall_tests,
-    generate_illegal_instruction_seed_tests,
     generate_illegal_instruction_tests,
     generate_instr_access_fault_tests,
     generate_instr_adr_misaligned_branch_nottaken,
@@ -302,7 +301,6 @@ def make_exceptionssm(test_data: TestData) -> list[TestChunk]:
             test_data, _CG, "cp_misaligned_priority_fetch", name_prefix="", name_suffix=""
         )
     )
-    tc.code.extend(generate_illegal_instruction_seed_tests(test_data, _CG))
     tc.code.extend(generate_breakpoint_tests(test_data, _CG))
     tc.code.extend(generate_illegal_instruction_tests(test_data, _CG))
     tc.code.extend(generate_ecall_tests(test_data, _CG, "cp_ecall_m", "ecall_m", "Ecall Machine Mode"))

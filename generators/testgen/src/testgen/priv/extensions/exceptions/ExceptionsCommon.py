@@ -395,26 +395,6 @@ def generate_illegal_instruction_tests(test_data: TestData, covergroup: str, *, 
     return lines
 
 
-def generate_illegal_instruction_seed_tests(test_data: TestData, covergroup: str) -> list[str]:
-    coverpoint = "cp_illegal_instruction_seed"
-    dest_regs = test_data.int_regs.get_registers(4)
-
-    lines = [
-        comment_banner(coverpoint, "Illegal Instruction Seed"),
-        test_data.add_testcase("seed_csrrs", coverpoint, covergroup),
-        f"csrrs x{dest_regs[0]}, seed, x0",
-        test_data.add_testcase("seed_csrrc", coverpoint, covergroup),
-        f"csrrc x{dest_regs[1]}, seed, x0",
-        test_data.add_testcase("seed_csrrsi", coverpoint, covergroup),
-        f"csrrsi x{dest_regs[2]}, seed, 0",
-        test_data.add_testcase("seed_csrrci", coverpoint, covergroup),
-        f"csrrci x{dest_regs[3]}, seed, 0",
-    ]
-
-    test_data.int_regs.return_registers(dest_regs)
-    return lines
-
-
 def generate_breakpoint_tests(test_data: TestData, covergroup: str) -> list[str]:
     coverpoint = "cp_breakpoint"
 

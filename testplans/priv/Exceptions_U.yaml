@@ -38,17 +38,6 @@ coverpoints:
     description: Executing instruction 0x00000000 and 0xFFFFFFFF
     expectation: throws an illegal instruction exception (trap and mcause)
     bins: 2 instr
-  - name: cp_illegal_instruction_seed
-    goal: Illegal Read-only access to a CSR
-    description: |-
-      csrrs x*, seed, x0 throws illegal instruction, as do
-      csrrc x*, seed, x0
-      csrrsi x*, seed, 0
-      csrrci x*, seed, 0
-    expectation: illegal instruction exception
-    bins: 4 csr ops
-    rules:
-      - "*** move to Zkr"
   - name: cp_breakpoint
     goal: Breakpoint
     description: |-

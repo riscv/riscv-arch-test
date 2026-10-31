@@ -572,7 +572,7 @@ def cp_custom_vfredusum_noactive(
                 res,
             )
     sentinel = _fval(ctx.acc, 5, -1)
-    keep = model.Result(sentinel, sentinel, False, False, False, False, 0, 0)
+    keep = model.Result(sentinel, sentinel, False, False, False, 0, 0)
     for masked in (False, True):
         mask_tag = "masked" if masked else "unmasked"
         _data_case(

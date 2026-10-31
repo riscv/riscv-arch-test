@@ -498,12 +498,10 @@ class Result:
     pos_inf: bool
     neg_inf: bool
     nan: bool  # canonical NaN allowed
-    must_nan: bool
     may: int
     must: int
     passthrough: int | None = None  # no active elements: vs1 bits may also be returned unchanged with no flags
     passthrough_canon_flags: int = 0  # flags when such a NaN scalar is canonicalized instead
-    exact_sum: int | None = None
 
 
 def _all_zero_sign(leaves: list[Leaf], mode: int) -> bool:
@@ -522,7 +520,7 @@ def reduce_outcomes(scalar: Leaf, elems: list[Leaf], mode: int, acc: Fmt) -> Res
     if not nonzero:
         neg = _all_zero_sign(leaves, mode)
         z = encode(0, neg, acc)
-        return Result(z, z, False, False, False, False, 0, 0, exact_sum=0)
+        return Result(z, z, False, False, False, 0, 0)
     # Group equal leaves. A multiset of leaves is then a tuple of counts, one per distinct leaf (kind).
     leaf_counts: dict[tuple, int] = {}
     leaf_of_kind: dict[tuple, Leaf] = {}
@@ -558,7 +556,6 @@ def reduce_outcomes(scalar: Leaf, elems: list[Leaf], mode: int, acc: Fmt) -> Res
     # Every tree adds every leaf, so an inexact exact sum makes the result inexact in every tree
     if all(leaf.kind == "fin" for leaf in leaves):
         exact = sum(leaf.x for leaf in leaves)
-        res.exact_sum = exact
         if not res.nan and not representable(exact, acc):
             res.must |= NX
         if _must_overflow(root, mode, acc):
@@ -595,18 +592,18 @@ def _to_result(o: Outcome, acc: Fmt) -> Result:
         lo = encode(o.lo[0], o.lo[1] < 0, acc)
         hi = encode(o.hi[0], o.hi[1] < 0, acc)
     nan = o.nan or o.must_nan
-    return Result(lo, hi, o.pos_inf, o.neg_inf, nan, o.must_nan, o.may, o.must)
+    return Result(lo, hi, o.pos_inf, o.neg_inf, nan, o.may, o.must)
 
 
 def _no_active(scalar: Leaf, acc: Fmt) -> Result:
     """No active elements: vs1[0] plus additive identities. NaN may pass through or be canonicalized."""
     if scalar.kind == "fin":
         b = encode(scalar.x, scalar.neg, acc)
-        return Result(b, b, False, False, False, False, 0, 0, exact_sum=scalar.x)
+        return Result(b, b, False, False, False, 0, 0)
     if scalar.kind == "inf":
-        return Result(None, None, not scalar.neg, scalar.neg, False, False, 0, 0)
+        return Result(None, None, not scalar.neg, scalar.neg, False, 0, 0)
     flags = NV if scalar.kind == "snan" else 0
-    return Result(None, None, False, False, True, True, flags, 0, passthrough_canon_flags=flags)
+    return Result(None, None, False, False, True, flags, 0, passthrough_canon_flags=flags)
 
 
 def reduce_bits(scalar_bits: int, elem_bits: list[int], mode: int, sew: int, widening: bool) -> Result:
@@ -639,11 +636,11 @@ def exact_bits(scalar_bits: int, elem_bits: list[int], mode: int, sew: int, wide
     if not nonzero:
         neg = _all_zero_sign(leaves, mode)
         z = encode(0, neg, acc)
-        return Result(z, z, False, False, False, False, 0, 0, exact_sum=0)
+        return Result(z, z, False, False, False, 0, 0)
     unit = min(m & -m for m in nonzero)
     total = sum(mags)
     if total >= unit << acc.prec or total > acc.max_norm:
         return None
     s = sum(lf.x for lf in leaves)
     b = encode(s, mode == RDN, acc)
-    return Result(b, b, False, False, False, False, 0, 0, exact_sum=s)
+    return Result(b, b, False, False, False, 0, 0)

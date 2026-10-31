@@ -264,7 +264,7 @@ def add_fp_load_misaligned_test(
     check_reg = test_data.float_regs.get_register()
 
     t_lines: list[str] = [
-        f"LI(x{addr_reg}, 0xBEE{offset}CAFE)",
+        f"LI(x{addr_reg}, 0xBEE{offset:X}CAFE) # unique per offset",
         f"fcvt.s.w f{check_reg}, x{addr_reg}",
         f"LA(x{addr_reg}, scratch)",
         f"addi x{addr_reg}, x{addr_reg}, {offset}",
@@ -293,7 +293,7 @@ def add_fp_store_misaligned_test(
     data_reg = test_data.float_regs.get_register()
 
     t_lines = [
-        f"LI(x{check_reg}, 0xBEE{offset}CAFE)",
+        f"LI(x{check_reg}, 0xBEE{offset:X}CAFE) # unique per offset",
         f"fcvt.s.w f{data_reg}, x{check_reg}",
         f"LA(x{addr_reg}, scratch)",
         f"addi x{addr_reg}, x{addr_reg}, {offset}",
@@ -318,7 +318,7 @@ def add_fp_store_misaligned_test(
 
 def _generate_mstatus_fs_illegal_instr_tests(test_data: TestData) -> list[str]:
     covergroup, coverpoint = "Exceptions_F_cg", "cp_mstatus_fs_illegal_instr"
-    clear_mask_reg, frm_reg, set_mask_reg = test_data.int_regs.get_registers(3)
+    clear_mask_reg, set_mask_reg = test_data.int_regs.get_registers(2)
 
     lines = [
         comment_banner(
@@ -327,11 +327,10 @@ def _generate_mstatus_fs_illegal_instr_tests(test_data: TestData) -> list[str]:
         ),
         f"LI(x{clear_mask_reg}, 0x6000) # MSTATUS_FS mask",
         f"LI(x{set_mask_reg}, 0) # MSTATUS_FS = Off",
-        f"LI(x{frm_reg}, 0)",
     ]
 
     lines.extend(add_fp_instructions(clear_mask_reg, set_mask_reg, 0, test_data, coverpoint, covergroup))
-    test_data.int_regs.return_registers([clear_mask_reg, frm_reg, set_mask_reg])
+    test_data.int_regs.return_registers([clear_mask_reg, set_mask_reg])
     return lines
 
 

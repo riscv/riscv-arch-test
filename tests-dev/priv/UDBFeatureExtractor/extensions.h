@@ -256,15 +256,16 @@
 //   Ssu32xl on RV64 = sstatus.UXL accepts 1; on RV32 UXLEN can only be 32, so it is not reported
 //   Svade = Svadu (menvcfg.ADUE = 0 is defined as Svade behavior); untested otherwise
 //   Sha = H + Shcounterenw + Shgatpa + Shvsatpa + Shvstvecd (Shtvala and Shvstvala are untested)
+// Zicclsm is computed there too: a misaligned lw and sw to main memory complete without a trap.
 
 // Ratified extensions that no probe can see, reported in a comment so the reader knows they were
 // not looked for.  Unprivileged: hints execute everywhere (Zihintpause, Zihintntl, Zicbop), the
-// rest constrain behavior rather than legality (Zicclsm, Ztso, Zkt, Zvkt, Zic64b, Zicc*, Za64rs,
+// rest constrain behavior rather than legality (Ztso, Zkt, Zvkt, Zic64b, Zicc*, Za64rs,
 // Za128rs, Zama16b), and Zk / Zvkn* / Zvks* need Zkt or Zvkt.  Privileged: trap-value guarantees
 // (Sstvala, Shtvala, Shvstvala), page-table-walk behavior (Ssccptr, Svvptc, Svnapot, Svrsw60t59b,
 // and Svade unless Svadu is present), Ssstrict, and debug mode (Sdext).
 #define UNTESTED_EXTENSIONS                                                                   \
-    "Zihintpause Zihintntl Zicbop Zicclsm Ztso Zkt Zvkt Zic64b Ziccif Ziccamoa Ziccamoc Ziccrse " \
+    "Zihintpause Zihintntl Zicbop Ztso Zkt Zvkt Zic64b Ziccif Ziccamoa Ziccamoc Ziccrse " \
     "Za64rs Za128rs Zama16b Zk Zvkn Zvknc Zvkng Zvks Zvksc Zvksg"
 #define UNTESTED_PRIV_EXTENSIONS                                                              \
     "Sstvala Shtvala Shvstvala Ssccptr Svvptc Svnapot Svrsw60t59b Ssstrict Sdext"

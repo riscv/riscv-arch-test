@@ -45,6 +45,8 @@ reading it back, which also gives Svbare, and Shgatpa and Shvsatpa by repeating 
 `vsatp`. Sscounterenw and Shcounterenw compare the writable bits of `scounteren` and `hcounteren`
 with those of `mcounteren`, on a hart with Zihpm (UDB defines them only with it). A 32-bit hart
 without Sv32 gets `PHYS_ADDR_WIDTH` 32 even when `pmpaddr` keeps bits 33:32 writable, with a note.
+Zicclsm is reported when a misaligned `lw` and `sw` to main memory complete without a trap,
+the same accesses that give `MISALIGNED_LDST`.
 Sspm, Supm, Ssu32xl on RV32, Svade with Svadu, and Sha are derived as
 described in `extensions.h`.
 
@@ -199,7 +201,7 @@ Extensions that add no instruction or CSR whose legality could be tested cannot 
 the output names them on a `# untested:` line so the reader knows they were not looked for:
 
 - hints, which execute everywhere: Zihintpause, Zihintntl, Zicbop
-- behavioral guarantees: Zicclsm, Ztso, Zkt, Zvkt, Zic64b, Ziccif, Ziccamoa, Ziccamoc, Ziccrse,
+- behavioral guarantees: Ztso, Zkt, Zvkt, Zic64b, Ziccif, Ziccamoa, Ziccamoc, Ziccrse,
   Za64rs, Za128rs, Zama16b, and Zk, Zvkn, Zvknc, Zvkng, Zvks, Zvksc, Zvksg (which need Zkt or Zvkt)
 - trap-value guarantees: Sstvala, Shtvala, Shvstvala
 - page-table-walk behavior: Ssccptr, Svvptc, Svnapot, Svrsw60t59b, and Svade unless Svadu is

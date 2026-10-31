@@ -181,12 +181,8 @@ covergroup Zkr_H_cg with function sample(ins_t ins);
     }
 
     mseccfg_sseed: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mseccfg", "sseed")[0] {
-        bins set   = {1};
-        bins clear = {0};
     }
     mseccfg_useed: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mseccfg", "useed")[0] {
-        bins set   = {1};
-        bins clear = {0};
     }
 
     // Main coverpoint (VS-mode and VU-mode)

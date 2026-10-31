@@ -17,19 +17,30 @@ from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 
 
+def _misaligned_target_padding(check_reg: int) -> list[str]:
+    """Padding whose upper halfword is a misaligned jump target.
+
+    An I-type instruction with imm = 0 and rs1 = x2 has upper halfword 0x0001, a c.nop.  A jump to the
+    upper halfword skips the write, so check_reg keeps its preset value.  Fall-through and trap-and-resume
+    write 0.
+    """
+    return [
+        "# jump target is the upper halfword 0x0001 (c.nop) of the next instruction, which then does not write rd",
+        f"andi x{check_reg}, x2, 0",
+    ]
+
+
 def generate_instr_adr_misaligned_branch_tests(test_data: TestData, covergroup: str) -> list[str]:
     coverpoint = "cp_instr_adr_misaligned_branch"
-    temp_reg = test_data.int_regs.get_register()
+    temp_reg, check_reg = test_data.int_regs.get_registers(2)
 
     lines = [
         comment_banner(coverpoint, "Instruction Address Misaligned branch (taken)"),
         f"LI(x{temp_reg}, 1)",
-        ".p2align 2",
-        test_data.add_testcase("taken_branch_pc_6", coverpoint, covergroup),
     ]
 
     branches = ["beq", "bne", "blt", "bge", "bltu", "bgeu"]
-    for branch in branches:
+    for i, branch in enumerate(branches):
         if branch in ("bge", "bgeu"):
             rs1 = f"x{temp_reg}"
             rs2 = "x0"
@@ -42,10 +53,13 @@ def generate_instr_adr_misaligned_branch_tests(test_data: TestData, covergroup: 
 
         lines.extend(
             [
+                f"LI(x{check_reg}, 0xB0BACAFE)",
+                ".p2align 2",
+                *([test_data.add_testcase("taken_branch_pc_6", coverpoint, covergroup)] if i == 0 else []),
                 f"{branch} {rs1}, {rs2}, .+6",
-                "# branch by 6 lands in upper half of next instruction 0x0001 which is generated into a c.nop",
-                "addi x0, x2, 0",
+                *_misaligned_target_padding(check_reg),
                 "nop",
+                write_sigupd(check_reg, test_data),
             ]
         )
 
@@ -56,22 +70,26 @@ def generate_instr_adr_misaligned_branch_tests(test_data: TestData, covergroup: 
             ".option push",
             # ".option arch, +zibi", TODO: uncomment this when Zibi is no longer experimental
             comment_banner(zibi_coverpoint, "Instruction Address Misaligned Zibi branch (taken)"),
+            f"LI(x{check_reg}, 0xB0BACAFE)",
+            ".p2align 2",
             test_data.add_testcase("beqi_taken_branch_pc_6", zibi_coverpoint, covergroup),
             f"beqi x{temp_reg}, 1, .+6",
-            "# branch by 6 lands in upper half of next instruction 0x0001 which is generated into a c.nop",
-            "addi x0, x2, 0",
+            *_misaligned_target_padding(check_reg),
             "nop",
+            write_sigupd(check_reg, test_data),
+            f"LI(x{check_reg}, 0xB0BACAFE)",
+            ".p2align 2",
             test_data.add_testcase("bnei_taken_branch_pc_6", zibi_coverpoint, covergroup),
             f"bnei x{temp_reg}, 2, .+6",
-            "# branch by 6 lands in upper half of next instruction 0x0001 which is generated into a c.nop",
-            "addi x0, x2, 0",
+            *_misaligned_target_padding(check_reg),
             "nop",
+            write_sigupd(check_reg, test_data),
             ".option pop",
             "#endif",
         ]
     )
 
-    test_data.int_regs.return_registers([temp_reg])
+    test_data.int_regs.return_registers([temp_reg, check_reg])
     return lines
 
 
@@ -128,16 +146,19 @@ def generate_instr_adr_misaligned_branch_nottaken(test_data: TestData, covergrou
 
 def generate_instr_adr_misaligned_jal_tests(test_data: TestData, covergroup: str) -> list[str]:
     coverpoint = "cp_instr_adr_misaligned_jal"
+    check_reg = test_data.int_regs.get_register()
 
     lines = [
         comment_banner(coverpoint, "Instruction Address Misaligned JAL"),
+        f"LI(x{check_reg}, 0xB0BACAFE)",
         ".p2align 2",
         test_data.add_testcase("jal_misaligned", coverpoint, covergroup),
         "jal x0, .+6",
-        "# branch by 6 lands in upper half of next instruction 0x0001 which is generated into a c.nop",
-        "addi x0, x2, 0",
+        *_misaligned_target_padding(check_reg),
         "nop",
+        write_sigupd(check_reg, test_data),
     ]
+    test_data.int_regs.return_registers([check_reg])
     return lines
 
 
@@ -145,7 +166,7 @@ def generate_instr_adr_misaligned_jalr_tests(
     test_data: TestData, covergroup: str, *, setup: Sequence[str] = ()
 ) -> list[str]:
     coverpoint = "cp_instr_adr_misaligned_jalr"
-    addr_reg = test_data.int_regs.get_register()
+    addr_reg, check_reg1, check_reg2 = test_data.int_regs.get_registers(3)
 
     lines = [
         comment_banner(coverpoint, "Instruction Address Misaligned JALR"),
@@ -166,21 +187,26 @@ def generate_instr_adr_misaligned_jalr_tests(
                     f"\n# rs1[1:0]={rs1_lsb:02b}, offset[1:0]={offset_lsb:02b}",
                     *setup,
                     "LI(x1, 0xB0BACAFE)  # a trapping jalr must leave x1 unchanged",
+                    f"LI(x{check_reg1}, 0xB0BACAFE)",
+                    f"LI(x{check_reg2}, 0xB0BACAFE)",
                     ".p2align 2",
                     f"auipc x{addr_reg}, 0 # PC+0 addr_reg = PC",
                     f"addi x{addr_reg}, x{addr_reg}, {base_off} # PC+4 addr_reg[1:0] = rs1_lsb",
                     test_data.add_testcase(f"jalr_rs1_{rs1_lsb}_off_{offset_lsb}", coverpoint, covergroup),
                     f"jalr x1, {jalr_off}(x{addr_reg}) # PC+8 jump target is PC + base_off + jalr_off (bit 0 cleared)",
-                    "# JALR target may land on the upper halfword (0x0001) of a padding ADDI, which decodes as a valid c.nop",
+                    "# JALR target may land on the upper halfword (0x0001) of a padding ANDI, which decodes as a valid c.nop",
                     "# With base_off/jalr_off in {6,7,8,9}, (base_off + jalr_off) spans 12..18 bytes",
                     "# after clearing bit 0 the possible targets are 12/14/16/18, so use two padding instructions",
-                    "addi x0, x2, 0  # PC+12 padding (upper halfword is 0x0001)",
-                    "addi x0, x2, 0  # PC+16 padding (upper halfword is 0x0001)",
+                    "# Each padding writes 0 to its own check register only when it executes",
+                    f"andi x{check_reg1}, x2, 0  # PC+12 padding (upper halfword is 0x0001)",
+                    f"andi x{check_reg2}, x2, 0  # PC+16 padding (upper halfword is 0x0001)",
                     write_sigupd(1, test_data),
+                    write_sigupd(check_reg1, test_data),
+                    write_sigupd(check_reg2, test_data),
                 ]
             )
 
-    test_data.int_regs.return_registers([addr_reg])
+    test_data.int_regs.return_registers([addr_reg, check_reg1, check_reg2])
     return lines
 
 
@@ -790,7 +816,7 @@ def generate_misaligned_priority_fetch_tests(
     name_suffix: str = "_priority",
 ) -> list[str]:
     """Generate misaligned-priority fetch testcases."""
-    addr_reg = test_data.int_regs.get_register()
+    addr_reg, check_reg = test_data.int_regs.get_registers(2)
 
     lines = [comment_banner(coverpoint, "Misaligned Priority Fetch")]
 
@@ -801,13 +827,14 @@ def generate_misaligned_priority_fetch_tests(
             f"LA(x{addr_reg}, {target_label})",
             f"addi x{addr_reg}, x{addr_reg}, 2",
             "LI(x1, 0xB0BACAFE)  # a trapping jalr must leave x1 unchanged",
+            f"LI(x{check_reg}, 0xB0BACAFE)",
             test_data.add_testcase(f"{name_prefix}misaligned_existent{name_suffix}", coverpoint, covergroup),
             f"jalr x1, 0(x{addr_reg})",
             ".p2align 4",
             f"{target_label}:",
-            "# upper half of addi x0, x2, 0 is 0x0001, a legal c.nop, so a C-capable DUT lands on an instruction",
-            "addi x0, x2, 0",
+            *_misaligned_target_padding(check_reg),
             write_sigupd(1, test_data),
+            write_sigupd(check_reg, test_data),
             "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
             "\n# misaligned fetch - non-existent (fault) address",
             f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
@@ -820,5 +847,5 @@ def generate_misaligned_priority_fetch_tests(
         ]
     )
 
-    test_data.int_regs.return_registers([addr_reg])
+    test_data.int_regs.return_registers([addr_reg, check_reg])
     return lines

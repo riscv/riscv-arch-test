@@ -572,10 +572,15 @@ coverpoints:
     expectation: Illegal instruction fault for satp and hgatp if TVM = 1.  vsatp accesses never trap.  VTVM has no effect.
     bins: 3 regs * 2 accesses * 2 TVM * 2 VTVM
   - name: cp_tvm_vs
-    goal: VTVM traps access to satp
-    description: With mstatus.TVM = {0/1} cross hstatus.VTVM = {0/1}, in VS-mode read and write satp
-    expectation: Virtual instruction fault if VTVM = 1. TVM does not affect VS-mode.
-    bins: 2 TVM * 2 VTVM * 2 accesses
+    goal: VTVM traps access to satp; hgatp and vsatp always trap; TVM does not affect VS-mode
+    description: With mstatus.TVM = {0/1} cross hstatus.VTVM = {0/1}, in VS-mode read and write satp, hgatp and vsatp
+    expectation: Virtual instruction fault for satp if VTVM = 1.  Virtual instruction fault for hgatp and vsatp for all TVM and VTVM values.  TVM does not affect VS-mode.
+    bins: 3 regs * 2 accesses * 2 TVM * 2 VTVM
+  - name: cp_tvm_vu
+    goal: satp, hgatp and vsatp always trap in VU-mode; TVM and VTVM do not affect VU-mode
+    description: With mstatus.TVM = {0/1} cross hstatus.VTVM = {0/1}, in VU-mode read and write satp, hgatp and vsatp
+    expectation: Virtual instruction fault for all accesses, for all TVM and VTVM values.
+    bins: 3 regs * 2 accesses * 2 TVM * 2 VTVM
   - name: cp_hfence
     goal: Basic fence
     description: Execute hfence.vvma, hfence.gvma in {M, HS, VS, U, VU mode} cross with mstatus.TVM = {0,1} and with hstatus.VTVM = {0,1}

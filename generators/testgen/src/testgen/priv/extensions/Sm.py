@@ -1982,51 +1982,38 @@ def _h_tvm_tests(test_data: TestData) -> list[str]:
             lines.extend([f"LI(x{temp_reg}, HSTATUS_VTVM)", f"{'csrs' if vtvm else 'csrc'} hstatus, x{temp_reg}"])
         return lines
 
-    lines = [
-        comment_banner(
-            "cp_tvm_hs",
-            "Read and write satp, hgatp and vsatp in HS-mode with mstatus.TVM = 0, 1 and hstatus.VTVM = 0, 1.\n"
-            "TVM = 1 traps satp and hgatp accesses but not vsatp accesses; VTVM does not affect HS-mode",
-        )
-    ]
-    for tvm in (0, 1):
-        for vtvm in (0, 1):
-            lines.extend([*tvm_bits(tvm, vtvm), "RVTEST_TSBI_GOTO_SMODE"])
-            for csr in ("satp", "hgatp", "vsatp"):
-                lines.extend(
-                    [
-                        f"LI(x{rd}, 42)",
-                        test_data.add_testcase(f"{csr}_read_tvm{tvm}_vtvm{vtvm}", "cp_tvm_hs", _H_TVM_CG),
-                        f"csrr x{rd}, {csr}",
-                        write_sigupd(rd, test_data),
-                        test_data.add_testcase(f"{csr}_write_tvm{tvm}_vtvm{vtvm}", "cp_tvm_hs", _H_TVM_CG),
-                        f"csrw {csr}, zero",
-                    ]
-                )
-            lines.append("RVTEST_TSBI_GOTO_MMODE")
-
-    lines.append(
-        comment_banner(
-            "cp_tvm_vs",
-            "Read and write satp in VS-mode with mstatus.TVM = 0, 1 and hstatus.VTVM = 0, 1.\n"
-            "VTVM = 1 raises virtual instruction; TVM does not affect VS-mode",
-        )
-    )
-    for tvm in (0, 1):
-        for vtvm in (0, 1):
-            lines.extend(
-                [
-                    *tvm_bits(tvm, vtvm),
-                    "RVTEST_TSBI_GOTO_VSMODE",
-                    f"LI(x{rd}, 42)",
-                    test_data.add_testcase(f"satp_read_tvm{tvm}_vtvm{vtvm}", "cp_tvm_vs", _H_TVM_CG),
-                    f"csrr x{rd}, satp",
-                    write_sigupd(rd, test_data),
-                    test_data.add_testcase(f"satp_write_tvm{tvm}_vtvm{vtvm}", "cp_tvm_vs", _H_TVM_CG),
-                    "csrw satp, zero",
-                    "RVTEST_TSBI_GOTO_MMODE",
-                ]
+    atp_modes = {
+        "hs": "TVM = 1 traps satp and hgatp accesses but not vsatp accesses; VTVM does not affect HS-mode",
+        "vs": "hgatp and vsatp always raise virtual instruction; satp raises it only if VTVM = 1.\n"
+        "TVM does not affect VS-mode",
+        "vu": "All accesses raise virtual instruction; TVM and VTVM do not affect VU-mode",
+    }
+    lines = []
+    for mode, effect in atp_modes.items():
+        coverpoint = f"cp_tvm_{mode}"
+        lines.append(
+            comment_banner(
+                coverpoint,
+                f"Read and write satp, hgatp and vsatp in {mode.upper()}-mode with mstatus.TVM = 0, 1 and "
+                f"hstatus.VTVM = 0, 1.\n{effect}",
             )
+        )
+        goto = "RVTEST_TSBI_GOTO_SMODE" if mode == "hs" else f"RVTEST_TSBI_GOTO_{mode.upper()}MODE"
+        for tvm in (0, 1):
+            for vtvm in (0, 1):
+                lines.extend([*tvm_bits(tvm, vtvm), goto])
+                for csr in ("satp", "hgatp", "vsatp"):
+                    lines.extend(
+                        [
+                            f"LI(x{rd}, 42)",
+                            test_data.add_testcase(f"{csr}_read_tvm{tvm}_vtvm{vtvm}", coverpoint, _H_TVM_CG),
+                            f"csrr x{rd}, {csr}",
+                            write_sigupd(rd, test_data),
+                            test_data.add_testcase(f"{csr}_write_tvm{tvm}_vtvm{vtvm}", coverpoint, _H_TVM_CG),
+                            f"csrw {csr}, zero",
+                        ]
+                    )
+                lines.append("RVTEST_TSBI_GOTO_MMODE")
 
     lines.append(
         comment_banner(

@@ -67,6 +67,7 @@ normative_rule_definitions:
         "PMP_Sm_cg/{cp_cfg_X0_all, cp_cfg_L_access_exec, cp_cfg_L_access_read, cp_cfg_L_access_write}",
         "PMP_U_cg/{cp_cfg_X, cp_mprv_lw, cp_mprv_sw}",
         "PMP_Zaamo_cg/cp_cfg_RW",
+        "PMP_Zicbo_cg/{cp_cfg_L_access_cbo_zero, cp_cfg_L_access_cbo_clean, cp_cfg_L_access_cbo_flush, cp_cfg_L_access_cbo_inval}",
       ]
 
   # PMP checks are applied to all accesses whose effective privilege mode is S or U,
@@ -117,6 +118,7 @@ normative_rule_definitions:
         "PMP_S_cg/{cp_cfg_X, cp_cfg_R, cp_cfg_W}",
         "PMP_Sm_cg/{cp_cfg_X, cp_cfg_R, cp_cfg_W, cp_cfg_L_access_read}",
         "PMP_U_cg/{cp_cfg_X, cp_cfg_R, cp_cfg_W}",
+        "PMP_Zicbo_cg/{cp_cfg_L_access_cbo_zero, cp_cfg_L_access_cbo_clean, cp_cfg_L_access_cbo_flush, cp_cfg_L_access_cbo_inval}",
       ]
 
   # If a PMP entry matches all bytes of a memory operation, then the L, R, W, and X
@@ -173,6 +175,7 @@ normative_rule_definitions:
         "PMP_Sm_cg/{cp_cfg_A_OFF_all_read, cp_cfg_A_OFF_all_write, cp_cfg_A_OFF_all_exec, cp_priority_off_lw}",
         "PMP_U_cg/{cp_cfg_A_off_jalr, cp_cfg_A_off_lw, cp_cfg_A_off_sw}",
         "PMP_Zca_cg/cp_misaligned_off",
+        "PMP_Zicbo_cg/{cp_none_cbo_zero, cp_none_cbo_clean, cp_none_cbo_flush, cp_none_cbo_inval}",
       ]
 
   # The A field encodes the address-matching mode: TOR, NA4, and NAPOT.
@@ -386,6 +389,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "PMP_Sm_cg/{cp_none_lw, cp_none_sw, cp_none_jalr}",
+        "PMP_Zicbo_cg/{cp_none_cbo_zero, cp_none_cbo_clean, cp_none_cbo_flush, cp_none_cbo_inval}",
         "TODO: S-mode and U-mode accesses that match no PMP entry",
       ]
 
@@ -488,14 +492,20 @@ normative_rule_definitions:
   # block whenever a load instruction or store instruction is permitted to access the
   # corresponding physical addresses.
   - name: cbm_access
-    coverpoint: ["PMP_Zicbo_cg/{cp_cbo_clean, cp_cbo_flush, cp_cbo_inval}"]
+    coverpoint:
+      [
+        "PMP_Zicbo_cg/{cp_cbo_clean, cp_cbo_flush, cp_cbo_inval}",
+        "PMP_Zicbo_cg/{cp_cfg_L_access_cbo_clean, cp_cfg_L_access_cbo_flush, cp_cfg_L_access_cbo_inval}",
+        "PMP_Zicbo_cg/{cp_none_cbo_clean, cp_none_cbo_flush, cp_none_cbo_inval}",
+      ]
 
   # A cache-block zero instruction is permitted to access the specified cache block
   # whenever a store instruction is permitted to access the corresponding physical
   # addresses and when the PMAs indicate that cache-block zero instructions are a
   # supported access type.
   - name: cbz_access
-    coverpoint: ["PMP_Zicbo_cg/cp_cbo_zero"]
+    coverpoint:
+      ["PMP_Zicbo_cg/{cp_cbo_zero, cp_cfg_L_access_cbo_zero, cp_none_cbo_zero}"]
 
   # When a page-fault, guest-page-fault, or access-fault exception is taken, the
   # relevant *tval CSR is written with the faulting effective address (i.e. the value

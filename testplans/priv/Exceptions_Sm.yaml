@@ -86,6 +86,15 @@ coverpoints:
     description: ecall from machine mode
     expectation: Ecall from M Exception
     bins: "1"
+  - name: cp_mtvec_vectored_exc
+    goal: mtvec Vectored mode for exceptions
+    description: |-
+      With mtvec.MODE = Vectored, raise illegal instruction (0x00000000), ebreak, lw access fault and ecall in M-mode.
+      Runs only when mtvec supports both Direct and Vectored.
+    expectation: Each exception goes to mtvec.BASE, not BASE + 4 * cause.  The trap signature records the trap vector entry taken.
+    bins: 4 causes (3 without RVMODEL_ACCESS_FAULT_ADDRESS)
+    rules:
+      - mtvec_mode_vectored_op
   - name: cp_misaligned_priority_load
     goal: Priority of exceptions
     description: Attempt lb, lbu, lh, lhu, lw, (lwu, ld) from memory location causing  access fault and misaligned. Also exercised in PMP, VM.

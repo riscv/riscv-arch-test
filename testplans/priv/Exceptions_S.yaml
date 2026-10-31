@@ -83,6 +83,13 @@ coverpoints:
     description: ecall from supervisor mode throws ecall supervisor exception (trap and mcause)
     expectation: ecall to M-mode (should not be delegated to S-mode because there would be no path to M-mode)
     bins: "1"
+  - name: cp_stvec_vectored_exc
+    goal: stvec Vectored mode for exceptions
+    description: |-
+      With stvec.MODE = Vectored, raise illegal instruction (0x00000000), ebreak and lw access fault in S-mode and U-mode, and ecall in U-mode.
+      Each exception is delegated to S-mode.  Runs only when stvec supports both Direct and Vectored.
+    expectation: Each exception goes to stvec.BASE, not BASE + 4 * cause.  The trap signature records the trap vector entry taken.
+    bins: 2 modes * 3 causes + ecall from U (2 * 2 + 1 without RVMODEL_ACCESS_FAULT_ADDRESS)
   - name: cp_misaligned_priority
     goal: Priority of exceptions
     description: Attempt lw and sw and fetch from memory location causing  access fault and misaligned

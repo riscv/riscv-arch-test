@@ -49,6 +49,13 @@ coverpoints:
     description: With hedeleg[3] = hedeleg[8] = 1 and vstvec pointing to a different trap handler than stvec, ebreak from VS-mode and ebreak and ecall from VU-mode.
     expectation: Each trap goes to the vstvec handler.  An ecall from VS-mode is never delegated to VS-mode (hedeleg[10] is read-only 0), so it is not part of this coverpoint.
     bins: "3"
+  - name: cp_vstvec_vectored_exc
+    goal: vstvec Vectored mode for exceptions
+    description: |-
+      With hedeleg[2,3,5,8] = 1 and vstvec.MODE = Vectored, raise illegal instruction (0x00000000), ebreak and lw access fault in VS-mode and VU-mode, and ecall in VU-mode.
+      Runs only when vstvec supports both Direct and Vectored.
+    expectation: Each exception goes to vstvec.BASE, not BASE + 4 * cause.  The trap signature records the trap vector entry taken.
+    bins: 2 modes * 3 causes + ecall from VU (2 * 2 + 1 without RVMODEL_ACCESS_FAULT_ADDRESS)
   - name: cp_priority
     goal: priority of illegal/virtual instruction, misaligned, access fault
     description: In each of HS, VS, U and VU modes with hstatus.HU = {0/1}, execute {hlv.w / hsv.w} x {scratch / access-fault address} x {addr[1:0] = 00/01}.  vsatp and hgatp are Bare.

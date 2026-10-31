@@ -13571,6 +13571,46 @@ covergroup Vf16_vfrec7_v_cg with function sample(ins_t ins);
     //// end cp_custom_FpRecipEst_flag_edges////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_FpRecipEst_subnorm_sew16
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // vfrec7.v subnormal inputs and outputs at SEW=16. Overflowing subnormals are crossed with frm
+    // and sign, because the result is inf or the greatest finite value depending on both.
+
+    FpRecipEst_subnorm_vsew : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
+        bins e16 = {1};
+    }
+
+    FpRecipEst_subnorm_vs2 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val)[15:0] {
+        bins pos_sub_lz0      = {[16'h0200:16'h03FF]}; // normal result
+        bins neg_sub_lz0      = {[16'h8200:16'h83FF]}; // normal result
+        bins pos_sub_lz1      = {[16'h0100:16'h01FF]}; // normal result
+        bins neg_sub_lz1      = {[16'h8100:16'h81FF]}; // normal result
+        bins pos_norm_subres1 = {[16'h7400:16'h77FF]}; // subnormal result
+        bins neg_norm_subres1 = {[16'hF400:16'hF7FF]}; // subnormal result
+        bins pos_norm_subres2 = {[16'h7800:16'h7BFF]}; // subnormal result
+        bins neg_norm_subres2 = {[16'hF800:16'hFBFF]}; // subnormal result
+    }
+
+    FpRecipEst_ovf_vs2 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val)[15:0] {
+        bins pos_sub_ovf = {[16'h0001:16'h00FF]}; // +/-inf or +/-greatest finite by frm; OF, NX
+        bins neg_sub_ovf = {[16'h8001:16'h80FF]}; // +/-inf or +/-greatest finite by frm; OF, NX
+    }
+
+    FpRecipEst_ovf_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "frm") {
+        bins rne = {0};
+        bins rtz = {1};
+        bins rdn = {2};
+        bins rup = {3};
+        bins rmm = {4};
+    }
+
+    cp_custom_FpRecipEst_subnorm_sew16 : cross std_vec, FpRecipEst_subnorm_vsew, FpRecipEst_subnorm_vs2;
+    cp_custom_FpRecipEst_subnorm_ovf_sew16 : cross std_vec, FpRecipEst_subnorm_vsew, FpRecipEst_ovf_vs2, FpRecipEst_ovf_frm;
+
+    //// end cp_custom_FpRecipEst_subnorm_sew16 ////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -15432,6 +15472,34 @@ covergroup Vf16_vfrsqrt7_v_cg with function sample(ins_t ins);
 `endif
 
     //// end cp_custom_FPrecSqrt_flag_edges////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_FpRecSqrtEst_subnorm_sew16
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // vfrsqrt7.v positive subnormal inputs at SEW=16. Each count of leading zeros takes a
+    // different normalization shift.
+
+    FpRecSqrtEst_subnorm_vsew : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
+        bins e16 = {1};
+    }
+
+    FpRecSqrtEst_subnorm_vs2 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val)[15:0] {
+        bins pos_sub_lz0 = {[16'h0200:16'h03FF]};
+        bins pos_sub_lz1 = {[16'h0100:16'h01FF]};
+        bins pos_sub_lz2 = {[16'h0080:16'h00FF]};
+        bins pos_sub_lz3 = {[16'h0040:16'h007F]};
+        bins pos_sub_lz4 = {[16'h0020:16'h003F]};
+        bins pos_sub_lz5 = {[16'h0010:16'h001F]};
+        bins pos_sub_lz6 = {[16'h0008:16'h000F]};
+        bins pos_sub_lz7 = {[16'h0004:16'h0007]};
+        bins pos_sub_lz8 = {[16'h0002:16'h0003]};
+        bins pos_sub_lz9 = {16'h0001};
+    }
+
+    cp_custom_FpRecSqrtEst_subnorm_sew16 : cross std_vec, FpRecSqrtEst_subnorm_vsew, FpRecSqrtEst_subnorm_vs2;
+
+    //// end cp_custom_FpRecSqrtEst_subnorm_sew16 ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_vfp_NaN_input

@@ -1980,7 +1980,11 @@ normative_rule_definitions:
   # output exponent is chosen to make the result approximate the reciprocal of the square
   # root of the argument.
   - name: vfrsqrt7_op_unex
-    coverpoint: ["Vf16_vfrsqrt7_v_cg/cp_custom_FpRecSqrtEst_edges"]
+    coverpoint:
+      [
+        "Vf16_vfrsqrt7_v_cg/cp_custom_FpRecSqrtEst_edges",
+        "Vf16_vfrsqrt7_v_cg/cp_custom_FpRecSqrtEst_subnorm_sew16",
+      ]
   # More precisely, the result is computed as follows. Let the normalized input exponent
   # be equal to the input exponent if the input is normal, or 0 minus the number of
   # leading zeros in the significand otherwise. If the input is subnormal, the normalized
@@ -1989,7 +1993,11 @@ normative_rule_definitions:
   # floor((3*B - 1 - the normalized input exponent) / 2), where B is the exponent bias.
   # The output sign equals the input sign.
   - name: vfrsqrt7_op_precise
-    coverpoint: ["Vf16_vfrsqrt7_v_cg/cp_custom_FpRecSqrtEst_edges"]
+    coverpoint:
+      [
+        "Vf16_vfrsqrt7_v_cg/cp_custom_FpRecSqrtEst_edges",
+        "Vf16_vfrsqrt7_v_cg/cp_custom_FpRecSqrtEst_subnorm_sew16",
+      ]
 
   # This is a unary vector-vector instruction that returns an estimate of 1/x accurate to
   # 7 bits.
@@ -2003,7 +2011,11 @@ normative_rule_definitions:
   # result approximate the reciprocal of the argument, and subnormal outputs are
   # denormalized accordingly.
   - name: vfrec7_op_unex
-    coverpoint: ["Vf16_vfrec7_v_cg/cp_custom_FpRecipEst_edges"]
+    coverpoint:
+      [
+        "Vf16_vfrec7_v_cg/cp_custom_FpRecipEst_edges",
+        "Vf16_vfrec7_v_cg/cp_custom_FpRecipEst_subnorm_sew16",
+      ]
   # More precisely, the result is computed as follows. Let the normalized input exponent
   # be equal to the input exponent if the input is normal, or 0 minus the number of
   # leading zeros in the significand otherwise. The normalized output exponent equals (2*B
@@ -2011,7 +2023,11 @@ normative_rule_definitions:
   # range [-1, 2*B], the result corresponds to one of the exceptional cases in the table
   # above.
   - name: vfrec7_op_precise
-    coverpoint: ["Vf16_vfrec7_v_cg/cp_custom_FpRecipEst_edges"]
+    coverpoint:
+      [
+        "Vf16_vfrec7_v_cg/cp_custom_FpRecipEst_edges",
+        "Vf16_vfrec7_v_cg/cp_custom_FpRecipEst_subnorm_ovf_sew16",
+      ]
   # If the input is subnormal, the normalized input significand is given by shifting the
   # input significand left by 1 minus the normalized input exponent, discarding the
   # leading 1 bit. Otherwise, the normalized input significand equals the input
@@ -2019,7 +2035,11 @@ normative_rule_definitions:
   # significand as a function of the seven MSBs of the normalized input significand; the
   # other bits of the normalized output significand are zero.
   - name: vfrec7_op_subnorm
-    coverpoint: ["Vf16_vfrec7_v_cg/cp_custom_FpRecipEst_edges"]
+    coverpoint:
+      [
+        "Vf16_vfrec7_v_cg/cp_custom_FpRecipEst_edges",
+        "Vf16_vfrec7_v_cg/cp_custom_FpRecipEst_subnorm_sew16",
+      ]
   # If the normalized output exponent is 0 or -1, the result is subnormal: the output
   # exponent is 0, and the output significand is given by concatenating a 1 bit to the
   # left of the normalized output significand, then shifting that quantity right by 1
@@ -2027,7 +2047,11 @@ normative_rule_definitions:
   # normalized output exponent, and the output significand equals the normalized output
   # significand. The output sign equals the input sign.
   - name: vfrec7_op_output
-    coverpoint: ["Vf16_vfrec7_v_cg/cp_custom_FpRecipEst_edges"]
+    coverpoint:
+      [
+        "Vf16_vfrec7_v_cg/cp_custom_FpRecipEst_edges",
+        "Vf16_vfrec7_v_cg/cp_custom_FpRecipEst_subnorm_sew16",
+      ]
 
   # The vector floating-point insn:vfmin[] and insn:vfmax[] instructions have the same
   # behavior as the corresponding scalar floating-point instructions in the ext:f[],

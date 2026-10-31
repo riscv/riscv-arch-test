@@ -109,8 +109,7 @@
     `endif
 
     // vill set after instruction (expected for high bits)
-    vill_after: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vtype", "vill")[0] {
-    }
+    vill_after: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vtype", "vill")[0] {}
 
     cp_vtype_walking1s_low: cross rs1_nonzero, rs2_walking1s_low, vill_after;
 

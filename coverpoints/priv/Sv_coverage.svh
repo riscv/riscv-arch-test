@@ -938,8 +938,7 @@ covergroup Sv_Sm_satp_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
-    tvm_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tvm")[0]{
-    }
+    tvm_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tvm")[0]{}
 
     // satp is always accessible from M-mode, so an access here never raises an exception.
     Mcause: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "code") {
@@ -1890,10 +1889,8 @@ covergroup Sv_H_vsstage_cg with function sample(ins_t ins);
         wildcard bins none = {6'b0?????};
         bins page_fault    = {6'b101100, 6'b101101, 6'b101111};
     }
-    vsstatus_sum : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "sum")[0] {
-    }
-    vsstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "mxr")[0] {
-    }
+    vsstatus_sum : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "sum")[0] {}
+    vsstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "mxr")[0] {}
     `ifdef UDB_MXLEN_64
         menvcfg_adue : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "adue") {
             bins off = {0};
@@ -1953,10 +1950,8 @@ covergroup Sv_H_gstage_cg with function sample(ins_t ins);
         bins guest_page_fault  = {6'b110100, 6'b110101, 6'b110111};
     }
     // HS-level MXR: mret into the guest logs mstatus
-    mstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mxr")[0] {
-    }
-    vsstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "mxr")[0] {
-    }
+    mstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mxr")[0] {}
+    vsstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "mxr")[0] {}
     `ifdef UDB_MXLEN_64
         menvcfg_adue : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "adue") {
             bins off = {0};
@@ -2055,10 +2050,8 @@ covergroup Sv_H_twostage_cg with function sample(ins_t ins);
     hedeleg_page_faults : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hedeleg", "deleg")[15:12] {
         bins delegated = {4'b1011};
     }
-    mstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mxr")[0] {
-    }
-    vsstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "mxr")[0] {
-    }
+    mstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mxr")[0] {}
+    vsstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "mxr")[0] {}
     htinst_read : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htinst", "htinst") iff (ins.current.csr_wb[CSR_HTINST]) {
         `ifdef UDB_MXLEN_64
             bins read = {'h3000};
@@ -2222,17 +2215,11 @@ covergroup Sv_H_hlv_cg with function sample(ins_t ins);
         bins page_fault       = {6'b101101};
         bins guest_page_fault = {6'b110101};
     }
-    hstatus_spvp : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "spvp")[0] {
-        // 0: VU, 1: VS
-    }
-    vsstatus_sum : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "sum")[0] {
-    }
-    sstatus_sum : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "sum")[0] {
-    }
-    vsstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "mxr")[0] {
-    }
-    sstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "mxr")[0] {
-    }
+    hstatus_spvp : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "spvp")[0] {}
+    vsstatus_sum : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "sum")[0] {}
+    sstatus_sum : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "sum")[0] {}
+    vsstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "mxr")[0] {}
+    sstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "mxr")[0] {}
     htinst_read : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htinst", "htinst") iff (ins.current.csr_wb[CSR_HTINST]) {
         `ifdef UDB_MXLEN_64
             bins read = {'h3000};
@@ -2387,8 +2374,7 @@ covergroup Sv_HSm_mprv_cg with function sample(ins_t ins);
         wildcard bins hlv_w = {HLV_W};
         wildcard bins hsv_w = {HSV_W};
     }
-    mprv : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv")[0] {
-    }
+    mprv : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv")[0] {}
     mprv_on : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv") {
         bins on = {1};
     }
@@ -2434,14 +2420,10 @@ covergroup Sv_HSm_mprv_cg with function sample(ins_t ins);
         wildcard bins none = {6'b0?????};
         bins page_fault    = {6'b101101, 6'b101111};
     }
-    vsstatus_sum : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "sum")[0] {
-    }
-    mstatus_sum : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sum")[0] {
-    }
-    vsstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "mxr")[0] {
-    }
-    mstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mxr")[0] {
-    }
+    vsstatus_sum : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "sum")[0] {}
+    mstatus_sum : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sum")[0] {}
+    vsstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "mxr")[0] {}
+    mstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mxr")[0] {}
 
     // MPRV = 1 and MPV = 1 translate M-mode loads and stores through the VS-stage
     cp_vsatp_mprv_effects : cross priv_mode_m, load_store, mprv_on, mpp_mpv_guest, vsatp_paged, hgatp_bare, trap;
@@ -2643,18 +2625,12 @@ covergroup Sv_HZicbo_cg with function sample(ins_t ins);
     bins flush = {2'b01};
     bins inval = {2'b11};
   }
-  menvcfg_cbcfe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "cbcfe")[0] {
-  }
-  henvcfg_cbcfe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "cbcfe")[0] {
-  }
-  senvcfg_cbcfe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "cbcfe")[0] {
-  }
-  menvcfg_cbze: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "cbze")[0] {
-  }
-  henvcfg_cbze: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "cbze")[0] {
-  }
-  senvcfg_cbze: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "cbze")[0] {
-  }
+  menvcfg_cbcfe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "cbcfe")[0] {}
+  henvcfg_cbcfe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "cbcfe")[0] {}
+  senvcfg_cbcfe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "cbcfe")[0] {}
+  menvcfg_cbze: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "cbze")[0] {}
+  henvcfg_cbze: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "cbze")[0] {}
+  senvcfg_cbze: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "cbze")[0] {}
   vsatp_bare: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
     bins bare = {0};
   }

@@ -17,25 +17,21 @@ covergroup Sstc_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
     // building blocks for the main coverpoints
-    mcounteren_tm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcounteren", "tm")[0] {
-    }
+    mcounteren_tm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcounteren", "tm")[0] {}
     mcounteren_tm_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcounteren", "tm") {
         bins one = {1};
     }
-    scounteren_tm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "scounteren", "tm")[0] {
-    }
+    scounteren_tm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "scounteren", "tm")[0] {}
     scounteren_tm_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "scounteren", "tm") {
         bins one = {1};
     }
     `ifdef UDB_MXLEN_64
-        menvcfg_stce: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "stce")[0] {
-        }
+        menvcfg_stce: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "stce")[0] {}
         menvcfg_stce_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "stce") {
             bins one = {1};
         }
     `else
-        menvcfg_stce: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfgh", "stce")[0] {
-        }
+        menvcfg_stce: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfgh", "stce")[0] {}
         menvcfg_stce_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfgh", "stce") {
             bins one = {1};
         }
@@ -72,20 +68,17 @@ covergroup Sstc_Sm_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
     // building blocks for the main coverpoints
-    mcounteren_tm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcounteren", "tm")[0] {
-    }
+    mcounteren_tm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcounteren", "tm")[0] {}
     mcounteren_tm_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcounteren", "tm") {
         bins one = {1};
     }
     `ifdef UDB_MXLEN_64
-        menvcfg_stce: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "stce")[0] {
-        }
+        menvcfg_stce: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "stce")[0] {}
         menvcfg_stce_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "stce") {
             bins one = {1};
         }
     `else
-        menvcfg_stce: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfgh", "stce")[0] {
-        }
+        menvcfg_stce: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfgh", "stce")[0] {}
         menvcfg_stce_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfgh", "stce") {
             bins one = {1};
         }

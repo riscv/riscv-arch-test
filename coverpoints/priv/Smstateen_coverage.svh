@@ -200,8 +200,7 @@ covergroup Smstateen_cg with function sample(ins_t ins);
       // with the hypervisor extension; anywhere else the bit is read-only zero.
       `ifdef H_SUPPORTED
       `ifdef UDB_MXLEN_32
-          p1p13_state: coverpoint mstateen0_bit(ins.hart, ins.issue, `SAMPLE_CURRENT, "p1p13", 1) {
-          }
+          p1p13_state: coverpoint mstateen0_bit(ins.hart, ins.issue, `SAMPLE_CURRENT, "p1p13", 1) {}
           hedelegh_csr: coverpoint ins.current.insn[31:20] {
               wildcard bins hedelegh = {CSR_HEDELEGH};
           }
@@ -211,8 +210,7 @@ covergroup Smstateen_cg with function sample(ins_t ins);
 
     // srmcfg
     `ifdef SSQOSID_SUPPORTED
-        srmcfg_state: coverpoint mstateen0_bit(ins.hart, ins.issue, `SAMPLE_AFTER, "srmcfg", 1) {
-        }
+        srmcfg_state: coverpoint mstateen0_bit(ins.hart, ins.issue, `SAMPLE_AFTER, "srmcfg", 1) {}
         srmcfg_csr: coverpoint ins.current.insn[31:20] {
             wildcard bins srmcfg = {CSR_SRMCFG};
         }

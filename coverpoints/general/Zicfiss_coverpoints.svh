@@ -128,7 +128,6 @@
     // pte.U is bit 4.
     pte_u: coverpoint ins.current.pte_d[4] {
         type_option.weight = 0;
-        // 0: supervisor, 1: user
     }
     // MXR governs whether an R=0 page is readable; the SS page is R=0 by construction.
     sstatus_mxr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "mxr")[0] {

@@ -13,7 +13,6 @@
 ///////////////////////////////////////////
 cbo_select: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "select")[0] {
     type_option.weight = 0;
-    // 0: address, 1: data
 }
 // tdata2 relative to the cache block address in rs1
 cbo_tdata2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata2", "tdata2") {

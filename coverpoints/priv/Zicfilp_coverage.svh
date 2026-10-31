@@ -36,8 +36,7 @@ covergroup Zicfilp_Sm_cg with function sample(ins_t ins);
     `include "general/Zicfilp_coverpoints.svh"
 
     // M-mode landing pad enable
-    lpe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mseccfg", "mlpe")[0] {
-    }
+    lpe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mseccfg", "mlpe")[0] {}
     lpe_enabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mseccfg", "mlpe") {
         bins enabled  = {1};
     }
@@ -149,23 +148,16 @@ covergroup Zicfilp_Sm_cg with function sample(ins_t ins);
     mret_prev: coverpoint ins.prev.insn {
         bins mret = {MRET};
     }
-    mseccfg_mlpe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mseccfg", "mlpe")[0] {
-    }
-    menvcfg_lpe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "menvcfg", "lpe")[0] {
-    }
+    mseccfg_mlpe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mseccfg", "mlpe")[0] {}
+    menvcfg_lpe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "menvcfg", "lpe")[0] {}
     // MPELP before the MRET, two records back
     `ifdef UDB_MXLEN_32
-        mpelp_before_mret: coverpoint get_csr_val(ins.hart, ins.issue, 2, "mstatush", "mpelp")[0] {
-            // 0: no LP expected, 1: LP expected
-        }
+        mpelp_before_mret: coverpoint get_csr_val(ins.hart, ins.issue, 2, "mstatush", "mpelp")[0] {}
     `else
-        mpelp_before_mret: coverpoint get_csr_val(ins.hart, ins.issue, 2, "mstatus", "mpelp")[0] {
-            // 0: no LP expected, 1: LP expected
-        }
+        mpelp_before_mret: coverpoint get_csr_val(ins.hart, ins.issue, 2, "mstatus", "mpelp")[0] {}
     `endif
     `ifdef S_SUPPORTED
-        senvcfg_lpe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "senvcfg", "lpe")[0] {
-        }
+        senvcfg_lpe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "senvcfg", "lpe")[0] {}
         cp_pelp_trap_return_zicfilp: cross priv_mode_m_s_u, mret_prev, mseccfg_mlpe, menvcfg_lpe, senvcfg_lpe,
                                              mpelp_before_mret, not_lpad;
     `elsif U_SUPPORTED
@@ -214,8 +206,7 @@ covergroup Zicfilp_S_cg with function sample(ins_t ins);
     `include "general/Zicfilp_coverpoints.svh"
 
     // S-mode landing pad enable
-    lpe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "menvcfg", "lpe")[0] {
-    }
+    lpe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "menvcfg", "lpe")[0] {}
     lpe_enabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "menvcfg", "lpe") {
         bins enabled  = {1};
     }
@@ -309,14 +300,10 @@ covergroup Zicfilp_S_cg with function sample(ins_t ins);
     sret_prev: coverpoint ins.prev.insn {
         bins sret = {SRET};
     }
-    menvcfg_lpe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "menvcfg", "lpe")[0] {
-    }
-    senvcfg_lpe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "senvcfg", "lpe")[0] {
-    }
+    menvcfg_lpe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "menvcfg", "lpe")[0] {}
+    senvcfg_lpe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "senvcfg", "lpe")[0] {}
     // SPELP before the SRET, two records back (the test's T-SBI call refreshes the mstatus log after it writes SPELP)
-    spelp_before_sret: coverpoint get_csr_val(ins.hart, ins.issue, 2, "mstatus", "spelp")[0] {
-        // 0: no LP expected, 1: LP expected
-    }
+    spelp_before_sret: coverpoint get_csr_val(ins.hart, ins.issue, 2, "mstatus", "spelp")[0] {}
     cp_pelp_trap_return_zicfilp: cross priv_mode_s_u, sret_prev, menvcfg_lpe, senvcfg_lpe, spelp_before_sret, not_lpad;
 
 endgroup
@@ -328,8 +315,7 @@ covergroup Zicfilp_U_cg with function sample(ins_t ins);
 
     `ifdef S_SUPPORTED
         // U-mode landing pad enable
-        lpe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "senvcfg", "lpe")[0] {
-        }
+        lpe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "senvcfg", "lpe")[0] {}
         lpe_enabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "senvcfg", "lpe") {
             bins enabled  = {1};
         }
@@ -356,8 +342,7 @@ covergroup Zicfilp_U_cg with function sample(ins_t ins);
         }
     `else
         // U-mode landing pad enable
-        lpe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "menvcfg", "lpe")[0] {
-        }
+        lpe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "menvcfg", "lpe")[0] {}
         lpe_enabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "menvcfg", "lpe") {
             bins enabled  = {1};
         }
@@ -525,12 +510,9 @@ covergroup Zicfilp_H_cg with function sample(ins_t ins);
 
     // H-specific coverpoints
 
-    menvcfg_lpe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "menvcfg", "lpe")[0] {
-    }
-    henvcfg_lpe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "henvcfg", "lpe")[0] {
-    }
-    senvcfg_lpe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "senvcfg", "lpe")[0] {
-    }
+    menvcfg_lpe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "menvcfg", "lpe")[0] {}
+    henvcfg_lpe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "henvcfg", "lpe")[0] {}
+    senvcfg_lpe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "senvcfg", "lpe")[0] {}
 
     // Target of an ELP-setting indirect jump (lp_branch_prev): a non-LPAD instruction, or an LPAD whose nonzero
     // label does not match x7[31:12].
@@ -556,9 +538,7 @@ covergroup Zicfilp_H_cg with function sample(ins_t ins);
         bins no_lp_expected = {2'b01};
     }
     // hedeleg[3] and hedeleg[18] are set together, so bit 18 names the handler for both traps
-    trap_to: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hedeleg", "deleg")[SOFTWARE_CHECK] {
-        // 0: HS, 1: VS
-    }
+    trap_to: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hedeleg", "deleg")[SOFTWARE_CHECK] {}
     mode_lpe_enabled: coverpoint (ins.prev.mode == 2'b01 ? get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "lpe")
                                                          : get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "lpe")) {
         bins enabled = {1};
@@ -573,21 +553,15 @@ covergroup Zicfilp_H_cg with function sample(ins_t ins);
     sret: coverpoint ins.current.insn {
         bins sret = {SRET};
     }
-    vs_new_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spp")[0] {
-        // 0: VU, 1: VS
-    }
+    vs_new_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spp")[0] {}
     hs_new_mode: coverpoint 2 * get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "spv") +
                             get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spp") {
         bins vu = {2};  // hstatus.SPV = 1, sstatus.SPP = 0
         bins vs = {3};  // hstatus.SPV = 1, sstatus.SPP = 1
     }
-    henvcfg_lpe_before: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "lpe")[0] {
-    }
-    senvcfg_lpe_before: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "lpe")[0] {
-    }
-    sstatus_spelp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spelp")[0] {
-        // 0: no LP expected, 1: LP expected
-    }
+    henvcfg_lpe_before: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "lpe")[0] {}
+    senvcfg_lpe_before: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "lpe")[0] {}
+    sstatus_spelp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spelp")[0] {}
     // Checked in HS-mode, where vsstatus has its own record
     vsstatus_spelp_differs: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "spelp") !=
                                         get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spelp")) {
@@ -613,8 +587,7 @@ covergroup Zicfilp_H_cg with function sample(ins_t ins);
                           get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spp")[0]} {
         bins hs = {2'b01};
     }
-    menvcfg_lpe_before: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "lpe")[0] {
-    }
+    menvcfg_lpe_before: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "lpe")[0] {}
     cp_hs_sret_to_hs_spelp: cross priv_mode_hs, sret, hs_to_hs, menvcfg_lpe_before, sstatus_spelp, vsstatus_spelp_differs;
 
     // SRET from HS-mode to VS-mode or VU-mode with sstatus.SPELP = 1 and the landing pad enable of the new mode set,
@@ -682,16 +655,13 @@ covergroup Zicfilp_SmH_cg with function sample(ins_t ins);
         bins vu = {3'b100};
         bins vs = {3'b101};
     }
-    henvcfg_lpe_before : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "lpe")[0] {
-    }
-    senvcfg_lpe_before : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "lpe")[0] {
-    }
+    henvcfg_lpe_before : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "lpe")[0] {}
+    senvcfg_lpe_before : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "lpe")[0] {}
     `ifdef UDB_MXLEN_64
         old_mpelp : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpelp")[0] {
     `else
         old_mpelp : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatush", "mpelp")[0] {
     `endif
-        // 0: no LP expected, 1: LP expected
     }
     cp_mret_mpelp_virt: cross priv_mode_m, mret, mret_virt_mode, henvcfg_lpe_before, senvcfg_lpe_before, old_mpelp;
 
@@ -725,9 +695,7 @@ covergroup Zicfilp_SmH_cg with function sample(ins_t ins);
     spelp_operand : coverpoint ins.current.rs1_val[23] {
         bins spelp = {1'b1};
     }
-    mstatus_spelp_before : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "spelp")[0] {
-        // 0: no LP expected, 1: LP expected
-    }
+    mstatus_spelp_before : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "spelp")[0] {}
     cp_vs_sstatus_spelp_mstatus: cross priv_mode_vs, vs_sstatus_spelp_write, spelp_operand, mstatus_spelp_before;
 endgroup
 `endif

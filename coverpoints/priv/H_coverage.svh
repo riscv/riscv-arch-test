@@ -1108,12 +1108,9 @@ covergroup H_Zicntr_cg with function sample(ins_t ins);
     }
 
     // The enable bit of the accessed counter in each counter-enable register
-    mcounteren_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "mcounteren")[int'(ins.current.insn[24:20])] {
-    }
-    hcounteren_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hcounteren", "hcounteren")[int'(ins.current.insn[24:20])] {
-    }
-    scounteren_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scounteren", "scounteren")[int'(ins.current.insn[24:20])] {
-    }
+    mcounteren_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "mcounteren")[int'(ins.current.insn[24:20])] {}
+    hcounteren_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hcounteren", "hcounteren")[int'(ins.current.insn[24:20])] {}
+    scounteren_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scounteren", "scounteren")[int'(ins.current.insn[24:20])] {}
     // The same bits held while another counter-enable register is walked
     mcounteren_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "mcounteren")[int'(ins.current.insn[24:20])] {
         bins one = {1};

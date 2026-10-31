@@ -58,8 +58,7 @@ covergroup Svinval_Sm_cg with function sample(ins_t ins);
         wildcard bins sinval_vma      = {SINVAL_VMA};
         wildcard bins sfence_vma      = {SFENCE_VMA}; // not essential, but might as well cross it
     }
-    cp_tvm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm")[0] {
-    }
+    cp_tvm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm")[0] {}
     cp_svinval : cross cp_instr, priv_mode_m_s_u, cp_tvm {
         // each instruction executed in every mode with mstatus.TVM clear and set
     }
@@ -88,8 +87,7 @@ covergroup Svinval_H_cg with function sample(ins_t ins);
     mstatus_tvm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm") {
         bins off = {0};
     }
-    hstatus_vtvm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vtvm")[0] {
-    }
+    hstatus_vtvm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vtvm")[0] {}
 
     // mstatus.TVM = 1 and M-mode are in Svinval_SmH_cg
     cp_svinval: cross priv_mode_hs_vs_u_vu, svinval, mstatus_tvm, hstatus_vtvm;
@@ -143,13 +141,11 @@ covergroup Svinval_SmH_cg with function sample(ins_t ins);
         wildcard bins hinval_vvma     = {HINVAL_VVMA};
         wildcard bins hinval_gvma     = {HINVAL_GVMA};
     }
-    mstatus_tvm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm")[0] {
-    }
+    mstatus_tvm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm")[0] {}
     mstatus_tvm_on: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm") {
         bins on = {1};
     }
-    hstatus_vtvm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vtvm")[0] {
-    }
+    hstatus_vtvm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vtvm")[0] {}
 
     // Svinval_H_cg covers the lower modes with mstatus.TVM = 0
     cp_svinval_m:   cross priv_mode_m, svinval, mstatus_tvm, hstatus_vtvm;

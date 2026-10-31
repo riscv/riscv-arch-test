@@ -37,10 +37,7 @@ covergroup Ssnpm_cg with function sample(ins_t ins);
     //Declare pmm before including the shared PMM coverpoint file so the include can reference it.
     `include "general/RISCV_coverage_pmm_coverpoints.svh"
 
-    mxr_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "mxr")[0] {
-        // MXR=1: execute-only pages readable
-        // MXR=0: normal permission checks
-    }
+    mxr_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "mxr")[0] {}
 
     `ifdef UDB_UXLEN_32  // UXL=01 is only reachable when U-mode supports RV32; checked from S-mode
         uxl_rv32: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "uxl") {
@@ -98,10 +95,7 @@ covergroup Ssnpm_Sm_cg with function sample(ins_t ins);
         }
     `endif // SMMPM_SUPPORTED
 
-    mxr_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mxr")[0] {
-        // MXR=1: execute-only pages readable
-        // MXR=0: normal permission checks
-    }
+    mxr_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mxr")[0] {}
     mprv_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv") {
         bins mprv_1 = {1'b1};   // MPRV=1: memory access uses MPP privilege
     }
@@ -156,9 +150,7 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
         bins sv48x4 = {9};
         bins sv57x4 = {10};
     }
-    spvp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "spvp")[0] {
-        // 0: VU, 1: VS
-    }
+    spvp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "spvp")[0] {}
     spvp_vu: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "spvp") {
         bins vu = {0};
     }

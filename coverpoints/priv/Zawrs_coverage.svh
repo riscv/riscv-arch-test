@@ -37,8 +37,7 @@ covergroup Zawrs_Sm_cg with function sample(ins_t ins);
         wildcard bins lr_w = {LR_W};
     }
 
-    mstatus_tw:  coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tw")[0]) {
-    }
+    mstatus_tw:  coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tw")[0]) {}
 
     mstatus_tw_one:  coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tw")) {
         bins one = {1};
@@ -48,8 +47,7 @@ covergroup Zawrs_Sm_cg with function sample(ins_t ins);
         bins zero = {0};
     }
 
-    mstatus_mie: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")[0])  {
-    }
+    mstatus_mie: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")[0])  {}
     mstatus_mie_zero: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")) {
         bins zero = {0};
     }
@@ -119,8 +117,7 @@ covergroup Zawrs_S_cg with function sample(ins_t ins);
         wildcard bins lr_w = {LR_W};
     }
 
-    mstatus_tw:  coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tw")[0]) {
-    }
+    mstatus_tw:  coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tw")[0]) {}
 
     mstatus_tw_one:  coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tw")) {
         bins one = {1};
@@ -130,8 +127,7 @@ covergroup Zawrs_S_cg with function sample(ins_t ins);
         bins zero = {0};
     }
 
-    mstatus_mie: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")[0])  {
-    }
+    mstatus_mie: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")[0])  {}
     mstatus_mie_zero: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")) {
         bins zero = {0};
     }
@@ -154,8 +150,7 @@ covergroup Zawrs_S_cg with function sample(ins_t ins);
     }
 
 
-    mstatus_sie: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")[0]) {
-    }
+    mstatus_sie: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")[0]) {}
     mstatus_sie_zero: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")) {
         bins zero = {0};
     }
@@ -249,8 +244,7 @@ covergroup Zawrs_U_cg with function sample(ins_t ins);
         wildcard bins lr_w = {LR_W};
     }
 
-    mstatus_tw:  coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tw")[0]) {
-    }
+    mstatus_tw:  coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tw")[0]) {}
 
     mstatus_tw_one:  coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tw")) {
         bins one = {1};
@@ -260,8 +254,7 @@ covergroup Zawrs_U_cg with function sample(ins_t ins);
         bins zero = {0};
     }
 
-    mstatus_mie: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")[0])  {
-    }
+    mstatus_mie: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")[0])  {}
     mstatus_mie_zero: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")) {
         bins zero = {0};
     }
@@ -289,8 +282,7 @@ covergroup Zawrs_U_cg with function sample(ins_t ins);
     }
 
     `ifdef S_SUPPORTED
-        mstatus_sie: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")[0]) {
-        }
+        mstatus_sie: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")[0]) {}
         mstatus_sie_zero: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")) {
             bins zero = {0};
         }

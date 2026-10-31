@@ -2375,7 +2375,11 @@ tsbi_instr_table:
         // sig_end_canary but must never pass it.
         LA(     T3, sig_end_canary)
         add     T4, T1, T2                          // T4 = this mode's updated trap sig write pointer
-        bgtu    T4, T3, \__MODE__\()trap_overflow  // overrun -> fail before corrupting the signature/tohost
+  .ifc \__MODE__ , M
+        bgtu    T4, T3, trap_sig_overflow_mmode     // overrun -> fail before corrupting the signature/tohost
+  .else
+        bgtu    T4, T3, trap_sig_overflow
+  .endif
 
 //---------- Trap Signature Word 0: vect+mode+status ----------
 // Packed format:
@@ -2728,7 +2732,11 @@ spcl_\__MODE__\()dispatch_handling:
         srli    T2, T2,1                //odd entry>0, remove LSB, normalizing to cause range
         beq     T5, T2, resto_\__MODE__\()rtn // case range matches, not an error, just noop
 1:
-        j       \__MODE__\()trap_abort
+  .ifc \__MODE__ , M
+        j       abort_test_mmode
+  .else
+        j       abort_test
+  .endif
 
 // The entry is in T2 (x7) because a jump through x7 does not set ELP (Zicfilp), so the
 // handler routines need no landing pad. The 15*4 offset above counts the instructions
@@ -3014,27 +3022,13 @@ excpt_\__MODE__\()hndlr_tbl:
 
 .popsection                                          // end of .text.rvmodel section
 
-// Failure exits. They leave the handler without an xRET, so an M-mode handler clears MDT
-// first. T4 is free on all three paths.
-\__MODE__\()trap_mismatch:                         // from TRAP_SIGUPD: x7 = return address
+// Mismatch failure exit (also used by the fast M handler). It leaves the handler without an
+// xRET, so an M-mode handler clears MDT first. x7 = return address; T4 is free.
+\__MODE__\()trap_mismatch:
   .ifc \__MODE__ , M
         RVTEST_CLEAR_MDT T4
   .endif
         j       failedtest_trap_x7_x9
-\__MODE__\()trap_overflow:
-  .ifc \__MODE__ , M
-        RVTEST_CLEAR_MDT T4
-        j       trap_sig_overflow_mmode
-  .else
-        j       trap_sig_overflow
-  .endif
-\__MODE__\()trap_abort:
-  .ifc \__MODE__ , M
-        RVTEST_CLEAR_MDT T4
-        j       abort_test_mmode
-  .else
-        j       abort_test
-  .endif
 
 .option pop
 .endm                                                 // end of RVTEST_TRAP_HANDLER
@@ -3210,14 +3204,11 @@ fast_Mothertrap:
         j    Mtrampoline                // hand off all non-illegal-instruction traps
 
 fast_Mcause_mismatch:
-        RVTEST_FAST_TRAP_FAILURE(CSR_MEPC, CSR_MCAUSE, CSR_MTVAL, CSR_MSTATUS, fast_Mcause_mismatch, sv_Mcause_str, fast_Mtrap_mismatch)
+        RVTEST_FAST_TRAP_FAILURE(CSR_MEPC, CSR_MCAUSE, CSR_MTVAL, CSR_MSTATUS, fast_Mcause_mismatch, sv_Mcause_str, Mtrap_mismatch)
 fast_Mepc_mismatch:
-        RVTEST_FAST_TRAP_FAILURE(CSR_MEPC, CSR_MCAUSE, CSR_MTVAL, CSR_MSTATUS, fast_Mepc_mismatch, sv_Mepc_str, fast_Mtrap_mismatch)
+        RVTEST_FAST_TRAP_FAILURE(CSR_MEPC, CSR_MCAUSE, CSR_MTVAL, CSR_MSTATUS, fast_Mepc_mismatch, sv_Mepc_str, Mtrap_mismatch)
 fast_Mtval_mismatch:
-        RVTEST_FAST_TRAP_FAILURE(CSR_MEPC, CSR_MCAUSE, CSR_MTVAL, CSR_MSTATUS, fast_Mtval_mismatch, sv_Mtval_str, fast_Mtrap_mismatch)
-fast_Mtrap_mismatch:                    // mstatus is already captured; x7 = return address, x9 free
-        RVTEST_CLEAR_MDT x9
-        j    failedtest_trap_x7_x9
+        RVTEST_FAST_TRAP_FAILURE(CSR_MEPC, CSR_MCAUSE, CSR_MTVAL, CSR_MSTATUS, fast_Mtval_mismatch, sv_Mtval_str, Mtrap_mismatch)
 
 #ifdef S_SUPPORTED
 // ── Fast S-mode handler (stvec) ─────────────────────────────────────────────

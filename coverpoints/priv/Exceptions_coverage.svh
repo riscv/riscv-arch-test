@@ -55,6 +55,10 @@ covergroup Exceptions_F_cg with function sample(ins_t ins);
             wildcard bins fsd          = {FSD};
             wildcard bins fadd_d       = {FADD_D};
             wildcard bins fcvt_d_s     = {FCVT_D_S};
+            `ifdef UDB_MXLEN_64
+                wildcard bins fmv_x_d      = {FMV_X_D};
+                wildcard bins fmv_d_x      = {FMV_D_X};
+            `endif
         `endif
         `ifdef ZFHMIN_SUPPORTED
             wildcard bins flh          = {FLH};

@@ -39,6 +39,7 @@ class _FpOp(NamedTuple):
 def _fp_ops(fd: int, rd: int, addr: int, snan_s: int, neg: int, zero: int, snan_d: int, snan_h: int) -> list[_FpOp]:
     """Instructions for the mstatus.FS tests. Arithmetic operands raise a flag if the instruction executes."""
     d = ("#ifdef D_SUPPORTED",)
+    d_rv64 = ("#ifdef D_SUPPORTED", "#if __riscv_xlen == 64")
     zfhmin = ("#ifdef ZFHMIN_SUPPORTED",)
     zfh = ("#ifdef ZFH_SUPPORTED",)
     # Sail does not support Q, so Q instructions are only tested where they must trap.
@@ -69,6 +70,8 @@ def _fp_ops(fd: int, rd: int, addr: int, snan_s: int, neg: int, zero: int, snan_
         _FpOp("fsd", f"fsd f{neg}, 0(x{addr})", "mem", d, store_words=2),
         _FpOp("fadd.d", f"fadd.d f{fd}, f{snan_d}, f{snan_d}", "f", d),
         _FpOp("fcvt.d.s", f"fcvt.d.s f{fd}, f{snan_s}", "f", d),
+        _FpOp("fmv.x.d", f"fmv.x.d x{rd}, f{snan_d}", "x", d_rv64),
+        _FpOp("fmv.d.x", f"fmv.d.x f{fd}, x{rd}", "f", d_rv64),
         _FpOp("flh", f"flh f{fd}, 0(x{addr})", "f", zfhmin),
         _FpOp("fsh", f"fsh f{neg}, 0(x{addr})", "mem", zfhmin, store_words=1),
         _FpOp("fadd.h", f"fadd.h f{fd}, f{snan_h}, f{snan_h}", "f", zfh),

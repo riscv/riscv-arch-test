@@ -8,7 +8,7 @@ coverpoints:
       Executing a floating-point instruction when mstatus.FS=00.
       Includes loads, stores and arithmetic from F and, if supported, D, Zfhmin, Zfh, Q, Zcd, Zcf and Zfa.
     expectation: causes illegal instruction exception. fd, rd, fflags and memory do not change.
-    bins: 16 F instructions + 23 instructions from other extensions, if supported
+    bins: 16 F instructions + 25 instructions from other extensions, if supported
   - name: cp_mstatus_fs_csr_access
     goal: Illegal Instruction
     description: |-

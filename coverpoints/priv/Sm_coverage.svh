@@ -634,7 +634,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     // misa
     cp_misa_mxl :               cross priv_mode_m, misa, misa_mxl_accesses;
     cp_misa_dependencies :      cross priv_mode_m, csrrw, misa, misa_dependencies;
-    cp_misa_clear_c :           cross priv_mode_m, csrc, misa_c_0, pc_1;
+    cp_misa_clear_c :           cross priv_mode_m, csrc, misa, misa_c_0, pc_1;
 
     // mepc[1] is masked on reads, including mret's, while misa.C = 0 makes IALIGN = 32
     // Only on harts with Zca whose misa.C is writable, so that IALIGN can change

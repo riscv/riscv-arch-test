@@ -584,6 +584,12 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         ("mhpmevent30", 0),  # mask all bits because they are WARL and can all be ROZ
         ("mhpmevent31", 0),  # mask all bits because they are WARL and can all be ROZ
     ]
+    # These CSRs do not exist without S-mode or U-mode
+    csrm_gate = {
+        "medeleg": "defined(S_SUPPORTED)",
+        "mideleg": "defined(S_SUPPORTED)",
+        "mcounteren": "defined(U_SUPPORTED)",
+    }
     # mcountinhibit is optional, so it is accessed under UDB_MCOUNTINHIBIT_IMPLEMENTED
     # TODO: remove mcountinhibit mask when Sail gets parameters for writable bits
     csr_mcountinhibit = ("mcountinhibit", 0b111)
@@ -618,7 +624,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
 
     for csr in csrm:
         tc = test_data.new_test_chunk(test_chunks)
-        tc.code.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
+        tc.code.extend(gated(csr_access_test(test_data, csr, covergroup, coverpoint), csrm_gate.get(csr[0])))
 
     tc = test_data.new_test_chunk(test_chunks)
     tc.code.append("\n#ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED")
@@ -626,7 +632,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     tc.code.append("#endif // UDB_MCOUNTINHIBIT_IMPLEMENTED")
 
     tc = test_data.new_test_chunk(test_chunks)
-    tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
+    tc.code.append("\n#if defined(SM1P12P0_OR_LATER_SUPPORTED) && defined(U_SUPPORTED)")
     tc.code.extend(csr_access_test(test_data, csr_menvcfg, covergroup, coverpoint_masked, maskedwrites=True))
     tc.code.append("#endif")
 
@@ -651,16 +657,18 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
 
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
     tc.code.extend(csr_access_test(test_data, csr_mstatush, covergroup, coverpoint_masked, maskedwrites=True))
+    tc.code.append("#ifdef U_SUPPORTED")
     tc.code.extend(csr_access_test(test_data, csr_menvcfgh, covergroup, coverpoint_masked, maskedwrites=True))
+    tc.code.append("#endif // U_SUPPORTED")
     tc.code.append("#endif //  SM1P12P0_OR_LATER_SUPPORTED")
     tc.code.append("\n#ifdef MSECCFG_SUPPORTED")
     tc.code.extend(csr_access_test(test_data, csr_mseccfgh, covergroup, coverpoint_masked, maskedwrites=True))
     tc.code.append("#endif // MSECCFG")
-    tc.code.append("\n#ifdef SM1P13P0_OR_LATER_SUPPORTED")
+    tc.code.append("\n#if defined(SM1P13P0_OR_LATER_SUPPORTED) && defined(S_SUPPORTED)")
     tc.code.extend(csr_access_test(test_data, csr_medelegh, covergroup, coverpoint))
     tc.code.extend(
         [
-            "#endif // SM1P13P0_OR_LATER_SUPPORTED",
+            "#endif // SM1P13P0_OR_LATER_SUPPORTED && S_SUPPORTED",
             "#endif // xlen = 32",
         ]
     )
@@ -732,14 +740,14 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         if csr[0] in SM_VADDR_CSRS:
             continue  # skip the virtual-address CSRs; they are walked in addr_csr_tests
         tc = test_data.new_test_chunk(test_chunks)
-        tc.code.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
+        tc.code.extend(gated(csr_walk_test(test_data, csr, covergroup, coverpoint), csrm_gate.get(csr[0])))
 
     tc = test_data.new_test_chunk(test_chunks)
     tc.code.append("\n#ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED")
     tc.code.extend(csr_walk_test(test_data, csr_mcountinhibit, covergroup, coverpoint))
     tc.code.append("#endif // UDB_MCOUNTINHIBIT_IMPLEMENTED")
 
-    tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
+    tc.code.append("\n#if defined(SM1P12P0_OR_LATER_SUPPORTED) && defined(U_SUPPORTED)")
     warl_fields = [("cbie", 4, 2, 0b10), ("pmm", 32, 2, 0b01)]
     tc.code.extend(
         csr_walk_test(test_data, csr_menvcfg, covergroup, coverpoint_masked, warl_fields=warl_fields, maskedwrites=True)
@@ -763,12 +771,14 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
 
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
     tc.code.extend(csr_walk_test(test_data, csr_mstatush, covergroup, coverpoint_masked, maskedwrites=True))
+    tc.code.append("#ifdef U_SUPPORTED")
     tc.code.extend(csr_walk_test(test_data, csr_menvcfgh, covergroup, coverpoint_masked, maskedwrites=True))
+    tc.code.append("#endif // U_SUPPORTED")
     tc.code.append("#endif // SM1P12P0_OR_LATER_SUPPORTED")
     tc.code.append("\n#ifdef MSECCFG_SUPPORTED")
     tc.code.extend(csr_walk_test(test_data, csr_mseccfgh, covergroup, coverpoint_masked, maskedwrites=True))
     tc.code.append("#endif // MSECCFG")
-    tc.code.append("\n#ifdef SM1P13P0_OR_LATER_SUPPORTED")
+    tc.code.append("\n#if defined(SM1P13P0_OR_LATER_SUPPORTED) && defined(S_SUPPORTED)")
     tc.code.extend(csr_walk_test(test_data, csr_medelegh, covergroup, coverpoint))
     tc.code.append("#endif // MEDELEGH")
     tc.code.append("#endif // __riscv_xlen == 32")

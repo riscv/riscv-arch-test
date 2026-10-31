@@ -4,14 +4,14 @@ source: https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73
 coverpoints:
   - name: cp_mcsr_access
     goal: Access to all M-mode CSRs
-    description: csr read, write all 1s, write all 0s, set all 1s, clear all 1s, write back initial value of each register below plus read-only mvendorid, marchid, mimpid, mhartid, mconfigptr
+    description: csr read, write all 1s, write all 0s, set all 1s, clear all 1s, write back initial value of each register below plus read-only mvendorid, marchid, mimpid, mhartid, mconfigptr.  medeleg, mideleg, and medelegh are only accessed with S-mode; mcounteren, menvcfg, and menvcfgh only with U-mode.
     expectation: Traps on writes to read-only registers.  Otherwise writable bits match reference model.
     bins: (14+5) regs * 6 ops
     rules:
       - mcause (WLRL), mstatus/h (WPRI), menvcfg/h (WPRI), mseccfg/h (WPRI) could be weird/hard to model
   - name: cp_mcsrwalk
     goal: Walking 1s and 0s in each writeable M-mode CSR
-    description: "Set and clear each bit of each writable M-mode CSR to exercise bitfields: mstatus, medeleg, mideleg, mie, mtvec, mcounteren, mscratch, mepc, mcause, mtval, mip, menvcfg, mseccfg.  For RV32 also mstatush, medelegh, menvcfgh, mseccfgh, mcountinhibit, mhpmevent31:3..  misa is fussy to model and is tested in cp_misa* instead.  Iterations that write a reserved mstatus.MPP, menvcfg.CBIE, or menvcfg/mseccfg.PMM value check the other bits exactly and only check that the field reads back a legal value."
+    description: "Set and clear each bit of each writable M-mode CSR to exercise bitfields: mstatus, medeleg, mideleg, mie, mtvec, mcounteren, mscratch, mepc, mcause, mtval, mip, menvcfg, mseccfg.  For RV32 also mstatush, medelegh, menvcfgh, mseccfgh, mcountinhibit, mhpmevent31:3..  misa is fussy to model and is tested in cp_misa* instead.  Iterations that write a reserved mstatus.MPP, menvcfg.CBIE, or menvcfg/mseccfg.PMM value check the other bits exactly and only check that the field reads back a legal value.  medeleg, mideleg, and medelegh are only walked with S-mode; mcounteren, menvcfg, and menvcfgh only with U-mode."
     expectation: Writable bits match reference model.
     bins: 14 regs * (64 set + 64 clear)
   - name: cp_misa_mxl

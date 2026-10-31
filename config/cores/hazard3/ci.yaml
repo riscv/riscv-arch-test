@@ -22,6 +22,8 @@ exclude_extensions:
   # (https://github.com/Wren6991/Hazard3/issues/49)
   - Sm_Zicntr
   - U_Zicntr
+  # misa.X is set (non-standard extensions), but Sail cannot set it yet (https://github.com/riscv/sail-riscv/issues/2067)
+  - Sm_reset
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"
 install_script: ".github/scripts/install-hazard3.sh"

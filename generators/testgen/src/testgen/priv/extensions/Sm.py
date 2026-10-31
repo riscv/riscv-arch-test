@@ -5,6 +5,7 @@
 # Also generates the Sm_F, Sm_V and Sm_VF groups, run only when F, Zve32x or Zve32f is also supported.
 # Also generates the Sm_Zicntr group, run only when Zicntr is also supported.
 # Also generates the Sm_H group, run only when H is also supported.
+# Also generates the Sm_reset group, which checks CSR fields captured at reset.
 # jcarlin@hmc.edu Jan 2026
 # SPDX-License-Identifier: Apache-2.0
 ##################################
@@ -1786,6 +1787,76 @@ def make_sm(test_data: TestData) -> list[TestChunk]:
 
     _generate_mcsr_tests(test_data, test_chunks)
 
+    return test_chunks
+
+
+_RESET_CG = "Sm_reset_cg"
+
+# misa Extensions letters that the privileged spec marks reserved or tentatively reserved
+_MISA_RESERVED = sum(1 << (ord(letter) - ord("A")) for letter in "GJKLNOPRTWYZ")
+_MISA_DEFINED_32 = f"{~_MISA_RESERVED & 0xFFFFFFFF:#x}"
+_MISA_DEFINED_64 = f"{~_MISA_RESERVED & 0xFFFFFFFFFFFFFFFF:#x}"
+
+# CSR fields with architectural reset values, captured by RVTEST_BOOT_TO_MMODE when RESET_TEST is defined:
+# (coverpoint, CSR, (RV32 field mask, RV64 field mask) or None for the whole CSR, gate)
+_RESET_FIELDS = [
+    ("cp_mstatus_reset", "mstatus", ("MSTATUS_MIE | MSTATUS_MPRV", "MSTATUS_MIE | MSTATUS_MPRV | MSTATUS_MBE"), None),
+    (
+        "cp_mstatush_reset",
+        "mstatush",
+        ("MSTATUSH_MBE", "MSTATUSH_MBE"),
+        "__riscv_xlen == 32 && defined(SM1P12P0_OR_LATER_SUPPORTED)",
+    ),
+    ("cp_misa_reset", "misa", (_MISA_DEFINED_32, _MISA_DEFINED_64), None),
+    ("cp_hgatp_reset", "hgatp", ("HGATP32_MODE", "HGATP64_MODE"), "defined(H_SUPPORTED)"),
+    ("cp_vsatp_reset", "vsatp", ("SATP32_MODE", "SATP64_MODE"), "defined(H_SUPPORTED)"),
+    ("cp_mseccfg_reset", "mseccfg", ("MSECCFG_MLPE", "MSECCFG_MLPE"), "defined(ZICFILP_SUPPORTED)"),
+]
+
+
+@add_priv_test_generator(
+    "Sm",
+    required_extensions=["Sm"],
+    extra_defines=["#define BOOT_TO_MMODE", "#define RESET_TEST"],
+)
+def make_sm_reset(test_data: TestData) -> list[TestChunk]:
+    """Generate Sm_reset tests: check the CSR fields that RVTEST_BOOT_TO_MMODE captured at reset."""
+    test_chunks: list[TestChunk] = []
+    tc = test_data.new_test_chunk(test_chunks, "reset")
+    r_val, r_mask = test_data.int_regs.get_registers(2)
+    tc.code.append(
+        comment_banner(
+            "cp_mstatus_reset, cp_mstatush_reset, cp_misa_reset, cp_hgatp_reset, cp_vsatp_reset, cp_mseccfg_reset",
+            "Boot code saved each CSR before writing any of them.  Check the fields with defined reset values:\n"
+            "mstatus.MIE/MPRV, mstatus/mstatush.MBE, misa except reserved letters, hgatp.MODE, vsatp.MODE and\n"
+            "mseccfg.MLPE",
+        )
+    )
+    for coverpoint, csr, masks, gate in _RESET_FIELDS:
+        lines = [
+            test_data.add_testcase(csr, coverpoint, _RESET_CG),
+            f"LA(x{r_val}, rvtest_reset_csrs)",
+            f"LREG x{r_val}, RESET_{csr.upper()}_OFFSET(x{r_val})",
+        ]
+        if masks is not None:
+            mask32, mask64 = masks
+            if mask32 == mask64:
+                lines.append(f"LI(x{r_mask}, {mask32})")
+            else:
+                lines.extend(
+                    [
+                        "#if __riscv_xlen == 64",
+                        f"LI(x{r_mask}, {mask64})",
+                        "#else",
+                        f"LI(x{r_mask}, {mask32})",
+                        "#endif",
+                    ]
+                )
+            lines.append(f"and x{r_val}, x{r_val}, x{r_mask}")
+        lines.append(write_sigupd(r_val, test_data))
+        tc.code.extend(gated(lines, gate))
+    test_data.int_regs.return_registers([r_val, r_mask])
+    test_chunks.append(test_data.end_test_chunk())
     return test_chunks
 
 

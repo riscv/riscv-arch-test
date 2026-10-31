@@ -2540,11 +2540,77 @@ endgroup
 `endif
 `endif
 
+// A CSR read returns the reset value if it is the first access to that CSR in the trace.  RVVI csr_wb flags
+// every CSR an instruction reads or writes, including the implicit writes of traps and xRETs.
+// The trace order count restarts with each trace, so a count no larger than the last one starts a new trace.
+bit [4095:0] sm_reset_csr_accessed;
+logic [63:0] sm_reset_prev_order;
+
+covergroup Sm_reset_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    csrr: coverpoint ins.current.insn {
+        wildcard bins csrr = {CSRR};
+    }
+    mstatus_first: coverpoint ins.current.insn[31:20] iff (!sm_reset_csr_accessed[CSR_MSTATUS]) {
+        bins mstatus = {CSR_MSTATUS};
+    }
+    misa_first: coverpoint ins.current.insn[31:20] iff (!sm_reset_csr_accessed[CSR_MISA]) {
+        bins misa = {CSR_MISA};
+    }
+    cp_mstatus_reset: cross priv_mode_m, csrr, mstatus_first; // mstatus.MIE, MPRV and (RV64) MBE
+    cp_misa_reset:    cross priv_mode_m, csrr, misa_first;
+
+    `ifdef UDB_MXLEN_32
+        `ifdef SM1P12P0_OR_LATER_SUPPORTED
+            mstatush_first: coverpoint ins.current.insn[31:20] iff (!sm_reset_csr_accessed[CSR_MSTATUSH]) {
+                bins mstatush = {CSR_MSTATUSH};
+            }
+            cp_mstatush_reset: cross priv_mode_m, csrr, mstatush_first; // mstatush.MBE
+        `endif
+    `endif
+
+    `ifdef H_SUPPORTED
+        hgatp_first: coverpoint ins.current.insn[31:20] iff (!sm_reset_csr_accessed[CSR_HGATP]) {
+            bins hgatp = {CSR_HGATP};
+        }
+        vsatp_first: coverpoint ins.current.insn[31:20] iff (!sm_reset_csr_accessed[CSR_VSATP]) {
+            bins vsatp = {CSR_VSATP};
+        }
+        cp_hgatp_reset: cross priv_mode_m, csrr, hgatp_first; // hgatp.MODE
+        cp_vsatp_reset: cross priv_mode_m, csrr, vsatp_first; // vsatp.MODE
+    `endif
+
+    `ifdef ZICFILP_SUPPORTED
+        mseccfg_first: coverpoint ins.current.insn[31:20] iff (!sm_reset_csr_accessed[CSR_MSECCFG]) {
+            bins mseccfg = {CSR_MSECCFG};
+        }
+        cp_mseccfg_reset: cross priv_mode_m, csrr, mseccfg_first; // mseccfg.MLPE
+    `endif
+
+    // No test reads mnstatus at reset until the Sail reference model supports Smrnmi
+    `ifdef SMRNMI_SUPPORTED
+        mnstatus_first: coverpoint ins.current.insn[31:20] iff (!sm_reset_csr_accessed[CSR_MNSTATUS]) {
+            bins mnstatus = {CSR_MNSTATUS};
+        }
+        cp_mnstatus_reset: cross priv_mode_m, csrr, mnstatus_first; // mnstatus.NMIE
+    `endif
+endgroup
+
+function void sm_reset_sample(ins_t ins);
+    if (ins.current.order <= sm_reset_prev_order) sm_reset_csr_accessed = '0;
+    sm_reset_prev_order = ins.current.order;
+    Sm_reset_cg.sample(ins);
+    sm_reset_csr_accessed |= ins.current.csr_wb;
+endfunction
+
 function void sm_sample(int hart, int issue, ins_t ins);
     Sm_mcause_cg.sample(ins);
     Sm_mstatus_cg.sample(ins);
     Sm_mprivinst_cg.sample(ins);
     Sm_mcsr_cg.sample(ins);
+    sm_reset_sample(ins);
     `ifdef F_SUPPORTED
         Sm_F_cg.sample(ins);
     `endif

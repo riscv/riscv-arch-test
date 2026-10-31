@@ -617,6 +617,42 @@ coverpoints:
     description: Execute sret in machine mode with cross-product of mstatus.SPP / hstatus.SPV / SPIE.  After the sret, a read of mscratch traps and the trap record shows the mode reached.  Then check mstatus.SPP, SIE, SPIE and hstatus.SPV.
     expectation: Goes to appropriate mode
     bins: 2 SPP * 2 SPV * 2 SPIE
+  - heading: "Sm_reset tests (Sm_reset-NN.S): CSR fields with defined reset values. With RESET_TEST defined, RVTEST_BOOT_TO_MMODE saves each CSR before any boot code writes it, and the test body checks the saved fields. Sm_reset_cg samples a CSR read only if it is the first access to that CSR in the trace."
+  - name: cp_mstatus_reset
+    goal: mstatus.MIE and MPRV reset to 0; on RV64, mstatus.MBE resets to 0 if little-endian memory accesses are supported
+    description: Read mstatus at reset.  Check MIE, MPRV and (RV64) MBE.
+    expectation: MIE and MPRV read 0.  MBE reads 0 if M-mode supports little-endian accesses (M_MODE_ENDIANNESS little or dynamic); it is read-only 1 on a big-endian-only hart.  Match reference model.
+    bins: "1"
+  - name: cp_mstatush_reset
+    goal: On RV32, mstatush.MBE resets to 0 if little-endian memory accesses are supported
+    description: RV32 only.  Read mstatush at reset.  Check MBE.
+    expectation: MBE reads 0 if M-mode supports little-endian accesses (M_MODE_ENDIANNESS little or dynamic); it is read-only 1 on a big-endian-only hart.  Match reference model.
+    bins: "1"
+  - name: cp_misa_reset
+    goal: misa resets to the maximal set of supported extensions and the widest MXLEN
+    description: Read misa at reset.  Check MXL, the zero field and the defined Extensions letters; mask off the reserved and tentatively reserved letters.
+    expectation: Match reference model.
+    bins: "1"
+  - name: |-
+      cp_hgatp_reset
+      cp_vsatp_reset
+    goal: hgatp.MODE and vsatp.MODE reset to 0
+    description: Only with H.  Read hgatp and vsatp at reset.  Check MODE.
+    expectation: MODE reads 0 (Bare).  Match reference model.
+    bins: "2"
+  - name: cp_mseccfg_reset
+    goal: mseccfg.MLPE resets to 0
+    description: Only with Zicfilp.  Read mseccfg at reset.  Check MLPE.
+    expectation: MLPE reads 0.  Match reference model.
+    bins: "1"
+  - name: cp_mnstatus_reset
+    goal: mnstatus.NMIE resets to 0
+    description: Only with Smrnmi.  Read mnstatus at reset.  Check NMIE.
+    expectation: NMIE reads 0.
+    bins: "1"
+    status: Not tested
+    notes: |-
+      Blocked on the reference model: Sail does not model Smrnmi, and sail_macros.h undefines SMRNMI_SUPPORTED in the signature build.
   - heading: Not tested
   - goal: misa.H enables the hypervisor extension
     description: With MUTABLE_MISA_H, clear misa.H, check that hypervisor CSRs and instructions raise illegal instruction, and set it again.

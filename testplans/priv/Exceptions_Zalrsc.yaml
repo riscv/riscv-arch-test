@@ -20,6 +20,11 @@ coverpoints:
     description: Misaligned sc.w, sc.d cross match lr address  (8 bins for bottom 3 bits of address) cross rd having an initial value > 1
     expectation: Faulting sc should not change rd
     bins: 8 lsbs * 2 instr
+  - name: cp_store_address_misaligned_reserved
+    goal: Store Misaligned with live reservation
+    description: Misaligned sc.w, sc.d directly after a retired lr.w, lr.d at the aligned base of the same doubleword (illegal lsbs) cross rd having an initial value > 1
+    expectation: Faulting sc should not change rd or memory
+    bins: 6 lsbs for sc.w + 7 lsbs for sc.d
   - name: cp_store_access_fault
     goal: Store Access Fault
     description: Access fault of sc.w, sc.d cross match lr address cross rd having an initial value > 1

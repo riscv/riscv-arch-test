@@ -66,12 +66,29 @@ def _generate_store_address_misaligned_tests(test_data: TestData) -> list[str]:
             lines = [*retry_start, *lines, *retry_end]
         return lines
 
-    lines = [comment_banner("cp_store_address_misaligned_legal_w/illegal_w/legal_d/illegal_d")]
+    def reserved_sc(width: str, offset: int, coverpoint: str) -> list[str]:
+        # Aligned LR sets a live reservation; the misaligned SC directly after it must still trap
+        return [
+            f"addi x{rd_reg}, x0, -1107",  # rd greater than 1 that the faulting SC must not change (-1107 = 0xBAD)
+            f"lr.{width} x{temp_reg}, (x{base_reg})",
+            test_data.add_testcase(f"sc.{width}_off{offset}", coverpoint, covergroup),
+            f"sc.{width} x{rd_reg}, x{data_reg}, (x{addr_reg})",
+            write_sigupd(rd_reg, test_data),
+        ]
+
+    def check_scratch() -> list[str]:
+        lines = [f"{INDENT}# Check scratch region"]
+        for word in range(4):
+            lines.extend([f"lw x{check_reg}, {4 * word}(x{base_reg})", write_sigupd(check_reg, test_data)])
+        return lines
+
+    lines = [comment_banner("cp_store_address_misaligned_legal_w/illegal_w/legal_d/illegal_d/reserved_w/reserved_d")]
 
     for offset in range(8):
         # sc.w is aligned at offsets 0 and 4; sc.d only at offset 0
-        cp_w = "cp_store_address_misaligned_legal_w" if offset % 4 == 0 else "cp_store_address_misaligned_illegal_w"
-        cp_d = "cp_store_address_misaligned_legal_d" if offset == 0 else "cp_store_address_misaligned_illegal_d"
+        aligned_w, aligned_d = offset % 4 == 0, offset == 0
+        cp_w = "cp_store_address_misaligned_legal_w" if aligned_w else "cp_store_address_misaligned_illegal_w"
+        cp_d = "cp_store_address_misaligned_legal_d" if aligned_d else "cp_store_address_misaligned_illegal_d"
         lines.extend(
             [
                 f"\n# Offset {offset} (LSBs: {offset:03b})",
@@ -79,35 +96,27 @@ def _generate_store_address_misaligned_tests(test_data: TestData) -> list[str]:
                 f"addi x{addr_reg}, x{base_reg}, {offset}",  # addr = aligned base + offset
                 f"LI(x{data_reg}, 0xDECAFCAB)",
                 f"LI(x{temp_reg}, 0xBAD)",
-                *lrsc("w", offset, cp_w, offset % 4 == 0),
+                *lrsc("w", offset, cp_w, aligned_w),
                 write_sigupd(temp_reg, test_data),
                 write_sigupd(rd_reg, test_data),
-                f"{INDENT}# Check scratch region",
-                f"lw x{check_reg}, 0(x{base_reg})",
-                write_sigupd(check_reg, test_data),
-                f"lw x{check_reg}, 4(x{base_reg})",
-                write_sigupd(check_reg, test_data),
-                f"lw x{check_reg}, 8(x{base_reg})",
-                write_sigupd(check_reg, test_data),
-                f"lw x{check_reg}, 12(x{base_reg})",
-                write_sigupd(check_reg, test_data),
-                "#if __riscv_xlen == 64",
-                f"LI(x{temp_reg}, 0xBAD)",
-                *lrsc("d", offset, cp_d, offset == 0),
-                write_sigupd(temp_reg, test_data),
-                write_sigupd(rd_reg, test_data),
-                f"{INDENT}# Check scratch region",
-                f"lw x{check_reg}, 0(x{base_reg})",
-                write_sigupd(check_reg, test_data),
-                f"lw x{check_reg}, 4(x{base_reg})",
-                write_sigupd(check_reg, test_data),
-                f"lw x{check_reg}, 8(x{base_reg})",
-                write_sigupd(check_reg, test_data),
-                f"lw x{check_reg}, 12(x{base_reg})",
-                write_sigupd(check_reg, test_data),
-                "#endif",
+                *check_scratch(),
             ]
         )
+        if not aligned_w:
+            lines.extend([*reserved_sc("w", offset, "cp_store_address_misaligned_reserved_w"), *check_scratch()])
+        lines.extend(
+            [
+                "#if __riscv_xlen == 64",
+                f"LI(x{temp_reg}, 0xBAD)",
+                *lrsc("d", offset, cp_d, aligned_d),
+                write_sigupd(temp_reg, test_data),
+                write_sigupd(rd_reg, test_data),
+                *check_scratch(),
+            ]
+        )
+        if not aligned_d:
+            lines.extend([*reserved_sc("d", offset, "cp_store_address_misaligned_reserved_d"), *check_scratch()])
+        lines.append("#endif")
     test_data.int_regs.return_registers([addr_reg, data_reg, rd_reg, base_reg, temp_reg, check_reg])
     return lines
 

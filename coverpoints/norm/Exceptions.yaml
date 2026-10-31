@@ -590,7 +590,7 @@ normative_rule_definitions:
   - name: lr_sc_alignment
     coverpoint:
       [
-        "Exceptions_Zalrsc_cg/{cp_load_address_misaligned, cp_store_address_misaligned_illegal_w, cp_store_address_misaligned_illegal_d}",
+        "Exceptions_Zalrsc_cg/{cp_load_address_misaligned, cp_store_address_misaligned_illegal_w, cp_store_address_misaligned_illegal_d, cp_store_address_misaligned_reserved_w, cp_store_address_misaligned_reserved_d}",
       ]
   # With the addition of the C extension, no instructions can raise
   # instruction-address-misaligned exceptions.

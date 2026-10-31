@@ -800,6 +800,28 @@ covergroup Exceptions_Zalrsc_cg with function sample(ins_t ins);
     adr_LSBs: coverpoint ins.current.rs1_val[2:0]  {
         // auto fills 000 through 111
     }
+    // previous instruction was a retired LR at an aligned address in the same doubleword as the SC,
+    // so the SC executes while a reservation is live
+    lr_w_prev: coverpoint ins.prev.insn {
+        wildcard bins lr_w = {LR_W};
+    }
+    `ifdef UDB_MXLEN_64
+        lr_d_prev: coverpoint ins.prev.insn {
+            wildcard bins lr_d = {LR_D};
+        }
+    `endif
+    lr_retired_prev: coverpoint ins.prev.trap {
+        bins retired = {0};
+    }
+    lr_adr_aligned_prev: coverpoint ins.prev.rs1_val[2:0] {
+        bins zero = {0};
+    }
+    sc_adr_matches_lr: coverpoint (ins.current.rs1_val[`UDB_MXLEN-1:3] == ins.prev.rs1_val[`UDB_MXLEN-1:3]) {
+        bins match = {1};
+    }
+    rd_gt_one_pre: coverpoint ins.current.rd_val_pre {
+        bins nonzero = {[2:$]};
+    }
 
     // Ideally this coverpoint would check the rs1 of the paired lr.x and sc.x
     // to match the test plan. With our current toolflow
@@ -834,7 +856,9 @@ covergroup Exceptions_Zalrsc_cg with function sample(ins_t ins);
         `ifdef UDB_MXLEN_64
             cp_store_address_misaligned_legal_d:     cross sc_d, adr_LSBs_legal_d,rd_gt_one_prev, rd_zero_cur, non_illegal_address;
             cp_store_address_misaligned_illegal_d:   cross sc_d, adr_LSBs_illegal_d, rd_gt_one_prev, rd_gt_one_cur, non_illegal_address;
+            cp_store_address_misaligned_reserved_d:  cross sc_d, adr_LSBs_illegal_d, lr_d_prev, lr_retired_prev, lr_adr_aligned_prev, sc_adr_matches_lr, rd_gt_one_pre, rd_gt_one_cur, non_illegal_address;
         `endif
+        cp_store_address_misaligned_reserved_w:    cross sc_w, adr_LSBs_illegal_w, lr_w_prev, lr_retired_prev, lr_adr_aligned_prev, sc_adr_matches_lr, rd_gt_one_pre, rd_gt_one_cur, non_illegal_address;
         cp_store_access_fault:                cross sc, illegal_address, rd_gt_one_prev, rd_gt_one_cur;
         cp_store_access_misaligned_priority:  cross sc, illegal_address_misaligned, rd_gt_one_prev, rd_gt_one_cur;
     `else // if no access faults, exclude non_illegal_address condition
@@ -844,7 +868,9 @@ covergroup Exceptions_Zalrsc_cg with function sample(ins_t ins);
         `ifdef UDB_MXLEN_64
             cp_store_address_misaligned_legal_d:     cross sc_d, adr_LSBs_legal_d,rd_gt_one_prev, rd_zero_cur;
             cp_store_address_misaligned_illegal_d:   cross sc_d, adr_LSBs_illegal_d, rd_gt_one_prev, rd_gt_one_cur;
+            cp_store_address_misaligned_reserved_d:  cross sc_d, adr_LSBs_illegal_d, lr_d_prev, lr_retired_prev, lr_adr_aligned_prev, sc_adr_matches_lr, rd_gt_one_pre, rd_gt_one_cur;
         `endif
+        cp_store_address_misaligned_reserved_w:    cross sc_w, adr_LSBs_illegal_w, lr_w_prev, lr_retired_prev, lr_adr_aligned_prev, sc_adr_matches_lr, rd_gt_one_pre, rd_gt_one_cur;
     `endif
 endgroup
 

@@ -115,13 +115,22 @@ coverpoints:
       ecall cross {mode = user/supervisor, medeleg[8] = {0/1}, mstatus.mie = {0/1}, mstatus.sie = {0/1}}
     expectation: xpie gets xie, xie gets 0
     bins: 3 modes * 2 medleg * 2 mie * 2 sie
-  - name: cp_medeleg_msu
+  - name: |-
+      cp_medeleg_msu_instrmisaligned
+      cp_medeleg_msu_instraccessfault
+      cp_medeleg_msu_illegalinstruction
+      cp_medeleg_msu_ebreak
+      cp_medeleg_msu_loadmisaligned
+      cp_medeleg_msu_loadaccessfault
+      cp_medeleg_msu_storemisaligned
+      cp_medeleg_msu_storeaccessfault
+      cp_medeleg_msu_ecall
     goal: Delegation to supervisor mode
     description: |-
       If S_SUPPORTED:
       Attempt instruction/load/store access fault, instruction/load/store misaligned fault, illegal instruction, ebreak, ecall, crossed with privilege mode S/U/M crossed with medeleg = [ {1011_0001_1111_1111}, {0}, and 12 different walking 1s]
     expectation: Should delegate from user/supervisor but not machine when a 1 is in the appropriate column.   Note medeleg[11] is hardwired to 0 because ecall from M cannot be delegated, and medeleg[9] is 0 because delegating an ecall from supervisor mode makes it impossible to get back to machine mode.
-    bins: 9 ops * 3 modes * 14 medeleg
+    bins: per exception, 3 modes * 14 medeleg, also crossed with the jalr target alignment, load/store ops and address LSBs where they apply
   - heading: "Notes: xepc, xcause, xtval, xtvec, mstatus.xpp are inherently tested with exceptions taking place"
   - heading: "Note: load/store misaligned, access fault, page fault for Zaamo, Zalrsc, Zicbo* are exercised in PMA, PMP, VM"
   - heading: menvcfg.STCE = 0 causes access to stimecmp outside of M mode to illegal instruction

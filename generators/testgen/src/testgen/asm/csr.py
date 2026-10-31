@@ -273,9 +273,9 @@ def csr_walk_test(
             Example: [("defined(UDB_S_MODE_ENDIANNESS_LITTLE) || !defined(S_SUPPORTED)", 1 << 4)]
             walks mstatush.SBE only where it is read-only zero.
         bin_prefix: Prefix for testcase bin names, to walk the same CSR more than once under one coverpoint.
-        unwalked_bits: Optional (bits, define) pairs for state the reference model cannot model. When
-            `define` is defined for the config, the bits are neither written nor checked, so their
-            coverage reports missing; otherwise they are walked and checked (read-only zero). Implies
+        unwalked_bits: Optional (bits, cond) pairs for state the reference model cannot model. `cond` is a
+            define name, or an #if expression. Where it holds, the bits are neither written nor checked,
+            so their coverage reports missing; elsewhere they are walked and checked (read-only). Implies
             maskedwrites, starting from the csr mask, or all ones if None.
     """
     assert 0 <= start_bit < 32, f"start_bit must be in 0..31, got {start_bit}"
@@ -369,12 +369,12 @@ def csr_walk_test(
     ]
     if mask is not None:
         lines.append(f"LI(x{mask_reg}, {mask})    # Load mask ({mask:#x})")
-        for bits, define in unwalked_bits or []:
+        for bits, cond in unwalked_bits or []:
             lines += [
-                f"#ifdef {define}",
+                f"#ifdef {cond}" if cond.isidentifier() else f"#if {cond}",
                 f"LI(x{check_reg}, {~bits & ((1 << 64) - 1)})    # Do not walk bits {bits:#x}",
                 f"and x{mask_reg}, x{mask_reg}, x{check_reg}",
-                f"#endif // {define}",
+                f"#endif // {cond}",
             ]
     for cond, bits in cond_mask or []:
         assert mask is not None, f"cond_mask requires a csr mask (got None for {csr_name})"

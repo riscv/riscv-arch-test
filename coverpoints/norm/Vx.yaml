@@ -2342,23 +2342,25 @@ normative_rule_definitions:
   # using the dynamic rounding mode) to the standard floating-point format indicated
   # by SEW.
   - name: vfredusum_op
-    coverpoint: ["Vf16_vfredusum_vs_cg/cp_vd"]
+    coverpoint:
+      [
+        "Vf16_vfredusum_vs_cg/cp_custom_vfredusum_sweep",
+        "Vf16_vfredusum_vs_cg/cp_custom_vfredusum_specials",
+      ]
 
   # The additive identity is +0.0 when rounding down (towards -{inf}) or -0.0 for
   # all other rounding modes.
   - name: vfredusum_additive_impl
     coverpoint:
       [
-        "Implicit: the additive-identity sign is whatever the reference model produces and is checked by the ordinary signature comparison, just not isolated by a dedicated coverpoint",
+        "Vf16_vfredusum_vs_cg/cp_custom_vfredusum_noactive",
+        "Vf16_vfredusum_vs_cg/cp_custom_vfredusum_specials",
       ]
 
   # The reduction tree structure must be deterministic for a given value in vtype
   # and vl.
   - name: vfredusum_redtree
-    coverpoint:
-      [
-        "Untestable: reduction-tree determinism across runs is not observable from a single self-checking execution",
-      ]
+    coverpoint: ["Vf16_vfredusum_vs_cg/cp_custom_vfredusum_determinism"]
 
   # The insn:vfredmin[] and insn:vfredmax[] instructions reduce the scalar argument in
   # vs1[0] and active elements in vs2 using the IEEE 754-2019 minimumNumber and
@@ -2370,13 +2372,21 @@ normative_rule_definitions:
   # reduction result.
   - name: vfwredosum_vfwredusum_op
     coverpoint:
-      ["Vf16_vfwredosum_vs_cg/cp_vd_emul2", "Vf16_vfwredusum_vs_cg/cp_vd_emul2"]
+      [
+        "Vf16_vfwredosum_vs_cg/cp_vd_emul2",
+        "Vf16_vfwredusum_vs_cg/cp_vd_emul2",
+        "Vf16_vfwredusum_vs_cg/cp_custom_vfredusum_sweep",
+      ]
   # The reduction of the SEW-width elements is performed as in the single-width reduction
   # case, with the elements in vs2 promoted to 2*SEW bits before adding to the 2*SEW-bit
   # accumulator.
   - name: vfwredosum_vfwredusum_op_reduction
     coverpoint:
-      ["Vf16_vfwredosum_vs_cg/cp_vd_emul2", "Vf16_vfwredusum_vs_cg/cp_vd_emul2"]
+      [
+        "Vf16_vfwredosum_vs_cg/cp_vd_emul2",
+        "Vf16_vfwredusum_vs_cg/cp_custom_vfredusum_sweep",
+        "Vf16_vfwredusum_vs_cg/cp_custom_vfredusum_specials_w",
+      ]
 
   # Vector mask-register logical operations operate on mask registers. Each element
   # in a mask register is a single bit,

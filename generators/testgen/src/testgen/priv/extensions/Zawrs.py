@@ -14,6 +14,7 @@ from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.asm.tsbi import tsbi_call_or_direct
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
+from testgen.priv.extensions.InterruptsCommon import write_vtw
 from testgen.priv.registry import add_priv_test_generator
 
 
@@ -48,15 +49,6 @@ def _disable_interrupts(priv: str, r_temp: int) -> list[str]:
         tsbi_call_or_direct(f"csrc mstatus, x{r_temp}", priv),
     ]
     return lines
-
-
-def _write_vtw(r_temp: int, vtw: int) -> list[str]:
-    """hstatus.VTW = vtw, written in HS-mode."""
-    return [
-        f"# hstatus.VTW = {vtw}",
-        f"LI(x{r_temp}, 0x200000)",
-        f"{'csrs' if vtw else 'csrc'} hstatus, x{r_temp}",
-    ]
 
 
 def wrs_resume_helper(
@@ -134,7 +126,7 @@ def wrs_resume_helper(
                         ]
                     )
 
-                    if virtual:
+                    if lower:
                         lines.extend(
                             [
                                 *_sstatus_sie(priv, r_temp, sie_val),
@@ -147,34 +139,8 @@ def wrs_resume_helper(
                                 f"LI(x{r_temp}, 0x80)",
                                 tsbi_call_or_direct(f"csrs mie, x{r_temp}", priv),
                                 "#endif",
-                                *_write_vtw(r_temp, 0),
-                                f"RVTEST_TSBI_GOTO_{mode}MODE",
+                                *([*write_vtw(r_temp, False, priv), f"RVTEST_TSBI_GOTO_{mode}MODE"] if virtual else []),
                                 *arm_timer,
-                                "# Read the trap count after the T-SBI calls above, which trap as well",
-                                *_read_trap_count_helper(r_cause),
-                            ]
-                        )
-                    elif lower:
-                        lines.extend(
-                            [
-                                *_sstatus_sie(priv, r_temp, sie_val),
-                                "#ifdef SSTC_SUPPORTED",
-                                "# Set sie.STIE",
-                                f"LI(x{r_temp}, 0x20)",
-                                tsbi_call_or_direct(f"csrs sie, x{r_temp}", priv),
-                                "# Set stimer interrupt soon",
-                                f"RVTEST_SET_SSTC_INT_SOON_{priv}",
-                                "#else",
-                                "# Set mie.MTIE",
-                                f"LI(x{r_temp}, 0x80)",
-                                tsbi_call_or_direct(f"csrs mie, x{r_temp}", priv),
-                                "# Set mtimer interrupt soon",
-                                f"RVTEST_SET_MTIME_INT_SOON_{priv}",
-                                "#endif",
-                            ]
-                        )
-                        lines.extend(
-                            [
                                 "# Read the trap count after the T-SBI calls above, which trap as well",
                                 *_read_trap_count_helper(r_cause),
                             ]
@@ -294,7 +260,7 @@ def wrs_interrupt_helper(test_data: TestData, covergroup: str) -> list[str]:
                 "# mstatus.TW = 0",
                 f"LI(x{r_temp}, 0x200000)",
                 tsbi_call_or_direct(f"csrc mstatus, x{r_temp}", "S"),
-                *_write_vtw(r_temp, 0),
+                *write_vtw(r_temp, False, "S"),
                 "# vsstatus.SIE = 0",
                 f"LI(x{r_temp}, 0x2)",
                 f"csrc vsstatus, x{r_temp}",
@@ -426,7 +392,7 @@ def wrs_no_mie_helper(
                     "RVTEST_SET_VSSW_INT_S",
                     "RVTEST_SET_VSTIME_INT_S",
                     "RVTEST_SET_VSEXT_INT_S",
-                    *_write_vtw(r_temp, 0),
+                    *write_vtw(r_temp, False, priv),
                     f"RVTEST_TSBI_GOTO_{mode}MODE",
                 ]
             )
@@ -536,7 +502,7 @@ def wrs_no_res_helper(test_data: TestData, priv: str, covergroup: str, mode: str
                     "# Write mstatus.TW",
                     f"LI(x{r_temp}, 0x200000)",
                     tsbi_call_or_direct(f"{'csrs' if tw_val else 'csrc'} mstatus, x{r_temp}", priv),
-                    *([*_write_vtw(r_temp, 0), f"RVTEST_TSBI_GOTO_{mode}MODE"] if virtual else []),
+                    *([*write_vtw(r_temp, False, priv), f"RVTEST_TSBI_GOTO_{mode}MODE"] if virtual else []),
                     "",
                     "# sc.w to clear reservation",
                     f"LA(x{r_scratch}, scratch)",
@@ -658,7 +624,7 @@ def wrs_timeout_helper(
         if virtual:
             lines.extend(
                 [
-                    *_write_vtw(r_temp, vtw),
+                    *write_vtw(r_temp, bool(vtw), priv),
                     f"# hedeleg[2] = {deleg}: illegal-instruction traps from VS/VU go to {'VS' if deleg else 'HS'}-mode",
                     f"LI(x{r_temp}, 0x4)",
                     f"{'csrs' if deleg else 'csrc'} hedeleg, x{r_temp}",
@@ -699,7 +665,7 @@ def wrs_timeout_helper(
     if virtual:
         lines.extend(
             [
-                *_write_vtw(r_temp, 0),
+                *write_vtw(r_temp, False, priv),
                 "# hedeleg[2] = 0",
                 f"LI(x{r_temp}, 0x4)",
                 f"csrc hedeleg, x{r_temp}",

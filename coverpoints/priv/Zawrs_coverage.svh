@@ -392,9 +392,7 @@ covergroup Zawrs_H_cg with function sample(ins_t ins);
         wildcard bins lr_w = {LR_W};
     }
 
-    mstatus_tw:  coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tw")) {
-        bins zero = {0};
-        bins one  = {1};
+    mstatus_tw:  coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tw")[0]) {
     }
     mstatus_tw_one:  coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tw")) {
         bins one = {1};
@@ -403,9 +401,7 @@ covergroup Zawrs_H_cg with function sample(ins_t ins);
         bins zero = {0};
     }
 
-    hstatus_vtw: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vtw")) {
-        bins zero = {0};
-        bins one  = {1};
+    hstatus_vtw: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vtw")[0]) {
     }
     hstatus_vtw_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vtw")) {
         bins one = {1};
@@ -416,13 +412,9 @@ covergroup Zawrs_H_cg with function sample(ins_t ins);
 
     // hedeleg[2] sends the illegal-instruction exception to HS-mode (0) or VS-mode (1)
     hedeleg_illegal_instr: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hedeleg", "deleg")[2]) {
-        bins hs = {0};
-        bins vs = {1};
     }
 
-    mstatus_mie: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie"))  {
-        bins zero = {0};
-        bins one  = {1};
+    mstatus_mie: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")[0]) {
     }
     mstatus_mie_zero: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")) {
         bins zero = {0};
@@ -431,9 +423,7 @@ covergroup Zawrs_H_cg with function sample(ins_t ins);
         bins one = {1};
     }
 
-    mstatus_sie: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")) {
-        bins zero = {0};
-        bins one  = {1};
+    mstatus_sie: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")[0]) {
     }
     mstatus_sie_zero: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")) {
         bins zero = {0};

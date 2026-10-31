@@ -51,6 +51,36 @@ covergroup Exceptions_F_cg with function sample(ins_t ins);
         wildcard bins fcvt_f_x     = {FCVT_S_W};
         `ifdef D_SUPPORTED
             wildcard bins fcvt_f_f     = {FCVT_S_D};
+            wildcard bins fld          = {FLD};
+            wildcard bins fsd          = {FSD};
+            wildcard bins fadd_d       = {FADD_D};
+            wildcard bins fcvt_d_s     = {FCVT_D_S};
+        `endif
+        `ifdef ZFHMIN_SUPPORTED
+            wildcard bins flh          = {FLH};
+            wildcard bins fsh          = {FSH};
+        `endif
+        `ifdef ZFH_SUPPORTED
+            wildcard bins fadd_h       = {FADD_H};
+        `endif
+        `ifdef Q_SUPPORTED
+            `ifdef UDB_MXLEN_64
+                wildcard bins flq          = {FLQ};
+                wildcard bins fsq          = {FSQ};
+                wildcard bins fadd_q       = {FADD_Q};
+            `endif
+        `endif
+        `ifdef ZCD_SUPPORTED
+            wildcard bins c_fld        = {C_FLD};
+            wildcard bins c_fsd        = {C_FSD};
+            wildcard bins c_fldsp      = {C_FLDSP};
+            wildcard bins c_fsdsp      = {C_FSDSP};
+        `endif
+        `ifdef ZCF_SUPPORTED // only supported in UDB_MXLEN_32
+            wildcard bins c_flw        = {C_FLW};
+            wildcard bins c_fsw        = {C_FSW};
+            wildcard bins c_flwsp      = {C_FLWSP};
+            wildcard bins c_fswsp      = {C_FSWSP};
         `endif
         wildcard bins fmadd        = {FMADD_S};
         wildcard bins fsqrt        = {FSQRT_S};
@@ -81,6 +111,16 @@ covergroup Exceptions_F_cg with function sample(ins_t ins);
         wildcard bins csrrc_fcsr   = {CSRRC} iff (ins.current.insn[31:20] == CSR_FCSR);
         wildcard bins csrrc_frm    = {CSRRC} iff (ins.current.insn[31:20] == CSR_FRM);
         wildcard bins csrrc_fflags = {CSRRC} iff (ins.current.insn[31:20] == CSR_FFLAGS);
+        wildcard bins csrrwi_fcsr   = {CSRRWI} iff (ins.current.insn[31:20] == CSR_FCSR);
+        wildcard bins csrrwi_frm    = {CSRRWI} iff (ins.current.insn[31:20] == CSR_FRM);
+        wildcard bins csrrwi_fflags = {CSRRWI} iff (ins.current.insn[31:20] == CSR_FFLAGS);
+        // uimm = 0: csrrsi and csrrci only read the CSR
+        wildcard bins csrrsi_fcsr   = {CSRRSI} iff (ins.current.insn[31:20] == CSR_FCSR   && ins.current.insn[19:15] == 0);
+        wildcard bins csrrsi_frm    = {CSRRSI} iff (ins.current.insn[31:20] == CSR_FRM    && ins.current.insn[19:15] == 0);
+        wildcard bins csrrsi_fflags = {CSRRSI} iff (ins.current.insn[31:20] == CSR_FFLAGS && ins.current.insn[19:15] == 0);
+        wildcard bins csrrci_fcsr   = {CSRRCI} iff (ins.current.insn[31:20] == CSR_FCSR   && ins.current.insn[19:15] == 0);
+        wildcard bins csrrci_frm    = {CSRRCI} iff (ins.current.insn[31:20] == CSR_FRM    && ins.current.insn[19:15] == 0);
+        wildcard bins csrrci_fflags = {CSRRCI} iff (ins.current.insn[31:20] == CSR_FFLAGS && ins.current.insn[19:15] == 0);
     }
     loadops: coverpoint ins.current.insn {
         wildcard bins flw = {FLW};

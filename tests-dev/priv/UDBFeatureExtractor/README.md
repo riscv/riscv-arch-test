@@ -361,6 +361,10 @@ onto Sail only approximately:
 - Reserved `medeleg` bits that a hart lets be set, and an RV64 `mstateen0.P1P13` that is writable,
   are left out: Sail rejects both.
 - Stateen bits without a UDB parameter are writable exactly when what they guard exists.
+- `ZAWRS_NTO_IS_NOP` says only whether `wrs.nto` stalls: UDB still has it trap under
+  `mstatus.TW` in S- and U-mode. Sail's `nto.is_nop` = true skips that check, so the converter
+  sets it only without S, and the extractor measures it directly by running `wrs.nto` in U-mode
+  with `TW` set (every simulator tested traps there, so all want false).
 - Sail allows more than 16 PMP entries only from privileged ISA 1.12, so a 1.11 configuration with
   64 entries gets 1.12.
 

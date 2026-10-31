@@ -418,7 +418,9 @@ class Converter:
                 self.set_param(f"extensions.H.hgatp_modes.Sv{n}x4", f"SV{n}X4_TRANSLATION")
                 self.set_param(f"extensions.H.vsatp_modes.Sv{n}", f"SV{n}_VSMODE_TRANSLATION")
 
-        self.set_param("extensions.Zawrs.nto.is_nop", "ZAWRS_NTO_IS_NOP")
+        # UDB's wrs.nto traps under mstatus.TW in S- and U-mode (with S) even when it is a no-op;
+        # Sail checks TW only when nto.is_nop is false
+        self.set_param("extensions.Zawrs.nto.is_nop", "ZAWRS_NTO_IS_NOP", lambda v: bool(v) and not self.has("S"))
         self.set_param("extensions.Zkr.sseed_read_only_zero", "SSEED_READ_ONLY_ZERO")
         self.set_param("extensions.Zkr.useed_read_only_zero", "USEED_READ_ONLY_ZERO")
         if self.has("S"):

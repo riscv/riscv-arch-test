@@ -408,6 +408,7 @@ DEFINE_STUB(ecall_stub, "zicsr", "ecall\n\tebreak")     // ecall, then ebreak in
 DEFINE_STUB(stub_illegal, "zicsr", ".word 0x00004073")
 DEFINE_STUB(stub_ebreak, "zicsr", "ebreak")
 DEFINE_STUB(stub_wfi, "zicsr", "wfi")
+DEFINE_STUB(stub_wrs_nto, "zalrsc, +zawrs", "lr.w t1, 0(a1)\n\twrs.nto\n\tsc.w t2, t1, 0(a1)")
 DEFINE_STUB(stub_lw_misaligned, "zicsr", "lw t1, 1(a1)")
 DEFINE_STUB(stub_sw_misaligned, "zicsr", "sw t1, 1(a1)")
 DEFINE_STUB(stub_jump_misaligned, "zicsr", "jalr zero, 2(a1)")
@@ -1860,12 +1861,15 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
     // longer limit.  wrs.nto, with a reservation held, is a no-op when it takes fewer than
     // NOP_CYCLES cycles more than an empty mcycle pair.  Neither is probed without a timer, since a
     // wait could last forever.
+    int zawrs_nop = -1;         // wrs.nto measured as a no-op in M-mode (1), stalling (0), or not measured
     {
         unsigned long ticks = watchdog_ticks < WAIT_TICKS ? watchdog_ticks : WAIT_TICKS, elapsed, cycles;
         if (timed_wait(false, ticks, &elapsed, &cycles))
             param_bool("WFI_FINITE", elapsed < ticks);
-        if (have("Zawrs") && timed_wait(true, ticks, &elapsed, &cycles) && cycles != ~0ul)
-            param_bool("ZAWRS_NTO_IS_NOP", cycles < NOP_CYCLES);
+        if (have("Zawrs") && timed_wait(true, ticks, &elapsed, &cycles) && cycles != ~0ul) {
+            zawrs_nop = cycles < NOP_CYCLES;
+            param_bool("ZAWRS_NTO_IS_NOP", zawrs_nop);
+        }
     }
 
     // Probes in U-, S- and VS-mode: PMP must let the lower modes run, the exceptions the probes
@@ -1881,6 +1885,15 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
         // illegal-instruction exception as one that does not let U-mode execute wfi (Sail does).
         if (has_u && has_s && run_in_mode(stub_wfi, 0, false, mstatus & ~(1ul << 21)) == CAUSE_USER_ECALL)
             param_bool("WFI_U_MODE", true);
+        // wrs.nto in U-mode with mstatus.TW set and a reservation held.  UDB has it trap there
+        // whatever ZAWRS_NTO_IS_NOP says, but Sail's nto.is_nop = true makes it retire without the
+        // TW check, so Sail can call it a no-op only for a hart that also completes it here
+        if (has_u && zawrs_nop >= 0) {
+            unsigned long c = run_in_mode(stub_wrs_nto, 0, false, mstatus | (1ul << 21));
+            PROBE("zalrsc", "sc.w t2, t1, 0(a1)");      // drop a reservation the trap left behind
+            if (c == CAUSE_USER_ECALL || c == CAUSE_ILLEGAL_INSTRUCTION)
+                sail_bool("extensions.Zawrs.nto.is_nop", zawrs_nop && c == CAUSE_USER_ECALL);
+        }
         if (has_s) {
             unsigned long stvec = stvec_rd();
             ecall_from("TRAP_ON_ECALL_FROM_S", 1, false, mstatus);

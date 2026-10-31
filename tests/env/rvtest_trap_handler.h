@@ -398,9 +398,9 @@
 .endm
 
 // Clear mstatus.MDT on an M-mode trap handler failure exit, which does not use mret. The
-// failure code and cleanup_epilogs make T-SBI ecalls, which are double traps while MDT is
-// still 1 from trap entry. Failure exits clear it only after the trap state has been
-// captured, so a passing trap never sees MDT changed.
+// failure code can make T-SBI ecalls (RVTEST_VECTOR enables mstatus.VS that way), which are
+// double traps while MDT is still 1 from trap entry. Failure exits clear it only after the
+// trap state has been captured, so a passing trap never sees MDT changed.
 .macro RVTEST_CLEAR_MDT TMP_REG
 #ifdef SMDBLTRP_SUPPORTED
   #if (UDB_MXLEN==64)
@@ -896,7 +896,7 @@
 // SECTION 11: DEFAULT INTERRUPT MACROS
 //
 // If the DUT does not define RVMODEL_SET/CLR_xxx_INT macros, these defaults
-// are used. The default action is to jump to cleanup_epilogs, which terminates
+// are used. The default action is to jump to rvtest_code_end, which terminates
 // the test. This ensures that if an unexpected interrupt fires for an
 // undefined interrupt type, the test fails cleanly rather than hanging.
 //
@@ -904,7 +904,18 @@
 // RVMODEL macros in their rvmodel_macros.h to actually set/clear the interrupt.
 //==============================================================================
 
-#define RVTEST_DFLT_INT_HNDLR      la T1, cleanup_epilogs; jr T1  // default: abort test on unexpected interrupt
+#define RVTEST_DFLT_INT_HNDLR      la T1, rvtest_code_end; jr T1  // default: abort test on unexpected interrupt
+
+// Trap handler version. The M-mode handler uses rvtest_code_end_mmode: with Smdbltrp,
+// mstatus.MDT=1 there and the ecall to switch to M-mode is a double trap.
+.macro RVTEST_DFLT_INT_HNDLR_MODE __MODE__
+  .ifc \__MODE__ , M
+        LA(     T1, rvtest_code_end_mmode)
+  .else
+        LA(     T1, rvtest_code_end)
+  .endif
+        jr      T1
+.endm
 
 // M-mode interrupt defaults
 #ifndef RVMODEL_SET_MSW_INT
@@ -1136,6 +1147,7 @@ endcopy_\__MODE__\()tramp:
 abort\__MODE__\()test:
         LA(     T6, rvtest_trap_prolog_error)
         SREG    T5, 0(T6)
+        LI(     T5, 0)                              // mark setup failure as not yet reported
         LA(     T2, exit_\__MODE__\()cleanup)        // load address of cleanup label
         jr      T2                                   // long jump to cleanup; x7 does not set ELP (Zicfilp)
 
@@ -1294,11 +1306,15 @@ rvtest_\__MODE__\()prolog_done:
   .endr
 //---------- End-of-test trampoline ----------
 // Reached for impossible/unhandled interrupt causes.
-// Long-jumps to rvtest_Xend which is the epilog cleanup entry.
+// Long-jumps to the failure summary entry, which prints the summary and runs the epilogs.
 
 rvtest_\__MODE__\()endtest:                      // impossible cause landed here
-        LA(     T2, rvtest_\__MODE__\()end)      // load epilog cleanup address (may be far away)
-        jr      T2                                // long jump to epilog cleanup; x7 does not set ELP (Zicfilp)
+.ifc \__MODE__ , M
+        LA(     T2, rvtest_fail_summary_mmode)    // M-mode is already in trap context
+.else
+        LA(     T2, rvtest_fail_summary)          // switch to M-mode before cleanup
+.endif
+        jr      T2                                // long jump to failure summary and cleanup
 
 //---------- Common Handler ----------
 // Entered via jal from per-cause stub. T6 has the stub's return address
@@ -1430,6 +1446,9 @@ tsbi_\__MODE__\()goto_mode:
         addi    T4, T4, 4                            // T4 = mepc + 4 (instruction after ecall)
         csrw    CSR_XEPC, T4                         // mepc = mepc + 4
         TSBI_RELOCATE_EPC \__MODE__                  // move between code region and its alias if needed
+        LA(     T4, rvtest_current_mode)
+        addi    T2, a0, -TSBI_GOTO_MMODE             // 0 for M-mode, nonzero for lower modes
+        SREG    T2, 0(T4)
 
         // Dispatch based on caller's a0 (still live in a0 from the ecall)
         li      T2, TSBI_GOTO_MMODE                  // T2 = 1
@@ -1893,11 +1912,11 @@ tsbi_\__MODE__\()instr_dispatch:
         bltu    T5, T4, 2f                        // middle CSR below the key: search the upper half
         mv      T2, T3                            // key below the middle CSR: hi = middle
         bltu    T1, T2, 1b
-        j       tsbi_instr_not_found              // range empty: CSR is not in the table
+        j       tsbi_\__MODE__\()instr_not_found  // range empty: CSR is not in the table
 2:
         addi    T1, T3, 32                        // lo = group after the middle
         bltu    T1, T2, 1b
-        j       tsbi_instr_not_found              // range empty: CSR is not in the table
+        j       tsbi_\__MODE__\()instr_not_found  // range empty: CSR is not in the table
 3:
         mv      T2, T3                            // T2 = first entry of the matching group
         addi    T1, T3, 32                        // T1 = end of the group
@@ -1910,7 +1929,7 @@ tsbi_\__MODE__\()instr_dispatch:
         beq     T3, a0, tsbi_\__MODE__\()instr_found
         addi    T2, T2, 8                         // skip instruction and ret
         bltu    T2, T1, 4b
-        j       tsbi_instr_not_found              // CSR is in the table, but not this access
+        j       tsbi_\__MODE__\()instr_not_found  // CSR is in the table, but not this access
 
         // Other instructions: search tsbi_instr_table in order
 tsbi_\__MODE__\()instr_other:
@@ -1922,7 +1941,7 @@ tsbi_\__MODE__\()instr_other:
           lwu     T3, 0(T2)                       // T3 = table instruction
         #endif
         beq     T3, a0, tsbi_\__MODE__\()instr_found
-        beqz    T3, tsbi_instr_not_found
+        beqz    T3, tsbi_\__MODE__\()instr_not_found
         addi    T2, T2, 8                          // skip instruction and ret
         j       5b
 tsbi_\__MODE__\()instr_found:
@@ -1935,8 +1954,18 @@ tsbi_\__MODE__\()instr_found:
         j       resto_\__MODE__\()rtn           // restore handler regs and xret
 .endif
 
+.ifc \__MODE__ , S
+tsbi_\__MODE__\()instr_not_found:
+        // The epilogs read M-mode CSRs: switch to M-mode first. a1 keeps the encoding.
+        mv      a1, a0
+        RVTEST_TSBI_GOTO_MMODE
+        mv      a0, a1
+        j       tsbi_instr_not_found
+.endif
+
 .ifc \__MODE__ , M
 
+tsbi_Minstr_not_found:
 tsbi_instr_not_found:
         // Requested instruction is not in the table: print the offending encoding and
         // terminate the simulation. Registers may be clobbered freely: this never returns.
@@ -1952,7 +1981,8 @@ tsbi_instr_not_found:
         call    rvmodel_io_write_str
         LA(a0, failstr)                         // RVCP-SUMMARY: TEST FAILED line so the harness classifies this run
         call    rvmodel_io_write_str
-        call    rvmodel_halt_fail
+        LA(     T1, rvtest_fail_epilogs_mmode)
+        jr      T1
 
 // Emit the 32-byte group for one CSR: csrr a0 / csrw a1 / csrs a1 / csrc a1, each followed by ret.
 // The groups must be in ascending CSR-address order for the binary search, so each use checks that
@@ -2859,7 +2889,7 @@ excpt_\__MODE__\()hndlr_tbl:
         CLR_INT_RETURN \__MODE__
 #else
 \__MODE__\()clr_Ssw_int:
-        RVTEST_DFLT_INT_HNDLR
+        RVTEST_DFLT_INT_HNDLR_MODE \__MODE__
 #endif
 
 #ifdef S_SUPPORTED
@@ -2893,9 +2923,9 @@ excpt_\__MODE__\()hndlr_tbl:
 2:      CLR_INT_RETURN \__MODE__
 #else
 \__MODE__\()clr_Stmr_int:
-        RVTEST_DFLT_INT_HNDLR
+        RVTEST_DFLT_INT_HNDLR_MODE \__MODE__
 \__MODE__\()clr_Sext_int:
-        RVTEST_DFLT_INT_HNDLR
+        RVTEST_DFLT_INT_HNDLR_MODE \__MODE__
 #endif
 
 #else
@@ -2905,7 +2935,7 @@ excpt_\__MODE__\()hndlr_tbl:
 \__MODE__\()clr_Mext_int:
 \__MODE__\()clr_Ssw_int:
 \__MODE__\()clr_Sext_int:
-        RVTEST_DFLT_INT_HNDLR
+        RVTEST_DFLT_INT_HNDLR_MODE \__MODE__
 
 \__MODE__\()clr_Stmr_int:                            // S-mode timer interrupt: STIP comes from stimecmp or
         la      T2, resto_\__MODE__\()rtn            //   an M-mode mip write, which the test clears;
@@ -2950,7 +2980,7 @@ excpt_\__MODE__\()hndlr_tbl:
 #ifdef RVTEST_SGEI_INTR_IMPL
 \__MODE__\()clr_Sgei_int:                            // supervisor guest external interrupt
   .ifc \__MODE__ , V
-        RVTEST_DFLT_INT_HNDLR
+        RVTEST_DFLT_INT_HNDLR_MODE \__MODE__
   .else
         CLR_INT_ENTER
         csrr    T3, CSR_HGEIP                        // T3 = pending guest external interrupts
@@ -2972,7 +3002,7 @@ excpt_\__MODE__\()hndlr_tbl:
   .endif
 #else
 \__MODE__\()clr_Sgei_int:                            // no guest interrupt files: hgeip is always 0
-        RVTEST_DFLT_INT_HNDLR
+        RVTEST_DFLT_INT_HNDLR_MODE \__MODE__
 #endif
 #endif
 
@@ -2994,13 +3024,17 @@ excpt_\__MODE__\()hndlr_tbl:
 \__MODE__\()trap_overflow:
   .ifc \__MODE__ , M
         RVTEST_CLEAR_MDT T4
-  .endif
+        j       trap_sig_overflow_mmode
+  .else
         j       trap_sig_overflow
+  .endif
 \__MODE__\()trap_abort:
   .ifc \__MODE__ , M
         RVTEST_CLEAR_MDT T4
-  .endif
+        j       abort_test_mmode
+  .else
         j       abort_test
+  .endif
 
 .option pop
 .endm                                                 // end of RVTEST_TRAP_HANDLER

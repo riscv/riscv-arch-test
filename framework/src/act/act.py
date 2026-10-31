@@ -161,6 +161,7 @@ def run_act(
                 dry_run,
                 enable_experimental_extensions,
                 exclude_sm,
+                max(1, jobs // len(config_files)),
             )
         )
 

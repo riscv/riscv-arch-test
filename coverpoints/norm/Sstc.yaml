@@ -4,14 +4,11 @@ normative_rule_definitions:
     coverpoint: ["Sstc_cg/{cp_supervisor_stce, cp_supervisor_tm}"]
   # This extension adds the STCE bit to the menvcfg and henvcfg CSRs.
   - name: stce_bit_exist
-    # henvcfg.STCE is covered by SstcH_vs_cg/cp_vs_stimecmp_accessible
     coverpoint:
       [
         "Sstc_cg/{cp_supervisor_stce, cp_user_stce}",
-        "SstcH_vs_cg/cp_vs_stimecmp_accessible",
+        "Sstc_H_cg/cp_vs_stimecmp_accessible",
       ]
-
-  # menvcfg_stce_exists and menvcfg_stce_rdonly0 are mapped in Sm.yaml (menvcfg walk).
 
   # The STCE bit enables stimecmp for S-mode when set to one.
   - name: menvcfg_stce_enable_op
@@ -27,21 +24,22 @@ normative_rule_definitions:
   # exception, STCE in henvcfg is read-only zero, and STIP in mip and sip reverts to its
   # defined behavior as if this extension is not implemented.
   - name: menvcfg_stce_zero_op
-    # cp_trigger_sti_sstc covers the STIP half with STCE = 0; henvcfg.STCE needs H (SstcH)
     coverpoint:
       [
         "Sstc_cg/{cp_supervisor_stce, cp_user_stce}",
         "Sstc_Sm_cg/cp_machine_stce",
+        "Sstc_H_cg/{cp_hs_vstimecmp_accessible, cp_vs_stimecmp_accessible, cp_vu_timecmp_inaccessible}",
+        "Sstc_H_cg/cp_vstip",
         "InterruptsSm_cg/cp_trigger_sti_sstc",
         "InterruptsSm_cg/cp_write_stip_sstc",
       ]
   # Further, if the H extension is implemented, then hip.VSTIP also reverts its defined
   # behavior as if this extension is not implemented.
   - name: menvcfg_stce_zero_vstip
-    # TODO: hip.VSTIP with menvcfg.STCE = 0 needs the hypervisor tests (SstcH)
     coverpoint:
       [
         "Sstc_Sm_cg/cp_machine_stce",
+        "Sstc_H_cg/cp_vstip",
         "InterruptsSm_cg/cp_trigger_sti_sstc",
         "InterruptsSm_cg/cp_write_stip_sstc",
       ]
@@ -50,15 +48,24 @@ normative_rule_definitions:
   # stimecmp or vstimecmp register while executing in a mode less privileged than M
   # will cause an illegal-instruction exception.
   - name: mcounteren_tm_clr
-    # U-mode accesses to stimecmp trap whatever TM is, so only S-mode exercises TM; vstimecmp needs SstcH
-    coverpoint: ["Sstc_cg/cp_supervisor_tm"]
+    # U-mode accesses to stimecmp trap whatever TM is, so Sstc_cg checks TM only in S-mode
+    coverpoint:
+      [
+        "Sstc_cg/cp_supervisor_tm",
+        "Sstc_H_cg/{cp_hs_vstimecmp_accessible, cp_vs_stimecmp_accessible, cp_vu_timecmp_inaccessible}",
+      ]
 
   # When this bit is set, access to the stimecmp or vstimecmp register is permitted
   # in S-mode if implemented, and access to the vstimecmp register (via stimecmp) is
   # permitted in VS-mode if implemented and not otherwise prevented by the TM bit in
   # hcounteren.
   - name: mcounteren_tm_set
-    coverpoint: ["Sstc_cg/cp_supervisor_tm"]
+    coverpoint:
+      [
+        "Sstc_cg/cp_supervisor_tm",
+        "Sstc_H_cg/cp_hs_vstimecmp_{accessible, accesses}",
+        "Sstc_H_cg/cp_vs_stimecmp_{accessible, accesses}",
+      ]
 
   # The stimecmp CSR is a 64-bit register and has 64-bit precision on all RV32 and
   # RV64 systems. In RV32 only, accesses to the stimecmp CSR access the low 32 bits,
@@ -72,13 +79,14 @@ normative_rule_definitions:
         "Sstc_cg/cp_supervisor_stce",
       ]
 
-  # mip_sip_stip_op and sip_stip_sie_stie are mapped in this file (InterruptsSm_cg).
+  # The next four rules are also mapped in Sm.yaml and S.yaml.
 
   # The Sstc extension adds the STCE (STimecmp Enable) bit to menvcfg CSR.
   - name: menvcfg_stce_exists
     coverpoint:
       [
         "Sstc_Sm_cg/cp_machine_stce",
+        "Sstc_cg/cp_supervisor_stce",
         "InterruptsSm_cg/cp_trigger_sti_sstc",
         "InterruptsSm_cg/cp_write_stip_sstc",
       ]
@@ -100,6 +108,7 @@ normative_rule_definitions:
   - name: mip_sip_stip_op
     coverpoint:
       [
+        "InterruptsS_cg/cp_trigger_sti_sstc",
         "InterruptsSm_cg/cp_trigger_sti_sstc",
         "InterruptsSm_cg/cp_write_stip_sstc",
       ]
@@ -113,6 +122,98 @@ normative_rule_definitions:
   - name: sip_stip_sie_stie
     coverpoint:
       [
+        "InterruptsS_cg/cp_trigger_sti_sstc",
         "InterruptsSm_cg/cp_trigger_sti_sstc",
         "InterruptsSm_cg/cp_write_stip_sstc",
       ]
+
+  # The rules below need H.
+
+  # The STCE bit enables vstimecmp for VS-mode when set to one.
+  - name: henvcfg_stce_op
+    coverpoint:
+      ["Sstc_H_cg/cp_vs_stimecmp_{accessible, accesses}", "Sstc_H_cg/cp_vstip"]
+  # When STCE bit is henvcfg is zero, an attempt to access stimecmp (really vstimecmp)
+  # when V=1 raises a virtual-instruction exception, and VSTIP in hip reverts to its
+  # defined behavior as if this extension is not implemented.
+  - name: henvcfg_stce_zero_op
+    coverpoint: ["Sstc_H_cg/cp_vs_stimecmp_accessible", "Sstc_H_cg/cp_vstip"]
+  # In addition, when the TM bit in the hcounteren register is clear, attempts to access
+  # the vstimecmp register (via stimecmp) while executing in VS-mode will cause a
+  # virtual-instruction exception if the same bit in mcounteren is set. When this bit and
+  # the same bit in mcounteren are both set, access to the vstimecmp register (if
+  # implemented) is permitted in VS-mode.
+  - name: hcounteren_acc
+    coverpoint: ["Sstc_H_cg/cp_vs_stimecmp_{accessible, accesses}"]
+
+  # When V=1, an attempt to read or write a VS CSR directly by its own separate CSR
+  # address causes a virtual-instruction exception.
+  - name: H_vscsrs_acc_vs
+    coverpoint: ["Sstc_H_cg/cp_vs_vstimecmp_inaccessible"]
+  # in VS-mode or VU-mode, attempts to access an implemented non-high-half hypervisor CSR
+  # or VS CSR when the same access (read/write) would be allowed in HS-mode, assuming
+  # mstatus.TVM=0;
+  - name: H_virtinst_vu_vs_nonhigh_allowedhs_tvm0
+    coverpoint:
+      ["Sstc_H_cg/{cp_vs_vstimecmp_inaccessible, cp_vu_timecmp_inaccessible}"]
+  # in VS-mode or VU-mode, if XLEN=32, attempts to access an implemented high-half
+  # hypervisor CSR or high-half VS CSR when the same access (read/write) to the CSR's
+  # low-half partner would be allowed in HS-mode, assuming mstatus.TVM=0;
+  - name: H_virtinst_vu_vs32_high_allowedhs_tvm0
+    coverpoint:
+      ["Sstc_H_cg/{cp_vs_vstimecmp_inaccessible, cp_vu_timecmp_inaccessible}"]
+
+  # in VU-mode, attempts to access an implemented non-high-half supervisor CSR when the
+  # same access (read/write) would be allowed in HS-mode, assuming mstatus.TVM=0;
+  - name: H_virtinst_vu_nonhigh_supervisor_allowedhs_tvm0
+    coverpoint: ["Sstc_H_cg/cp_vu_timecmp_inaccessible"]
+  # in VU-mode, if XLEN=32, attempts to access an implemented high-half supervisor CSR
+  # when the same access to the CSR's low-half partner would be allowed in HS-mode,
+  # assuming mstatus.TVM=0;
+  - name: H_virtinst_vu32_high_supervisor_allowedhs_tvm0
+    coverpoint: ["Sstc_H_cg/cp_vu_timecmp_inaccessible"]
+
+  # U-mode accesses to stimecmp and vstimecmp raise illegal instruction
+  - names: [H_vscsrs_acc_u]
+    coverpoint: ["Sstc_H_cg/cp_u_timecmp_inaccessible"]
+
+  # The vstimecmp interrupt is taken under the usual enable and delegation rules
+  - names: [hip_vstip_enable, hideleg_op]
+    coverpoint:
+      [
+        "InterruptsS_cg/{cp_trigger_vsti_sstc, cp_trigger_vsti_sstc_vs, cp_trigger_vsti_sstc_tsbi}",
+        "InterruptsSm_cg/cp_trigger_vsti_sstc",
+      ]
+
+  # hip.VSTIP is hvip.VSTIP OR the vstimecmp comparison, which counts only when menvcfg.STCE and henvcfg.STCE are set
+  - names: [hip_vstip_defined_v0]
+    coverpoint: ["InterruptsS_cg/cp_trigger_vsti_sstc", "Sstc_H_cg/cp_vstip"]
+  - names: [hip_vstip_acc]
+    coverpoint: ["Sstc_H_cg/cp_vstip"]
+
+  # VSTIP is set while (time + htimedelta) mod 2^64 >= vstimecmp, unsigned
+  - names:
+      [
+        hip_vstip_op,
+        hip_vstip_vstimecmp_op,
+        hip_vstip_clear,
+        htimedelta_sz_acc_op,
+        htimedeltah_sz_acc_op,
+      ]
+    coverpoint: ["Sstc_H_cg/cp_htimedelta"]
+
+  # vstimecmp is a 64-bit register, with vstimecmph holding the upper half on RV32
+  - names: [vstimecmp_exist, vstimecmp_sz, vstimecmp_acc]
+    coverpoint:
+      [
+        "Sstc_H_cg/cp_hs_vstimecmp_{accessible, accesses}",
+        "Sstc_HSm_cg/cp_m_vstimecmp_{accessible, accesses}",
+      ]
+
+  # The Sstc extension adds the STCE bit to henvcfg
+  - names: [henvcfg_stce]
+    coverpoint: ["Sstc_H_cg/cp_vs_stimecmp_accessible"]
+
+  # When the Sstc extension is not implemented, henvcfg.STCE is read-only zero
+  - names: [henvcfg_stce_rdonly0]
+    coverpoint: ["Not tested: needs an H implementation without Sstc"]

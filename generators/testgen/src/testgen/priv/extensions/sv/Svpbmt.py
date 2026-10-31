@@ -13,7 +13,7 @@ from testgen.asm.helpers import gated, write_sigupd
 from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.sv.access import Crosses, add_rwx_test, cross_names
+from testgen.priv.extensions.sv.access import Crosses, add_rwx_test, cross_names, mode_switch
 from testgen.priv.extensions.sv.generate import SvRegs, begin_sv_test, end_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import (
     SV39,
@@ -35,6 +35,19 @@ def _crosses(prefix: str, mode: str) -> Crosses:
     return Crosses("Svpbmt_cg", f"{prefix}_write_{m}", f"{prefix}_read_{m}", f"{prefix}_exec_{m}")
 
 
+def _envcfg_setup(regs: SvRegs, mode: str, enables: tuple[str, ...] = ()) -> tuple[str, ...]:
+    """Set menvcfg.PBMTE and the menvcfg CBO ``enables`` (CBCFE, CBZE), and the senvcfg ones for U-mode."""
+    setup = [
+        f"LI(x{regs.scratch}, {' | '.join(['MENVCFG_PBMTE', *(f'MENVCFG_{e}' for e in enables)])})",
+        tsbi_call(f"csrs menvcfg, x{regs.scratch}"),
+    ]
+    if enables and mode == "Umode":
+        setup.extend(
+            [f"LI(x{regs.scratch}, {' | '.join(f'SENVCFG_{e}' for e in enables)})", f"csrs senvcfg, x{regs.scratch}"]
+        )
+    return tuple(setup)
+
+
 def _begin_test(test_data: TestData, regs: SvRegs, sv: SvMode, mode: str, topic: str, banner: str) -> TestChunk:
     return begin_sv_test(
         test_data,
@@ -43,7 +56,7 @@ def _begin_test(test_data: TestData, regs: SvRegs, sv: SvMode, mode: str, topic:
         mode,
         f"{sv.name}_{topic}_{mode}",
         coverpoint=banner,
-        setup_asm=(f"LI(x{regs.scratch}, MENVCFG_PBMTE)", tsbi_call(f"csrs menvcfg, x{regs.scratch}")),
+        setup_asm=_envcfg_setup(regs, mode),
     )
 
 
@@ -150,9 +163,10 @@ def _make_nc_io_alias_tests(test_data: TestData, sv: SvMode, mode: str) -> TestC
         f"{sv.name}_Svpbmt_alias_{mode}",
         coverpoint=coverpoint,
         va_defs=(("va_nc", f"{sv.data_va} + 0x1000"), ("va_io", f"{sv.data_va} + 0x2000")),
-        setup_asm=(f"LI(x{regs.scratch}, MENVCFG_PBMTE)", tsbi_call(f"csrs menvcfg, x{regs.scratch}")),
+        setup_asm=_envcfg_setup(regs, mode),
     )
     umode = mode == "Umode"
+    enter, leave = mode_switch(mode, "Smode")
     (nc_bits, _, _), (io_bits, _, _) = _ALIAS_PBMT
     chunk.code.extend(
         [
@@ -177,12 +191,12 @@ def _make_nc_io_alias_tests(test_data: TestData, sv: SvMode, mode: str) -> TestC
                 "sfence.vma",
                 f"LI({addr}, {store_va} + 0x800)",
                 f"LI({other}, {load_va} + 0x800)",
-                *([] if mode == "Smode" else ["RVTEST_TSBI_GOTO_UMODE"]),
+                *enter,
                 f"addi {value}, {value}, 16",
                 f"sd {value}, 0({addr})",
                 label,
                 f"ld {load}, 0({other})",
-                *([] if mode == "Smode" else ["RVTEST_TSBI_GOTO_SMODE"]),
+                *leave,
                 write_sigupd(regs.load, test_data, label=label.removesuffix(":")),
                 "",
             ]
@@ -198,19 +212,6 @@ def _make_svpbmt(test_data: TestData, sv: SvMode) -> list[TestChunk]:
         # Aliasing does not depend on the translation mode, so Sv39, which Svpbmt requires, suffices.
         tests.extend(_make_nc_io_alias_tests(test_data, sv, mode) for mode in ("Smode", "Umode"))
     return tests
-
-
-def _cbo_setup(regs: SvRegs, mode: str, enables: tuple[str, ...]) -> tuple[str, ...]:
-    """Set menvcfg.PBMTE and the menvcfg CBO ``enables`` (CBCFE, CBZE), and the senvcfg ones for U-mode."""
-    setup = [
-        f"LI(x{regs.scratch}, MENVCFG_PBMTE | {' | '.join(f'MENVCFG_{e}' for e in enables)})",
-        tsbi_call(f"csrs menvcfg, x{regs.scratch}"),
-    ]
-    if mode == "Umode":
-        setup.extend(
-            [f"LI(x{regs.scratch}, {' | '.join(f'SENVCFG_{e}' for e in enables)})", f"csrs senvcfg, x{regs.scratch}"]
-        )
-    return tuple(setup)
 
 
 def _make_zicbom_tests(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
@@ -242,9 +243,10 @@ def _make_zicbom_tests(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
         f"Zicbom_{sv.name}_{mode}",
         coverpoint=coverpoint,
         va_defs=(("va_data", sv.data_va), ("va_alias", f"{sv.data_va} + 0x1000")),
-        setup_asm=_cbo_setup(regs, mode, ("CBCFE",)),
+        setup_asm=_envcfg_setup(regs, mode, ("CBCFE",)),
     )
     umode = mode == "Umode"
+    enter, leave = mode_switch(mode, "Smode")
     value, addr, load = (f"x{reg}" for reg in (regs.value, regs.addr, regs.load))
     chunk.code.extend(
         [
@@ -291,9 +293,9 @@ def _make_zicbom_tests(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                 "sfence.vma",
                 f"LI({addr}, va_data + 0x800)",
                 f"LI({alias}, va_alias + 0x800)",
-                *([] if mode == "Smode" else ["RVTEST_TSBI_GOTO_UMODE"]),
+                *enter,
                 *body,
-                *([] if mode == "Smode" else ["RVTEST_TSBI_GOTO_SMODE"]),
+                *leave,
                 write_sigupd(regs.load, test_data, label=label.removesuffix(":")),
                 "",
             ]
@@ -328,9 +330,10 @@ def _make_zicboz_tests(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
         mode,
         f"Zicboz_{sv.name}_{mode}",
         coverpoint=coverpoint,
-        setup_asm=_cbo_setup(regs, mode, ("CBZE",)),
+        setup_asm=_envcfg_setup(regs, mode, ("CBZE",)),
     )
     umode = mode == "Umode"
+    enter, leave = mode_switch(mode, "Smode")
     value, addr, load, result, scratch = (
         f"x{reg}" for reg in (regs.value, regs.addr, regs.load, regs.result, regs.scratch)
     )
@@ -361,7 +364,7 @@ def _make_zicboz_tests(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                 *create_page_mapping(sv, leaf_level=0, leaf_flags=PteFlags(user=umode, extra=(bits,))),
                 "sfence.vma",
                 f"LI({addr}, va_data + 0x400)",
-                *([] if mode == "Smode" else ["RVTEST_TSBI_GOTO_UMODE"]),
+                *enter,
                 f"addi {value}, {value}, 16",
                 "// Fill the block and its neighbors, then read a neighbor over the bus",
                 *fill,
@@ -376,7 +379,7 @@ def _make_zicboz_tests(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                 f"cbo.zero ({addr})",
                 f"sd {value}, 8({addr})  // Store right after cbo.zero",
                 f"ld {load}, 8({addr})",
-                *([] if mode == "Smode" else ["RVTEST_TSBI_GOTO_SMODE"]),
+                *leave,
                 write_sigupd(regs.result, test_data, label=zero.removesuffix(":")),
                 write_sigupd(regs.load, test_data, label=store.removesuffix(":")),
                 "",

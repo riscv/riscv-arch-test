@@ -30,6 +30,7 @@ from testgen.priv.extensions.sv.page_tables import (
 )
 from testgen.priv.extensions.sv.SvH import (
     BOOT,
+    CBO_OPS,
     G_LEAF,
     G_NO_AD,
     G_NO_D,
@@ -90,6 +91,41 @@ IMPLICIT_CASES: tuple[ImplicitCase, ...] = (
 HLV_IMPLICIT_CASES: tuple[HlvImplicitCase, ...] = (
     ("table_readonly", 1, 1, VS_NO_AD, perm_flags("r", True), ("hlv", "hlvx", "hsv")),
 )
+
+
+def _cbo_chunk(test_data: TestData, g: SvMode, vs: SvMode, family: str) -> TestChunk:
+    """CBOs with ADUE = 1 through a VS-stage leaf (hgatp Bare) and a G-stage leaf (vsatp Bare) with A = D = 0.
+
+    A CBO sets A in each stage.  cbo.zero also sets D, because it writes; a cache-block management instruction never
+    checks or sets D (cmo.adoc).  Each leaf is read back.
+    """
+    ops = CBO_OPS[family]
+    chunk = begin_chunk(
+        test_data,
+        f"H_{g.name}_{family}_adue",
+        "cp_vsatp_adue_cbo, cp_hgatp_adue_cbo",
+        f"In VS-mode with menvcfg.ADUE = henvcfg.ADUE = 1, execute {', '.join(op.replace('_', '.') for op in ops)}\n"
+        "through a VS-stage leaf (hgatp = Bare) and a G-stage leaf (vsatp = Bare) with A = D = 0, and read each\n"
+        f"leaf back: A is set{', and D too' if family == 'zicboz' else ', and D stays clear'}",
+        stages=(g, vs),
+    )
+    reg = test_data.int_regs.get_register()
+    enables = [f"LI(x{reg}, HENVCFG_CBIE | HENVCFG_CBCFE | HENVCFG_CBZE)", f"csrs henvcfg, x{reg}"]
+    code = [
+        *enables,
+        *guest_chunk_setup(test_data, None, vs, "VS"),
+        *vs_ad_accesses(test_data, vs, ((1, 1, VS_NO_AD, ops),), CG, "cp_vsatp_adue_cbo"),
+        *guest_chunk_teardown(test_data, vs.xlen),
+        *enables,
+        *guest_chunk_setup(test_data, g, None, "VS"),
+        *g_ad_accesses(test_data, g, ((1, G_NO_AD, ops),), CG, "cp_hgatp_adue_cbo"),
+        *guest_chunk_teardown(test_data, g.xlen),
+        f"LI(x{reg}, HENVCFG_CBIE | HENVCFG_CBCFE | HENVCFG_CBZE)",
+        f"csrc henvcfg, x{reg}",
+    ]
+    test_data.int_regs.return_register(reg)
+    chunk.code.extend(code)
+    return test_data.end_test_chunk()
 
 
 def _vs_chunk(test_data: TestData, vs: SvMode, henvcfg: bool) -> TestChunk:
@@ -206,3 +242,23 @@ def make_svadu_h_g_sv57x4(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator("Svadu", required_extensions=["H", "Svadu"], extra_defines=BOOT, params=SV57_PARAMS)
 def make_svadu_h_two_stage_sv57(test_data: TestData) -> list[TestChunk]:
     return [_two_stage_chunk(test_data, SV57X4, VS_SV57)]
+
+
+@add_priv_test_generator("Svadu", required_extensions=["H", "Svadu", "Zicbom"], extra_defines=BOOT, params=SV32_PARAMS)
+def make_svadu_h_sv32_zicbom(test_data: TestData) -> list[TestChunk]:
+    return [_cbo_chunk(test_data, SV32X4, VS_SV32, "zicbom")]
+
+
+@add_priv_test_generator("Svadu", required_extensions=["H", "Svadu", "Zicboz"], extra_defines=BOOT, params=SV32_PARAMS)
+def make_svadu_h_sv32_zicboz(test_data: TestData) -> list[TestChunk]:
+    return [_cbo_chunk(test_data, SV32X4, VS_SV32, "zicboz")]
+
+
+@add_priv_test_generator("Svadu", required_extensions=["H", "Svadu", "Zicbom"], extra_defines=BOOT, params=SV39_PARAMS)
+def make_svadu_h_sv39_zicbom(test_data: TestData) -> list[TestChunk]:
+    return [_cbo_chunk(test_data, SV39X4, VS_SV39, "zicbom")]
+
+
+@add_priv_test_generator("Svadu", required_extensions=["H", "Svadu", "Zicboz"], extra_defines=BOOT, params=SV39_PARAMS)
+def make_svadu_h_sv39_zicboz(test_data: TestData) -> list[TestChunk]:
+    return [_cbo_chunk(test_data, SV39X4, VS_SV39, "zicboz")]

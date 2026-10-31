@@ -11,6 +11,26 @@ normative_rule_definitions:
         "Svadu_cg/{Abit_unset_read_s, Dbit_unset_write_s}",
       ]
 
+  # During address translation, a cache-block management instruction checks the accessed bit and may either
+  # raise an exception or set the bit as required; it does not check the dirty bit and neither raises an
+  # exception nor sets the bit.  With ADUE = 1, the hardware sets A, and the tests read the leaf back to check
+  # that A is set and D stays clear.
+  - name: cbm_unperm_translate
+    coverpoint:
+      [
+        "Svadu_cg/{Abit_unset_cbm_s,Dbit_unset_cbm_s}",
+        "Svadu_H_cg/{cp_vsatp_adue_cbo,cp_hgatp_adue_cbo}",
+      ]
+
+  # During address translation, a cache-block zero instruction checks the accessed and dirty bits and may either
+  # raise an exception or set the bits as required.  With ADUE = 1, the hardware sets them.
+  - name: cbz_unperm_translate
+    coverpoint:
+      [
+        "Svadu_cg/{Abit_unset_cbz_s,Dbit_unset_cbz_s}",
+        "Svadu_H_cg/{cp_vsatp_adue_cbo,cp_hgatp_adue_cbo}",
+      ]
+
   # If the hypervisor extension is additionally implemented, the henvcfg.ADUE field is
   # also writable.
   - name: Svadu_hypervisor_adue_writable

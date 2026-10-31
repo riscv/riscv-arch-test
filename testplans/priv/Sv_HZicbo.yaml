@@ -101,6 +101,23 @@ coverpoints:
       Otherwise henvcfg.CBZE = 0, or senvcfg.CBZE = 0 in VU-mode: virtual-instruction exception.
       Otherwise cbo.zero zeroes the word.
     bins: "VS × cbo.zero × 2 menvcfg × 2 henvcfg = 4; VU × cbo.zero × 2 menvcfg × 2 henvcfg × 2 senvcfg = 8"
+  - heading: CBO address inside a cache block, and htinst
+  - name: cp_offset
+    goal: Verify that a CBO at an address inside its cache block takes no address-misaligned exception and that a fault writes rs1, not the block's address, to stval.
+    description: |-
+      Zicbom and Zicboz.  In VS-mode and VU-mode, the CBOs at 3 bytes into the cache block of the test data: through a valid VS-stage kilopage leaf; through a VS-stage leaf with V = 0; through a VS-stage leaf at a guest physical address that the G-stage does not map; and, through a VS-stage identity superpage, at a G-stage leaf with V = 0 and at a G-stage leaf that maps RVMODEL_ACCESS_FAULT_ADDRESS (only when it is defined).
+      htval holds the guest physical address shifted right by 2.  The ISA manual does not say whether that is the address of rs1 or of the cache block, so the offset stays within the two bits that htval drops.
+    expectation: |-
+      Valid leaf: no exception, and cbo.zero zeroes the block.
+      Otherwise a store page fault, store guest-page fault or store access fault with stval = rs1 (cmo.adoc fault_excep_csr), and for a guest-page fault htval = the guest physical address >> 2.
+    bins: "{VS, VU} × CBO × rs1[1:0] = 3 × {no fault, store page fault, store guest-page fault, store access fault}, with vsatp and hgatp paged"
+  - name: cp_cbo_htinst
+    goal: Verify that a CBO fault taken in HS-mode writes the standard transformation of the CBO, or zero, to htinst.
+    description: |-
+      The CBO faults of cp_vs_pte, cp_vs_gpa, cp_g_pte, cp_g_pa and cp_offset (VS-mode and VU-mode, hedeleg clear, so every trap is taken in HS-mode).
+      The trap handler records htinst and accepts the reference model's value or zero.
+    expectation: htinst holds the CBO with rs1 cleared (cmo.adoc h_trans_cache), or zero.
+    bins: "{VS, VU} × CBO × {store page fault, store guest-page fault, store access fault} × transformed CBO in htinst"
   - heading: Not tested
   - goal: cbo.inval with every CBIE field 11 performs an invalidate
     status: Not tested

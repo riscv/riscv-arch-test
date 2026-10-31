@@ -144,9 +144,35 @@ covergroup Svadu_cg with function sample(ins_t ins);
     fault_no_update_read_s:  cross PTE_fault_reason_d, Svadu_enabled, read_acc, load_page_fault, priv_mode_s;
     fault_no_update_write_s: cross PTE_fault_reason_d, Svadu_enabled, write_acc, store_page_fault, priv_mode_s;
 
+    // A CBO sets A.  cbo.zero also sets D, because it writes; a cache-block management instruction never checks or
+    // sets D (cmo.adoc).  The tests read each leaf back.  The tests run at every level, but the crosses leave out
+    // PageType_d, which Sail's trace reports as a kilopage for every access.
+    `ifdef ZICBOM_SUPPORTED
+        cbm: coverpoint ins.current.insn {
+            wildcard bins clean = {CBO_CLEAN};
+            wildcard bins flush = {CBO_FLUSH};
+            wildcard bins inval = {CBO_INVAL};
+        }
+        Abit_unset_cbm_s: cross PTE_Abit_unset_s_d, Svadu_enabled, cbm, priv_mode_s;
+        Dbit_unset_cbm_s: cross PTE_Dbit_unset_s_d, Svadu_enabled, cbm, priv_mode_s;
+    `endif
+    `ifdef ZICBOZ_SUPPORTED
+        cbz: coverpoint ins.current.insn {
+            wildcard bins zero = {CBO_ZERO};
+        }
+        Abit_unset_cbz_s: cross PTE_Abit_unset_s_d, Svadu_enabled, cbz, priv_mode_s;
+        Dbit_unset_cbz_s: cross PTE_Dbit_unset_s_d, Svadu_enabled, cbz, priv_mode_s;
+    `endif
+
 endgroup
 
 `ifdef H_SUPPORTED
+`ifdef ZICBOM_SUPPORTED
+    `define SVADU_H_CBO
+`elsif ZICBOZ_SUPPORTED
+    `define SVADU_H_CBO
+`endif
+
 // Svadu in the VS-stage and G-stage: menvcfg.ADUE selects Svade or Svadu for the G-stage, and henvcfg.ADUE for the
 // VS-stage.  The ADUE = 0 crosses repeat Sv_H_cg's Svade crosses.
 covergroup Svadu_H_cg with function sample(ins_t ins);
@@ -274,6 +300,44 @@ covergroup Svadu_H_cg with function sample(ins_t ins);
     cp_hlv_implicit  : cross priv_mode_hs, hlv, stage_modes, htinst_write;
     // henvcfg.ADUE is read-only zero while menvcfg.ADUE = 0
     cp_henvcfg_menvcfg : cross priv_mode_hs, csrrs, henvcfg, menvcfg_adue;
+
+    // CBOs with ADUE = 1 through leaves with A = D = 0: A is set in each stage, and D too for cbo.zero; a
+    // cache-block management instruction never checks or sets D (cmo.adoc).  The tests read each leaf back.
+    `ifdef SVADU_H_CBO
+        cbo : coverpoint ins.current.insn {
+            `ifdef ZICBOM_SUPPORTED
+                wildcard bins clean = {CBO_CLEAN};
+                wildcard bins flush = {CBO_FLUSH};
+                wildcard bins inval = {CBO_INVAL};
+            `endif
+            `ifdef ZICBOZ_SUPPORTED
+                wildcard bins zero = {CBO_ZERO};
+            `endif
+        }
+        vsatp_paged : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
+            bins paged = {[1:15]};
+        }
+        hgatp_paged : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode") {
+            bins paged = {[1:15]};
+        }
+        `ifdef UDB_MXLEN_64
+            menvcfg_adue_on : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "adue") {
+                bins on = {1};
+            }
+            henvcfg_adue_on : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "adue") {
+                bins on = {1};
+            }
+        `else
+            menvcfg_adue_on : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfgh", "adue") {
+                bins on = {1};
+            }
+            henvcfg_adue_on : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfgh", "adue") {
+                bins on = {1};
+            }
+        `endif
+        cp_vsatp_adue_cbo : cross priv_mode_vs, cbo, vsatp_paged, hgatp_bare, menvcfg_adue_on, henvcfg_adue_on;
+        cp_hgatp_adue_cbo : cross priv_mode_vs, cbo, vsatp_bare, hgatp_paged, menvcfg_adue_on;
+    `endif
 endgroup
 `endif // H_SUPPORTED
 

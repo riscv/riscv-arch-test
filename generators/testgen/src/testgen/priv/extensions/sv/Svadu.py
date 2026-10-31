@@ -176,6 +176,50 @@ def _make_svadu_mode(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
     return end_sv_test(test_data, regs)
 
 
+_CBOS = {"zicbom": ("cbo.clean", "cbo.flush", "cbo.inval"), "zicboz": ("cbo.zero",)}
+
+
+def _make_cbo_adue(test_data: TestData, sv: SvMode, family: str) -> TestChunk:
+    """CBOs in S-mode with menvcfg.ADUE = 1 through a leaf with A = D = 0 and one with only D = 0, at each level.
+
+    A CBO sets A.  cbo.zero also sets D, because it writes; a cache-block management instruction never checks or sets
+    D (cmo.adoc).  Each CBO gets a fresh leaf, which is read back after it.
+    """
+    regs = SvRegs.allocate(test_data)
+    kind = "cbm" if family == "zicbom" else "cbz"
+    chunk = begin_sv_test(
+        test_data,
+        regs,
+        sv,
+        "Smode",
+        f"{sv.name}_Svadu_{family}",
+        coverpoint=f"Abit_unset_{kind}_s, Dbit_unset_{kind}_s",
+        setup_asm=_enable_adue(sv, regs),
+    )
+    load = "lw" if sv.xlen == 32 else "ld"
+    for level in sv.levels_desc:
+        for accessed, coverpoint in ((False, f"Abit_unset_{kind}_s"), (True, f"Dbit_unset_{kind}_s")):
+            for op in _CBOS[family]:
+                expected = "A = 1, D = " + ("1" if family == "zicboz" else "0")
+                name = f"l{level}_a{int(accessed)}_d0_{op.replace('.', '_')}"
+                chunk.code.extend(
+                    [
+                        f"// {op} at level {level} with A = {int(accessed)}, D = 0: expected {expected}",
+                        *create_page_mapping(sv, leaf_level=level, leaf_flags=PteFlags(accessed=accessed, dirty=False)),
+                        "sfence.vma",
+                        *virtual_address(sv, "va_data", level, destination=regs.addr, scratch=regs.scratch),
+                        test_data.add_testcase(name, coverpoint, "Svadu_cg"),
+                        f"{op} (x{regs.addr})",
+                        f"LA(x{regs.scratch}, {sv.pte_address(level, sv.data_va)})",
+                        f"{load} x{regs.result}, 0(x{regs.scratch})",
+                        write_sigupd(regs.result, test_data),
+                        "",
+                    ]
+                )
+    chunk.raw_data.extend(sv_data(sv, regs))
+    return end_sv_test(test_data, regs)
+
+
 class _FaultCase(NamedTuple):
     description: str
     level: int
@@ -319,3 +363,83 @@ def make_svadu_sv48(test_data: TestData) -> list[TestChunk]:
 )
 def make_svadu_sv57(test_data: TestData) -> list[TestChunk]:
     return _make_svadu(test_data, SV57)
+
+
+@add_priv_test_generator(
+    "Svadu",
+    required_extensions=["Sv32", "Svadu", "Zicbom"],
+    march_extensions=["Svadu", "Zicbom"],
+    extra_defines=["#define BOOT_TO_SMODE"],
+)
+def make_svadu_sv32_zicbom(test_data: TestData) -> list[TestChunk]:
+    return [_make_cbo_adue(test_data, SV32, "zicbom")]
+
+
+@add_priv_test_generator(
+    "Svadu",
+    required_extensions=["Sv32", "Svadu", "Zicboz"],
+    march_extensions=["Svadu", "Zicboz"],
+    extra_defines=["#define BOOT_TO_SMODE"],
+)
+def make_svadu_sv32_zicboz(test_data: TestData) -> list[TestChunk]:
+    return [_make_cbo_adue(test_data, SV32, "zicboz")]
+
+
+@add_priv_test_generator(
+    "Svadu",
+    required_extensions=["Sv39", "Svadu", "Zicbom"],
+    march_extensions=["Svadu", "Zicbom"],
+    extra_defines=["#define BOOT_TO_SMODE"],
+)
+def make_svadu_sv39_zicbom(test_data: TestData) -> list[TestChunk]:
+    return [_make_cbo_adue(test_data, SV39, "zicbom")]
+
+
+@add_priv_test_generator(
+    "Svadu",
+    required_extensions=["Sv39", "Svadu", "Zicboz"],
+    march_extensions=["Svadu", "Zicboz"],
+    extra_defines=["#define BOOT_TO_SMODE"],
+)
+def make_svadu_sv39_zicboz(test_data: TestData) -> list[TestChunk]:
+    return [_make_cbo_adue(test_data, SV39, "zicboz")]
+
+
+@add_priv_test_generator(
+    "Svadu",
+    required_extensions=["Sv48", "Svadu", "Zicbom"],
+    march_extensions=["Svadu", "Zicbom"],
+    extra_defines=["#define BOOT_TO_SMODE"],
+)
+def make_svadu_sv48_zicbom(test_data: TestData) -> list[TestChunk]:
+    return [_make_cbo_adue(test_data, SV48, "zicbom")]
+
+
+@add_priv_test_generator(
+    "Svadu",
+    required_extensions=["Sv48", "Svadu", "Zicboz"],
+    march_extensions=["Svadu", "Zicboz"],
+    extra_defines=["#define BOOT_TO_SMODE"],
+)
+def make_svadu_sv48_zicboz(test_data: TestData) -> list[TestChunk]:
+    return [_make_cbo_adue(test_data, SV48, "zicboz")]
+
+
+@add_priv_test_generator(
+    "Svadu",
+    required_extensions=["Sv57", "Svadu", "Zicbom"],
+    march_extensions=["Svadu", "Zicbom"],
+    extra_defines=["#define BOOT_TO_SMODE"],
+)
+def make_svadu_sv57_zicbom(test_data: TestData) -> list[TestChunk]:
+    return [_make_cbo_adue(test_data, SV57, "zicbom")]
+
+
+@add_priv_test_generator(
+    "Svadu",
+    required_extensions=["Sv57", "Svadu", "Zicboz"],
+    march_extensions=["Svadu", "Zicboz"],
+    extra_defines=["#define BOOT_TO_SMODE"],
+)
+def make_svadu_sv57_zicboz(test_data: TestData) -> list[TestChunk]:
+    return [_make_cbo_adue(test_data, SV57, "zicboz")]

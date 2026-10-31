@@ -596,8 +596,9 @@ normative_rule_definitions:
   # and protection mechanisms of the current privilege mode. When csr::[mprv]=1, load
   # and store memory addresses are translated and protected, and endianness is applied,
   # as though the current privilege mode were set to csr::[mpp].
+  # CBOs are translated and protected like stores (cmo.adoc), so they follow MPRV too.
   - name: mstatus_mprv_ldst_op
-    coverpoint: ["Sv_Sm_mstatus_mprv_cg/cp_mprv_{load,store}"]
+    coverpoint: ["Sv_Sm_mstatus_mprv_cg/cp_mprv_{load,store,cbo,cbo_m}"]
 
   # Instruction address-translation and protection are unaffected by the setting of
   # csr::[mprv].
@@ -646,13 +647,26 @@ normative_rule_definitions:
   # When a page-fault, guest-page-fault, or access-fault exception is taken, the
   # relevant *tval CSR is written with the faulting effective address (i.e. the value of
   # rs1).
-  # rs1 is block aligned in these tests, so a DUT that reports the aligned address also passes.
+  # cp_offset puts rs1 3 bytes into its cache block, so a DUT that reports the block's address fails; the other
+  # coverpoints use block-aligned rs1.
   - name: fault_excep_csr
     coverpoint:
       [
         "Sv_Zicbo_cg/{cp_PTE_inv_cbo_s,cp_PTE_inv_cbo_u}",
-        "Sv_HZicbo_cg/{cp_vs_gpa,cp_vs_gpa_implicit,cp_g_pte}",
+        "Sv_HZicbo_cg/{cp_vs_gpa,cp_vs_gpa_implicit,cp_g_pte,cp_offset}",
       ]
+
+  # It is not required that rs1 is aligned to the size of a cache block.
+  # A CBO 3 bytes into its cache block takes no address-misaligned exception in VS-mode and VU-mode.
+  - names: [cbo-flush_unaligned, cbo-inval_unaligned, cbo-zero_unaligned]
+    coverpoint: ["Sv_HZicbo_cg/cp_offset"]
+
+  # For the purposes of writing the mtinst or htinst register on a trap, the standard transformation of a
+  # cache-block management or zero instruction keeps its opcode, funct3 and operation fields and zeroes rs1.
+  # A hart may write zero instead, which the trap handler accepts.
+  - name: h_trans_cache
+    coverpoint:
+      ["Sv_HZicbo_cg/cp_cbo_htinst", "Sv_HSm_mprv_cg/cp_mprv_cbo_mtinst"]
 
   # If access to the cache block is not permitted, a cache-block management instruction
   # raises a store page-fault or store guest-page-fault exception if address translation
@@ -1064,6 +1078,7 @@ normative_rule_definitions:
         "Sv_HSm_mprv_cg/cp_hgatp_mprv_effects",
         "Sv_HSm_mprv_cg/cp_mprv_sum",
         "Sv_HSm_mprv_cg/cp_mprv_mxr",
+        "Sv_HSm_mprv_cg/{cp_mprv_cbo_vsatp,cp_mprv_cbo_hgatp}",
       ]
 
   # MPRV does not affect HLV and HSV

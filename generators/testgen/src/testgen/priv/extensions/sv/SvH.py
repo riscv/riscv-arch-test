@@ -55,7 +55,8 @@ from testgen.priv.extensions.sv.SvHFenceCommon import (
 from testgen.priv.registry import add_priv_test_generator
 
 # Guest accesses: a store and a load of the word at offset 8 of the test page, and a fetch of the ret at
-# offset 0.  HLV, HLVX and HSV run in HS-mode and access offset 8 of their address.
+# offset 0.  HLV, HLVX and HSV run in HS-mode and access offset 8 of their address, and the CBOs the cache block
+# at offset 0.
 OPS = {
     "store": "sw x{data}, 8(x{va})",
     "load": "lw x{data}, 8(x{va})",
@@ -63,7 +64,13 @@ OPS = {
     "hsv": "hsv.w x{data}, (x{va})",
     "hlv": "hlv.w x{data}, (x{va})",
     "hlvx": "hlvx.wu x{data}, (x{va})",
+    "cbo_clean": "cbo.clean (x{va})",
+    "cbo_flush": "cbo.flush (x{va})",
+    "cbo_inval": "cbo.inval (x{va})",
+    "cbo_zero": "cbo.zero (x{va})",
 }
+# The CBOs of each family, as OPS keys
+CBO_OPS = {"zicbom": ("cbo_clean", "cbo_flush", "cbo_inval"), "zicboz": ("cbo_zero",)}
 LOADS = ("load", "hlv", "hlvx")
 GUEST_OPS = ("store", "load", "exec")
 

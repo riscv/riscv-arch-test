@@ -20,6 +20,13 @@
     `define SV_ZICBO_ANY
 `endif
 
+// Cache-block management or zero instructions, which MPRV translates like stores
+`ifdef ZICBOM_SUPPORTED
+    `define SV_CBO_MZ
+`elsif ZICBOZ_SUPPORTED
+    `define SV_CBO_MZ
+`endif
+
 covergroup Sv_satp_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include  "general/RISCV_coverage_standard_coverpoints.svh"
@@ -1098,6 +1105,46 @@ covergroup Sv_Sm_mstatus_mprv_cg with function sample(ins_t ins);
 
     cp_mstatus_sbe_read: cross read_acc, PTE_sbe_d, PageType_d, sbe_mstatus; //ms.5
     cp_mstatus_sbe_write: cross write_acc, PTE_sbe_d, PageType_d, sbe_mstatus; //ms.5
+
+    // CBOs in M-mode with MPRV = 1 are translated and checked with the privilege in MPP, like stores, but menvcfg
+    // enables them by the mode that executes them, which is M-mode, so they run with its CBO fields clear
+    `ifdef SV_CBO_MZ
+        cbo: coverpoint ins.current.insn {
+            `ifdef ZICBOM_SUPPORTED
+                wildcard bins clean = {CBO_CLEAN};
+                wildcard bins flush = {CBO_FLUSH};
+                wildcard bins inval = {CBO_INVAL};
+            `endif
+            `ifdef ZICBOZ_SUPPORTED
+                wildcard bins zero = {CBO_ZERO};
+            `endif
+        }
+        mprv_on: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv") {
+            bins on = {1};
+        }
+        mpp_m: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp") {
+            bins m = {2'b11};
+        }
+        mpp_su: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp") {
+            bins u = {2'b00};
+            bins s = {2'b01};
+        }
+        satp_paged: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "satp", "mode") {
+            bins paged = {[1:15]};
+        }
+        menvcfg_cbo_off: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "cbie") |
+                                     get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "cbcfe") |
+                                     get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "cbze")) {
+            bins off = {0};
+        }
+        // No trap, or a store page fault where the page's U does not match MPP
+        cbo_outcome: coverpoint {ins.current.csr_wb[CSR_MCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "mcause")[4:0]} {
+            wildcard bins no_fault  = {6'b0?????};
+            bins store_page_fault   = {6'b101111};
+        }
+        cp_mprv_cbo_m: cross priv_mode_m, cbo, mprv_on, mpp_m, menvcfg_cbo_off;
+        cp_mprv_cbo:   cross priv_mode_m, cbo, mprv_on, mpp_su, satp_paged, menvcfg_cbo_off, cbo_outcome;
+    `endif
 
 endgroup
 `endif // EXCLUDE_SM
@@ -2488,6 +2535,43 @@ covergroup Sv_HSm_mprv_cg with function sample(ins_t ins);
     cp_mprv_sum           : cross priv_mode_m, load_store, mprv_on, mpp_mpv_guest, vsatp_paged, hgatp_paged, vsstatus_sum, mstatus_sum;
     // mstatus.MXR makes execute-only pages readable in both stages, vsstatus.MXR only in the VS-stage
     cp_mprv_mxr           : cross priv_mode_m, lw, mprv_on, mpp_mpv_guest, vsatp_paged, hgatp_paged, vsstatus_mxr, mstatus_mxr;
+
+    // CBOs follow MPRV, MPP and MPV like stores, but menvcfg enables them by the mode that executes them, which is
+    // M-mode, so they run with its CBO fields clear
+    `ifdef SV_CBO_MZ
+        cbo : coverpoint ins.current.insn {
+            `ifdef ZICBOM_SUPPORTED
+                wildcard bins clean = {CBO_CLEAN};
+                wildcard bins flush = {CBO_FLUSH};
+                wildcard bins inval = {CBO_INVAL};
+            `endif
+            `ifdef ZICBOZ_SUPPORTED
+                wildcard bins zero = {CBO_ZERO};
+            `endif
+        }
+        menvcfg_cbo_off : coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "cbie") |
+                                     get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "cbcfe") |
+                                     get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "cbze")) {
+            bins off = {0};
+        }
+        cbo_trap : coverpoint {ins.current.csr_wb[CSR_MCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "mcause")[4:0]} {
+            wildcard bins none    = {6'b0?????};
+            bins store_page_fault = {6'b101111};
+        }
+        cbo_guest_page_fault : coverpoint {ins.current.csr_wb[CSR_MCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "mcause")[4:0]} {
+            bins store_guest_page_fault = {6'b110111};
+        }
+        // mtinst holds the standard transformation of the CBO (cmo.adoc h_trans_cache), which the reference model
+        // writes; a hart may write zero instead, which the trap handler accepts
+        mtinst_cbo : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mtinst", "mtinst") iff (ins.current.csr_wb[CSR_MTINST]) {
+            bins transformed = {[0:$]} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mtinst", "mtinst") == {ins.current.insn[31:20], 5'b0, ins.current.insn[14:12], 5'b0, ins.current.insn[6:0]});
+        }
+        // With MPV = 1, the VS-stage translates the CBO and checks it with the privilege in MPP
+        cp_mprv_cbo_vsatp  : cross priv_mode_m, cbo, mprv_on, mpp_mpv_guest, vsatp_paged, hgatp_bare, menvcfg_cbo_off, cbo_trap;
+        // Only MPRV = 1 with MPV = 1 and MPP = S or U uses the G-stage
+        cp_mprv_cbo_hgatp  : cross priv_mode_m, cbo, mprv, mpp_mpv, vsatp_bare, hgatp_paged, menvcfg_cbo_off;
+        cp_mprv_cbo_mtinst : cross priv_mode_m, cbo, mprv_on, mpp_mpv_guest, cbo_guest_page_fault, mtinst_cbo;
+    `endif
 endgroup
 
 covergroup Sv_HSm_trap_cg with function sample(ins_t ins);
@@ -2642,6 +2726,35 @@ covergroup Sv_HZicbo_cg with function sample(ins_t ins);
   `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
     cp_g_pa:          cross priv_mode_vs_vu, cbo, g_stage, store_access_fault;
   `endif
+
+  // A CBO 3 bytes into its cache block takes no address-misaligned exception, and a fault writes rs1 to stval, not
+  // the block's address (cmo.adoc fault_excep_csr).  htval drops address bits 1:0, so it is the same for both.
+  block_offset: coverpoint ins.current.rs1_val[1:0] {
+    bins three = {3};
+  }
+  offset_outcome: coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[4:0]} {
+    wildcard bins no_fault       = {6'b0?????};
+    bins store_page_fault        = {6'b101111};
+    bins store_guest_page_fault  = {6'b110111};
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+      bins store_access_fault    = {6'b100111};
+    `endif
+  }
+  cp_offset: cross priv_mode_vs_vu, cbo, block_offset, offset_outcome, vsatp_paged, hgatp_paged;
+
+  // A CBO fault taken in HS-mode writes htinst with the standard transformation of the CBO (cmo.adoc
+  // h_trans_cache), which the reference model writes; a hart may write zero instead, which the trap handler accepts
+  cbo_fault: coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[4:0]} {
+    bins store_page_fault        = {6'b101111};
+    bins store_guest_page_fault  = {6'b110111};
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+      bins store_access_fault    = {6'b100111};
+    `endif
+  }
+  htinst_cbo: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htinst", "htinst") iff (ins.current.csr_wb[CSR_HTINST]) {
+    bins transformed = {[0:$]} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htinst", "htinst") == {ins.current.insn[31:20], 5'b0, ins.current.insn[14:12], 5'b0, ins.current.insn[6:0]});
+  }
+  cp_cbo_htinst: cross priv_mode_vs_vu, cbo, cbo_fault, htinst_cbo;
 
   // A prefetch is a HINT, so it raises no exception even where a load or store would fault in either stage
   `ifdef ZICBOP_SUPPORTED

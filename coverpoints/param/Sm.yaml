@@ -7,33 +7,302 @@ parameter_definitions:
       [
         "Implicitly tested by all the XLEN-dependent tests (e.g. add would fail if XLEN is wrong)",
       ]
+
+  # misa
   - name: MISA_CSR_IMPLEMENTED
-    coverpoint: ["cp_mcsr_access"]
-    effect: ["misa bin results depend on parameter"]
-  - name: TIME_CSR_IMPLEMENTED
-    coverpoint: ["cp_mtime_write"]
-    effect: ["coverpoint only applies if parameter is True"]
-  - name: COUNTINHIBIT_EN
-    coverpoint: ["cp_inhibit"]
+    coverpoint:
+      [
+        "Sm_mcsr_cg/cp_misa_mxl",
+        "Sm_mcsr_cg/cp_misa_dependencies",
+        "Sm_mcsr_cg/cp_misa_clear_c",
+        "Sm_mcsr_cg/cp_misa_b",
+        "Sm_mcsr_cg/cp_misa_v",
+      ]
     effect:
       [
-        "bins 0 and 2 for `mcycle` and `minstret` are affected by this parameter.  Other bins are OUT-OF-SCOPE and not tested because HPM behavior is UNSPECIFIED",
+        "If false, `misa` is read-only zero. The tests read back `misa` after each write.",
       ]
+  - name: MUTABLE_MISA_C
+    coverpoint:
+      [
+        "Sm_mcsr_cg/cp_misa_clear_c",
+        "Sm_mcsr_cg/cp_mepc_ialign32_read",
+        "Sm_mcsr_cg/cp_mepc_ialign32_mret",
+        "Sm_mcsr_cg/cp_sepc_ialign32_read",
+        "Sm_mcsr_cg/cp_sepc_ialign32_sret",
+        "Sm_H_mcsr_cg/cp_vsepc_ialign32_read",
+        "Sm_H_mcsr_cg/cp_vsepc_ialign32_vs_read",
+        "Sm_H_mcsr_cg/cp_vsepc_ialign32_sret",
+      ]
+    effect:
+      [
+        "If true, software can clear `misa.C`. The `*_ialign32_*` coverpoints apply only if this parameter is true and Zca is implemented.",
+      ]
+  - name: MUTABLE_MISA_B
+    coverpoint: ["Sm_mcsr_cg/cp_misa_b"]
+    effect:
+      [
+        "If true, software can change `misa.B`. The test reads back `misa.B` after a set and a clear.",
+      ]
+  - name: MUTABLE_MISA_V
+    coverpoint: ["Sm_mcsr_cg/cp_misa_v"]
+    effect:
+      [
+        "If true, software can change `misa.V`. The test reads back `misa.V` after a set and a clear.",
+      ]
+
+  # mstatus
+  - name: MSTATUS_FS_LEGAL_VALUES
+    coverpoint:
+      [
+        "Sm_mstatus_cg/cp_mstatus_sd_write",
+        "Sm_mcsr_cg/cp_mcsr_access_masked",
+        "Sm_mcsr_cg/cp_mcsrwalk_masked",
+        "Sm_F_cg/cp_fcsr_access",
+        "Sm_F_cg/cp_mstatus_FS_transition",
+        "Sm_VF_cg/cp_vectorfp_mstatus_fs_state_affecting_register",
+        "Sm_VF_cg/cp_vectorfp_mstatus_fs_state_affecting_csr",
+        "Sm_VF_cg/cp_vectorfp_mstatus_fs_state_nonaffecting",
+      ]
+    effect:
+      [
+        "Sets the values that `mstatus.FS` holds after a write. The Initial and Clean bins apply only if the parameter includes 1 and 2.",
+      ]
+  - name: MSTATUS_VS_LEGAL_VALUES
+    coverpoint:
+      [
+        "Sm_mstatus_cg/cp_mstatus_sd_write",
+        "Sm_mcsr_cg/cp_mcsr_access_masked",
+        "Sm_mcsr_cg/cp_mcsrwalk_masked",
+        "Sm_V_cg/cp_mstatus_vs_set_dirty_arithmetic",
+        "Sm_V_cg/cp_mstatus_vs_set_dirty_csr",
+        "Sm_V_cg/cp_mstatus_vs_set_dirty_vcsr",
+      ]
+    effect:
+      [
+        "Sets the values that `mstatus.VS` holds after a write. The Initial and Clean bins apply only if the parameter includes 1 and 2.",
+      ]
+  - name: HW_MSTATUS_FS_DIRTY_UPDATE
+    coverpoint:
+      [
+        "Sm_F_cg/cp_fcsr_access",
+        "Sm_F_cg/cp_mstatus_FS_transition",
+        "Sm_F_cg/cp_mstatus_FS_transition_nondeterministic",
+        "Sm_VF_cg/cp_vectorfp_mstatus_fs_state_affecting_register",
+        "Sm_VF_cg/cp_vectorfp_mstatus_fs_state_affecting_csr",
+        "Sm_VF_cg/cp_vectorfp_mstatus_fs_state_nonaffecting",
+      ]
+    effect:
+      [
+        "The tests read `mstatus.FS` after F and vector-FP instructions and expect `precise`. With `imprecise`, the results are unpredictable.",
+      ]
+  - name: HW_MSTATUS_VS_DIRTY_UPDATE
+    coverpoint:
+      [
+        "Sm_V_cg/cp_mstatus_vs_set_dirty_arithmetic",
+        "Sm_V_cg/cp_mstatus_vs_set_dirty_csr",
+        "Sm_V_cg/cp_mstatus_vs_set_dirty_vcsr",
+      ]
+    effect:
+      [
+        "The tests read `mstatus.VS` after vector instructions and expect `precise`. With `imprecise`, the results are unpredictable.",
+      ]
+
+  # Interrupts
+  - name: MSI_INTR_IMPL
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access", "Sm_mcsr_cg/cp_mcsrwalk"]
+    effect: ["If false, the `mie` and `mip` MSI bits are read-only zero."]
+  - name: MTI_INTR_IMPL
+    coverpoint:
+      [
+        "Sm_mcsr_cg/cp_mcsr_access",
+        "Sm_mcsr_cg/cp_mcsrwalk",
+        "Sm_Zicntr_cg/cp_instret_wfi_pending",
+        "Sm_Zicntr_cg/cp_instret_wfi_taken",
+      ]
+    effect:
+      [
+        "If false, the `mie` and `mip` MTI bits are read-only zero. The `cp_instret_wfi_pending` and `cp_instret_wfi_taken` coverpoints apply only if the parameter is true.",
+      ]
+  - name: MEI_INTR_IMPL
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access", "Sm_mcsr_cg/cp_mcsrwalk"]
+    effect: ["If false, the `mie` and `mip` MEI bits are read-only zero."]
+  - name: WFI_FINITE
+    coverpoint: ["Sm_Zicntr_cg/cp_instret_wfi_timeout"]
+    effect: ["The coverpoint applies only if the parameter is true."]
+
+  # mtval
+  - name: MTVAL_WIDTH
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access", "Sm_H_mcsr_cg/cp_mtvala"]
+    effect:
+      [
+        "Sets the writable bits of `mtval`, and thus the value read back after an all-ones write. The `cp_mtval_*` walks write only addresses and encodings that a legal width holds.",
+      ]
+  - name: REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION
+    coverpoint:
+      ["Sm_mcsr_cg/cp_mtval_ilen_walk1", "Sm_mcsr_cg/cp_mtval_ilen_ones"]
+    effect:
+      [
+        "The coverpoints apply only if the parameter is true. Then `mtval` must hold every ILEN-bit value.",
+      ]
+
+  # Counters
+  - name: TIME_CSR_IMPLEMENTED
+    coverpoint: ["Sm_mcsr_cg/cp_mtime_write", "Sm_mcsr_cg/cp_mtimeh_write"]
+    effect: ["coverpoint only applies if parameter is True"]
+  - name: MCOUNTINHIBIT_IMPLEMENTED
+    coverpoint:
+      [
+        "Sm_mcsr_cg/cp_mcsr_access",
+        "Sm_mcsr_cg/cp_mcsrwalk",
+        "Sm_mcsr_cg/cp_inhibit_mcycle",
+        "Sm_mcsr_cg/cp_inhibit_minstret",
+      ]
+    effect:
+      [
+        "The `mcountinhibit` bins and the `cp_inhibit_*` coverpoints apply only if the parameter is true.",
+      ]
+  - name: COUNTINHIBIT_EN
+    coverpoint:
+      [
+        "Sm_mcsr_cg/cp_inhibit_mcycle",
+        "Sm_mcsr_cg/cp_inhibit_minstret",
+        "Sm_mcsr_cg/cp_mcsr_access",
+        "Sm_mcsr_cg/cp_mcsrwalk",
+      ]
+    effect:
+      [
+        "Bin `one` of `cp_inhibit_mcycle` applies only if `COUNTINHIBIT_EN[0]` is true. Bin `one` of `cp_inhibit_minstret` applies only if `COUNTINHIBIT_EN[2]` is true. Bits 0 and 2 change the `mcountinhibit` read-back value. The tests do not check the HPM bits because HPM behavior is UNSPECIFIED.",
+      ]
+  - name: HPM_COUNTER_EN
+    coverpoint:
+      [
+        "Sm_mcsr_cg/cp_cntr_access",
+        "Sm_Zicntr_cg/cp_mcounteren_access_m",
+        "Sm_Zicntr_cg/cp_scounteren_access_m",
+        "Sm_Zicntr_H_cg/cp_mhscounteren_access_m",
+      ]
+    effect:
+      [
+        "If `HPM_COUNTER_EN[n]` is false, `mhpmcounter<n>` is read-only zero. The `hpmcounter<n>` bins of the counter-enable coverpoints apply only if `HPM_COUNTER_EN[n]` is true.",
+      ]
+  - name: MCOUNTENABLE_EN
+    coverpoint:
+      [
+        "Sm_mcsr_cg/cp_mcsr_access",
+        "Sm_mcsr_cg/cp_mcsrwalk",
+        "Sm_Zicntr_cg/cp_mcounteren_access_m",
+        "Sm_Zicntr_cg/cp_scounteren_access_m",
+        "Sm_Zicntr_H_cg/cp_mhscounteren_access_m",
+      ]
+    effect:
+      [
+        "If `MCOUNTENABLE_EN[n]` is false, `mcounteren` bit n is read-only zero. A bin of `cp_mhscounteren_access_m` applies only if its `mcounteren` bit is writable.",
+      ]
+  - name: SCOUNTENABLE_EN
+    coverpoint:
+      [
+        "Sm_Zicntr_cg/cp_scounteren_access_m",
+        "Sm_Zicntr_H_cg/cp_mhscounteren_access_m",
+      ]
+    effect:
+      [
+        "If `SCOUNTENABLE_EN[n]` is false, `scounteren` bit n is read-only zero. A bin of `cp_mhscounteren_access_m` applies only if its `scounteren` bit is writable.",
+      ]
+  - name: HCOUNTENABLE_EN
+    coverpoint: ["Sm_Zicntr_H_cg/cp_mhscounteren_access_m"]
+    effect: ["A bin applies only if its `hcounteren` bit is writable."]
+
+  # Vector
+  - name: ELEN
+    coverpoint:
+      [
+        "Sm_V_cg/cp_sew_lmul_vsetvl",
+        "Sm_V_cg/cp_sew_lmul_vset_i_vli",
+        "Sm_V_cg/cp_vl_walking1s_sew_lmul",
+        "Sm_V_cg/cp_vsetvl_i_rd_nx0_rs1_x0",
+      ]
+    effect:
+      [
+        "Sets the legal SEW and fractional LMUL pairs. The tests and bins for pairs that need ELEN = 64 apply only if ELEN is 64, or if SUPPORT_FRACTIONAL_LMUL_BEYOND_REQUIRED allows them.",
+      ]
+  - name: SUPPORT_FRACTIONAL_LMUL_BEYOND_REQUIRED
+    coverpoint:
+      [
+        "Sm_V_cg/cp_sew_lmul_vsetvl",
+        "Sm_V_cg/cp_sew_lmul_vset_i_vli",
+        "Sm_V_cg/cp_vl_walking1s_sew_lmul",
+        "Sm_V_cg/cp_vsetvl_i_rd_nx0_rs1_x0",
+      ]
+    effect:
+      [
+        "Sets if SEW and fractional LMUL pairs larger than LMUL * ELEN are legal. The bins for these pairs apply only if they are legal.",
+      ]
+  - name: SEW_MIN
+    coverpoint:
+      ["Sm_V_cg/cp_vsetvl_rs2_vill", "Sm_V_cg/cp_vstart_out_of_bounds"]
+    effect:
+      [
+        "`cp_vsetvl_rs2_vill` uses the smallest supported SEW. The `vstart` read-back value depends on VLEN and SEW_MIN.",
+      ]
+  - name: VLEN
+    coverpoint: ["Sm_V_cg/cp_vstart_out_of_bounds"]
+    effect: ["The `vstart` read-back value depends on VLEN and SEW_MIN."]
+
+  # Hypervisor address translation
+  - name: SV39_VSMODE_TRANSLATION
+    coverpoint:
+      [
+        "Sm_H_mcsr_cg/cp_atpwalk1",
+        "Sm_H_mcsr_cg/cp_atpwalk0",
+        "Sm_H_mcsr_cg/cp_replica",
+        "Sm_H_mcsr_cg/cp_replica_vs",
+      ]
+    effect:
+      [
+        "On RV64, the `vsatp` and `satp` bins apply only if the parameter is true.",
+      ]
+  - name: SV32_VSMODE_TRANSLATION
+    coverpoint:
+      [
+        "Sm_H_mcsr_cg/cp_atpwalk1",
+        "Sm_H_mcsr_cg/cp_atpwalk0",
+        "Sm_H_mcsr_cg/cp_replica",
+        "Sm_H_mcsr_cg/cp_replica_vs",
+      ]
+    effect:
+      [
+        "On RV32, the `vsatp` and `satp` bins apply only if the parameter is true.",
+      ]
+  - name: SV39X4_TRANSLATION
+    coverpoint: ["Sm_H_mcsr_cg/cp_atpwalk1", "Sm_H_mcsr_cg/cp_atpwalk0"]
+    effect: ["On RV64, the `hgatp` bins apply only if the parameter is true."]
+  - name: SV32X4_TRANSLATION
+    coverpoint: ["Sm_H_mcsr_cg/cp_atpwalk1", "Sm_H_mcsr_cg/cp_atpwalk0"]
+    effect: ["On RV32, the `hgatp` bins apply only if the parameter is true."]
+  - name: PHYS_ADDR_WIDTH
+    coverpoint: ["Sm_H_mcsr_cg/cp_atpwalk1", "Sm_H_mcsr_cg/cp_atpwalk0"]
+    effect:
+      [
+        "The tests do not check `hgatp` and `vsatp` PPN bits at and above PHYS_ADDR_WIDTH - 12.",
+      ]
+
+  # Read-only ID CSRs
   - name: MARCHID_IMPLEMENTED
-    coverpoint: ["cp_mcsr_access"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_ro"]
     effect: ["if false, `marchid` bin is read-only zero"]
   - name: ARCH_ID_VALUE
-    coverpoint: ["cp_mcsr_access"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_ro"]
     effect: ["`marchid` value"]
   - name: MIMPID_IMPLEMENTED
-    coverpoint: ["cp_mcsr_access"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_ro"]
     effect: ["if false, `mimpid` is read-only zero."]
   - name: IMP_ID_VALUE
-    coverpoint: ["cp_mcsr_access"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_ro"]
     effect: ["`mimpid` value"]
   - name: VENDOR_ID_BANK
-    coverpoint: ["cp_mcsr_access"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_ro"]
     effect: ["`mvendorid` value"]
   - name: VENDOR_ID_OFFSET
-    coverpoint: ["cp_mcsr_access"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_ro"]
     effect: ["`mvendorid` value"]

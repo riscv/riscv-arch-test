@@ -3,9 +3,10 @@ suite: U
 source: https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=1720466356#gid=1720466356
 coverpoints:
   - name: cp_uprivinst
-    description: Execute ecall and ebreak, mret, uret in user mode
+    description: Execute ecall and ebreak, mret, uret in user mode, and sfence.vma if S is supported
     rules:
       - ecall throws environment call.  ebreak throws breakpoint.  mret and sret throw illegal instructions.
+      - sfence.vma throws illegal instruction (only if S is supported).
   - name: cp_csrr_insufficient_priv
     description: Read Machine, Hypervisor, Supervisor CSRS100-3FF, 500-7FF, 900-BFF, D000-FFF
   - name: cp_csr_ro

@@ -14,6 +14,7 @@ implemented_extensions:
   - { name: D, version: "= 2.2.0" }
   - { name: S, version: "= 1.13.0" }
   - { name: U, version: "= 1.0.0" }
+  - { name: Zicclsm, version: "= 1.0.0" }
   - { name: Zicntr, version: "= 2.0" }
   - { name: Zicsr, version: "= 2.0" }
   - { name: Zifencei, version: "= 2.0.0" }

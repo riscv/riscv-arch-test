@@ -12,6 +12,7 @@ implemented_extensions:
   - { name: F, version: "= 2.2.0" }
   - { name: D, version: "= 2.2.0" }
   - { name: C, version: "= 2.0" }
+  - { name: Zicclsm, version: "= 1.0.0" }
   - { name: Zicntr, version: "= 2.0" }
   #  - { name: Zihpm, version: "= 2.0" }   // haven't found a way to turn this on in imperas.ic in this variant
   - { name: Zicsr, version: "= 2.0" }

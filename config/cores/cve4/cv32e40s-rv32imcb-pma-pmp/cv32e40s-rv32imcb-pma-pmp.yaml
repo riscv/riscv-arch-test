@@ -19,6 +19,7 @@ implemented_extensions: # VERIFIED against User Manual (Introduction)
   - { name: Zcb, version: "= 1.0.0" } # VERIFIED — always present per User Manual, Introduction (always-enabled extensions)
   - { name: Zcmp, version: "= 1.0.0" } # VERIFIED — always present per User Manual, Introduction (always-enabled extensions)
   - { name: Zcmt, version: "= 1.0.0" } # VERIFIED — always present per User Manual, Introduction (always-enabled extensions)
+  - { name: Zicclsm, version: "= 1.0.0" }
   - { name: Zicsr, version: "= 2.0" }
   - { name: Zifencei, version: "= 2.0" }
   - { name: Zkt, version: "= 1.0.0" } # VERIFIED — always enabled per User Manual, Introduction; data-independent execution latency

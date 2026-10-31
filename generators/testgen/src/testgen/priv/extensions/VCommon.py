@@ -17,6 +17,7 @@ from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.PrivCommon import (
     STATUS_CSR,
+    VIRTUAL_MODES,
     gen_status_read_sigupd,
     hs_status_values,
     hs_tag,
@@ -73,7 +74,7 @@ def _gen_vcsrrswc(test_data: TestData, temp_reg: int, covergroup: str, priv: str
                         *set_status_fields(temp_reg, priv, vs=vs, hs_vs=hs),
                         test_data.add_testcase(f"{csr}_{op}_vs{vs}{hs_tag(hs)}", coverpoint, covergroup),
                         f"{op} x0, {csr}, x{save_reg}",
-                        f"LI(x{temp_reg}, MSTATUS_VS)",
+                        f"LI(x{temp_reg}, MSTATUS_VS | MSTATUS_SD)",
                         gen_status_read_sigupd(check_reg, test_data, priv, temp_reg),
                         gen_csr_read_sigupd(check_reg, (csr, None), test_data),
                     ]
@@ -696,6 +697,12 @@ def gen_v_tests(test_data: TestData, priv: str, covergroup: str) -> list[TestChu
 
     _gen_vl_walking1s_sew_lmul(test_data, temp_reg, test_chunks, covergroup, priv)
 
-    test_data.int_regs.return_registers([temp_reg])
     test_chunks.append(test_data.end_test_chunk())
+
+    # No FP instruction runs here, so turn FS Off to make SD reflect VS only.
+    fs_off = set_status_fields(temp_reg, priv, fs=0, hs_fs=0 if priv in VIRTUAL_MODES else None)
+    fs_on = set_status_fields(temp_reg, priv, fs=3)
+    for chunk in test_chunks:
+        chunk.code = [*fs_off, *chunk.code, *fs_on]
+    test_data.int_regs.return_registers([temp_reg])
     return test_chunks

@@ -145,7 +145,7 @@ def gen_fcsr_tests(test_data: TestData, priv: str, covergroup: str) -> list[str]
         "fcvt.s.w f0, x0",
         "fmadd.s f0, f1, f2, f3",
         "fsqrt.s f0, f1",
-        "fsgnj.s f0, f1, f2",
+        "fsgnjn.s f0, f1, f2",
         f"fmv.w.x f0, x{temp_reg}",
         "fmin.s f0, f1, f2",
         f"add x{temp_reg}, x{temp_reg}, x{temp_reg}",

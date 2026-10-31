@@ -23,7 +23,7 @@ from testgen.priv.extensions.InterruptsCommon import (
     generate_cp_wfi,
     generate_cp_wfi_timeout,
     guard_symbol,
-    int_bit,
+    hideleg_vs_target,
     int_coverpoint,
     int_macro,
     label_coverpoint,
@@ -96,23 +96,11 @@ def _generate_cp_trigger_s(test_data: TestData, test_chunks: list[TestChunk], su
             # stvec.MODE
             modecmd = "csrs" if mode == 1 else "csrc"
             enablecmd = "csrs" if enable == 1 else "csrc"
-            vs_target = (
-                [
-                    f"#ifdef UDB_VSTVEC_MODES_{mode}",
-                    f"LI(x{tmp_reg}, {1 << int_bit[int_type]:#x})",
-                    f"csrw hideleg, x{tmp_reg} # hideleg delegates {int_type} to VS-mode",
-                    f"LI(x{tmp_reg}, 1)",
-                    f"{modecmd} vstvec, x{tmp_reg} # vstvec.mode = {mode}",
-                    f"LI(x{tmp_reg}, 0x22) # SIE, SPIE",
-                    f"{enablecmd} vsstatus, x{tmp_reg} # vsstatus.SIE = {enable}",
-                ]
-                if hideleg
-                else []
-            )
+            vs_open, vs_close = hideleg_vs_target(hideleg, int_type, mode, enable, tmp_reg)
             tc.code += [
                 f"#ifdef {guard}",
                 f"#ifdef UDB_STVEC_MODES_{mode}",
-                *vs_target,
+                *vs_open,
                 f"LI(x{tmp_reg}, -1)",
                 *write_ie(suite, tmp_reg, "1s"),
                 f"LI(x{tmp_reg}, 1)",
@@ -139,7 +127,7 @@ def _generate_cp_trigger_s(test_data: TestData, test_chunks: list[TestChunk], su
                 f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait for interrupt to fire",
                 f"RVTEST_CLR_{macro}_INT_{flavor(priv)} # Clear the interrupt if the handler hasn't done so",
                 *mode_exit(suite, priv),
-                *(["csrw hideleg, zero # hideleg = 0", "#endif // UDB_VSTVEC_MODES"] if hideleg else []),
+                *vs_close,
                 f"#endif // UDB_STVEC_MODES_{mode}",
                 f"#endif // {guard}",
                 "",

@@ -22,7 +22,7 @@ IMSIC state below M-mode (vstopei, vsiselect and vsireg), so each file first set
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.InterruptsCommon import int_macro
+from testgen.priv.extensions.InterruptsCommon import goto_mode, int_macro
 from testgen.priv.registry import add_priv_test_generator
 
 _CG = "Interrupts_Sgei_cg"
@@ -41,9 +41,6 @@ IMSIC_STATEEN_ON = (
     "#endif",
     "#endif",
 )
-
-# Modes a test enters with RVTEST_TSBI_GOTO_<mode>MODE, by the name of the GOTO macro
-_GOTO = {"HS": "S", "U": "U", "VS": "VS", "VU": "VU"}
 
 
 def _gei(op: str, gei: int, tmp_reg: int, mode: str = "S") -> list[str]:
@@ -100,7 +97,7 @@ def _trigger_tests(test_data: TestData) -> list[str]:
                     f"csrw hie, x{tmp_reg}",
                     *_gei("SET", 1, tmp_reg),
                     test_data.add_testcase(f"{mode.lower()}_sgeie{ie}", "cp_trigger_sgei_lower", _CG),
-                    f"RVTEST_TSBI_GOTO_{_GOTO[mode]}MODE",
+                    f"RVTEST_TSBI_GOTO_{goto_mode[mode]}MODE",
                     f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})",
                     "RVTEST_TSBI_GOTO_SMODE",
                     f"csrr x{tmp_reg}, hip",
@@ -131,7 +128,7 @@ def _trigger_sm_tests(test_data: TestData) -> list[str]:
         f"LI(x{tmp_reg}, 2)",
         f"csrw hgeie, x{tmp_reg}",
     ]
-    for mode in ("M", *_GOTO):
+    for mode in ("M", *goto_mode):
         for mie in (0, 1):
             for sie in (0, 1):
                 for ie in (0, 1):
@@ -147,7 +144,7 @@ def _trigger_sm_tests(test_data: TestData) -> list[str]:
                     else:
                         body = [
                             test_data.add_testcase(bin_name, "cp_trigger_sgei", _CG_SM),
-                            f"RVTEST_TSBI_GOTO_{_GOTO[mode]}MODE",
+                            f"RVTEST_TSBI_GOTO_{goto_mode[mode]}MODE",
                             f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})",
                             "RVTEST_TSBI_GOTO_MMODE",
                             f"csrr x{check_reg}, hip",

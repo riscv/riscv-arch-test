@@ -91,6 +91,9 @@ int_macro = {"MEI": "MEXT", "MTI": "MTIME", "MSI": "MSW", "SEI": "SEXT", "STI": 
 int_macro |= {name: name for name in ["LCOFI", *reg_ints, *sstc_ints]}
 int_macro |= {"VSEI": "VSEXT", "VSTI": "VSTIME", "VSSI": "VSSW"}
 
+# Modes a test enters with RVTEST_TSBI_GOTO_<mode>MODE, by the mode name in testcase labels
+goto_mode = {"HS": "S", "U": "U", "VS": "VS", "VU": "VU"}
+
 
 def flavor(priv: str) -> str:
     """Mode whose RVTEST_SET/CLR_<name>_INT_<mode> macros and CSR accesses a test running in ``priv`` uses.
@@ -153,6 +156,24 @@ def mode_exit(suite: InterruptSuite, priv: str) -> list[str]:
     if priv == suite.boot:
         return []
     return [f"RVTEST_TSBI_GOTO_{suite.boot}MODE # return to {suite.boot}-mode"]
+
+
+def hideleg_vs_target(hideleg: int, int_type: str, mode: int, sie: int, reg: int) -> tuple[list[str], list[str]]:
+    """Lines that open and close a case where hideleg delegates int_type to VS-mode, with vstvec.MODE = mode and
+    vsstatus.SIE = sie. Both are empty when hideleg = 0."""
+    if not hideleg:
+        return [], []
+    modecmd = "csrs" if mode == 1 else "csrc"
+    siecmd = "csrs" if sie == 1 else "csrc"
+    return [
+        f"#ifdef UDB_VSTVEC_MODES_{mode}",
+        f"LI(x{reg}, {1 << int_bit[int_type]:#x})",
+        f"csrw hideleg, x{reg} # hideleg delegates {int_type} to VS-mode",
+        f"LI(x{reg}, 1)",
+        f"{modecmd} vstvec, x{reg} # vstvec.mode = {mode}",
+        f"LI(x{reg}, 0x22) # SIE, SPIE",
+        f"{siecmd} vsstatus, x{reg} # vsstatus.SIE = {sie}",
+    ], ["csrw hideleg, zero # hideleg = 0", "#endif // UDB_VSTVEC_MODES"]
 
 
 def generate_cp_enable(test_data: TestData, test_chunks: list[TestChunk], suite: InterruptSuite, priv: str) -> None:

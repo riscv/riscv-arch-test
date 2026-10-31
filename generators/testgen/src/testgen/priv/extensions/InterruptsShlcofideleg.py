@@ -19,13 +19,11 @@ goes to M-mode from every mode.
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
+from testgen.priv.extensions.InterruptsCommon import goto_mode
 from testgen.priv.registry import add_priv_test_generator
 
 _CG = "Interrupts_Shlcofideleg_cg"
 _CG_SM = "Interrupts_SmShlcofideleg_cg"
-
-# Modes a test enters with RVTEST_TSBI_GOTO_<mode>MODE, by the mode name in testcase labels
-_GOTO = {"HS": "S", "U": "U", "VS": "VS", "VU": "VU"}
 
 
 def _trigger_tests(test_data: TestData) -> list[str]:
@@ -39,7 +37,7 @@ def _trigger_tests(test_data: TestData) -> list[str]:
         ),
         "csrci sstatus, SSTATUS_SIE",
     ]
-    for mode, goto in _GOTO.items():
+    for mode, goto in goto_mode.items():
         flavor = "S" if mode == "HS" else "U"
         for sie in (0, 1):
             lines.extend(
@@ -127,13 +125,13 @@ def _trigger_sm_tests(test_data: TestData) -> list[str]:
         "csrw mideleg, zero",
     ]
     # M-mode takes LCOFI as it is raised when mstatus.MIE = 1; the other modes take it on the mret into the mode
-    for mode, mie in [("M", 0), ("M", 1), *[(mode, 0) for mode in _GOTO]]:
+    for mode, mie in [("M", 0), ("M", 1), *[(mode, 0) for mode in goto_mode]]:
         name = f"m_mie{mie}" if mode == "M" else mode.lower()
         if mode == "M":
             enter = []
         else:
             enter = [
-                f"RVTEST_TSBI_GOTO_{_GOTO[mode]}MODE",
+                f"RVTEST_TSBI_GOTO_{goto_mode[mode]}MODE",
                 f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})",
                 *(
                     [f"csrr x{check_reg}, sip # vsip.LCOFIP reads 0", write_sigupd(check_reg, test_data)]

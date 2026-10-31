@@ -612,10 +612,14 @@ normative_rule_definitions:
   # summarizes whether either the csr::[fs], csr::[vs], or csr::[xs] fields signal the
   # presence of some dirty state that will require saving extended user context to memory.
   - name: mstatus_sd_summary_op
-    # Every mstatus read records SD; V configurations boot with VS=Dirty, so SD=1 throughout there
+    # Every mstatus read records SD; the V tests turn FS Off so SD follows VS
     coverpoint:
       [
         "Sm_mstatus_cg/cp_mstatus_sd_write",
+        "Sm_V_cg/cp_mstatus_vs_set_dirty_vcsr",
+        "U_V_cg/cp_mstatus_vs_set_dirty_vcsr",
+        "S_V_cg/cp_sstatus_vs_set_dirty_vcsr",
+        "H_V_cg/cp_vsstatus_vs_set_dirty_vcsr",
         "Sm_F_cg/cp_mstatus_FS_transition",
         "U_F_cg/cp_mstatus_FS_transition",
         "S_F_cg/cp_sstatus_FS_transition",
@@ -624,7 +628,14 @@ normative_rule_definitions:
   # If csr:mstatus[vs] is Dirty, csr:mstatus[sd] is 1; otherwise, csr:mstatus[sd] is set
   # in accordance with existing specifications.
   - name: mstatus_sd_vs_dirty_op
-    coverpoint: ["Sm_mstatus_cg/cp_mstatus_sd_write"]
+    coverpoint:
+      [
+        "Sm_mstatus_cg/cp_mstatus_sd_write",
+        "Sm_V_cg/cp_mstatus_vs_set_dirty_vcsr",
+        "U_V_cg/cp_mstatus_vs_set_dirty_vcsr",
+        "S_V_cg/cp_sstatus_vs_set_dirty_vcsr",
+        "H_V_cg/cp_vsstatus_vs_set_dirty_vcsr",
+      ]
 
   # If FS, XS, and VS are all read-only zero, then SD is also always zero.
   - name: mstatus_sd_rdonly0
@@ -634,10 +645,14 @@ normative_rule_definitions:
   # bits encode a Dirty state (i.e., csr::[sd]=(csr::[fs]==0b11 OR csr::[xs]==0b11 OR
   # csr::[vs]==0b11)).
   - name: mstatus_sd_formula
-    # Every mstatus read records SD; V configurations boot with VS=Dirty, so SD=1 throughout there
+    # Every mstatus read records SD; the V tests turn FS Off so SD follows VS
     coverpoint:
       [
         "Sm_mstatus_cg/cp_mstatus_sd_write",
+        "Sm_V_cg/cp_mstatus_vs_set_dirty_vcsr",
+        "U_V_cg/cp_mstatus_vs_set_dirty_vcsr",
+        "S_V_cg/cp_sstatus_vs_set_dirty_vcsr",
+        "H_V_cg/cp_vsstatus_vs_set_dirty_vcsr",
         "Sm_F_cg/cp_mstatus_FS_transition",
         "U_F_cg/cp_mstatus_FS_transition",
         "S_F_cg/cp_sstatus_FS_transition",
@@ -653,10 +668,10 @@ normative_rule_definitions:
         "U_F_cg/{cp_fcsr_access, cp_mstatus_FS_transition}",
         "S_F_cg/{cp_fcsr_access, cp_sstatus_FS_transition}",
         "H_F_cg/{cp_fcsr_access, cp_vsstatus_FS_transition}",
-        "Sm_V_cg/{cp_mstatus_vs_off_arithmetic, cp_mstatus_vs_off_csr}",
-        "U_V_cg/{cp_mstatus_vs_off_arithmetic, cp_mstatus_vs_off_csr}",
-        "S_V_cg/{cp_sstatus_vs_off_arithmetic, cp_sstatus_vs_off_csr}",
-        "H_V_cg/{cp_vsstatus_vs_off_arithmetic, cp_vsstatus_vs_off_csr}",
+        "Sm_V_cg/{cp_mstatus_vs_off_arithmetic, cp_mstatus_vs_off_csr, cp_mstatus_vs_off_vector_instruction, cp_mstatus_vs_off_vcsr_read, cp_mstatus_vs_off_vcsr_write}",
+        "U_V_cg/{cp_mstatus_vs_off_arithmetic, cp_mstatus_vs_off_csr, cp_mstatus_vs_off_vector_instruction, cp_mstatus_vs_off_vcsr_read, cp_mstatus_vs_off_vcsr_write}",
+        "S_V_cg/{cp_sstatus_vs_off_arithmetic, cp_sstatus_vs_off_csr, cp_sstatus_vs_off_vector_instruction, cp_sstatus_vs_off_vcsr_read, cp_sstatus_vs_off_vcsr_write}",
+        "H_V_cg/{cp_vsstatus_vs_off_arithmetic, cp_vsstatus_vs_off_csr, cp_vsstatus_vs_off_vector_instruction, cp_vsstatus_vs_off_vcsr_read, cp_vsstatus_vs_off_vcsr_write}",
       ]
 
   # When the status is Initial, the corresponding state should have an initial constant
@@ -688,7 +703,13 @@ normative_rule_definitions:
 
   # the setting of VS has no effect on the contents of the vector register state.
   - name: mstatus_vs_wr
-    coverpoint: ["TODO: test with vector"]
+    coverpoint:
+      [
+        "Sm_V_cg/cp_mstatus_vs_off_arithmetic",
+        "U_V_cg/cp_mstatus_vs_off_arithmetic",
+        "S_V_cg/cp_sstatus_vs_off_arithmetic",
+        "H_V_cg/cp_vsstatus_vs_off_arithmetic",
+      ]
 
   # dirtiness might not be tracked at all, in which case the valid FS states are Off
   # and Dirty, and an attempt to set FS to Initial or Clean causes it to be set to

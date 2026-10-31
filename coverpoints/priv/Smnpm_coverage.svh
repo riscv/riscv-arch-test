@@ -51,10 +51,7 @@ covergroup Smnpm_S_cg with function sample(ins_t ins);
     //Declare pmm before including the shared PMM coverpoint file so the include can reference it.
     `include "general/RISCV_coverage_pmm_coverpoints.svh"
 
-    mxr_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "mxr") {
-        bins mxr_1 = {1'b1};   // MXR=1: execute-only pages readable
-        bins mxr_0 = {1'b0};   // MXR=0: normal permission checks
-    }
+    mxr_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "mxr")[0] {}
     csr_target: coverpoint ins.current.insn[31:20] { //excluding read-only csrs
         bins sepc     = {CSR_SEPC};
         //bins stvec    = {CSR_STVEC}; //// warl field has complex write restrictions and is not easy to test
@@ -108,10 +105,7 @@ covergroup Smnpm_SSm_cg with function sample(ins_t ins);
         }
     `endif // SMMPM_SUPPORTED
 
-    mxr_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mxr") {
-        bins mxr_1 = {1'b1};   // MXR=1: execute-only pages readable
-        bins mxr_0 = {1'b0};   // MXR=0: normal permission checks
-    }
+    mxr_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mxr")[0] {}
     mprv_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv") {
         bins mprv_1 = {1'b1};   // MPRV=1: memory access uses MPP privilege
     }

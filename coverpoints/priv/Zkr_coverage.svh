@@ -43,14 +43,8 @@ covergroup Zkr_Sm_cg with function sample(ins_t ins);
         bins nonzero = {[5'b00001:5'b11111]};
     }
 
-    mseccfg_sseed: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mseccfg", "sseed")[0] {
-        bins set   = {1};
-        bins clear = {0};
-    }
-    mseccfg_useed: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mseccfg", "useed")[0] {
-        bins set   = {1};
-        bins clear = {0};
-    }
+    mseccfg_sseed: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mseccfg", "sseed")[0] {}
+    mseccfg_useed: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mseccfg", "useed")[0] {}
 
     // Main coverpoints (M-mode)
     cp_zkr_seed_csrrw:                 cross csrrw, seed_csr, rs1_imm_0_1, priv_mode_m, mseccfg_sseed, mseccfg_useed;
@@ -90,14 +84,8 @@ covergroup Zkr_S_cg with function sample(ins_t ins);
         bins nonzero = {[5'b00001:5'b11111]};
     }
 
-    mseccfg_sseed: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mseccfg", "sseed")[0] {
-        bins set   = {1};
-        bins clear = {0};
-    }
-    mseccfg_useed: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mseccfg", "useed")[0] {
-        bins set   = {1};
-        bins clear = {0};
-    }
+    mseccfg_sseed: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mseccfg", "sseed")[0] {}
+    mseccfg_useed: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mseccfg", "useed")[0] {}
 
     // Main coverpoints (S-mode)
     cp_zkr_seed_csrrw:                 cross csrrw, seed_csr, rs1_imm_0_1, priv_mode_s, mseccfg_sseed, mseccfg_useed;
@@ -137,14 +125,8 @@ covergroup Zkr_U_cg with function sample(ins_t ins);
         bins nonzero = {[5'b00001:5'b11111]};
     }
 
-    mseccfg_sseed: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mseccfg", "sseed")[0] {
-        bins set   = {1};
-        bins clear = {0};
-    }
-    mseccfg_useed: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mseccfg", "useed")[0] {
-        bins set   = {1};
-        bins clear = {0};
-    }
+    mseccfg_sseed: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mseccfg", "sseed")[0] {}
+    mseccfg_useed: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mseccfg", "useed")[0] {}
 
     // Main coverpoints (U-mode)
     cp_zkr_seed_csrrw:                 cross csrrw, seed_csr, rs1_imm_0_1, priv_mode_u, mseccfg_sseed, mseccfg_useed;

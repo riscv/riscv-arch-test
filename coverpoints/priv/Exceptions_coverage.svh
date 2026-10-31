@@ -445,10 +445,7 @@ covergroup Exceptions_Sm_cg with function sample(ins_t ins);
         medeleg_b8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "medeleg", "medeleg")[8] {
             // auto fills 1 and 0: ecall from U-mode delegated to S-mode or not
         }
-        jalr_target_bit1: coverpoint {ins.current.rs1_val + ins.current.imm}[1] {
-            bins aligned    = {0};  // 4-byte aligned target
-            bins misaligned = {1};  // bit 1 set: instruction address misaligned (a legal target with Zca)
-        }
+        jalr_target_bit1: coverpoint {ins.current.rs1_val + ins.current.imm}[1] {}
     `endif
 
     // main coverpoints
@@ -1412,24 +1409,15 @@ covergroup Exceptions_H_cg with function sample(ins_t ins);
     hedeleg_ecall_u_vs_disabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hedeleg", "deleg")[10:8] {
         wildcard bins not_delegated = {3'b0?0};
     }
-    hstatus_spvp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "spvp") {
-        bins spvp_0 = {0};
-        bins spvp_1 = {1};
-    }
-    hstatus_hu: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hu") {
-        bins hu_disabled = {0};
-        bins hu_enabled  = {1};
-    }
+    hstatus_spvp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "spvp")[0] {}
+    hstatus_hu: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hu")[0] {}
     hstatus_vtsr_enabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vtsr") {
         bins one = {1};
     }
     hstatus_vtvm_enabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vtvm") {
         bins one = {1};
     }
-    vsstatus_sie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "sie") {
-        bins off = {0};
-        bins on  = {1};
-    }
+    vsstatus_sie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "sie")[0] {}
     mstatus_tvm_disabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm") {
         bins tvm_disabled = {0};
     }
@@ -1542,10 +1530,7 @@ covergroup Exceptions_H_cg with function sample(ins_t ins);
         jalr: coverpoint ins.current.insn {
             wildcard bins jalr = {JALR};
         }
-        jalr_target_bit1: coverpoint {ins.current.rs1_val + ins.current.imm}[1] {
-            bins aligned    = {0};
-            bins misaligned = {1};
-        }
+        jalr_target_bit1: coverpoint {ins.current.rs1_val + ins.current.imm}[1] {}
         hlv_hsv_instr: coverpoint ins.current.insn {
             wildcard bins hlv_w = {HLV_W};
             wildcard bins hsv_w = {HSV_W};
@@ -1554,10 +1539,7 @@ covergroup Exceptions_H_cg with function sample(ins_t ins);
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
         }
         // HLV and HSV have no immediate
-        hlv_address_legality: coverpoint (ins.current.rs1_val & ~`UDB_MXLEN'(3)) == (`UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS) & ~`UDB_MXLEN'(3)) {
-            bins legal   = {0};
-            bins illegal = {1};
-        }
+        hlv_address_legality: coverpoint (ins.current.rs1_val & ~`UDB_MXLEN'(3)) == (`UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS) & ~`UDB_MXLEN'(3)) {}
         hlv_addr_alignment: coverpoint ins.current.rs1_val[1:0] {
             bins aligned    = {2'b00};
             bins misaligned = {2'b01};
@@ -1700,14 +1682,8 @@ covergroup Exceptions_HSm_cg with function sample(ins_t ins);
     hedeleg_disabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hedeleg", "deleg") {
         bins disabled = {32'h00000000};
     }
-    hstatus_hu: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hu") {
-        bins hu_disabled = {0};
-        bins hu_enabled  = {1};
-    }
-    hstatus_vtsr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vtsr") {
-        bins vtsr_0 = {0};
-        bins vtsr_1 = {1};
-    }
+    hstatus_hu: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hu")[0] {}
+    hstatus_vtsr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vtsr")[0] {}
     mstatus_tsr_enabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tsr") {
         bins tsr_enabled = {1};
     }
@@ -1777,10 +1753,7 @@ covergroup Exceptions_HSm_cg with function sample(ins_t ins);
             wildcard bins hlv_w = {HLV_W};
             wildcard bins hsv_w = {HSV_W};
         }
-        jalr_target_bit1: coverpoint {ins.current.rs1_val + ins.current.imm}[1] {
-            bins aligned    = {0};
-            bins misaligned = {1};
-        }
+        jalr_target_bit1: coverpoint {ins.current.rs1_val + ins.current.imm}[1] {}
         hlv_addr_alignment: coverpoint ins.current.rs1_val[1:0] {
             bins aligned    = {2'b00};
             bins misaligned = {2'b01};
@@ -1788,10 +1761,7 @@ covergroup Exceptions_HSm_cg with function sample(ins_t ins);
         illegal_address: coverpoint ins.current.imm + ins.current.rs1_val {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
         }
-        hlv_address_legality: coverpoint (ins.current.rs1_val & ~`UDB_MXLEN'(3)) == (`UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS) & ~`UDB_MXLEN'(3)) {
-            bins legal   = {0};
-            bins illegal = {1};
-        }
+        hlv_address_legality: coverpoint (ins.current.rs1_val & ~`UDB_MXLEN'(3)) == (`UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS) & ~`UDB_MXLEN'(3)) {}
         hlv_illegal_address: coverpoint ins.current.rs1_val {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
         }

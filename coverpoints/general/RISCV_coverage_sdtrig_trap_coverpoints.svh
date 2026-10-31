@@ -62,8 +62,6 @@ trap_handled_s: coverpoint sdtrig_trap_result(ins)[3:1] {
 // the origin mode's tdata1 bit
 trap_priv: coverpoint sdtrig_trap_result(ins)[1] {
     type_option.weight = 0;
-    bins clear = {1'b0};
-    bins set   = {1'b1};
 }
 // the selected trigger is an itrigger and an interrupt was taken on this record
 itrigger_interrupt: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tdata1", "type")[3:0] iff (sdtrig_trap_interrupt(ins)) {

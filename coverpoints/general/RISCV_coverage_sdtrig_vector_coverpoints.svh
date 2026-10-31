@@ -68,8 +68,6 @@ vec_tdata2_plus_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "t
 // v0 mask bit of the element at base + 8
 vec_element_8: coverpoint ins.current.v_wdata[0][8 / sdtrig_vec_eew_bytes(ins.current.insn)] {
     type_option.weight = 0;
-    bins masked_off = {1'b0};
-    bins active     = {1'b1};
 }
 // fired (into M, mcause = 3) iff an active element below vl matches
 vec_outcome: coverpoint sdtrig_vec_as_expected(ins) {

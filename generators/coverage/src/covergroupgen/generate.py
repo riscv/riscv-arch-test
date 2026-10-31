@@ -95,6 +95,8 @@ SEW_DEPENDENT_CPS = {
     "cp_fs1_edges_v",
     "cr_vs2_fs1_edges",
     "cr_vl_lmul",
+    "cp_custom_FpRecipEst_subnorm",
+    "cp_custom_FpRecSqrtEst_subnorm",
 }
 
 # Coverpoints whose template name would otherwise match SEW_DEPENDENT_CPS, but are not

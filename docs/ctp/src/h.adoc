@@ -88,6 +88,8 @@ include::norm/Shtvala_norm_rules.adoc[]
 
 ==== Shlcofideleg Hypervisor Counter Overflow Delegation
 
+NOTE: The Shlcofideleg tests are not yet implemented.  The test plan below lists the planned coverpoints.
+
 include::{testplansdir}/priv/Shlcofideleg.adoc[]
 
 ==== ZkrH Hypervisor Entropy Register

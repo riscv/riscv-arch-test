@@ -795,3 +795,41 @@ def generate_misaligned_priority_fetch_tests(
 
     test_data.int_regs.return_registers([addr_reg])
     return lines
+
+
+def generate_load_x0_fault_tests(test_data: TestData, covergroup: str, tag: str = "") -> list[str]:
+    """Generate access-fault and misaligned loads with rd = x0, which must still trap.
+
+    tag is appended to the bin names so that callers can emit the tests more than once.
+    """
+    addr_reg = test_data.int_regs.get_register()
+
+    def load(op: str, base: str, offset: int, coverpoint: str, bin_suffix: str) -> list[str]:
+        return [
+            f"\n# Testcase: {op} x0 {bin_suffix}",
+            f"LA(x{addr_reg}, {base})",
+            test_data.add_testcase(f"{op}_x0_{bin_suffix}{tag}", coverpoint, covergroup),
+            f"{op} x0, {offset}(x{addr_reg})",
+        ]
+
+    fault_cp = "cp_load_x0_access_fault"
+    lines = ["#ifdef RVMODEL_ACCESS_FAULT_ADDRESS", comment_banner(fault_cp, "Load Access Fault with rd = x0")]
+    for op in ["lb", "lbu", "lh", "lhu", "lw"]:
+        lines.extend(load(op, "RVMODEL_ACCESS_FAULT_ADDRESS", 0, fault_cp, "fault"))
+    lines.append("\n#if __riscv_xlen == 64")
+    for op in ["lwu", "ld"]:
+        lines.extend(load(op, "RVMODEL_ACCESS_FAULT_ADDRESS", 0, fault_cp, "fault"))
+    lines.extend(["#endif", "#endif // RVMODEL_ACCESS_FAULT_ADDRESS"])
+
+    # Misaligned loads trap only when the hardware does not support them
+    misaligned_cp = "cp_load_x0_address_misaligned"
+    lines.extend(["", "#ifndef UDB_MISALIGNED_LDST", comment_banner(misaligned_cp, "Load Misaligned with rd = x0")])
+    for op in ["lh", "lhu", "lw"]:
+        lines.extend(load(op, "scratch", 1, misaligned_cp, "misaligned"))
+    lines.append("\n#if __riscv_xlen == 64")
+    for op in ["lwu", "ld"]:
+        lines.extend(load(op, "scratch", 1, misaligned_cp, "misaligned"))
+    lines.extend(["#endif", "#endif // UDB_MISALIGNED_LDST"])
+
+    test_data.int_regs.return_registers([addr_reg])
+    return lines

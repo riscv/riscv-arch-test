@@ -66,6 +66,22 @@ coverpoints:
     description: Attempt lb, lbu, lh, lhu, lw, lwu, ld from an illegal address (parameterized)
     expectation: load access fault
     bins: 7 ops
+  - name: cp_load_x0_access_fault
+    goal: Load Access Fault with rd = x0
+    description: Attempt lb, lbu, lh, lhu, lw, lwu, ld with rd = x0 from an illegal address (parameterized)
+    expectation: Load access fault, even though the load value is discarded
+    bins: 7 ops
+    rules:
+      - load_exc_x0
+  - name: cp_load_x0_address_misaligned
+    goal: Load Misaligned with rd = x0
+    description: |-
+      Attempt lh, lhu, lw, lwu, ld with rd = x0 from an odd address.
+      Compiled only when the hart does not perform misaligned loads and stores (UDB MISALIGNED_LDST = false).
+    expectation: Load address misaligned exception, even though the load value is discarded
+    bins: 5 ops
+    rules:
+      - load_exc_x0
   - name: cp_store_address_misaligned
     goal: Store Misaligned
     description: "Attempt sh, sw, sd with every combination of three lsbs: 000-111"

@@ -277,7 +277,10 @@ normative_rule_definitions:
   - name: load_exc_x0
     coverpoint:
       [
-        "TODO: currently have no cp in Exceptions_Sm that tests for load with rd = x0",
+        "Exceptions_H_cg/{cp_load_x0_access_fault, cp_load_x0_address_misaligned}",
+        "Exceptions_S_cg/{cp_load_x0_access_fault, cp_load_x0_address_misaligned}",
+        "Exceptions_Sm_cg/{cp_load_x0_access_fault, cp_load_x0_address_misaligned}",
+        "Exceptions_U_cg/{cp_load_x0_access_fault, cp_load_x0_address_misaligned}",
       ]
   # Loads and stores whose effective address is not naturally aligned to the
   # referenced datatype (i.e., the effective address is not divisible by the size of

@@ -165,6 +165,7 @@ def generate_instr_adr_misaligned_jalr_tests(
                 [
                     f"\n# rs1[1:0]={rs1_lsb:02b}, offset[1:0]={offset_lsb:02b}",
                     *setup,
+                    "LI(x1, 0xB0BACAFE)  # a trapping jalr must leave x1 unchanged",
                     ".p2align 2",
                     f"auipc x{addr_reg}, 0 # PC+0 addr_reg = PC",
                     f"addi x{addr_reg}, x{addr_reg}, {base_off} # PC+4 addr_reg[1:0] = rs1_lsb",
@@ -175,6 +176,7 @@ def generate_instr_adr_misaligned_jalr_tests(
                     "# after clearing bit 0 the possible targets are 12/14/16/18, so use two padding instructions",
                     "addi x0, x2, 0  # PC+12 padding (upper halfword is 0x0001)",
                     "addi x0, x2, 0  # PC+16 padding (upper halfword is 0x0001)",
+                    write_sigupd(1, test_data),
                 ]
             )
 
@@ -254,7 +256,9 @@ def generate_delegated_fault_tests(
             "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
             test_data.add_testcase(tag, coverpoints["instrmisaligned"], covergroup),
             f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+            "LI(x1, 0xB0BACAFE)",
             f"jalr x1, 2(x{addr_reg})  # misaligned target",
+            write_sigupd(1, test_data),
             "#endif",
         ]
     )
@@ -296,19 +300,29 @@ def generate_delegated_fault_tests(
         ]
     )
 
-    # Load misaligned
-    lines.extend([test_data.add_testcase(tag, coverpoints["loadmisaligned"], covergroup), f"LA(x{addr_reg}, scratch)"])
+    # Load misaligned.  data_reg accumulates each result, so a trapping load that writes rd changes the sum.
+    lines.extend(
+        [
+            test_data.add_testcase(tag, coverpoints["loadmisaligned"], covergroup),
+            f"LA(x{addr_reg}, scratch)",
+            f"LI(x{check_reg}, 0xB0BACAFE)",
+            f"LI(x{data_reg}, 0)",
+        ]
+    )
     for offset in range(8):
         for op in ["lw", "lh", "lhu", "lb", "lbu"]:
-            lines.append(f"{op} x{check_reg}, {offset}(x{addr_reg})")
+            lines.extend([f"{op} x{check_reg}, {offset}(x{addr_reg})", f"add x{data_reg}, x{data_reg}, x{check_reg}"])
         lines.extend(
             [
                 "#if __riscv_xlen == 64",
                 f" ld x{check_reg}, {offset}(x{addr_reg})",
+                f" add x{data_reg}, x{data_reg}, x{check_reg}",
                 f" lwu x{check_reg}, {offset}(x{addr_reg})",
+                f" add x{data_reg}, x{data_reg}, x{check_reg}",
                 "#endif",
             ]
         )
+    lines.append(write_sigupd(data_reg, test_data))
 
     # Load access fault
     lines.append("#ifdef RVMODEL_ACCESS_FAULT_ADDRESS")
@@ -316,6 +330,7 @@ def generate_delegated_fault_tests(
         [
             test_data.add_testcase(tag, coverpoints["loadaccessfault"], covergroup),
             f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+            f"LI(x{check_reg}, 0xB0BACAFE)  # each faulting load must leave rd unchanged",
         ]
     )
     for op in ["lw", "lh", "lhu", "lb", "lbu"]:
@@ -326,6 +341,7 @@ def generate_delegated_fault_tests(
             f" ld x{check_reg}, 0(x{addr_reg})",
             f" lwu x{check_reg}, 0(x{addr_reg})",
             "#endif",
+            write_sigupd(check_reg, test_data),
             "#endif",
         ]
     )
@@ -684,7 +700,12 @@ def generate_misaligned_priority_load_tests(
     lines.append(f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)")
 
     for offset in range(8):
-        lines.append(f"addi x{temp_reg}, x{addr_reg}, {offset}")
+        lines.extend(
+            [
+                f"addi x{temp_reg}, x{addr_reg}, {offset}",
+                f"LI(x{check_reg}, 0xB0BACAFE)  # each faulting load must leave rd unchanged",
+            ]
+        )
 
         for op in load_ops_base:
             lines.extend(
@@ -695,6 +716,8 @@ def generate_misaligned_priority_load_tests(
                 ]
             )
 
+        # Label the SIGUPD with an RV32 testcase: RV64-only labels do not exist on RV32
+        base_label = test_data.current_testcase_label
         lines.append("\n#if __riscv_xlen == 64")
         for op in load_ops_64:
             lines.extend(
@@ -704,7 +727,7 @@ def generate_misaligned_priority_load_tests(
                     f"{op} x{check_reg}, 0(x{temp_reg})",
                 ]
             )
-        lines.append("\n#endif\n")
+        lines.extend(["\n#endif\n", write_sigupd(check_reg, test_data, label=base_label)])
 
     lines.append("#endif")
     test_data.int_regs.return_registers([temp_reg, addr_reg, check_reg])
@@ -777,18 +800,22 @@ def generate_misaligned_priority_fetch_tests(
             "\n# misaligned fetch - existent address",
             f"LA(x{addr_reg}, {target_label})",
             f"addi x{addr_reg}, x{addr_reg}, 2",
+            "LI(x1, 0xB0BACAFE)  # a trapping jalr must leave x1 unchanged",
             test_data.add_testcase(f"{name_prefix}misaligned_existent{name_suffix}", coverpoint, covergroup),
             f"jalr x1, 0(x{addr_reg})",
             ".p2align 4",
             f"{target_label}:",
             "# upper half of addi x0, x2, 0 is 0x0001, a legal c.nop, so a C-capable DUT lands on an instruction",
             "addi x0, x2, 0",
+            write_sigupd(1, test_data),
             "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
             "\n# misaligned fetch - non-existent (fault) address",
             f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
             f"addi x{addr_reg}, x{addr_reg}, 2",
+            "LI(x1, 0xB0BACAFE)",
             test_data.add_testcase(f"{name_prefix}misaligned_nonexistent{name_suffix}", coverpoint, covergroup),
             f"jalr x1, 0(x{addr_reg})",
+            write_sigupd(1, test_data),
             "#endif",
         ]
     )

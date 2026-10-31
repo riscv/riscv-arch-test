@@ -8,7 +8,7 @@
 
 """Exceptions Sm test generator (refactored, calls ExceptionsCommon)."""
 
-from testgen.asm.helpers import comment_banner
+from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.exceptions.ExceptionsCommon import (
@@ -68,7 +68,9 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
                 test_data.add_testcase(tag, "cp_medeleg_msu_instrmisaligned", covergroup),
                 f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
                 f"jalr x1, 0(x{addr_reg})  # aligned target",
+                "LI(x1, 0xB0BACAFE)",
                 f"jalr x1, 2(x{addr_reg})  # misaligned target",
+                write_sigupd(1, test_data),
                 "#endif",
             ]
         )
@@ -110,21 +112,31 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
             ]
         )
 
-        # Load misaligned
+        # Load misaligned.  data_reg accumulates each result, so a trapping load that writes rd changes the sum.
         lines.extend(
-            [test_data.add_testcase(tag, "cp_medeleg_msu_loadmisaligned", covergroup), f"LA(x{addr_reg}, scratch)"]
+            [
+                test_data.add_testcase(tag, "cp_medeleg_msu_loadmisaligned", covergroup),
+                f"LA(x{addr_reg}, scratch)",
+                f"LI(x{check_reg}, 0xB0BACAFE)",
+                f"LI(x{data_reg}, 0)",
+            ]
         )
         for offset in range(8):
             for op in ["lw", "lh", "lhu", "lb", "lbu"]:
-                lines.append(f"{op} x{check_reg}, {offset}(x{addr_reg})")
+                lines.extend(
+                    [f"{op} x{check_reg}, {offset}(x{addr_reg})", f"add x{data_reg}, x{data_reg}, x{check_reg}"]
+                )
             lines.extend(
                 [
                     "#if __riscv_xlen == 64",
                     f" ld x{check_reg}, {offset}(x{addr_reg})",
+                    f" add x{data_reg}, x{data_reg}, x{check_reg}",
                     f" lwu x{check_reg}, {offset}(x{addr_reg})",
+                    f" add x{data_reg}, x{data_reg}, x{check_reg}",
                     "#endif",
                 ]
             )
+        lines.append(write_sigupd(data_reg, test_data))
 
         # Load access fault
         lines.append("#ifdef RVMODEL_ACCESS_FAULT_ADDRESS")
@@ -132,6 +144,7 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
             [
                 test_data.add_testcase(tag, "cp_medeleg_msu_loadaccessfault", covergroup),
                 f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+                f"LI(x{check_reg}, 0xB0BACAFE)  # each faulting load must leave rd unchanged",
             ]
         )
         for op in ["lw", "lh", "lhu", "lb", "lbu"]:
@@ -142,6 +155,7 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
                 f" ld x{check_reg}, 0(x{addr_reg})",
                 f" lwu x{check_reg}, 0(x{addr_reg})",
                 "#endif",
+                write_sigupd(check_reg, test_data),
                 "#endif",
             ]
         )
@@ -287,8 +301,8 @@ def make_exceptionssm(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(generate_instr_adr_misaligned_jal_tests(test_data, _CG))
     tc.code.extend(generate_instr_adr_misaligned_jalr_tests(test_data, _CG))
     tc.code.extend(generate_instr_access_fault_tests(test_data, _CG))
-    tc.code.extend(generate_load_address_misaligned_tests(test_data, _CG, use_sentinel=False))
-    tc.code.extend(generate_load_access_fault_tests(test_data, _CG, use_sigupd=False))
+    tc.code.extend(generate_load_address_misaligned_tests(test_data, _CG, use_sentinel=True))
+    tc.code.extend(generate_load_access_fault_tests(test_data, _CG, use_sigupd=True))
     tc.code.extend(generate_store_address_misaligned_tests(test_data, _CG))
     tc.code.extend(generate_store_access_fault_tests(test_data, _CG))
     tc.code.extend(

@@ -149,6 +149,11 @@ def _add_load_fault(
 
     reg_str = f"f{fp_reg}" if is_float else f"x{check_reg}"
 
+    # The faulting load must leave rd unchanged
+    t_lines.append(f"LI(x{check_reg}, 0xB0BACAFE)")
+    if is_float:
+        t_lines.append(f"fmv.w.x f{fp_reg}, x{check_reg}")
+
     if is_sp:
         t_lines.append(f"mv x{base_reg}, sp")
         t_lines.append("LI(sp, RVMODEL_ACCESS_FAULT_ADDRESS)")
@@ -171,6 +176,8 @@ def _add_load_fault(
         t_lines.append("c.nop")
         t_lines.append("c.nop")
         t_lines.append("c.nop")
+
+    t_lines.append(write_sigupd(fp_reg if is_float else check_reg, test_data, sig_type="float" if is_float else "int"))
 
     test_data.int_regs.return_registers([addr_reg, base_reg, check_reg])
     test_data.float_regs.return_registers([fp_reg])

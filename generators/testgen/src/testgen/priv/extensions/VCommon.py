@@ -32,10 +32,11 @@ _VSET_M1 = "vsetivli x0, 1, e32, m1, tu, mu"
 
 
 def _check_vset(rd_reg: int, check_reg: int, test_data: TestData) -> list[str]:
-    """Commit what a vset* produced: the vl written to rd, and the resulting vtype."""
+    """Commit what a vset* produced: the vl written to rd, and the resulting vtype and vl."""
     return [
         write_sigupd(rd_reg, test_data),
         gen_csr_read_sigupd(check_reg, ("vtype", None), test_data),
+        gen_csr_read_sigupd(check_reg, ("vl", None), test_data),
     ]
 
 
@@ -434,6 +435,7 @@ def _gen_vtype_vill_set_vl_0(test_data: TestData, temp_reg: int, covergroup: str
     lines.append("#else")
     lines.append(f"LI(x{rs2_reg}, 0x8000000000000000)")
     lines.append("#endif")
+    lines.append(f"vsetivli x{temp_reg}, 1, e8, m1, tu, mu  # vl = 1 before the vill write")
     lines.append(test_data.add_testcase("vill_set_vl_0", coverpoint, covergroup))
     lines.append(f"vsetvl x{temp_reg}, x{rs1_reg}, x{rs2_reg}  # rs2 vill set -> vl=0")
     lines.extend(_check_vset(temp_reg, check_reg, test_data))  # the promised vl=0 check

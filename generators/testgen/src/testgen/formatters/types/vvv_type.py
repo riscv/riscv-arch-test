@@ -254,7 +254,7 @@ def format_vvv_like_type(
         # Don't overwrite vs2 in this case
         to_load.append(VectorLoad(reg="vs1", widen="vs1" in widen, egs=egs))
 
-    load_code, random_vl_reg = load_vec_regs(to_load, params, test_data)
+    load_code, random_vl_reg = load_vec_regs(to_load, params, test_data, base_tail_fill=enable_vs2_preload)
     setup.extend(load_code)
     setup.append(load_test_vtype(params, random_vl_reg))
 

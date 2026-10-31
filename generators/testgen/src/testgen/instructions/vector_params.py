@@ -19,6 +19,7 @@ from testgen.constants import VLEN_MAX
 from testgen.data.params import InstructionParams
 from testgen.data.random import random_int, random_range
 from testgen.data.state import TestData
+from testgen.data.vector_data import VECTOR_RANDOM_DATA_LABEL
 from testgen.formatters import get_instruction_type_config
 from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig
 from testgen.instructions.vector import VectorInstructionInfo, parse_vector_instruction_info
@@ -187,12 +188,12 @@ def randomize_registers(
         if new_params.rs1val_pointer is None and (
             "load" in instr_type_config.instruction_class or "store" in instr_type_config.instruction_class
         ):
-            random_ptr = "vector_ls_random_base"
+            random_ptr = VECTOR_RANDOM_DATA_LABEL
             new_params.rs1val_pointer = random_ptr
 
             if random_ptr not in test_data.vector_labels:
                 test_data.register_vector_data(
-                    "vector_ls_random_base",
+                    VECTOR_RANDOM_DATA_LABEL,
                     preset_params.sew,
                     random_elements=VLEN_MAX // preset_params.sew,
                 )
@@ -528,6 +529,8 @@ def generate_random_vector_params(
             if instr_type_config.vector_data.random_element_generator:
                 elements = instr_type_config.vector_data.random_element_generator(element_count, eew, register)
                 test_data.register_vector_data(label, eew, elements=elements)
+            elif suite == "length" and 8 <= eew <= 64:
+                test_data.register_pooled_vector_data(label, eew, element_count)
             else:
                 test_data.register_vector_data(label, eew, random_elements=element_count)
 

@@ -6,13 +6,16 @@
 ##################################
 
 import re
+from random import Random
 from typing import Literal
 
+from testgen.constants import VECTOR_LENGTH_DATA_POOL_BYTES
 from testgen.data.config import TestConfig
 from testgen.data.params import InstructionParams
 from testgen.data.random import random_int
 from testgen.data.registers import FloatRegisterFile, IntegerRegisterFile, VectorRegisterFile
 from testgen.data.test_chunk import TestChunk
+from testgen.data.vector_data import PooledVectorData, VectorData
 
 # Pre-compiled regex patterns for label normalization in add_testcase()
 _LABEL_INVALID_CHARS = re.compile(r"[^a-zA-Z0-9_]")
@@ -53,7 +56,10 @@ class TestData:
         self._current_testcase_label = ""
         self._fp_load_size: Literal["single", "double", "half", "quad"] | None = None
         self.test_chunk: TestChunk | None = None
-        self._vector_labels: dict[str, tuple[list[int], int]] = {}
+        self._vector_labels: dict[str, tuple[VectorData, int]] = {}
+        self._length_data_rng = Random(f"{instr_name}-{test_config.sew}-{test_config.xlen}")
+        self._length_data_pool: tuple[int, ...] = ()
+        self._length_data_ranges: dict[int, list[tuple[int, int]]] = {}
 
     def __repr__(self) -> str:
         return f"TestData(config={self._config}, int_regs={self._int_regs}, float_regs={self._float_regs}, test_count={self._test_count})"
@@ -147,7 +153,7 @@ class TestData:
         return self._test_count
 
     @property
-    def vector_labels(self) -> dict[str, tuple[list[int], int]]:
+    def vector_labels(self) -> dict[str, tuple[VectorData, int]]:
         return self._vector_labels
 
     def increment_test_count(self) -> None:
@@ -264,6 +270,34 @@ class TestData:
             )
 
         self._vector_labels[label] = (elements, sew)
+
+    def register_pooled_vector_data(self, label: str, eew: int, element_count: int) -> None:
+        """
+        Registers a label for element_count random eew-wide elements that point into this instruction's pool of
+        random length-suite data, so its test files hold one pool instead of a copy per label. The offset is random
+        and aligned to the operand size, and does not overlap the other operands of the same testcase. The shared
+        random stream advances as if the elements were drawn individually, so the rest of the test is unchanged.
+        """
+        for _ in range(element_count):
+            random_int(eew)
+
+        if not self._length_data_pool:
+            self._length_data_pool = tuple(
+                self._length_data_rng.randrange(2**64) for _ in range(VECTOR_LENGTH_DATA_POOL_BYTES // 8)
+            )
+
+        size = element_count * eew // 8
+        align = 1 << (size - 1).bit_length()
+        used = self._length_data_ranges.setdefault(self._test_count, [])
+        free = [
+            offset
+            for offset in range(0, VECTOR_LENGTH_DATA_POOL_BYTES - size + 1, align)
+            if all(offset + size <= start or end <= offset for start, end in used)
+        ]
+        assert free, f"No room in the length-suite data pool for {label}"
+        offset = self._length_data_rng.choice(free)
+        used.append((offset, offset + size))
+        self._vector_labels[label] = (PooledVectorData(self._length_data_pool, offset), eew)
 
 
 def return_testcase_registers(test_data: TestData, params: InstructionParams) -> None:

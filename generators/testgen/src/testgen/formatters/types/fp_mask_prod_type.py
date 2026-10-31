@@ -141,7 +141,9 @@ def format_fp_mask_producing_type(
             32: "single",
             64: "double",
         }
-        setup.append(load_float_reg("fs1", params.fs1, params.fs1val, test_data, fp_load_sew_map[params.sew]))
+        setup.append(
+            load_float_reg("fs1", params.fs1, params.fs1val, test_data, fp_load_sew_map[params.sew], comment=False)
+        )
         testline += f", f{params.fs1}"
 
     load_code, random_vl_reg = load_vec_regs(to_load, params, test_data)

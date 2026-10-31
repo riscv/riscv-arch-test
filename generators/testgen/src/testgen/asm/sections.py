@@ -8,9 +8,17 @@
 
 """Assembly data section generation."""
 
+from random import Random
+
 from testgen.asm.helpers import to_hex
-from testgen.constants import VLEN_MAX
-from testgen.data.random import random_int
+from testgen.constants import VECTOR_DATA_BYTES_PER_LINE, VLEN_MAX
+from testgen.data.vector_data import (
+    LENGTH_DATA_POOL_LABEL,
+    VECTOR_RANDOM_DATA_FILE,
+    VECTOR_RANDOM_DATA_LABEL,
+    PooledVectorData,
+    VectorData,
+)
 
 
 def generate_test_data_section(data_values: list[int], xlen: int, flen: int, vdsew: int) -> str:
@@ -51,7 +59,7 @@ def generate_test_string_section(data_strings: list[str]) -> str:
     return "\n".join(data_strings)
 
 
-def generate_vector_data_section(vector_data_labels: list[tuple[str, list[int], int]]) -> str:
+def generate_vector_data_section(vector_data_labels: list[tuple[str, VectorData, int]]) -> str:
     """
     Generate the .data section containing all vector data, aligned to eew
 
@@ -69,6 +77,19 @@ def generate_vector_data_section(vector_data_labels: list[tuple[str, list[int], 
             continue
         seen_labels.add(label)
 
+        if label == VECTOR_RANDOM_DATA_LABEL:
+            lines.append(f'#include "{VECTOR_RANDOM_DATA_FILE}"')
+            continue
+
+        if isinstance(data, PooledVectorData):
+            if LENGTH_DATA_POOL_LABEL not in seen_labels:
+                seen_labels.add(LENGTH_DATA_POOL_LABEL)
+                lines.extend(
+                    [".balign 8", f"{LENGTH_DATA_POOL_LABEL}:", *pack_data_directives(".dword", list(data.pool), 64)]
+                )
+            lines.append(f".set {label}, {LENGTH_DATA_POOL_LABEL} + {data.offset}")
+            continue
+
         # Repack into .dword chunks
         if eew == 256:
             data = [(val >> (64 * i)) & (2**64 - 1) for val in data for i in range(4)]
@@ -79,41 +100,56 @@ def generate_vector_data_section(vector_data_labels: list[tuple[str, list[int], 
 
         lines.append(f".balign {eew // 8}")
 
-        if label == "vector_ls_random_base":
-            lines.extend(generate_vector_ls_random_base(eew))
-            continue
-
         lines.append(f"{label}:")
-        for value in data:
-            hex_value = to_hex(value, eew)
-            lines.append(f"{directive} {hex_value}")
+        lines.extend(pack_data_directives(directive, data, eew))
 
     return "\n".join(lines)
 
 
-def generate_vector_ls_random_base(eew: int) -> list[str]:
+def pack_data_directives(directive: str, values: list[int], eew: int) -> list[str]:
     """
-    Generates a vector load-store base and header label, able to fit 8*vlmax bytes going forward
-    to cover all possible lmul and segment combinations, and 2*vlmax bytes going backwards for the
-    strided load-store instructions.
-
-    TODO: Make this customizable by instruction type & cut down on the number of elements generated
-    as this is probably too many
+    Emit values as data directives holding VECTOR_DATA_BYTES_PER_LINE bytes per line. Elements narrower than 64
+    bits are combined into little-endian .dword values, which lay out the same bytes in memory with shorter text.
+    Elements left over after the last full doubleword keep their own directive.
     """
+    if eew >= 64:
+        return _data_lines(directive, values, eew)
+    per_dword = 64 // eew
+    full = len(values) - len(values) % per_dword
+    dwords = [
+        sum((values[i + k] & ((1 << eew) - 1)) << (k * eew) for k in range(per_dword))
+        for i in range(0, full, per_dword)
+    ]
+    return _data_lines(".dword", dwords, 64) + _data_lines(directive, values[full:], eew)
 
-    lines = ["vector_ls_random_header:"]
-    directives = {8: ".byte", 16: ".short", 32: ".word", 64: ".dword"}
-    directive = directives[eew]
 
-    for i in range(2 * VLEN_MAX):
-        value = random_int(eew)
-        hex_value = to_hex(value, eew)
-        lines.append(f"{directive} {hex_value}")
+def _data_lines(directive: str, values: list[int], eew: int) -> list[str]:
+    per_line = max(1, VECTOR_DATA_BYTES_PER_LINE * 8 // eew)
+    return [
+        f"{directive} " + ", ".join(to_hex(value, eew) for value in values[i : i + per_line])
+        for i in range(0, len(values), per_line)
+    ]
 
-    lines.append("vector_ls_random_base:")
-    for i in range(8 * VLEN_MAX):
-        value = random_int(eew)
-        hex_value = to_hex(value, eew)
-        lines.append(f"{directive} {hex_value}")
 
-    return lines
+def generate_vector_random_data() -> str:
+    """
+    Generates tests/env/vector_random_data.h, the random data shared by the vector load/store tests. It holds
+    8*VLEN_MAX bytes after vector_ls_random_base to cover all lmul and segment combinations and 2*VLEN_MAX bytes
+    before it for negative strides.
+    """
+    rng = Random("vector_random_data")
+    header = [rng.randrange(2**64) for _ in range(2 * VLEN_MAX // 8)]
+    base = [rng.randrange(2**64) for _ in range(8 * VLEN_MAX // 8)]
+    return "\n".join(
+        [
+            "// Random data shared by the vector load/store tests. Generated by testgen; do not edit.",
+            "// SPDX-License-Identifier: Apache-2.0",
+            "",
+            ".balign 8",
+            "vector_ls_random_header:",
+            *pack_data_directives(".dword", header, 64),
+            f"{VECTOR_RANDOM_DATA_LABEL}:",
+            *pack_data_directives(".dword", base, 64),
+            "",
+        ]
+    )

@@ -11,7 +11,7 @@
 from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk, trap_sigupd_count
-from testgen.priv.extensions.sv.access import Crosses, cross_names
+from testgen.priv.extensions.sv.access import Crosses, cross_names, virtual_address
 from testgen.priv.extensions.sv.generate import SvRegs, begin_sv_test, end_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import (
     PTE_SETUP_ADDR_REG,
@@ -31,10 +31,13 @@ from testgen.priv.extensions.sv.Sv import (
     change_pte_to_be,
     emit_access,
     level_header,
+    mprv_cleanup,
+    mstatus_setup,
     satp_access_ops,
     satp_csr_read,
     satp_mode_value,
 )
+from testgen.priv.extensions.sv.SvZicbo import CBOS
 from testgen.priv.registry import add_priv_test_generator
 
 MPRV_CG = "Sv_Sm_mstatus_mprv_cg"
@@ -222,6 +225,44 @@ def _t_satp_access(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode
     test_chunks.append(test_data.end_test_chunk())
 
 
+def _t_mprv_cbo(test_data: TestData, sv: SvMode, family: str) -> TestChunk:
+    """CBOs in M-mode with mstatus.MPRV = 1 are translated and checked with the privilege in MPP, like stores
+    (cmo.adoc), but menvcfg enables them by the mode that executes them, which is M-mode.  The menvcfg CBO fields
+    are clear throughout."""
+    regs = SvRegs.allocate(test_data)
+    chunk = begin_sv_test(test_data, regs, sv, "Smode", f"Sm_{sv.name}_mprv_{family}", coverpoint="cp_mprv_cbo")
+    ops = CBOS[family]
+    t = f"x{regs.scratch}"
+    enables = "MENVCFG_CBIE | MENVCFG_CBCFE | MENVCFG_CBZE"
+    code = [
+        f"// With the menvcfg CBO fields clear, execute {', '.join(ops)} in M-mode with MPRV = 1 and MPP = M (no",
+        "// translation), S and U, on a supervisor page and a user page.  sstatus.SUM = 0, so a store page fault",
+        "// is expected where the page's U does not match MPP.",
+        f"LI({t}, {enables})",
+        f"csrc menvcfg, {t}",
+    ]
+    mprv_m = (f"LI({t}, MSTATUS_MPRV | MSTATUS_MPP)", f"csrs mstatus, {t}")
+    faults = 0
+    for user in (False, True):
+        code.extend([*create_page_mapping(sv, leaf_level=0, leaf_flags=PteFlags(user=user)), "sfence.vma"])
+        for mpp in ("m", "s", "u"):
+            if mpp == "m":
+                code.append(f"LA(x{regs.addr}, rvtest_data_1)")
+            else:
+                code.extend(virtual_address(sv, "va_data", 0, destination=regs.addr, scratch=regs.scratch))
+                faults += len(ops) if user == (mpp == "s") else 0
+            # The mret that ends a trap handler changes MPP and clears MPRV, so both are set before each CBO
+            setup = mprv_m if mpp == "m" else mstatus_setup(f"mprv_{mpp}", regs.scratch)
+            for op in ops:
+                label = test_data.add_testcase(f"u{int(user)}_mpp_{mpp}_{op.replace('.', '_')}", "cp_mprv_cbo", MPRV_CG)
+                code.extend([*setup, label, f"{op} (x{regs.addr})", *mprv_cleanup(regs.scratch)])
+    code.extend([f"LI({t}, {enables})", f"csrs menvcfg, {t}"])
+    chunk.code.extend(code)
+    chunk.raw_data.extend(sv_data(sv, regs))
+    chunk.trap_sigupd_count = trap_sigupd_count(faults)
+    return end_sv_test(test_data, regs)
+
+
 def _make_svsm(test_data: TestData, sv: SvMode) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
     _t_mstatus_mprv(test_data, test_chunks, sv)
@@ -351,3 +392,43 @@ def make_svsm_mstatus_tvm(test_data: TestData) -> list[TestChunk]:
     chunk.trap_sigupd_count = 8
     test_data.int_regs.return_registers([value_reg, check_reg])
     return [test_data.end_test_chunk()]
+
+
+@add_priv_test_generator(
+    "Sv",
+    required_extensions=["Sm", "Sv32", "Zicbom"],
+    march_extensions=["Zicbom"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_svsm_sv32_zicbom(test_data: TestData) -> list[TestChunk]:
+    return [_t_mprv_cbo(test_data, SV32, "zicbom")]
+
+
+@add_priv_test_generator(
+    "Sv",
+    required_extensions=["Sm", "Sv32", "Zicboz"],
+    march_extensions=["Zicboz"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_svsm_sv32_zicboz(test_data: TestData) -> list[TestChunk]:
+    return [_t_mprv_cbo(test_data, SV32, "zicboz")]
+
+
+@add_priv_test_generator(
+    "Sv",
+    required_extensions=["Sm", "Sv39", "Zicbom"],
+    march_extensions=["Zicbom"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_svsm_sv39_zicbom(test_data: TestData) -> list[TestChunk]:
+    return [_t_mprv_cbo(test_data, SV39, "zicbom")]
+
+
+@add_priv_test_generator(
+    "Sv",
+    required_extensions=["Sm", "Sv39", "Zicboz"],
+    march_extensions=["Zicboz"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_svsm_sv39_zicboz(test_data: TestData) -> list[TestChunk]:
+    return [_t_mprv_cbo(test_data, SV39, "zicboz")]

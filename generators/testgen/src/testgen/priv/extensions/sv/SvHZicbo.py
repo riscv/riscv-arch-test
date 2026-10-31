@@ -41,14 +41,10 @@ from testgen.priv.extensions.sv.page_tables import (
     write_pte,
 )
 from testgen.priv.extensions.sv.SvH import henvcfg_bits, menvcfg_bits, read_pte
-from testgen.priv.extensions.sv.SvZicbo import cbo_leaves
+from testgen.priv.extensions.sv.SvZicbo import CBOS, cbo_leaves
 from testgen.priv.registry import add_priv_test_generator
 
-OPS = {
-    "zicbom": ("cbo.clean", "cbo.flush", "cbo.inval"),
-    "zicboz": ("cbo.zero",),
-    "zicbop": ("prefetch.i", "prefetch.r", "prefetch.w"),
-}
+OPS = {**CBOS, "zicbop": ("prefetch.i", "prefetch.r", "prefetch.w")}
 _FIELDS = {"zicbom": ("cbie", "cbcfe"), "zicboz": ("cbze",)}
 DATA = "svhzicbo_data"
 _DATA_REGION = [".p2align 12", f"{DATA}:", f".fill 1024, 4, {CBO_ZERO_FILL:#x}"]
@@ -135,10 +131,11 @@ def case(
     va: str | None = None,
     guest: tuple[list[str], list[str]] = ([], []),
     ifdef: str | None = None,
+    byte_offset: int = 0,
 ) -> list[str]:
     """Write ``ptes``, form the guest virtual address of ``offset`` in the mapping of ``va`` (by default
-    stage.data_va) at ``level``, and run the CBOs in ``mode`` between the ``guest`` setup and cleanup lines.  The home
-    mode checks what cbo.zero did to the test data."""
+    stage.data_va) at ``level``, add ``byte_offset``, and run the CBOs in ``mode`` between the ``guest`` setup and
+    cleanup lines.  The home mode checks what cbo.zero did to the test data."""
     addr, val = test_data.int_regs.get_registers(2)
     check = c.family == "zicboz" and offset == DATA
     lines = [
@@ -156,6 +153,7 @@ def case(
             merge_sv32_base_page=True,
             scratch=addr,
         ),
+        *([f"addi x{c.gva}, x{c.gva}, {byte_offset}    # inside the cache block"] if byte_offset else []),
     ]
     if check:
         lines.extend([f"LA(x{addr}, {DATA})", f"LI(x{val}, {CBO_ZERO_FILL:#x})", f"sw x{val}, 0(x{addr})"])
@@ -408,6 +406,83 @@ def _prefetch_cases(test_data: TestData, c: Chunk, mode: str) -> list[str]:
     return lines
 
 
+# The byte offset of the CBO address inside its cache block.  A CBO takes no address-misaligned exception, and a
+# fault writes rs1 to stval (cmo.adoc fault_excep_csr), not the block's address.  htval holds the guest physical
+# address shifted right by 2, and the ISA manual does not say whether that is the address of rs1 or of the block,
+# so the offset stays within the two bits that htval drops.
+BYTE_OFFSET = 3
+
+
+def _offset_cases(test_data: TestData, c: Chunk, mode: str) -> list[str]:
+    """CBOs BYTE_OFFSET bytes into a cache block at kilopage leaves: no fault, a store page fault, a store
+    guest-page fault on the final guest physical address and on a G-stage leaf, and a store access fault."""
+    vs, g = c.vs, c.g
+    user = PteFlags(user=mode == "vu")
+    identity = vs_identity(test_data, c, mode)
+    unmapped_gpa = _pte(test_data, g, g.levels - 1, "0", g.data_va, "0")
+    cases: list[tuple[str, str, SvMode, list[str], str, str | None]] = [
+        (
+            "offset_valid",
+            "no fault and no address-misaligned exception",
+            vs,
+            mapping(test_data, vs, 0, user),
+            DATA,
+            None,
+        ),
+        (
+            "offset_vs_v0",
+            "store page fault, stval = rs1",
+            vs,
+            mapping(test_data, vs, 0, PteFlags(valid=False, user=mode == "vu")),
+            DATA,
+            None,
+        ),
+        (
+            "offset_gpa_unmapped",
+            "store guest-page fault, stval = rs1",
+            vs,
+            [*mapping(test_data, vs, 0, user, g.data_va), *unmapped_gpa],
+            DATA,
+            None,
+        ),
+        (
+            "offset_g_v0",
+            "store guest-page fault, stval = rs1",
+            g,
+            [*identity, *mapping(test_data, g, 0, PteFlags(valid=False, user=True))],
+            DATA,
+            None,
+        ),
+        (
+            "offset_access_fault",
+            "store access fault, stval = rs1",
+            g,
+            [*identity, *mapping(test_data, g, 0, PteFlags(user=True), "RVMODEL_ACCESS_FAULT_ADDRESS")],
+            "RVMODEL_ACCESS_FAULT_ADDRESS",
+            "RVMODEL_ACCESS_FAULT_ADDRESS",
+        ),
+    ]
+    lines = []
+    for name, expected, stage, ptes, offset, ifdef in cases:
+        lines.extend(
+            case(
+                test_data,
+                c,
+                mode,
+                name,
+                "cp_offset",
+                expected,
+                ptes,
+                stage=stage,
+                level=0,
+                offset=offset,
+                ifdef=ifdef,
+                byte_offset=BYTE_OFFSET,
+            )
+        )
+    return lines
+
+
 _PREFETCH_SECTION = (
     "prefetch",
     "cp_vs_prefetch, cp_g_prefetch",
@@ -428,6 +503,12 @@ _SECTIONS = (
         "cp_g_pte, cp_g_pa",
         "Each G-stage PTE, and G-stage leaf and non-leaf PTEs at faulting supervisor physical addresses",
         _g_cases,
+    ),
+    (
+        "offset",
+        "cp_offset",
+        f"CBOs {BYTE_OFFSET} bytes into a cache block, without a fault and with each kind of fault",
+        _offset_cases,
     ),
 )
 

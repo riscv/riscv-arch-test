@@ -1323,6 +1323,9 @@
         li a1, CSR_MEPC
         beq a0, a1, 2f
     1:
+        # An M-mode test body may have set mstatus.MDT, which makes the ecall a double trap.
+        LREG a0, rvtest_current_mode
+        beqz a0, 2f                         # the last T-SBI mode change was to M-mode
         # M-mode resumes after the ecall at the same address, which it can fetch only if this
         # code runs at its link address. A test running it through another mapping of the
         # image reports in place, as before.

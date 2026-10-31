@@ -736,6 +736,33 @@ covergroup Exceptions_Zaamo_cg with function sample(ins_t ins);
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
         }
         cp_amo_access_fault:        cross amo_instrs, illegal_address;
+
+        amo_instrs_wd: coverpoint ins.current.insn {
+            wildcard bins amoswap_w = {AMOSWAP_W};
+            wildcard bins amoadd_w  = {AMOADD_W};
+            wildcard bins amoand_w  = {AMOAND_W};
+            wildcard bins amoor_w   = {AMOOR_W};
+            wildcard bins amoxor_w  = {AMOXOR_W};
+            wildcard bins amomax_w  = {AMOMAX_W};
+            wildcard bins amomaxu_w = {AMOMAXU_W};
+            wildcard bins amomin_w  = {AMOMIN_W};
+            wildcard bins amominu_w = {AMOMINU_W};
+            `ifdef UDB_MXLEN_64
+                wildcard bins amoswap_d = {AMOSWAP_D};
+                wildcard bins amoadd_d  = {AMOADD_D};
+                wildcard bins amoand_d  = {AMOAND_D};
+                wildcard bins amoor_d   = {AMOOR_D};
+                wildcard bins amoxor_d  = {AMOXOR_D};
+                wildcard bins amomax_d  = {AMOMAX_D};
+                wildcard bins amomaxu_d = {AMOMAXU_D};
+                wildcard bins amomin_d  = {AMOMIN_D};
+                wildcard bins amominu_d = {AMOMINU_D};
+            `endif
+        }
+        illegal_address_misaligned: coverpoint ins.current.rs1_val {
+            bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS + 1};
+        }
+        cp_amo_access_misaligned_priority: cross amo_instrs_wd, illegal_address_misaligned;
     `endif
 
 endgroup

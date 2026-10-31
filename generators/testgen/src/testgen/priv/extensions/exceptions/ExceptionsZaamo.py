@@ -262,6 +262,37 @@ def _generate_amo_access_fault_tests(test_data: TestData) -> list[str]:
     return lines
 
 
+def _generate_amo_access_misaligned_priority_tests(test_data: TestData) -> list[str]:
+    covergroup, coverpoint = "Exceptions_Zaamo_cg", "cp_amo_access_misaligned_priority"
+    dest_reg, source_reg, addr_reg = test_data.int_regs.get_registers(3)
+
+    lines = [
+        "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
+        comment_banner(coverpoint, "Test misaligned amo instructions on restricted memory for exception priority"),
+        f"LI(x{source_reg}, 1)",
+        f"LI(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+        f"addi x{addr_reg}, x{addr_reg}, 1",
+    ]
+
+    ops = ["amoswap.", "amoadd.", "amoxor.", "amoand.", "amoor.", "amomin.", "amomax.", "amominu.", "amomaxu."]
+    for width in ["w", "d"]:
+        if width == "d":
+            lines.append("#if __riscv_xlen == 64")
+        for op in ops:
+            lines.extend(
+                [
+                    f"LI(x{dest_reg}, 0xBAD)",
+                    test_data.add_testcase(f"amo_access_misaligned_priority_{op[:-1]}_{width}", coverpoint, covergroup),
+                    f"{op}{width} x{dest_reg}, x{source_reg}, (x{addr_reg})",
+                    write_sigupd(dest_reg, test_data),
+                ]
+            )
+    lines.extend(["#endif", "#endif"])
+
+    test_data.int_regs.return_registers([dest_reg, source_reg, addr_reg])
+    return lines
+
+
 @add_priv_test_generator(
     "Exceptions",
     required_extensions=["Zaamo", ["Sm", "U"]],
@@ -274,5 +305,6 @@ def make_exceptionszaamo(test_data: TestData) -> list[TestChunk]:
 
     tc.code.extend(_generate_amo_address_misaligned_tests(test_data))
     tc.code.extend(_generate_amo_access_fault_tests(test_data))
+    tc.code.extend(_generate_amo_access_misaligned_priority_tests(test_data))
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

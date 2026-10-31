@@ -105,7 +105,6 @@
 #define RVMODEL_MTIMECMP_ADDRESS (CLINT_BASE_ADDRESS + 0x4000)
 #define RVMODEL_MSIP_ADDRESS     (CLINT_BASE_ADDRESS + 0x0)
 
-#define RVMODEL_MAX_CYCLES_PER_TIMER_TICK 1000
 # 8 ticks (8000 cycles) covers the four T-SBI round trips that arm the timer from U-mode.
 #define RVMODEL_TIMER_INT_SOON_DELAY 8
 # An interrupt raised through the CLINT or the PLIC reaches mip within a few tens of cycles.
@@ -113,55 +112,39 @@
 
 ##### External Interrupts #####
 
-
-#define RVMODEL_SET_MEXT_INT(_R1, _R2)          \
+# Raise the UART interrupt through one PLIC context: enable the UART source in that context, set
+# its threshold to 0 and set the UART transmit watermark interrupt.
+#define ROCKET_SET_EXT_INT(_R1, _R2, _ENABLE, _THRESH) \
   li _R1, 1;                                     \
   li _R2, PLIC_BASE_ADDRESS;                     \
   sw _R1, (4*UART_INT_SRC)(_R2);                 \
   li _R1, (1 << UART_INT_SRC);                   \
-  li _R2, PLIC_ENABLE_ADDRESS;                   \
+  li _R2, _ENABLE;                               \
   sw _R1, 0(_R2);                                \
-  li _R2, PLIC_THRESH_ADDRESS;                   \
+  li _R2, _THRESH;                               \
   sw zero, 0(_R2);                               \
   li _R2, UART_BASE_ADDRESS;                     \
   li _R1, 1;                                     \
   sb _R1, 0xA(_R2);                              \
   sw _R1, 0x10(_R2);
 
-# Drop the UART interrupt, then claim and complete it. The M context is disabled afterwards so
-# that it does not also see a later supervisor external interrupt.
-#define RVMODEL_CLR_MEXT_INT(_R1, _R2)          \
+# Drop the UART interrupt, then claim and complete it. The context is disabled afterwards so
+# that it does not also see a later external interrupt meant for the other context.
+#define ROCKET_CLR_EXT_INT(_R1, _R2, _CLAIM, _ENABLE) \
   li _R2, UART_BASE_ADDRESS;                     \
   sw zero, 0x10(_R2);                            \
-  li _R2, PLIC_CLAIM_ADDRESS;                    \
+  li _R2, _CLAIM;                                \
   lw _R1, 0(_R2);                                \
   sw _R1, 0(_R2);                                \
-  li _R2, PLIC_ENABLE_ADDRESS;                   \
+  li _R2, _ENABLE;                               \
   sw zero, 0(_R2);
+
+#define RVMODEL_SET_MEXT_INT(_R1, _R2) ROCKET_SET_EXT_INT(_R1, _R2, PLIC_ENABLE_ADDRESS, PLIC_THRESH_ADDRESS)
+#define RVMODEL_CLR_MEXT_INT(_R1, _R2) ROCKET_CLR_EXT_INT(_R1, _R2, PLIC_CLAIM_ADDRESS, PLIC_ENABLE_ADDRESS)
 
 ##### Supervisor Interrupts #####
 
-#define RVMODEL_SET_SEXT_INT(_R1, _R2)          \
-  li _R1, 1;                                     \
-  li _R2, PLIC_BASE_ADDRESS;                     \
-  sw _R1, (4*UART_INT_SRC)(_R2);                 \
-  li _R1, (1 << UART_INT_SRC);                   \
-  li _R2, PLIC_SENABLE_ADDRESS;                  \
-  sw _R1, 0(_R2);                                \
-  li _R2, PLIC_STHRESH_ADDRESS;                  \
-  sw zero, 0(_R2);                               \
-  li _R2, UART_BASE_ADDRESS;                     \
-  li _R1, 1;                                     \
-  sb _R1, 0xA(_R2);                              \
-  sw _R1, 0x10(_R2);
-
-#define RVMODEL_CLR_SEXT_INT(_R1, _R2)          \
-  li _R2, UART_BASE_ADDRESS;                     \
-  sw zero, 0x10(_R2);                            \
-  li _R2, PLIC_SCLAIM_ADDRESS;                   \
-  lw _R1, 0(_R2);                                \
-  sw _R1, 0(_R2);                                \
-  li _R2, PLIC_SENABLE_ADDRESS;                  \
-  sw zero, 0(_R2);
+#define RVMODEL_SET_SEXT_INT(_R1, _R2) ROCKET_SET_EXT_INT(_R1, _R2, PLIC_SENABLE_ADDRESS, PLIC_STHRESH_ADDRESS)
+#define RVMODEL_CLR_SEXT_INT(_R1, _R2) ROCKET_CLR_EXT_INT(_R1, _R2, PLIC_SCLAIM_ADDRESS, PLIC_SENABLE_ADDRESS)
 
 #endif // _RVMODEL_MACROS_H

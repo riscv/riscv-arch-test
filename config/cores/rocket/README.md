@@ -95,5 +95,3 @@ make CONFIG_FILES=config/cores/rocket/rocket-saturn-rv64gcvh/test_config.yaml
   context 1 S-mode.
 - `RVMODEL_ACCESS_FAULT_ADDRESS` is `0x4000_0000` (unmapped).
 - `RVMODEL_BOOT` clears `mie`: the boot ROM leaves `mie.MSIE` set.
-- `run-rocket.sh` scores a test as passed only when the simulator exits 0 and prints the
-  `RVCP-SUMMARY: TEST PASSED` line.

@@ -136,11 +136,11 @@ normative_rule_definitions:
     coverpoint: [""]
   # Instructions that access a non-existent CSR address are reserved.
   - name: Zicsr_nonexistent_rsv
-    # Representative coverpoints; also SsstrictS_scsr_cg and other SsstrictU_ucsr_cg crosses
+    # Representative coverpoints; also Ssstrict_S_scsr_cg and other Ssstrict_U_ucsr_cg crosses
     coverpoint:
       [
-        "SsstrictSm_mcsr_cg/{cp_csrr, cp_csrw_edges, cp_csrcs}",
-        "SsstrictU_ucsr_cg/cp_csrr",
+        "Ssstrict_Sm_mcsr_cg/{cp_csrr, cp_csrw_edges, cp_csrcs}",
+        "Ssstrict_U_ucsr_cg/cp_csrr",
       ]
   # Machine-mode standard read-write CSRs 0x7A0–0x7BF are reserved for use by the debug
   # system. Of these CSRs, 0x7A0–0x7AF are accessible to machine mode, whereas
@@ -217,4 +217,4 @@ normative_rule_definitions:
   # reserved, so an attempt to access a high-half CSR typically raises an illegal-instruction
   # exception.
   - name: Zicsr_high_half_rv64_rsv
-    coverpoint: ["SsstrictSm_mcsr_cg/{cp_csrr, cp_csrw_edges, cp_csrcs}"]
+    coverpoint: ["Ssstrict_Sm_mcsr_cg/{cp_csrr, cp_csrw_edges, cp_csrcs}"]

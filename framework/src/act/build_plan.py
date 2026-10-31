@@ -15,7 +15,7 @@ from pathlib import Path
 import pyjson5
 
 from act.build_types import COVERAGE_STEP_TIMEOUT_SECONDS, BuildTask, PythonAction, SubprocessAction, SymlinkAction
-from act.config import Config, CoverageSimulator, RefModelType, spike_isa_string
+from act.config import Config, CoverageSimulator, RefModelType
 from act.coverreport import generate_report, merge_summaries
 from act.parse_test_constraints import TestMetadata
 from act.sail_to_rvvi import sailLog2Trace
@@ -100,13 +100,6 @@ def _ref_model_sig_cmd(
             cmd.append("--trace")
             cmd.extend(["--trace-output", str(sig_trace_file)])
         cmd.extend(["--config", str(sail_config_path)])
-        cmd.extend(config.ref_model_type.signature_flags(sig_file, xlen // 8))
-        cmd.append(str(sig_elf))
-        return cmd
-    if config.ref_model_type == RefModelType.SPIKE:
-        cmd = [str(config.ref_model_exe), f"--isa={spike_isa_string(xlen)}"]
-        if debug:
-            cmd.extend(["-l", "--log-commits", f"--log={sig_trace_file}"])
         cmd.extend(config.ref_model_type.signature_flags(sig_file, xlen // 8))
         cmd.append(str(sig_elf))
         return cmd
@@ -376,6 +369,7 @@ def gen_rvvi_tasks(
     sail_cmd.extend(
         [
             "--trace",
+            "--trace-ptw",
             "--trace-output",
             str(sail_trace),
             "--config",
@@ -418,10 +412,15 @@ def gen_coverage_tasks(
     dry_run: bool = False,
     enable_experimental_extensions: bool = False,
     exclude_sm: bool = False,
+    jobs: int = 1,
 ) -> list[BuildTask]:
     """Generate BuildTasks for coverage UCDB generation, reports, and summary merging."""
     tasks: list[BuildTask] = []
     coverage_reports: list[Path] = []
+    # Split this config's job share across its Verilator builds so the total stays near jobs.
+    simulator_build_env: tuple[tuple[str, str], ...] = ()
+    if coverage_simulator == CoverageSimulator.VERILATOR:
+        simulator_build_env = (("VERILATOR_BUILD_JOBS", str(max(1, jobs // len(coverage_targets)))),)
 
     # Resolve package resources once for use in commands and dependency tracking.
     # Uses importlib.resources.files() which returns a real filesystem path when the
@@ -430,7 +429,11 @@ def gen_coverage_tasks(
     # a context that spans task execution.
     act_resources = importlib.resources.files("act")
     fcov_path = Path(str(act_resources / "fcov")).absolute()
-    script_name = "riscv-arch-test.do" if coverage_simulator == CoverageSimulator.QUESTA else "riscv-arch-test-vcs.sh"
+    script_name = {
+        CoverageSimulator.QUESTA: "riscv-arch-test.do",
+        CoverageSimulator.VCS: "riscv-arch-test-vcs.sh",
+        CoverageSimulator.VERILATOR: "riscv-arch-test-verilator.sh",
+    }[coverage_simulator]
     sim_script = Path(str(act_resources / script_name)).absolute()
 
     # Collect shared file dependencies for staleness checking. Extension-specific
@@ -454,7 +457,11 @@ def gen_coverage_tasks(
         coverage_dir = base_dir / coverage_group
         base_name = coverage_dir / coverage_group.stem
         tracelist_file = base_name.with_suffix(".tracelist")
-        coverage_db_ext = "ucdb" if coverage_simulator == CoverageSimulator.QUESTA else "vdb"
+        coverage_db_ext = {
+            CoverageSimulator.QUESTA: "ucdb",
+            CoverageSimulator.VCS: "vdb",
+            CoverageSimulator.VERILATOR: "dat",
+        }[coverage_simulator]
         simulator_artifact = base_name.with_suffix(f".{coverage_db_ext}")
         simulator_log = base_name.with_suffix(f".{coverage_db_ext}.log")
         work_dir = base_name.parent / f"{coverage_db_ext}_work"
@@ -531,7 +538,9 @@ def gen_coverage_tasks(
                 outputs=(simulator_artifact,),
                 deps=rvvi_deps,
                 extra_inputs=coverage_inputs if dry_run else (*coverage_inputs, tracelist_file),
-                action=SubprocessAction(cmd=coverage_cmd, stdout_file=simulator_log, cwd=coverage_dir),
+                action=SubprocessAction(
+                    cmd=coverage_cmd, stdout_file=simulator_log, cwd=coverage_dir, env=simulator_build_env
+                ),
                 intermediate=True,
                 timeout=COVERAGE_STEP_TIMEOUT_SECONDS,
             )
@@ -568,7 +577,7 @@ def gen_coverage_tasks(
 # Top-level build plan construction
 # ---------------------------------------------------------------------------
 
-_COVERAGE_GROUPS_WITHOUT_COVERPOINTS = frozenset({Path("priv/H")})
+_COVERAGE_GROUPS_WITHOUT_COVERPOINTS: frozenset[Path] = frozenset()
 
 
 def generate_build_plan(
@@ -586,6 +595,7 @@ def generate_build_plan(
     dry_run: bool = False,
     enable_experimental_extensions: bool = False,
     exclude_sm: bool = False,
+    jobs: int = 1,
 ) -> list[BuildTask]:
     """Build the full DAG of tasks for a single config."""
     if coverage_enabled and config.ref_model_type != RefModelType.SAIL:
@@ -613,7 +623,7 @@ def generate_build_plan(
     udb_headers = tuple(sorted(p.absolute() for p in (config_wkdir / "env").iterdir() if p.suffix == ".h"))
     compile_inputs = (*env_files, *dut_headers, *udb_headers, config.linker_script.absolute())
 
-    # Sail config affects reference model output (Spike has no equivalent file).
+    # Sail config affects reference model output.
     ref_model_inputs: tuple[Path, ...] = ()
     # sail_macros.h is included by every test, so the platform defines are needed
     # whatever the reference model is; only the model's own inputs are Sail-specific.
@@ -694,6 +704,7 @@ def generate_build_plan(
                 dry_run,
                 enable_experimental_extensions,
                 exclude_sm,
+                jobs,
             )
         )
 

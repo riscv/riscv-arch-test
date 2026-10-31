@@ -5,10 +5,23 @@
 ci_enabled: true
 
 # Wren6991/Hazard3 ba0c83c; paths are under https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/
-#   ExceptionsZalrsc  sc.w with no reservation fails without a bus access, so an sc.w to an inaccessible address retires
-#                     with rd = 1 instead of raising a store access fault (norm:sc_retire_permission): doc/sections/bus_behaviour.adoc#L63 (https://github.com/Wren6991/Hazard3/issues/53)
-#   ZicntrSm,ZicntrU  a load that takes a bus-error access fault is still counted in minstret: hdl/hazard3_core.v#L1138 (https://github.com/Wren6991/Hazard3/issues/49)
-exclude_extensions: "ExceptionsZalrsc,ZicntrSm,ZicntrU"
+exclude_extensions:
+  # Waived: legal implementation-defined behavior that the test does not allow for.
+  # Hazard3 has no PMA checker and learns that an address is inaccessible only from the bus error
+  # response, so a plain store to RVMODEL_ACCESS_FAULT_ADDRESS (0x90000000, no bus slave) raises a
+  # store access fault. An sc.w with no reservation fails inside the core and returns rd = 1 without
+  # a bus access (doc/sections/bus_behaviour.adoc#L63), so there is no bus error and no fault; PMP
+  # faults on sc.w are raised as usual. cp_store_access_fault (gated on RVMODEL_ACCESS_FAULT_ADDRESS)
+  # expects the sc.w to fault (norm:sc_retire_permission). Andrew Waterman: the spec requires
+  # protection checks, not every check that can raise an access fault, and bus errors are
+  # implementation-defined (https://github.com/riscv/riscv-isa-manual/issues/3350,
+  # https://github.com/Wren6991/Hazard3/issues/53). Allowing it would need a per-DUT switch for
+  # whether a failing SC sees bus errors, which is not worth the complexity for so obscure a case.
+  - Exceptions_Zalrsc
+  # A load that takes a bus-error access fault is still counted in minstret: hdl/hazard3_core.v#L1138
+  # (https://github.com/Wren6991/Hazard3/issues/49)
+  - Sm_Zicntr
+  - U_Zicntr
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"
 install_script: ".github/scripts/install-hazard3.sh"

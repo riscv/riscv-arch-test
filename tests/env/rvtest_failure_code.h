@@ -80,13 +80,13 @@
         SREG x1, 8(x9)                 # save x1 early
         li x1, 3
         SREG x1, 0(x9)                 # failure_type = 3 (trap handler)
-        li x1, 4
         SREG x6, 272(x9)               # failing_value = actual value
         SREG DEFAULT_TEMP_REG, 280(x9) # expected_value = expected value
-        la DEFAULT_TEMP_REG, trap_diag_mode
-        sw x1, 0(DEFAULT_TEMP_REG)     # unknown trap mode until the string is decoded
         mv DEFAULT_TEMP_REG, x9        # move scratch base into DEFAULT_TEMP_REG
         mv DEFAULT_LINK_REG, x7        # move return address into DEFAULT_LINK_REG
+        LI(x1, 4)                      # x1 and x9 are already saved/consumed; x16 must stay intact
+        LA(x9, trap_diag_mode)
+        sw x1, 0(x9)                   # unknown trap mode until the string is decoded
         # now DEFAULT_LINK_REG has the return address of jal from the failure and DEFAULT_TEMP_REG is a vacant temporary register.
         # NOTE: do NOT read mcause/mtval/mstatus here.  This entry point is
         # reached from whichever mode's trap handler detected the mismatch;
@@ -1054,6 +1054,14 @@
         la x7, trap_sig_offset_mismatch
         beq x6, x7, trap_diag_offset_mismatch
 
+        // ---- Check for abortstr (from RVTEST_CODE_END, which runs in M-mode) ----
+        la x7, abortstr
+        bne x6, x7, 1f
+        LA(x7, trap_diag_mode)
+        sw zero, 0(x7)
+        j trap_diag_generic_report
+    1:
+
         // ---- Determine mode from string pointer ----
         // Mode is encoded in string name: sv_M*_str, sv_S*_str, sv_H*_str, sv_V*_str
         // and Xclr_Xext_int_str variants
@@ -1254,8 +1262,8 @@
         li x8, 9                                     # subtype: offset mismatch
         la x7, trap_diag_subtype
         sw x8, 0(x7)
-        la x7, trap_diag_mode
-        sw zero, 0(x7)                               # this check runs in M-mode
+        LA(x7, trap_diag_mode)
+        sw zero, 0(x7)                              # this check runs in M-mode
 
         j failedtest_saveresults_common
 
@@ -1921,6 +1929,13 @@
         bne a0, a1, 1f
         // xip mismatch hints
         LA(a0, trap_diag_hint_ip_str)
+        call rvmodel_io_write_str
+        j failedtest_report_end
+    1:
+        li a1, 7
+        bne a0, a1, 1f
+        // xtinst mismatch hints
+        LA(a0, trap_diag_hint_tinst_str)
         call rvmodel_io_write_str
         j failedtest_report_end
     1:
@@ -2652,7 +2667,7 @@
     trap_diag_field_ip_str:
         .string "XIP (trap signature word 2, interrupt)\n"
     trap_diag_field_tval2_str:
-        .string "MTVAL2 (trap signature word 4, hypervisor)\n"
+        .string "MTVAL2/HTVAL (trap signature word 4, hypervisor)\n"
     trap_diag_field_tinst_str:
         .string "XTINST (trap signature word 5, hypervisor)\n"
     trap_diag_field_intid_str:
@@ -2695,8 +2710,13 @@
         .ascii  "RVCP: HINT: XIP mismatch means interrupt pending bits differ. Check: interrupt\n"
         .ascii  "RVCP:       controller configuration, RVMODEL interrupt set/clear macros, timer\n"
         .asciz  "RVCP:       configuration (mtime/mtimecmp), and delegation settings.\n"
+    trap_diag_hint_tinst_str:
+        .ascii  "RVCP: HINT: XTINST must be zero or the reference model's value. Zero is not\n"
+        .ascii  "RVCP:       allowed where the reference writes a pseudoinstruction for a\n"
+        .ascii  "RVCP:       guest-page fault on an implicit VS-stage page-table access,\n"
+        .asciz  "RVCP:       unless mtval2/htval is also zero.\n"
 
     tsbi_instr_not_found_str:
-        .string "\nT-SBI ERROR: requested instruction not found in tsbi_instr_table: "
+        .string "\nT-SBI ERROR: requested instruction not found in the T-SBI instruction table: "
 
 .endm

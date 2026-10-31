@@ -2,12 +2,18 @@
 suite: Shvstvecd
 source: https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=1109621355#gid=1109621355
 coverpoints:
-  - heading: Following tests are done in M-mode
-  - name: cp_shvstvecd
+  - heading: Following tests are done in HS-mode
+  - name: |-
+      cp_vstvec_vaddr_pc
+      cp_vstvec_vaddr_scratch
     goal: Check vstvec.MODE can be 0 and when it is, vstvec.base can hold valid 4-byte aligned addresses
-    description: Write vstvec = RAM_BASE_ADDR, RAM_BASE_ADDR+4
+    description: Write vstvec = two physical addresses with MODE = Direct, the current pc and the scratch area, and read it back.  They are valid even when address translation is off.
     expectation: vstvec gets value written
     bins: "2"
-    rules:
-      - Shvstvecd_vstvec_mode_direct
-      - Shvstvecd_vstvec_base_aligned_address
+  - name: |-
+      cp_vstvec_vaddr_walk1
+      cp_vstvec_vaddr_walk0
+    goal: vstvec.BASE holds every valid 4-byte-aligned virtual address when vstvec.MODE = Direct
+    description: Write a walking 1 (0s in the msbs) and a walking 0 (1s in the msbs) through bits 2 to VALEN-2 of vstvec (bit 31 on RV32) with MODE = Direct, and read it back.  Canonical addresses have bits XLEN-1:VALEN-1 equal, so only bits up to VALEN-2 are walked.  VALEN is set by the largest of Sv39, Sv48 and Sv57 that satp supports; the walk needs Sv32 or Sv39.
+    expectation: vstvec gets value written
+    bins: 2 x walked bits (30 on RV32, 36/45/54 for Sv39/Sv48/Sv57)

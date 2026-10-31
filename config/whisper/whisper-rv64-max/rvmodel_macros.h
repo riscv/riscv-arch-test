@@ -1,3 +1,7 @@
+# rvmodel_macros.h
+# DUT-specific macro definitions for Whisper with an APLIC, AIA (Smaia and Ssaia) and H, used by the -max
+# configs. The configs without H use the APLIC-only version in ../whisper-rv64-m/rvmodel_macros.h.
+
 #ifndef _RVMODEL_MACROS_H
 #define _RVMODEL_MACROS_H
 
@@ -47,6 +51,8 @@
 #define SETIE_SRC2      0x4 /* enable source 2 (bit 2) */
 
 #define RVMODEL_BOOT \
+  /* ---- IMSIC: let the APLIC deliver directly to the M-level and S-level files ---- */ \
+  IMSIC_ENABLE_APLIC_DELIVERY \
   /* ---- Machine APLIC domain: source 1 -> MEXT ---- */ \
   li      t1, ADDR_SOURCECFG1; /* setting up for APLIC */\
   li      t2, SM_EDGE1; \
@@ -85,7 +91,95 @@
   sw      zero, 0(t1); \
   li      t1, ADDR_S_SETIE0; /* Enables source 2 */ \
   li      t2, SETIE_SRC2; \
-  sw      t2, 0(t1);
+  sw      t2, 0(t1); \
+  /* ---- IMSIC: enable the guest interrupt files ---- */ \
+  IMSIC_ENABLE_GUEST_FILES
+
+/* Whisper's IMSIC (whisper.json "imsic") serves only the guest external interrupts; the APLIC above delivers MEXT
+ * and SEXT directly. The M-level interrupt file is at IMSIC_M_FILE and the S-level file at IMSIC_S_FILE, followed
+ * by one guest interrupt file per 4 KiB page; GEILEN is guest_interrupt_count in whisper.json, which
+ * UDB_NUM_EXTERNAL_GUEST_INTERRUPTS matches. Writing an interrupt identity to a file's seteipnum_le register
+ * (offset 0) makes it pending. The macros below use identity IMSIC_EIID, which RVMODEL_BOOT enables in every guest
+ * file. */
+#define IMSIC_M_FILE           0x24000000
+#define IMSIC_S_FILE           0x28000000
+#define IMSIC_GEILEN           UDB_NUM_EXTERNAL_GUEST_INTERRUPTS
+#define IMSIC_EIID             1
+#define IMSIC_EIDELIVERY       0x70  /* indirect register numbers, AIA section 3.8 */
+#define IMSIC_EITHRESHOLD      0x72
+#define IMSIC_EIE0             0xC0
+
+/* Enable delivery of identity IMSIC_EIID with no threshold in the file reached through _SEL and _REG
+ * (miselect and mireg, or vsiselect and vsireg). */
+#define IMSIC_ENABLE_FILE(_SEL, _REG) \
+  li t0, IMSIC_EIDELIVERY;  csrw _SEL, t0; li t1, 1; csrw _REG, t1; \
+  li t0, IMSIC_EITHRESHOLD; csrw _SEL, t0; csrw _REG, zero; \
+  li t0, IMSIC_EIE0;        csrw _SEL, t0; li t1, 1 << IMSIC_EIID; csrs _REG, t1;
+
+/* eidelivery = 0x40000000 in the M-level and S-level files */
+#define IMSIC_ENABLE_APLIC_DELIVERY \
+  li t0, IMSIC_EIDELIVERY; li t1, 0x40000000; \
+  csrw miselect, t0; csrw mireg, t1; \
+  csrw siselect, t0; csrw sireg, t1;
+
+/* On RV32, Whisper keeps using the old hstatus.VGEIN after an hstatus write while mstatush is nonzero, as it is
+ * at reset (MDT = 1), so the vsireg accesses below would trap (https://github.com/tenstorrent/whisper/issues/108).
+ * The test setup clears mstatush after boot anyway. */
+#if __riscv_xlen == 32
+  #define IMSIC_CLEAR_MSTATUSH csrw mstatush, zero;
+#else
+  #define IMSIC_CLEAR_MSTATUSH
+#endif
+
+/* hstatus.VGEIN selects the guest file that vsiselect and vsireg reach; walk it over 1..IMSIC_GEILEN */
+#define IMSIC_ENABLE_GUEST_FILES \
+  IMSIC_CLEAR_MSTATUSH \
+  csrr t2, hstatus; \
+  li t3, 1; \
+  1: slli t0, t3, 12; csrw hstatus, t0; \
+  IMSIC_ENABLE_FILE(vsiselect, vsireg) \
+  addi t3, t3, 1; li t0, IMSIC_GEILEN; bleu t3, t0, 1b; \
+  csrw hstatus, t2;
+
+/* Guest external interrupt _GEI (a register, 1 to IMSIC_GEILEN): pend IMSIC_EIID in guest file _GEI, which makes
+ * hgeip bit _GEI read 1. To clear, claim it through vstopei with hstatus.VGEIN = _GEI, then restore hstatus.
+ * The _M flavors reach the file and the CSRs directly. The others run in any mode and go through T-SBI, which
+ * takes its operands in a1 and a2 and returns in a0; the framework passes _GEI, _R1 and _R2 in a0, a1 and a2. */
+#define RVMODEL_SET_GUEST_EXT_INT_M(_GEI, _R1, _R2) \
+  slli _R2, _GEI, 12;                              \
+  LI(_R1, IMSIC_S_FILE);                           \
+  add _R2, _R2, _R1;                               \
+  li _R1, IMSIC_EIID;                              \
+  sw _R1, 0(_R2);
+
+#define RVMODEL_SET_GUEST_EXT_INT(_GEI, _R1, _R2) \
+  slli a1, _GEI, 12;                             \
+  LI(a2, IMSIC_S_FILE);                          \
+  add a1, a1, a2;                                \
+  li a2, IMSIC_EIID;                             \
+  RVTEST_TSBI_SW /* sw a2, 0(a1) */
+
+#define RVMODEL_CLR_GUEST_EXT_INT_M(_GEI, _R1, _R2) \
+  csrr _R1, hstatus;                               \
+  li _R2, HSTATUS_VGEIN;                           \
+  csrc hstatus, _R2;                               \
+  slli _R2, _GEI, 12;                              \
+  csrs hstatus, _R2;                               \
+  csrw vstopei, zero;                              \
+  csrw hstatus, _R1;
+
+#define RVMODEL_CLR_GUEST_EXT_INT(_GEI, _R1, _R2) \
+  slli a2, _GEI, 12;                 /* a2 = _GEI in the VGEIN field */      \
+  RVTEST_TSBI_CSR_READ(CSR_HSTATUS); /* a0 = hstatus */                      \
+  li a1, ~HSTATUS_VGEIN;                                                     \
+  and a1, a0, a1;                                                            \
+  or a1, a1, a2;                     /* a1 = hstatus with VGEIN = _GEI */    \
+  mv a2, a0;                         /* a2 = hstatus to restore */           \
+  RVTEST_TSBI_CSR_WRITE_A1(CSR_HSTATUS);                                     \
+  RVTEST_TSBI_CSR_WRITE(CSR_VSTOPEI, 0);                                     \
+  mv a1, a2;                                                                 \
+  RVTEST_TSBI_CSR_WRITE_A1(CSR_HSTATUS)
+
 
 // Custom RVMODEL_BOOT_TO_MMODE overrides default RVTEST_BOOT_TO_MMODE
 // if defined.  For most DUTs, the default should work and this macro
@@ -154,7 +248,6 @@
 #define RVMODEL_TIMER_INT_SOON_DELAY 10000
 
 ##### Machine Timer #####
-#define RVMODEL_MAX_CYCLES_PER_TIMER_TICK 1
 
 #define RVMODEL_MTIMECMP_ADDRESS  0x02004000  /* Address of mtimecmp CSR */
 
@@ -191,12 +284,6 @@
   li      _R1, ADDR_S_CLRIPNUM; /* clear the pending interrupt */ \
   li      _R2, 2; \
   sw      _R2, 0(_R1); /* clear source 2 interrupt */
-
-// whisper.json sets trigger_use_tcontrol on configs without S-mode, so tcontrol.mte gates
-// M-mode triggers with action=0
-#ifndef S_SUPPORTED
-  #define RVMODEL_SDTRIG_USE_TCONTROL
-#endif
 
 ##### Sscofpmf #####
 

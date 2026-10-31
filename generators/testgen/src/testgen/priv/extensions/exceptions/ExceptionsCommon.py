@@ -823,13 +823,13 @@ def generate_load_x0_fault_tests(test_data: TestData, covergroup: str, tag: str 
 
     # Misaligned loads trap only when the hardware does not support them
     misaligned_cp = "cp_load_x0_address_misaligned"
-    lines.extend(["", "#ifndef UDB_MISALIGNED_LDST", comment_banner(misaligned_cp, "Load Misaligned with rd = x0")])
+    lines.extend(["", comment_banner(misaligned_cp, "Load Misaligned with rd = x0")])
     for op in ["lh", "lhu", "lw"]:
         lines.extend(load(op, "scratch", 1, misaligned_cp, "misaligned"))
     lines.append("\n#if __riscv_xlen == 64")
     for op in ["lwu", "ld"]:
         lines.extend(load(op, "scratch", 1, misaligned_cp, "misaligned"))
-    lines.extend(["#endif", "#endif // UDB_MISALIGNED_LDST"])
+    lines.append("#endif")
 
     test_data.int_regs.return_registers([addr_reg])
     return lines

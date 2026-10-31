@@ -122,12 +122,10 @@ coverpoints:
   - name: cp_load_x0_address_misaligned
     goal: Load Misaligned with rd = x0
     description: In VS-mode and VU-mode with hedeleg = 0, attempt lh, lhu, lw, lwu, ld with rd = x0 from an odd address.
-    expectation: Load address misaligned exception into HS-mode, even though the load value is discarded.
+    expectation: Load address misaligned exception into HS-mode if the hart does not perform misaligned loads, even though the load value is discarded.
     bins: 2 modes * 5 ops
     rules:
       - load_exc_x0
-    notes: |-
-      Compiled only when the hart does not perform misaligned loads and stores (UDB MISALIGNED_LDST = false).  Of the current H configurations only sargantana-rv64imafdb assembles it.
   - name: cp_xtinst_instr_misaligned
     goal: Instruction address misaligned writes xtinst
     description: From VS mode with hedeleg = 0, after HS-mode writes a nonzero value to htval and htinst, jump to a misaligned address.

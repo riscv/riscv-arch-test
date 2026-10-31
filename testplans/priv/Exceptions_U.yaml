@@ -75,10 +75,8 @@ coverpoints:
       - load_exc_x0
   - name: cp_load_x0_address_misaligned
     goal: Load Misaligned with rd = x0
-    description: |-
-      Attempt lh, lhu, lw, lwu, ld with rd = x0 from an odd address.
-      Compiled only when the hart does not perform misaligned loads and stores (UDB MISALIGNED_LDST = false).
-    expectation: Load address misaligned exception, even though the load value is discarded
+    description: Attempt lh, lhu, lw, lwu, ld with rd = x0 from an odd address.
+    expectation: Load address misaligned exception if the hart does not perform misaligned loads, even though the load value is discarded
     bins: 5 ops
     rules:
       - load_exc_x0

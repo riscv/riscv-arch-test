@@ -239,6 +239,12 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
   end else if (name == "hgatp") begin
     case(field)
 `ifdef UDB_MXLEN_32
+      "vmid" : val = (val >> 22) & 32'h7f;
+`endif
+`ifdef UDB_MXLEN_64
+      "vmid" : val = (val >> 44) & 64'h3fff;
+`endif
+`ifdef UDB_MXLEN_32
       "mode" : val = (val >> 31) & 32'h1;
 `endif
 `ifdef UDB_MXLEN_64
@@ -1057,6 +1063,12 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
     endcase
   end else if (name == "vsatp") begin
     case(field)
+`ifdef UDB_MXLEN_32
+      "asid" : val = (val >> 22) & 32'h1ff;
+`endif
+`ifdef UDB_MXLEN_64
+      "asid" : val = (val >> 44) & 64'hffff;
+`endif
 `ifdef UDB_MXLEN_32
       "mode" : val = (val >> 31) & 32'h1;
 `endif

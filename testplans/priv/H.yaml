@@ -135,6 +135,11 @@ coverpoints:
     bins: 1023 CSRs
     rules:
       - Zicsr_illegal_mode
+  - name: cp_csr_ro
+    goal: Read-only CSRs cannot be written from VS-mode
+    description: In VS-mode, attempt to write all 1s to each CSR number from 0xC00 to 0xEFF, as S_scsr_cg/cp_csr_ro in S-mode
+    expectation: Illegal instruction fault, and rd is unchanged
+    bins: 768 CSRs
   - name: cp_hcsr_virtualinstructionfault
     goal: HS and VS registers cause virtual instruction fault from VS-mode
     description: csrrw, csrrc, csrrs, csrr each {HS/VS} H-Extension CSR
@@ -224,7 +229,7 @@ coverpoints:
     bins: 1 mode
   - name: cp_hfence
     goal: Hypervisor fences execute only in HS-mode (and M-mode)
-    description: With mstatus.TVM = 0 and hstatus.VTVM = 0, execute hfence.vvma and hfence.gvma (rs1 = rs2 = x0) in {HS, VS, VU, U} modes, as S_sprivinst_cg executes sfence.vma.  Sm_H_tvm_cg/cp_hfence crosses them with M-mode, mstatus.TVM and hstatus.VTVM, and SvH checks that they remove stale VS-stage and G-stage translations.
+    description: With mstatus.TVM = 0 and hstatus.VTVM = 0, execute hfence.vvma and hfence.gvma (rs1 = rs2 = x0) in {HS, VS, VU, U} modes, as S_sprivinst_cg executes sfence.vma.  Sm_H_tvm_cg/cp_hfence crosses them with M-mode, mstatus.TVM and hstatus.VTVM, and Sv_H_fence_cg checks that they remove stale VS-stage and G-stage translations.
     expectation: Executes in HS-mode; virtual instruction in VS-mode and VU-mode; illegal instruction in U-mode
     bins: 4 modes * 2 instr
   - name: |-

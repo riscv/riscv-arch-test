@@ -87,11 +87,17 @@ exclude_extensions:
   # (https://gitlab.com/qemu-project/qemu/-/issues/4620). QEMU has further hypervisor bugs
   # filed the same day, 4611 through 4617, so this exclusion will be needed for a while.
   - H
+  - Sv_H
+  - Sv_HSm
+  - Sv_HZicbo
+  - PMP_HSvZicbo
   - Exceptions_H
   - Exceptions_HSm
+  - Zicfilp_H
   # The same mstatus.MPV bug breaks the mret and mstatus.TVM tests, and every vsstatus bit is
   # writable (https://gitlab.com/qemu-project/qemu/-/work_items/4589).
   - Sm_H
+  - Zicfilp_SmH
   # mstatus.MPV is read-only, so no VS/VU-mode (https://gitlab.com/qemu-project/qemu/-/work_items/4588);
   # hlvx.wu raises the wrong fault (https://gitlab.com/qemu-project/qemu/-/work_items/4595)
   - Shtvala
@@ -100,9 +106,17 @@ exclude_extensions:
   # (https://gitlab.com/qemu-project/qemu/-/issues/4620).
   - Svinval_H
   - Svinval_SmH
+  - Svadu_H
+  - Svpbmt_H
+  - Svnapot_H
   # The same mstatus.MPV bug keeps the VS-mode and VU-mode sweeps in HS-mode
   # (https://gitlab.com/qemu-project/qemu/-/work_items/4588).
   - Ssstrict_H
+  # mret never enters VS/VU (https://gitlab.com/qemu-project/qemu/-/issues/4620), so the VS/VU
+  # accesses and the VS timer interrupts fail, and M-mode writes of hvip.VSTIP are dropped while
+  # menvcfg.STCE = henvcfg.STCE = 1 (https://gitlab.com/qemu-project/qemu/-/work_items/4593).
+  - Sstc_H
+  - Sstc_HSm
   # Runs in VS-mode and VU-mode, which QEMU never enters (see H above).
   - Ssnpm_H
   # With ADUE=1, QEMU sets A/D on a PTE with a reserved Svnapot encoding before raising the page fault

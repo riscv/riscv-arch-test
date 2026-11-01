@@ -1,0 +1,55 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Sv_HSm
+notes: |-
+  Sv_HSm covers two-stage address translation seen from M-mode through mstatus.MPRV and MPV, and guest traps taken in M-mode.  The group boots to M-mode and delegates nothing (medeleg = hedeleg = 0), so the M-mode trap handler takes every trap and records mcause, mtval, mtval2, mtinst and mstatus.GVA/MPV.  It runs with Sv39/Sv39x4 on RV64 and Sv32/Sv32x4 on RV32, and uses the Sv_H test page, page tables and conventions; the other two-stage cases are in Sv_H.
+  MPRV tests set mstatus.MPRV, MPP and MPV (mstatush.MPV on RV32) just before each M-mode load or store and clear MPRV after it, because a trap from M-mode leaves MPP = M and MPV = 0.  Instruction fetches in M-mode are never translated.  The fetch straddle test (cp_straddle_m) needs Zca, and the load/store straddle test (cp_ldst_straddle_m) needs a hart that performs misaligned accesses byte by byte (MISALIGNED_LDST with MISALIGNED_SPLIT_STRATEGY = sequential_bytes); they are separate test files.
+coverpoints:
+  - heading: M-mode accesses with MPRV (Sv_HSm_mprv_cg)
+  - name: cp_vsatp_mprv_effects
+    goal: MPRV effects on address translation
+    description: |-
+      Environment: While in M-mode, set MPRV=1, mstatus.MPP={S,U}, mstatus.MPV=1, vsatp.MODE = Sv32 or Sv39, hgatp.MODE=BARE, satp.MODE=BARE, with a VS-stage leaf that is readable and writable, then execute-only.  The leaf has U = 1 for MPP = U.
+      Test Case: Do load/store from M-mode. Instruction fetches unaffected, only data accesses translated.
+    expectation: |-
+      Data accesses are translated through the VS-stage with the privilege of MPP: they reach the test page through the RW leaf and raise load or store/AMO page faults (13, 15) through the execute-only leaf, taken in M-mode with mtval = the guest virtual address and mstatus.GVA = 1.  Instruction fetches are not translated and don't fault.
+    bins: M x {lw, sw} x MPRV = 1 x MPV/MPP {VS, VU} x vsatp paged x hgatp Bare x {no trap, page fault}
+  - name: cp_hgatp_mprv_effects
+    goal: MPRV behavior when G-stage present
+    description: |-
+      Environment: While in M-mode, with vsatp = satp = Bare and a G-stage identity mapping that makes the test page execute-only (U = 1), set MPRV={0,1} and mstatus.MPP/MPV={M, M with MPV=1, HS, VS, U, VU} before each access.
+      Test Case: Execute lw, sw, hlv.w and hsv.w on the test page.  MPRV affects explicit memory accesses of loads and stores; HLV/HSV ignore MPRV.
+    expectation: When MPRV=1 and MPV=1 (MPP = S or U), lw and sw are translated through the G-stage (vsatp is Bare) and raise load or store/AMO guest-page faults with mtval2 = the guest physical address >> 2 (or zero).  When MPRV=0, or MPV=0, lw and sw access the test page untranslated; in particular M-mode with MPRV = 0 does no translation.  hlv.w and hsv.w always use the G-stage, whatever MPRV is, and raise guest-page faults.  MPV is ignored with MPP = M, so MPRV = 1 with MPP = M and MPV = 1 is an M-level access with no translation.
+    bins: M x {lw, sw, hlv.w, hsv.w} x MPRV {0, 1} x MPP/MPV {M, M with MPV = 1, HS, VS, U, VU} x vsatp Bare x hgatp paged
+  - name: cp_mprv_sum
+    goal: With MPRV = 1 and MPV = 1, vsstatus.SUM applies instead of mstatus.SUM
+    description: In M-mode with MPRV = 1, MPV = 1 and both stages paged, store and load through a VS-stage leaf with U = 1 with MPP = S, and through a leaf with U = 0 with MPP = U, with vsstatus.SUM = 0 and 1 and mstatus.SUM = 0 and 1.
+    expectation: With MPP = S, the accesses to the U = 1 page succeed only with vsstatus.SUM = 1; mstatus.SUM has no effect.  With MPP = U, the accesses to the U = 0 page always raise page faults.
+    bins: M x {lw, sw} x MPRV = 1 x MPV/MPP {VS, VU} x vsatp paged x hgatp paged x vsstatus.SUM {0, 1} x mstatus.SUM {0, 1}
+  - name: cp_mprv_mxr
+    goal: With MPRV = 1 and MPV = 1, mstatus.MXR applies to both stages and vsstatus.MXR to the VS-stage
+    description: In M-mode with MPRV = 1, MPV = 1 and MPP = S and U, load through pages that are execute-only in the VS-stage, in the G-stage, or in both, with vsstatus.MXR = 0 and 1 and mstatus.MXR = 0 and 1.  VS-stage leaves have U = 1 for MPP = U.
+    expectation: vsstatus.MXR makes the VS-stage execute-only page readable; mstatus.MXR makes execute-only pages of both stages readable.  A denied load raises a load page fault (VS-stage) or load guest-page fault (G-stage) in M-mode.
+    bins: M x lw x MPRV = 1 x MPV/MPP {VS, VU} x vsatp paged x hgatp paged x vsstatus.MXR {0, 1} x mstatus.MXR {0, 1}
+  - heading: Guest traps taken in M-mode (Sv_HSm_trap_cg)
+  - name: |-
+      cp_guest_page_fault_m
+      cp_implicit_gpf_m
+    goal: Page faults and guest-page faults from VS-mode and VU-mode taken in M-mode write mtval2, mtinst and mstatus.GVA/MPV
+    description: In VS-mode and VU-mode with nothing delegated, store, load and fetch through an invalid VS-stage leaf, an invalid G-stage leaf, and a VS-stage leaf table whose G-stage leaf is invalid.
+    expectation: |-
+      Each trap is taken in M-mode with mstatus.GVA = 1, mstatus.MPV = 1 (mstatush on RV32) and mtval = the guest virtual address.
+      The invalid VS-stage leaf raises a page fault (12, 13, 15) with mtval2 = 0.  The invalid G-stage leaf raises a guest-page fault (20, 21, 23) with mtval2 = the guest physical address >> 2 (or zero).  The leaf table raises a guest-page fault on the implicit VS-stage PTE read, with mtval2 = the guest physical address of the PTE >> 2 and, if mtval2 is nonzero, mtinst = the pseudoinstruction 0x3000 (RV64) or 0x2000 (RV32), reported for the original access type.
+    bins: |-
+      cp_guest_page_fault_m: {VS, VU} x {sw, lw, jalr} x vsatp paged x hgatp paged x {page fault, guest-page fault} x mstatus.GVA = MPV = 1
+      cp_implicit_gpf_m: {VS, VU} x {sw, lw, jalr} x vsatp paged x hgatp paged x mtinst read pseudoinstruction
+  - name: |-
+      cp_straddle_m
+      cp_ldst_straddle_m
+    goal: mtval2 reports the faulting portion of a straddling fetch or misaligned access
+    description: |-
+      cp_straddle_m needs Zca: in VS-mode and VU-mode, jump to a 4-byte instruction in the last halfword (offset 0xFFE) of a guest page whose next page has an invalid G-stage leaf.
+      cp_ldst_straddle_m needs a hart that performs misaligned accesses byte by byte: in VS-mode and VU-mode, store and load the word two bytes below the end of such a page.
+    expectation: An instruction, store/AMO or load guest-page fault taken in M-mode, with mtval = the page-boundary address (the faulting portion) and mtval2 = its guest physical address >> 2, or zero.  A faulting load leaves rd unchanged.
+    bins: |-
+      cp_straddle_m: {VS, VU} x jalr x vsatp paged x hgatp paged x target offset 0xFFE x guest-page fault x nonzero mtval2 at the page boundary
+      cp_ldst_straddle_m: {VS, VU} x {lw, sw} x vsatp paged x hgatp paged x address offset 0xFFE x guest-page fault x nonzero mtval2 at the page boundary

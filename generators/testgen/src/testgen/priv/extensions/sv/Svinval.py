@@ -11,7 +11,7 @@
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk, trap_sigupd_count
-from testgen.priv.extensions.sv.generate import set_atp
+from testgen.priv.extensions.sv.generate import identity_map_image, set_atp
 from testgen.priv.extensions.sv.page_tables import (
     SV32,
     SV32X4,
@@ -168,20 +168,10 @@ def _s_inval_chunk(test_data: TestData, sv: SvMode) -> TestChunk:
     chunk.raw_data.extend([*_S_INVAL_PAGES, *lower_table_data(sv)])
     pte, addr, tmp = test_data.int_regs.get_registers(3)
     regs = (pte, addr, tmp)
-    code = ["// Identity map the test image, turn on translation and set every implemented satp.ASID bit"]
-    for label in ("rvtest_code_begin", "rvtest_data_begin", "rvtest_sig_end"):
-        code.extend(
-            write_pte(
-                sv,
-                level=sv.levels - 1,
-                flags=PteFlags(),
-                virtual_address=label,
-                physical_address=label,
-                regs=regs,
-                va_is_label=True,
-                superpage=True,
-            )
-        )
+    code = [
+        "// Identity map the test image, turn on translation and set every implemented satp.ASID bit",
+        *identity_map_image(((sv, PteFlags()),), regs),
+    ]
     code.extend([*set_atp(sv, pte, addr), f"LI(x{tmp}, SATP{sv.xlen}_ASID)", f"csrs satp, x{tmp}", "sfence.vma"])
     test_data.int_regs.return_registers(list(regs))
     for name, rs1, rs2 in _S_INVAL_CASES:

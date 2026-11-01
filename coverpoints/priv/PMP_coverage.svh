@@ -42,6 +42,43 @@
   `endif
 `endif
 
+// PMP_HSvZicbo needs a NAPOT entry the size of the 4 KiB test page (a grain of at most 4 KiB) below the background
+// entry
+`ifdef H_SUPPORTED
+  `ifdef PMP_HAS_CBO
+    `ifdef UDB_PMP_NAPOT_SUPPORTED
+      `ifdef UDB_PMP_GRANULARITY_2
+        `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_3
+        `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_4
+        `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_5
+        `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_6
+        `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_7
+        `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_8
+        `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_9
+        `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_10
+        `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_11
+        `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_12
+        `define PMP_COVER_HSVZICBO
+      `endif
+      `ifdef UDB_NUM_PMP_ENTRIES_0
+        `undef PMP_COVER_HSVZICBO
+      `elsif UDB_NUM_PMP_ENTRIES_1
+        `undef PMP_COVER_HSVZICBO
+      `endif
+    `endif
+  `endif
+`endif
+
 
 `ifdef F_SUPPORTED
 covergroup PMP_F_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],logic [14:0] pmp_hit);
@@ -316,10 +353,7 @@ covergroup PMP_S_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
     wildcard bins csrrw  = {CSRRW};
   }
 
-  mprv_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv")[0]{
-    bins set   = {1};
-    bins unset = {0};
-  }
+  mprv_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv")[0]{}
 
   mpp_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0] {
     bins S_mode = {2'b01};
@@ -1112,10 +1146,7 @@ covergroup PMP_Sm_cg with function sample(
   }
 
   // L = {0/1} pmp_region_1 and check the writes on pmp_region_1 and pmp_region_0
-  lock_checking: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "pmpcfg0", "pmp1cfg_l")[0] {
-    bins locked_region = {1};
-    bins unlocked_region = {0};
-  }
+  lock_checking: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "pmpcfg0", "pmp1cfg_l")[0] {}
 
   // Attempt to write values in given PMP CSRs when A = {OFF/TOR/NAPOT} and L = {0/1}
   // rs1 should be x0 while writing to pmpaddr1 & pmp1cfg0 in order to write all 0s.
@@ -2432,10 +2463,7 @@ covergroup PMP_U_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
     wildcard bins csrrw  = {CSRRW};
   }
 
-  mprv_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv")[0]{
-    bins set   = {1};
-    bins unset = {0};
-  }
+  mprv_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv")[0]{}
 
   mpp_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0] {
     bins U_mode = {2'b00};
@@ -3407,6 +3435,50 @@ function void pmp_SvZicbo_sample(int hart, int issue, ins_t ins);
 endfunction
 `endif
 
+`ifdef PMP_COVER_HSVZICBO
+// PMP on the final supervisor physical address of a CBO from VS-mode and VU-mode, through a VS-stage or a G-stage
+// kilopage
+covergroup PMP_HSvZicbo_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    cbo: coverpoint ins.current.insn {
+        `ifdef ZICBOM_SUPPORTED
+            wildcard bins clean = {CBO_CLEAN};
+            wildcard bins flush = {CBO_FLUSH};
+            wildcard bins inval = {CBO_INVAL};
+        `endif
+        `ifdef ZICBOZ_SUPPORTED
+            wildcard bins zero = {CBO_ZERO};
+        `endif
+    }
+    // The superpage of the guest virtual address: VS-stage cases use VS_SV39/VS_SV32 data_va, and G-stage cases
+    // SV39X4/SV32X4 data_va through a VS-stage identity superpage
+    `ifdef UDB_MXLEN_64
+        stage: coverpoint ins.current.rs1_val[63:30] {
+            bins vs = {5};
+            bins g  = {11};
+        }
+    `else
+        stage: coverpoint ins.current.rs1_val[31:22] {
+            bins vs = {'h241};
+            bins g  = {'h341};
+        }
+    `endif
+    // PMP entry 0 covers the test page with no permissions, or with read permission only
+    pmp_xwr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmpcfg0")[7:0] {
+        bins none = {8'b00011000};
+        bins r    = {8'b00011001};
+    }
+
+    cp_pmp: cross priv_mode_vs_vu, cbo, stage, pmp_xwr;
+endgroup
+
+function void pmp_HSvZicbo_sample(int hart, int issue, ins_t ins);
+    PMP_HSvZicbo_cg.sample(ins);
+endfunction
+`endif
+
 `ifdef SVADU_SUPPORTED
 covergroup PMP_Svadu_cg with function sample(ins_t ins);
     option.per_instance = 0;
@@ -3547,6 +3619,9 @@ function void pmp_sample(int hart, int issue, ins_t ins);
   `endif
   `ifdef PMP_COVER_SVZICBO
     pmp_SvZicbo_sample(hart, issue, ins);
+  `endif
+  `ifdef PMP_COVER_HSVZICBO
+    pmp_HSvZicbo_sample(hart, issue, ins);
   `endif
   `ifdef SVADU_SUPPORTED
     pmp_Svadu_sample(hart, issue, ins);

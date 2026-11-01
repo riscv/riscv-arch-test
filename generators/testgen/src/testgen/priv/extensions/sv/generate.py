@@ -154,6 +154,29 @@ def set_atp(mode: SvMode, reg: int, tmp: int) -> list[str]:
     ]
 
 
+def identity_map_image(
+    stages: Iterable[tuple[SvMode | None, PteFlags]], regs: tuple[int, int, int], level: int | None = None
+) -> list[str]:
+    """Identity map the code, data and signature regions of the test image with a superpage at ``level`` (default:
+    the root) in each (mode, leaf flags) of ``stages``.  A None mode is skipped."""
+    stages = [(mode, flags) for mode, flags in stages if mode is not None]
+    return [
+        line
+        for label in ("rvtest_code_begin", "rvtest_data_begin", "rvtest_sig_end")
+        for mode, flags in stages
+        for line in write_pte(
+            mode,
+            level=mode.levels - 1 if level is None else level,
+            flags=flags,
+            virtual_address=label,
+            physical_address=label,
+            regs=regs,
+            va_is_label=True,
+            superpage=True,
+        )
+    ]
+
+
 def guest_translation_setup(test_data: TestData, g: SvMode | None, vs: SvMode | None, priv_mode: str) -> list[str]:
     """Identity map the test image in both stages, map the guest code alias, register it in the V save area, and
     turn on hgatp and vsatp.  A None stage stays Bare.  The alias is user accessible when ``priv_mode`` is "VUmode".
@@ -164,22 +187,10 @@ def guest_translation_setup(test_data: TestData, g: SvMode | None, vs: SvMode | 
     reg, tmp, spare = test_data.int_regs.get_registers(3)
     regs = (reg, tmp, spare)
     shift = alias.page_offset_bits(alias.levels - 1)
-    lines = ["// Identity map the test image in both stages"]
-    for label in ("rvtest_code_begin", "rvtest_data_begin", "rvtest_sig_end"):
-        for mode, flags in ((g, PteFlags(user=True)), (vs, PteFlags())):
-            if mode is not None:
-                lines.extend(
-                    write_pte(
-                        mode,
-                        level=mode.levels - 1,
-                        flags=flags,
-                        virtual_address=label,
-                        physical_address=label,
-                        regs=regs,
-                        va_is_label=True,
-                        superpage=True,
-                    )
-                )
+    lines = [
+        "// Identity map the test image in both stages",
+        *identity_map_image(((g, PteFlags(user=True)), (vs, PteFlags())), regs),
+    ]
     lines.append("// Map the code region again at the guest alias")
     if g is not None:
         lines.extend(

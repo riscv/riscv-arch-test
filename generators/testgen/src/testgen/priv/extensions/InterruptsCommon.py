@@ -456,6 +456,93 @@ def generate_cp_wfi(test_data: TestData, test_chunks: list[TestChunk], suite: In
         tc.code.append("#endif // S_SUPPORTED")
 
 
+def generate_cp_trigger_vsti_sstc(
+    test_data: TestData, test_chunks: list[TestChunk], suite: InterruptSuite, priv: str
+) -> None:
+    """VSTI through vstimecmp, armed like STI in cp_trigger_sti_sstc: vstimecmp = 0 fires at once.
+
+    With hie.VSTIE = 1, VS-mode takes STI when hideleg.VSTI = 1, and HS-mode takes VSTI otherwise.  The boot mode
+    (HS or M) writes vstimecmp, and VS-mode writes its own timer through stimecmp, which is vstimecmp there.  For
+    U-mode and VU-mode, HS-mode writes vstimecmp and then enters them.  HS-mode takes an undelegated VSTI in place
+    with sstatus.SIE = 1; M-mode never takes VSTI, so InterruptsSm enters VS-mode.  U-mode never takes a delegated
+    VSTI, since V = 0.
+    """
+
+    ######################################
+    coverpoint = "cp_trigger_vsti_sstc"
+    ######################################
+    boot = suite.boot
+    in_vs = priv == "VS"
+    tc = test_data.new_test_chunk(test_chunks, f"trigger_vsti_sstc_{priv}")
+    tc.section_header = comment_banner(
+        coverpoint,
+        "With menvcfg.STCE = henvcfg.STCE = 1 and hie.VSTIE = 1, set "
+        + ("stimecmp = 0 in VS-mode" if in_vs else f"vstimecmp = 0 in {boot}-mode, then run in {priv}-mode")
+        + " x hideleg.VSTI = 0/1",
+    )
+    tmp_reg = test_data.int_regs.get_register()
+    tc.code += [
+        "#ifdef H_SUPPORTED",
+        "#ifdef SSTC_SUPPORTED",
+        *write_stce(test_data, True, boot),
+        *write_stce(test_data, True, boot, henvcfg=True),
+        f"LI(x{tmp_reg}, SSTATUS_SIE)",
+        f"csrs vsstatus, x{tmp_reg} # vsstatus.SIE = 1",
+        # vstimecmp has no reset value; all 1s keeps VSTIP clear until a case arms it
+        f"RVTEST_CLR_VSSTC_INT_{boot}",
+    ]
+    for deleg in (0, 1):
+        # Mode the test runs in while VSTIP is pending
+        target = priv if priv != boot else "S" if boot == "S" and not deleg else "VS"
+        enable = [f"LI(x{tmp_reg}, MIP_VSTIP)", f"csrw hie, x{tmp_reg} # hie.VSTIE = 1"]
+        tc.code += [
+            f"LI(x{tmp_reg}, {'MIP_VSTIP' if deleg else 0})",
+            f"csrw hideleg, x{tmp_reg} # hideleg.VSTI = {deleg}",
+        ]
+        if in_vs:
+            # vstimecmp is all 1s here, so enabling before VS-mode arms it cannot fire
+            tc.code += [
+                *enable,
+                *mode_enter(suite, "VS"),
+                test_data.add_testcase(f"priv_{priv}_hideleg_{deleg}", f"{coverpoint}_vs", suite.covergroup),
+                "#if __riscv_xlen == 32",
+                "csrw stimecmph, zero",
+                "#endif",
+                "csrw stimecmp, zero # stimecmp is vstimecmp in VS-mode",
+            ]
+        else:
+            tc.code += [
+                test_data.add_testcase(
+                    f"priv_{priv}_hideleg_{deleg}",
+                    coverpoint if priv == boot else f"{coverpoint}_tsbi",
+                    suite.covergroup,
+                ),
+                f"RVTEST_SET_VSSTC_INT_{boot} # vstimecmp = 0",
+                *enable,
+                *(["csrsi sstatus, SSTATUS_SIE"] if target == "S" else []),
+                *mode_enter(suite, target),
+            ]
+        tc.code += [
+            f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait for interrupt to fire",
+            *mode_exit(suite, target),
+            *(["csrci sstatus, SSTATUS_SIE"] if target == "S" else []),
+            "csrw hie, zero",
+            f"RVTEST_CLR_VSSTC_INT_{boot}",
+            "",
+        ]
+    tc.code += [
+        "csrw hideleg, zero",
+        f"LI(x{tmp_reg}, SSTATUS_SIE)",
+        f"csrc vsstatus, x{tmp_reg} # vsstatus.SIE = 0",
+        *write_stce(test_data, False, boot, henvcfg=True),
+        *write_stce(test_data, False, boot),
+        "#endif // SSTC_SUPPORTED",
+        "#endif // H_SUPPORTED",
+        "",
+    ]
+    test_data.int_regs.return_register(tmp_reg)
+
+
 def _write_vtw(reg: int, vtw: bool, boot: str) -> list[str]:
     """Set or clear hstatus.VTW from the boot mode."""
     return [

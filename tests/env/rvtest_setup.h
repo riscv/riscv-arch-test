@@ -1005,6 +1005,34 @@
   #error "SCRATCH_SIZE must be at least 264"
 #endif
 
+// Offsets of the CSRs saved at reset in rvtest_reset_csrs when RESET_TEST is defined
+#define RESET_MSTATUS_OFFSET  (0*REGWIDTH)
+#define RESET_MSTATUSH_OFFSET (1*REGWIDTH)
+#define RESET_MISA_OFFSET     (2*REGWIDTH)
+#define RESET_HGATP_OFFSET    (3*REGWIDTH)
+#define RESET_VSATP_OFFSET    (4*REGWIDTH)
+#define RESET_MSECCFG_OFFSET  (5*REGWIDTH)
+#define RESET_MSTATEEN0_OFFSET  (6*REGWIDTH)
+#define RESET_MSTATEEN1_OFFSET  (7*REGWIDTH)
+#define RESET_MSTATEEN2_OFFSET  (8*REGWIDTH)
+#define RESET_MSTATEEN3_OFFSET  (9*REGWIDTH)
+#define RESET_MSTATEEN0H_OFFSET (10*REGWIDTH)
+#define RESET_MSTATEEN1H_OFFSET (11*REGWIDTH)
+#define RESET_MSTATEEN2H_OFFSET (12*REGWIDTH)
+#define RESET_MSTATEEN3H_OFFSET (13*REGWIDTH)
+#define RESET_VL_OFFSET         (14*REGWIDTH)
+#define RESET_VTYPE_OFFSET      (15*REGWIDTH)
+#define RESET_TSELECT_OFFSET    (16*REGWIDTH)
+#define RESET_MCONTEXT_OFFSET   (17*REGWIDTH)
+#define RESET_SCONTEXT_OFFSET   (18*REGWIDTH)
+// tdata1 of each trigger, from trigger 0
+#define RESET_TDATA1_OFFSET     (19*REGWIDTH)
+#if defined(SDTRIG_SUPPORTED) && defined(UDB_SDTRIG_NUM_TRIGGERS)
+  #define RESET_CSR_COUNT       (19 + UDB_SDTRIG_NUM_TRIGGERS)
+#else
+  #define RESET_CSR_COUNT       19
+#endif
+
 .macro RVTEST_DATA_BEGIN
   // Scratch region of memory for tests (ie for loads/stores that are not part of signature)
   // The first 264 bytes are initialized with distinct values so tests can detect unintended
@@ -1049,6 +1077,13 @@
   .p2align 3
   rvtest_current_mode:
     .dword 0
+
+  #ifdef RESET_TEST
+    // CSR values captured at reset by RVTEST_BOOT_TO_MMODE, checked by the Sm reset test
+    .p2align 3
+    rvtest_reset_csrs:
+      .fill RESET_CSR_COUNT, REGWIDTH, 0
+  #endif
 
   .p2align 4
 
@@ -1185,6 +1220,90 @@
 
     // Do setup that requires a standard M-mode
     #ifdef STANDARD_SM_SUPPORTED
+
+      #ifdef RESET_TEST
+        // Capture CSRs with architectural reset values before any boot code writes them.
+        // The signature pointer is not set up yet, so the test body checks the saved values.
+        // The trap prologs write vsatp, so this must precede them.
+        LA(T1, rvtest_reset_csrs)
+        csrr T2, mstatus
+        SREG T2, RESET_MSTATUS_OFFSET(T1)
+        #if __riscv_xlen == 32 && defined(SM1P12P0_OR_LATER_SUPPORTED)
+          csrr T2, mstatush
+          SREG T2, RESET_MSTATUSH_OFFSET(T1)
+        #endif
+        csrr T2, misa
+        SREG T2, RESET_MISA_OFFSET(T1)
+        #ifdef H_SUPPORTED
+          csrr T2, hgatp
+          SREG T2, RESET_HGATP_OFFSET(T1)
+          csrr T2, vsatp
+          SREG T2, RESET_VSATP_OFFSET(T1)
+        #endif
+        #ifdef ZICFILP_SUPPORTED
+          csrr T2, mseccfg
+          SREG T2, RESET_MSECCFG_OFFSET(T1)
+        #endif
+        // The Smstateen setup below writes mstateen0-3
+        #ifdef SMSTATEEN_SUPPORTED
+          csrr T2, mstateen0
+          SREG T2, RESET_MSTATEEN0_OFFSET(T1)
+          csrr T2, mstateen1
+          SREG T2, RESET_MSTATEEN1_OFFSET(T1)
+          csrr T2, mstateen2
+          SREG T2, RESET_MSTATEEN2_OFFSET(T1)
+          csrr T2, mstateen3
+          SREG T2, RESET_MSTATEEN3_OFFSET(T1)
+          #if __riscv_xlen == 32
+            csrr T2, mstateen0h
+            SREG T2, RESET_MSTATEEN0H_OFFSET(T1)
+            csrr T2, mstateen1h
+            SREG T2, RESET_MSTATEEN1H_OFFSET(T1)
+            csrr T2, mstateen2h
+            SREG T2, RESET_MSTATEEN2H_OFFSET(T1)
+            csrr T2, mstateen3h
+            SREG T2, RESET_MSTATEEN3H_OFFSET(T1)
+          #endif
+        #endif
+        #ifdef ZVE32X_SUPPORTED
+          // Reading vl and vtype needs mstatus.VS on; mstatus is restored to its reset value afterwards
+          LI(T2, MSTATUS_VS & (MSTATUS_VS >> 1))
+          csrs mstatus, T2
+          csrr T2, vl
+          SREG T2, RESET_VL_OFFSET(T1)
+          csrr T2, vtype
+          SREG T2, RESET_VTYPE_OFFSET(T1)
+          LREG T2, RESET_MSTATUS_OFFSET(T1)
+          csrw mstatus, T2
+        #endif
+        #ifdef SDTRIG_SUPPORTED
+          csrr T2, CSR_TSELECT
+          SREG T2, RESET_TSELECT_OFFSET(T1)
+          #ifdef UDB_MCONTEXT_IMPLEMENTED
+            csrr T2, CSR_MCONTEXT
+            SREG T2, RESET_MCONTEXT_OFFSET(T1)
+          #endif
+          #ifdef UDB_SCONTEXT_IMPLEMENTED
+            csrr T2, CSR_SCONTEXT
+            SREG T2, RESET_SCONTEXT_OFFSET(T1)
+          #endif
+          #ifdef UDB_SDTRIG_NUM_TRIGGERS
+            // tdata1 of each trigger; tselect is restored to its reset value afterwards
+            LI(T3, 0)
+          rvtest_reset_tdata1_loop:
+            csrw CSR_TSELECT, T3
+            csrr T2, CSR_TDATA1
+            SREG T2, RESET_TDATA1_OFFSET(T1)
+            addi T1, T1, REGWIDTH
+            addi T3, T3, 1
+            LI(T2, UDB_SDTRIG_NUM_TRIGGERS)
+            bltu T3, T2, rvtest_reset_tdata1_loop
+            LA(T1, rvtest_reset_csrs)
+            LREG T2, RESET_TSELECT_OFFSET(T1)
+            csrw CSR_TSELECT, T2
+          #endif
+        #endif
+      #endif
 
       // Disable interrupts
       csrw mie, zero

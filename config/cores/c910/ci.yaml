@@ -33,6 +33,8 @@ exclude_extensions:
   # The same imprecise load fault, and a store bus error raises no fault.
   - Sv_Exceptions
   - Sv_ExceptionsSm_sv39_exceptions
+  # misa.X is set (non-standard extensions), but Sail cannot set it yet (https://github.com/riscv/sail-riscv/issues/2067)
+  - Sm_reset
   # LR takes store/AMO causes 6, 7 and 15 (lsu/rtl/ct_lsu_ld_dc.v#L1239-L1247).
   - Exceptions_Zalrsc
   - Sv_ExceptionsZalrsc

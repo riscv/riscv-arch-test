@@ -35,7 +35,7 @@ implemented_extensions: # VERIFIED against User Manual (Introduction)
   - { name: Sm, version: "= 1.12.0" }
 
 params:
-  NON_STANDARD_EXTENSION_IMPLEMENTED: false
+  NON_STANDARD_EXTENSION_IMPLEMENTED: true # misa.X is hardwired to 1 (CORE_MISA in rtl/cv32e40x_cs_registers.sv)
   MXLEN: 32 # VERIFIED -- User Manual, Introduction; RV32I base ISA
   PHYS_ADDR_WIDTH: 32 # VERIFIED -- 32-bit addressing, no virtual memory
 

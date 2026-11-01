@@ -21,7 +21,7 @@ normative_rule_definitions:
 
   # Upon reset, the MDT field is set to 1.
   - name: mstatus_mdt_rst
-    coverpoint: ["TODO: covered by the Smdbltrp suite (not yet written)"]
+    coverpoint: ["Sm_reset_cg/cp_mdt_reset"]
 
   # A trap caused by an RNMI does not set the MDT bit.
   - name: mstatus_mdt_not_set_rnmi

@@ -664,8 +664,9 @@ coverpoints:
       cp_tselect_reset
       cp_mcontext_reset
       cp_scontext_reset
-    goal: tselect, mcontext and scontext reset to 0
-    description: Only with Sdtrig; mcontext and scontext only when implemented (MCONTEXT_IMPLEMENTED, SCONTEXT_IMPLEMENTED).  Read each at reset.
+      cp_tcontrol_reset
+    goal: tselect, mcontext, scontext and tcontrol reset to 0
+    description: Only with Sdtrig; mcontext, scontext and tcontrol only when implemented (MCONTEXT_IMPLEMENTED, SCONTEXT_IMPLEMENTED, TCONTROL_IMPLEMENTED).  Read each at reset.
     expectation: Each reads 0 (every field resets to 0 in the Debug spec register tables).  Match reference model.
     bins: 1 each
   - name: cp_tdata1_reset

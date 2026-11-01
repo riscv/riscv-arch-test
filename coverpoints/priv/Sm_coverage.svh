@@ -2642,6 +2642,12 @@ covergroup Sm_reset_cg with function sample(ins_t ins);
             }
             cp_scontext_reset: cross priv_mode_m, csrr, scontext_first;
         `endif
+        `ifdef UDB_TCONTROL_IMPLEMENTED
+            tcontrol_first: coverpoint ins.current.insn[31:20] iff (!sm_reset_csr_accessed[CSR_TCONTROL]) {
+                bins tcontrol = {CSR_TCONTROL};
+            }
+            cp_tcontrol_reset: cross priv_mode_m, csrr, tcontrol_first;
+        `endif
         `ifdef UDB_SDTRIG_NUM_TRIGGERS
             // The first read of each trigger's tdata1
             tdata1_first: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tselect", "tselect")

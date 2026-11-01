@@ -1823,6 +1823,7 @@ _RESET_FIELDS = [
     ("cp_tselect_reset", "tselect", None, "defined(SDTRIG_SUPPORTED)"),
     ("cp_mcontext_reset", "mcontext", None, "defined(SDTRIG_SUPPORTED) && defined(UDB_MCONTEXT_IMPLEMENTED)"),
     ("cp_scontext_reset", "scontext", None, "defined(SDTRIG_SUPPORTED) && defined(UDB_SCONTEXT_IMPLEMENTED)"),
+    ("cp_tcontrol_reset", "tcontrol", None, "defined(SDTRIG_SUPPORTED) && defined(UDB_TCONTROL_IMPLEMENTED)"),
 ]
 
 # Triggers checked by cp_tdata1_reset; more need a larger bound

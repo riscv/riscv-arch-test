@@ -1025,12 +1025,13 @@
 #define RESET_TSELECT_OFFSET    (16*REGWIDTH)
 #define RESET_MCONTEXT_OFFSET   (17*REGWIDTH)
 #define RESET_SCONTEXT_OFFSET   (18*REGWIDTH)
+#define RESET_TCONTROL_OFFSET   (19*REGWIDTH)
 // tdata1 of each trigger, from trigger 0
-#define RESET_TDATA1_OFFSET     (19*REGWIDTH)
+#define RESET_TDATA1_OFFSET     (20*REGWIDTH)
 #if defined(SDTRIG_SUPPORTED) && defined(UDB_SDTRIG_NUM_TRIGGERS)
-  #define RESET_CSR_COUNT       (19 + UDB_SDTRIG_NUM_TRIGGERS)
+  #define RESET_CSR_COUNT       (20 + UDB_SDTRIG_NUM_TRIGGERS)
 #else
-  #define RESET_CSR_COUNT       19
+  #define RESET_CSR_COUNT       20
 #endif
 
 .macro RVTEST_DATA_BEGIN
@@ -1286,6 +1287,10 @@
           #ifdef UDB_SCONTEXT_IMPLEMENTED
             csrr T2, CSR_SCONTEXT
             SREG T2, RESET_SCONTEXT_OFFSET(T1)
+          #endif
+          #ifdef UDB_TCONTROL_IMPLEMENTED
+            csrr T2, CSR_TCONTROL
+            SREG T2, RESET_TCONTROL_OFFSET(T1)
           #endif
           #ifdef UDB_SDTRIG_NUM_TRIGGERS
             // tdata1 of each trigger; tselect is restored to its reset value afterwards

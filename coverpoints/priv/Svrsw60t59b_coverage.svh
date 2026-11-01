@@ -30,20 +30,19 @@ covergroup Svrsw60t59b_cg with function sample(ins_t ins);
 
     // Accesses that complete: the trace marks no read, write or execute access, so name the instruction.
     // Only instructions in the page under test have bits 60:59 set in pte_i.
-    load_ok: coverpoint ins.current.insn {
-        wildcard bins lw = {LW} iff (!ins.current.trap);
+    load_ok: coverpoint ins.current.insn iff (!ins.current.trap) {
+        wildcard bins lw = {LW};
     }
-    store_ok: coverpoint ins.current.insn {
-        wildcard bins sw = {SW} iff (!ins.current.trap);
+    store_ok: coverpoint ins.current.insn iff (!ins.current.trap) {
+        wildcard bins sw = {SW};
     }
-    fetch_ok: coverpoint ins.current.trap {
-        bins no_trap = {1'b0};
+    // The first instruction of the page under test, reached by the jalr, completes
+    fetch_ok: coverpoint ins.prev.insn iff (!ins.current.trap) {
+        wildcard bins jalr = {JALR};
     }
 
     satp_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] {
-        `ifdef SV39_SUPPORTED
-            bins sv39 = {4'b1000};
-        `endif
+        bins sv39 = {4'b1000};
         `ifdef SV48_SUPPORTED
             bins sv48 = {4'b1001};
         `endif
@@ -77,14 +76,15 @@ covergroup Svrsw60t59b_H_cg with function sample(ins_t ins);
 
     // Accesses that complete: the trace marks no read, write or execute access, so name the instruction.
     // Only instructions in the page under test have bits 60:59 set in pte_i.
-    load_ok: coverpoint ins.current.insn {
-        wildcard bins lw = {LW} iff (!ins.current.trap);
+    load_ok: coverpoint ins.current.insn iff (!ins.current.trap) {
+        wildcard bins lw = {LW};
     }
-    store_ok: coverpoint ins.current.insn {
-        wildcard bins sw = {SW} iff (!ins.current.trap);
+    store_ok: coverpoint ins.current.insn iff (!ins.current.trap) {
+        wildcard bins sw = {SW};
     }
-    fetch_ok: coverpoint ins.current.trap {
-        bins no_trap = {1'b0};
+    // The first instruction of the page under test, reached by the jalr, completes
+    fetch_ok: coverpoint ins.prev.insn iff (!ins.current.trap) {
+        wildcard bins jalr = {JALR};
     }
 
     vsatp_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {

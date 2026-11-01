@@ -41,45 +41,45 @@ RVTEST_BEGIN
   srli x15, x15, 39
   slli x15, x15, 53
   srli x15, x15, 50
-  LA(x9, rvtest_Hroot_pg_tbl)
-  add x15, x15, x9
+  LA(x14, rvtest_Hroot_pg_tbl)
+  add x15, x15, x14
   LA(x6, rvtest_code_begin)
   srli x6, x6, 39
   slli x6, x6, 37
-  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x6, x6, x9
+  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x6, x6, x14
   SREG x6, 0(x15)
   LA(x15, rvtest_data_begin)
   srli x15, x15, 39
   slli x15, x15, 53
   srli x15, x15, 50
-  LA(x9, rvtest_Hroot_pg_tbl)
-  add x15, x15, x9
+  LA(x14, rvtest_Hroot_pg_tbl)
+  add x15, x15, x14
   LA(x6, rvtest_data_begin)
   srli x6, x6, 39
   slli x6, x6, 37
-  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x6, x6, x9
+  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x6, x6, x14
   SREG x6, 0(x15)
   LA(x15, rvtest_sig_end)
   srli x15, x15, 39
   slli x15, x15, 53
   srli x15, x15, 50
-  LA(x9, rvtest_Hroot_pg_tbl)
-  add x15, x15, x9
+  LA(x14, rvtest_Hroot_pg_tbl)
+  add x15, x15, x14
   LA(x6, rvtest_sig_end)
   srli x6, x6, 39
   slli x6, x6, 37
-  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x6, x6, x9
+  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x6, x6, x14
   SREG x6, 0(x15)
 // Map the code region again at the guest alias
   LA(x15, rvtest_Hroot_pg_tbl + (((0x18000000000) >> 39) & 0x7ff) * 8)
   LA(x6, rvtest_code_begin)
   srli x6, x6, 39
   slli x6, x6, 37
-  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x6, x6, x9
+  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x6, x6, x14
   SREG x6, 0(x15)
 // Register the alias of rvtest_code_begin
   LI(x6, ((0x18000000000) >> 39) << 39)
@@ -98,98 +98,19 @@ RVTEST_BEGIN
   csrw vsatp, zero
   hfence.gvma
   hfence.vvma
-  LI(x14, SSTATUS_SUM | SSTATUS_MXR)
-  csrc sstatus, x14
-  LI(x14, SSTATUS_SUM | SSTATUS_MXR)
-  csrc vsstatus, x14
+  LI(x8, SSTATUS_SUM | SSTATUS_MXR)
+  csrc sstatus, x8
+  LI(x8, SSTATUS_SUM | SSTATUS_MXR)
+  csrc vsstatus, x8
   csrw hedeleg, zero
 // Test case 1: 512GB page, leaf PTE at level 3 with bit 59
   LA(x14, rvtest_Hroot_pg_tbl + (((0x28500403000) >> 39) & 0x7ff) * 8)
-  LA(x9, svh_page)
-  srli x9, x9, 39
-  slli x9, x9, 37
-  LI(x6, (1 << 59) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  hfence.vvma
-  hfence.gvma
-  LI(x8, (0x28500403000 >> 39) << 39)
   LA(x13, svh_page)
-  slli x13, x13, 25
-  srli x13, x13, 25
-  add x8, x8, x13
-  LI(x13, 0x13f)
-  RVTEST_TSBI_GOTO_VUMODE
-Svrsw60t59b_H_cg_cp_hgatp_test1_store:
-  sw x13, 8(x8)
-  RVTEST_TSBI_GOTO_SMODE
-
-  hfence.vvma
-  hfence.gvma
-  LI(x15, (0x28500403000 >> 39) << 39)
-  LA(x9, svh_page)
-  slli x9, x9, 25
-  srli x9, x9, 25
-  add x15, x15, x9
-  LI(x9, 0x140)
-  RVTEST_TSBI_GOTO_VUMODE
-  LI(x9, -1)
-Svrsw60t59b_H_cg_cp_hgatp_test1_load:
-  lw x9, 8(x15)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Svrsw60t59b_H_cg_cp_hgatp_test1_load, Svrsw60t59b_H_cg_cp_hgatp_test1_load_str)
-
-  hfence.vvma
-  hfence.gvma
-  LI(x9, (0x28500403000 >> 39) << 39)
-  LA(x13, svh_page)
-  slli x13, x13, 25
-  srli x13, x13, 25
-  add x9, x9, x13
-  LI(x13, 0x141)
-  RVTEST_TSBI_GOTO_VUMODE
-Svrsw60t59b_H_cg_cp_hgatp_test1_exec:
-  jalr ra, 0(x9)
-  RVTEST_TSBI_GOTO_SMODE
-
-// Test case 2: 512GB page, leaf PTE at level 3 with bit 60
-  LA(x14, rvtest_Hroot_pg_tbl + (((0x28500403000) >> 39) & 0x7ff) * 8)
-  LA(x9, svh_page)
-  srli x9, x9, 39
-  slli x9, x9, 37
-  LI(x6, (1 << 60) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  hfence.vvma
-  hfence.gvma
-  LI(x14, (0x28500403000 >> 39) << 39)
-  LA(x13, svh_page)
-  slli x13, x13, 25
-  srli x13, x13, 25
-  add x14, x14, x13
-  LI(x13, 0x142)
-  RVTEST_TSBI_GOTO_VUMODE
-Svrsw60t59b_H_cg_cp_hgatp_test2_store:
-  sw x13, 8(x14)
-  RVTEST_TSBI_GOTO_SMODE
-
-  hfence.vvma
-  hfence.gvma
-  LI(x6, (0x28500403000 >> 39) << 39)
-  LA(x14, svh_page)
-  slli x14, x14, 25
-  srli x14, x14, 25
-  add x6, x6, x14
-  LI(x14, 0x143)
-  RVTEST_TSBI_GOTO_VUMODE
-  LI(x14, -1)
-Svrsw60t59b_H_cg_cp_hgatp_test2_load:
-  lw x14, 8(x6)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Svrsw60t59b_H_cg_cp_hgatp_test2_load, Svrsw60t59b_H_cg_cp_hgatp_test2_load_str)
-
+  srli x13, x13, 39
+  slli x13, x13, 37
+  LI(x9, (1 << 59) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
   hfence.vvma
   hfence.gvma
   LI(x13, (0x28500403000 >> 39) << 39)
@@ -197,220 +118,160 @@ Svrsw60t59b_H_cg_cp_hgatp_test2_load:
   slli x8, x8, 25
   srli x8, x8, 25
   add x13, x13, x8
-  LI(x8, 0x144)
+  LI(x8, 0x13f)
   RVTEST_TSBI_GOTO_VUMODE
-Svrsw60t59b_H_cg_cp_hgatp_test2_exec:
+Svrsw60t59b_H_cg_cp_hgatp_test1_store:
+  sw x8, 8(x13)
+  LI(x8, -1)
+Svrsw60t59b_H_cg_cp_hgatp_test1_load:
+  lw x8, 8(x13)
+Svrsw60t59b_H_cg_cp_hgatp_test1_exec:
   jalr ra, 0(x13)
   RVTEST_TSBI_GOTO_SMODE
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Svrsw60t59b_H_cg_cp_hgatp_test1_load, Svrsw60t59b_H_cg_cp_hgatp_test1_load_str)
 
-// Test case 3: 512GB page, leaf PTE at level 3 with bits 60:59
+// Test case 2: 512GB page, leaf PTE at level 3 with bit 60
   LA(x14, rvtest_Hroot_pg_tbl + (((0x28500403000) >> 39) & 0x7ff) * 8)
-  LA(x9, svh_page)
-  srli x9, x9, 39
-  slli x9, x9, 37
-  LI(x6, (3 << 59) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  hfence.vvma
-  hfence.gvma
-  LI(x8, (0x28500403000 >> 39) << 39)
-  LA(x6, svh_page)
-  slli x6, x6, 25
-  srli x6, x6, 25
-  add x8, x8, x6
-  LI(x6, 0x145)
-  RVTEST_TSBI_GOTO_VUMODE
-Svrsw60t59b_H_cg_cp_hgatp_test3_store:
-  sw x6, 8(x8)
-  RVTEST_TSBI_GOTO_SMODE
-
+  LA(x13, svh_page)
+  srli x13, x13, 39
+  slli x13, x13, 37
+  LI(x9, (1 << 60) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
   hfence.vvma
   hfence.gvma
   LI(x13, (0x28500403000 >> 39) << 39)
-  LA(x6, svh_page)
-  slli x6, x6, 25
-  srli x6, x6, 25
-  add x13, x13, x6
-  LI(x6, 0x146)
+  LA(x9, svh_page)
+  slli x9, x9, 25
+  srli x9, x9, 25
+  add x13, x13, x9
+  LI(x9, 0x142)
   RVTEST_TSBI_GOTO_VUMODE
-  LI(x6, -1)
-Svrsw60t59b_H_cg_cp_hgatp_test3_load:
-  lw x6, 8(x13)
+Svrsw60t59b_H_cg_cp_hgatp_test2_store:
+  sw x9, 8(x13)
+  LI(x9, -1)
+Svrsw60t59b_H_cg_cp_hgatp_test2_load:
+  lw x9, 8(x13)
+Svrsw60t59b_H_cg_cp_hgatp_test2_exec:
+  jalr ra, 0(x13)
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Svrsw60t59b_H_cg_cp_hgatp_test3_load, Svrsw60t59b_H_cg_cp_hgatp_test3_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Svrsw60t59b_H_cg_cp_hgatp_test2_load, Svrsw60t59b_H_cg_cp_hgatp_test2_load_str)
 
+// Test case 3: 512GB page, leaf PTE at level 3 with bits 60:59
+  LA(x14, rvtest_Hroot_pg_tbl + (((0x28500403000) >> 39) & 0x7ff) * 8)
+  LA(x13, svh_page)
+  srli x13, x13, 39
+  slli x13, x13, 37
+  LI(x9, (3 << 59) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
   hfence.vvma
   hfence.gvma
-  LI(x15, (0x28500403000 >> 39) << 39)
+  LI(x6, (0x28500403000 >> 39) << 39)
   LA(x14, svh_page)
   slli x14, x14, 25
   srli x14, x14, 25
-  add x15, x15, x14
-  LI(x14, 0x147)
+  add x6, x6, x14
+  LI(x14, 0x145)
   RVTEST_TSBI_GOTO_VUMODE
+Svrsw60t59b_H_cg_cp_hgatp_test3_store:
+  sw x14, 8(x6)
+  LI(x14, -1)
+Svrsw60t59b_H_cg_cp_hgatp_test3_load:
+  lw x14, 8(x6)
 Svrsw60t59b_H_cg_cp_hgatp_test3_exec:
-  jalr ra, 0(x15)
+  jalr ra, 0(x6)
   RVTEST_TSBI_GOTO_SMODE
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Svrsw60t59b_H_cg_cp_hgatp_test3_load, Svrsw60t59b_H_cg_cp_hgatp_test3_load_str)
 
 // Test case 4: 1GB page, leaf PTE at level 2 with bit 59
   LA(x14, rvtest_Hroot_pg_tbl + (((0x28500403000) >> 39) & 0x7ff) * 8)
-  LA(x9, rvtest_hlvl2_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
+  LA(x13, rvtest_hlvl2_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
   LA(x14, rvtest_hlvl2_pg_tbl + (((0x28500403000) >> 30) & 0x1ff) * 8)
-  LA(x9, svh_page)
-  srli x9, x9, 30
-  slli x9, x9, 28
-  LI(x6, (1 << 59) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
+  LA(x13, svh_page)
+  srli x13, x13, 30
+  slli x13, x13, 28
+  LI(x9, (1 << 59) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
   hfence.vvma
   hfence.gvma
-  LI(x15, (0x28500403000 >> 30) << 30)
-  LA(x9, svh_page)
-  slli x9, x9, 34
-  srli x9, x9, 34
-  add x15, x15, x9
-  LI(x9, 0x148)
-  RVTEST_TSBI_GOTO_VUMODE
-Svrsw60t59b_H_cg_cp_hgatp_test4_store:
-  sw x9, 8(x15)
-  RVTEST_TSBI_GOTO_SMODE
-
-  hfence.vvma
-  hfence.gvma
-  LI(x15, (0x28500403000 >> 30) << 30)
+  LI(x8, (0x28500403000 >> 30) << 30)
   LA(x14, svh_page)
   slli x14, x14, 34
   srli x14, x14, 34
-  add x15, x15, x14
-  LI(x14, 0x149)
+  add x8, x8, x14
+  LI(x14, 0x148)
   RVTEST_TSBI_GOTO_VUMODE
+Svrsw60t59b_H_cg_cp_hgatp_test4_store:
+  sw x14, 8(x8)
   LI(x14, -1)
 Svrsw60t59b_H_cg_cp_hgatp_test4_load:
-  lw x14, 8(x15)
+  lw x14, 8(x8)
+Svrsw60t59b_H_cg_cp_hgatp_test4_exec:
+  jalr ra, 0(x8)
   RVTEST_TSBI_GOTO_SMODE
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Svrsw60t59b_H_cg_cp_hgatp_test4_load, Svrsw60t59b_H_cg_cp_hgatp_test4_load_str)
 
-  hfence.vvma
-  hfence.gvma
-  LI(x9, (0x28500403000 >> 30) << 30)
-  LA(x15, svh_page)
-  slli x15, x15, 34
-  srli x15, x15, 34
-  add x9, x9, x15
-  LI(x15, 0x14a)
-  RVTEST_TSBI_GOTO_VUMODE
-Svrsw60t59b_H_cg_cp_hgatp_test4_exec:
-  jalr ra, 0(x9)
-  RVTEST_TSBI_GOTO_SMODE
-
 // Test case 5: 1GB page, leaf PTE at level 2 with bit 60
   LA(x14, rvtest_Hroot_pg_tbl + (((0x28500403000) >> 39) & 0x7ff) * 8)
-  LA(x9, rvtest_hlvl2_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
+  LA(x13, rvtest_hlvl2_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
   LA(x14, rvtest_hlvl2_pg_tbl + (((0x28500403000) >> 30) & 0x1ff) * 8)
-  LA(x9, svh_page)
-  srli x9, x9, 30
-  slli x9, x9, 28
-  LI(x6, (1 << 60) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  hfence.vvma
-  hfence.gvma
-  LI(x14, (0x28500403000 >> 30) << 30)
   LA(x13, svh_page)
-  slli x13, x13, 34
-  srli x13, x13, 34
-  add x14, x14, x13
-  LI(x13, 0x14b)
-  RVTEST_TSBI_GOTO_VUMODE
-Svrsw60t59b_H_cg_cp_hgatp_test5_store:
-  sw x13, 8(x14)
-  RVTEST_TSBI_GOTO_SMODE
-
-  hfence.vvma
-  hfence.gvma
-  LI(x8, (0x28500403000 >> 30) << 30)
-  LA(x9, svh_page)
-  slli x9, x9, 34
-  srli x9, x9, 34
-  add x8, x8, x9
-  LI(x9, 0x14c)
-  RVTEST_TSBI_GOTO_VUMODE
-  LI(x9, -1)
-Svrsw60t59b_H_cg_cp_hgatp_test5_load:
-  lw x9, 8(x8)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Svrsw60t59b_H_cg_cp_hgatp_test5_load, Svrsw60t59b_H_cg_cp_hgatp_test5_load_str)
-
-  hfence.vvma
-  hfence.gvma
-  LI(x6, (0x28500403000 >> 30) << 30)
-  LA(x13, svh_page)
-  slli x13, x13, 34
-  srli x13, x13, 34
-  add x6, x6, x13
-  LI(x13, 0x14d)
-  RVTEST_TSBI_GOTO_VUMODE
-Svrsw60t59b_H_cg_cp_hgatp_test5_exec:
-  jalr ra, 0(x6)
-  RVTEST_TSBI_GOTO_SMODE
-
-// Test case 6: 1GB page, leaf PTE at level 2 with bits 60:59
-  LA(x14, rvtest_Hroot_pg_tbl + (((0x28500403000) >> 39) & 0x7ff) * 8)
-  LA(x9, rvtest_hlvl2_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  LA(x14, rvtest_hlvl2_pg_tbl + (((0x28500403000) >> 30) & 0x1ff) * 8)
-  LA(x9, svh_page)
-  srli x9, x9, 30
-  slli x9, x9, 28
-  LI(x6, (3 << 59) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  hfence.vvma
-  hfence.gvma
-  LI(x14, (0x28500403000 >> 30) << 30)
-  LA(x9, svh_page)
-  slli x9, x9, 34
-  srli x9, x9, 34
-  add x14, x14, x9
-  LI(x9, 0x14e)
-  RVTEST_TSBI_GOTO_VUMODE
-Svrsw60t59b_H_cg_cp_hgatp_test6_store:
-  sw x9, 8(x14)
-  RVTEST_TSBI_GOTO_SMODE
-
+  srli x13, x13, 30
+  slli x13, x13, 28
+  LI(x9, (1 << 60) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
   hfence.vvma
   hfence.gvma
   LI(x13, (0x28500403000 >> 30) << 30)
-  LA(x15, svh_page)
-  slli x15, x15, 34
-  srli x15, x15, 34
-  add x13, x13, x15
-  LI(x15, 0x14f)
+  LA(x6, svh_page)
+  slli x6, x6, 34
+  srli x6, x6, 34
+  add x13, x13, x6
+  LI(x6, 0x14b)
   RVTEST_TSBI_GOTO_VUMODE
-  LI(x15, -1)
-Svrsw60t59b_H_cg_cp_hgatp_test6_load:
-  lw x15, 8(x13)
+Svrsw60t59b_H_cg_cp_hgatp_test5_store:
+  sw x6, 8(x13)
+  LI(x6, -1)
+Svrsw60t59b_H_cg_cp_hgatp_test5_load:
+  lw x6, 8(x13)
+Svrsw60t59b_H_cg_cp_hgatp_test5_exec:
+  jalr ra, 0(x13)
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Svrsw60t59b_H_cg_cp_hgatp_test6_load, Svrsw60t59b_H_cg_cp_hgatp_test6_load_str)
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, Svrsw60t59b_H_cg_cp_hgatp_test5_load, Svrsw60t59b_H_cg_cp_hgatp_test5_load_str)
 
+// Test case 6: 1GB page, leaf PTE at level 2 with bits 60:59
+  LA(x14, rvtest_Hroot_pg_tbl + (((0x28500403000) >> 39) & 0x7ff) * 8)
+  LA(x13, rvtest_hlvl2_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
+  LA(x14, rvtest_hlvl2_pg_tbl + (((0x28500403000) >> 30) & 0x1ff) * 8)
+  LA(x13, svh_page)
+  srli x13, x13, 30
+  slli x13, x13, 28
+  LI(x9, (3 << 59) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
   hfence.vvma
   hfence.gvma
   LI(x6, (0x28500403000 >> 30) << 30)
@@ -418,175 +279,125 @@ Svrsw60t59b_H_cg_cp_hgatp_test6_load:
   slli x13, x13, 34
   srli x13, x13, 34
   add x6, x6, x13
-  LI(x13, 0x150)
+  LI(x13, 0x14e)
   RVTEST_TSBI_GOTO_VUMODE
+Svrsw60t59b_H_cg_cp_hgatp_test6_store:
+  sw x13, 8(x6)
+  LI(x13, -1)
+Svrsw60t59b_H_cg_cp_hgatp_test6_load:
+  lw x13, 8(x6)
 Svrsw60t59b_H_cg_cp_hgatp_test6_exec:
   jalr ra, 0(x6)
   RVTEST_TSBI_GOTO_SMODE
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Svrsw60t59b_H_cg_cp_hgatp_test6_load, Svrsw60t59b_H_cg_cp_hgatp_test6_load_str)
 
 // Test case 7: 2MB page, leaf PTE at level 1 with bit 59
   LA(x14, rvtest_Hroot_pg_tbl + (((0x28500403000) >> 39) & 0x7ff) * 8)
-  LA(x9, rvtest_hlvl2_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
+  LA(x13, rvtest_hlvl2_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
   LA(x14, rvtest_hlvl2_pg_tbl + (((0x28500403000) >> 30) & 0x1ff) * 8)
-  LA(x9, rvtest_hlvl1_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
+  LA(x13, rvtest_hlvl1_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
   LA(x14, rvtest_hlvl1_pg_tbl + (((0x28500403000) >> 21) & 0x1ff) * 8)
-  LA(x9, svh_page)
-  srli x9, x9, 21
-  slli x9, x9, 19
-  LI(x6, (1 << 59) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  hfence.vvma
-  hfence.gvma
-  LI(x15, (0x28500403000 >> 21) << 21)
-  LA(x9, svh_page)
-  slli x9, x9, 43
-  srli x9, x9, 43
-  add x15, x15, x9
-  LI(x9, 0x151)
-  RVTEST_TSBI_GOTO_VUMODE
-Svrsw60t59b_H_cg_cp_hgatp_test7_store:
-  sw x9, 8(x15)
-  RVTEST_TSBI_GOTO_SMODE
-
+  LA(x13, svh_page)
+  srli x13, x13, 21
+  slli x13, x13, 19
+  LI(x9, (1 << 59) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
   hfence.vvma
   hfence.gvma
   LI(x13, (0x28500403000 >> 21) << 21)
-  LA(x9, svh_page)
-  slli x9, x9, 43
-  srli x9, x9, 43
-  add x13, x13, x9
-  LI(x9, 0x152)
-  RVTEST_TSBI_GOTO_VUMODE
-  LI(x9, -1)
-Svrsw60t59b_H_cg_cp_hgatp_test7_load:
-  lw x9, 8(x13)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Svrsw60t59b_H_cg_cp_hgatp_test7_load, Svrsw60t59b_H_cg_cp_hgatp_test7_load_str)
-
-  hfence.vvma
-  hfence.gvma
-  LI(x9, (0x28500403000 >> 21) << 21)
-  LA(x14, svh_page)
-  slli x14, x14, 43
-  srli x14, x14, 43
-  add x9, x9, x14
-  LI(x14, 0x153)
-  RVTEST_TSBI_GOTO_VUMODE
-Svrsw60t59b_H_cg_cp_hgatp_test7_exec:
-  jalr ra, 0(x9)
-  RVTEST_TSBI_GOTO_SMODE
-
-// Test case 8: 2MB page, leaf PTE at level 1 with bit 60
-  LA(x14, rvtest_Hroot_pg_tbl + (((0x28500403000) >> 39) & 0x7ff) * 8)
-  LA(x9, rvtest_hlvl2_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  LA(x14, rvtest_hlvl2_pg_tbl + (((0x28500403000) >> 30) & 0x1ff) * 8)
-  LA(x9, rvtest_hlvl1_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  LA(x14, rvtest_hlvl1_pg_tbl + (((0x28500403000) >> 21) & 0x1ff) * 8)
-  LA(x9, svh_page)
-  srli x9, x9, 21
-  slli x9, x9, 19
-  LI(x6, (1 << 60) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  hfence.vvma
-  hfence.gvma
-  LI(x6, (0x28500403000 >> 21) << 21)
-  LA(x13, svh_page)
-  slli x13, x13, 43
-  srli x13, x13, 43
-  add x6, x6, x13
-  LI(x13, 0x154)
-  RVTEST_TSBI_GOTO_VUMODE
-Svrsw60t59b_H_cg_cp_hgatp_test8_store:
-  sw x13, 8(x6)
-  RVTEST_TSBI_GOTO_SMODE
-
-  hfence.vvma
-  hfence.gvma
-  LI(x8, (0x28500403000 >> 21) << 21)
   LA(x6, svh_page)
   slli x6, x6, 43
   srli x6, x6, 43
-  add x8, x8, x6
-  LI(x6, 0x155)
+  add x13, x13, x6
+  LI(x6, 0x151)
   RVTEST_TSBI_GOTO_VUMODE
+Svrsw60t59b_H_cg_cp_hgatp_test7_store:
+  sw x6, 8(x13)
   LI(x6, -1)
-Svrsw60t59b_H_cg_cp_hgatp_test8_load:
-  lw x6, 8(x8)
+Svrsw60t59b_H_cg_cp_hgatp_test7_load:
+  lw x6, 8(x13)
+Svrsw60t59b_H_cg_cp_hgatp_test7_exec:
+  jalr ra, 0(x13)
   RVTEST_TSBI_GOTO_SMODE
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Svrsw60t59b_H_cg_cp_hgatp_test8_load, Svrsw60t59b_H_cg_cp_hgatp_test8_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x6, Svrsw60t59b_H_cg_cp_hgatp_test7_load, Svrsw60t59b_H_cg_cp_hgatp_test7_load_str)
 
+// Test case 8: 2MB page, leaf PTE at level 1 with bit 60
+  LA(x14, rvtest_Hroot_pg_tbl + (((0x28500403000) >> 39) & 0x7ff) * 8)
+  LA(x13, rvtest_hlvl2_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
+  LA(x14, rvtest_hlvl2_pg_tbl + (((0x28500403000) >> 30) & 0x1ff) * 8)
+  LA(x13, rvtest_hlvl1_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
+  LA(x14, rvtest_hlvl1_pg_tbl + (((0x28500403000) >> 21) & 0x1ff) * 8)
+  LA(x13, svh_page)
+  srli x13, x13, 21
+  slli x13, x13, 19
+  LI(x9, (1 << 60) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
   hfence.vvma
   hfence.gvma
-  LI(x15, (0x28500403000 >> 21) << 21)
-  LA(x9, svh_page)
-  slli x9, x9, 43
-  srli x9, x9, 43
-  add x15, x15, x9
-  LI(x9, 0x156)
+  LI(x14, (0x28500403000 >> 21) << 21)
+  LA(x15, svh_page)
+  slli x15, x15, 43
+  srli x15, x15, 43
+  add x14, x14, x15
+  LI(x15, 0x154)
   RVTEST_TSBI_GOTO_VUMODE
+Svrsw60t59b_H_cg_cp_hgatp_test8_store:
+  sw x15, 8(x14)
+  LI(x15, -1)
+Svrsw60t59b_H_cg_cp_hgatp_test8_load:
+  lw x15, 8(x14)
 Svrsw60t59b_H_cg_cp_hgatp_test8_exec:
-  jalr ra, 0(x15)
+  jalr ra, 0(x14)
   RVTEST_TSBI_GOTO_SMODE
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svrsw60t59b_H_cg_cp_hgatp_test8_load, Svrsw60t59b_H_cg_cp_hgatp_test8_load_str)
 
 // Test case 9: 2MB page, leaf PTE at level 1 with bits 60:59
   LA(x14, rvtest_Hroot_pg_tbl + (((0x28500403000) >> 39) & 0x7ff) * 8)
-  LA(x9, rvtest_hlvl2_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
+  LA(x13, rvtest_hlvl2_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
   LA(x14, rvtest_hlvl2_pg_tbl + (((0x28500403000) >> 30) & 0x1ff) * 8)
-  LA(x9, rvtest_hlvl1_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
+  LA(x13, rvtest_hlvl1_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
   LA(x14, rvtest_hlvl1_pg_tbl + (((0x28500403000) >> 21) & 0x1ff) * 8)
-  LA(x9, svh_page)
-  srli x9, x9, 21
-  slli x9, x9, 19
-  LI(x6, (3 << 59) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  hfence.vvma
-  hfence.gvma
-  LI(x8, (0x28500403000 >> 21) << 21)
-  LA(x9, svh_page)
-  slli x9, x9, 43
-  srli x9, x9, 43
-  add x8, x8, x9
-  LI(x9, 0x157)
-  RVTEST_TSBI_GOTO_VUMODE
-Svrsw60t59b_H_cg_cp_hgatp_test9_store:
-  sw x9, 8(x8)
-  RVTEST_TSBI_GOTO_SMODE
-
+  LA(x13, svh_page)
+  srli x13, x13, 21
+  slli x13, x13, 19
+  LI(x9, (3 << 59) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
   hfence.vvma
   hfence.gvma
   LI(x15, (0x28500403000 >> 21) << 21)
@@ -594,70 +405,48 @@ Svrsw60t59b_H_cg_cp_hgatp_test9_store:
   slli x14, x14, 43
   srli x14, x14, 43
   add x15, x15, x14
-  LI(x14, 0x158)
+  LI(x14, 0x157)
   RVTEST_TSBI_GOTO_VUMODE
+Svrsw60t59b_H_cg_cp_hgatp_test9_store:
+  sw x14, 8(x15)
   LI(x14, -1)
 Svrsw60t59b_H_cg_cp_hgatp_test9_load:
   lw x14, 8(x15)
+Svrsw60t59b_H_cg_cp_hgatp_test9_exec:
+  jalr ra, 0(x15)
   RVTEST_TSBI_GOTO_SMODE
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Svrsw60t59b_H_cg_cp_hgatp_test9_load, Svrsw60t59b_H_cg_cp_hgatp_test9_load_str)
 
-  hfence.vvma
-  hfence.gvma
-  LI(x13, (0x28500403000 >> 21) << 21)
-  LA(x6, svh_page)
-  slli x6, x6, 43
-  srli x6, x6, 43
-  add x13, x13, x6
-  LI(x6, 0x159)
-  RVTEST_TSBI_GOTO_VUMODE
-Svrsw60t59b_H_cg_cp_hgatp_test9_exec:
-  jalr ra, 0(x13)
-  RVTEST_TSBI_GOTO_SMODE
-
 // Test case 10: 4KB page, leaf PTE at level 0 with bit 59
   LA(x14, rvtest_Hroot_pg_tbl + (((0x28500403000) >> 39) & 0x7ff) * 8)
-  LA(x9, rvtest_hlvl2_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
+  LA(x13, rvtest_hlvl2_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
   LA(x14, rvtest_hlvl2_pg_tbl + (((0x28500403000) >> 30) & 0x1ff) * 8)
-  LA(x9, rvtest_hlvl1_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
+  LA(x13, rvtest_hlvl1_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
   LA(x14, rvtest_hlvl1_pg_tbl + (((0x28500403000) >> 21) & 0x1ff) * 8)
-  LA(x9, rvtest_hlvl0_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
+  LA(x13, rvtest_hlvl0_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
   LA(x14, rvtest_hlvl0_pg_tbl + (((0x28500403000) >> 12) & 0x1ff) * 8)
-  LA(x9, svh_page)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, (1 << 59) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  hfence.vvma
-  hfence.gvma
-  LI(x6, (0x28500403000 >> 12) << 12)
-  LA(x15, svh_page)
-  slli x15, x15, 52
-  srli x15, x15, 52
-  add x6, x6, x15
-  LI(x15, 0x15a)
-  RVTEST_TSBI_GOTO_VUMODE
-Svrsw60t59b_H_cg_cp_hgatp_test10_store:
-  sw x15, 8(x6)
-  RVTEST_TSBI_GOTO_SMODE
-
+  LA(x13, svh_page)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, (1 << 59) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
   hfence.vvma
   hfence.gvma
   LI(x8, (0x28500403000 >> 12) << 12)
@@ -665,567 +454,97 @@ Svrsw60t59b_H_cg_cp_hgatp_test10_store:
   slli x6, x6, 52
   srli x6, x6, 52
   add x8, x8, x6
-  LI(x6, 0x15b)
+  LI(x6, 0x15a)
   RVTEST_TSBI_GOTO_VUMODE
+Svrsw60t59b_H_cg_cp_hgatp_test10_store:
+  sw x6, 8(x8)
   LI(x6, -1)
 Svrsw60t59b_H_cg_cp_hgatp_test10_load:
   lw x6, 8(x8)
+Svrsw60t59b_H_cg_cp_hgatp_test10_exec:
+  jalr ra, 0(x8)
   RVTEST_TSBI_GOTO_SMODE
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, Svrsw60t59b_H_cg_cp_hgatp_test10_load, Svrsw60t59b_H_cg_cp_hgatp_test10_load_str)
 
-  hfence.vvma
-  hfence.gvma
-  LI(x14, (0x28500403000 >> 12) << 12)
-  LA(x8, svh_page)
-  slli x8, x8, 52
-  srli x8, x8, 52
-  add x14, x14, x8
-  LI(x8, 0x15c)
-  RVTEST_TSBI_GOTO_VUMODE
-Svrsw60t59b_H_cg_cp_hgatp_test10_exec:
-  jalr ra, 0(x14)
-  RVTEST_TSBI_GOTO_SMODE
-
 // Test case 11: 4KB page, leaf PTE at level 0 with bit 60
   LA(x14, rvtest_Hroot_pg_tbl + (((0x28500403000) >> 39) & 0x7ff) * 8)
-  LA(x9, rvtest_hlvl2_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
+  LA(x13, rvtest_hlvl2_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
   LA(x14, rvtest_hlvl2_pg_tbl + (((0x28500403000) >> 30) & 0x1ff) * 8)
-  LA(x9, rvtest_hlvl1_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
+  LA(x13, rvtest_hlvl1_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
   LA(x14, rvtest_hlvl1_pg_tbl + (((0x28500403000) >> 21) & 0x1ff) * 8)
-  LA(x9, rvtest_hlvl0_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
+  LA(x13, rvtest_hlvl0_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
   LA(x14, rvtest_hlvl0_pg_tbl + (((0x28500403000) >> 12) & 0x1ff) * 8)
-  LA(x9, svh_page)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, (1 << 60) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  hfence.vvma
-  hfence.gvma
-  LI(x9, (0x28500403000 >> 12) << 12)
   LA(x13, svh_page)
-  slli x13, x13, 52
-  srli x13, x13, 52
-  add x9, x9, x13
-  LI(x13, 0x15d)
-  RVTEST_TSBI_GOTO_VUMODE
-Svrsw60t59b_H_cg_cp_hgatp_test11_store:
-  sw x13, 8(x9)
-  RVTEST_TSBI_GOTO_SMODE
-
-  hfence.vvma
-  hfence.gvma
-  LI(x9, (0x28500403000 >> 12) << 12)
-  LA(x6, svh_page)
-  slli x6, x6, 52
-  srli x6, x6, 52
-  add x9, x9, x6
-  LI(x6, 0x15e)
-  RVTEST_TSBI_GOTO_VUMODE
-  LI(x6, -1)
-Svrsw60t59b_H_cg_cp_hgatp_test11_load:
-  lw x6, 8(x9)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Svrsw60t59b_H_cg_cp_hgatp_test11_load, Svrsw60t59b_H_cg_cp_hgatp_test11_load_str)
-
-  hfence.vvma
-  hfence.gvma
-  LI(x9, (0x28500403000 >> 12) << 12)
-  LA(x13, svh_page)
-  slli x13, x13, 52
-  srli x13, x13, 52
-  add x9, x9, x13
-  LI(x13, 0x15f)
-  RVTEST_TSBI_GOTO_VUMODE
-Svrsw60t59b_H_cg_cp_hgatp_test11_exec:
-  jalr ra, 0(x9)
-  RVTEST_TSBI_GOTO_SMODE
-
-// Test case 12: 4KB page, leaf PTE at level 0 with bits 60:59
-  LA(x14, rvtest_Hroot_pg_tbl + (((0x28500403000) >> 39) & 0x7ff) * 8)
-  LA(x9, rvtest_hlvl2_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  LA(x14, rvtest_hlvl2_pg_tbl + (((0x28500403000) >> 30) & 0x1ff) * 8)
-  LA(x9, rvtest_hlvl1_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  LA(x14, rvtest_hlvl1_pg_tbl + (((0x28500403000) >> 21) & 0x1ff) * 8)
-  LA(x9, rvtest_hlvl0_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  LA(x14, rvtest_hlvl0_pg_tbl + (((0x28500403000) >> 12) & 0x1ff) * 8)
-  LA(x9, svh_page)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, (3 << 59) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  hfence.vvma
-  hfence.gvma
-  LI(x14, (0x28500403000 >> 12) << 12)
-  LA(x8, svh_page)
-  slli x8, x8, 52
-  srli x8, x8, 52
-  add x14, x14, x8
-  LI(x8, 0x160)
-  RVTEST_TSBI_GOTO_VUMODE
-Svrsw60t59b_H_cg_cp_hgatp_test12_store:
-  sw x8, 8(x14)
-  RVTEST_TSBI_GOTO_SMODE
-
-  hfence.vvma
-  hfence.gvma
-  LI(x14, (0x28500403000 >> 12) << 12)
-  LA(x8, svh_page)
-  slli x8, x8, 52
-  srli x8, x8, 52
-  add x14, x14, x8
-  LI(x8, 0x161)
-  RVTEST_TSBI_GOTO_VUMODE
-  LI(x8, -1)
-Svrsw60t59b_H_cg_cp_hgatp_test12_load:
-  lw x8, 8(x14)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Svrsw60t59b_H_cg_cp_hgatp_test12_load, Svrsw60t59b_H_cg_cp_hgatp_test12_load_str)
-
-  hfence.vvma
-  hfence.gvma
-  LI(x8, (0x28500403000 >> 12) << 12)
-  LA(x14, svh_page)
-  slli x14, x14, 52
-  srli x14, x14, 52
-  add x8, x8, x14
-  LI(x14, 0x162)
-  RVTEST_TSBI_GOTO_VUMODE
-Svrsw60t59b_H_cg_cp_hgatp_test12_exec:
-  jalr ra, 0(x8)
-  RVTEST_TSBI_GOTO_SMODE
-
-// Test case 13: 4KB page, non-leaf PTE at level 3 with bit 59
-  LA(x14, rvtest_Hroot_pg_tbl + (((0x28500403000) >> 39) & 0x7ff) * 8)
-  LA(x9, rvtest_hlvl2_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, (1 << 59) | PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  LA(x14, rvtest_hlvl2_pg_tbl + (((0x28500403000) >> 30) & 0x1ff) * 8)
-  LA(x9, rvtest_hlvl1_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  LA(x14, rvtest_hlvl1_pg_tbl + (((0x28500403000) >> 21) & 0x1ff) * 8)
-  LA(x9, rvtest_hlvl0_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  LA(x14, rvtest_hlvl0_pg_tbl + (((0x28500403000) >> 12) & 0x1ff) * 8)
-  LA(x9, svh_page)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  hfence.vvma
-  hfence.gvma
-  LI(x9, (0x28500403000 >> 12) << 12)
-  LA(x6, svh_page)
-  slli x6, x6, 52
-  srli x6, x6, 52
-  add x9, x9, x6
-  LI(x6, 0x163)
-  RVTEST_TSBI_GOTO_VUMODE
-Svrsw60t59b_H_cg_cp_hgatp_test13_store:
-  sw x6, 8(x9)
-  RVTEST_TSBI_GOTO_SMODE
-
-  hfence.vvma
-  hfence.gvma
-  LI(x13, (0x28500403000 >> 12) << 12)
-  LA(x9, svh_page)
-  slli x9, x9, 52
-  srli x9, x9, 52
-  add x13, x13, x9
-  LI(x9, 0x164)
-  RVTEST_TSBI_GOTO_VUMODE
-  LI(x9, -1)
-Svrsw60t59b_H_cg_cp_hgatp_test13_load:
-  lw x9, 8(x13)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Svrsw60t59b_H_cg_cp_hgatp_test13_load, Svrsw60t59b_H_cg_cp_hgatp_test13_load_str)
-
-  hfence.vvma
-  hfence.gvma
-  LI(x14, (0x28500403000 >> 12) << 12)
-  LA(x6, svh_page)
-  slli x6, x6, 52
-  srli x6, x6, 52
-  add x14, x14, x6
-  LI(x6, 0x165)
-  RVTEST_TSBI_GOTO_VUMODE
-Svrsw60t59b_H_cg_cp_hgatp_test13_exec:
-  jalr ra, 0(x14)
-  RVTEST_TSBI_GOTO_SMODE
-
-// Test case 14: 4KB page, non-leaf PTE at level 3 with bit 60
-  LA(x14, rvtest_Hroot_pg_tbl + (((0x28500403000) >> 39) & 0x7ff) * 8)
-  LA(x9, rvtest_hlvl2_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, (1 << 60) | PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  LA(x14, rvtest_hlvl2_pg_tbl + (((0x28500403000) >> 30) & 0x1ff) * 8)
-  LA(x9, rvtest_hlvl1_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  LA(x14, rvtest_hlvl1_pg_tbl + (((0x28500403000) >> 21) & 0x1ff) * 8)
-  LA(x9, rvtest_hlvl0_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  LA(x14, rvtest_hlvl0_pg_tbl + (((0x28500403000) >> 12) & 0x1ff) * 8)
-  LA(x9, svh_page)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  hfence.vvma
-  hfence.gvma
-  LI(x9, (0x28500403000 >> 12) << 12)
-  LA(x6, svh_page)
-  slli x6, x6, 52
-  srli x6, x6, 52
-  add x9, x9, x6
-  LI(x6, 0x166)
-  RVTEST_TSBI_GOTO_VUMODE
-Svrsw60t59b_H_cg_cp_hgatp_test14_store:
-  sw x6, 8(x9)
-  RVTEST_TSBI_GOTO_SMODE
-
-  hfence.vvma
-  hfence.gvma
-  LI(x14, (0x28500403000 >> 12) << 12)
-  LA(x8, svh_page)
-  slli x8, x8, 52
-  srli x8, x8, 52
-  add x14, x14, x8
-  LI(x8, 0x167)
-  RVTEST_TSBI_GOTO_VUMODE
-  LI(x8, -1)
-Svrsw60t59b_H_cg_cp_hgatp_test14_load:
-  lw x8, 8(x14)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Svrsw60t59b_H_cg_cp_hgatp_test14_load, Svrsw60t59b_H_cg_cp_hgatp_test14_load_str)
-
-  hfence.vvma
-  hfence.gvma
-  LI(x8, (0x28500403000 >> 12) << 12)
-  LA(x15, svh_page)
-  slli x15, x15, 52
-  srli x15, x15, 52
-  add x8, x8, x15
-  LI(x15, 0x168)
-  RVTEST_TSBI_GOTO_VUMODE
-Svrsw60t59b_H_cg_cp_hgatp_test14_exec:
-  jalr ra, 0(x8)
-  RVTEST_TSBI_GOTO_SMODE
-
-// Test case 15: 4KB page, non-leaf PTE at level 3 with bits 60:59
-  LA(x14, rvtest_Hroot_pg_tbl + (((0x28500403000) >> 39) & 0x7ff) * 8)
-  LA(x9, rvtest_hlvl2_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, (3 << 59) | PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  LA(x14, rvtest_hlvl2_pg_tbl + (((0x28500403000) >> 30) & 0x1ff) * 8)
-  LA(x9, rvtest_hlvl1_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  LA(x14, rvtest_hlvl1_pg_tbl + (((0x28500403000) >> 21) & 0x1ff) * 8)
-  LA(x9, rvtest_hlvl0_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  LA(x14, rvtest_hlvl0_pg_tbl + (((0x28500403000) >> 12) & 0x1ff) * 8)
-  LA(x9, svh_page)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  hfence.vvma
-  hfence.gvma
-  LI(x6, (0x28500403000 >> 12) << 12)
-  LA(x9, svh_page)
-  slli x9, x9, 52
-  srli x9, x9, 52
-  add x6, x6, x9
-  LI(x9, 0x169)
-  RVTEST_TSBI_GOTO_VUMODE
-Svrsw60t59b_H_cg_cp_hgatp_test15_store:
-  sw x9, 8(x6)
-  RVTEST_TSBI_GOTO_SMODE
-
-  hfence.vvma
-  hfence.gvma
-  LI(x13, (0x28500403000 >> 12) << 12)
-  LA(x6, svh_page)
-  slli x6, x6, 52
-  srli x6, x6, 52
-  add x13, x13, x6
-  LI(x6, 0x16a)
-  RVTEST_TSBI_GOTO_VUMODE
-  LI(x6, -1)
-Svrsw60t59b_H_cg_cp_hgatp_test15_load:
-  lw x6, 8(x13)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Svrsw60t59b_H_cg_cp_hgatp_test15_load, Svrsw60t59b_H_cg_cp_hgatp_test15_load_str)
-
-  hfence.vvma
-  hfence.gvma
-  LI(x8, (0x28500403000 >> 12) << 12)
-  LA(x6, svh_page)
-  slli x6, x6, 52
-  srli x6, x6, 52
-  add x8, x8, x6
-  LI(x6, 0x16b)
-  RVTEST_TSBI_GOTO_VUMODE
-Svrsw60t59b_H_cg_cp_hgatp_test15_exec:
-  jalr ra, 0(x8)
-  RVTEST_TSBI_GOTO_SMODE
-
-// Test case 16: 4KB page, non-leaf PTE at level 2 with bit 59
-  LA(x14, rvtest_Hroot_pg_tbl + (((0x28500403000) >> 39) & 0x7ff) * 8)
-  LA(x9, rvtest_hlvl2_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  LA(x14, rvtest_hlvl2_pg_tbl + (((0x28500403000) >> 30) & 0x1ff) * 8)
-  LA(x9, rvtest_hlvl1_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, (1 << 59) | PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  LA(x14, rvtest_hlvl1_pg_tbl + (((0x28500403000) >> 21) & 0x1ff) * 8)
-  LA(x9, rvtest_hlvl0_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  LA(x14, rvtest_hlvl0_pg_tbl + (((0x28500403000) >> 12) & 0x1ff) * 8)
-  LA(x9, svh_page)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  hfence.vvma
-  hfence.gvma
-  LI(x14, (0x28500403000 >> 12) << 12)
-  LA(x6, svh_page)
-  slli x6, x6, 52
-  srli x6, x6, 52
-  add x14, x14, x6
-  LI(x6, 0x16c)
-  RVTEST_TSBI_GOTO_VUMODE
-Svrsw60t59b_H_cg_cp_hgatp_test16_store:
-  sw x6, 8(x14)
-  RVTEST_TSBI_GOTO_SMODE
-
-  hfence.vvma
-  hfence.gvma
-  LI(x6, (0x28500403000 >> 12) << 12)
-  LA(x15, svh_page)
-  slli x15, x15, 52
-  srli x15, x15, 52
-  add x6, x6, x15
-  LI(x15, 0x16d)
-  RVTEST_TSBI_GOTO_VUMODE
-  LI(x15, -1)
-Svrsw60t59b_H_cg_cp_hgatp_test16_load:
-  lw x15, 8(x6)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Svrsw60t59b_H_cg_cp_hgatp_test16_load, Svrsw60t59b_H_cg_cp_hgatp_test16_load_str)
-
-  hfence.vvma
-  hfence.gvma
-  LI(x14, (0x28500403000 >> 12) << 12)
-  LA(x6, svh_page)
-  slli x6, x6, 52
-  srli x6, x6, 52
-  add x14, x14, x6
-  LI(x6, 0x16e)
-  RVTEST_TSBI_GOTO_VUMODE
-Svrsw60t59b_H_cg_cp_hgatp_test16_exec:
-  jalr ra, 0(x14)
-  RVTEST_TSBI_GOTO_SMODE
-
-// Test case 17: 4KB page, non-leaf PTE at level 2 with bit 60
-  LA(x14, rvtest_Hroot_pg_tbl + (((0x28500403000) >> 39) & 0x7ff) * 8)
-  LA(x9, rvtest_hlvl2_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  LA(x14, rvtest_hlvl2_pg_tbl + (((0x28500403000) >> 30) & 0x1ff) * 8)
-  LA(x9, rvtest_hlvl1_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, (1 << 60) | PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  LA(x14, rvtest_hlvl1_pg_tbl + (((0x28500403000) >> 21) & 0x1ff) * 8)
-  LA(x9, rvtest_hlvl0_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  LA(x14, rvtest_hlvl0_pg_tbl + (((0x28500403000) >> 12) & 0x1ff) * 8)
-  LA(x9, svh_page)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  hfence.vvma
-  hfence.gvma
-  LI(x8, (0x28500403000 >> 12) << 12)
-  LA(x6, svh_page)
-  slli x6, x6, 52
-  srli x6, x6, 52
-  add x8, x8, x6
-  LI(x6, 0x16f)
-  RVTEST_TSBI_GOTO_VUMODE
-Svrsw60t59b_H_cg_cp_hgatp_test17_store:
-  sw x6, 8(x8)
-  RVTEST_TSBI_GOTO_SMODE
-
-  hfence.vvma
-  hfence.gvma
-  LI(x9, (0x28500403000 >> 12) << 12)
-  LA(x6, svh_page)
-  slli x6, x6, 52
-  srli x6, x6, 52
-  add x9, x9, x6
-  LI(x6, 0x170)
-  RVTEST_TSBI_GOTO_VUMODE
-  LI(x6, -1)
-Svrsw60t59b_H_cg_cp_hgatp_test17_load:
-  lw x6, 8(x9)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Svrsw60t59b_H_cg_cp_hgatp_test17_load, Svrsw60t59b_H_cg_cp_hgatp_test17_load_str)
-
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, (1 << 60) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
   hfence.vvma
   hfence.gvma
   LI(x15, (0x28500403000 >> 12) << 12)
-  LA(x8, svh_page)
-  slli x8, x8, 52
-  srli x8, x8, 52
-  add x15, x15, x8
-  LI(x8, 0x171)
+  LA(x9, svh_page)
+  slli x9, x9, 52
+  srli x9, x9, 52
+  add x15, x15, x9
+  LI(x9, 0x15d)
   RVTEST_TSBI_GOTO_VUMODE
-Svrsw60t59b_H_cg_cp_hgatp_test17_exec:
+Svrsw60t59b_H_cg_cp_hgatp_test11_store:
+  sw x9, 8(x15)
+  LI(x9, -1)
+Svrsw60t59b_H_cg_cp_hgatp_test11_load:
+  lw x9, 8(x15)
+Svrsw60t59b_H_cg_cp_hgatp_test11_exec:
   jalr ra, 0(x15)
   RVTEST_TSBI_GOTO_SMODE
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Svrsw60t59b_H_cg_cp_hgatp_test11_load, Svrsw60t59b_H_cg_cp_hgatp_test11_load_str)
 
-// Test case 18: 4KB page, non-leaf PTE at level 2 with bits 60:59
+// Test case 12: 4KB page, leaf PTE at level 0 with bits 60:59
   LA(x14, rvtest_Hroot_pg_tbl + (((0x28500403000) >> 39) & 0x7ff) * 8)
-  LA(x9, rvtest_hlvl2_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
+  LA(x13, rvtest_hlvl2_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
   LA(x14, rvtest_hlvl2_pg_tbl + (((0x28500403000) >> 30) & 0x1ff) * 8)
-  LA(x9, rvtest_hlvl1_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, (3 << 59) | PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
+  LA(x13, rvtest_hlvl1_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
   LA(x14, rvtest_hlvl1_pg_tbl + (((0x28500403000) >> 21) & 0x1ff) * 8)
-  LA(x9, rvtest_hlvl0_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
+  LA(x13, rvtest_hlvl0_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
   LA(x14, rvtest_hlvl0_pg_tbl + (((0x28500403000) >> 12) & 0x1ff) * 8)
-  LA(x9, svh_page)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  hfence.vvma
-  hfence.gvma
-  LI(x6, (0x28500403000 >> 12) << 12)
-  LA(x14, svh_page)
-  slli x14, x14, 52
-  srli x14, x14, 52
-  add x6, x6, x14
-  LI(x14, 0x172)
-  RVTEST_TSBI_GOTO_VUMODE
-Svrsw60t59b_H_cg_cp_hgatp_test18_store:
-  sw x14, 8(x6)
-  RVTEST_TSBI_GOTO_SMODE
-
+  LA(x13, svh_page)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, (3 << 59) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
   hfence.vvma
   hfence.gvma
   LI(x6, (0x28500403000 >> 12) << 12)
@@ -1233,141 +552,48 @@ Svrsw60t59b_H_cg_cp_hgatp_test18_store:
   slli x13, x13, 52
   srli x13, x13, 52
   add x6, x6, x13
-  LI(x13, 0x173)
+  LI(x13, 0x160)
   RVTEST_TSBI_GOTO_VUMODE
+Svrsw60t59b_H_cg_cp_hgatp_test12_store:
+  sw x13, 8(x6)
   LI(x13, -1)
-Svrsw60t59b_H_cg_cp_hgatp_test18_load:
+Svrsw60t59b_H_cg_cp_hgatp_test12_load:
   lw x13, 8(x6)
+Svrsw60t59b_H_cg_cp_hgatp_test12_exec:
+  jalr ra, 0(x6)
   RVTEST_TSBI_GOTO_SMODE
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svrsw60t59b_H_cg_cp_hgatp_test18_load, Svrsw60t59b_H_cg_cp_hgatp_test18_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Svrsw60t59b_H_cg_cp_hgatp_test12_load, Svrsw60t59b_H_cg_cp_hgatp_test12_load_str)
 
-  hfence.vvma
-  hfence.gvma
-  LI(x15, (0x28500403000 >> 12) << 12)
-  LA(x14, svh_page)
-  slli x14, x14, 52
-  srli x14, x14, 52
-  add x15, x15, x14
-  LI(x14, 0x174)
-  RVTEST_TSBI_GOTO_VUMODE
-Svrsw60t59b_H_cg_cp_hgatp_test18_exec:
-  jalr ra, 0(x15)
-  RVTEST_TSBI_GOTO_SMODE
-
-// Test case 19: 4KB page, non-leaf PTE at level 1 with bit 59
+// Test case 13: 4KB page, non-leaf PTE at level 3 with bit 59
   LA(x14, rvtest_Hroot_pg_tbl + (((0x28500403000) >> 39) & 0x7ff) * 8)
-  LA(x9, rvtest_hlvl2_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
+  LA(x13, rvtest_hlvl2_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, (1 << 59) | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
   LA(x14, rvtest_hlvl2_pg_tbl + (((0x28500403000) >> 30) & 0x1ff) * 8)
-  LA(x9, rvtest_hlvl1_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
+  LA(x13, rvtest_hlvl1_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
   LA(x14, rvtest_hlvl1_pg_tbl + (((0x28500403000) >> 21) & 0x1ff) * 8)
-  LA(x9, rvtest_hlvl0_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, (1 << 59) | PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
+  LA(x13, rvtest_hlvl0_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
   LA(x14, rvtest_hlvl0_pg_tbl + (((0x28500403000) >> 12) & 0x1ff) * 8)
-  LA(x9, svh_page)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  hfence.vvma
-  hfence.gvma
-  LI(x9, (0x28500403000 >> 12) << 12)
-  LA(x14, svh_page)
-  slli x14, x14, 52
-  srli x14, x14, 52
-  add x9, x9, x14
-  LI(x14, 0x175)
-  RVTEST_TSBI_GOTO_VUMODE
-Svrsw60t59b_H_cg_cp_hgatp_test19_store:
-  sw x14, 8(x9)
-  RVTEST_TSBI_GOTO_SMODE
-
-  hfence.vvma
-  hfence.gvma
-  LI(x8, (0x28500403000 >> 12) << 12)
-  LA(x9, svh_page)
-  slli x9, x9, 52
-  srli x9, x9, 52
-  add x8, x8, x9
-  LI(x9, 0x176)
-  RVTEST_TSBI_GOTO_VUMODE
-  LI(x9, -1)
-Svrsw60t59b_H_cg_cp_hgatp_test19_load:
-  lw x9, 8(x8)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Svrsw60t59b_H_cg_cp_hgatp_test19_load, Svrsw60t59b_H_cg_cp_hgatp_test19_load_str)
-
-  hfence.vvma
-  hfence.gvma
-  LI(x15, (0x28500403000 >> 12) << 12)
-  LA(x14, svh_page)
-  slli x14, x14, 52
-  srli x14, x14, 52
-  add x15, x15, x14
-  LI(x14, 0x177)
-  RVTEST_TSBI_GOTO_VUMODE
-Svrsw60t59b_H_cg_cp_hgatp_test19_exec:
-  jalr ra, 0(x15)
-  RVTEST_TSBI_GOTO_SMODE
-
-// Test case 20: 4KB page, non-leaf PTE at level 1 with bit 60
-  LA(x14, rvtest_Hroot_pg_tbl + (((0x28500403000) >> 39) & 0x7ff) * 8)
-  LA(x9, rvtest_hlvl2_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  LA(x14, rvtest_hlvl2_pg_tbl + (((0x28500403000) >> 30) & 0x1ff) * 8)
-  LA(x9, rvtest_hlvl1_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  LA(x14, rvtest_hlvl1_pg_tbl + (((0x28500403000) >> 21) & 0x1ff) * 8)
-  LA(x9, rvtest_hlvl0_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, (1 << 60) | PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  LA(x14, rvtest_hlvl0_pg_tbl + (((0x28500403000) >> 12) & 0x1ff) * 8)
-  LA(x9, svh_page)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  hfence.vvma
-  hfence.gvma
-  LI(x6, (0x28500403000 >> 12) << 12)
-  LA(x14, svh_page)
-  slli x14, x14, 52
-  srli x14, x14, 52
-  add x6, x6, x14
-  LI(x14, 0x178)
-  RVTEST_TSBI_GOTO_VUMODE
-Svrsw60t59b_H_cg_cp_hgatp_test20_store:
-  sw x14, 8(x6)
-  RVTEST_TSBI_GOTO_SMODE
-
+  LA(x13, svh_page)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
   hfence.vvma
   hfence.gvma
   LI(x6, (0x28500403000 >> 12) << 12)
@@ -1375,86 +601,48 @@ Svrsw60t59b_H_cg_cp_hgatp_test20_store:
   slli x9, x9, 52
   srli x9, x9, 52
   add x6, x6, x9
-  LI(x9, 0x179)
+  LI(x9, 0x163)
   RVTEST_TSBI_GOTO_VUMODE
+Svrsw60t59b_H_cg_cp_hgatp_test13_store:
+  sw x9, 8(x6)
   LI(x9, -1)
-Svrsw60t59b_H_cg_cp_hgatp_test20_load:
+Svrsw60t59b_H_cg_cp_hgatp_test13_load:
   lw x9, 8(x6)
+Svrsw60t59b_H_cg_cp_hgatp_test13_exec:
+  jalr ra, 0(x6)
   RVTEST_TSBI_GOTO_SMODE
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Svrsw60t59b_H_cg_cp_hgatp_test20_load, Svrsw60t59b_H_cg_cp_hgatp_test20_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x9, Svrsw60t59b_H_cg_cp_hgatp_test13_load, Svrsw60t59b_H_cg_cp_hgatp_test13_load_str)
 
-  hfence.vvma
-  hfence.gvma
-  LI(x15, (0x28500403000 >> 12) << 12)
-  LA(x13, svh_page)
-  slli x13, x13, 52
-  srli x13, x13, 52
-  add x15, x15, x13
-  LI(x13, 0x17a)
-  RVTEST_TSBI_GOTO_VUMODE
-Svrsw60t59b_H_cg_cp_hgatp_test20_exec:
-  jalr ra, 0(x15)
-  RVTEST_TSBI_GOTO_SMODE
-
-// Test case 21: 4KB page, non-leaf PTE at level 1 with bits 60:59
+// Test case 14: 4KB page, non-leaf PTE at level 3 with bit 60
   LA(x14, rvtest_Hroot_pg_tbl + (((0x28500403000) >> 39) & 0x7ff) * 8)
-  LA(x9, rvtest_hlvl2_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
+  LA(x13, rvtest_hlvl2_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, (1 << 60) | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
   LA(x14, rvtest_hlvl2_pg_tbl + (((0x28500403000) >> 30) & 0x1ff) * 8)
-  LA(x9, rvtest_hlvl1_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
+  LA(x13, rvtest_hlvl1_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
   LA(x14, rvtest_hlvl1_pg_tbl + (((0x28500403000) >> 21) & 0x1ff) * 8)
-  LA(x9, rvtest_hlvl0_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, (3 << 59) | PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
+  LA(x13, rvtest_hlvl0_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
   LA(x14, rvtest_hlvl0_pg_tbl + (((0x28500403000) >> 12) & 0x1ff) * 8)
-  LA(x9, svh_page)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x14)
-  hfence.vvma
-  hfence.gvma
-  LI(x6, (0x28500403000 >> 12) << 12)
-  LA(x15, svh_page)
-  slli x15, x15, 52
-  srli x15, x15, 52
-  add x6, x6, x15
-  LI(x15, 0x17b)
-  RVTEST_TSBI_GOTO_VUMODE
-Svrsw60t59b_H_cg_cp_hgatp_test21_store:
-  sw x15, 8(x6)
-  RVTEST_TSBI_GOTO_SMODE
-
-  hfence.vvma
-  hfence.gvma
-  LI(x9, (0x28500403000 >> 12) << 12)
-  LA(x14, svh_page)
-  slli x14, x14, 52
-  srli x14, x14, 52
-  add x9, x9, x14
-  LI(x14, 0x17c)
-  RVTEST_TSBI_GOTO_VUMODE
-  LI(x14, -1)
-Svrsw60t59b_H_cg_cp_hgatp_test21_load:
-  lw x14, 8(x9)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Svrsw60t59b_H_cg_cp_hgatp_test21_load, Svrsw60t59b_H_cg_cp_hgatp_test21_load_str)
-
+  LA(x13, svh_page)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
   hfence.vvma
   hfence.gvma
   LI(x14, (0x28500403000 >> 12) << 12)
@@ -1462,25 +650,375 @@ Svrsw60t59b_H_cg_cp_hgatp_test21_load:
   slli x6, x6, 52
   srli x6, x6, 52
   add x14, x14, x6
-  LI(x6, 0x17d)
+  LI(x6, 0x166)
   RVTEST_TSBI_GOTO_VUMODE
-Svrsw60t59b_H_cg_cp_hgatp_test21_exec:
+Svrsw60t59b_H_cg_cp_hgatp_test14_store:
+  sw x6, 8(x14)
+  LI(x6, -1)
+Svrsw60t59b_H_cg_cp_hgatp_test14_load:
+  lw x6, 8(x14)
+Svrsw60t59b_H_cg_cp_hgatp_test14_exec:
   jalr ra, 0(x14)
   RVTEST_TSBI_GOTO_SMODE
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, Svrsw60t59b_H_cg_cp_hgatp_test14_load, Svrsw60t59b_H_cg_cp_hgatp_test14_load_str)
+
+// Test case 15: 4KB page, non-leaf PTE at level 3 with bits 60:59
+  LA(x14, rvtest_Hroot_pg_tbl + (((0x28500403000) >> 39) & 0x7ff) * 8)
+  LA(x13, rvtest_hlvl2_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, (3 << 59) | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
+  LA(x14, rvtest_hlvl2_pg_tbl + (((0x28500403000) >> 30) & 0x1ff) * 8)
+  LA(x13, rvtest_hlvl1_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
+  LA(x14, rvtest_hlvl1_pg_tbl + (((0x28500403000) >> 21) & 0x1ff) * 8)
+  LA(x13, rvtest_hlvl0_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
+  LA(x14, rvtest_hlvl0_pg_tbl + (((0x28500403000) >> 12) & 0x1ff) * 8)
+  LA(x13, svh_page)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
+  hfence.vvma
+  hfence.gvma
+  LI(x15, (0x28500403000 >> 12) << 12)
+  LA(x9, svh_page)
+  slli x9, x9, 52
+  srli x9, x9, 52
+  add x15, x15, x9
+  LI(x9, 0x169)
+  RVTEST_TSBI_GOTO_VUMODE
+Svrsw60t59b_H_cg_cp_hgatp_test15_store:
+  sw x9, 8(x15)
+  LI(x9, -1)
+Svrsw60t59b_H_cg_cp_hgatp_test15_load:
+  lw x9, 8(x15)
+Svrsw60t59b_H_cg_cp_hgatp_test15_exec:
+  jalr ra, 0(x15)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Svrsw60t59b_H_cg_cp_hgatp_test15_load, Svrsw60t59b_H_cg_cp_hgatp_test15_load_str)
+
+// Test case 16: 4KB page, non-leaf PTE at level 2 with bit 59
+  LA(x14, rvtest_Hroot_pg_tbl + (((0x28500403000) >> 39) & 0x7ff) * 8)
+  LA(x13, rvtest_hlvl2_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
+  LA(x14, rvtest_hlvl2_pg_tbl + (((0x28500403000) >> 30) & 0x1ff) * 8)
+  LA(x13, rvtest_hlvl1_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, (1 << 59) | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
+  LA(x14, rvtest_hlvl1_pg_tbl + (((0x28500403000) >> 21) & 0x1ff) * 8)
+  LA(x13, rvtest_hlvl0_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
+  LA(x14, rvtest_hlvl0_pg_tbl + (((0x28500403000) >> 12) & 0x1ff) * 8)
+  LA(x13, svh_page)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
+  hfence.vvma
+  hfence.gvma
+  LI(x9, (0x28500403000 >> 12) << 12)
+  LA(x8, svh_page)
+  slli x8, x8, 52
+  srli x8, x8, 52
+  add x9, x9, x8
+  LI(x8, 0x16c)
+  RVTEST_TSBI_GOTO_VUMODE
+Svrsw60t59b_H_cg_cp_hgatp_test16_store:
+  sw x8, 8(x9)
+  LI(x8, -1)
+Svrsw60t59b_H_cg_cp_hgatp_test16_load:
+  lw x8, 8(x9)
+Svrsw60t59b_H_cg_cp_hgatp_test16_exec:
+  jalr ra, 0(x9)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Svrsw60t59b_H_cg_cp_hgatp_test16_load, Svrsw60t59b_H_cg_cp_hgatp_test16_load_str)
+
+// Test case 17: 4KB page, non-leaf PTE at level 2 with bit 60
+  LA(x14, rvtest_Hroot_pg_tbl + (((0x28500403000) >> 39) & 0x7ff) * 8)
+  LA(x13, rvtest_hlvl2_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
+  LA(x14, rvtest_hlvl2_pg_tbl + (((0x28500403000) >> 30) & 0x1ff) * 8)
+  LA(x13, rvtest_hlvl1_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, (1 << 60) | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
+  LA(x14, rvtest_hlvl1_pg_tbl + (((0x28500403000) >> 21) & 0x1ff) * 8)
+  LA(x13, rvtest_hlvl0_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
+  LA(x14, rvtest_hlvl0_pg_tbl + (((0x28500403000) >> 12) & 0x1ff) * 8)
+  LA(x13, svh_page)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
+  hfence.vvma
+  hfence.gvma
+  LI(x14, (0x28500403000 >> 12) << 12)
+  LA(x13, svh_page)
+  slli x13, x13, 52
+  srli x13, x13, 52
+  add x14, x14, x13
+  LI(x13, 0x16f)
+  RVTEST_TSBI_GOTO_VUMODE
+Svrsw60t59b_H_cg_cp_hgatp_test17_store:
+  sw x13, 8(x14)
+  LI(x13, -1)
+Svrsw60t59b_H_cg_cp_hgatp_test17_load:
+  lw x13, 8(x14)
+Svrsw60t59b_H_cg_cp_hgatp_test17_exec:
+  jalr ra, 0(x14)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Svrsw60t59b_H_cg_cp_hgatp_test17_load, Svrsw60t59b_H_cg_cp_hgatp_test17_load_str)
+
+// Test case 18: 4KB page, non-leaf PTE at level 2 with bits 60:59
+  LA(x14, rvtest_Hroot_pg_tbl + (((0x28500403000) >> 39) & 0x7ff) * 8)
+  LA(x13, rvtest_hlvl2_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
+  LA(x14, rvtest_hlvl2_pg_tbl + (((0x28500403000) >> 30) & 0x1ff) * 8)
+  LA(x13, rvtest_hlvl1_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, (3 << 59) | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
+  LA(x14, rvtest_hlvl1_pg_tbl + (((0x28500403000) >> 21) & 0x1ff) * 8)
+  LA(x13, rvtest_hlvl0_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
+  LA(x14, rvtest_hlvl0_pg_tbl + (((0x28500403000) >> 12) & 0x1ff) * 8)
+  LA(x13, svh_page)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
+  hfence.vvma
+  hfence.gvma
+  LI(x14, (0x28500403000 >> 12) << 12)
+  LA(x6, svh_page)
+  slli x6, x6, 52
+  srli x6, x6, 52
+  add x14, x14, x6
+  LI(x6, 0x172)
+  RVTEST_TSBI_GOTO_VUMODE
+Svrsw60t59b_H_cg_cp_hgatp_test18_store:
+  sw x6, 8(x14)
+  LI(x6, -1)
+Svrsw60t59b_H_cg_cp_hgatp_test18_load:
+  lw x6, 8(x14)
+Svrsw60t59b_H_cg_cp_hgatp_test18_exec:
+  jalr ra, 0(x14)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, Svrsw60t59b_H_cg_cp_hgatp_test18_load, Svrsw60t59b_H_cg_cp_hgatp_test18_load_str)
+
+// Test case 19: 4KB page, non-leaf PTE at level 1 with bit 59
+  LA(x14, rvtest_Hroot_pg_tbl + (((0x28500403000) >> 39) & 0x7ff) * 8)
+  LA(x13, rvtest_hlvl2_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
+  LA(x14, rvtest_hlvl2_pg_tbl + (((0x28500403000) >> 30) & 0x1ff) * 8)
+  LA(x13, rvtest_hlvl1_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
+  LA(x14, rvtest_hlvl1_pg_tbl + (((0x28500403000) >> 21) & 0x1ff) * 8)
+  LA(x13, rvtest_hlvl0_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, (1 << 59) | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
+  LA(x14, rvtest_hlvl0_pg_tbl + (((0x28500403000) >> 12) & 0x1ff) * 8)
+  LA(x13, svh_page)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
+  hfence.vvma
+  hfence.gvma
+  LI(x6, (0x28500403000 >> 12) << 12)
+  LA(x13, svh_page)
+  slli x13, x13, 52
+  srli x13, x13, 52
+  add x6, x6, x13
+  LI(x13, 0x175)
+  RVTEST_TSBI_GOTO_VUMODE
+Svrsw60t59b_H_cg_cp_hgatp_test19_store:
+  sw x13, 8(x6)
+  LI(x13, -1)
+Svrsw60t59b_H_cg_cp_hgatp_test19_load:
+  lw x13, 8(x6)
+Svrsw60t59b_H_cg_cp_hgatp_test19_exec:
+  jalr ra, 0(x6)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Svrsw60t59b_H_cg_cp_hgatp_test19_load, Svrsw60t59b_H_cg_cp_hgatp_test19_load_str)
+
+// Test case 20: 4KB page, non-leaf PTE at level 1 with bit 60
+  LA(x14, rvtest_Hroot_pg_tbl + (((0x28500403000) >> 39) & 0x7ff) * 8)
+  LA(x13, rvtest_hlvl2_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
+  LA(x14, rvtest_hlvl2_pg_tbl + (((0x28500403000) >> 30) & 0x1ff) * 8)
+  LA(x13, rvtest_hlvl1_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
+  LA(x14, rvtest_hlvl1_pg_tbl + (((0x28500403000) >> 21) & 0x1ff) * 8)
+  LA(x13, rvtest_hlvl0_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, (1 << 60) | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
+  LA(x14, rvtest_hlvl0_pg_tbl + (((0x28500403000) >> 12) & 0x1ff) * 8)
+  LA(x13, svh_page)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
+  hfence.vvma
+  hfence.gvma
+  LI(x6, (0x28500403000 >> 12) << 12)
+  LA(x8, svh_page)
+  slli x8, x8, 52
+  srli x8, x8, 52
+  add x6, x6, x8
+  LI(x8, 0x178)
+  RVTEST_TSBI_GOTO_VUMODE
+Svrsw60t59b_H_cg_cp_hgatp_test20_store:
+  sw x8, 8(x6)
+  LI(x8, -1)
+Svrsw60t59b_H_cg_cp_hgatp_test20_load:
+  lw x8, 8(x6)
+Svrsw60t59b_H_cg_cp_hgatp_test20_exec:
+  jalr ra, 0(x6)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Svrsw60t59b_H_cg_cp_hgatp_test20_load, Svrsw60t59b_H_cg_cp_hgatp_test20_load_str)
+
+// Test case 21: 4KB page, non-leaf PTE at level 1 with bits 60:59
+  LA(x14, rvtest_Hroot_pg_tbl + (((0x28500403000) >> 39) & 0x7ff) * 8)
+  LA(x13, rvtest_hlvl2_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
+  LA(x14, rvtest_hlvl2_pg_tbl + (((0x28500403000) >> 30) & 0x1ff) * 8)
+  LA(x13, rvtest_hlvl1_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
+  LA(x14, rvtest_hlvl1_pg_tbl + (((0x28500403000) >> 21) & 0x1ff) * 8)
+  LA(x13, rvtest_hlvl0_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, (3 << 59) | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
+  LA(x14, rvtest_hlvl0_pg_tbl + (((0x28500403000) >> 12) & 0x1ff) * 8)
+  LA(x13, svh_page)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
+  hfence.vvma
+  hfence.gvma
+  LI(x13, (0x28500403000 >> 12) << 12)
+  LA(x8, svh_page)
+  slli x8, x8, 52
+  srli x8, x8, 52
+  add x13, x13, x8
+  LI(x8, 0x17b)
+  RVTEST_TSBI_GOTO_VUMODE
+Svrsw60t59b_H_cg_cp_hgatp_test21_store:
+  sw x8, 8(x13)
+  LI(x8, -1)
+Svrsw60t59b_H_cg_cp_hgatp_test21_load:
+  lw x8, 8(x13)
+Svrsw60t59b_H_cg_cp_hgatp_test21_exec:
+  jalr ra, 0(x13)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Svrsw60t59b_H_cg_cp_hgatp_test21_load, Svrsw60t59b_H_cg_cp_hgatp_test21_load_str)
 
   csrw vsatp, zero
   csrw hgatp, zero
   hfence.gvma
   hfence.vvma
-  LA(x9, rvtest_code_begin)
+  LA(x8, rvtest_code_begin)
   LA(x15, Vtramptbl_sv)
-  SREG x9, code_bgn_off(x15)
-  LI(x13, SSTATUS_SUM | SSTATUS_MXR)
-  csrc sstatus, x13
-  LI(x13, SSTATUS_SUM | SSTATUS_MXR)
-  csrc vsstatus, x13
-  LI(x13, HENVCFG_ADUE | HENVCFG_PBMTE)
-  csrc henvcfg, x13
+  SREG x8, code_bgn_off(x15)
+  LI(x14, SSTATUS_SUM | SSTATUS_MXR)
+  csrc sstatus, x14
+  LI(x14, SSTATUS_SUM | SSTATUS_MXR)
+  csrc vsstatus, x14
+  LI(x14, HENVCFG_ADUE | HENVCFG_PBMTE)
+  csrc henvcfg, x14
   RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFG, MENVCFG_ADUE | MENVCFG_PBMTE)
   csrw hedeleg, zero
 

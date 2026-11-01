@@ -32,7 +32,6 @@ from testgen.priv.extensions.sv.page_tables import (
 )
 from testgen.priv.extensions.sv.SvH import (
     BOOT,
-    GUEST_OPS,
     SV39_PARAMS,
     begin_chunk,
     guest_access,
@@ -44,6 +43,7 @@ from testgen.priv.registry import add_priv_test_generator
 # Values of PTE bits 60:59 under test: each bit alone, then both.
 _RSW_BITS = (("bit 59", "(1 << 59)"), ("bit 60", "(1 << 60)"), ("bits 60:59", "(3 << 59)"))
 
+CG = "Svrsw60t59b_cg"
 H_CG = "Svrsw60t59b_H_cg"
 
 
@@ -92,7 +92,7 @@ def _rsw_cases(
 
 def _make_svrsw60t59b_mode(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
     regs = SvRegs.allocate(test_data)
-    crosses = Crosses(f"{test_data.testsuite}_cg", "cp_store", "cp_load", "cp_fetch")
+    crosses = Crosses(CG, "cp_store", "cp_load", "cp_fetch")
     chunk = begin_sv_test(test_data, regs, sv, mode, f"{sv.name}_{mode}", coverpoint=cross_names(crosses))
     cases = _rsw_cases(sv, mode == "Umode")
 
@@ -135,23 +135,13 @@ def _h_chunk(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
     pte, addr, tmp = test_data.int_regs.get_registers(3)
     cases = _rsw_cases(sv, g_stage or mode == "VU", sv.data_va, "svh_page", (pte, addr, tmp))
     test_data.int_regs.return_registers([pte, addr, tmp])
-    # The trace reports a PTE only for an access that walks the page table, so each access follows a fence
     for number, (description, mapping, level) in enumerate(cases, 1):
-        for op, setup in zip(GUEST_OPS, ([f"// Test case {number}: {description}", *mapping], [], []), strict=True):
-            code.extend(
-                guest_access(
-                    test_data,
-                    H_CG,
-                    coverpoint,
-                    f"test{number}",
-                    mode,
-                    sv.data_va,
-                    setup=[*setup, "hfence.vvma", "hfence.gvma"],
-                    ops=(op,),
-                    sv=sv,
-                    level=level,
-                )
+        setup = [f"// Test case {number}: {description}", *mapping, "hfence.vvma", "hfence.gvma"]
+        code.extend(
+            guest_access(
+                test_data, H_CG, coverpoint, f"test{number}", mode, sv.data_va, setup=setup, sv=sv, level=level
             )
+        )
     chunk.code.extend([*code, *guest_chunk_teardown(test_data, sv.xlen)])
     return test_data.end_test_chunk()
 

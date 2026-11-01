@@ -496,7 +496,6 @@ def add_load_misaligned_test(
     coverpoint: str,
     covergroup: str,
     *,
-    use_sentinel: bool = True,
     setup: Sequence[str] = (),
 ) -> list[str]:
     """Generate a single load-misaligned testcase."""
@@ -505,17 +504,12 @@ def add_load_misaligned_test(
     t_lines: list[str] = [
         f"LA(x{addr_reg}, scratch)",
         f"addi x{addr_reg}, x{addr_reg}, {offset}",
+        f"LI(x{check_reg}, 0xB0BACAFE)",
+        *setup,
+        test_data.add_testcase(f"{op}_off{offset}", coverpoint, covergroup),
+        f"{op} x{check_reg}, 0(x{addr_reg})",
+        write_sigupd(check_reg, test_data),
     ]
-    if use_sentinel:
-        t_lines.append(f"LI(x{check_reg}, 0xB0BACAFE)")
-    t_lines.extend(
-        [
-            *setup,
-            test_data.add_testcase(f"{op}_off{offset}", coverpoint, covergroup),
-            f"{op} x{check_reg}, 0(x{addr_reg})",
-            write_sigupd(check_reg, test_data),
-        ]
-    )
 
     test_data.int_regs.return_registers([addr_reg, check_reg])
     return t_lines
@@ -559,7 +553,6 @@ def generate_load_address_misaligned_tests(
     test_data: TestData,
     covergroup: str,
     *,
-    use_sentinel: bool = True,
     setup: Sequence[str] = (),
 ) -> list[str]:
     """Generate load-misaligned testcases for all load ops and offsets 0-7."""
@@ -571,20 +564,12 @@ def generate_load_address_misaligned_tests(
     for offset in range(8):
         for op in load_ops:
             lines.append(f"\n# Testcase: {op} with offset {offset} (LSBs: {offset:03b})")
-            lines.extend(
-                add_load_misaligned_test(
-                    op, offset, test_data, coverpoint, covergroup, use_sentinel=use_sentinel, setup=setup
-                )
-            )
+            lines.extend(add_load_misaligned_test(op, offset, test_data, coverpoint, covergroup, setup=setup))
 
         lines.append("#if __riscv_xlen == 64")
         for op in ["lwu", "ld"]:
             lines.append(f"\n# Testcase: {op} with offset {offset} (LSBs: {offset:03b})")
-            lines.extend(
-                add_load_misaligned_test(
-                    op, offset, test_data, coverpoint, covergroup, use_sentinel=use_sentinel, setup=setup
-                )
-            )
+            lines.extend(add_load_misaligned_test(op, offset, test_data, coverpoint, covergroup, setup=setup))
         lines.append("#endif")
 
     return lines
@@ -615,7 +600,6 @@ def generate_load_access_fault_tests(
     test_data: TestData,
     covergroup: str,
     *,
-    use_sigupd: bool = True,
     address: str = "RVMODEL_ACCESS_FAULT_ADDRESS",
     setup: Sequence[str] = (),
 ) -> list[str]:
@@ -629,34 +613,30 @@ def generate_load_access_fault_tests(
 
     for op in load_ops:
         lines.append(f"\n# Testcase: {op} access fault")
-        lines.append(f"LA(x{addr_reg}, {address})")
-        if use_sigupd:
-            lines.append(f"LI(x{check_reg}, 0xB0BACAFE)")
         lines.extend(
             [
+                f"LA(x{addr_reg}, {address})",
+                f"LI(x{check_reg}, 0xB0BACAFE)",
                 *setup,
                 test_data.add_testcase(f"{op}_fault", coverpoint, covergroup),
                 f"{op} x{check_reg}, 0(x{addr_reg})",
+                write_sigupd(check_reg, test_data),
             ]
         )
-        if use_sigupd:
-            lines.append(write_sigupd(check_reg, test_data))
 
     lines.extend(["", "#if __riscv_xlen == 64"])
     for op in ["lwu", "ld"]:
         lines.append(f"\n# Testcase: {op} access fault")
-        lines.append(f"LA(x{addr_reg}, {address})")
-        if use_sigupd:
-            lines.append(f"LI(x{check_reg}, 0xB0BACAFE)")
         lines.extend(
             [
+                f"LA(x{addr_reg}, {address})",
+                f"LI(x{check_reg}, 0xB0BACAFE)",
                 *setup,
                 test_data.add_testcase(f"{op}_fault", coverpoint, covergroup),
                 f"{op} x{check_reg}, 0(x{addr_reg})",
+                write_sigupd(check_reg, test_data),
             ]
         )
-        if use_sigupd:
-            lines.append(write_sigupd(check_reg, test_data))
     lines.extend(["", "#endif", "#endif"])
 
     test_data.int_regs.return_registers([addr_reg, check_reg])

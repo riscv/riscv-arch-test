@@ -301,8 +301,8 @@ def make_exceptionssm(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(generate_instr_adr_misaligned_jal_tests(test_data, _CG))
     tc.code.extend(generate_instr_adr_misaligned_jalr_tests(test_data, _CG))
     tc.code.extend(generate_instr_access_fault_tests(test_data, _CG))
-    tc.code.extend(generate_load_address_misaligned_tests(test_data, _CG, use_sentinel=True))
-    tc.code.extend(generate_load_access_fault_tests(test_data, _CG, use_sigupd=True))
+    tc.code.extend(generate_load_address_misaligned_tests(test_data, _CG))
+    tc.code.extend(generate_load_access_fault_tests(test_data, _CG))
     tc.code.extend(generate_store_address_misaligned_tests(test_data, _CG))
     tc.code.extend(generate_store_access_fault_tests(test_data, _CG))
     tc.code.extend(

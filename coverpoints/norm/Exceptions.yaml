@@ -592,6 +592,10 @@ normative_rule_definitions:
       [
         "Exceptions_Zalrsc_cg/{cp_load_address_misaligned, cp_store_address_misaligned_illegal_w, cp_store_address_misaligned_illegal_d, cp_store_address_misaligned_reserved_w, cp_store_address_misaligned_reserved_d}",
       ]
+  # Regardless of success or failure, executing an SC.W instruction invalidates any reservation
+  # held by this hart.
+  - name: sc_reservation_invalidate
+    coverpoint: ["Exceptions_Zalrsc_cg/cp_sc_after_faulted_lr"]
   # With the addition of the C extension, no instructions can raise
   # instruction-address-misaligned exceptions.
   - name: Zca_no_misaligned

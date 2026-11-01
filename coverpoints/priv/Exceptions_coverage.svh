@@ -906,12 +906,21 @@ covergroup Exceptions_Zc_cg with function sample(ins_t ins);
     adr_LSBs: coverpoint {ins.current.rs1_val + ins.current.imm}[2:0]  {
         // auto fills 000 through 111
     }
+    c_ebreak: coverpoint ins.current.insn[15:0] {
+        bins c_ebreak = {16'h9002};
+    }
+    illegal0: coverpoint ins.current.insn[15:0] {
+        bins illegal0 = {'0};
+    }
+    pc_bit_1: coverpoint ins.current.pc_rdata[1] {
+        // auto fills 1 and 0
+    }
 
     // main coverpoints
-    cp_breakpoint:                           coverpoint ins.current.insn[15:0] {bins c_ebreak = {16'h9002};}
+    cp_breakpoint:                           cross c_ebreak, pc_bit_1;
     cp_load_address_misaligned:              cross loadops, adr_LSBs;
     cp_store_address_misaligned:             cross storeops, adr_LSBs;
-    cp_illegal_instruction:                  coverpoint ins.current.insn[15:0] { bins illegal0 = {'0}; }
+    cp_illegal_instruction:                  cross illegal0, pc_bit_1;
 
     // access fault coverpoints
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS

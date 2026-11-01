@@ -73,10 +73,7 @@ normative_rule_definitions:
     coverpoint: ["Ssstateen_cg/cp_hstateen_walking_ones"]
 
   - name: mstateen_zero_initialization
-    coverpoint:
-      [
-        "TODO: record the writable mstateen bits before the boot code writes them",
-      ]
+    coverpoint: ["Sm_reset_cg/cp_mstateen_reset"]
 
   - name: mstateen_bit_63_op
     coverpoint:

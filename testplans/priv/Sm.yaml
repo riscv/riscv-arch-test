@@ -645,6 +645,11 @@ coverpoints:
     description: Only with Zicfilp.  Read mseccfg at reset.  Check MLPE.
     expectation: MLPE reads 0.  Match reference model.
     bins: "1"
+  - name: cp_mstateen_reset
+    goal: Writable mstateen bits reset to 0
+    description: Only with Smstateen.  Read mstateen0-3 (and mstateen0h-3h on RV32) at reset.  Then find each CSR's writable bits by writing all ones and then zero, and restore the value the boot code wrote.  Check the writable bits of the reset value.
+    expectation: The writable bits read 0.  Read-only bits are not checked.  Match reference model.
+    bins: 4 CSRs (8 on RV32)
   - name: cp_mnstatus_reset
     goal: mnstatus.NMIE resets to 0
     description: Only with Smrnmi.  Read mnstatus at reset.  Check NMIE.

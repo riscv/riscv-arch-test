@@ -1856,8 +1856,53 @@ def make_sm_reset(test_data: TestData) -> list[TestChunk]:
         lines.append(write_sigupd(r_val, test_data))
         tc.code.extend(gated(lines, gate))
     test_data.int_regs.return_registers([r_val, r_mask])
+    tc.code.extend(_mstateen_reset_checks(test_data))
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks
+
+
+# mstateen CSRs saved at reset, and the gate for each
+_MSTATEEN_RESET = [(f"mstateen{n}", "defined(SMSTATEEN_SUPPORTED)") for n in range(4)] + [
+    (f"mstateen{n}h", "defined(SMSTATEEN_SUPPORTED) && __riscv_xlen == 32") for n in range(4)
+]
+
+
+def _mstateen_reset_checks(test_data: TestData) -> list[str]:
+    """Check that the writable bits of each mstateen CSR were zero at reset (smstateen.adoc
+    mstateen_zero_initialization).  Writing all ones and then zero finds the writable bits: those that read 1
+    after the first write and 0 after the second.  The value the boot code wrote is restored afterwards."""
+    r_val, r_ones, r_zeros, r_cur = test_data.int_regs.get_registers(4)
+    lines = [
+        comment_banner(
+            "cp_mstateen_reset",
+            "Boot code saved mstateen0-3 (and mstateen0h-3h on RV32) before writing them.  Check that their writable\n"
+            "bits were zero",
+        )
+    ]
+    for csr, gate in _MSTATEEN_RESET:
+        lines.extend(
+            gated(
+                [
+                    test_data.add_testcase(csr, "cp_mstateen_reset", _RESET_CG),
+                    f"csrr x{r_cur}, {csr}",
+                    f"LI(x{r_ones}, -1)",
+                    f"csrw {csr}, x{r_ones}",
+                    f"csrr x{r_ones}, {csr}",
+                    f"csrw {csr}, zero",
+                    f"csrr x{r_zeros}, {csr}",
+                    f"csrw {csr}, x{r_cur}",
+                    f"not x{r_zeros}, x{r_zeros}",
+                    f"and x{r_ones}, x{r_ones}, x{r_zeros}",
+                    f"LA(x{r_val}, rvtest_reset_csrs)",
+                    f"LREG x{r_val}, RESET_{csr.upper()}_OFFSET(x{r_val})",
+                    f"and x{r_val}, x{r_val}, x{r_ones}",
+                    write_sigupd(r_val, test_data),
+                ],
+                gate,
+            )
+        )
+    test_data.int_regs.return_registers([r_val, r_ones, r_zeros, r_cur])
+    return lines
 
 
 @add_priv_test_generator(

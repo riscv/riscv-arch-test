@@ -1012,7 +1012,15 @@
 #define RESET_HGATP_OFFSET    (3*REGWIDTH)
 #define RESET_VSATP_OFFSET    (4*REGWIDTH)
 #define RESET_MSECCFG_OFFSET  (5*REGWIDTH)
-#define RESET_CSR_COUNT       6
+#define RESET_MSTATEEN0_OFFSET  (6*REGWIDTH)
+#define RESET_MSTATEEN1_OFFSET  (7*REGWIDTH)
+#define RESET_MSTATEEN2_OFFSET  (8*REGWIDTH)
+#define RESET_MSTATEEN3_OFFSET  (9*REGWIDTH)
+#define RESET_MSTATEEN0H_OFFSET (10*REGWIDTH)
+#define RESET_MSTATEEN1H_OFFSET (11*REGWIDTH)
+#define RESET_MSTATEEN2H_OFFSET (12*REGWIDTH)
+#define RESET_MSTATEEN3H_OFFSET (13*REGWIDTH)
+#define RESET_CSR_COUNT       14
 
 .macro RVTEST_DATA_BEGIN
   // Scratch region of memory for tests (ie for loads/stores that are not part of signature)
@@ -1224,6 +1232,27 @@
         #ifdef ZICFILP_SUPPORTED
           csrr T2, mseccfg
           SREG T2, RESET_MSECCFG_OFFSET(T1)
+        #endif
+        // The Smstateen setup below writes mstateen0-3
+        #ifdef SMSTATEEN_SUPPORTED
+          csrr T2, mstateen0
+          SREG T2, RESET_MSTATEEN0_OFFSET(T1)
+          csrr T2, mstateen1
+          SREG T2, RESET_MSTATEEN1_OFFSET(T1)
+          csrr T2, mstateen2
+          SREG T2, RESET_MSTATEEN2_OFFSET(T1)
+          csrr T2, mstateen3
+          SREG T2, RESET_MSTATEEN3_OFFSET(T1)
+          #if __riscv_xlen == 32
+            csrr T2, mstateen0h
+            SREG T2, RESET_MSTATEEN0H_OFFSET(T1)
+            csrr T2, mstateen1h
+            SREG T2, RESET_MSTATEEN1H_OFFSET(T1)
+            csrr T2, mstateen2h
+            SREG T2, RESET_MSTATEEN2H_OFFSET(T1)
+            csrr T2, mstateen3h
+            SREG T2, RESET_MSTATEEN3H_OFFSET(T1)
+          #endif
         #endif
       #endif
 

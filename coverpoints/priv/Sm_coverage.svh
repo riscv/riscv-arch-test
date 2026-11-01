@@ -2589,6 +2589,23 @@ covergroup Sm_reset_cg with function sample(ins_t ins);
         cp_mseccfg_reset: cross priv_mode_m, csrr, mseccfg_first; // mseccfg.MLPE
     `endif
 
+    `ifdef SMSTATEEN_SUPPORTED
+        // Each mstateen CSR is read at reset before any other access
+        mstateen_first: coverpoint ins.current.insn[31:20] iff (!sm_reset_csr_accessed[ins.current.insn[31:20]]) {
+            bins mstateen0 = {CSR_MSTATEEN0};
+            bins mstateen1 = {CSR_MSTATEEN1};
+            bins mstateen2 = {CSR_MSTATEEN2};
+            bins mstateen3 = {CSR_MSTATEEN3};
+            `ifdef UDB_MXLEN_32
+                bins mstateen0h = {CSR_MSTATEEN0H};
+                bins mstateen1h = {CSR_MSTATEEN1H};
+                bins mstateen2h = {CSR_MSTATEEN2H};
+                bins mstateen3h = {CSR_MSTATEEN3H};
+            `endif
+        }
+        cp_mstateen_reset: cross priv_mode_m, csrr, mstateen_first; // writable mstateen bits
+    `endif
+
     // No test reads mnstatus at reset until the Sail reference model supports Smrnmi
     `ifdef SMRNMI_SUPPORTED
         mnstatus_first: coverpoint ins.current.insn[31:20] iff (!sm_reset_csr_accessed[CSR_MNSTATUS]) {

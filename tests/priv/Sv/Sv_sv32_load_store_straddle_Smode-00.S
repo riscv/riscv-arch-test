@@ -448,6 +448,7 @@ Sv_vm_permissions_cg_cp_straddle_write_s_test2_sw_1:
 Sv_vm_permissions_cg_cp_straddle_read_s_test2_lw_1:
   lw x13, 0(x8)
   nop
+#if !defined(UDB_MISALIGNED_LDST) || defined(UDB_MISALIGNED_SPLIT_STRATEGY_SEQUENTIAL_BYTES)
   LI(x8, 0x90407ffe)
 Sv_vm_permissions_cg_cp_straddle_write_s_test2_sw_2:
   sw x14, 0(x8)
@@ -462,6 +463,7 @@ Sv_vm_permissions_cg_cp_straddle_write_s_test2_sw_3:
 Sv_vm_permissions_cg_cp_straddle_read_s_test2_lw_3:
   lw x13, 0(x8)
   nop
+#endif
 #ifdef ZFHMIN_SUPPORTED
   .option push
   .option arch, +zfhmin
@@ -484,6 +486,7 @@ Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsw_1:
 Sv_vm_permissions_cg_cp_straddle_read_s_test2_flw_1:
   flw f25, 0(x8)
   nop
+#if !defined(UDB_MISALIGNED_LDST) || defined(UDB_MISALIGNED_SPLIT_STRATEGY_SEQUENTIAL_BYTES)
   LI(x8, 0x90407ffe)
 Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsw_2:
   fsw f9, 0(x8)
@@ -498,6 +501,7 @@ Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsw_3:
 Sv_vm_permissions_cg_cp_straddle_read_s_test2_flw_3:
   flw f25, 0(x8)
   nop
+#endif
   .option pop
 #endif // F_SUPPORTED
 #ifdef D_SUPPORTED
@@ -510,6 +514,7 @@ Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsd_1:
 Sv_vm_permissions_cg_cp_straddle_read_s_test2_fld_1:
   fld f25, 0(x8)
   nop
+#if !defined(UDB_MISALIGNED_LDST) || defined(UDB_MISALIGNED_SPLIT_STRATEGY_SEQUENTIAL_BYTES)
   LI(x8, 0x90407ffe)
 Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsd_2:
   fsd f9, 0(x8)
@@ -552,6 +557,7 @@ Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsd_7:
 Sv_vm_permissions_cg_cp_straddle_read_s_test2_fld_7:
   fld f25, 0(x8)
   nop
+#endif
   .option pop
 #endif // D_SUPPORTED
 #ifdef Q_SUPPORTED
@@ -564,6 +570,7 @@ Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsq_1:
 Sv_vm_permissions_cg_cp_straddle_read_s_test2_flq_1:
   flq f25, 0(x8)
   nop
+#if !defined(UDB_MISALIGNED_LDST) || defined(UDB_MISALIGNED_SPLIT_STRATEGY_SEQUENTIAL_BYTES)
   LI(x8, 0x90407ffe)
 Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsq_2:
   fsq f9, 0(x8)
@@ -662,6 +669,7 @@ Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsq_15:
 Sv_vm_permissions_cg_cp_straddle_read_s_test2_flq_15:
   flq f25, 0(x8)
   nop
+#endif
   .option pop
 #endif // Q_SUPPORTED
 
@@ -681,6 +689,7 @@ Sv_vm_permissions_cg_cp_straddle_write_s_test3_sh_1:
 Sv_vm_permissions_cg_cp_straddle_read_s_test3_lh_1:
   lh x13, 0(x8)
   nop
+#if !defined(UDB_MISALIGNED_LDST) || defined(UDB_MISALIGNED_SPLIT_STRATEGY_SEQUENTIAL_BYTES)
   LI(x8, 0x90407fff)
 Sv_vm_permissions_cg_cp_straddle_write_s_test3_sw_1:
   sw x14, 0(x8)
@@ -695,6 +704,7 @@ Sv_vm_permissions_cg_cp_straddle_write_s_test3_sw_2:
 Sv_vm_permissions_cg_cp_straddle_read_s_test3_lw_2:
   lw x13, 0(x8)
   nop
+#endif
   LI(x8, 0x90407ffd)
 Sv_vm_permissions_cg_cp_straddle_write_s_test3_sw_3:
   sw x14, 0(x8)
@@ -717,6 +727,7 @@ Sv_vm_permissions_cg_cp_straddle_read_s_test3_flh_1:
 #ifdef F_SUPPORTED
   .option push
   .option arch, +f
+#if !defined(UDB_MISALIGNED_LDST) || defined(UDB_MISALIGNED_SPLIT_STRATEGY_SEQUENTIAL_BYTES)
   LI(x8, 0x90407fff)
 Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsw_1:
   fsw f9, 0(x8)
@@ -731,6 +742,7 @@ Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsw_2:
 Sv_vm_permissions_cg_cp_straddle_read_s_test3_flw_2:
   flw f25, 0(x8)
   nop
+#endif
   LI(x8, 0x90407ffd)
 Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsw_3:
   fsw f9, 0(x8)
@@ -743,6 +755,7 @@ Sv_vm_permissions_cg_cp_straddle_read_s_test3_flw_3:
 #ifdef D_SUPPORTED
   .option push
   .option arch, +d
+#if !defined(UDB_MISALIGNED_LDST) || defined(UDB_MISALIGNED_SPLIT_STRATEGY_SEQUENTIAL_BYTES)
   LI(x8, 0x90407fff)
 Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsd_1:
   fsd f9, 0(x8)
@@ -785,6 +798,7 @@ Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsd_6:
 Sv_vm_permissions_cg_cp_straddle_read_s_test3_fld_6:
   fld f25, 0(x8)
   nop
+#endif
   LI(x8, 0x90407ff9)
 Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsd_7:
   fsd f9, 0(x8)
@@ -797,6 +811,7 @@ Sv_vm_permissions_cg_cp_straddle_read_s_test3_fld_7:
 #ifdef Q_SUPPORTED
   .option push
   .option arch, +q
+#if !defined(UDB_MISALIGNED_LDST) || defined(UDB_MISALIGNED_SPLIT_STRATEGY_SEQUENTIAL_BYTES)
   LI(x8, 0x90407fff)
 Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsq_1:
   fsq f9, 0(x8)
@@ -895,6 +910,7 @@ Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsq_14:
 Sv_vm_permissions_cg_cp_straddle_read_s_test3_flq_14:
   flq f25, 0(x8)
   nop
+#endif
   LI(x8, 0x90407ff1)
 Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsq_15:
   fsq f9, 0(x8)
@@ -921,6 +937,7 @@ Sv_vm_permissions_cg_cp_straddle_write_s_test4_sh_1:
 Sv_vm_permissions_cg_cp_straddle_read_s_test4_lh_1:
   lh x13, 0(x8)
   nop
+#if !defined(UDB_MISALIGNED_LDST) || defined(UDB_MISALIGNED_SPLIT_STRATEGY_SEQUENTIAL_BYTES)
   LI(x8, 0x90407fff)
 Sv_vm_permissions_cg_cp_straddle_write_s_test4_sw_1:
   sw x14, 0(x8)
@@ -935,6 +952,7 @@ Sv_vm_permissions_cg_cp_straddle_write_s_test4_sw_2:
 Sv_vm_permissions_cg_cp_straddle_read_s_test4_lw_2:
   lw x13, 0(x8)
   nop
+#endif
   LI(x8, 0x90407ffd)
 Sv_vm_permissions_cg_cp_straddle_write_s_test4_sw_3:
   sw x14, 0(x8)
@@ -957,6 +975,7 @@ Sv_vm_permissions_cg_cp_straddle_read_s_test4_flh_1:
 #ifdef F_SUPPORTED
   .option push
   .option arch, +f
+#if !defined(UDB_MISALIGNED_LDST) || defined(UDB_MISALIGNED_SPLIT_STRATEGY_SEQUENTIAL_BYTES)
   LI(x8, 0x90407fff)
 Sv_vm_permissions_cg_cp_straddle_write_s_test4_fsw_1:
   fsw f9, 0(x8)
@@ -971,6 +990,7 @@ Sv_vm_permissions_cg_cp_straddle_write_s_test4_fsw_2:
 Sv_vm_permissions_cg_cp_straddle_read_s_test4_flw_2:
   flw f25, 0(x8)
   nop
+#endif
   LI(x8, 0x90407ffd)
 Sv_vm_permissions_cg_cp_straddle_write_s_test4_fsw_3:
   fsw f9, 0(x8)
@@ -983,6 +1003,7 @@ Sv_vm_permissions_cg_cp_straddle_read_s_test4_flw_3:
 #ifdef D_SUPPORTED
   .option push
   .option arch, +d
+#if !defined(UDB_MISALIGNED_LDST) || defined(UDB_MISALIGNED_SPLIT_STRATEGY_SEQUENTIAL_BYTES)
   LI(x8, 0x90407fff)
 Sv_vm_permissions_cg_cp_straddle_write_s_test4_fsd_1:
   fsd f9, 0(x8)
@@ -1025,6 +1046,7 @@ Sv_vm_permissions_cg_cp_straddle_write_s_test4_fsd_6:
 Sv_vm_permissions_cg_cp_straddle_read_s_test4_fld_6:
   fld f25, 0(x8)
   nop
+#endif
   LI(x8, 0x90407ff9)
 Sv_vm_permissions_cg_cp_straddle_write_s_test4_fsd_7:
   fsd f9, 0(x8)
@@ -1037,6 +1059,7 @@ Sv_vm_permissions_cg_cp_straddle_read_s_test4_fld_7:
 #ifdef Q_SUPPORTED
   .option push
   .option arch, +q
+#if !defined(UDB_MISALIGNED_LDST) || defined(UDB_MISALIGNED_SPLIT_STRATEGY_SEQUENTIAL_BYTES)
   LI(x8, 0x90407fff)
 Sv_vm_permissions_cg_cp_straddle_write_s_test4_fsq_1:
   fsq f9, 0(x8)
@@ -1135,6 +1158,7 @@ Sv_vm_permissions_cg_cp_straddle_write_s_test4_fsq_14:
 Sv_vm_permissions_cg_cp_straddle_read_s_test4_flq_14:
   flq f25, 0(x8)
   nop
+#endif
   LI(x8, 0x90407ff1)
 Sv_vm_permissions_cg_cp_straddle_write_s_test4_fsq_15:
   fsq f9, 0(x8)

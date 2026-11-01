@@ -1085,8 +1085,13 @@ def _t_va_all(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> 
     test_chunks.append(end_sv_test(test_data, regs))
 
 
-# Bytes of a 32-bit access two bytes below the end of a page that fall in the next page
+# Bytes of a 32-bit instruction two bytes below the end of a page that fall in the next page
 _STRADDLE_OFFSET = 2
+
+# A faulting straddling access with more than one byte in the faulting page reports, in stval, the address of the
+# first byte it accesses there, which depends on the order in which the hart splits the access.  UDB defines that
+# order only for sequential_bytes.  A hart that does not perform misaligned accesses raises address-misaligned instead.
+_ORDER_GATE = "#if !defined(UDB_MISALIGNED_LDST) || defined(UDB_MISALIGNED_SPLIT_STRATEGY_SEQUENTIAL_BYTES)"
 
 # (load, store, bytes, gate, .option arch) of each access that straddles a kilopage boundary.  Each runs at every
 # offset from 1 to bytes - 1 below the boundary.  ld/sd are only generated for RV64; the others are gated in the test.
@@ -1249,15 +1254,15 @@ def _t_fetch_straddle(test_data: TestData, test_chunks: list[TestChunk], sv: SvM
 
 def _straddle_accesses(
     sv: SvMode, page: _StraddlePage
-) -> list[tuple[str, str, tuple[int, ...], str | None, str | None]]:
-    """(load, store, offsets below the boundary, gate, .option arch) of the accesses that straddle out of ``page``:
-    every load/store width at every offset that spans a kilopage boundary, and a word two bytes below a megapage
-    boundary.
+) -> list[tuple[str, str, int, tuple[int, ...], str | None, str | None]]:
+    """(load, store, bytes, offsets below the boundary, gate, .option arch) of the accesses that straddle out of
+    ``page``: every load/store width at every offset that spans a kilopage boundary, and a halfword one byte below a
+    megapage boundary.
     """
     if page.level != 0:
-        return [("lw", "sw", (_STRADDLE_OFFSET,), None, None)]
+        return [("lh", "sh", 2, (1,), None, None)]
     return [
-        (load, store, tuple(range(1, size)), gate, arch)
+        (load, store, size, tuple(range(1, size)), gate, arch)
         for load, store, size, gate, arch in _STRADDLE_ACCESSES
         if load != "ld" or sv.xlen == 64
     ]
@@ -1266,14 +1271,16 @@ def _straddle_accesses(
 def _t_load_store_straddle(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode, page: _StraddlePage) -> None:
     """Store and load across the end of a page, with neither page faulting, the first page invalid, or the next page
     invalid or execute-only.  At the end of a kilopage every integer and floating-point width straddles the boundary
-    at every offset from 1 to its size - 1; at the end of a megapage a word straddles it two bytes below.
+    at every offset from 1 to its size - 1; at the end of a megapage a halfword straddles it one byte below.
 
     When neither page faults, each load reads back the value just stored, which the signature checks; floating-point
     stores take their value from an aligned load of a pattern at the start of va_data.  Otherwise every access traps
-    and the trap signature checks it: a hart that performs misaligned accesses faults on the part of the access in the
-    faulting page, however it splits the access, so stval holds the address of that part, and a hart that does not
-    raises address-misaligned instead, which the reference model predicts from its configuration.  A faulting store
-    may have written the part in the other page, so memory is not checked after it.
+    and the trap signature checks it.  A hart that performs misaligned accesses faults in the faulting page, and stval
+    holds the address of the first byte it accesses there.  That is fixed only when one byte of the access is in the
+    faulting page; otherwise it depends on how the hart splits the access, so those cases need sequential_bytes
+    (_ORDER_GATE).  A hart that does not perform misaligned accesses raises address-misaligned instead, which the
+    reference model predicts from its configuration.  A faulting store may have written the part in the other page, so
+    memory is not checked after it.
     """
     for mode in ("Smode", "Umode"):
         regs = SvRegs.allocate(test_data)
@@ -1316,7 +1323,7 @@ def _t_load_store_straddle(test_data: TestData, test_chunks: list[TestChunk], sv
                 chunk.code.extend([f"LI({base}, {page.va})", *enter, *pattern_stores, *leave])
             elif not completes:
                 chunk.code.extend(enter)
-            for load_op, store_op, offsets, gate, arch in accesses:
+            for load_op, store_op, size, offsets, gate, arch in accesses:
                 fp = load_op.startswith("f")
                 chunk.code.extend(
                     [
@@ -1324,7 +1331,13 @@ def _t_load_store_straddle(test_data: TestData, test_chunks: list[TestChunk], sv
                         *([".option push", f".option arch, +{arch}"] if arch else []),
                     ]
                 )
+                gated = False
                 for below in offsets:
+                    # ``below`` bytes are in the first page and size - below in the next
+                    faulting_bytes = below if not first.valid else 0 if completes else size - below
+                    if (faulting_bytes > 1) != gated:
+                        gated = not gated
+                        chunk.code.append(_ORDER_GATE if gated else "#endif")
                     labels = {
                         op: test_data.add_testcase(f"test{number}_{name}_{below}", crosses[op], PERMISSIONS_CG)
                         for op, name in (("store", store_op), ("load", load_op))
@@ -1364,7 +1377,13 @@ def _t_load_store_straddle(test_data: TestData, test_chunks: list[TestChunk], sv
                     if fp and sv.xlen == 64:
                         # RVTEST_SIGUPD_F takes 3 entries when FLEN > XLEN (Q on RV64); priv tests assume FLEN = 64
                         chunk.sigupd_count += 1
-                chunk.code.extend([*([".option pop"] if arch else []), *([f"#endif // {gate}"] if gate else [])])
+                chunk.code.extend(
+                    [
+                        *(["#endif"] if gated else []),
+                        *([".option pop"] if arch else []),
+                        *([f"#endif // {gate}"] if gate else []),
+                    ]
+                )
             chunk.code.extend([*([] if completes else leave), ""])
         chunk.raw_data.extend(sv_data(sv, regs, (page.level,), data_region_body=page.data))
         chunk.trap_sigupd_count = trap_sigupd_count(traps)

@@ -742,10 +742,12 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
     `endif
 
     // A load or store that spans the end of a kilopage, at every offset from 1 to its size - 1 below the boundary, and
-    // on RV64 a word two bytes below the end of a 2 MiB megapage.  The access coverpoint is {megapage, floating point
+    // on RV64 a halfword one byte below the end of a 2 MiB megapage.  The access coverpoint is {megapage, floating point
     // (opcode bit 2), funct3 (the size), bytes below the boundary}, so a bin is one instruction at one offset.  A load or
     // store samples its own record: the trap flag marks a fault, and stval says which part faulted.  A hart that does
-    // not perform misaligned accesses raises address-misaligned instead, so these need MISALIGNED_LDST.
+    // not perform misaligned accesses raises address-misaligned instead, so these need MISALIGNED_LDST.  stval of a
+    // fault with more than one byte in the faulting page depends on the order in which the hart splits the access, so
+    // without sequential_bytes only the halfwords, with one byte in each page, are crossed with the faults.
     `ifdef UDB_MISALIGNED_LDST
         straddle_load: coverpoint {((ins.current.rs1_val + ins.current.imm) & 'h1FFFFF) > 'h1FFFF0, ins.current.insn[2], ins.current.insn[14:12],
                                    4'('h1000 - ((ins.current.rs1_val + ins.current.imm) & 'hFFF))}
@@ -754,7 +756,7 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
             bins lw[]  = {['h021:'h023]};
             `ifdef UDB_MXLEN_64
                 bins ld[]        = {['h031:'h037]};
-                bins lw_megapage = {'h122};
+                bins lh_megapage = {'h111};
             `endif
             `ifdef ZFHMIN_SUPPORTED
                 bins flh   = {'h091};
@@ -776,7 +778,7 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
             bins sw[]  = {['h021:'h023]};
             `ifdef UDB_MXLEN_64
                 bins sd[]        = {['h031:'h037]};
-                bins sw_megapage = {'h122};
+                bins sh_megapage = {'h111};
             `endif
             `ifdef ZFHMIN_SUPPORTED
                 bins fsh   = {'h091};
@@ -817,10 +819,47 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
                 bins faults = {[1:3]};
             `endif
         }
-        cp_straddle_read_s:  cross priv_mode_s, straddle_load,  straddle_load_outcome,  mode;
-        cp_straddle_read_u:  cross priv_mode_u, straddle_load,  straddle_load_outcome,  mode;
-        cp_straddle_write_s: cross priv_mode_s, straddle_store, straddle_store_outcome, mode;
-        cp_straddle_write_u: cross priv_mode_u, straddle_store, straddle_store_outcome, mode;
+        `ifdef UDB_MISALIGNED_SPLIT_STRATEGY_SEQUENTIAL_BYTES
+            cp_straddle_read_s:  cross priv_mode_s, straddle_load,  straddle_load_outcome,  mode;
+            cp_straddle_read_u:  cross priv_mode_u, straddle_load,  straddle_load_outcome,  mode;
+            cp_straddle_write_s: cross priv_mode_s, straddle_store, straddle_store_outcome, mode;
+            cp_straddle_write_u: cross priv_mode_u, straddle_store, straddle_store_outcome, mode;
+        `else
+            // A halfword one byte below the boundary: one byte in each page
+            straddle_load_halfword: coverpoint {((ins.current.rs1_val + ins.current.imm) & 'h1FFFFF) > 'h1FFFF0, ins.current.insn[2], ins.current.insn[14:12],
+                                                4'('h1000 - ((ins.current.rs1_val + ins.current.imm) & 'hFFF))}
+                                                iff (ins.current.insn[6:0] inside {7'b0000011, 7'b0000111} && ((ins.current.rs1_val + ins.current.imm) & 'hFFF) > 'hFF0) {
+                bins lh = {'h011};
+                `ifdef UDB_MXLEN_64
+                    bins lh_megapage = {'h111};
+                `endif
+                `ifdef ZFHMIN_SUPPORTED
+                    bins flh = {'h091};
+                `endif
+            }
+            straddle_store_halfword: coverpoint {((ins.current.rs1_val + ins.current.imm) & 'h1FFFFF) > 'h1FFFF0, ins.current.insn[2], ins.current.insn[14:12],
+                                                 4'('h1000 - ((ins.current.rs1_val + ins.current.imm) & 'hFFF))}
+                                                 iff (ins.current.insn[6:0] inside {7'b0100011, 7'b0100111} && ((ins.current.rs1_val + ins.current.imm) & 'hFFF) > 'hFF0) {
+                bins sh = {'h011};
+                `ifdef UDB_MXLEN_64
+                    bins sh_megapage = {'h111};
+                `endif
+                `ifdef ZFHMIN_SUPPORTED
+                    bins fsh = {'h091};
+                `endif
+            }
+            straddle_completes: coverpoint ins.current.trap {
+                bins completes = {0};
+            }
+            cp_straddle_read_s:            cross priv_mode_s, straddle_load_halfword,  straddle_load_outcome,  mode;
+            cp_straddle_read_u:            cross priv_mode_u, straddle_load_halfword,  straddle_load_outcome,  mode;
+            cp_straddle_write_s:           cross priv_mode_s, straddle_store_halfword, straddle_store_outcome, mode;
+            cp_straddle_write_u:           cross priv_mode_u, straddle_store_halfword, straddle_store_outcome, mode;
+            cp_straddle_read_s_completes:  cross priv_mode_s, straddle_load,  straddle_completes, mode;
+            cp_straddle_read_u_completes:  cross priv_mode_u, straddle_load,  straddle_completes, mode;
+            cp_straddle_write_s_completes: cross priv_mode_s, straddle_store, straddle_completes, mode;
+            cp_straddle_write_u_completes: cross priv_mode_u, straddle_store, straddle_completes, mode;
+        `endif
     `endif
 endgroup
 

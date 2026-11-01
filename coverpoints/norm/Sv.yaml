@@ -590,7 +590,8 @@ normative_rule_definitions:
   # an access-fault, page-fault, or hardware-error exception, then stval will
   # contain the virtual address of the portion of the access that caused the fault.
   # A load or store of each width across the end of a page whose first or next page faults: a hart that performs
-  # misaligned accesses faults on the part in that page.
+  # misaligned accesses faults on the part in that page.  With more than one byte in that page, stval depends on the
+  # order in which the hart splits the access, so those cases need MISALIGNED_SPLIT_STRATEGY = sequential_bytes.
   - name: stval_op_load_store_fault
     coverpoint: ["Sv_vm_permissions_cg/cp_straddle_{read,write}_{s,u}"]
 

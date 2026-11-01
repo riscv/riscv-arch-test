@@ -32,7 +32,7 @@ repos:
 
   # Format pyproject.toml files
   - repo: https://github.com/tox-dev/pyproject-fmt
-    rev: a72ae8edd6eeddb9d942168912362945651212f8 # frozen: v2.30.1
+    rev: 50e0f3aee9dc5747a5f173f79a7417403c18dda6 # frozen: v2.30.3
     hooks:
       - id: pyproject-fmt
 
@@ -76,7 +76,7 @@ repos:
 
   # Find security issues in GitHub Actions workflows
   - repo: https://github.com/zizmorcore/zizmor-pre-commit
-    rev: fa412071e4f5d44d44f9e365f4676f9df92456a2 # frozen: v1.30.1
+    rev: c92afdf2c6ca336aaa8f39e2bd8d48f62dbd8e1f # frozen: v1.31.1
     hooks:
       - id: zizmor
 
@@ -96,7 +96,7 @@ repos:
 
   # Prettier for json, yaml, markdown, etc. formatting
   - repo: https://github.com/rbubley/mirrors-prettier
-    rev: ef4a397f916211b4a39ccf9d3d9cbb6562157251 # frozen: v3.9.9
+    rev: 331f33fa4dfbcbca7c3da3620c137fde0faab273 # frozen: v3.9.10
     hooks:
       - id: prettier
 
@@ -120,7 +120,7 @@ repos:
 
   # Validate Renovate configuration
   - repo: https://github.com/renovatebot/pre-commit-hooks
-    rev: 2099203ca448c26d3280ca7c2970eb9762645904 # frozen: 44.134.2
+    rev: be4002a131a8fa52ef314b785adb353b29643508 # frozen: 44.181.6
     hooks:
       - id: renovate-config-validator
 

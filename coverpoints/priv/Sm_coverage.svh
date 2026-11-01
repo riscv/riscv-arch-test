@@ -2544,6 +2544,8 @@ endgroup
 // every CSR an instruction reads or writes, including the implicit writes of traps and xRETs.
 // The trace order count restarts with each trace, so a count no larger than the last one starts a new trace.
 bit [4095:0] sm_reset_csr_accessed;
+// The triggers whose tdata1 has been accessed, by tselect value
+bit [63:0] sm_reset_tdata1_accessed;
 logic [63:0] sm_reset_prev_order;
 
 covergroup Sm_reset_cg with function sample(ins_t ins);
@@ -2606,6 +2608,57 @@ covergroup Sm_reset_cg with function sample(ins_t ins);
         cp_mstateen_reset: cross priv_mode_m, csrr, mstateen_first; // writable mstateen bits
     `endif
 
+    `ifdef SMDBLTRP_SUPPORTED
+        // mstatus.MDT on RV64 and mstatush.MDT on RV32
+        `ifdef UDB_MXLEN_64
+            cp_mdt_reset: cross priv_mode_m, csrr, mstatus_first;
+        `elsif SM1P12P0_OR_LATER_SUPPORTED
+            cp_mdt_reset: cross priv_mode_m, csrr, mstatush_first;
+        `endif
+    `endif
+
+    `ifdef ZVE32X_SUPPORTED
+        vector_first: coverpoint ins.current.insn[31:20] iff (!sm_reset_csr_accessed[ins.current.insn[31:20]]) {
+            bins vl    = {CSR_VL};
+            bins vtype = {CSR_VTYPE};
+        }
+        cp_vector_reset: cross priv_mode_m, csrr, vector_first; // vl and vtype restorable by one vsetvl
+    `endif
+
+    `ifdef SDTRIG_SUPPORTED
+        tselect_first: coverpoint ins.current.insn[31:20] iff (!sm_reset_csr_accessed[CSR_TSELECT]) {
+            bins tselect = {CSR_TSELECT};
+        }
+        cp_tselect_reset: cross priv_mode_m, csrr, tselect_first;
+        `ifdef UDB_TCONTROL_IMPLEMENTED
+            tcontrol_first: coverpoint ins.current.insn[31:20] iff (!sm_reset_csr_accessed[CSR_TCONTROL]) {
+                bins tcontrol = {CSR_TCONTROL};
+            }
+            cp_tcontrol_reset: cross priv_mode_m, csrr, tcontrol_first;
+        `endif
+        `ifdef UDB_MCONTEXT_IMPLEMENTED
+            mcontext_first: coverpoint ins.current.insn[31:20] iff (!sm_reset_csr_accessed[CSR_MCONTEXT]) {
+                bins mcontext = {CSR_MCONTEXT};
+            }
+            cp_mcontext_reset: cross priv_mode_m, csrr, mcontext_first;
+        `endif
+        `ifdef UDB_SCONTEXT_IMPLEMENTED
+            scontext_first: coverpoint ins.current.insn[31:20] iff (!sm_reset_csr_accessed[CSR_SCONTEXT]) {
+                bins scontext = {CSR_SCONTEXT};
+            }
+            cp_scontext_reset: cross priv_mode_m, csrr, scontext_first;
+        `endif
+        `ifdef UDB_SDTRIG_NUM_TRIGGERS
+            // The first read of each trigger's tdata1
+            tdata1_first: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tselect", "tselect")
+                          iff (ins.current.insn[31:20] == CSR_TDATA1 &&
+                               !sm_reset_tdata1_accessed[get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tselect", "tselect") & 'h3F]) {
+                bins trigger[] = {[0:`UDB_SDTRIG_NUM_TRIGGERS-1]};
+            }
+            cp_tdata1_reset: cross priv_mode_m, csrr, tdata1_first;
+        `endif
+    `endif
+
     // No test reads mnstatus at reset until the Sail reference model supports Smrnmi
     `ifdef SMRNMI_SUPPORTED
         mnstatus_first: coverpoint ins.current.insn[31:20] iff (!sm_reset_csr_accessed[CSR_MNSTATUS]) {
@@ -2616,9 +2669,16 @@ covergroup Sm_reset_cg with function sample(ins_t ins);
 endgroup
 
 function void sm_reset_sample(ins_t ins);
-    if (ins.current.order <= sm_reset_prev_order) sm_reset_csr_accessed = '0;
+    if (ins.current.order <= sm_reset_prev_order) begin
+        sm_reset_csr_accessed = '0;
+        sm_reset_tdata1_accessed = '0;
+    end
     sm_reset_prev_order = ins.current.order;
     Sm_reset_cg.sample(ins);
+    `ifdef SDTRIG_SUPPORTED
+        if (ins.current.csr_wb[CSR_TDATA1])
+            sm_reset_tdata1_accessed[get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tselect", "tselect") & 'h3F] = 1;
+    `endif
     sm_reset_csr_accessed |= ins.current.csr_wb;
 endfunction
 

@@ -1811,7 +1811,50 @@ _RESET_FIELDS = [
     ("cp_hgatp_reset", "hgatp", ("HGATP32_MODE", "HGATP64_MODE"), "defined(H_SUPPORTED)"),
     ("cp_vsatp_reset", "vsatp", ("SATP32_MODE", "SATP64_MODE"), "defined(H_SUPPORTED)"),
     ("cp_mseccfg_reset", "mseccfg", ("MSECCFG_MLPE", "MSECCFG_MLPE"), "defined(ZICFILP_SUPPORTED)"),
+    # Smdbltrp: MDT resets to 1, in mstatus on RV64 and in mstatush on RV32
+    ("cp_mdt_reset", "mstatus", ("MSTATUS_MDT", "MSTATUS_MDT"), "__riscv_xlen == 64 && defined(SMDBLTRP_SUPPORTED)"),
+    (
+        "cp_mdt_reset",
+        "mstatush",
+        ("MSTATUSH_MDT", "MSTATUSH_MDT"),
+        "__riscv_xlen == 32 && defined(SM1P12P0_OR_LATER_SUPPORTED) && defined(SMDBLTRP_SUPPORTED)",
+    ),
+    # Sdtrig: every field of these CSRs resets to 0 (Debug spec register tables)
+    ("cp_tselect_reset", "tselect", None, "defined(SDTRIG_SUPPORTED)"),
+    ("cp_mcontext_reset", "mcontext", None, "defined(SDTRIG_SUPPORTED) && defined(UDB_MCONTEXT_IMPLEMENTED)"),
+    ("cp_scontext_reset", "scontext", None, "defined(SDTRIG_SUPPORTED) && defined(UDB_SCONTEXT_IMPLEMENTED)"),
 ]
+
+# Triggers checked by cp_tdata1_reset; more need a larger bound
+_MAX_TRIGGERS = 64
+
+
+@add_priv_test_generator(
+    "Sm",
+    required_extensions=["Sm", "Sdtrig"],
+    march_extensions=[],
+    extra_defines=["#define BOOT_TO_MMODE", "#define RESET_TEST", "#define RESET_TEST_TCONTROL"],
+    params=["TCONTROL_IMPLEMENTED: true"],
+)
+def make_sm_reset_tcontrol(test_data: TestData) -> list[TestChunk]:
+    """tcontrol resets to 0.  A separate test, because Sail models tcontrol only with tcontrol-based breakpoint
+    reentrancy (https://github.com/riscv/sail-riscv/issues/2039), so configurations that implement tcontrol
+    otherwise exclude it; boot code reads tcontrol only in this test (RESET_TEST_TCONTROL)."""
+    test_chunks: list[TestChunk] = []
+    tc = test_data.new_test_chunk(test_chunks, "reset_tcontrol")
+    r_val = test_data.int_regs.get_register()
+    tc.code.extend(
+        [
+            comment_banner("cp_tcontrol_reset", "Boot code saved tcontrol at reset.  It must read 0"),
+            test_data.add_testcase("tcontrol", "cp_tcontrol_reset", _RESET_CG),
+            f"LA(x{r_val}, rvtest_reset_csrs)",
+            f"LREG x{r_val}, RESET_TCONTROL_OFFSET(x{r_val})",
+            write_sigupd(r_val, test_data),
+        ]
+    )
+    test_data.int_regs.return_register(r_val)
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks
 
 
 @add_priv_test_generator(
@@ -1857,6 +1900,8 @@ def make_sm_reset(test_data: TestData) -> list[TestChunk]:
         tc.code.extend(gated(lines, gate))
     test_data.int_regs.return_registers([r_val, r_mask])
     tc.code.extend(_mstateen_reset_checks(test_data))
+    tc.code.extend(_vector_reset_check(test_data))
+    tc.code.extend(_tdata1_reset_checks(test_data))
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks
 
@@ -2316,3 +2361,95 @@ def make_sm_zicntr_h(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(htimedelta_tests(test_data, _ZICNTR_H_CG, "M"))
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks
+
+
+def _vector_reset_check(test_data: TestData) -> list[str]:
+    """vl and vtype at reset can be restored by one vsetvl (vector.adoc vector_reset_state): vsetvl with the saved
+    vl as AVL and the saved vtype must leave both unchanged.  The saved values are implementation-defined, so only
+    their difference from the restored values is recorded."""
+    r_vl, r_vtype, r_tmp = test_data.int_regs.get_registers(3)
+    lines = [
+        comment_banner(
+            "cp_vector_reset",
+            "Boot code saved vl and vtype at reset.  vsetvl with them must restore both unchanged",
+        ),
+        test_data.add_testcase("vsetvl", "cp_vector_reset", _RESET_CG),
+        f"LI(x{r_tmp}, MSTATUS_VS & (MSTATUS_VS >> 1))",
+        f"csrs mstatus, x{r_tmp}",
+        f"LA(x{r_tmp}, rvtest_reset_csrs)",
+        f"LREG x{r_vl}, RESET_VL_OFFSET(x{r_tmp})",
+        f"LREG x{r_vtype}, RESET_VTYPE_OFFSET(x{r_tmp})",
+        ".option push",
+        ".option arch, +zve32x",
+        f"vsetvl x{r_tmp}, x{r_vl}, x{r_vtype}",
+        ".option pop",
+        f"csrr x{r_tmp}, vl",
+        f"xor x{r_vl}, x{r_vl}, x{r_tmp}",
+        f"csrr x{r_tmp}, vtype",
+        f"xor x{r_vtype}, x{r_vtype}, x{r_tmp}",
+        f"or x{r_vl}, x{r_vl}, x{r_vtype}",
+        write_sigupd(r_vl, test_data),
+    ]
+    test_data.int_regs.return_registers([r_vl, r_vtype, r_tmp])
+    return gated(lines, "defined(ZVE32X_SUPPORTED)")
+
+
+def _tdata1_reset_checks(test_data: TestData) -> list[str]:
+    """tdata1 of each trigger at reset (Debug spec tdata1 and trigger-type tables, which "apply to every underlying
+    trigger").  tdata1.type resets to an implementation-chosen value, so the check depends on it:
+    type 2 (mcontrol): every field below type is 0 except maskmax; type 3 (icount): every field is 0 except count = 1;
+    types 4-7 (itrigger, etrigger, mcontrol6, tmexttrigger): every field is 0; any other type: dmode is 0.
+    The masked value minus the expected one is recorded, which is 0 on every hart."""
+    r_val, r_type, r_mask, r_exp, r_tmp = test_data.int_regs.get_registers(5)
+    low = "((1 << (__riscv_xlen - 4)) - 1)"
+    lines = [
+        comment_banner(
+            "cp_tdata1_reset",
+            "Boot code saved tdata1 of each trigger at reset.  Check the fields with fixed reset values for the\n"
+            "trigger's reset type",
+        )
+    ]
+    for n in range(_MAX_TRIGGERS):
+        prefix = f"sm_reset_tdata1_{n}"
+        lines.extend(
+            gated(
+                [
+                    test_data.add_testcase(f"trigger{n}", "cp_tdata1_reset", _RESET_CG),
+                    f"LA(x{r_val}, rvtest_reset_csrs)",
+                    f"LREG x{r_val}, (RESET_TDATA1_OFFSET + {n}*REGWIDTH)(x{r_val})",
+                    f"srli x{r_type}, x{r_val}, __riscv_xlen - 4",
+                    f"LI(x{r_mask}, 1 << (__riscv_xlen - 5))",
+                    f"LI(x{r_exp}, 0)",
+                    f"LI(x{r_tmp}, 2)",
+                    f"bne x{r_type}, x{r_tmp}, {prefix}_not_mcontrol",
+                    f"LI(x{r_mask}, {low} & ~(0x3F << (__riscv_xlen - 11)))",
+                    f"j {prefix}_check",
+                    f"{prefix}_not_mcontrol:",
+                    f"LI(x{r_tmp}, 3)",
+                    f"bne x{r_type}, x{r_tmp}, {prefix}_not_icount",
+                    f"LI(x{r_mask}, {low})",
+                    f"LI(x{r_exp}, 1 << 10)",
+                    f"j {prefix}_check",
+                    f"{prefix}_not_icount:",
+                    f"LI(x{r_tmp}, 4)",
+                    f"bltu x{r_type}, x{r_tmp}, {prefix}_check",
+                    f"LI(x{r_tmp}, 7)",
+                    f"bltu x{r_tmp}, x{r_type}, {prefix}_check",
+                    f"LI(x{r_mask}, {low})",
+                    f"{prefix}_check:",
+                    f"and x{r_val}, x{r_val}, x{r_mask}",
+                    f"xor x{r_val}, x{r_val}, x{r_exp}",
+                    write_sigupd(r_val, test_data),
+                ],
+                f"defined(SDTRIG_SUPPORTED) && defined(UDB_SDTRIG_NUM_TRIGGERS) && UDB_SDTRIG_NUM_TRIGGERS > {n}",
+            )
+        )
+    lines.extend(
+        [
+            f"#if defined(SDTRIG_SUPPORTED) && defined(UDB_SDTRIG_NUM_TRIGGERS) && UDB_SDTRIG_NUM_TRIGGERS > {_MAX_TRIGGERS}",
+            f'#error "cp_tdata1_reset checks at most {_MAX_TRIGGERS} triggers"',
+            "#endif",
+        ]
+    )
+    test_data.int_regs.return_registers([r_val, r_type, r_mask, r_exp, r_tmp])
+    return lines

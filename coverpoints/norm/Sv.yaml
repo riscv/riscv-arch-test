@@ -928,10 +928,12 @@ normative_rule_definitions:
   - name: H_straddle
     coverpoint:
       [
-        "Sv_H_twostage_cg/cp_straddle",
-        "Sv_H_twostage_cg/cp_ldst_straddle",
-        "Sv_HSm_trap_cg/cp_straddle_m",
-        "Sv_HSm_trap_cg/cp_ldst_straddle_m",
+        "Sv_H_twostage_cg/cp_misaligned_instr_page_fault_vs",
+        "Sv_H_twostage_cg/cp_misaligned_load_page_fault_vs",
+        "Sv_H_twostage_cg/cp_misaligned_store_page_fault_vs",
+        "Sv_HSm_trap_cg/cp_misaligned_instr_page_fault_m",
+        "Sv_HSm_trap_cg/cp_misaligned_load_page_fault_m",
+        "Sv_HSm_trap_cg/cp_misaligned_store_page_fault_m",
       ]
 
   # hedeleg can delegate page faults, but not guest-page faults, to VS-mode
@@ -1083,7 +1085,11 @@ normative_rule_definitions:
   # corresponds to the faulting portion of the access that mtval indicates
   - name: mtval2_trapval_other
     coverpoint:
-      ["Sv_HSm_trap_cg/cp_straddle_m", "Sv_HSm_trap_cg/cp_ldst_straddle_m"]
+      [
+        "Sv_HSm_trap_cg/cp_misaligned_instr_page_fault_m",
+        "Sv_HSm_trap_cg/cp_misaligned_load_page_fault_m",
+        "Sv_HSm_trap_cg/cp_misaligned_store_page_fault_m",
+      ]
 
   # The Zicbom extension adds the CBIE (Cache Block Invalidate instruction Enable) WARL
   # field to henvcfg. The CBIE field controls execution of the cache block invalidate

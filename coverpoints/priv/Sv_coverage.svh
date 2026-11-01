@@ -2063,8 +2063,10 @@ covergroup Sv_H_twostage_cg with function sample(ins_t ins);
     page_end : coverpoint ins.current.rs1_val[11:0] {
         bins page_end = {12'hffe};
     }
-    ldst : coverpoint ins.current.insn {
+    straddle_lh : coverpoint ins.current.insn {
         wildcard bins lh = {LH};
+    }
+    straddle_sh : coverpoint ins.current.insn {
         wildcard bins sh = {SH};
     }
     // A halfword one byte below the end of a page
@@ -2147,11 +2149,12 @@ covergroup Sv_H_twostage_cg with function sample(ins_t ins);
     cp_stage_both_bare : cross priv_mode_vs_vu, access, vsatp_bare, hgatp_bare;
     `ifdef ZCA_SUPPORTED
         // A fetch straddling a page boundary faults on the second page
-        cp_straddle    : cross priv_mode_vs, jalr, vsatp_paged, hgatp_paged, page_end, trap;
+        cp_misaligned_instr_page_fault_vs : cross priv_mode_vs, jalr, vsatp_paged, hgatp_paged, page_end, trap;
     `endif
     `ifdef UDB_MISALIGNED_LDST
         // A misaligned store or load straddling a page boundary faults on the second page
-        cp_ldst_straddle : cross priv_mode_vs, ldst, vsatp_paged, hgatp_paged, ldst_page_end, trap;
+        cp_misaligned_load_page_fault_vs  : cross priv_mode_vs, straddle_lh, vsatp_paged, hgatp_paged, ldst_page_end, trap;
+        cp_misaligned_store_page_fault_vs : cross priv_mode_vs, straddle_sh, vsatp_paged, hgatp_paged, ldst_page_end, trap;
     `endif
     `ifdef UDB_MXLEN_64
         // A non-canonical guest virtual address raises a page fault, not a guest-page fault
@@ -2474,8 +2477,10 @@ covergroup Sv_HSm_trap_cg with function sample(ins_t ins);
     jalr : coverpoint ins.current.insn {
         wildcard bins jalr = {JALR};
     }
-    ldst : coverpoint ins.current.insn {
+    straddle_lh : coverpoint ins.current.insn {
         wildcard bins lh = {LH};
+    }
+    straddle_sh : coverpoint ins.current.insn {
         wildcard bins sh = {SH};
     }
     // A fetch at the last halfword of a page
@@ -2500,10 +2505,11 @@ covergroup Sv_HSm_trap_cg with function sample(ins_t ins);
     cp_implicit_gpf_m     : cross priv_mode_vs_vu, access, vsatp_paged, hgatp_paged, mtinst_pseudo;
     // A fetch, or a misaligned store or load, whose second page has an invalid G-stage leaf
     `ifdef ZCA_SUPPORTED
-        cp_straddle_m      : cross priv_mode_vs_vu, jalr, vsatp_paged, hgatp_paged, page_end, guest_page_fault, mtval2_page_boundary;
+        cp_misaligned_instr_page_fault_m : cross priv_mode_vs_vu, jalr, vsatp_paged, hgatp_paged, page_end, guest_page_fault, mtval2_page_boundary;
     `endif
     `ifdef UDB_MISALIGNED_LDST
-        cp_ldst_straddle_m : cross priv_mode_vs_vu, ldst, vsatp_paged, hgatp_paged, ldst_page_end, guest_page_fault, mtval2_page_boundary;
+        cp_misaligned_load_page_fault_m  : cross priv_mode_vs_vu, straddle_lh, vsatp_paged, hgatp_paged, ldst_page_end, guest_page_fault, mtval2_page_boundary;
+        cp_misaligned_store_page_fault_m : cross priv_mode_vs_vu, straddle_sh, vsatp_paged, hgatp_paged, ldst_page_end, guest_page_fault, mtval2_page_boundary;
     `endif
 endgroup
 `endif // EXCLUDE_SM

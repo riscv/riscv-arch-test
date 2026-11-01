@@ -270,15 +270,20 @@ def _t_guest_faults(test_data: TestData, test_chunks: list[TestChunk], g: SvMode
 def _t_straddle_m(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs: SvMode, fetch: bool) -> None:
     """A fetch, or a misaligned store or load, that straddles into a page with an invalid G-stage leaf takes a
     guest-page fault in M-mode with mtval and mtval2 at the faulting portion."""
-    coverpoint, name, what = (
-        ("cp_straddle_m", "straddle", "fetch a 4-byte instruction in the last halfword")
+    # The coverpoint of each access, named after Sv_Exceptions' cp_misaligned_*_page_fault_{s,u}
+    coverpoints, name, what = (
+        ({"exec": "cp_misaligned_instr_page_fault_m"}, "straddle", "fetch a 4-byte instruction in the last halfword")
         if fetch
-        else ("cp_ldst_straddle_m", "ldst_straddle", "store and load the halfword one byte below the end")
+        else (
+            {"store_h": "cp_misaligned_store_page_fault_m", "load_h": "cp_misaligned_load_page_fault_m"},
+            "ldst_straddle",
+            "store and load the halfword one byte below the end",
+        )
     )
     chunk = begin_chunk(
         test_data,
         f"HSm_{g.name}_{name}",
-        coverpoint,
+        ", ".join(coverpoints.values()),
         f"In VS-mode and VU-mode, {what} of a guest page whose next page has an invalid G-stage leaf.  The\n"
         "guest-page fault is taken in M-mode with mtval = the page-boundary address and mtval2 = its guest physical\n"
         "address >> 2",
@@ -286,23 +291,24 @@ def _t_straddle_m(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, 
     )
     code = []
     for mode in ("VS", "VU"):
-        code.extend(
-            [
-                *guest_chunk_setup(test_data, g, vs, mode),
-                *guest_access(
+        code.extend(guest_chunk_setup(test_data, g, vs, mode))
+        setup = map_straddle_pages(test_data, g, vs, user=mode == "VU", g_valid=False)
+        for op, coverpoint in coverpoints.items():
+            code.extend(
+                guest_access(
                     test_data,
                     TRAP_CG,
                     coverpoint,
                     f"{mode.lower()}_g_invalid",
                     mode,
                     f"{vs.data_va} + {0xFFE if fetch else 0xFF7:#x}",
-                    setup=map_straddle_pages(test_data, g, vs, user=mode == "VU", g_valid=False),
-                    ops=("exec",) if fetch else ("store_h", "load_h"),
+                    setup=setup,
+                    ops=(op,),
                     driver="M",
-                ),
-                *guest_chunk_teardown(test_data, g.xlen),
-            ]
-        )
+                )
+            )
+            setup = []
+        code.extend(guest_chunk_teardown(test_data, g.xlen))
     chunk.code.extend(code)
     test_chunks.append(test_data.end_test_chunk())
 

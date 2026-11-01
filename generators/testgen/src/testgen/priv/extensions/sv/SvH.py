@@ -1040,7 +1040,12 @@ def _t_straddle(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs
     """An instruction fetch, or a misaligned store or load, that straddles a page boundary faults on the second
     page."""
     name = "straddle" if fetch else "ldst_straddle"
-    coverpoint = f"cp_{name}"
+    # The coverpoint of each access, named after Sv_Exceptions' cp_misaligned_*_page_fault_{s,u}
+    coverpoints = (
+        {"exec": "cp_misaligned_instr_page_fault_vs"}
+        if fetch
+        else {"store_h": "cp_misaligned_store_page_fault_vs", "load_h": "cp_misaligned_load_page_fault_vs"}
+    )
     description = (
         "In VS-mode, execute a 4-byte instruction in the last halfword of a page whose next page is mapped, has an\n"
         "invalid G-stage leaf (instruction guest-page fault) or an invalid VS-stage leaf (instruction page fault).\n"
@@ -1050,13 +1055,14 @@ def _t_straddle(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs
         "an invalid G-stage leaf (guest-page fault) or an invalid VS-stage leaf (page fault).  One byte is in each page,\n"
         "so however the hart splits the access, stval holds the address of the next page"
     )
-    chunk = begin_chunk(test_data, f"H_{g.name}_{name}", coverpoint, description, stages=(g, vs))
+    chunk = begin_chunk(test_data, f"H_{g.name}_{name}", ", ".join(coverpoints.values()), description, stages=(g, vs))
     code = guest_chunk_setup(test_data, g, vs, "VS")
     va = f"{vs.data_va} + {0xFFE if fetch else 0xFF7:#x}"
-    ops = ("exec",) if fetch else ("store_h", "load_h")
     for case, vs_valid, g_valid in STRADDLE_CASES:
         setup = map_straddle_pages(test_data, g, vs, vs_valid=vs_valid, g_valid=g_valid)
-        code.extend(guest_access(test_data, TWO_CG, coverpoint, case, "VS", va, setup=setup, ops=ops))
+        for op, coverpoint in coverpoints.items():
+            code.extend(guest_access(test_data, TWO_CG, coverpoint, case, "VS", va, setup=setup, ops=(op,)))
+            setup = []
     chunk.code.extend([*code, *guest_chunk_teardown(test_data, g.xlen)])
     test_chunks.append(test_data.end_test_chunk())
 

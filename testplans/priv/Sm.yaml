@@ -65,12 +65,6 @@ coverpoints:
     description: csr_read, write nonzero, write 0, set nonzero, clear all for each of for mcycle, minstret, mhpmcounter31...3. If RV32 is supported, also do mcycleh, minstreth, mhpmcounterh31...3.  Read back value and check if it is within some threshold of the written value (because counters will continue to increment).
     expectation: Writable bits match reference model.
     bins: 32 regs * 6 ops
-  - name: cp_mtime_write
-    goal: Writing memory-mapped MTIME shows up in time CSR
-    description: If Zicntr is supported, Write walking 1s and 0s to memory-mapped mtime, read back from time CSR
-    expectation: Time reflects memory-mapped mtime. Difference should be small.
-    rules:
-      - Presently just writing one value
   - name: cp_inhibit
     goal: mcountinhibit prevents counting
     description: With mcountinhibit[2/0] = {0, 1}, read mcycle and minstret multiple times and check whether they increment.

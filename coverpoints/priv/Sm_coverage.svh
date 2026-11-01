@@ -440,14 +440,6 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     minstret: coverpoint ins.current.insn[31:20] {
         bins minstret = {CSR_MINSTRET};
     }
-    time_csr: coverpoint ins.current.insn[31:20] {
-        bins time_csr = {CSR_TIME};
-    }
-    `ifdef UDB_MXLEN_32
-        timeh_csr: coverpoint ins.current.insn[31:20] {
-            bins timeh_csr = {CSR_TIMEH};
-        }
-    `endif
 
     misa: coverpoint ins.current.insn[31:20] {
         bins misa = {CSR_MISA};
@@ -655,11 +647,6 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         `endif
     `endif
 
-    cp_mtime_write :            cross priv_mode_m, csrr,  time_csr; // assumes mtime has been written
-    `ifdef UDB_MXLEN_32
-        cp_mtimeh_write :       cross priv_mode_m, csrr,  timeh_csr; // assumes mtimeh has been written
-    `endif
-
     `ifdef SM1P13P0_OR_LATER_SUPPORTED
         misa_b_bit: coverpoint ins.current.rs1_val[1] {}
         misa_v_bit: coverpoint ins.current.rs1_val[21] {}
@@ -667,16 +654,14 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         cp_misa_b: cross priv_mode_m, misa, csrop, misa_b_bit;
         cp_misa_v: cross priv_mode_m, misa, csrop, misa_v_bit;
 
-
+        // rvmodel_macros.svh only records whether RVMODEL_MSIP_ADDRESS is defined, not its value, so
+        // cp_msip does not check the store address.
         `ifdef RVMODEL_MSIP_ADDRESS
-            msip_address: coverpoint ins.current.rs1_val {
-                bin msip = {`RVMODEL_MSIP_ADDRESS};
-            }
             msip_val: coverpoint ins.current.rs2_val {
-                bin zero = {0};
-                bin one  = {1};
+                bins zero = {0};
+                bins ones = {32'hFFFFFFFF}; // all 1s in the low 32 bits, also on RV64
             }
-            cp_msip: cross priv_mode_m, sw, msip_address, msip_val;
+            cp_msip: cross priv_mode_m, sw, msip_val;
         `endif // RVMODEL_MSIP_ADDRESS
     `endif // SM1P13P0_OR_LATER_SUPPORTED
 
@@ -713,21 +698,13 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         cp_minstreth_wraparound: cross priv_mode_m, csrrw_allones, minstreth;
     `endif
 
-    `ifdef RVMODEL_MTIME_ADDRESS
+    // check_defines.h requires RVMODEL_MTIME_ADDRESS when MTI is implemented. The store address is
+    // not checked.
+    `ifdef UDB_MTI_INTR_IMPL
         `ifdef UDB_MXLEN_64
-            mtime_address: coverpoint ins.current.rs1_val + ins.current.imm {
-                bins mtime = {`RVMODEL_MTIME_ADDRESS};
-            }
-            cp_mtime_wraparound: cross priv_mode_m, sd, mtime_address, rs2_ones;
+            cp_mtime_wraparound: cross priv_mode_m, sd, rs2_ones;
         `else
-            mtime_address: coverpoint ins.current.rs1_val + ins.current.imm {
-                bins mtime = {`RVMODEL_MTIME_ADDRESS};
-            }
-            mtimeh_address: coverpoint ins.current.rs1_val + ins.current.imm {
-                bins mtimeh = {`RVMODEL_MTIME_ADDRESS + 4};
-            }
-            cp_mtime_wraparound:  cross priv_mode_m, sw, mtime_address, rs2_ones;
-            cp_mtimeh_wraparound: cross priv_mode_m, sw, mtimeh_address, rs2_ones;
+            cp_mtime_wraparound: cross priv_mode_m, sw, rs2_ones; // mtime and mtimeh
         `endif
     `endif
 
@@ -1882,6 +1859,24 @@ covergroup Sm_Zicntr_cg with function sample(ins_t ins);
         cp_instret_wrs_nto: cross priv_mode_m, wrs_nto, prev_minstret_read;
         cp_instret_wrs_sto: cross priv_mode_m, wrs_sto, prev_minstret_read;
     `endif
+
+    // memory-mapped mtime is visible in the time CSR (check_defines.h requires RVMODEL_MTIME_ADDRESS
+    // when MTI is implemented)
+    `ifdef UDB_MTI_INTR_IMPL
+        csrr: coverpoint ins.current.insn {
+            wildcard bins csrr = {CSRR};
+        }
+        time_csr: coverpoint ins.current.insn[31:20] {
+            bins time_csr = {CSR_TIME};
+        }
+        cp_mtime_write: cross priv_mode_m, csrr, time_csr; // assumes mtime has been written
+        `ifdef UDB_MXLEN_32
+            timeh_csr: coverpoint ins.current.insn[31:20] {
+                bins timeh_csr = {CSR_TIMEH};
+            }
+            cp_mtimeh_write: cross priv_mode_m, csrr, timeh_csr; // assumes mtimeh has been written
+        `endif
+    `endif // UDB_MTI_INTR_IMPL
 
 endgroup
 `endif

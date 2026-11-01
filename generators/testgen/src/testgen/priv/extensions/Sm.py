@@ -1606,42 +1606,6 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
         ]
     )
 
-    ######################################
-    coverpoint = "cp_mtime_write"
-    ######################################
-    lines.append(
-        comment_banner(
-            coverpoint,
-            "Write mtime and read back time if supported",
-        ),
-    )
-    lines.extend(
-        [
-            "#ifdef RVMODEL_MTIME_ADDRESS",
-            f"LI(x{r1}, 42)        # value to write to mtime",
-            f"LA(x{r2}, RVMODEL_MTIME_ADDRESS)        # load address of mtime",
-            f"SREG x{r1}, 0(x{r2})        # write mtime = 42 using memory-mapped I/O",
-            "fence o, i        # order the mtime write before the time read",
-            test_data.add_testcase("", coverpoint, covergroup),
-            f"csrr x{r2}, time        # read time",
-            f"sub x{r2}, x{r2}, x{r1}          # difference should be small",
-            f"sltiu x{r2}, x{r2}, 100          # signature is 1 only if time is within 100 above the written value",
-            write_sigupd(r2, test_data),
-            "",
-            "#if __riscv_xlen == 32",
-            f"LI(x{r1}, 67)        # value to write to mtimeh",
-            f"LA(x{r2}, RVMODEL_MTIME_ADDRESS)        # load address of mtimeh",
-            f"SREG x{r1}, 4(x{r2})        # write mtimeh = 67 using memory-mapped I/O",
-            "fence o, i        # order the mtimeh write before the timeh read",
-            test_data.add_testcase("h", coverpoint, covergroup),
-            f"csrr x{r2}, timeh        # read timeh",
-            f"sub x{r2}, x{r2}, x{r1}          # difference should be zero",
-            write_sigupd(r2, test_data),
-            "#endif",
-            "#endif",
-        ]
-    )
-
     test_data.int_regs.return_registers([r1, r2])
 
     # Counter Wraparound Verification
@@ -1840,6 +1804,41 @@ _ZICNTR_CG = "Sm_Zicntr_cg"
 _ZICNTR_H_CG = "Sm_Zicntr_H_cg"
 
 
+def _mtime_write_tests(test_data: TestData) -> list[str]:
+    """cp_mtime_write: write memory-mapped mtime (and mtimeh on RV32), then read it back through time."""
+    coverpoint = "cp_mtime_write"
+    r1, r2 = test_data.int_regs.get_registers(2)
+    lines = [comment_banner(coverpoint, "Write mtime and read back time")]
+    lines.extend(
+        [
+            "#ifdef RVMODEL_MTIME_ADDRESS",
+            f"LI(x{r1}, 42)        # value to write to mtime",
+            f"LA(x{r2}, RVMODEL_MTIME_ADDRESS)        # load address of mtime",
+            f"SREG x{r1}, 0(x{r2})        # write mtime = 42 using memory-mapped I/O",
+            "fence o, i        # order the mtime write before the time read",
+            test_data.add_testcase("", coverpoint, _ZICNTR_CG),
+            f"csrr x{r2}, time        # read time",
+            f"sub x{r2}, x{r2}, x{r1}          # difference should be small",
+            f"sltiu x{r2}, x{r2}, 100          # signature is 1 only if time is within 100 above the written value",
+            write_sigupd(r2, test_data),
+            "",
+            "#if __riscv_xlen == 32",
+            f"LI(x{r1}, 67)        # value to write to mtimeh",
+            f"LA(x{r2}, RVMODEL_MTIME_ADDRESS)        # load address of mtimeh",
+            f"SREG x{r1}, 4(x{r2})        # write mtimeh = 67 using memory-mapped I/O",
+            "fence o, i        # order the mtimeh write before the timeh read",
+            test_data.add_testcase("h", coverpoint, _ZICNTR_CG),
+            f"csrr x{r2}, timeh        # read timeh",
+            f"sub x{r2}, x{r2}, x{r1}          # difference should be zero",
+            write_sigupd(r2, test_data),
+            "#endif",
+            "#endif  // RVMODEL_MTIME_ADDRESS",
+        ]
+    )
+    test_data.int_regs.return_registers([r1, r2])
+    return lines
+
+
 @add_priv_test_generator(
     "Sm",
     required_extensions=["Sm", "Zicntr"],
@@ -1882,6 +1881,7 @@ def make_zicntrsm(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(instret_retire_tests(test_data, _ZICNTR_CG, "M"))
     tc.code.extend(instret_exception_tests(test_data, _ZICNTR_CG, "M"))
     tc.code.extend(instret_interrupt_tests(test_data, _ZICNTR_CG, "M"))
+    tc.code.extend(_mtime_write_tests(test_data))
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

@@ -210,7 +210,8 @@ normative_rule_definitions:
     # RV32 only
     coverpoint:
       [
-        "Sm_mcsr_cg/{cp_mtimeh_write, cp_mcycleh_wraparound, cp_minstreth_wraparound}",
+        "Sm_mcsr_cg/{cp_mcycleh_wraparound, cp_minstreth_wraparound}",
+        "Sm_Zicntr_cg/cp_mtimeh_write",
       ]
   # Standard high-half CSRs are accessible only when the base RISC-V instruction set is RV32
   # (XLEN=32). For RV64 (when XLEN=64), the addresses of all standard high-half CSRs are

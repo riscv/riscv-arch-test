@@ -470,6 +470,7 @@ def _generate_load_access_fault_tests(test_data: TestData) -> list[str]:
         [
             test_data.add_testcase("flw_fault", coverpoint, covergroup),
             f"flw f{check_reg}, 0(x{addr_reg})",
+            write_sigupd(check_reg, test_data, sig_type="float"),
         ]
     )
 
@@ -478,6 +479,7 @@ def _generate_load_access_fault_tests(test_data: TestData) -> list[str]:
             "#ifdef D_SUPPORTED",
             test_data.add_testcase("fld_fault", coverpoint, covergroup),
             f"fld f{check_reg}, 0(x{addr_reg})",
+            write_sigupd(check_reg, test_data, sig_type="float"),
             "",
             "#endif",
             "",
@@ -489,6 +491,7 @@ def _generate_load_access_fault_tests(test_data: TestData) -> list[str]:
             "#ifdef ZFHMIN_SUPPORTED",
             test_data.add_testcase("flh_fault", coverpoint, covergroup),
             f"flh f{check_reg}, 0(x{addr_reg})",
+            write_sigupd(check_reg, test_data, sig_type="float"),
             "#endif",
             "",
         ]

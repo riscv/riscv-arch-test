@@ -14,7 +14,6 @@
 #   SV39X4_TRANSLATION: true
 #   SV39_VSMODE_TRANSLATION: true
 #   MISALIGNED_LDST: true
-#   MISALIGNED_SPLIT_STRATEGY: sequential_bytes
 # MARCH: rv${XLEN}ih_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -36,8 +35,8 @@ RVTEST_BEGIN
 /////////////////////////////////
 // cp_ldst_straddle
 //   In VS-mode, store and load the word two bytes below the end of a page whose next page is mapped, has an
-//   invalid G-stage leaf (guest-page fault) or an invalid VS-stage leaf (page fault).  The hart performs
-//   misaligned accesses byte by byte, so stval holds the address of the next page
+//   invalid G-stage leaf (guest-page fault) or an invalid VS-stage leaf (page fault).  Only the second page can
+//   fault, so stval holds the address of the next page
 /////////////////////////////////
 
 // Identity map the test image in both stages

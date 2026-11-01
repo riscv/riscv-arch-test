@@ -14,7 +14,6 @@
 #   SV32X4_TRANSLATION: true
 #   SV32_VSMODE_TRANSLATION: true
 #   MISALIGNED_LDST: true
-#   MISALIGNED_SPLIT_STRATEGY: sequential_bytes
 # MARCH: rv${XLEN}ih_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 

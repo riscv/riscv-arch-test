@@ -2150,10 +2150,8 @@ covergroup Sv_H_twostage_cg with function sample(ins_t ins);
         cp_straddle    : cross priv_mode_vs, jalr, vsatp_paged, hgatp_paged, page_end, trap;
     `endif
     `ifdef UDB_MISALIGNED_LDST
-    `ifdef UDB_MISALIGNED_SPLIT_STRATEGY_SEQUENTIAL_BYTES
-        // A misaligned store or load straddling a page boundary, performed byte by byte, faults on the second page
+        // A misaligned store or load straddling a page boundary faults on the second page
         cp_ldst_straddle : cross priv_mode_vs, ldst, vsatp_paged, hgatp_paged, ldst_page_end, trap;
-    `endif
     `endif
     `ifdef UDB_MXLEN_64
         // A non-canonical guest virtual address raises a page fault, not a guest-page fault
@@ -2496,14 +2494,12 @@ covergroup Sv_HSm_trap_cg with function sample(ins_t ins);
     // Guest page faults and guest-page faults taken in M-mode (mtval2 and mtinst are in the trap signature)
     cp_guest_page_fault_m : cross priv_mode_vs_vu, access, vsatp_paged, hgatp_paged, trap, gva_mpv;
     cp_implicit_gpf_m     : cross priv_mode_vs_vu, access, vsatp_paged, hgatp_paged, mtinst_pseudo;
-    // A fetch, or a misaligned store or load performed byte by byte, whose second page has an invalid G-stage leaf
+    // A fetch, or a misaligned store or load, whose second page has an invalid G-stage leaf
     `ifdef ZCA_SUPPORTED
         cp_straddle_m      : cross priv_mode_vs_vu, jalr, vsatp_paged, hgatp_paged, page_end, guest_page_fault, mtval2_page_boundary;
     `endif
     `ifdef UDB_MISALIGNED_LDST
-    `ifdef UDB_MISALIGNED_SPLIT_STRATEGY_SEQUENTIAL_BYTES
         cp_ldst_straddle_m : cross priv_mode_vs_vu, ldst, vsatp_paged, hgatp_paged, page_end, guest_page_fault, mtval2_page_boundary;
-    `endif
     `endif
 endgroup
 `endif // EXCLUDE_SM

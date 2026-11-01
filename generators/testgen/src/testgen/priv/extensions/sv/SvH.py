@@ -1044,8 +1044,8 @@ def _t_straddle(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs
         "stval holds the address of the next page"
         if fetch
         else "In VS-mode, store and load the word two bytes below the end of a page whose next page is mapped, has an\n"
-        "invalid G-stage leaf (guest-page fault) or an invalid VS-stage leaf (page fault).  The hart performs\n"
-        "misaligned accesses byte by byte, so stval holds the address of the next page"
+        "invalid G-stage leaf (guest-page fault) or an invalid VS-stage leaf (page fault).  Only the second page can\n"
+        "fault, so stval holds the address of the next page"
     )
     chunk = begin_chunk(test_data, f"H_{g.name}_{name}", coverpoint, description, stages=(g, vs))
     code = guest_chunk_setup(test_data, g, vs, "VS")
@@ -1515,7 +1515,7 @@ SV32_PARAMS = ["SV32X4_TRANSLATION: true", "SV32_VSMODE_TRANSLATION: true"]
 SV39_PARAMS = ["SV39X4_TRANSLATION: true", "SV39_VSMODE_TRANSLATION: true"]
 SV48_PARAMS = ["SV48X4_TRANSLATION: true", "SV48_VSMODE_TRANSLATION: true"]
 SV57_PARAMS = ["SV57X4_TRANSLATION: true", "SV57_VSMODE_TRANSLATION: true"]
-MISALIGNED_PARAMS = ["MISALIGNED_LDST: true", "MISALIGNED_SPLIT_STRATEGY: sequential_bytes"]
+MISALIGNED_PARAMS = ["MISALIGNED_LDST: true"]
 BOOT = ["#define BOOT_TO_SMODE"]
 
 
@@ -1540,7 +1540,7 @@ def make_svh_straddle_sv39(test_data: TestData) -> list[TestChunk]:
     return _make_svh_straddle(test_data, SV39X4, VS_SV39)
 
 
-# The hart performs misaligned accesses byte by byte, so it faults only on the second page
+# The hart performs misaligned accesses, and only the second page can fault, so the split order does not matter
 @add_priv_test_generator("Sv", required_extensions=["H"], extra_defines=BOOT, params=[*SV32_PARAMS, *MISALIGNED_PARAMS])
 def make_svh_ldst_straddle_sv32(test_data: TestData) -> list[TestChunk]:
     return _make_svh_ldst_straddle(test_data, SV32X4, VS_SV32)

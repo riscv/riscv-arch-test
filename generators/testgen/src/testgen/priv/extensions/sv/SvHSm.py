@@ -362,7 +362,7 @@ def make_svhsm_straddle_sv39(test_data: TestData) -> list[TestChunk]:
     return test_chunks
 
 
-# The hart performs misaligned accesses byte by byte, so it faults only on the second page
+# The hart performs misaligned accesses, and only the second page can fault, so the split order does not matter
 @add_priv_test_generator(
     "Sv",
     required_extensions=["Sm", "H"],

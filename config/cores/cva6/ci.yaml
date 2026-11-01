@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # CI configuration for the OpenHW CVA6 Verilator testharness.
-# cv32a65x and cv32a60x share this file: one ci.yaml covers every run_cmd.txt in this directory.
+# cv32a65x, cv32a60x and cv64a6_imafdc_sv39 share this file: one ci.yaml covers every run_cmd.txt
+# in this directory.
 
 ci_enabled: true
 
@@ -10,11 +11,38 @@ exclude_extensions:
   # access with OKAY, while Sail expects an access fault because there is no memory at 0.
   # CVA6 has no data-side PMA check, so the DUT raises no fault and the load returns 0.
   # Remove this exclusion once riscv-arch-test#2963 drops the address-0 probes.
-  # The exclusion is preemptive: both configs declare NUM_PMP_ENTRIES: 0, so no PMP test
-  # runs yet. It takes effect once cv32a65x declares its PMP entries (riscv-arch-test#2904).
+  # Both cv32 configs declare NUM_PMP_ENTRIES: 0, so there the exclusion is preemptive until
+  # cv32a65x declares its PMP entries (riscv-arch-test#2904). cv64a6_imafdc_sv39 runs it and fails.
   # https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/corev_apu/tb/ariane_soc_pkg.sv#L58
   # https://github.com/riscv/riscv-arch-test/issues/2963
   - PMP_Sm_cfg_A_tor_zero
+  # The entries below fail on cv64a6_imafdc_sv39 because of open CVA6 RTL issues.
+  # Writes to mie/mip/mideleg do not flush the pipeline, so a newly enabled interrupt is
+  # taken late: InterruptsSm_priority_mideleg_{M,S,U} fail.
+  #   https://github.com/openhwfoundation/cva6/issues/3175
+  - InterruptsSm_priority_mideleg
+  # An FCVT F->int that updates fflags does not set mstatus.FS to Dirty.
+  #   https://github.com/openhwfoundation/cva6/issues/3173 (fix: openhwfoundation/cva6#3678)
+  - S_F
+  - Sm_F
+  - U_F
+  # LR takes store/AMO exception causes (6, 7, 15) instead of load causes (4, 5, 13),
+  # including PMP and page faults.
+  #   https://github.com/openhwfoundation/cva6/issues/2455
+  #   https://github.com/openhwfoundation/cva6/issues/3394
+  - Exceptions_Zalrsc
+  - PMP_Zalrsc_cfg_wr
+  - Sv_ExceptionsZalrsc_sv39_exceptions_Zalrsc
+  - Sv_ExceptionsZalrscSm_sv39_exceptions_Zalrsc_mprv_S_Mmode
+  - Sv_ExceptionsZalrscSm_sv39_medeleg_Zalrsc
+  # cbo.clean/cbo.flush raise a store page fault on a page with R=1, W=0.
+  #   https://github.com/openhwfoundation/cva6/issues/3431
+  - Sv_Zicbo_sv39_zicbom_exceptions
+  # pmpaddr bit 0 reads as 1 in NAPOT mode, so a NAPOT region cannot be smaller than
+  # 16 bytes while TOR has 8-byte granularity.
+  #   https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/csr_regfile.sv#L995-L1001
+  #   https://github.com/openhwfoundation/cva6/issues/697
+  - PMP_Sm_grain-
 
 # device-tree-compiler and the Boost libraries are required by CVA6's Spike build
 # (verif/regress/install-spike.sh). Without them fesvr is not installed and the

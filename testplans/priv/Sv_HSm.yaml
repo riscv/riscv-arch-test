@@ -48,8 +48,8 @@ coverpoints:
     goal: mtval2 reports the faulting portion of a straddling fetch or misaligned access
     description: |-
       cp_straddle_m needs Zca: in VS-mode and VU-mode, jump to a 4-byte instruction in the last halfword (offset 0xFFE) of a guest page whose next page has an invalid G-stage leaf.
-      cp_ldst_straddle_m needs a hart that performs misaligned accesses (MISALIGNED_LDST): in VS-mode and VU-mode, store and load the word two bytes below the end of such a page.
+      cp_ldst_straddle_m needs a hart that performs misaligned accesses (MISALIGNED_LDST): in VS-mode and VU-mode, store and load the halfword one byte below the end (offset 0xFFF) of such a page.
     expectation: An instruction, store/AMO or load guest-page fault taken in M-mode, with mtval = the page-boundary address (the faulting portion) and mtval2 = its guest physical address >> 2, or zero.  A faulting load leaves rd unchanged.
     bins: |-
       cp_straddle_m: {VS, VU} x jalr x vsatp paged x hgatp paged x target offset 0xFFE x guest-page fault x nonzero mtval2 at the page boundary
-      cp_ldst_straddle_m: {VS, VU} x {lw, sw} x vsatp paged x hgatp paged x address offset 0xFFE x guest-page fault x nonzero mtval2 at the page boundary
+      cp_ldst_straddle_m: {VS, VU} x {lh, sh} x vsatp paged x hgatp paged x address offset 0xFFF x guest-page fault x nonzero mtval2 at the page boundary

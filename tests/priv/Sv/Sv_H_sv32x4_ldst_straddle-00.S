@@ -34,9 +34,9 @@ RVTEST_BEGIN
 
 /////////////////////////////////
 // cp_ldst_straddle
-//   In VS-mode, store and load the word two bytes below the end of a page whose next page is mapped, has an
-//   invalid G-stage leaf (guest-page fault) or an invalid VS-stage leaf (page fault).  Only the second page can
-//   fault, so stval holds the address of the next page
+//   In VS-mode, store and load the halfword one byte below the end of a page whose next page is mapped, has
+//   an invalid G-stage leaf (guest-page fault) or an invalid VS-stage leaf (page fault).  One byte is in each page,
+//   so however the hart splits the access, stval holds the address of the next page
 /////////////////////////////////
 
 // Identity map the test image in both stages
@@ -187,17 +187,17 @@ RVTEST_BEGIN
   SREG x14, 0(x13)
   hfence.vvma
   hfence.gvma
-  LI(x8, 0x90407000 + 0xff6)
+  LI(x8, 0x90407000 + 0xff7)
   LI(x6, 0x100)
   RVTEST_TSBI_GOTO_VSMODE
-Sv_H_twostage_cg_cp_ldst_straddle_mapped_store:
-  sw x6, 8(x8)
+Sv_H_twostage_cg_cp_ldst_straddle_mapped_store_h:
+  sh x6, 8(x8)
   LI(x6, -1)
-Sv_H_twostage_cg_cp_ldst_straddle_mapped_load:
-  lw x6, 8(x8)
+Sv_H_twostage_cg_cp_ldst_straddle_mapped_load_h:
+  lh x6, 8(x8)
   RVTEST_TSBI_GOTO_SMODE
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_twostage_cg_cp_ldst_straddle_mapped_load, Sv_H_twostage_cg_cp_ldst_straddle_mapped_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_twostage_cg_cp_ldst_straddle_mapped_load_h, Sv_H_twostage_cg_cp_ldst_straddle_mapped_load_h_str)
 
   LA(x15, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x14, rvtest_vlvl0_pg_tbl)
@@ -237,17 +237,17 @@ Sv_H_twostage_cg_cp_ldst_straddle_mapped_load:
   SREG x13, 0(x6)
   hfence.vvma
   hfence.gvma
-  LI(x15, 0x90407000 + 0xff6)
+  LI(x15, 0x90407000 + 0xff7)
   LI(x8, 0x102)
   RVTEST_TSBI_GOTO_VSMODE
-Sv_H_twostage_cg_cp_ldst_straddle_g_invalid_store:
-  sw x8, 8(x15)
+Sv_H_twostage_cg_cp_ldst_straddle_g_invalid_store_h:
+  sh x8, 8(x15)
   LI(x8, -1)
-Sv_H_twostage_cg_cp_ldst_straddle_g_invalid_load:
-  lw x8, 8(x15)
+Sv_H_twostage_cg_cp_ldst_straddle_g_invalid_load_h:
+  lh x8, 8(x15)
   RVTEST_TSBI_GOTO_SMODE
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_twostage_cg_cp_ldst_straddle_g_invalid_load, Sv_H_twostage_cg_cp_ldst_straddle_g_invalid_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_twostage_cg_cp_ldst_straddle_g_invalid_load_h, Sv_H_twostage_cg_cp_ldst_straddle_g_invalid_load_h_str)
 
   LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x8, rvtest_vlvl0_pg_tbl)
@@ -287,17 +287,17 @@ Sv_H_twostage_cg_cp_ldst_straddle_g_invalid_load:
   SREG x14, 0(x13)
   hfence.vvma
   hfence.gvma
-  LI(x15, 0x90407000 + 0xff6)
+  LI(x15, 0x90407000 + 0xff7)
   LI(x13, 0x104)
   RVTEST_TSBI_GOTO_VSMODE
-Sv_H_twostage_cg_cp_ldst_straddle_vs_invalid_store:
-  sw x13, 8(x15)
+Sv_H_twostage_cg_cp_ldst_straddle_vs_invalid_store_h:
+  sh x13, 8(x15)
   LI(x13, -1)
-Sv_H_twostage_cg_cp_ldst_straddle_vs_invalid_load:
-  lw x13, 8(x15)
+Sv_H_twostage_cg_cp_ldst_straddle_vs_invalid_load_h:
+  lh x13, 8(x15)
   RVTEST_TSBI_GOTO_SMODE
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_twostage_cg_cp_ldst_straddle_vs_invalid_load, Sv_H_twostage_cg_cp_ldst_straddle_vs_invalid_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_twostage_cg_cp_ldst_straddle_vs_invalid_load_h, Sv_H_twostage_cg_cp_ldst_straddle_vs_invalid_load_h_str)
 
   csrw vsatp, zero
   csrw hgatp, zero
@@ -378,12 +378,12 @@ rvtest_vlvl0_pg_tbl:
   .endif
 
 // Testcase strings
-Sv_H_twostage_cg_cp_ldst_straddle_mapped_store_str: .string "\"test: 1; cg: Sv_H_twostage_cg; cp: cp_ldst_straddle; bin: mapped_store\""
-Sv_H_twostage_cg_cp_ldst_straddle_mapped_load_str: .string "\"test: 2; cg: Sv_H_twostage_cg; cp: cp_ldst_straddle; bin: mapped_load\""
-Sv_H_twostage_cg_cp_ldst_straddle_g_invalid_store_str: .string "\"test: 3; cg: Sv_H_twostage_cg; cp: cp_ldst_straddle; bin: g_invalid_store\""
-Sv_H_twostage_cg_cp_ldst_straddle_g_invalid_load_str: .string "\"test: 4; cg: Sv_H_twostage_cg; cp: cp_ldst_straddle; bin: g_invalid_load\""
-Sv_H_twostage_cg_cp_ldst_straddle_vs_invalid_store_str: .string "\"test: 5; cg: Sv_H_twostage_cg; cp: cp_ldst_straddle; bin: vs_invalid_store\""
-Sv_H_twostage_cg_cp_ldst_straddle_vs_invalid_load_str: .string "\"test: 6; cg: Sv_H_twostage_cg; cp: cp_ldst_straddle; bin: vs_invalid_load\""
+Sv_H_twostage_cg_cp_ldst_straddle_mapped_store_h_str: .string "\"test: 1; cg: Sv_H_twostage_cg; cp: cp_ldst_straddle; bin: mapped_store_h\""
+Sv_H_twostage_cg_cp_ldst_straddle_mapped_load_h_str: .string "\"test: 2; cg: Sv_H_twostage_cg; cp: cp_ldst_straddle; bin: mapped_load_h\""
+Sv_H_twostage_cg_cp_ldst_straddle_g_invalid_store_h_str: .string "\"test: 3; cg: Sv_H_twostage_cg; cp: cp_ldst_straddle; bin: g_invalid_store_h\""
+Sv_H_twostage_cg_cp_ldst_straddle_g_invalid_load_h_str: .string "\"test: 4; cg: Sv_H_twostage_cg; cp: cp_ldst_straddle; bin: g_invalid_load_h\""
+Sv_H_twostage_cg_cp_ldst_straddle_vs_invalid_store_h_str: .string "\"test: 5; cg: Sv_H_twostage_cg; cp: cp_ldst_straddle; bin: vs_invalid_store_h\""
+Sv_H_twostage_cg_cp_ldst_straddle_vs_invalid_load_h_str: .string "\"test: 6; cg: Sv_H_twostage_cg; cp: cp_ldst_straddle; bin: vs_invalid_load_h\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

@@ -2064,12 +2064,12 @@ covergroup Sv_H_twostage_cg with function sample(ins_t ins);
         bins page_end = {12'hffe};
     }
     ldst : coverpoint ins.current.insn {
-        wildcard bins lw = {LW};
-        wildcard bins sw = {SW};
+        wildcard bins lh = {LH};
+        wildcard bins sh = {SH};
     }
-    // A word two bytes below the end of a page
+    // A halfword one byte below the end of a page
     ldst_page_end : coverpoint ((ins.current.rs1_val + ins.current.imm) & 'hFFF) {
-        bins page_end = {'hFFE};
+        bins page_end = {'hFFF};
     }
     `ifdef UDB_MXLEN_64
         menvcfg_adue : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "adue") {
@@ -2475,12 +2475,16 @@ covergroup Sv_HSm_trap_cg with function sample(ins_t ins);
         wildcard bins jalr = {JALR};
     }
     ldst : coverpoint ins.current.insn {
-        wildcard bins lw = {LW};
-        wildcard bins sw = {SW};
+        wildcard bins lh = {LH};
+        wildcard bins sh = {SH};
     }
-    // A fetch at the last halfword of a page, or a word two bytes below the end of a page
+    // A fetch at the last halfword of a page
     page_end : coverpoint ((ins.current.rs1_val + ins.current.imm) & 'hFFF) {
         bins page_end = {'hFFE};
+    }
+    // A halfword one byte below the end of a page
+    ldst_page_end : coverpoint ((ins.current.rs1_val + ins.current.imm) & 'hFFF) {
+        bins page_end = {'hFFF};
     }
     guest_page_fault : coverpoint {ins.current.csr_wb[CSR_MCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "mcause")[4:0]} {
         bins guest_page_fault = {6'b110100, 6'b110101, 6'b110111};
@@ -2499,7 +2503,7 @@ covergroup Sv_HSm_trap_cg with function sample(ins_t ins);
         cp_straddle_m      : cross priv_mode_vs_vu, jalr, vsatp_paged, hgatp_paged, page_end, guest_page_fault, mtval2_page_boundary;
     `endif
     `ifdef UDB_MISALIGNED_LDST
-        cp_ldst_straddle_m : cross priv_mode_vs_vu, ldst, vsatp_paged, hgatp_paged, page_end, guest_page_fault, mtval2_page_boundary;
+        cp_ldst_straddle_m : cross priv_mode_vs_vu, ldst, vsatp_paged, hgatp_paged, ldst_page_end, guest_page_fault, mtval2_page_boundary;
     `endif
 endgroup
 `endif // EXCLUDE_SM

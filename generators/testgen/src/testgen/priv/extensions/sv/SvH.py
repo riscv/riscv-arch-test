@@ -55,16 +55,19 @@ from testgen.priv.extensions.sv.SvHFenceCommon import (
 from testgen.priv.registry import add_priv_test_generator
 
 # Guest accesses: a store and a load of the word at offset 8 of the test page, and a fetch of the ret at
-# offset 0.  HLV, HLVX and HSV run in HS-mode and access offset 8 of their address.
+# offset 0.  HLV, HLVX and HSV run in HS-mode and access offset 8 of their address.  The halfword store and load are
+# for the straddle tests.
 OPS = {
     "store": "sw x{data}, 8(x{va})",
     "load": "lw x{data}, 8(x{va})",
+    "store_h": "sh x{data}, 8(x{va})",
+    "load_h": "lh x{data}, 8(x{va})",
     "exec": "jalr ra, 0(x{va})",
     "hsv": "hsv.w x{data}, (x{va})",
     "hlv": "hlv.w x{data}, (x{va})",
     "hlvx": "hlvx.wu x{data}, (x{va})",
 }
-LOADS = ("load", "hlv", "hlvx")
+LOADS = ("load", "load_h", "hlv", "hlvx")
 GUEST_OPS = ("store", "load", "exec")
 
 # Leaves that allow every access; G-stage accesses are user-level
@@ -1043,14 +1046,14 @@ def _t_straddle(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs
         "invalid G-stage leaf (instruction guest-page fault) or an invalid VS-stage leaf (instruction page fault).\n"
         "stval holds the address of the next page"
         if fetch
-        else "In VS-mode, store and load the word two bytes below the end of a page whose next page is mapped, has an\n"
-        "invalid G-stage leaf (guest-page fault) or an invalid VS-stage leaf (page fault).  Only the second page can\n"
-        "fault, so stval holds the address of the next page"
+        else "In VS-mode, store and load the halfword one byte below the end of a page whose next page is mapped, has\n"
+        "an invalid G-stage leaf (guest-page fault) or an invalid VS-stage leaf (page fault).  One byte is in each page,\n"
+        "so however the hart splits the access, stval holds the address of the next page"
     )
     chunk = begin_chunk(test_data, f"H_{g.name}_{name}", coverpoint, description, stages=(g, vs))
     code = guest_chunk_setup(test_data, g, vs, "VS")
-    va = f"{vs.data_va} + {0xFFE if fetch else 0xFF6:#x}"
-    ops = ("exec",) if fetch else ("store", "load")
+    va = f"{vs.data_va} + {0xFFE if fetch else 0xFF7:#x}"
+    ops = ("exec",) if fetch else ("store_h", "load_h")
     for case, vs_valid, g_valid in STRADDLE_CASES:
         setup = map_straddle_pages(test_data, g, vs, vs_valid=vs_valid, g_valid=g_valid)
         code.extend(guest_access(test_data, TWO_CG, coverpoint, case, "VS", va, setup=setup, ops=ops))
@@ -1540,7 +1543,7 @@ def make_svh_straddle_sv39(test_data: TestData) -> list[TestChunk]:
     return _make_svh_straddle(test_data, SV39X4, VS_SV39)
 
 
-# The hart performs misaligned accesses, and only the second page can fault, so the split order does not matter
+# The hart performs misaligned accesses; one byte is in each page, so the split order does not matter
 @add_priv_test_generator("Sv", required_extensions=["H"], extra_defines=BOOT, params=[*SV32_PARAMS, *MISALIGNED_PARAMS])
 def make_svh_ldst_straddle_sv32(test_data: TestData) -> list[TestChunk]:
     return _make_svh_ldst_straddle(test_data, SV32X4, VS_SV32)

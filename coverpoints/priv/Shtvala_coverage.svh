@@ -111,17 +111,30 @@ covergroup Shtvala_cg with function sample(ins_t ins);
                                                       htval_page_boundary_fetch;
         `endif
 
-        // A hart that performs misaligned accesses faults on the part in the next page, however it splits the access.
-        // Other harts raise an address-misaligned exception.
+        // A halfword one byte below the end of a page has one byte in each page, so a hart that performs misaligned
+        // accesses faults on the byte in the next page, however it splits the access.  Other harts raise an
+        // address-misaligned exception.
         `ifdef UDB_MISALIGNED_LDST
-            // A word two bytes below the end of a page, which continues into the next page
+            lh : coverpoint ins.current.insn {
+                wildcard bins lh = {LH};
+            }
+            sh : coverpoint ins.current.insn {
+                wildcard bins sh = {SH};
+            }
+            hlv_h : coverpoint ins.current.insn {
+                wildcard bins hlv_h = {HLV_H};
+            }
+            hsv_h : coverpoint ins.current.insn {
+                wildcard bins hsv_h = {HSV_H};
+            }
+            // A halfword one byte below the end of a page, which continues into the next page
             straddle : coverpoint ((ins.current.rs1_val + ins.current.imm) & 'hFFF) {
-                bins page_end = {'hFFE};
+                bins page_end = {'hFFF};
             }
             // As straddle, for HLV and HSV, whose address is rs1 alone: their disassembly has no immediate operand, so
             // ins.current.imm is not set for them
             straddle_hlsv : coverpoint (ins.current.rs1_val & 'hFFF) {
-                bins page_end = {'hFFE};
+                bins page_end = {'hFFF};
             }
             // htval holds the guest physical address of the page boundary, where the faulting part begins.  The
             // test sets htval to a random value before each trap.
@@ -129,11 +142,11 @@ covergroup Shtvala_cg with function sample(ins_t ins);
                 bins page_boundary = {0};
             }
 
-            cp_load_straddle_guest_page_fault:  cross priv_mode_vs_vu, lw, load_guest_page_fault, straddle, htval_page_boundary;
-            cp_store_straddle_guest_page_fault: cross priv_mode_vs_vu, sw, store_guest_page_fault, straddle, htval_page_boundary;
+            cp_load_straddle_guest_page_fault:  cross priv_mode_vs_vu, lh, load_guest_page_fault, straddle, htval_page_boundary;
+            cp_store_straddle_guest_page_fault: cross priv_mode_vs_vu, sh, store_guest_page_fault, straddle, htval_page_boundary;
             // HLV and HSV from HS-mode and U-mode (hstatus.HU = 1)
-            cp_hlv_straddle_guest_page_fault:   cross priv_mode_s_u, hlv_w, load_guest_page_fault, straddle_hlsv, htval_page_boundary, hstatus_hu;
-            cp_hsv_straddle_guest_page_fault:   cross priv_mode_s_u, hsv_w, store_guest_page_fault, straddle_hlsv, htval_page_boundary, hstatus_hu;
+            cp_hlv_straddle_guest_page_fault:   cross priv_mode_s_u, hlv_h, load_guest_page_fault, straddle_hlsv, htval_page_boundary, hstatus_hu;
+            cp_hsv_straddle_guest_page_fault:   cross priv_mode_s_u, hsv_h, store_guest_page_fault, straddle_hlsv, htval_page_boundary, hstatus_hu;
         `endif
     `endif
 endgroup

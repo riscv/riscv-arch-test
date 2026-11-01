@@ -125,9 +125,9 @@ coverpoints:
     bins: VS x jalr x vsatp paged x hgatp paged x target offset 0xFFE x {no trap, page fault, guest-page fault}
   - name: cp_ldst_straddle
     goal: A misaligned load or store that straddles a page boundary faults on the second page
-    description: Only on harts with MISALIGNED_LDST.  Only the second page can fault, so the order in which the hart splits the access does not matter.  In VS-mode, store and load the word two bytes below the end (offset 0xFFE) of a guest page whose next page is mapped, has an invalid G-stage leaf, or has an invalid VS-stage leaf.
+    description: Only on harts with MISALIGNED_LDST.  In VS-mode, store and load the halfword one byte below the end (offset 0xFFF) of a guest page whose next page is mapped, has an invalid G-stage leaf, or has an invalid VS-stage leaf.  One byte is in each page, so only the second page can fault and the order in which the hart splits the access does not matter.
     expectation: When the next page is mapped, the accesses complete across the boundary.  Otherwise they raise store/AMO or load guest-page faults (G-stage) or page faults (VS-stage) with stval = the page-boundary address, the faulting portion; for the guest-page faults, htval holds the guest physical address of the page boundary >> 2 (or zero).  A faulting load leaves rd unchanged.
-    bins: VS x {lw, sw} x vsatp paged x hgatp paged x address offset 0xFFE x {no trap, page fault, guest-page fault}
+    bins: VS x {lh, sh} x vsatp paged x hgatp paged x address offset 0xFFF x {no trap, page fault, guest-page fault}
   - name: cp_twostage_canonical
     goal: Non-canonical guest virtual addresses
     description: RV64 only.  For each supported pair Sv39/Sv39x4, Sv48/Sv48x4 and Sv57/Sv57x4, in VS-mode and VU-mode, store, load and fetch at the mapped guest virtual address with the bit just above the VS-stage VA width set, and with all bits from that bit to 63 set.  The top VA bit is clear, so both addresses are non-canonical.

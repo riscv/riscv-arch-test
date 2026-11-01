@@ -273,7 +273,7 @@ def _t_straddle_m(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, 
     coverpoint, name, what = (
         ("cp_straddle_m", "straddle", "fetch a 4-byte instruction in the last halfword")
         if fetch
-        else ("cp_ldst_straddle_m", "ldst_straddle", "store and load the word two bytes below the end")
+        else ("cp_ldst_straddle_m", "ldst_straddle", "store and load the halfword one byte below the end")
     )
     chunk = begin_chunk(
         test_data,
@@ -295,9 +295,9 @@ def _t_straddle_m(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, 
                     coverpoint,
                     f"{mode.lower()}_g_invalid",
                     mode,
-                    f"{vs.data_va} + {0xFFE if fetch else 0xFF6:#x}",
+                    f"{vs.data_va} + {0xFFE if fetch else 0xFF7:#x}",
                     setup=map_straddle_pages(test_data, g, vs, user=mode == "VU", g_valid=False),
-                    ops=("exec",) if fetch else ("store", "load"),
+                    ops=("exec",) if fetch else ("store_h", "load_h"),
                     driver="M",
                 ),
                 *guest_chunk_teardown(test_data, g.xlen),
@@ -362,7 +362,7 @@ def make_svhsm_straddle_sv39(test_data: TestData) -> list[TestChunk]:
     return test_chunks
 
 
-# The hart performs misaligned accesses, and only the second page can fault, so the split order does not matter
+# The hart performs misaligned accesses; one byte is in each page, so the split order does not matter
 @add_priv_test_generator(
     "Sv",
     required_extensions=["Sm", "H"],

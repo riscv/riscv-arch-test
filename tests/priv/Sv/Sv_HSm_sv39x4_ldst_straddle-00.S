@@ -34,7 +34,7 @@ RVTEST_BEGIN
 
 /////////////////////////////////
 // cp_ldst_straddle_m
-//   In VS-mode and VU-mode, store and load the word two bytes below the end of a guest page whose next page has an invalid G-stage leaf.  The
+//   In VS-mode and VU-mode, store and load the halfword one byte below the end of a guest page whose next page has an invalid G-stage leaf.  The
 //   guest-page fault is taken in M-mode with mtval = the page-boundary address and mtval2 = its guest physical
 //   address >> 2
 /////////////////////////////////
@@ -201,17 +201,17 @@ RVTEST_BEGIN
   SREG x14, 0(x6)
   hfence.vvma
   hfence.gvma
-  LI(x14, 0x140802000 + 0xff6)
+  LI(x14, 0x140802000 + 0xff7)
   LI(x15, 0x100)
   RVTEST_TSBI_GOTO_VSMODE
-Sv_HSm_trap_cg_cp_ldst_straddle_m_vs_g_invalid_store:
-  sw x15, 8(x14)
+Sv_HSm_trap_cg_cp_ldst_straddle_m_vs_g_invalid_store_h:
+  sh x15, 8(x14)
   LI(x15, -1)
-Sv_HSm_trap_cg_cp_ldst_straddle_m_vs_g_invalid_load:
-  lw x15, 8(x14)
+Sv_HSm_trap_cg_cp_ldst_straddle_m_vs_g_invalid_load_h:
+  lh x15, 8(x14)
   RVTEST_TSBI_GOTO_MMODE
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_HSm_trap_cg_cp_ldst_straddle_m_vs_g_invalid_load, Sv_HSm_trap_cg_cp_ldst_straddle_m_vs_g_invalid_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_HSm_trap_cg_cp_ldst_straddle_m_vs_g_invalid_load_h, Sv_HSm_trap_cg_cp_ldst_straddle_m_vs_g_invalid_load_h_str)
 
   csrw vsatp, zero
   csrw hgatp, zero
@@ -390,17 +390,17 @@ Sv_HSm_trap_cg_cp_ldst_straddle_m_vs_g_invalid_load:
   SREG x15, 0(x8)
   hfence.vvma
   hfence.gvma
-  LI(x8, 0x140802000 + 0xff6)
+  LI(x8, 0x140802000 + 0xff7)
   LI(x13, 0x102)
   RVTEST_TSBI_GOTO_VUMODE
-Sv_HSm_trap_cg_cp_ldst_straddle_m_vu_g_invalid_store:
-  sw x13, 8(x8)
+Sv_HSm_trap_cg_cp_ldst_straddle_m_vu_g_invalid_store_h:
+  sh x13, 8(x8)
   LI(x13, -1)
-Sv_HSm_trap_cg_cp_ldst_straddle_m_vu_g_invalid_load:
-  lw x13, 8(x8)
+Sv_HSm_trap_cg_cp_ldst_straddle_m_vu_g_invalid_load_h:
+  lh x13, 8(x8)
   RVTEST_TSBI_GOTO_MMODE
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HSm_trap_cg_cp_ldst_straddle_m_vu_g_invalid_load, Sv_HSm_trap_cg_cp_ldst_straddle_m_vu_g_invalid_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HSm_trap_cg_cp_ldst_straddle_m_vu_g_invalid_load_h, Sv_HSm_trap_cg_cp_ldst_straddle_m_vu_g_invalid_load_h_str)
 
   csrw vsatp, zero
   csrw hgatp, zero
@@ -491,10 +491,10 @@ rvtest_vlvl1_pg_tbl:
   .endif
 
 // Testcase strings
-Sv_HSm_trap_cg_cp_ldst_straddle_m_vs_g_invalid_store_str: .string "\"test: 1; cg: Sv_HSm_trap_cg; cp: cp_ldst_straddle_m; bin: vs_g_invalid_store\""
-Sv_HSm_trap_cg_cp_ldst_straddle_m_vs_g_invalid_load_str: .string "\"test: 2; cg: Sv_HSm_trap_cg; cp: cp_ldst_straddle_m; bin: vs_g_invalid_load\""
-Sv_HSm_trap_cg_cp_ldst_straddle_m_vu_g_invalid_store_str: .string "\"test: 3; cg: Sv_HSm_trap_cg; cp: cp_ldst_straddle_m; bin: vu_g_invalid_store\""
-Sv_HSm_trap_cg_cp_ldst_straddle_m_vu_g_invalid_load_str: .string "\"test: 4; cg: Sv_HSm_trap_cg; cp: cp_ldst_straddle_m; bin: vu_g_invalid_load\""
+Sv_HSm_trap_cg_cp_ldst_straddle_m_vs_g_invalid_store_h_str: .string "\"test: 1; cg: Sv_HSm_trap_cg; cp: cp_ldst_straddle_m; bin: vs_g_invalid_store_h\""
+Sv_HSm_trap_cg_cp_ldst_straddle_m_vs_g_invalid_load_h_str: .string "\"test: 2; cg: Sv_HSm_trap_cg; cp: cp_ldst_straddle_m; bin: vs_g_invalid_load_h\""
+Sv_HSm_trap_cg_cp_ldst_straddle_m_vu_g_invalid_store_h_str: .string "\"test: 3; cg: Sv_HSm_trap_cg; cp: cp_ldst_straddle_m; bin: vu_g_invalid_store_h\""
+Sv_HSm_trap_cg_cp_ldst_straddle_m_vu_g_invalid_load_h_str: .string "\"test: 4; cg: Sv_HSm_trap_cg; cp: cp_ldst_straddle_m; bin: vu_g_invalid_load_h\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

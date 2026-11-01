@@ -1,0 +1,777 @@
+{
+  "$schema": "https://github.com/riscv/sail-riscv/releases/download/0.16/sail_riscv_config_schema.json",
+  "base": {
+    "xlen": 64,
+    "E": false,
+    "hpmcounter_increments_in_self_hpmevent_write": false,
+    "hpmcounter_width_bits": 64,
+    "hpmevent_width_bits": 5,
+    "mcountinhibit": {
+      "supported": true,
+      "writable_bits": {
+        "len": 32,
+        "value": "0x0000_01FD"
+      }
+    },
+    "writable_fiom": true,
+    "writable_hpm_counters": {
+      "len": 32,
+      "value": "0x0000_01F8"
+    },
+    "scounteren_writable_bits": {
+      "len": 32,
+      "value": "0xFFFF_FFFF"
+    },
+    "mcounteren_writable_bits": {
+      "len": 32,
+      "value": "0xFFFF_FFFF"
+    },
+    "hcounteren_writable_bits": {
+      "len": 32,
+      "value": "0x0"
+    },
+    "mtvec": {
+      "direct": {
+        "supported": true,
+        "base_alignment": 2
+      },
+      "vectored": {
+        "supported": true,
+        "base_alignment": 8
+      }
+    },
+    "stvec": {
+      "direct": {
+        "supported": true
+      },
+      "vectored": {
+        "supported": true,
+        "base_alignment": 8
+      }
+    },
+    "vstvec": {
+      "direct": {
+        "supported": false
+      },
+      "vectored": {
+        "supported": false,
+        "base_alignment": 2
+      }
+    },
+    "medeleg": {
+      "delegatable_bits": {
+        "len": 64,
+        "value": "0x0000_0000_0000_B1FF"
+      }
+    },
+    "mideleg": {
+      "delegatable_bits": {
+        "len": "xlen",
+        "value": "0x0000_0000_0000_0222"
+      }
+    },
+    "xtval_nonzero": {
+      "illegal_instruction": true,
+      "virtual_instruction": false,
+      "load_guest_page_fault": false,
+      "samo_guest_page_fault": false,
+      "fetch_guest_page_fault": false,
+      "software_breakpoint": true,
+      "hardware_breakpoint": true,
+      "load_address_misaligned": true,
+      "load_access_fault": true,
+      "load_page_fault": true,
+      "samo_address_misaligned": true,
+      "samo_access_fault": true,
+      "samo_page_fault": true,
+      "fetch_address_misaligned": true,
+      "fetch_access_fault": true,
+      "fetch_page_fault": true,
+      "software_check": true,
+      "hardware_error": true,
+      "reserved_exceptions": false
+    },
+    "reserved_behavior": {
+      "amocas_odd_register": "AMOCAS_Illegal",
+      "fcsr_rm": "Fcsr_RM_Illegal",
+      "pmpcfg_write_only": "PMP_ClearPermissions",
+      "xenvcfg_cbie": "Xenvcfg_ClearPermissions",
+      "xtvec_mode": "Xtvec_Ignore",
+      "rv32zdinx_odd_register": "Zdinx_Illegal"
+    },
+    "mstatus": {
+      "fs_legal_states": "ExtContext_FourState",
+      "vs_legal_states": "ExtContext_Off"
+    },
+    "privileged_isa_version": "Privileged_ISA_1_12"
+  },
+  "memory": {
+    "physaddr_bits": 56,
+    "asidlen": 16,
+    "vmidlen": 14,
+    "pmp": {
+      "grain": 1,
+      "count": 16,
+      "usable_count": 8,
+      "tor_supported": true,
+      "na4_supported": false,
+      "napot_supported": true
+    },
+    "misaligned": {
+      "exceptions": {
+        "load_store": {
+          "Some": "AlignmentException"
+        },
+        "vector": {
+          "Some": "AlignmentException"
+        },
+        "amo": {
+          "Some": "AlignmentException"
+        },
+        "lrsc": {
+          "Some": "AlignmentException"
+        }
+      },
+      "order_decreasing": false,
+      "default_allowed_within_exp": 0,
+      "byte_by_byte": false
+    },
+    "dtb_address": {
+      "len": 64,
+      "value": "0x80F00000"
+    },
+    "regions": [
+      {
+        "base": {
+          "len": 64,
+          "value": "0x2000000"
+        },
+        "size": {
+          "len": 64,
+          "value": "0x10000000"
+        },
+        "attributes": {
+          "mem_type": "IOMemory",
+          "cacheable": false,
+          "coherent": true,
+          "executable": false,
+          "readable": true,
+          "writable": true,
+          "read_idempotent": false,
+          "write_idempotent": false,
+          "misaligned_exceptions": {
+            "load_store": {
+              "Some": "AlignmentException"
+            },
+            "vector": {
+              "Some": "AlignmentException"
+            },
+            "amo": "AlignmentException",
+            "lrsc": "AccessFault"
+          },
+          "atomic_support": "AMONone",
+          "misaligned_atomicity_granule_size_exp": 0,
+          "vector_misaligned_atomicity_granule_size_exp": 0,
+          "reservability": "RsrvNone",
+          "supports_cbo_zero": false,
+          "supports_pte_read": false,
+          "supports_pte_write": false
+        },
+        "include_in_device_tree": false
+      },
+      {
+        "base": {
+          "len": 64,
+          "value": "0x80000000"
+        },
+        "size": {
+          "len": 64,
+          "value": "0x1000000"
+        },
+        "attributes": {
+          "mem_type": "MainMemory",
+          "cacheable": true,
+          "coherent": true,
+          "executable": true,
+          "readable": true,
+          "writable": true,
+          "read_idempotent": true,
+          "write_idempotent": true,
+          "misaligned_exceptions": {
+            "load_store": {
+              "None": null
+            },
+            "vector": {
+              "Some": "AlignmentException"
+            },
+            "amo": "AlignmentException",
+            "lrsc": "AlignmentException"
+          },
+          "atomic_support": "AMOArithmetic",
+          "misaligned_atomicity_granule_size_exp": 0,
+          "vector_misaligned_atomicity_granule_size_exp": 0,
+          "reservability": "RsrvEventual",
+          "supports_cbo_zero": false,
+          "supports_pte_read": true,
+          "supports_pte_write": true
+        },
+        "include_in_device_tree": true
+      }
+    ],
+    "invalid_physical_address": {
+      "None": null
+    }
+  },
+  "platform": {
+    "vendorid": 1538,
+    "archid": 3,
+    "impid": 0,
+    "hartid": 0,
+    "cache_block_size_exp": 4,
+    "reservation": {
+      "reservation_set_size_exp": 3,
+      "require_exact_reservation_addr": false,
+      "invalidate_on_same_hart_store": false
+    },
+    "interrupts": {
+      "machine": {
+        "software": {
+          "supported": true
+        },
+        "external": {
+          "supported": true
+        },
+        "timer": {
+          "supported": true
+        }
+      }
+    },
+    "clint": {
+      "supported": true,
+      "base": 33554432,
+      "size": 786432
+    },
+    "simple_interrupt_generator": {
+      "supported": true,
+      "base": 201326592
+    },
+    "clock_frequency": 1000000000,
+    "instructions_per_tick": 2,
+    "wfi_is_nop": false,
+    "wfi_available_to_user_mode": false,
+    "max_time_to_wait": 200,
+    "event_selectors": []
+  },
+  "extensions": {
+    "M": {
+      "mutable_misa": false,
+      "supported": true
+    },
+    "A": {
+      "mutable_misa": false,
+      "supported": true
+    },
+    "F": {
+      "mutable_misa": false,
+      "supported": true,
+      "fflags_dirty_policy": "Fflags_Dirty_Precise"
+    },
+    "D": {
+      "mutable_misa": false,
+      "supported": true
+    },
+    "C": {
+      "mutable_misa": false
+    },
+    "V": {
+      "mutable_misa": false,
+      "support_level": "Disabled",
+      "vlen_exp": 9,
+      "elen_exp": 6,
+      "reserved_behavior": {
+        "illegal_vtype": "IllegalVtype_SetVill",
+        "vstart_out_of_bounds": "Vstart_Illegal"
+      },
+      "vl_use_ceil": false,
+      "max_index_eew_exp": 6,
+      "vstart": {
+        "zero_required": {
+          "arith": true,
+          "scalar_move": true
+        }
+      }
+    },
+    "B": {
+      "mutable_misa": false,
+      "supported": true
+    },
+    "S": {
+      "mutable_misa": false,
+      "supported": true,
+      "interrupts": {
+        "software": {
+          "supported": true
+        },
+        "external": {
+          "supported": true
+        },
+        "timer": {
+          "supported": true
+        }
+      }
+    },
+    "U": {
+      "mutable_misa": false,
+      "supported": true
+    },
+    "H": {
+      "mutable_misa": false,
+      "supported": false,
+      "geilen": 63,
+      "guest_page_fault_writes_htval": true,
+      "transformed_instruction": {
+        "load_access_fault": true,
+        "load_address_misaligned": true,
+        "load_guest_page_fault": true,
+        "load_page_fault": true,
+        "samo_access_fault": true,
+        "samo_address_misaligned": true,
+        "samo_guest_page_fault": true,
+        "samo_page_fault": true
+      },
+      "hgatp_modes": {
+        "Sv32x4": false,
+        "Sv39x4": true,
+        "Sv48x4": true,
+        "Sv57x4": true
+      },
+      "vsatp_modes": {
+        "Sv32": false,
+        "Sv39": true,
+        "Sv48": true,
+        "Sv57": true
+      },
+      "implicit_vs_pte_access_sets_gstage_d": false
+    },
+    "Sha": {
+      "supported": false
+    },
+    "Shcounterenw": {
+      "supported": false
+    },
+    "Shgatpa": {
+      "supported": false
+    },
+    "Shtvala": {
+      "supported": false
+    },
+    "Shvsatpa": {
+      "supported": false
+    },
+    "Shvstvala": {
+      "supported": false
+    },
+    "Shvstvecd": {
+      "supported": false
+    },
+    "Sstvecd": {
+      "supported": true
+    },
+    "Svukte": {
+      "supported": false
+    },
+    "Zilx": {
+      "supported": false
+    },
+    "Zibi": {
+      "supported": false
+    },
+    "Zic64b": {
+      "supported": false
+    },
+    "Zicbom": {
+      "supported": true
+    },
+    "Zicbop": {
+      "supported": false
+    },
+    "Zicboz": {
+      "supported": false
+    },
+    "Ziccamoa": {
+      "supported": false
+    },
+    "Ziccamoc": {
+      "supported": false
+    },
+    "Ziccif": {
+      "supported": true
+    },
+    "Zicclsm": {
+      "supported": false
+    },
+    "Ziccrse": {
+      "supported": false
+    },
+    "Zicfilp": {
+      "supported": false
+    },
+    "Zicfiss": {
+      "supported": false
+    },
+    "Zicond": {
+      "supported": true
+    },
+    "Zicntr": {
+      "supported": true
+    },
+    "Zicsr": {
+      "supported": true
+    },
+    "Zifencei": {
+      "supported": true
+    },
+    "Zihintntl": {
+      "supported": false
+    },
+    "Zihintpause": {
+      "supported": false
+    },
+    "Zihpm": {
+      "supported": true
+    },
+    "Zimop": {
+      "supported": false
+    },
+    "Zmmul": {
+      "supported": true
+    },
+    "Zaamo": {
+      "supported": true
+    },
+    "Zabha": {
+      "supported": false
+    },
+    "Zacas": {
+      "supported": false
+    },
+    "Zalrsc": {
+      "supported": true
+    },
+    "Zama16b": {
+      "supported": false
+    },
+    "Zawrs": {
+      "supported": false,
+      "nto": {
+        "is_nop": false
+      },
+      "sto": {
+        "is_nop": false
+      }
+    },
+    "Zfa": {
+      "supported": false
+    },
+    "Zfbfmin": {
+      "supported": false
+    },
+    "Zfh": {
+      "supported": false
+    },
+    "Zfhmin": {
+      "supported": false
+    },
+    "Zfinx": {
+      "supported": false
+    },
+    "Zdinx": {
+      "supported": false
+    },
+    "Zca": {
+      "supported": true
+    },
+    "Zcf": {
+      "supported": false
+    },
+    "Zcd": {
+      "supported": true
+    },
+    "Zcb": {
+      "supported": true
+    },
+    "Zcmop": {
+      "supported": false
+    },
+    "Zba": {
+      "supported": true
+    },
+    "Zbb": {
+      "supported": true
+    },
+    "Zbs": {
+      "supported": true
+    },
+    "Zbc": {
+      "supported": true
+    },
+    "Zbkb": {
+      "supported": true
+    },
+    "Zbkc": {
+      "supported": true
+    },
+    "Zbkx": {
+      "supported": true
+    },
+    "Zknd": {
+      "supported": true
+    },
+    "Zkne": {
+      "supported": true
+    },
+    "Zknh": {
+      "supported": true
+    },
+    "Zkr": {
+      "supported": false,
+      "sseed_reset_value": false,
+      "useed_reset_value": false,
+      "sseed_read_only_zero": false,
+      "useed_read_only_zero": false
+    },
+    "Zksed": {
+      "supported": false
+    },
+    "Zksh": {
+      "supported": false
+    },
+    "Zkt": {
+      "supported": false
+    },
+    "Zhinx": {
+      "supported": false
+    },
+    "Zhinxmin": {
+      "supported": false
+    },
+    "Zvabd": {
+      "supported": false
+    },
+    "Zvfbfmin": {
+      "supported": false
+    },
+    "Zvfbfwma": {
+      "supported": false
+    },
+    "Zvfh": {
+      "supported": false
+    },
+    "Zvfhmin": {
+      "supported": false
+    },
+    "Zvbb": {
+      "supported": false
+    },
+    "Zvbc": {
+      "supported": false
+    },
+    "Zvkb": {
+      "supported": false
+    },
+    "Zvkg": {
+      "supported": false
+    },
+    "Zvkned": {
+      "supported": false
+    },
+    "Zvknha": {
+      "supported": false
+    },
+    "Zvknhb": {
+      "supported": false
+    },
+    "Zvksed": {
+      "supported": false
+    },
+    "Zvksh": {
+      "supported": false
+    },
+    "Zvkt": {
+      "supported": false
+    },
+    "Ssccptr": {
+      "supported": true
+    },
+    "Sscofpmf": {
+      "supported": false
+    },
+    "Sscounterenw": {
+      "supported": true
+    },
+    "Sstc": {
+      "supported": false
+    },
+    "Sstvala": {
+      "supported": true
+    },
+    "Svade": {
+      "supported": true
+    },
+    "Svadu": {
+      "supported": false
+    },
+    "Svinval": {
+      "supported": false
+    },
+    "Svrsw60t59b": {
+      "supported": false
+    },
+    "Svnapot": {
+      "supported": false
+    },
+    "Ssnpm": {
+      "supported": false,
+      "supported_pmlen_7": true,
+      "supported_pmlen_16": true
+    },
+    "Smnpm": {
+      "supported": false,
+      "supported_pmlen_7": true,
+      "supported_pmlen_16": true
+    },
+    "Smmpm": {
+      "supported": false,
+      "supported_pmlen_7": true,
+      "supported_pmlen_16": true
+    },
+    "Smcntrpmf": {
+      "supported": false
+    },
+    "Svbare": {
+      "supported": true,
+      "sfence_vma_illegal_if_svbare_only": true
+    },
+    "Sv32": {
+      "supported": false
+    },
+    "Sv39": {
+      "supported": true
+    },
+    "Sv48": {
+      "supported": false
+    },
+    "Sv57": {
+      "supported": false
+    },
+    "Stateen": {
+      "Smstateen": {
+        "supported": false
+      },
+      "Ssstateen": {
+        "supported": false
+      },
+      "C_readonly_zero": true,
+      "SE0_readonly_zero": false,
+      "mstateen0": {
+        "SE0": "CSRBit_Writable",
+        "ENVCFG": "CSRBit_ReadOnlyZero",
+        "CONTEXT": "CSRBit_ReadOnlyZero",
+        "P1P13": "CSRBit_ReadOnlyZero",
+        "SRMCFG": "CSRBit_ReadOnlyZero",
+        "FCSR": "CSRBit_ReadOnlyZero",
+        "C": "CSRBit_ReadOnlyZero"
+      },
+      "mstateen1": {
+        "SE1": "CSRBit_Writable"
+      },
+      "mstateen2": {
+        "SE2": "CSRBit_Writable"
+      },
+      "mstateen3": {
+        "SE3": "CSRBit_Writable"
+      },
+      "hstateen0": {
+        "ENVCFG": "CSRBit_ReadOnlyZero",
+        "CONTEXT": "CSRBit_ReadOnlyZero",
+        "FCSR": "CSRBit_ReadOnlyZero",
+        "C": "CSRBit_ReadOnlyZero"
+      },
+      "sstateen0": {
+        "FCSR": "CSRBit_ReadOnlyZero",
+        "C": "CSRBit_ReadOnlyZero"
+      }
+    },
+    "Ssqosid": {
+      "supported": false,
+      "rcid_length": 12,
+      "mcid_length": 12
+    },
+    "Svpbmt": {
+      "supported": false
+    },
+    "Svvptc": {
+      "supported": false
+    },
+    "Sdtrig": {
+      "supported": false,
+      "breakpoint_reentrancy": "No_reentrancy_support",
+      "etrigger": {
+        "supported": false,
+        "supported_exceptions": {
+          "len": "xlen",
+          "value": "0"
+        }
+      },
+      "hcontext": {
+        "supported": false
+      },
+      "icount": {
+        "supported": false,
+        "count_hardwired_one": false,
+        "self_write_sets_pending": false
+      },
+      "itrigger": {
+        "supported": false,
+        "supported_interrupts": {
+          "len": "xlen",
+          "value": "0"
+        }
+      },
+      "mcontext": {
+        "supported": false
+      },
+      "num_triggers": 0,
+      "scontext": {
+        "supported": false
+      },
+      "mcontrol6": {
+        "supported": false,
+        "maskmax6": 63,
+        "address_select_matches_all_addresses": true,
+        "max_chain_length": 4
+      },
+      "textra": {
+        "mhselect": {
+          "mcontext_match": false,
+          "vmid_match": false
+        },
+        "sselect": {
+          "scontext_match": false,
+          "asid_match": true
+        },
+        "mhvalue_len": 13,
+        "svalue_len": 32
+      }
+    },
+    "Smdbltrp": {
+      "supported": false
+    },
+    "Ssdbltrp": {
+      "supported": false
+    },
+    "Ssstrict": {
+      "supported": false
+    }
+  }
+}

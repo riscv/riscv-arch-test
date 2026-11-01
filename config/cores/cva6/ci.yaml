@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # CI configuration for the OpenHW CVA6 Verilator testharness.
-# cv32a65x, cv32a60x and cv32a6_imac_sv32 share this file: one ci.yaml covers every run_cmd.txt
+# cv32a65x, cv32a60x, cv32a6_imac_sv32 and cv64a6_imafdc_sv39 share this file: one ci.yaml
+# covers every run_cmd.txt
 # in this directory.
 
 ci_enabled: true
@@ -10,7 +11,7 @@ exclude_extensions:
   # address 0 is the debug module (DebugBase=0x0, DebugLength=0x1000), which answers every
   # access with OKAY, while Sail expects an access fault because there is no memory at 0.
   # CVA6 has no data-side PMA check, so the DUT raises no fault and the load returns 0.
-  # Only cv32a6_imac_sv32 has PMP entries, so only it runs this test.
+  # Only cv32a6_imac_sv32 and cv64a6_imafdc_sv39 declare PMP entries, so only they run this test.
   # Remove this exclusion once riscv-arch-test#2963 drops the address-0 probes.
   # https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/corev_apu/tb/ariane_soc_pkg.sv#L58
   # https://github.com/riscv/riscv-arch-test/issues/2963
@@ -27,6 +28,9 @@ exclude_extensions:
   - PMP_Zalrsc_cfg_wr
   - Sv_ExceptionsZalrsc_sv32
   - Sv_ExceptionsZalrscSm_sv32
+  - Sv_ExceptionsZalrsc_sv39_exceptions_Zalrsc
+  - Sv_ExceptionsZalrscSm_sv39_exceptions_Zalrsc_mprv_S_Mmode
+  - Sv_ExceptionsZalrscSm_sv39_medeleg_Zalrsc
   # A write to mie does not flush the pipeline, so the 2-3 already decoded instructions retire
   # before the newly enabled interrupt is taken. Here they clear mip.SEIP first, so the handler
   # sees the wrong mip or takes STI instead of SEI. mstatus writes flush; mie, mip and mideleg
@@ -49,6 +53,7 @@ exclude_extensions:
   # The trailing "-" keeps PMP_Sm_grain_check, which passes.
   # https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/csr_regfile.sv#L995-L1001
   # https://github.com/openhwfoundation/cva6/issues/2656
+  # https://github.com/openhwfoundation/cva6/issues/697
   - PMP_Sm_grain-
   # A PMP fault on a PTE read during a store raises a load access fault (5) instead of a store
   # access fault (7). The store cause is used only for Sv39 (PtLevels == 3).
@@ -62,6 +67,14 @@ exclude_extensions:
   - Sv_sv32_spage_Smode
   - Sv_sv32_spage_mstatus_sum_set_Smode
   - Sv_sv32_upage_Umode
+  # An FCVT F->int that updates fflags does not set mstatus.FS to Dirty.
+  # https://github.com/openhwfoundation/cva6/issues/3173 (fix: openhwfoundation/cva6#3678)
+  - S_F
+  - Sm_F
+  - U_F
+  # cbo.clean/cbo.flush raise a store page fault on a page with R=1, W=0.
+  # https://github.com/openhwfoundation/cva6/issues/3431
+  - Sv_Zicbo_sv39_zicbom_exceptions
 
 # device-tree-compiler and the Boost libraries are required by CVA6's Spike build
 # (verif/regress/install-spike.sh). Without them fesvr is not installed and the

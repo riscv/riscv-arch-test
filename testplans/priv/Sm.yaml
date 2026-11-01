@@ -617,6 +617,71 @@ coverpoints:
     description: Execute sret in machine mode with cross-product of mstatus.SPP / hstatus.SPV / SPIE.  After the sret, a read of mscratch traps and the trap record shows the mode reached.  Then check mstatus.SPP, SIE, SPIE and hstatus.SPV.
     expectation: Goes to appropriate mode
     bins: 2 SPP * 2 SPV * 2 SPIE
+  - heading: "Sm_reset tests (Sm_reset-NN.S): CSR fields with defined reset values. With RESET_TEST defined, RVTEST_BOOT_TO_MMODE saves each CSR before any boot code writes it, and the test body checks the saved fields. Sm_reset_cg samples a CSR read only if it is the first access to that CSR in the trace."
+  - name: cp_mstatus_reset
+    goal: mstatus.MIE and MPRV reset to 0; on RV64, mstatus.MBE resets to 0 if little-endian memory accesses are supported
+    description: Read mstatus at reset.  Check MIE, MPRV and (RV64) MBE.
+    expectation: MIE and MPRV read 0.  MBE reads 0 if M-mode supports little-endian accesses (M_MODE_ENDIANNESS little or dynamic); it is read-only 1 on a big-endian-only hart.  Match reference model.
+    bins: "1"
+  - name: cp_mstatush_reset
+    goal: On RV32, mstatush.MBE resets to 0 if little-endian memory accesses are supported
+    description: RV32 only.  Read mstatush at reset.  Check MBE.
+    expectation: MBE reads 0 if M-mode supports little-endian accesses (M_MODE_ENDIANNESS little or dynamic); it is read-only 1 on a big-endian-only hart.  Match reference model.
+    bins: "1"
+  - name: cp_misa_reset
+    goal: misa resets to the maximal set of supported extensions and the widest MXLEN
+    description: Read misa at reset.  Check MXL, the zero field and the defined Extensions letters; mask off the reserved and tentatively reserved letters.
+    expectation: Match reference model.
+    bins: "1"
+  - name: |-
+      cp_hgatp_reset
+      cp_vsatp_reset
+    goal: hgatp.MODE and vsatp.MODE reset to 0
+    description: Only with H.  Read hgatp and vsatp at reset.  Check MODE.
+    expectation: MODE reads 0 (Bare).  Match reference model.
+    bins: "2"
+  - name: cp_mseccfg_reset
+    goal: mseccfg.MLPE resets to 0
+    description: Only with Zicfilp.  Read mseccfg at reset.  Check MLPE.
+    expectation: MLPE reads 0.  Match reference model.
+    bins: "1"
+  - name: cp_mstateen_reset
+    goal: Writable mstateen bits reset to 0
+    description: Only with Smstateen.  Read mstateen0-3 (and mstateen0h-3h on RV32) at reset.  Then find each CSR's writable bits by writing all ones and then zero, and restore the value the boot code wrote.  Check the writable bits of the reset value.
+    expectation: The writable bits read 0.  Read-only bits are not checked.  Match reference model.
+    bins: 4 CSRs (8 on RV32)
+  - name: cp_mdt_reset
+    goal: mstatus.MDT resets to 1 (mstatush.MDT on RV32)
+    description: Only with Smdbltrp.  Read mstatus (RV64) or mstatush (RV32) at reset.  Check MDT.
+    expectation: MDT reads 1.  Match reference model.
+    bins: "1"
+  - name: cp_vector_reset
+    goal: vl and vtype at reset can be read and restored with a single vsetvl
+    description: Only with a vector extension (Zve32x).  At reset, turn mstatus.VS on, read vl and vtype, and restore mstatus.  In the test, execute vsetvl with the saved vl as AVL and the saved vtype, then read vl and vtype.
+    expectation: vl and vtype are unchanged.  Only their difference from the saved values is recorded, since the reset values are implementation-defined.
+    bins: "2 CSRs"
+  - name: |-
+      cp_tselect_reset
+      cp_mcontext_reset
+      cp_scontext_reset
+      cp_tcontrol_reset
+    goal: tselect, mcontext, scontext and tcontrol reset to 0
+    description: Only with Sdtrig; mcontext, scontext and tcontrol only when implemented (MCONTEXT_IMPLEMENTED, SCONTEXT_IMPLEMENTED, TCONTROL_IMPLEMENTED).  Read each at reset.
+    expectation: Each reads 0 (every field resets to 0 in the Debug spec register tables).  Match reference model.
+    bins: 1 each
+  - name: cp_tdata1_reset
+    goal: Each trigger's tdata1 resets to the fixed values of its reset type
+    description: Only with Sdtrig.  At reset, read tdata1 of each of the SDTRIG_NUM_TRIGGERS triggers (writing tselect), and restore tselect.  tdata1.type resets to an implementation-chosen value, so the check depends on it.
+    expectation: "type 2 (mcontrol): every field below type is 0 except maskmax.  Type 3 (icount): every field is 0 except count = 1.  Types 4-7 (itrigger, etrigger, mcontrol6, tmexttrigger): every field is 0.  Any other type: dmode is 0.  tdata2 and tdata3 (Preset) are not checked."
+    bins: 1 per trigger
+  - name: cp_mnstatus_reset
+    goal: mnstatus.NMIE resets to 0
+    description: Only with Smrnmi.  Read mnstatus at reset.  Check NMIE.
+    expectation: NMIE reads 0.
+    bins: "1"
+    status: Not tested
+    notes: |-
+      Blocked on the reference model: Sail does not model Smrnmi, and sail_macros.h undefines SMRNMI_SUPPORTED in the signature build.
   - heading: Not tested
   - goal: misa.H enables the hypervisor extension
     description: With MUTABLE_MISA_H, clear misa.H, check that hypervisor CSRs and instructions raise illegal instruction, and set it again.

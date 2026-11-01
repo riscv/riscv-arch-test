@@ -62,6 +62,8 @@ exclude_extensions:
   - Sm_mcsr_walk
   - Sm_scsr
   - Sm_shadow
+  # misa.V is set for the partial vector unit (RVV = 1 in includes/def_pkg.sv), which the configuration does not declare.
+  - Sm_reset
   # sepc[1] is writable with IALIGN = 32: csr:csr_bsc.sv#L1244; senvcfg.CBIE keeps 0b10: #L1242
   # (https://github.com/bsc-loca/sargantana/issues/113 items 5 and 8; bsc-loca/csr#7 masks sepc[1])
   - S_scsr-

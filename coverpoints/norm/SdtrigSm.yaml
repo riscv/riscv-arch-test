@@ -402,7 +402,7 @@ normative_rule_definitions:
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_tdata1_reset
-    coverpoint: ["Reset values not tested in this suite"]
+    coverpoint: ["Sm_reset_cg/cp_tdata1_reset"]
 
   # Writing 0 to this register must result in a trigger that is disabled.
   - name: Sdtrig_tdata1_write0
@@ -670,7 +670,7 @@ normative_rule_definitions:
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_mcontrol_reset
-    coverpoint: ["Deprecated mcontrol type 2 trigger; not implemented"]
+    coverpoint: ["Sm_reset_cg/cp_tdata1_reset"]
 
   # This register is accessible as tdata1 when type is 2.
   - name: Sdtrig_mcontrol_access
@@ -899,7 +899,7 @@ normative_rule_definitions:
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_mcontrol6_reset
-    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+    coverpoint: ["Sm_reset_cg/cp_tdata1_reset"]
 
   # This register is accessible as tdata1 when type is 6.
   - name: Sdtrig_mcontrol6_access
@@ -1394,7 +1394,7 @@ normative_rule_definitions:
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_icount_reset
-    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+    coverpoint: ["Sm_reset_cg/cp_tdata1_reset"]
 
   # This register is accessible as tdata1 when type is 3.
   - name: Sdtrig_icount_access
@@ -1582,7 +1582,7 @@ normative_rule_definitions:
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_itrigger_reset
-    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+    coverpoint: ["Sm_reset_cg/cp_tdata1_reset"]
 
   # This register is accessible as tdata1 when type is 4.
   - name: Sdtrig_itrigger_access
@@ -1711,7 +1711,7 @@ normative_rule_definitions:
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_etrigger_reset
-    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+    coverpoint: ["Sm_reset_cg/cp_tdata1_reset"]
 
   # This register is accessible as tdata1 when type is 5.
   - name: Sdtrig_etrigger_access
@@ -1823,8 +1823,7 @@ normative_rule_definitions:
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_tmexttrigger_reset
-    coverpoint:
-      ["External trigger inputs are implementation-specific and unspecified"]
+    coverpoint: ["Sm_reset_cg/cp_tdata1_reset"]
 
   # This register is accessible as tdata1 when type is 7.
   - name: Sdtrig_tmexttrigger_access

@@ -184,7 +184,7 @@ params:
   MISALIGNED_LDST: true
   MISALIGNED_LDST_EXCEPTION_PRIORITY: low
   MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 4096 # check
-  MISALIGNED_SPLIT_STRATEGY: sequential_bytes # two XLEN-sized accesses, lower first
+  MISALIGNED_SPLIT_STRATEGY: custom # We fetch the lower and upper parts with two XLEN-sized fetches and merge them
   TRAP_ON_ILLEGAL_WLRL: false
   TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
   TRAP_ON_RESERVED_INSTRUCTION: true

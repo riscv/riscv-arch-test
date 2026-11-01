@@ -665,7 +665,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         `ifdef RVMODEL_MSIP_ADDRESS
             msip_val: coverpoint ins.current.rs2_val {
                 bins zero = {0};
-                bins one  = {1};
+                bins ones = {32'hFFFFFFFF}; // all 1s in the low 32 bits, also on RV64
             }
             cp_msip: cross priv_mode_m, sw, msip_val;
         `endif // RVMODEL_MSIP_ADDRESS

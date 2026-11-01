@@ -159,6 +159,21 @@ include::{testplansdir}/priv/Svnapot_H.adoc[]
 
 include::norm/Svnapot_norm_rules.adoc[]
 
+==== Svrsw60t59b PTE Bits Reserved for Software
+
+Svrsw60t59b reserves bits 60:59 of each PTE for supervisor software, and the implementation ignores them.
+Each test sets the bits in a leaf or non-leaf PTE and checks that loads, stores and fetches through it complete as if the bits were clear.
+
+include::{testplansdir}/priv/Svrsw60t59b.adoc[]
+
+===== Svrsw60t59b_H Hypervisor PTE Bits Reserved for Software
+
+Checks bits 60:59 in VS-stage and G-stage PTEs, with guest accesses in VS-mode and VU-mode.
+
+include::{testplansdir}/priv/Svrsw60t59b_H.adoc[]
+
+include::norm/Svrsw60t59b_norm_rules.adoc[]
+
 ==== Svvptc Obviating Memory-Management Instructions after Marking PTEs Valid
 
 Svvptc requires a store that changes a PTE from invalid to valid to reach later implicit accesses within a bounded time, without `SFENCE.VMA`.

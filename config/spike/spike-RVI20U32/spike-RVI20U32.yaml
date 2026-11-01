@@ -13,6 +13,7 @@ implemented_extensions:
   - { name: F, version: "= 2.2.0" }
   - { name: D, version: "= 2.2.0" }
   - { name: C, version: "= 2.0" }
+  - { name: Zicclsm, version: "= 1.0.0" }
   - { name: Zicntr, version: "= 2.0" }
   - { name: Zicsr, version: "= 2.0" }
   - { name: Zifencei, version: "= 2.0.0" }
@@ -31,33 +32,32 @@ params:
   LRSC_FAIL_ON_VA_SYNONYM: false
   LRSC_MISALIGNED_BEHAVIOR: "always raise access fault"
   LRSC_FAIL_ON_NON_EXACT_LRSC: false
-  MUTABLE_MISA_A: false
+  MUTABLE_MISA_A: true
   # M params
-  MUTABLE_MISA_M: false
+  MUTABLE_MISA_M: true
   # F params
-  MUTABLE_MISA_F: false
+  MUTABLE_MISA_F: true
   HW_MSTATUS_FS_DIRTY_UPDATE: precise
   MSTATUS_FS_LEGAL_VALUES: [0, 1, 2, 3]
   # D params
-  MUTABLE_MISA_D: false
+  MUTABLE_MISA_D: true
   # C params
-  MUTABLE_MISA_C: false
+  MUTABLE_MISA_C: true
   # Zicntr params
   TIME_CSR_IMPLEMENTED: true
   # Sm params
   WFI_U_MODE: false
-  MEI_INTR_IMPL: false
+  MEI_INTR_IMPL: true
   MSI_INTR_IMPL: true
   MTI_INTR_IMPL: true
-  WFI_FINITE: true
+  WFI_FINITE: false
   MXLEN: 32
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
   TRAP_ON_ECALL_FROM_M: true
   TRAP_ON_EBREAK: true
   MARCHID_IMPLEMENTED: true
-  ARCH_ID_VALUE: 0x1
-  MIMPID_IMPLEMENTED: true
-  IMP_ID_VALUE: 0x0
+  ARCH_ID_VALUE: 5
+  MIMPID_IMPLEMENTED: false
   VENDOR_ID_BANK: 0x0
   VENDOR_ID_OFFSET: 0x0
   MISALIGNED_LDST: true
@@ -86,7 +86,7 @@ params:
   MTVEC_MODES: [0, 1]
   MTVEC_BASE_ALIGNMENT_DIRECT: 4
   MTVEC_BASE_ALIGNMENT_VECTORED: 4
-  MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom
   MCOUNTINHIBIT_IMPLEMENTED: true
   COUNTINHIBIT_EN:
     [

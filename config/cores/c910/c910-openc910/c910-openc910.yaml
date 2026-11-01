@@ -45,6 +45,7 @@ implemented_extensions:
   - { name: C, version: "= 2.0" }
   - { name: Zca, version: "= 1.0.0" }
   - { name: Zcd, version: "= 1.0.0" }
+  - { name: Zicclsm, version: "= 1.0.0" }
   - { name: Zicsr, version: "= 2.0" }
   # fence.i is decoded in the MISC-MEM opcode alongside fence.
   #   Quote: "32'b0000_0000_0000_00000_001_00000_0001111 : ... // fence.i"

@@ -18,7 +18,7 @@
     // If Sscofpmf is supported, the `mhpmevent` CSRs are always 64
     // bits; this value then defines the number, upto 56, of the lowest
     // bits of the CSRs that are used as the event selector.
-    "hpmevent_width_bits": 56,
+    "hpmevent_width_bits": 64,
     "mcountinhibit": {
       // Whether the `mcountinhibit` CSR is implemented.
       "supported": true,
@@ -172,11 +172,11 @@
       // The configuration option determines how to handle the reserved behavior `pmpcfg_with_R0W1`.
       // "PMP_Fatal"  – raise a Sail exception, stopping execution.
       // "PMP_ClearPermissions" – convert a PMP entry with R=0, W=1 to R=0, W=0, X=0.
-      "pmpcfg_write_only": "PMP_ClearPermissions",
+      "pmpcfg_write_only": "PMP_Ignore",
       // The configuration option determines how to handle the reserved behavior `xenvcfg.CBIE` with 0b10.
       // "Xenvcfg_Fatal"  – raise a Sail exception, stopping execution.
       // "Xenvcfg_ClearPermissions" – convert CBIE with 0b10 to 0b00.
-      "xenvcfg_cbie": "Xenvcfg_ClearPermissions",
+      "xenvcfg_cbie": "Xenvcfg_Ignore",
       // The configuration option determines how to handle the reserved behavior `xtvec[Mode] >= 2`.
       // "Xtvec_Fatal"  – raise a Sail exception, stopping execution.
       // "Xtvec_Ignore" – use old Mode of xtvec.
@@ -511,7 +511,7 @@
       //                      if that flag is already set.
       // - Fflags_Dirty_Instruction: Set FS/SD when we execute an instruction that
       //                             might set a flag, even if it actually doesn't.
-      "fflags_dirty_policy": "Fflags_Dirty_Precise"
+      "fflags_dirty_policy": "Fflags_Dirty_Flag"
     },
     "D": {
       "mutable_misa": false,
@@ -550,7 +550,7 @@
         // vector spec marks reserved and recommends, but does not require, trapping.
         // "Vstart_Illegal" - raise an illegal instruction exception.
         // "Vstart_Ignore"  - treat as a no-op, the instruction writes nothing.
-        "vstart_out_of_bounds": "Vstart_Illegal"
+        "vstart_out_of_bounds": "Vstart_Ignore"
       },
       "vl_use_ceil": false,
       // The maximum index EEW for indexed vector addressing mode, as
@@ -1023,7 +1023,7 @@
         // corresponding interrupt is supported by the trigger.
         // Triggers for reserved interrupts are not supported.  This
         // value is ignored when `itrigger` is not supported.
-        "supported_interrupts": { "len": "xlen", "value": "0x3EEE" }
+        "supported_interrupts": { "len": "xlen", "value": "0x0888" }
       },
       "mcontrol6": {
         "supported": true,
@@ -1058,7 +1058,7 @@
         // above these are read only zero. At most 6 and 16 on RV32,
         // 13 and 32 on RV64.
         "mhvalue_len": 13,
-        "svalue_len": 0
+        "svalue_len": 32
       },
       // CSRs
       "mcontext": { "supported": true },

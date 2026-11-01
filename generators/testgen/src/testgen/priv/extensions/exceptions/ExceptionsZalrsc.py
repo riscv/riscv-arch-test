@@ -14,6 +14,9 @@ from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
 
+# rd value before each SC: 0x...FBAD, greater than 1 as an unsigned value
+SC_RD_PRESET = -1107
+
 
 def _generate_load_address_misaligned_tests(test_data: TestData) -> list[str]:
     """Generate load address misaligned exception tests."""
@@ -53,10 +56,12 @@ def _generate_store_address_misaligned_tests(test_data: TestData) -> list[str]:
     addr_reg, data_reg, rd_reg, temp_reg, base_reg, check_reg = test_data.int_regs.get_registers(6)
 
     def lrsc(width: str, offset: int, coverpoint: str, aligned: bool) -> list[str]:
+        lr_label_line = test_data.add_testcase(f"lr.{width}_off{offset}", coverpoint, covergroup)
+        lr_label = test_data.current_testcase_label
         lines = [
-            test_data.add_testcase(f"lr.{width}_off{offset}", coverpoint, covergroup),
+            lr_label_line,
             f"lr.{width} x{temp_reg}, (x{addr_reg})",  # establish reservation
-            f"addi x{rd_reg}, x0, -1107",  # previous rd greater than 1 （-1107 = 0xBAD）
+            f"addi x{rd_reg}, x0, {SC_RD_PRESET}",
             test_data.add_testcase(f"sc.{width}_off{offset}", coverpoint, covergroup),
             f"sc.{width} x{rd_reg}, x{data_reg}, (x{addr_reg})",
         ]
@@ -64,14 +69,32 @@ def _generate_store_address_misaligned_tests(test_data: TestData) -> list[str]:
             # check_reg is not used until the scratch checks, so it counts the retries
             retry_start, retry_end = lrsc_retry_loop(test_data.current_testcase_label, check_reg, rd_reg)
             lines = [*retry_start, *lines, *retry_end]
+        # Record the LR result after the SC so that no store separates the pair
+        return [*lines, write_sigupd(temp_reg, test_data, label=lr_label), write_sigupd(rd_reg, test_data)]
+
+    def reserved_sc(width: str, offset: int, coverpoint: str) -> list[str]:
+        # Aligned LR sets a live reservation; the misaligned SC directly after it must still trap
+        return [
+            f"addi x{rd_reg}, x0, {SC_RD_PRESET}",
+            f"lr.{width} x{temp_reg}, (x{base_reg})",
+            test_data.add_testcase(f"sc.{width}_off{offset}", coverpoint, covergroup),
+            f"sc.{width} x{rd_reg}, x{data_reg}, (x{addr_reg})",
+            write_sigupd(rd_reg, test_data),
+        ]
+
+    def check_scratch() -> list[str]:
+        lines = [f"{INDENT}# Check scratch region"]
+        for word in range(4):
+            lines.extend([f"lw x{check_reg}, {4 * word}(x{base_reg})", write_sigupd(check_reg, test_data)])
         return lines
 
-    lines = [comment_banner("cp_store_address_misaligned_legal_w/illegal_w/legal_d/illegal_d")]
+    lines = [comment_banner("cp_store_address_misaligned_legal_w/illegal_w/legal_d/illegal_d/reserved_w/reserved_d")]
 
     for offset in range(8):
         # sc.w is aligned at offsets 0 and 4; sc.d only at offset 0
-        cp_w = "cp_store_address_misaligned_legal_w" if offset % 4 == 0 else "cp_store_address_misaligned_illegal_w"
-        cp_d = "cp_store_address_misaligned_legal_d" if offset == 0 else "cp_store_address_misaligned_illegal_d"
+        aligned_w, aligned_d = offset % 4 == 0, offset == 0
+        cp_w = "cp_store_address_misaligned_legal_w" if aligned_w else "cp_store_address_misaligned_illegal_w"
+        cp_d = "cp_store_address_misaligned_legal_d" if aligned_d else "cp_store_address_misaligned_illegal_d"
         lines.extend(
             [
                 f"\n# Offset {offset} (LSBs: {offset:03b})",
@@ -79,35 +102,23 @@ def _generate_store_address_misaligned_tests(test_data: TestData) -> list[str]:
                 f"addi x{addr_reg}, x{base_reg}, {offset}",  # addr = aligned base + offset
                 f"LI(x{data_reg}, 0xDECAFCAB)",
                 f"LI(x{temp_reg}, 0xBAD)",
-                *lrsc("w", offset, cp_w, offset % 4 == 0),
-                write_sigupd(temp_reg, test_data),
-                write_sigupd(rd_reg, test_data),
-                f"{INDENT}# Check scratch region",
-                f"lw x{check_reg}, 0(x{base_reg})",
-                write_sigupd(check_reg, test_data),
-                f"lw x{check_reg}, 4(x{base_reg})",
-                write_sigupd(check_reg, test_data),
-                f"lw x{check_reg}, 8(x{base_reg})",
-                write_sigupd(check_reg, test_data),
-                f"lw x{check_reg}, 12(x{base_reg})",
-                write_sigupd(check_reg, test_data),
-                "#if __riscv_xlen == 64",
-                f"LI(x{temp_reg}, 0xBAD)",
-                *lrsc("d", offset, cp_d, offset == 0),
-                write_sigupd(temp_reg, test_data),
-                write_sigupd(rd_reg, test_data),
-                f"{INDENT}# Check scratch region",
-                f"lw x{check_reg}, 0(x{base_reg})",
-                write_sigupd(check_reg, test_data),
-                f"lw x{check_reg}, 4(x{base_reg})",
-                write_sigupd(check_reg, test_data),
-                f"lw x{check_reg}, 8(x{base_reg})",
-                write_sigupd(check_reg, test_data),
-                f"lw x{check_reg}, 12(x{base_reg})",
-                write_sigupd(check_reg, test_data),
-                "#endif",
+                *lrsc("w", offset, cp_w, aligned_w),
+                *check_scratch(),
             ]
         )
+        if not aligned_w:
+            lines.extend([*reserved_sc("w", offset, "cp_store_address_misaligned_reserved_w"), *check_scratch()])
+        lines.extend(
+            [
+                "#if __riscv_xlen == 64",
+                f"LI(x{temp_reg}, 0xBAD)",
+                *lrsc("d", offset, cp_d, aligned_d),
+                *check_scratch(),
+            ]
+        )
+        if not aligned_d:
+            lines.extend([*reserved_sc("d", offset, "cp_store_address_misaligned_reserved_d"), *check_scratch()])
+        lines.append("#endif")
     test_data.int_regs.return_registers([addr_reg, data_reg, rd_reg, base_reg, temp_reg, check_reg])
     return lines
 
@@ -173,8 +184,6 @@ def _generate_store_access_fault_tests(test_data: TestData) -> list[str]:
     """Generate store access fault exception tests."""
     covergroup, coverpoint = "Exceptions_Zalrsc_cg", "cp_store_access_fault"
     addr_reg, data_reg, rd_reg, temp_reg = test_data.int_regs.get_registers(4)
-    # sc.w at illegal address does not trigger exception in QEMU
-    # QEMU issue: https://gitlab.com/qemu-project/qemu/-/issues/3323
     lines = [
         "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
         comment_banner(coverpoint),
@@ -184,20 +193,20 @@ def _generate_store_access_fault_tests(test_data: TestData) -> list[str]:
         f"LI(x{temp_reg}, 0xBAD)",
         test_data.add_testcase("lr.w_store_fault", coverpoint, covergroup),
         f"lr.w x{temp_reg}, (x{addr_reg})",
-        f"addi x{rd_reg}, x0, -1107",  # previous rd greater than 1 （-1107 = 0xBAD）
+        write_sigupd(temp_reg, test_data),
+        f"addi x{rd_reg}, x0, {SC_RD_PRESET}",
         test_data.add_testcase("sc.w_fault", coverpoint, covergroup),
         f"sc.w x{rd_reg}, x{data_reg}, (x{addr_reg})",
-        write_sigupd(temp_reg, test_data),
         write_sigupd(rd_reg, test_data),
         "#if __riscv_xlen == 64",
         f"LI(x{data_reg}, 0xDEADBEEFDECAFCAB)",
         f"LI(x{temp_reg}, 0xBAD)",
         test_data.add_testcase("lr.d_store_fault", coverpoint, covergroup),
         f"lr.d x{temp_reg}, (x{addr_reg})",
-        f"addi x{rd_reg}, x0, -1107",  # previous rd greater than 1 （-1107 = 0xBAD）
+        write_sigupd(temp_reg, test_data),
+        f"addi x{rd_reg}, x0, {SC_RD_PRESET}",
         test_data.add_testcase("sc.d_fault", coverpoint, covergroup),
         f"sc.d x{rd_reg}, x{data_reg}, (x{addr_reg})",
-        write_sigupd(temp_reg, test_data),
         write_sigupd(rd_reg, test_data),
         "#endif",
         "#endif",
@@ -219,24 +228,24 @@ def _generate_store_misaligned_priority_tests(test_data: TestData) -> list[str]:
         [
             f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
             f"addi x{addr_reg}, x{addr_reg}, 1",
-            f"LI(x{data_reg}, 0xDECAFCAB)",  # Match original value
+            f"LI(x{data_reg}, 0xDECAFCAB)",
             f"LI(x{temp_reg}, 0xDECAFCAB)",
             test_data.add_testcase("lr.w_off1_priority", coverpoint, covergroup),
             f"lr.w x{temp_reg}, (x{addr_reg})",
-            f"addi x{rd_reg}, x0, -1107",  # previous rd greater than 1 （-1107 = 0xBAD）
+            write_sigupd(temp_reg, test_data),
+            f"addi x{rd_reg}, x0, {SC_RD_PRESET}",
             test_data.add_testcase("sc.w_off1_priority", coverpoint, covergroup),
             f"sc.w x{rd_reg}, x{data_reg}, (x{addr_reg})",
-            write_sigupd(temp_reg, test_data),
             write_sigupd(rd_reg, test_data),
             "#if __riscv_xlen == 64",
-            f"LI(x{data_reg}, 0xDEADBEEFDECAFCAB)",  # Match original value
+            f"LI(x{data_reg}, 0xDEADBEEFDECAFCAB)",
             f"LI(x{temp_reg}, 0xDECAFCAB)",
             test_data.add_testcase("lr.d_off1_priority", coverpoint, covergroup),
             f"lr.d x{temp_reg}, (x{addr_reg})",
-            f"addi x{rd_reg}, x0, -1107",  # previous rd greater than 1 （-1107 = 0xBAD）
+            write_sigupd(temp_reg, test_data),
+            f"addi x{rd_reg}, x0, {SC_RD_PRESET}",
             test_data.add_testcase("sc.d_off1_priority", coverpoint, covergroup),
             f"sc.d x{rd_reg}, x{data_reg}, (x{addr_reg})",
-            write_sigupd(temp_reg, test_data),
             write_sigupd(rd_reg, test_data),
             "#endif",
             "#endif",
@@ -244,6 +253,43 @@ def _generate_store_misaligned_priority_tests(test_data: TestData) -> list[str]:
         ]
     )
     test_data.int_regs.return_registers([addr_reg, data_reg, rd_reg, temp_reg])
+    return lines
+
+
+def _generate_sc_after_faulted_lr_tests(test_data: TestData) -> list[str]:
+    """Generate tests that check a faulted LR does not set a reservation."""
+    covergroup, coverpoint = "Exceptions_Zalrsc_cg", "cp_sc_after_faulted_lr"
+    base_reg, addr_reg, data_reg, rd_reg, temp_reg, check_reg = test_data.int_regs.get_registers(6)
+
+    lines = [comment_banner(coverpoint)]
+
+    for width in ["w", "d"]:
+        lines.extend(
+            [
+                *(["#if __riscv_xlen == 64"] if width == "d" else []),
+                f"LA(x{base_reg}, scratch)",
+                f"addi x{addr_reg}, x{base_reg}, 1",
+                f"lw x{temp_reg}, 0(x{base_reg})",
+                # Clear any old reservation; if this SC succeeds, it stores the value already in memory
+                f"sc.w x{temp_reg}, x{temp_reg}, (x{base_reg})",
+                f"LI(x{data_reg}, 0xDECAFCAB)",
+                f"addi x{rd_reg}, x0, {SC_RD_PRESET}",
+                test_data.add_testcase(f"lr.{width}", coverpoint, covergroup),
+                f"lr.{width} x{temp_reg}, (x{addr_reg})",  # misaligned, so it traps and sets no reservation
+                # The trap handler returns to the SC, which has no reservation and must fail
+                test_data.add_testcase(f"sc.{width}", coverpoint, covergroup),
+                f"sc.{width} x{rd_reg}, x{data_reg}, (x{base_reg})",
+                write_sigupd(rd_reg, test_data),
+                f"{INDENT}# Check scratch region",
+            ]
+        )
+        for word in range(4):
+            lines.extend([f"lw x{check_reg}, {4 * word}(x{base_reg})", write_sigupd(check_reg, test_data)])
+        if width == "d":
+            lines.append("#endif")
+    lines.append("")
+
+    test_data.int_regs.return_registers([base_reg, addr_reg, data_reg, rd_reg, temp_reg, check_reg])
     return lines
 
 
@@ -262,6 +308,7 @@ def make_exceptionszalrsc(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(_generate_store_address_misaligned_tests(test_data))
     tc.code.extend(_generate_store_access_fault_tests(test_data))
     tc.code.extend(_generate_store_misaligned_priority_tests(test_data))
+    tc.code.extend(_generate_sc_after_faulted_lr_tests(test_data))
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

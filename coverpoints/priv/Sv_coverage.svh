@@ -2063,13 +2063,15 @@ covergroup Sv_H_twostage_cg with function sample(ins_t ins);
     page_end : coverpoint ins.current.rs1_val[11:0] {
         bins page_end = {12'hffe};
     }
-    ldst : coverpoint ins.current.insn {
-        wildcard bins lw = {LW};
-        wildcard bins sw = {SW};
+    straddle_lh : coverpoint ins.current.insn {
+        wildcard bins lh = {LH};
     }
-    // A word two bytes below the end of a page
+    straddle_sh : coverpoint ins.current.insn {
+        wildcard bins sh = {SH};
+    }
+    // A halfword one byte below the end of a page
     ldst_page_end : coverpoint ((ins.current.rs1_val + ins.current.imm) & 'hFFF) {
-        bins page_end = {'hFFE};
+        bins page_end = {'hFFF};
     }
     `ifdef UDB_MXLEN_64
         menvcfg_adue : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "adue") {
@@ -2147,13 +2149,12 @@ covergroup Sv_H_twostage_cg with function sample(ins_t ins);
     cp_stage_both_bare : cross priv_mode_vs_vu, access, vsatp_bare, hgatp_bare;
     `ifdef ZCA_SUPPORTED
         // A fetch straddling a page boundary faults on the second page
-        cp_straddle    : cross priv_mode_vs, jalr, vsatp_paged, hgatp_paged, page_end, trap;
+        cp_misaligned_instr_page_fault_vs : cross priv_mode_vs, jalr, vsatp_paged, hgatp_paged, page_end, trap;
     `endif
     `ifdef UDB_MISALIGNED_LDST
-    `ifdef UDB_MISALIGNED_SPLIT_STRATEGY_SEQUENTIAL_BYTES
-        // A misaligned store or load straddling a page boundary, performed byte by byte, faults on the second page
-        cp_ldst_straddle : cross priv_mode_vs, ldst, vsatp_paged, hgatp_paged, ldst_page_end, trap;
-    `endif
+        // A misaligned store or load straddling a page boundary faults on the second page
+        cp_misaligned_load_page_fault_vs  : cross priv_mode_vs, straddle_lh, vsatp_paged, hgatp_paged, ldst_page_end, trap;
+        cp_misaligned_store_page_fault_vs : cross priv_mode_vs, straddle_sh, vsatp_paged, hgatp_paged, ldst_page_end, trap;
     `endif
     `ifdef UDB_MXLEN_64
         // A non-canonical guest virtual address raises a page fault, not a guest-page fault
@@ -2476,13 +2477,19 @@ covergroup Sv_HSm_trap_cg with function sample(ins_t ins);
     jalr : coverpoint ins.current.insn {
         wildcard bins jalr = {JALR};
     }
-    ldst : coverpoint ins.current.insn {
-        wildcard bins lw = {LW};
-        wildcard bins sw = {SW};
+    straddle_lh : coverpoint ins.current.insn {
+        wildcard bins lh = {LH};
     }
-    // A fetch at the last halfword of a page, or a word two bytes below the end of a page
+    straddle_sh : coverpoint ins.current.insn {
+        wildcard bins sh = {SH};
+    }
+    // A fetch at the last halfword of a page
     page_end : coverpoint ((ins.current.rs1_val + ins.current.imm) & 'hFFF) {
         bins page_end = {'hFFE};
+    }
+    // A halfword one byte below the end of a page
+    ldst_page_end : coverpoint ((ins.current.rs1_val + ins.current.imm) & 'hFFF) {
+        bins page_end = {'hFFF};
     }
     guest_page_fault : coverpoint {ins.current.csr_wb[CSR_MCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "mcause")[4:0]} {
         bins guest_page_fault = {6'b110100, 6'b110101, 6'b110111};
@@ -2496,14 +2503,13 @@ covergroup Sv_HSm_trap_cg with function sample(ins_t ins);
     // Guest page faults and guest-page faults taken in M-mode (mtval2 and mtinst are in the trap signature)
     cp_guest_page_fault_m : cross priv_mode_vs_vu, access, vsatp_paged, hgatp_paged, trap, gva_mpv;
     cp_implicit_gpf_m     : cross priv_mode_vs_vu, access, vsatp_paged, hgatp_paged, mtinst_pseudo;
-    // A fetch, or a misaligned store or load performed byte by byte, whose second page has an invalid G-stage leaf
+    // A fetch, or a misaligned store or load, whose second page has an invalid G-stage leaf
     `ifdef ZCA_SUPPORTED
-        cp_straddle_m      : cross priv_mode_vs_vu, jalr, vsatp_paged, hgatp_paged, page_end, guest_page_fault, mtval2_page_boundary;
+        cp_misaligned_instr_page_fault_m : cross priv_mode_vs_vu, jalr, vsatp_paged, hgatp_paged, page_end, guest_page_fault, mtval2_page_boundary;
     `endif
     `ifdef UDB_MISALIGNED_LDST
-    `ifdef UDB_MISALIGNED_SPLIT_STRATEGY_SEQUENTIAL_BYTES
-        cp_ldst_straddle_m : cross priv_mode_vs_vu, ldst, vsatp_paged, hgatp_paged, page_end, guest_page_fault, mtval2_page_boundary;
-    `endif
+        cp_misaligned_load_page_fault_m  : cross priv_mode_vs_vu, straddle_lh, vsatp_paged, hgatp_paged, ldst_page_end, guest_page_fault, mtval2_page_boundary;
+        cp_misaligned_store_page_fault_m : cross priv_mode_vs_vu, straddle_sh, vsatp_paged, hgatp_paged, ldst_page_end, guest_page_fault, mtval2_page_boundary;
     `endif
 endgroup
 `endif // EXCLUDE_SM

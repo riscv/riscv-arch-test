@@ -32,7 +32,7 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// cp_straddle
+// cp_misaligned_instr_page_fault_vs
 //   In VS-mode, execute a 4-byte instruction in the last halfword of a page whose next page is mapped, has an
 //   invalid G-stage leaf (instruction guest-page fault) or an invalid VS-stage leaf (instruction page fault).
 //   stval holds the address of the next page
@@ -189,7 +189,7 @@ RVTEST_BEGIN
   LI(x6, 0x90407000 + 0xffe)
   LI(x15, 0x100)
   RVTEST_TSBI_GOTO_VSMODE
-Sv_H_twostage_cg_cp_straddle_mapped_exec:
+Sv_H_twostage_cg_cp_misaligned_instr_page_fault_vs_mapped_exec:
   jalr ra, 0(x6)
   RVTEST_TSBI_GOTO_SMODE
 
@@ -234,7 +234,7 @@ Sv_H_twostage_cg_cp_straddle_mapped_exec:
   LI(x14, 0x90407000 + 0xffe)
   LI(x8, 0x101)
   RVTEST_TSBI_GOTO_VSMODE
-Sv_H_twostage_cg_cp_straddle_g_invalid_exec:
+Sv_H_twostage_cg_cp_misaligned_instr_page_fault_vs_g_invalid_exec:
   jalr ra, 0(x14)
   RVTEST_TSBI_GOTO_SMODE
 
@@ -279,7 +279,7 @@ Sv_H_twostage_cg_cp_straddle_g_invalid_exec:
   LI(x8, 0x90407000 + 0xffe)
   LI(x14, 0x102)
   RVTEST_TSBI_GOTO_VSMODE
-Sv_H_twostage_cg_cp_straddle_vs_invalid_exec:
+Sv_H_twostage_cg_cp_misaligned_instr_page_fault_vs_vs_invalid_exec:
   jalr ra, 0(x8)
   RVTEST_TSBI_GOTO_SMODE
 
@@ -362,9 +362,9 @@ rvtest_vlvl0_pg_tbl:
   .endif
 
 // Testcase strings
-Sv_H_twostage_cg_cp_straddle_mapped_exec_str: .string "\"test: 1; cg: Sv_H_twostage_cg; cp: cp_straddle; bin: mapped_exec\""
-Sv_H_twostage_cg_cp_straddle_g_invalid_exec_str: .string "\"test: 2; cg: Sv_H_twostage_cg; cp: cp_straddle; bin: g_invalid_exec\""
-Sv_H_twostage_cg_cp_straddle_vs_invalid_exec_str: .string "\"test: 3; cg: Sv_H_twostage_cg; cp: cp_straddle; bin: vs_invalid_exec\""
+Sv_H_twostage_cg_cp_misaligned_instr_page_fault_vs_mapped_exec_str: .string "\"test: 1; cg: Sv_H_twostage_cg; cp: cp_misaligned_instr_page_fault_vs; bin: mapped_exec\""
+Sv_H_twostage_cg_cp_misaligned_instr_page_fault_vs_g_invalid_exec_str: .string "\"test: 2; cg: Sv_H_twostage_cg; cp: cp_misaligned_instr_page_fault_vs; bin: g_invalid_exec\""
+Sv_H_twostage_cg_cp_misaligned_instr_page_fault_vs_vs_invalid_exec_str: .string "\"test: 3; cg: Sv_H_twostage_cg; cp: cp_misaligned_instr_page_fault_vs; bin: vs_invalid_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

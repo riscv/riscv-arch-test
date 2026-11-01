@@ -11,7 +11,7 @@ notes: |
   - Legal XWR = {000, 001, 011, 100, 101, 111}. R=0 with W=1 is reserved and never written.
   - After every PMP CSR write the tests execute sfence.vma when S-mode is implemented.
   - Coverpoints compare addresses and pmpaddr values on their low bits (PMP_ADDR_LOWMASK), so bins match wherever .data lands.
-  - Entries 0-14 are the entries below the background entry of a 16-entry PMP; with 64 entries, cp_pmp64_* covers entries 15-62.
+  - Entries 0-14 are the entries below the background entry of a 16-entry PMP; with 64 entries, cp_pmp64_* covers entries 15-62. With fewer usable entries (NUM_USABLE_PMP_ENTRIES), bins for entries at or above the background entry are compiled out.
 coverpoints:
   - heading: Permission bits, locked entry
   - name: cp_cfg_X

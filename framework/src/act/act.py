@@ -18,7 +18,7 @@ from rich import print as rprint
 from act.build import build, prune_empty_dirs
 from act.build_plan import generate_build_plan
 from act.build_types import BuildTask
-from act.certificate_tests import certificate_exists, get_certificate_extensions
+from act.certificate_tests import CertificateError, certificate_exists, get_certificate_extensions
 from act.config import CoverageSimulator
 from act.coverreport import print_coverage_summary
 from act.parse_test_constraints import TestYamlHeaderError, generate_test_dict
@@ -104,7 +104,8 @@ def run_act(
             raise typer.BadParameter(f"Unknown certificate '{certificate}'.", param_hint="--certificate")
         rprint(
             "[bold yellow]Certification mode:[/] "
-            f"selected certificate [bold]{certificate}[/]. M-mode tests and extensions that are not part of the certificate will not be run."
+            f"selected certificate [bold]{certificate}[/]. Each config must implement the certificate's mandatory extensions. "
+            "M-mode tests and extensions that are not part of the certificate will not be run."
         )
         # Coverage for a certificate without machine mode skips Sm coverpoints
         exclude_sm = "Sm" not in get_certificate_extensions(certificate)
@@ -127,15 +128,20 @@ def run_act(
     # Load all configs and prepare every DUT's generated files
     # (extensions.txt, rvtest_config.{h,svh}, and rvmodel_macros.svh) in
     # one parallel UDB pass, then select tests per config.
-    for config, config_params, selected_tests in prepare_configs_and_select_tests(
-        config_files,
-        certificate,
-        full_test_dict,
-        workdir,
-        jobs=jobs,
-        verbose=verbose,
-        enable_experimental_extensions=enable_experimental_extensions,
-    ):
+    try:
+        selections = prepare_configs_and_select_tests(
+            config_files,
+            certificate,
+            full_test_dict,
+            workdir,
+            jobs=jobs,
+            verbose=verbose,
+            enable_experimental_extensions=enable_experimental_extensions,
+        )
+    except CertificateError as e:
+        rprint(f"[bold red]Error:[/] {e}")
+        raise typer.Exit(1) from None
+    for config, config_params, selected_tests in selections:
         mxlen = config_params["MXLEN"]
         if not isinstance(mxlen, int):
             raise TypeError(f"MXLEN must be an integer, got {type(mxlen)}: {mxlen!r}")

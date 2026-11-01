@@ -14,7 +14,7 @@ from pathlib import Path
 
 from rich import print as rprint
 
-from act.certificate_tests import get_certificate_extensions
+from act.certificate_tests import check_mandatory_extensions, get_certificate_extensions
 from act.config import Config, load_config
 from act.parse_test_constraints import ExtensionRequirement, TestMetadata
 from act.parse_udb_config import get_config_params, get_implemented_extensions, prepare_dut_outputs
@@ -201,7 +201,8 @@ def prepare_configs_and_select_tests(
 
     Args:
         config_files: ACT test config files to load.
-        certificate: Certificate that limits selected tests to its extensions.
+        certificate: Certificate that limits selected tests to its extensions. Raises
+            CertificateError if a config lacks one of its mandatory extensions.
         full_test_dict: Candidate tests, usually from ``generate_test_dict``.
         workdir: Directory for generated UDB outputs (one subdir per config).
         jobs: Parallelism for DUT output generation.
@@ -216,6 +217,8 @@ def prepare_configs_and_select_tests(
     results: list[tuple[Config, dict[str, ConfigParamValue], dict[str, TestMetadata]]] = []
     for config in configs:
         implemented_extensions = get_implemented_extensions(workdir / config.name / "env" / "extensions.txt")
+        if certificate:
+            check_mandatory_extensions(config.name, certificate, implemented_extensions)
         config_params = get_config_params(config.udb_config)
         selected_tests = select_tests(
             full_test_dict,

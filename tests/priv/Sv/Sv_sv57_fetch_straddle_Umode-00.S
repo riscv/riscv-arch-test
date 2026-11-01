@@ -30,7 +30,7 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// cp_straddle_exec_u
+// cp_misaligned_instr_page_fault_u
 /////////////////////////////////
 
 
@@ -74,7 +74,7 @@ RVTEST_BEGIN
 
   LI(x9, 0x7028500403ffe)
   RVTEST_TSBI_GOTO_UMODE
-Sv_vm_permissions_cg_cp_straddle_exec_u_test1:
+Sv_Exceptions_cg_cp_misaligned_instr_page_fault_u_test1:
   jalr ra, x9, 0
   nop
   RVTEST_TSBI_GOTO_SMODE
@@ -93,7 +93,7 @@ Sv_vm_permissions_cg_cp_straddle_exec_u_test1:
 
   LI(x9, 0x7028500403ffe)
   RVTEST_TSBI_GOTO_UMODE
-Sv_vm_permissions_cg_cp_straddle_exec_u_test2:
+Sv_Exceptions_cg_cp_misaligned_instr_page_fault_u_test2:
   jalr ra, x9, 0
   nop
   RVTEST_TSBI_GOTO_SMODE
@@ -112,7 +112,7 @@ Sv_vm_permissions_cg_cp_straddle_exec_u_test2:
 
   LI(x9, 0x7028500403ffe)
   RVTEST_TSBI_GOTO_UMODE
-Sv_vm_permissions_cg_cp_straddle_exec_u_test3:
+Sv_Exceptions_cg_cp_misaligned_instr_page_fault_u_test3:
   jalr ra, x9, 0
   nop
   RVTEST_TSBI_GOTO_SMODE
@@ -131,7 +131,7 @@ Sv_vm_permissions_cg_cp_straddle_exec_u_test3:
 
   LI(x9, 0x7028500403ffe)
   RVTEST_TSBI_GOTO_UMODE
-Sv_vm_permissions_cg_cp_straddle_exec_u_test4:
+Sv_Exceptions_cg_cp_misaligned_instr_page_fault_u_test4:
   jalr ra, x9, 0
   nop
   RVTEST_TSBI_GOTO_SMODE
@@ -171,10 +171,10 @@ rvtest_slvl3_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_vm_permissions_cg_cp_straddle_exec_u_test1_str: .string "\"test: 5; cg: Sv_vm_permissions_cg; cp: cp_straddle_exec_u; bin: test1\""
-Sv_vm_permissions_cg_cp_straddle_exec_u_test2_str: .string "\"test: 6; cg: Sv_vm_permissions_cg; cp: cp_straddle_exec_u; bin: test2\""
-Sv_vm_permissions_cg_cp_straddle_exec_u_test3_str: .string "\"test: 7; cg: Sv_vm_permissions_cg; cp: cp_straddle_exec_u; bin: test3\""
-Sv_vm_permissions_cg_cp_straddle_exec_u_test4_str: .string "\"test: 8; cg: Sv_vm_permissions_cg; cp: cp_straddle_exec_u; bin: test4\""
+Sv_Exceptions_cg_cp_misaligned_instr_page_fault_u_test1_str: .string "\"test: 5; cg: Sv_Exceptions_cg; cp: cp_misaligned_instr_page_fault_u; bin: test1\""
+Sv_Exceptions_cg_cp_misaligned_instr_page_fault_u_test2_str: .string "\"test: 6; cg: Sv_Exceptions_cg; cp: cp_misaligned_instr_page_fault_u; bin: test2\""
+Sv_Exceptions_cg_cp_misaligned_instr_page_fault_u_test3_str: .string "\"test: 7; cg: Sv_Exceptions_cg; cp: cp_misaligned_instr_page_fault_u; bin: test3\""
+Sv_Exceptions_cg_cp_misaligned_instr_page_fault_u_test4_str: .string "\"test: 8; cg: Sv_Exceptions_cg; cp: cp_misaligned_instr_page_fault_u; bin: test4\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

@@ -30,7 +30,7 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// cp_straddle_write_s, cp_straddle_read_s
+// cp_misaligned_store_page_fault_s, cp_misaligned_load_page_fault_s
 /////////////////////////////////
 
 
@@ -73,14 +73,14 @@ RVTEST_BEGIN
 
   mv x8, x0
   LI(x13, 0x285009fffff)
-Sv_vm_permissions_cg_cp_straddle_write_s_test1_sh_1:
+Sv_Exceptions_cg_cp_misaligned_store_page_fault_s_test1_sh_1:
   sh x15, 0(x13)
   nop
-Sv_vm_permissions_cg_cp_straddle_read_s_test1_lh_1:
+Sv_Exceptions_cg_cp_misaligned_load_page_fault_s_test1_lh_1:
   lh x8, 0(x13)
   nop
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_vm_permissions_cg_cp_straddle_read_s_test1_lh_1, Sv_vm_permissions_cg_cp_straddle_read_s_test1_lh_1_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Exceptions_cg_cp_misaligned_load_page_fault_s_test1_lh_1, Sv_Exceptions_cg_cp_misaligned_load_page_fault_s_test1_lh_1_str)
 
 
 // 2MB page at level 1
@@ -93,10 +93,10 @@ Sv_vm_permissions_cg_cp_straddle_read_s_test1_lh_1:
   sfence.vma
 
   LI(x13, 0x285009fffff)
-Sv_vm_permissions_cg_cp_straddle_write_s_test2_sh_1:
+Sv_Exceptions_cg_cp_misaligned_store_page_fault_s_test2_sh_1:
   sh x15, 0(x13)
   nop
-Sv_vm_permissions_cg_cp_straddle_read_s_test2_lh_1:
+Sv_Exceptions_cg_cp_misaligned_load_page_fault_s_test2_lh_1:
   lh x8, 0(x13)
   nop
 
@@ -111,10 +111,10 @@ Sv_vm_permissions_cg_cp_straddle_read_s_test2_lh_1:
   sfence.vma
 
   LI(x13, 0x285009fffff)
-Sv_vm_permissions_cg_cp_straddle_write_s_test3_sh_1:
+Sv_Exceptions_cg_cp_misaligned_store_page_fault_s_test3_sh_1:
   sh x15, 0(x13)
   nop
-Sv_vm_permissions_cg_cp_straddle_read_s_test3_lh_1:
+Sv_Exceptions_cg_cp_misaligned_load_page_fault_s_test3_lh_1:
   lh x8, 0(x13)
   nop
 
@@ -129,10 +129,10 @@ Sv_vm_permissions_cg_cp_straddle_read_s_test3_lh_1:
   sfence.vma
 
   LI(x13, 0x285009fffff)
-Sv_vm_permissions_cg_cp_straddle_write_s_test4_sh_1:
+Sv_Exceptions_cg_cp_misaligned_store_page_fault_s_test4_sh_1:
   sh x15, 0(x13)
   nop
-Sv_vm_permissions_cg_cp_straddle_read_s_test4_lh_1:
+Sv_Exceptions_cg_cp_misaligned_load_page_fault_s_test4_lh_1:
   lh x8, 0(x13)
   nop
 
@@ -174,14 +174,14 @@ rvtest_slvl2_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_vm_permissions_cg_cp_straddle_write_s_test1_sh_1_str: .string "\"test: 1275; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test1_sh_1\""
-Sv_vm_permissions_cg_cp_straddle_read_s_test1_lh_1_str: .string "\"test: 1276; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test1_lh_1\""
-Sv_vm_permissions_cg_cp_straddle_write_s_test2_sh_1_str: .string "\"test: 1277; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test2_sh_1\""
-Sv_vm_permissions_cg_cp_straddle_read_s_test2_lh_1_str: .string "\"test: 1278; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test2_lh_1\""
-Sv_vm_permissions_cg_cp_straddle_write_s_test3_sh_1_str: .string "\"test: 1279; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test3_sh_1\""
-Sv_vm_permissions_cg_cp_straddle_read_s_test3_lh_1_str: .string "\"test: 1280; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test3_lh_1\""
-Sv_vm_permissions_cg_cp_straddle_write_s_test4_sh_1_str: .string "\"test: 1281; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test4_sh_1\""
-Sv_vm_permissions_cg_cp_straddle_read_s_test4_lh_1_str: .string "\"test: 1282; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test4_lh_1\""
+Sv_Exceptions_cg_cp_misaligned_store_page_fault_s_test1_sh_1_str: .string "\"test: 1275; cg: Sv_Exceptions_cg; cp: cp_misaligned_store_page_fault_s; bin: test1_sh_1\""
+Sv_Exceptions_cg_cp_misaligned_load_page_fault_s_test1_lh_1_str: .string "\"test: 1276; cg: Sv_Exceptions_cg; cp: cp_misaligned_load_page_fault_s; bin: test1_lh_1\""
+Sv_Exceptions_cg_cp_misaligned_store_page_fault_s_test2_sh_1_str: .string "\"test: 1277; cg: Sv_Exceptions_cg; cp: cp_misaligned_store_page_fault_s; bin: test2_sh_1\""
+Sv_Exceptions_cg_cp_misaligned_load_page_fault_s_test2_lh_1_str: .string "\"test: 1278; cg: Sv_Exceptions_cg; cp: cp_misaligned_load_page_fault_s; bin: test2_lh_1\""
+Sv_Exceptions_cg_cp_misaligned_store_page_fault_s_test3_sh_1_str: .string "\"test: 1279; cg: Sv_Exceptions_cg; cp: cp_misaligned_store_page_fault_s; bin: test3_sh_1\""
+Sv_Exceptions_cg_cp_misaligned_load_page_fault_s_test3_lh_1_str: .string "\"test: 1280; cg: Sv_Exceptions_cg; cp: cp_misaligned_load_page_fault_s; bin: test3_lh_1\""
+Sv_Exceptions_cg_cp_misaligned_store_page_fault_s_test4_sh_1_str: .string "\"test: 1281; cg: Sv_Exceptions_cg; cp: cp_misaligned_store_page_fault_s; bin: test4_sh_1\""
+Sv_Exceptions_cg_cp_misaligned_load_page_fault_s_test4_lh_1_str: .string "\"test: 1282; cg: Sv_Exceptions_cg; cp: cp_misaligned_load_page_fault_s; bin: test4_lh_1\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

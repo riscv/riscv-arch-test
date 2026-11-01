@@ -67,6 +67,7 @@ def mprv_cleanup(scratch: int) -> tuple[str, ...]:
 PERMISSIONS_CG = "Sv_vm_permissions_cg"
 GLOBAL_CG = "Sv_res_global_pte_cg"
 FEATURE_CG = "Sv_add_feature_cg"
+EXCEPTIONS_CG = "Sv_Exceptions_cg"
 
 
 def permission_crosses(topic: str, flags: PteFlags, suffixes: tuple[str, str, str]) -> Crosses:
@@ -1215,7 +1216,7 @@ def _t_fetch_straddle(test_data: TestData, test_chunks: list[TestChunk], sv: SvM
     for mode in ("Smode", "Umode"):
         regs = SvRegs.allocate(test_data)
         user = mode == "Umode"
-        coverpoint = f"cp_straddle_exec_{mode[0].lower()}"
+        coverpoint = f"cp_misaligned_instr_page_fault_{mode[0].lower()}"
         chunk = begin_sv_test(
             test_data,
             regs,
@@ -1228,7 +1229,7 @@ def _t_fetch_straddle(test_data: TestData, test_chunks: list[TestChunk], sv: SvM
         enter, leave = mode_switch(mode, "Smode")
         cases = _straddle_cases(user, PteFlags(user=user, execute=False))
         for number, (description, first, successor, expected) in enumerate(cases, start=1):
-            label = test_data.add_testcase(f"test{number}", coverpoint, PERMISSIONS_CG)
+            label = test_data.add_testcase(f"test{number}", coverpoint, EXCEPTIONS_CG)
             chunk.code.extend(
                 [
                     *level_header(sv, page.level),
@@ -1287,7 +1288,7 @@ def _t_load_store_straddle(test_data: TestData, test_chunks: list[TestChunk], sv
         pattern, check = test_data.float_regs.get_registers(2)
         user = mode == "Umode"
         m = mode[0].lower()
-        crosses = {"store": f"cp_straddle_write_{m}", "load": f"cp_straddle_read_{m}"}
+        crosses = {"store": f"cp_misaligned_store_page_fault_{m}", "load": f"cp_misaligned_load_page_fault_{m}"}
         chunk = begin_sv_test(
             test_data,
             regs,
@@ -1339,7 +1340,7 @@ def _t_load_store_straddle(test_data: TestData, test_chunks: list[TestChunk], sv
                         gated = not gated
                         chunk.code.append(_ORDER_GATE if gated else "#endif")
                     labels = {
-                        op: test_data.add_testcase(f"test{number}_{name}_{below}", crosses[op], PERMISSIONS_CG)
+                        op: test_data.add_testcase(f"test{number}_{name}_{below}", crosses[op], EXCEPTIONS_CG)
                         for op, name in (("store", store_op), ("load", load_op))
                     }
                     source, dest = (f"f{pattern}", f"f{check}") if fp else (value, load)

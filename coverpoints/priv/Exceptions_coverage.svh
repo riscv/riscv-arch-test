@@ -281,7 +281,7 @@ covergroup Exceptions_S_cg with function sample(ins_t ins);
     cp_load_address_misaligned:              cross priv_mode_s, loadops, adr_LSBs;
     cp_store_address_misaligned:             cross priv_mode_s, storeops, adr_LSBs;
     cp_ecall_s:                              cross priv_mode_s, ecall;
-    cp_stvec:                                cross priv_mode_s_u, illegalops, medeleg_illegalinstr_enabled, mtvec_stvec_ne; // Testplan was not specific, I chose illegal instruction fault for the delegated exception
+    cp_stvec:                                cross priv_mode_s_u, illegalops, medeleg_illegalinstr_enabled, mtvec_stvec_ne;
     cp_xstatus_ie:                           cross priv_mode_s_u, ecall, mstatus_MIE, mstatus_SIE;
 
     // access fault coverpoints

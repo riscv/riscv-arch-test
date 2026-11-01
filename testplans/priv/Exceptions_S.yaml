@@ -89,13 +89,13 @@ coverpoints:
     expectation: System-dependent
     bins: 3 ops
   - name: cp_stvec
-    description: Cause delegated exception in s and u mode with stvec != mtvec
+    description: Cause delegated illegal instruction exception in s and u mode with stvec != mtvec
     expectation: Delegates to stvec handler
-    bins: 2 modes
+    bins: 2 modes * 2 illegal instructions (all 0s, all 1s)
   - name: cp_xstatus_ie
     goal: Interrupt Enables
     description: ecall cross {mode = user/supervisor, mstatus.mie = {0/1}, mstatus.sie = {0/1}}
     expectation: xpie gets xie, xie gets 0
-    bins: 3 modes * 2 medleg * 2 mie * 2 sie
+    bins: 2 modes * 2 mie * 2 sie
   - heading: "Note: instruction/load/store fault pages are being tested in Sv_Exceptions"
-  - heading: "Note: tests that differ from Exceptions_Sm are cp_medeleg_mu and cp_stvec.  Also, cp_misaligned_priority is not split here."
+  - heading: "Note: cp_stvec is not in Exceptions_Sm.  Also, cp_misaligned_priority is not split here."

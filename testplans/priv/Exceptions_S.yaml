@@ -91,7 +91,7 @@ coverpoints:
   - name: cp_stvec
     description: Cause delegated illegal instruction exception in s and u mode with stvec != mtvec
     expectation: Delegates to stvec handler
-    bins: 2 modes
+    bins: 2 modes * 2 illegal instructions (all 0s, all 1s)
   - name: cp_xstatus_ie
     goal: Interrupt Enables
     description: ecall cross {mode = user/supervisor, mstatus.mie = {0/1}, mstatus.sie = {0/1}}

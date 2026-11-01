@@ -1421,47 +1421,348 @@ covergroup Sv_Exceptions_cg with function sample(ins_t ins);
         wildcard bins sw       = {SW};
         wildcard bins lw       = {LW};
     }
-    lw: coverpoint ins.current.insn {
-        wildcard bins lw = {LW};
-    }
-    sw: coverpoint ins.current.insn {
-        wildcard bins sw = {SW};
-    }
     jalr: coverpoint ins.prev.insn {
         wildcard bins jalr = {JALR};
     }
-
-    d_page_table_entry_bad: coverpoint ins.current.pte_d[7:0] {
-        bins invalid = {8'b00000000}; // invalid
-    }
-
-    d_phys_address: coverpoint ins.current.phys_adr_d[11:0] {
-        // check that fault occurs on the last halfword of the first page and the first halfword of the second page
-        bins first  = {12'b111111111110};
-        bins second = {12'b000000000000};
-    }
-
-    i_page_table_entry_bad: coverpoint ins.current.pte_i[7:0] {
-        bins invalid = {8'b00000000}; // invalid
-    }
-
-    i_phys_address: coverpoint ins.current.phys_adr_i[11:0] {
-        // check that fault occurs on the last halfword of the first page and the first halfword of the second page
-        bins first  = {12'b111111111110};
-        bins second = {12'b000000000000};
-    }
-
 
     // Main Coverpoints
     cp_instr_page_fault_s:           cross priv_mode_s, instr_page_fault;
     cp_load_page_fault_s:            cross priv_mode_s, load_page_fault;
     cp_store_page_fault_s:           cross priv_mode_s, store_page_fault;
-    cp_misaligned_load_page_fault_s: cross priv_mode_s, d_page_table_entry_bad, d_phys_address, lw;
-    cp_misaligned_store_page_fault_s:cross priv_mode_s, d_page_table_entry_bad, d_phys_address, sw;
-    cp_misaligned_inst_page_fault_s: cross priv_mode_s, i_page_table_entry_bad, i_phys_address, jalr;
     cp_instr_page_fault_u:           cross priv_mode_u, instr_page_fault;
     cp_load_page_fault_u:            cross priv_mode_u, load_page_fault;
     cp_store_page_fault_u:           cross priv_mode_u, store_page_fault;
+
+    // An access that spans the end of a page into the next page, with neither page faulting, the first page faulting,
+    // or the next page faulting.  The outcome is {completes, faults in the first page (stval = the access address),
+    // faults in the next page (stval = the page boundary)}.  A hart that writes zero to stval on a page fault (no
+    // UDB_REPORT_VA_IN_STVAL_ON_*_PAGE_FAULT) has one faults bin instead.
+    `ifdef UDB_MXLEN_64
+        mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] {
+            `ifdef SV57_SUPPORTED
+                bins sv57 = {4'b1010};
+            `endif
+            `ifdef SV48_SUPPORTED
+                bins sv48 = {4'b1001};
+            `endif
+            `ifdef SV39_SUPPORTED
+                bins sv39 = {4'b1000};
+            `endif
+        }
+    `else
+        mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] {
+            bins sv32 = {1'b1};
+        }
+    `endif
+
+    // A fetch is a jalr to a 32-bit instruction (addi x0, x0, 0) at page offset 0xFFE, and on RV64 also at the end of a
+    // 2 MiB megapage.  One parcel is in each page, so the faulting portion, and stval, does not depend on the hart.  Sail
+    // logs the trap CSRs of a faulting fetch with the jalr, so the jalr samples a fault (and sepc, the start of the
+    // instruction); the instruction itself, at pc 0xFFE, samples a fetch that completes.
+    `ifdef ZCA_SUPPORTED
+        straddle_fetch_page: coverpoint ((((ins.current.insn ==? JALR) ? ins.current.rs1_val + ins.current.imm : ins.current.pc_rdata) & 'h1FFFFF) == 'h1FFFFE)
+                             iff ((((ins.current.insn ==? JALR) ? ins.current.rs1_val + ins.current.imm : ins.current.pc_rdata) & 'hFFF) == 'hFFE) {
+            bins kilopage = {0};
+            `ifdef UDB_MXLEN_64
+                bins megapage = {1};
+            `endif
+        }
+        // 0: completes, 1: faults in the first page, 2: faults in the next page, 3: faults with another stval,
+        // 7: neither (another instruction, or a jalr that does not take an instruction page fault at its target)
+        straddle_fetch_outcome: coverpoint ((ins.current.insn == 32'h00000013) && !ins.current.trap ? 3'd0 :
+                                            !(ins.current.insn ==? JALR) ||
+                                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") != INSTRUCTION_PAGE_FAULT ||
+                                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sepc", "sepc") != ins.current.rs1_val + ins.current.imm ? 3'd7 :
+                                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") == ins.current.rs1_val + ins.current.imm ? 3'd1 :
+                                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") == ins.current.rs1_val + ins.current.imm + 2 ? 3'd2 : 3'd3) {
+            bins completes = {0};
+            `ifdef UDB_REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT
+                bins first_faults = {1};
+                bins next_faults  = {2};
+            `else
+                bins faults = {[1:3]};
+            `endif
+        }
+        cp_misaligned_instr_page_fault_s: cross priv_mode_s, straddle_fetch_page, straddle_fetch_outcome, mode;
+        cp_misaligned_instr_page_fault_u: cross priv_mode_u, straddle_fetch_page, straddle_fetch_outcome, mode;
+    `endif
+
+    // A load or store that spans the end of a kilopage, at every offset from 1 to its size - 1 below the boundary, and
+    // on RV64 a halfword one byte below the end of a 2 MiB megapage.  The coverpoint is {outcome (as for the fetch, 7 for
+    // another trap), megapage, floating point (opcode bit 2), funct3 (the size), bytes below the boundary}, so a bin is
+    // one outcome of one instruction at one offset.  A load or store samples its own record: the trap flag marks a
+    // fault, and stval says which part faulted.  stval is the address of the first byte the hart accesses in the
+    // faulting page, so with more than one byte there it depends on how the hart splits the access: those faults are
+    // bins only with sequential_bytes, and otherwise only the faults with one byte in the faulting page are.  A hart
+    // that does not perform misaligned accesses raises address-misaligned instead, so these need MISALIGNED_LDST.
+    `ifdef UDB_MISALIGNED_LDST
+        straddle_load: coverpoint {(!ins.current.trap ? 3'd0 :
+                                    get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") != LOAD_PAGE_FAULT ? 3'd7 :
+                                    get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") == (ins.current.rs1_val + ins.current.imm) ? 3'd1 :
+                                    get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") == (((ins.current.rs1_val + ins.current.imm) >> 12) + 1) << 12 ? 3'd2 : 3'd3),
+                                   ((ins.current.rs1_val + ins.current.imm) & 'h1FFFFF) > 'h1FFFF0, ins.current.insn[2], ins.current.insn[14:12], 4'('h1000 - ((ins.current.rs1_val + ins.current.imm) & 'hFFF))}
+                                   iff (ins.current.insn[6:0] inside {7'b0000011, 7'b0000111} && ((ins.current.rs1_val + ins.current.imm) & 'hFFF) > 'hFF0) {
+            // Completes, at every offset
+            bins lh_completes = {{3'd0, 9'h011}};
+            bins lw_completes[] = {[{3'd0, 9'h021}:{3'd0, 9'h023}]};
+            `ifdef UDB_MXLEN_64
+                bins ld_completes[] = {[{3'd0, 9'h031}:{3'd0, 9'h037}]};
+                bins lh_megapage_completes = {{3'd0, 9'h111}};
+            `endif
+            `ifdef ZFHMIN_SUPPORTED
+                bins flh_completes = {{3'd0, 9'h091}};
+            `endif
+            `ifdef F_SUPPORTED
+                bins flw_completes[] = {[{3'd0, 9'h0A1}:{3'd0, 9'h0A3}]};
+            `endif
+            `ifdef D_SUPPORTED
+                bins fld_completes[] = {[{3'd0, 9'h0B1}:{3'd0, 9'h0B7}]};
+            `endif
+            `ifdef Q_SUPPORTED
+                bins flq_completes[] = {[{3'd0, 9'h0C1}:{3'd0, 9'h0CF}]};
+            `endif
+            `ifdef UDB_REPORT_VA_IN_STVAL_ON_LOAD_PAGE_FAULT
+                `ifdef UDB_MISALIGNED_SPLIT_STRATEGY_SEQUENTIAL_BYTES
+                    // Faults in the first page (stval = the access address) or the next page (stval = the boundary), at every offset
+                    bins lh_first_faults = {{3'd1, 9'h011}};
+                    bins lh_next_faults = {{3'd2, 9'h011}};
+                    bins lw_first_faults[] = {[{3'd1, 9'h021}:{3'd1, 9'h023}]};
+                    bins lw_next_faults[] = {[{3'd2, 9'h021}:{3'd2, 9'h023}]};
+                    `ifdef UDB_MXLEN_64
+                        bins ld_first_faults[] = {[{3'd1, 9'h031}:{3'd1, 9'h037}]};
+                        bins ld_next_faults[] = {[{3'd2, 9'h031}:{3'd2, 9'h037}]};
+                        bins lh_megapage_first_faults = {{3'd1, 9'h111}};
+                        bins lh_megapage_next_faults = {{3'd2, 9'h111}};
+                    `endif
+                    `ifdef ZFHMIN_SUPPORTED
+                        bins flh_first_faults = {{3'd1, 9'h091}};
+                        bins flh_next_faults = {{3'd2, 9'h091}};
+                    `endif
+                    `ifdef F_SUPPORTED
+                        bins flw_first_faults[] = {[{3'd1, 9'h0A1}:{3'd1, 9'h0A3}]};
+                        bins flw_next_faults[] = {[{3'd2, 9'h0A1}:{3'd2, 9'h0A3}]};
+                    `endif
+                    `ifdef D_SUPPORTED
+                        bins fld_first_faults[] = {[{3'd1, 9'h0B1}:{3'd1, 9'h0B7}]};
+                        bins fld_next_faults[] = {[{3'd2, 9'h0B1}:{3'd2, 9'h0B7}]};
+                    `endif
+                    `ifdef Q_SUPPORTED
+                        bins flq_first_faults[] = {[{3'd1, 9'h0C1}:{3'd1, 9'h0CF}]};
+                        bins flq_next_faults[] = {[{3'd2, 9'h0C1}:{3'd2, 9'h0CF}]};
+                    `endif
+                `else
+                    // Faults with one byte in the faulting page
+                    bins lh_first_faults = {{3'd1, 9'h011}};
+                    bins lh_next_faults = {{3'd2, 9'h011}};
+                    bins lw_first_faults = {{3'd1, 9'h021}};
+                    bins lw_next_faults = {{3'd2, 9'h023}};
+                    `ifdef UDB_MXLEN_64
+                        bins ld_first_faults = {{3'd1, 9'h031}};
+                        bins ld_next_faults = {{3'd2, 9'h037}};
+                        bins lh_megapage_first_faults = {{3'd1, 9'h111}};
+                        bins lh_megapage_next_faults = {{3'd2, 9'h111}};
+                    `endif
+                    `ifdef ZFHMIN_SUPPORTED
+                        bins flh_first_faults = {{3'd1, 9'h091}};
+                        bins flh_next_faults = {{3'd2, 9'h091}};
+                    `endif
+                    `ifdef F_SUPPORTED
+                        bins flw_first_faults = {{3'd1, 9'h0A1}};
+                        bins flw_next_faults = {{3'd2, 9'h0A3}};
+                    `endif
+                    `ifdef D_SUPPORTED
+                        bins fld_first_faults = {{3'd1, 9'h0B1}};
+                        bins fld_next_faults = {{3'd2, 9'h0B7}};
+                    `endif
+                    `ifdef Q_SUPPORTED
+                        bins flq_first_faults = {{3'd1, 9'h0C1}};
+                        bins flq_next_faults = {{3'd2, 9'h0CF}};
+                    `endif
+                `endif
+            `else
+                // stval = 0, so the faulting page cannot be told apart
+                `ifdef UDB_MISALIGNED_SPLIT_STRATEGY_SEQUENTIAL_BYTES
+                    bins lh_faults = {{3'd3, 9'h011}};
+                    bins lw_faults[] = {[{3'd3, 9'h021}:{3'd3, 9'h023}]};
+                    `ifdef UDB_MXLEN_64
+                        bins ld_faults[] = {[{3'd3, 9'h031}:{3'd3, 9'h037}]};
+                        bins lh_megapage_faults = {{3'd3, 9'h111}};
+                    `endif
+                    `ifdef ZFHMIN_SUPPORTED
+                        bins flh_faults = {{3'd3, 9'h091}};
+                    `endif
+                    `ifdef F_SUPPORTED
+                        bins flw_faults[] = {[{3'd3, 9'h0A1}:{3'd3, 9'h0A3}]};
+                    `endif
+                    `ifdef D_SUPPORTED
+                        bins fld_faults[] = {[{3'd3, 9'h0B1}:{3'd3, 9'h0B7}]};
+                    `endif
+                    `ifdef Q_SUPPORTED
+                        bins flq_faults[] = {[{3'd3, 9'h0C1}:{3'd3, 9'h0CF}]};
+                    `endif
+                `else
+                    bins lh_faults = {{3'd3, 9'h011}};
+                    bins lw_faults_first_byte = {{3'd3, 9'h021}};
+                    bins lw_faults_last_byte = {{3'd3, 9'h023}};
+                    `ifdef UDB_MXLEN_64
+                        bins ld_faults_first_byte = {{3'd3, 9'h031}};
+                        bins ld_faults_last_byte = {{3'd3, 9'h037}};
+                        bins lh_megapage_faults = {{3'd3, 9'h111}};
+                    `endif
+                    `ifdef ZFHMIN_SUPPORTED
+                        bins flh_faults = {{3'd3, 9'h091}};
+                    `endif
+                    `ifdef F_SUPPORTED
+                        bins flw_faults_first_byte = {{3'd3, 9'h0A1}};
+                        bins flw_faults_last_byte = {{3'd3, 9'h0A3}};
+                    `endif
+                    `ifdef D_SUPPORTED
+                        bins fld_faults_first_byte = {{3'd3, 9'h0B1}};
+                        bins fld_faults_last_byte = {{3'd3, 9'h0B7}};
+                    `endif
+                    `ifdef Q_SUPPORTED
+                        bins flq_faults_first_byte = {{3'd3, 9'h0C1}};
+                        bins flq_faults_last_byte = {{3'd3, 9'h0CF}};
+                    `endif
+                `endif
+            `endif
+        }
+        straddle_store: coverpoint {(!ins.current.trap ? 3'd0 :
+                                    get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") != STORE_AMO_PAGE_FAULT ? 3'd7 :
+                                    get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") == (ins.current.rs1_val + ins.current.imm) ? 3'd1 :
+                                    get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") == (((ins.current.rs1_val + ins.current.imm) >> 12) + 1) << 12 ? 3'd2 : 3'd3),
+                                   ((ins.current.rs1_val + ins.current.imm) & 'h1FFFFF) > 'h1FFFF0, ins.current.insn[2], ins.current.insn[14:12], 4'('h1000 - ((ins.current.rs1_val + ins.current.imm) & 'hFFF))}
+                                   iff (ins.current.insn[6:0] inside {7'b0100011, 7'b0100111} && ((ins.current.rs1_val + ins.current.imm) & 'hFFF) > 'hFF0) {
+            // Completes, at every offset
+            bins sh_completes = {{3'd0, 9'h011}};
+            bins sw_completes[] = {[{3'd0, 9'h021}:{3'd0, 9'h023}]};
+            `ifdef UDB_MXLEN_64
+                bins sd_completes[] = {[{3'd0, 9'h031}:{3'd0, 9'h037}]};
+                bins sh_megapage_completes = {{3'd0, 9'h111}};
+            `endif
+            `ifdef ZFHMIN_SUPPORTED
+                bins fsh_completes = {{3'd0, 9'h091}};
+            `endif
+            `ifdef F_SUPPORTED
+                bins fsw_completes[] = {[{3'd0, 9'h0A1}:{3'd0, 9'h0A3}]};
+            `endif
+            `ifdef D_SUPPORTED
+                bins fsd_completes[] = {[{3'd0, 9'h0B1}:{3'd0, 9'h0B7}]};
+            `endif
+            `ifdef Q_SUPPORTED
+                bins fsq_completes[] = {[{3'd0, 9'h0C1}:{3'd0, 9'h0CF}]};
+            `endif
+            `ifdef UDB_REPORT_VA_IN_STVAL_ON_STORE_AMO_PAGE_FAULT
+                `ifdef UDB_MISALIGNED_SPLIT_STRATEGY_SEQUENTIAL_BYTES
+                    // Faults in the first page (stval = the access address) or the next page (stval = the boundary), at every offset
+                    bins sh_first_faults = {{3'd1, 9'h011}};
+                    bins sh_next_faults = {{3'd2, 9'h011}};
+                    bins sw_first_faults[] = {[{3'd1, 9'h021}:{3'd1, 9'h023}]};
+                    bins sw_next_faults[] = {[{3'd2, 9'h021}:{3'd2, 9'h023}]};
+                    `ifdef UDB_MXLEN_64
+                        bins sd_first_faults[] = {[{3'd1, 9'h031}:{3'd1, 9'h037}]};
+                        bins sd_next_faults[] = {[{3'd2, 9'h031}:{3'd2, 9'h037}]};
+                        bins sh_megapage_first_faults = {{3'd1, 9'h111}};
+                        bins sh_megapage_next_faults = {{3'd2, 9'h111}};
+                    `endif
+                    `ifdef ZFHMIN_SUPPORTED
+                        bins fsh_first_faults = {{3'd1, 9'h091}};
+                        bins fsh_next_faults = {{3'd2, 9'h091}};
+                    `endif
+                    `ifdef F_SUPPORTED
+                        bins fsw_first_faults[] = {[{3'd1, 9'h0A1}:{3'd1, 9'h0A3}]};
+                        bins fsw_next_faults[] = {[{3'd2, 9'h0A1}:{3'd2, 9'h0A3}]};
+                    `endif
+                    `ifdef D_SUPPORTED
+                        bins fsd_first_faults[] = {[{3'd1, 9'h0B1}:{3'd1, 9'h0B7}]};
+                        bins fsd_next_faults[] = {[{3'd2, 9'h0B1}:{3'd2, 9'h0B7}]};
+                    `endif
+                    `ifdef Q_SUPPORTED
+                        bins fsq_first_faults[] = {[{3'd1, 9'h0C1}:{3'd1, 9'h0CF}]};
+                        bins fsq_next_faults[] = {[{3'd2, 9'h0C1}:{3'd2, 9'h0CF}]};
+                    `endif
+                `else
+                    // Faults with one byte in the faulting page
+                    bins sh_first_faults = {{3'd1, 9'h011}};
+                    bins sh_next_faults = {{3'd2, 9'h011}};
+                    bins sw_first_faults = {{3'd1, 9'h021}};
+                    bins sw_next_faults = {{3'd2, 9'h023}};
+                    `ifdef UDB_MXLEN_64
+                        bins sd_first_faults = {{3'd1, 9'h031}};
+                        bins sd_next_faults = {{3'd2, 9'h037}};
+                        bins sh_megapage_first_faults = {{3'd1, 9'h111}};
+                        bins sh_megapage_next_faults = {{3'd2, 9'h111}};
+                    `endif
+                    `ifdef ZFHMIN_SUPPORTED
+                        bins fsh_first_faults = {{3'd1, 9'h091}};
+                        bins fsh_next_faults = {{3'd2, 9'h091}};
+                    `endif
+                    `ifdef F_SUPPORTED
+                        bins fsw_first_faults = {{3'd1, 9'h0A1}};
+                        bins fsw_next_faults = {{3'd2, 9'h0A3}};
+                    `endif
+                    `ifdef D_SUPPORTED
+                        bins fsd_first_faults = {{3'd1, 9'h0B1}};
+                        bins fsd_next_faults = {{3'd2, 9'h0B7}};
+                    `endif
+                    `ifdef Q_SUPPORTED
+                        bins fsq_first_faults = {{3'd1, 9'h0C1}};
+                        bins fsq_next_faults = {{3'd2, 9'h0CF}};
+                    `endif
+                `endif
+            `else
+                // stval = 0, so the faulting page cannot be told apart
+                `ifdef UDB_MISALIGNED_SPLIT_STRATEGY_SEQUENTIAL_BYTES
+                    bins sh_faults = {{3'd3, 9'h011}};
+                    bins sw_faults[] = {[{3'd3, 9'h021}:{3'd3, 9'h023}]};
+                    `ifdef UDB_MXLEN_64
+                        bins sd_faults[] = {[{3'd3, 9'h031}:{3'd3, 9'h037}]};
+                        bins sh_megapage_faults = {{3'd3, 9'h111}};
+                    `endif
+                    `ifdef ZFHMIN_SUPPORTED
+                        bins fsh_faults = {{3'd3, 9'h091}};
+                    `endif
+                    `ifdef F_SUPPORTED
+                        bins fsw_faults[] = {[{3'd3, 9'h0A1}:{3'd3, 9'h0A3}]};
+                    `endif
+                    `ifdef D_SUPPORTED
+                        bins fsd_faults[] = {[{3'd3, 9'h0B1}:{3'd3, 9'h0B7}]};
+                    `endif
+                    `ifdef Q_SUPPORTED
+                        bins fsq_faults[] = {[{3'd3, 9'h0C1}:{3'd3, 9'h0CF}]};
+                    `endif
+                `else
+                    bins sh_faults = {{3'd3, 9'h011}};
+                    bins sw_faults_first_byte = {{3'd3, 9'h021}};
+                    bins sw_faults_last_byte = {{3'd3, 9'h023}};
+                    `ifdef UDB_MXLEN_64
+                        bins sd_faults_first_byte = {{3'd3, 9'h031}};
+                        bins sd_faults_last_byte = {{3'd3, 9'h037}};
+                        bins sh_megapage_faults = {{3'd3, 9'h111}};
+                    `endif
+                    `ifdef ZFHMIN_SUPPORTED
+                        bins fsh_faults = {{3'd3, 9'h091}};
+                    `endif
+                    `ifdef F_SUPPORTED
+                        bins fsw_faults_first_byte = {{3'd3, 9'h0A1}};
+                        bins fsw_faults_last_byte = {{3'd3, 9'h0A3}};
+                    `endif
+                    `ifdef D_SUPPORTED
+                        bins fsd_faults_first_byte = {{3'd3, 9'h0B1}};
+                        bins fsd_faults_last_byte = {{3'd3, 9'h0B7}};
+                    `endif
+                    `ifdef Q_SUPPORTED
+                        bins fsq_faults_first_byte = {{3'd3, 9'h0C1}};
+                        bins fsq_faults_last_byte = {{3'd3, 9'h0CF}};
+                    `endif
+                `endif
+            `endif
+        }
+        cp_misaligned_load_page_fault_s:  cross priv_mode_s, straddle_load,  mode;
+        cp_misaligned_load_page_fault_u:  cross priv_mode_u, straddle_load,  mode;
+        cp_misaligned_store_page_fault_s: cross priv_mode_s, straddle_store, mode;
+        cp_misaligned_store_page_fault_u: cross priv_mode_u, straddle_store, mode;
+    `endif
 
     // Access fault coverpoints
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS

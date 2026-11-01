@@ -661,14 +661,8 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     `endif
 
     `ifdef SM1P13P0_OR_LATER_SUPPORTED
-        misa_b_bit: coverpoint ins.current.rs1_val[1] {
-            bins b_set   = {1'b1};
-            bins b_clear = {1'b0};
-        }
-        misa_v_bit: coverpoint ins.current.rs1_val[21] {
-            bins v_set   = {1'b1};
-            bins v_clear = {1'b0};
-        }
+        misa_b_bit: coverpoint ins.current.rs1_val[1] {}
+        misa_v_bit: coverpoint ins.current.rs1_val[21] {}
 
         cp_misa_b: cross priv_mode_m, misa, csrop, misa_b_bit;
         cp_misa_v: cross priv_mode_m, misa, csrop, misa_v_bit;
@@ -811,8 +805,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         satp : coverpoint ins.current.insn[31:20] {
             bins satp = {CSR_SATP};
         }
-        mstatus_tvm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm")[0] {
-        }
+        mstatus_tvm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm")[0] {}
 
         cp_scsr_from_m :            cross priv_mode_m, scsrname, csraccesses;
         cp_scause_from_m :          cross priv_mode_m, csrrw, scause_csr, scause_wlrl_values;
@@ -2168,14 +2161,8 @@ covergroup Sm_H_tvm_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    mstatus_tvm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm") {
-        bins off = {0};
-        bins on  = {1};
-    }
-    hstatus_vtvm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vtvm") {
-        bins off = {0};
-        bins on  = {1};
-    }
+    mstatus_tvm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm")[0] {}
+    hstatus_vtvm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vtvm")[0] {}
     csr_rw : coverpoint ins.current.insn {
         wildcard bins csrr = {CSRR};
         wildcard bins csrw = {CSRW};
@@ -2262,29 +2249,15 @@ covergroup Sm_H_inst_cg with function sample(ins_t ins);
         bins m = {3};
     }
     `ifdef UDB_MXLEN_64
-        old_mpv : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpv") {
+        old_mpv : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpv")[0] {
     `else
-        old_mpv : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatush", "mpv") {
+        old_mpv : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatush", "mpv")[0] {
     `endif
-        bins off = {0};
-        bins on  = {1};
     }
-    old_mpie : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpie") {
-        bins off = {0};
-        bins on  = {1};
-    }
-    old_spp : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "spp") {
-        bins u = {0};
-        bins s = {1};
-    }
-    old_spie : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "spie") {
-        bins off = {0};
-        bins on  = {1};
-    }
-    old_spv : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "spv") {
-        bins off = {0};
-        bins on  = {1};
-    }
+    old_mpie : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpie")[0] {}
+    old_spp : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "spp")[0] {}
+    old_spie : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "spie")[0] {}
+    old_spv : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "spv")[0] {}
 
     cp_mret_m:  cross priv_mode_m, mret, old_mpp, old_mpv, old_mpie;
     cp_sret_m:  cross priv_mode_m, sret, old_spp, old_spv, old_spie;
@@ -2498,10 +2471,7 @@ covergroup Sm_Zicntr_H_cg with function sample(ins_t ins);
     }
 
     // The enable bit of the accessed counter in mcounteren
-    mcounteren_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "mcounteren")[int'(ins.current.insn[24:20])] {
-        bins disabled = {0};
-        bins enabled  = {1};
-    }
+    mcounteren_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "mcounteren")[int'(ins.current.insn[24:20])] {}
 
     csraccess: coverpoint ins.current.insn {
         wildcard bins csrr = {CSRR};

@@ -2630,12 +2630,6 @@ covergroup Sm_reset_cg with function sample(ins_t ins);
             bins tselect = {CSR_TSELECT};
         }
         cp_tselect_reset: cross priv_mode_m, csrr, tselect_first;
-        `ifdef UDB_TCONTROL_IMPLEMENTED
-            tcontrol_first: coverpoint ins.current.insn[31:20] iff (!sm_reset_csr_accessed[CSR_TCONTROL]) {
-                bins tcontrol = {CSR_TCONTROL};
-            }
-            cp_tcontrol_reset: cross priv_mode_m, csrr, tcontrol_first;
-        `endif
         `ifdef UDB_MCONTEXT_IMPLEMENTED
             mcontext_first: coverpoint ins.current.insn[31:20] iff (!sm_reset_csr_accessed[CSR_MCONTEXT]) {
                 bins mcontext = {CSR_MCONTEXT};

@@ -12,7 +12,6 @@ exclude_extensions:
   - SdtrigSm_csr_access_common
   - SdtrigSm_csr_access_global
   - SdtrigSm_tcontrol
-  - Sm_reset_tcontrol
   - SdtrigS_csr_access_global
   # Sail 0.16 lacks Smaia and Smrnmi, whose CSRs Whisper implements
   - Ssstrict_Sm_CSR

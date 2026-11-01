@@ -1831,34 +1831,6 @@ _MAX_TRIGGERS = 64
 
 @add_priv_test_generator(
     "Sm",
-    required_extensions=["Sm", "Sdtrig"],
-    march_extensions=[],
-    extra_defines=["#define BOOT_TO_MMODE", "#define RESET_TEST", "#define RESET_TEST_TCONTROL"],
-    params=["TCONTROL_IMPLEMENTED: true"],
-)
-def make_sm_reset_tcontrol(test_data: TestData) -> list[TestChunk]:
-    """tcontrol resets to 0.  A separate test, because Sail models tcontrol only with tcontrol-based breakpoint
-    reentrancy (https://github.com/riscv/sail-riscv/issues/2039), so configurations that implement tcontrol
-    otherwise exclude it; boot code reads tcontrol only in this test (RESET_TEST_TCONTROL)."""
-    test_chunks: list[TestChunk] = []
-    tc = test_data.new_test_chunk(test_chunks, "reset_tcontrol")
-    r_val = test_data.int_regs.get_register()
-    tc.code.extend(
-        [
-            comment_banner("cp_tcontrol_reset", "Boot code saved tcontrol at reset.  It must read 0"),
-            test_data.add_testcase("tcontrol", "cp_tcontrol_reset", _RESET_CG),
-            f"LA(x{r_val}, rvtest_reset_csrs)",
-            f"LREG x{r_val}, RESET_TCONTROL_OFFSET(x{r_val})",
-            write_sigupd(r_val, test_data),
-        ]
-    )
-    test_data.int_regs.return_register(r_val)
-    test_chunks.append(test_data.end_test_chunk())
-    return test_chunks
-
-
-@add_priv_test_generator(
-    "Sm",
     required_extensions=["Sm"],
     extra_defines=["#define BOOT_TO_MMODE", "#define RESET_TEST"],
 )

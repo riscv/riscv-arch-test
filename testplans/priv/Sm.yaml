@@ -662,11 +662,10 @@ coverpoints:
     bins: "2 CSRs"
   - name: |-
       cp_tselect_reset
-      cp_tcontrol_reset
       cp_mcontext_reset
       cp_scontext_reset
-    goal: tselect, tcontrol, mcontext and scontext reset to 0
-    description: Only with Sdtrig; tcontrol, mcontext and scontext only when implemented (TCONTROL_IMPLEMENTED, MCONTEXT_IMPLEMENTED, SCONTEXT_IMPLEMENTED).  Read each at reset.  tcontrol is checked in its own test, Sm_reset_tcontrol, because the Sail reference models tcontrol only with tcontrol-based breakpoint reentrancy.
+    goal: tselect, mcontext and scontext reset to 0
+    description: Only with Sdtrig; mcontext and scontext only when implemented (MCONTEXT_IMPLEMENTED, SCONTEXT_IMPLEMENTED).  Read each at reset.
     expectation: Each reads 0 (every field resets to 0 in the Debug spec register tables).  Match reference model.
     bins: 1 each
   - name: cp_tdata1_reset

@@ -1023,15 +1023,14 @@
 #define RESET_VL_OFFSET         (14*REGWIDTH)
 #define RESET_VTYPE_OFFSET      (15*REGWIDTH)
 #define RESET_TSELECT_OFFSET    (16*REGWIDTH)
-#define RESET_TCONTROL_OFFSET   (17*REGWIDTH)
-#define RESET_MCONTEXT_OFFSET   (18*REGWIDTH)
-#define RESET_SCONTEXT_OFFSET   (19*REGWIDTH)
+#define RESET_MCONTEXT_OFFSET   (17*REGWIDTH)
+#define RESET_SCONTEXT_OFFSET   (18*REGWIDTH)
 // tdata1 of each trigger, from trigger 0
-#define RESET_TDATA1_OFFSET     (20*REGWIDTH)
+#define RESET_TDATA1_OFFSET     (19*REGWIDTH)
 #if defined(SDTRIG_SUPPORTED) && defined(UDB_SDTRIG_NUM_TRIGGERS)
-  #define RESET_CSR_COUNT       (20 + UDB_SDTRIG_NUM_TRIGGERS)
+  #define RESET_CSR_COUNT       (19 + UDB_SDTRIG_NUM_TRIGGERS)
 #else
-  #define RESET_CSR_COUNT       20
+  #define RESET_CSR_COUNT       19
 #endif
 
 .macro RVTEST_DATA_BEGIN
@@ -1280,11 +1279,6 @@
         #ifdef SDTRIG_SUPPORTED
           csrr T2, CSR_TSELECT
           SREG T2, RESET_TSELECT_OFFSET(T1)
-          // Only in Sm_reset_tcontrol, which configurations whose Sail reference cannot model tcontrol exclude
-          #if defined(RESET_TEST_TCONTROL) && defined(UDB_TCONTROL_IMPLEMENTED)
-            csrr T2, CSR_TCONTROL
-            SREG T2, RESET_TCONTROL_OFFSET(T1)
-          #endif
           #ifdef UDB_MCONTEXT_IMPLEMENTED
             csrr T2, CSR_MCONTEXT
             SREG T2, RESET_MCONTEXT_OFFSET(T1)

@@ -62,8 +62,7 @@
     // corresponding bit of `mcounteren` is writable, otherwise the
     // bit is read-only zero.
     // VeeR EL2 makes CY (0), IR (2) and HPM3..HPM6 (6:3) writable; TM (1) is read-only zero
-    // because there is no time CSR. MCOUNTENABLE_EN in the yaml marks only bits 3..6, because
-    // UDB requires bits 0..2 to be read-only zero without Zicntr.
+    // because there is no time CSR, matching MCOUNTENABLE_EN in the yaml.
     //   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/el2_dec_tlu_ctl.sv#L2856
     "mcounteren_writable_bits": {
       "len": 32,
@@ -588,9 +587,8 @@
     "Zicond": {
       "supported": false
     },
-    // Sail-only: EL2 implements cycle(h) and instret(h) but no time CSR, so the yaml cannot
-    // claim Zicntr. Sail makes cycle and instret accessible only with Zicntr
-    // (model/extensions/Zicntr/zicntr_control.sail:18-23), so it is enabled here to model them.
+    // EL2 implements cycle(h) and instret(h) but no time CSR; ACT emulates time reads on the
+    // DUT (TIME_CSR_IMPLEMENTED: false in the yaml), and Sail reads its own time.
     //   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/csrdecode_mu#L86-L89
     "Zicntr": {
       "supported": true

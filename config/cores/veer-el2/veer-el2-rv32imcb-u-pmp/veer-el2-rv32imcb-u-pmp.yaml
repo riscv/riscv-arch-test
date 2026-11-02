@@ -43,6 +43,13 @@ implemented_extensions:
   - { name: Zbc, version: "= 1.0.0" }
   - { name: Zbs, version: "= 1.0.0" }
   - { name: Zbkc, version: "= 1.0.0" }
+  # Zicntr: the M+U build decodes the unprivileged cycle(h) and instret(h) shadows of mcycle and
+  # minstret, but there is no time CSR (see TIME_CSR_IMPLEMENTED below), so ACT emulates time reads.
+  #   Quote: "In order to enable performance monitoring in user mode, unprivileged shadow copies
+  #   of `mcycle` and `minstret` registers are implemented: `cycle` and `instret`."
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/user-mode.md#L30-L35
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/csrdecode_mu#L86-L89
+  - { name: Zicntr, version: "= 2.0" }
   # Zihpm: the unprivileged hpmcounter3..6 shadows exist in the U-mode build, which is what
   # Zihpm provides. Confirmed empirically by the UDB feature extractor and in the CSR decode.
   #   Quote: "csr_hpmc3 ... csr_hpmc6" (and their high halves) in the M+U decode table
@@ -211,6 +218,13 @@ params:
   PMP_NA4_SUPPORTED: true
   PMP_NAPOT_SUPPORTED: true
 
+  # The time CSR is NOT implemented: the CSR decode has cycle(h) and instret(h) but no time(h)
+  # (0xC01/0xC81), and an access to a CSR that is not decoded raises an illegal instruction. ACT
+  # emulates time/timeh reads from RVMODEL_MTIME_ADDRESS through its invisible trap handler.
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/csrdecode_mu#L86-L97
+  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/el2_dec_tlu_ctl.sv#L2919-L2922
+  TIME_CSR_IMPLEMENTED: false
+
   # Hardware performance monitors: mhpmcounter3-6 / mhpmevent3-6 only (4 counters).
   #   Quote: "0xB03 ... mhpmcounter3" through "0xB06 ... mhpmcounter6"
   #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/csrs.md
@@ -268,16 +282,11 @@ params:
   # read-only zero (there is no time CSR on EL2).
   #   Quote: "rvdffs #(6) mcounteren_ff (.*, ... .din({dec_csr_wrdata_r[6:2], dec_csr_wrdata_r[0]}))"
   #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/el2_dec_tlu_ctl.sv
-  # Only bits 3..6 are marked writable here. The core also makes CY (0) and IR (2)
-  # writable, but UDB requires MCOUNTENABLE_EN[0:2] to be false unless Zicntr is
-  # implemented, and EL2 cannot claim Zicntr: it has the cycle and instret shadows but no
-  # time CSR at all. sail.json carries the core's full mask (0x7D) so the reference model
-  # matches the hardware.
   MCOUNTENABLE_EN:
     [
+      true,
       false,
-      false,
-      false,
+      true,
       true,
       true,
       true,

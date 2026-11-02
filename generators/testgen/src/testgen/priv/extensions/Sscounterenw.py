@@ -30,7 +30,7 @@ def _generate_scounteren_tests(test_data: TestData) -> list[str]:
 
 @add_priv_test_generator(
     "Sscounterenw",
-    required_extensions=["S"],
+    required_extensions=["Sscounterenw"],
     extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_scounterenw(test_data: TestData) -> list[TestChunk]:

@@ -166,7 +166,7 @@ typedef enum {
   x13,
   x14,
   x15
-`ifndef COVER_E
+`ifndef E_SUPPORTED
   ,
   x16,
   x17,

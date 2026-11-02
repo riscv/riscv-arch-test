@@ -2,14 +2,12 @@
 suite: Shgatpa
 source: https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=262220701#gid=262220701
 coverpoints:
-  - heading: Following tests are done in M-mode
+  - heading: Following tests are done in HS-mode
   - name: cp_shgatpa
     goal: Check all values writable to hgatp.mode
-    description: |-
-      RV32: write hgatp.mode = 0/1
-      RV64: write hgatp.mode = 0, 8, 9, 10
-    expectation: Matches reference model, which should accept same values as satp.mode
-    bins: 2 or 4
+    description: Write hgatp with MODE = Bare and with Sv32x4 (MODE 1, RV32) or each of Sv39x4, Sv48x4 and Sv57x4 (MODE 8, 9 and 10, RV64) whose satp mode is supported, with the other fields zero, because Bare with nonzero fields is UNSPECIFIED; read hgatp back.
+    expectation: Each value reads back as written
+    bins: Bare + 1 per supported satp mode (2 on RV32, up to 4 on RV64)
     rules:
       - Shgatpa_satp_hgatp_mode_support
       - Shgatpa_hgatp_bare_mode

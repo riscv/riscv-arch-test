@@ -36,6 +36,20 @@ coverpoints:
     description: Attempt to clear C when subsequent instruction is not a multiple of 2.  C should not change.
     expectation: C should not change
     bins: "1"
+  - name: |-
+      cp_mepc_ialign32_read
+      cp_mepc_ialign32_mret
+    goal: mepc[1] is masked on reads, including mret's, while IALIGN = 32
+    description: Only with Zca and a writable misa.C (MUTABLE_MISA_C).  Clear misa.C, write mepc with bit 1 set, execute mret with mstatus.MPP = M, then read mepc; then set misa.C again and read mepc.
+    expectation: While misa.C = 0, mepc reads with bit 1 clear and mret returns to the masked address; after misa.C is set again, mepc reads with bit 1 set.  Match reference model.
+    bins: "2"
+  - name: |-
+      cp_sepc_ialign32_read
+      cp_sepc_ialign32_sret
+    goal: sepc[1] is masked on reads, including sret's, while IALIGN = 32
+    description: Only with Zca, S and a writable misa.C (MUTABLE_MISA_C).  Clear misa.C in M-mode.  Write sepc with bit 1 set and execute sret with sstatus.SPP = S, from M-mode and then from S-mode (entered with T-SBI); write sepc with bit 1 set again and read it, in M-mode and in S-mode.  Then set misa.C again in M-mode and read sepc.
+    expectation: While misa.C = 0, sepc reads with bit 1 clear and sret returns to the masked address; after misa.C is set again, sepc reads with bit 1 set.  Match reference model.
+    bins: 2 modes * 2
   - name: cp_csrr_insufficient_priv
     goal: Debug registers should be inaccessible from M-mode
     description: Read Debug CSRS 7B0-7BF
@@ -95,7 +109,11 @@ coverpoints:
     rules:
       - sepc should be pointing two instructions ahead.
   - name: cp_scsr_from_m
-    description: "If S supported, read/write/set/clear each S-mode CSR: sstatus, scause, sie, stvec, scounteren, senvcfg, sscratch, sip.  sepc and stval are not tested because it is hard to express what values are legal."
+    description: "If S supported, read/write/set/clear each S-mode CSR: sstatus, sie, stvec, scounteren, senvcfg, sscratch, sepc, stval, sip.  stvec is WARL with complex legal values, so only MODE[1], which must read 0, is checked.  scause is tested in cp_scause_from_m."
+  - name: cp_scause_from_m
+    description: "If S supported, write scause from M-mode with each Exception Code 0-9, 12, 13 and 15 and read it back.  If Ss1p12 or later is supported, also write codes 10, 11, 14 and 16-31; otherwise also write 18 if Zicfilp or Zicfiss is supported and 10 and 20-23 if H is supported."
+    expectation: The Exception Code is WLRL.  Ss1p12 and later must hold the values 0-31, so each reads back as written.  Ss1p11 need only hold the codes of supported causes, such as software check (18) with Zicfilp or Zicfiss and the H causes (10 and 20-23) with H.
+    bins: 13, plus 1 with Zicfilp or Zicfiss and 5 with H (32 on Ss1p12 or later)
   - name: cp_satp_from_m
     description: If S is supported, read satp with mstatus.TVM=0/1
     expectation: shouldn't trap on either TVM.  Value is not predictable.
@@ -445,3 +463,171 @@ coverpoints:
     expectation: illegal instruction exception
     bins: "1"
     notes: "spec: If the floating-point unit status field mstatus.FS is Off then any attempt to execute a vector floating-point instruction will raise an illegal instruction exception."
+  - heading: "Sm_H tests (Sm_H_*-NN.S): the hypervisor CSRs and instructions from M-mode, and the mstatus.TVM tests of HS-mode and VS-mode, whose traps are taken in M-mode because the HS-mode trap handler reads satp and hgatp. They run when H is also supported. The CSR lists are those of the H suite."
+  - heading: Tests executed in M-mode (Sm_H_mcsr_cg)
+  - name: |-
+      cp_hcsr_access
+      cp_hcsr_access_zero
+      cp_hcsr_access_masked
+      cp_hcsr_access_ro
+    goal: All H-extension CSRs are able to read, write, set, and clear
+    description: |-
+      Write all 1s and all 0s, then set all bits, then clear all bits, then read each {Machine/HS/VS} H-Extension CSR.
+      cp_hcsr_access_zero: mtval2, mtinst, htval, htinst, hgatp, vsatp and (RV32, Priv 1.13) hedelegh need only hold zero, so their readback is checked only after writing 0 and after clearing every bit.
+      cp_hcsr_access_masked: hstatus and henvcfg (and henvcfgh on RV32) are written only with their checked fields, because the others are WLRL, WARL with reserved encodings, or change the endianness or XLEN.
+      cp_hcsr_access_ro: hgeip is read-only.
+      With Priv 1.13, writing all 1s to hedeleg also checks that bits 18 and 19 are writable; without Zca (IALIGN = 32), that bit 0 is writable.
+    expectation: All registers are accessible, and checked fields read back as written. Writes to hgeip raise illegal instruction.
+    bins: 5 * (2 + 14-17 + 9-11)
+    rules:
+      - hstatus_sz_acc_op
+      - hedeleg_sz_acc
+      - hideleg_sz_acc
+      - hip_hie_sz_acc
+      - htimedelta_sz_acc_op
+      - hcounteren_sz
+      - hgeie_sz_acc_op
+      - henvcfg_sz_acc_op
+      - htval_sz_acc_op
+      - hvip_sz_op
+      - htinst_sz_acc_op
+      - hgatp_sz_acc_op
+      - hgeip_sz_acc_op
+      - hedelegh_sz_acc_op
+      - htimedeltah_sz_acc_op
+      - henvcfgh_sz_acc_op
+      - vsstatus_sz_acc_op
+      - vsip_vsie_sz_acc_op
+      - vstval_sz_acc_op
+      - vstvec_sz_acc_op
+      - vsscratch_sz_acc_op
+      - vsepc_sz_acc_op
+      - vscause_sz_acc_op
+      - vsatp_sz_acc_op
+      - Zicsr_higher_priv
+      - Zicsr_rw
+  - name: |-
+      cp_hcsrwalk
+      cp_hcsrwalk_masked
+    goal: Exercise each bit of H-extension CSRs
+    description: Set and clear each bit of each {Machine/HS/VS} H-Extension CSR that holds more than zero. hstatus is walked over GVA, SPV, SPVP, HU, VTVM, VTW and VTSR, and henvcfg over FIOM, LPE, SSE, CBIE, CBCFE, CBZE, PMM, ADUE, PBMTE and STCE (cp_hcsrwalk_masked). The CSRs of cp_hcsr_access_zero are not walked, and hgatp and vsatp are walked by cp_atpwalk1/0. vsepc and vstval are not walked, because an invalid address may legally be converted; cp_vsepc_vaddr_* and cp_vstval_vaddr_* write them with valid addresses.
+    expectation: All registers are accessible.  Some fields are WARL and will not change.
+    bins: 64*2*(13-16 + 8-10)
+  - name: |-
+      cp_atpwalk1
+      cp_atpwalk0
+    goal: hgatp and vsatp hold each PPN, VMID and ASID bit
+    description: With MODE = Sv39x4/Sv39 (RV64) or Sv32x4/Sv32 (RV32), write hgatp and vsatp with a walking 1 and a walking 0 through every non-MODE bit. MODE = Bare with nonzero fields is UNSPECIFIED and unsupported MODEs are legalized in an implementation-defined way, so MODE is held at a paged mode.
+    expectation: Each bit reads back as written, except PPN bits at and above the physical address width, which are not checked, VMID and ASID bits above VMIDLEN and ASIDLEN, and hgatp.PPN[1:0], which may be read-only zero.
+    bins: 2 CSRs * (60 (RV64) or 31 (RV32)) each
+  - name: |-
+      cp_vsepc_vaddr_walk1
+      cp_vsepc_vaddr_walk0
+      cp_vsepc_vaddr_pc
+      cp_vsepc_vaddr_scratch
+      cp_vstval_vaddr_walk1
+      cp_vstval_vaddr_walk0
+      cp_vstval_vaddr_pc
+      cp_vstval_vaddr_scratch
+    goal: vsepc and vstval hold every valid address
+    description: csrrw vsepc and vstval with each canonical virtual address with a walking 1 (0s in the msbs) and a walking 0 (1s in the msbs) through bits 0 to VALEN-2 of the largest supported Sv mode, and with two physical addresses, the current pc and the scratch area. Only valid addresses are written, because an invalid address may legally be converted.
+    expectation: Each value reads back as written (vsepc bit 0 reads 0, and bit 1 reads 0 unless 2-byte instruction alignment is allowed).
+    bins: |-
+      walk1, walk0: 2 CSRs * (32 (Sv32), 38 (Sv39), 47 (Sv48) or 56 (Sv57)) each
+      pc, scratch: 2 CSRs * 1 each
+  - name: cp_replica
+    goal: Writing to S/VS-mode CSRs doesn't affect replica
+    description: Write different values into S-mode CSRs and their VS-mode replicas (satp and vsatp only when both support Sv39 (RV64) or Sv32 (RV32)).  Read back both.
+    expectation: Each CSR should have value written.
+    bins: "9"
+    rules:
+      - H_vscsrs_v0
+  - name: cp_replica_vs
+    goal: In VS, writing to S-mode CSRs affects replica instead
+    description: In M-mode, write different values into S-mode CSRs and their VS-mode replicas (satp and vsatp only when vsatp supports Sv39 (RV64) or Sv32 (RV32)).  Switch to VS-mode and write and read back the S CSRs.  VS-mode ecalls go to M-mode, so no trap changes the S CSRs.  Back in M-mode, read both the S CSRs and the VS replicas.  vsatp stays Bare while VS-mode runs; satp holds a paged value.
+    expectation: VS replica should have changed but S CSR does not change.
+    bins: "9"
+    rules:
+      - H_vscsrs_sub
+      - H_vscsrs_v1
+  - name: cp_mtvala
+    goal: mtval must not be read-only zero
+    description: Write 1s to mtval
+    expectation: nonzero
+    bins: "1"
+    rules:
+      - H_mtval_nrz
+  - name: |-
+      cp_vsepc_ialign32_read
+      cp_vsepc_ialign32_vs_read
+      cp_vsepc_ialign32_sret
+    goal: vsepc[1] is masked on reads, including sret's in VS-mode, while IALIGN = 32
+    description: Only with Zca and a writable misa.C (MUTABLE_MISA_C).  Clear misa.C in M-mode.  In VS-mode (entered with T-SBI), write sepc (vsepc) with bit 1 set, execute sret with sstatus.SPP = S, then write and read sepc.  Write and read vsepc in M-mode and in HS-mode.  Then set misa.C again in M-mode and read vsepc.
+    expectation: While misa.C = 0, vsepc reads with bit 1 clear in every mode and sret returns to the masked address; after misa.C is set again, vsepc reads with bit 1 set.  Match reference model.
+    bins: 2 modes + 1 + 1
+  - heading: mstatus.TVM and hstatus.VTVM (Sm_H_tvm_cg)
+  - name: cp_tvm_hs
+    goal: TVM traps access to satp and hgatp, but not vsatp; VTVM does not affect HS-mode
+    description: With mstatus.TVM = {0/1} cross hstatus.VTVM = {0/1}, in HS-mode read and write satp, hgatp and vsatp
+    expectation: Illegal instruction fault for satp and hgatp if TVM = 1.  vsatp accesses never trap.  VTVM has no effect.
+    bins: 3 regs * 2 accesses * 2 TVM * 2 VTVM
+  - name: cp_tvm_vs
+    goal: VTVM traps access to satp
+    description: With mstatus.TVM = {0/1} cross hstatus.VTVM = {0/1}, in VS-mode read and write satp
+    expectation: Virtual instruction fault if VTVM = 1. TVM does not affect VS-mode.
+    bins: 2 TVM * 2 VTVM * 2 accesses
+  - name: cp_hfence
+    goal: Basic fence
+    description: Execute hfence.vvma, hfence.gvma in {M, HS, VS, U, VU mode} cross with mstatus.TVM = {0,1} and with hstatus.VTVM = {0,1}
+    expectation: Executes in M-mode and HS-mode, except illegal instruction for HFENCE.GVMA in HS-mode with mstatus.TVM = 1. Illegal instruction in U-mode and virtual instruction in VS-mode and VU-mode.
+    bins: 5 modes * 2 instr * 2 TVM * 2 VTVM
+  - name: cp_sfence
+    goal: Basic fence
+    description: Execute sfence.vma in {M, HS, VS, U, VU mode} cross with mstatus.TVM = {0,1} and with hstatus.VTVM = {0,1}
+    expectation: Executes in M-mode, in HS-mode when TVM = 0 and in VS-mode when VTVM = 0. Illegal instruction in HS-mode when TVM = 1 and in U-mode; virtual instruction in VS-mode when VTVM = 1 and in VU-mode.
+    bins: 5 modes * 2 TVM * 2 VTVM
+  - heading: Instructions (Sm_H_inst_cg)
+  - name: cp_hlv
+    goal: Basic load
+    description: "Set up non-identity G and VS-stage page tables (Sv39x4 and Sv39, or Sv32x4 and Sv32). In M-mode: Write a value with the sign bit of every access size set to scratch. hlv.b, hlv.bu, hlv.h,  hlv.hu, hlv.w from scratch.  For rv64, also test hlv.wu, hlv.d.  Random source and destination registers."
+    expectation: Read and sign/zero extend
+    bins: 5 instr (7 on RV64)
+  - name: cp_hlvx
+    goal: Basic load
+    description: "Set up non-identity G and VS-stage page tables. In M-mode: Write a value to scratch. hlvx.hu, hlvx.wu from scratch.  Random source and destination registers."
+    expectation: Read and sign/zero extend
+    bins: 2 instr
+  - name: cp_hsv
+    goal: Basic store
+    description: "Set up non-identity G and VS-stage page tables. In M-mode: hsv.b, hsv.h, hsv.w to scratch, and read scratch through its physical address.  For rv64, also test hsv.d.  Random source and destination registers."
+    expectation: Stores the low bytes of the source register
+    bins: 3 instr (4 on RV64)
+  - name: cp_guest_page_fault
+    goal: hlv and hsv guest-page faults record mtval2 and mtinst
+    description: In M-mode with an empty G-stage root table, hlv.w and hsv.w with vsatp = Bare (a fault on the final translation) and with the VS-stage root table at an unmapped guest physical address (a fault on an implicit VS-stage access).
+    expectation: Load or store guest-page fault into M-mode. mtval2 holds zero or the guest physical address >> 2. mtinst holds zero or the transformed instruction on the final translation, and the pseudoinstruction on the implicit access when mtval2 is nonzero.
+    bins: 2 instr * 2 vsatp
+  - name: cp_mret_m
+    goal: mret uses MPV
+    description: Execute mret in machine mode with cross-product of mstatus.MPP = {M, S, U} / MPV / MPIE.  In a lower mode, a read of mscratch traps and the trap record shows the mode reached.  Then record mstatus (and mstatush on RV32).
+    expectation: Goes to appropriate mode. With MPP = M, mret stays in M-mode with V = 0. mret clears MPV.
+    bins: 3 MPP * 2 MPV * 2 MPIE
+  - name: cp_sret_m
+    goal: sret from M mode
+    description: Execute sret in machine mode with cross-product of mstatus.SPP / hstatus.SPV / SPIE.  After the sret, a read of mscratch traps and the trap record shows the mode reached.  Then check mstatus.SPP, SIE, SPIE and hstatus.SPV.
+    expectation: Goes to appropriate mode
+    bins: 2 SPP * 2 SPV * 2 SPIE
+  - heading: Not tested
+  - goal: misa.H enables the hypervisor extension
+    description: With MUTABLE_MISA_H, clear misa.H, check that hypervisor CSRs and instructions raise illegal instruction, and set it again.
+    status: Not tested
+    rules:
+      - misa_H_op
+    notes: |-
+      Blocked on the reference model: Sail's writable_misa makes every misa bit writable, and no sail.json of a config with MUTABLE_MISA_H enables it.
+  - goal: Ssdbltrp requires mtval2
+    status: Not tested
+    rules:
+      - mtval2_Ssdbltrp
+    notes: |-
+      An implementation requirement; with H, cp_hcsr_access_zero accesses mtval2.  A hart with Ssdbltrp and without H belongs to an Ssdbltrp suite.

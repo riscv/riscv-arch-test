@@ -12,7 +12,7 @@ import importlib.resources
 import re
 from pathlib import Path
 
-from testgen.constants import EXPERIMENTAL_EXTENSIONS, EXTENSION_PARAM_MAP
+from testgen.constants import EXPERIMENTAL_EXTENSIONS
 from testgen.data.config import TestConfig
 
 
@@ -123,10 +123,6 @@ def canonicalize_extensions(
     params: list[str] = []
     if xlen > 0:
         params.append(f"MXLEN: {xlen}")
-    for ext in ext_components:
-        if ext in EXTENSION_PARAM_MAP:
-            params.append(EXTENSION_PARAM_MAP[ext])
-            ext_components.remove(ext)
 
     # Canonicize extensions
     if "I" not in ext_components and "E" not in ext_components:

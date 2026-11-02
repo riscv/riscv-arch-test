@@ -60,6 +60,7 @@ def randomize_register(
     test_data: TestData,
     instr_type_config: InstructionTypeConfig,
     lmul: float,
+    sew: int,
     info: VectorInstructionInfo,
     preset: int | None = None,
 ) -> int:
@@ -71,6 +72,7 @@ def randomize_register(
         test_data: TestData object. Gives information like sew, and access to the register files.
         instr_type_config: Type config used to derive emul
         lmul: lmul value used to derive emul
+        sew: SEW for the instruction under test
         info: InstructionInfo object used to derive emul
 
     Optional Args:
@@ -78,9 +80,6 @@ def randomize_register(
     """
 
     if register_name.startswith("v"):
-        sew = test_data.config.sew
-        assert sew is not None, "SEW must be set when randomizing vector registers"
-
         segments = info.segments
         if (
             instr_type_config.instruction_class
@@ -138,6 +137,8 @@ def randomize_registers(
         info: InstructionInfo object that will aid emul calculation when picking a random registers
         lmul: lmul value for the test. Passed to ensure proper alignment of all registers
     """
+    assert preset_params.sew is not None, "SEW must be set for vector register randomization"
+
     new_params = copy(preset_params)
 
     if instr_type_config.required_params is None:
@@ -147,16 +148,26 @@ def randomize_registers(
     registers &= instr_type_config.required_params
 
     if "vs3" in registers:
-        new_params.vs3 = randomize_register("vs3", test_data, instr_type_config, lmul, info, new_params.vs3)
+        new_params.vs3 = randomize_register(
+            "vs3", test_data, instr_type_config, lmul, preset_params.sew, info, new_params.vs3
+        )
     if "vs2" in registers:
-        new_params.vs2 = randomize_register("vs2", test_data, instr_type_config, lmul, info, new_params.vs2)
+        new_params.vs2 = randomize_register(
+            "vs2", test_data, instr_type_config, lmul, preset_params.sew, info, new_params.vs2
+        )
     if "vs1" in registers:
-        new_params.vs1 = randomize_register("vs1", test_data, instr_type_config, lmul, info, new_params.vs1)
+        new_params.vs1 = randomize_register(
+            "vs1", test_data, instr_type_config, lmul, preset_params.sew, info, new_params.vs1
+        )
     if "vd" in registers:
-        new_params.vd = randomize_register("vd", test_data, instr_type_config, lmul, info, new_params.vd)
+        new_params.vd = randomize_register(
+            "vd", test_data, instr_type_config, lmul, preset_params.sew, info, new_params.vd
+        )
 
     if "rs2" in registers:
-        new_params.rs2 = randomize_register("rs2", test_data, instr_type_config, lmul, info, new_params.rs2)
+        new_params.rs2 = randomize_register(
+            "rs2", test_data, instr_type_config, lmul, preset_params.sew, info, new_params.rs2
+        )
         if new_params.rs2val is None:
             if "strided" in instr_type_config.instruction_class:
                 assert info.load_store_eew is not None
@@ -168,34 +179,41 @@ def randomize_registers(
                     # Less strict requirements for loads as they do not write memory so ordering does not matter
                     new_params.rs2val = random_range(-2, 2 + 1) * int(info.load_store_eew / 8)
             else:
-                new_params.rs2val = random_int(test_data.config.xlen)
+                new_params.rs2val = random_int(test_data.config.xlen or 32)
     if "rs1" in registers:
-        new_params.rs1 = randomize_register("rs1", test_data, instr_type_config, lmul, info, new_params.rs1)
+        new_params.rs1 = randomize_register(
+            "rs1", test_data, instr_type_config, lmul, preset_params.sew, info, new_params.rs1
+        )
         if new_params.rs1val_pointer is None and (
             "load" in instr_type_config.instruction_class or "store" in instr_type_config.instruction_class
         ):
             random_ptr = "vector_ls_random_base"
             new_params.rs1val_pointer = random_ptr
 
-            assert test_data.config.sew is not None, "SEW must be set for vector register randomization"
             if random_ptr not in test_data.vector_labels:
                 test_data.register_vector_data(
                     "vector_ls_random_base",
-                    test_data.config.sew,
-                    random_elements=VLEN_MAX // test_data.config.sew,
+                    preset_params.sew,
+                    random_elements=VLEN_MAX // preset_params.sew,
                 )
         elif new_params.rs1val is None:
-            new_params.rs1val = random_int(test_data.config.xlen)
+            new_params.rs1val = random_int(test_data.config.xlen or 32)
     if "rd" in registers:
-        new_params.rd = randomize_register("rd", test_data, instr_type_config, lmul, info, new_params.rd)
+        new_params.rd = randomize_register(
+            "rd", test_data, instr_type_config, lmul, preset_params.sew, info, new_params.rd
+        )
 
     if "fs1" in registers:
-        new_params.fs1 = randomize_register("fs1", test_data, instr_type_config, lmul, info, new_params.fs1)
+        new_params.fs1 = randomize_register(
+            "fs1", test_data, instr_type_config, lmul, preset_params.sew, info, new_params.fs1
+        )
         if new_params.fs1val is None:
-            assert test_data.config.sew is not None, "SEW must be set for vector register randomization"
-            new_params.fs1val = random_int(test_data.config.sew, signed=False)
+            assert preset_params.sew is not None, "SEW must be set for vector register randomization"
+            new_params.fs1val = random_int(preset_params.sew, signed=False)
     if "fd" in registers:
-        new_params.fd = randomize_register("fd", test_data, instr_type_config, lmul, info, new_params.fd)
+        new_params.fd = randomize_register(
+            "fd", test_data, instr_type_config, lmul, preset_params.sew, info, new_params.fd
+        )
 
     return new_params
 
@@ -402,15 +420,22 @@ def generate_random_vector_params(
 
     test_count = test_data.test_count
 
-    sew = test_data.config.sew
+    if "sew" in fixed_params and test_data.config.sew is not None:
+        assert test_data.config.sew == fixed_params["sew"], (
+            f"Provided SEW {fixed_params['sew']} and test_config SEW ({test_data.config.sew}) are different"
+        )
+    sew = test_data.config.sew if test_data.config.sew else fixed_params.get("sew")
     assert sew is not None, "SEW must be set for Vector Instructions"
 
     preset_params = InstructionParams(**fixed_params)
+    preset_params.sew = sew
 
     instr_type_config = get_instruction_type_config(instr_type)
     assert instr_type_config.vector_data is not None, (
         f"Vector Data must be provided for vector instruction type {instr_type}"
     )
+    if masked and not instr_type_config.vector_data.maskable:
+        raise ValueError(f"vector instruction type {instr_type} is not maskable")
     info = parse_vector_instruction_info(instruction, instr_type)
 
     no_overlap = get_overlap_constraints(info, instr_type_config, masked, sew)

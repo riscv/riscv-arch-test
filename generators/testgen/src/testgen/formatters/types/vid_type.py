@@ -18,7 +18,7 @@ from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig, add_instruction_formatter
 
-vid_config = InstructionTypeConfig(required_params={"vd"}, vector_data=VectorTypeConfig())
+vid_config = InstructionTypeConfig(required_params={"vd"}, vector_data=VectorTypeConfig(require_zero_vstart=True))
 
 
 @add_instruction_formatter("VID", vid_config)

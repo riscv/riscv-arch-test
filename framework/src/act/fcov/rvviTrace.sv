@@ -60,7 +60,7 @@ interface rvviTrace
   parameter int RETIRE = 1    // Number of instructions that can retire during valid event
 );
 
-  `ifdef COVER_E
+  `ifdef E_SUPPORTED
     localparam NUM_REGS = 16;
   `else
     localparam NUM_REGS = 32;

@@ -240,7 +240,7 @@ jobs:
         run: |
           FAST=True \
           ENABLE_EXPERIMENTAL_EXTENSIONS=True \
-          EXTENSIONS=Zibi,ExceptionsS,ExceptionsU,ExceptionsSm \
+          EXTENSIONS=Zibi,Exceptions \
           CONFIG_FILES=config/spike/spike-rv64-experimental/test_config.yaml \
           make elfs
 

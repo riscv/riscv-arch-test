@@ -993,7 +993,7 @@
         "P1P13": "CSRBit_ReadOnlyZero",
         "SRMCFG": "CSRBit_ReadOnlyZero",
         "FCSR": "CSRBit_ReadOnlyZero",
-        "C": "CSRBit_ReadOnlyZero"
+        "C": "CSRBit_Writable"
       },
       // Bit 63 of mstateen1, mstateen2 and mstateen3. These can only be
       // read-only zero if H is not supported.
@@ -1011,11 +1011,11 @@
         "ENVCFG": "CSRBit_ReadOnlyZero",
         "CONTEXT": "CSRBit_ReadOnlyZero",
         "FCSR": "CSRBit_ReadOnlyZero",
-        "C": "CSRBit_ReadOnlyZero"
+        "C": "CSRBit_Writable"
       },
       "sstateen0": {
         "FCSR": "CSRBit_ReadOnlyZero",
-        "C": "CSRBit_ReadOnlyZero"
+        "C": "CSRBit_Writable"
       }
     },
     "Ssqosid": {

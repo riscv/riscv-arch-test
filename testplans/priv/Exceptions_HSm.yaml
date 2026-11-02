@@ -1,0 +1,88 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Exceptions_HSm
+notes: |
+  The group boots to M-mode and delegates nothing (medeleg = 0), so the M-mode handler takes every trap.  Its record holds mcause, mepc, mtval, mtval2, mtinst, mstatus.MPP/MPIE and mstatus.MPV/GVA.  With medeleg = 0, hedeleg has no effect, so it is set only to 0 and to all of its writable bits.
+  Each checked ecall is the T-SBI call RVTEST_TSBI_ECALL_TEST, which the M-mode handler records like any other exception.  mtinst is checked on every trap as in Exceptions_H.
+coverpoints:
+  - name: cp_hedeleg
+    goal: hedeleg has no effect with medeleg = 0
+    description: |-
+      In VS-mode and VU-mode with medeleg = 0 and hedeleg = {0, all writable bits}, raise the exceptions of Exceptions_H cp_hedeleg: {jalr to a misaligned target at the access-fault address, jalr to the access-fault address, illegal instruction all 0s and all 1s, ebreak, each load and store at scratch + 0-7, each load and store at the access-fault address, ecall}.
+      The access-fault cases need RVMODEL_ACCESS_FAULT_ADDRESS.
+    expectation: Every exception traps to M-mode with mstatus.MPV = 1 and mstatus.MPP = the nominal privilege.  Misaligned fetches, loads and stores trap or complete as the reference model does.
+    bins: 9 exceptions * 2 modes * 2 hedeleg (* 8 offsets for misaligned loads and stores)
+  - name: cp_ecall_to_m
+    goal: ecall to M sets status bits
+    description: With medeleg = 0, ecall from M/VS/VU.
+    expectation: Trap to M-mode with mcause = 11, 10 or 8, mstatus.MPP = the nominal privilege, MPV = the old V, MPIE = the old MIE, MIE = 0 and GVA = 0.
+    bins: "3"
+  - name: cp_ebreak_to_m
+    goal: ebreak to M sets status bits
+    description: With medeleg = 0, ebreak from M/VS/VU.
+    expectation: Trap to M-mode with mcause = 3, mstatus.MPP = the nominal privilege, MPV = the old V, MPIE = the old MIE and MIE = 0.  GVA = 1 exactly when a trap from VS or VU writes the guest virtual address of the ebreak to mtval.
+    bins: "3"
+  - name: cp_tsr_vs_sret
+    goal: mstatus.TSR does not affect VS-mode
+    description: With mstatus.TSR = 1 and hstatus.VTSR = {0/1}, execute sret in VS-mode with vsstatus.SPP = 1 and SPIE = 0
+    expectation: sret executes and stays in VS-mode when VTSR = 0; virtual instruction exception when VTSR = 1
+    bins: 2 VTSR
+  - name: cp_loadstore_priv
+    goal: Hypervisor load/store in M-mode
+    description: In M-mode with hstatus.HU = {0/1}, attempt {HLV.W, HLVX.WU, HSV.W} on scratch memory.  vsatp and hgatp are Bare.
+    expectation: Succeeds; HU has no effect outside U-mode.  The hsv.w result is read back.
+    bins: 3 instr * 2 HU
+  - name: cp_priority
+    goal: priority of misaligned and access fault in M-mode
+    description: In M-mode with hstatus.HU = {0/1}, execute {hlv.w / hsv.w} x {scratch / access-fault address} x {addr[1:0] = 00/01}.  vsatp and hgatp are Bare.
+    expectation: An aligned access to scratch completes; the other accesses raise the access fault or address-misaligned exception the reference model raises (misaligned accesses to scratch may complete; the order of address-misaligned and access faults is implementation-defined).  HU has no effect.
+    bins: 2 instr * 2 access * 2 misaligned * 2 HU
+  - name: cp_hlv_address_misaligned
+    goal: Hypervisor Load Misaligned
+    description: In M-mode with vsatp and hgatp Bare, attempt hlv.{b, bu, h, hu, w} and hlvx.{hu, wu} at scratch + each offset 0-7.  For RV64, also hlv.wu and hlv.d.
+    expectation: Success, or for a misaligned address the load address-misaligned or access fault the reference model raises (implementation-defined).  A trap sets mstatus.GVA = 1 and MPV = 0.
+    bins: 7 instr * 8 addr, + 2 instr on RV64
+  - name: cp_hlv_access_fault
+    goal: Hypervisor Load Access Fault
+    description: In M-mode with vsatp and hgatp Bare, attempt hlv.{b, bu, h, hu, w} and hlvx.{hu, wu} at the access-fault address.  For RV64, also hlv.wu and hlv.d.
+    expectation: Load access fault with mtval = the guest virtual address and mstatus.GVA = 1
+    bins: 7 instr, + 2 on RV64
+  - name: cp_hsv_address_misaligned
+    goal: Hypervisor Store Misaligned
+    description: In M-mode with vsatp and hgatp Bare, attempt hsv.{b, h, w} at scratch + each offset 0-7, then read back scratch.  For RV64, also hsv.d.
+    expectation: Success, or for a misaligned address the store address-misaligned or access fault the reference model raises (implementation-defined).  A trap sets mstatus.GVA = 1 and MPV = 0.
+    bins: 3 instr * 8 addr, + 1 instr on RV64
+  - name: cp_hsv_access_fault
+    goal: Hypervisor Store Access Fault
+    description: In M-mode with vsatp and hgatp Bare, attempt hsv.{b, h, w} at the access-fault address.  For RV64, also hsv.d.
+    expectation: Store access fault with mtval = the guest virtual address and mstatus.GVA = 1
+    bins: 3 instr, + 1 on RV64
+  - name: |-
+      cp_xtinst_instr_access
+      cp_xtinst_illegalinstr
+      cp_xtinst_breakpoint
+      cp_xtinst_virtinstr
+      cp_xtinst_load_access
+      cp_xtinst_store_access
+      cp_xtinst_ecall
+    goal: Exceptions taken into M-mode write mtval2 and mtinst
+    description: |-
+      From VS-mode with medeleg = hedeleg = 0, after M-mode writes a nonzero value to mtval2 and mtinst and enters VS-mode with mret (a T-SBI call would overwrite them), attempt each of:
+      jump to the access-fault address
+      illegal instruction all 0s
+      ebreak
+      csrr vstval
+      lw from the access-fault address
+      sw to the access-fault address
+      ecall
+    expectation: The exception traps to M-mode with mtval2 = 0 and mtinst = 0, or for lw and sw the transformed instruction.
+    bins: "7"
+  - name: |-
+      cp_xtinst_instr_misaligned
+      cp_xtinst_load_misaligned
+      cp_xtinst_store_misaligned
+    goal: Misaligned exceptions taken into M-mode write mtval2 and mtinst
+    description: As above, attempt a jump to a misaligned address, a misaligned lw and a misaligned sw.
+    expectation: The exception traps to M-mode with mtval2 = 0 and mtinst = 0, or for lw and sw the transformed instruction.
+    bins: "3"
+    notes: |-
+      cp_xtinst_instr_misaligned is compiled only without Zca, and the load and store cases only when the hart does not perform misaligned loads and stores (UDB MISALIGNED_LDST = false).  Of the current H configurations only sargantana-rv64imafdb assembles them.

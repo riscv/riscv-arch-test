@@ -1,71 +1,85 @@
 # yaml-language-server: $schema=testplan.schema.json
 suite: Sstvala
 source: https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=691634508#gid=691634508
+notes: |-
+  Sstvala boots to S-mode, and the boot code delegates the exceptions to S-mode.  Each exception is raised in S-mode and in U-mode after stval is set to a random value through T-SBI, so a hart that does not write stval fails, and the S-mode trap handler records stval.  The page-fault tests run in S-mode under Sv39 (RV64) or Sv32 (RV32).  Shvstvala tests vstval the same way in VS-mode and VU-mode.
+  The access-fault tests need RVMODEL_ACCESS_FAULT_ADDRESS.  The misaligned load and store tests are compiled only without MISALIGNED_LDST, and the misaligned fetch test only without Zca.
 coverpoints:
-  - heading: All tests take place in S-mode with exceptions delegated to S-mode.
-  - name: cp_stval_load_page_fault
-    goal: stval is written with faulting VA
-    description: With VM enabled, cause load page fault.
-    expectation: fault, stval written with VA
-    bins: "1"
+  - name: cp_load_page_fault
+    goal: Fault writes VA to stval
+    description: In S-mode under Sv39 or Sv32, lw (and ld on RV64) from a page whose leaf has W but not R
+    expectation: stval written with VA
+    bins: "S x {lw, ld} x load page fault x stval = address"
     rules:
       - Sstvala_stval_faulting_vaddr
-  - name: cp_stval_store_page_fault
-    goal: stval is written with faulting VA
-    description: With VM enabled, cause store page fault.
-    expectation: fault, stval written with VA
-    bins: "1"
-  - name: cp_stval_instr_page_fault
-    goal: stval is written with faulting VA
-    description: With VM enabled, cause instruction page fault.
-    expectation: fault, stval written with VA
-    bins: "1"
+  - name: cp_store_page_fault
+    goal: Fault writes VA to stval
+    description: In S-mode under Sv39 or Sv32, sw (and sd on RV64) to a page whose leaf has R and X but not W
+    expectation: stval written with VA
+    bins: "S x {sw, sd} x store/AMO page fault x stval = address"
+  - name: cp_instr_page_fault
+    goal: Fault writes VA to stval
+    description: In S-mode under Sv39 or Sv32, jalr to a page whose leaf has R and W but not X
+    expectation: stval written with VA
+    bins: "S x jalr x instruction page fault x stval = target"
     rules:
       - Sstvala_stval_faulting_vaddr
   - name: cp_load_access_fault
-    goal: stval is written with faulting VA
-    description: load from an illegal address
-    expectation: fault, stval written with VA
-    bins: "1"
+    goal: Fault writes VA to stval
+    description: In S-mode and U-mode, each load (lb, lbu, lh, lhu, lw, and lwu, ld on RV64) from RVMODEL_ACCESS_FAULT_ADDRESS
+    expectation: stval written with VA
+    bins: "{S, U} x each load x load access fault x stval = address"
     rules:
       - Sstvala_stval_faulting_vaddr
   - name: cp_store_access_fault
-    goal: stval is written with faulting VA
-    description: store to an illegal address
-    expectation: fault, stval written with VA
-    bins: "1"
+    goal: Fault writes VA to stval
+    description: In S-mode and U-mode, each store (sb, sh, sw, and sd on RV64) to RVMODEL_ACCESS_FAULT_ADDRESS
+    expectation: stval written with VA
+    bins: "{S, U} x each store x store/AMO access fault x stval = address"
     rules:
       - Sstvala_stval_faulting_vaddr
   - name: cp_instr_access_fault
-    goal: stval is written with faulting VA
-    description: jump to an illegal address
-    expectation: fault, stval written with VA
-    bins: "1"
+    goal: Fault writes VA to stval
+    description: In S-mode and U-mode, jalr to RVMODEL_ACCESS_FAULT_ADDRESS
+    expectation: stval written with VA
+    bins: "{S, U} x jalr x instruction access fault x stval = target"
     rules:
       - Sstvala_stval_faulting_vaddr
   - name: cp_load_address_misaligned
-    goal: stval is written with faulting VA if misaligned fault occurs
-    description: lw with misaligned address
-    expectation: succeed, or fault with stval containing address
+    goal: Fault writes VA to stval
+    description: Only without MISALIGNED_LDST.  In S-mode and U-mode, each load wider than a byte at offsets 0-7 of a scratch doubleword
+    expectation: stval written with VA for each misaligned load
+    bins: "{S, U} x each load wider than a byte x load address misaligned x stval = address"
     rules:
       - Sstvala_stval_faulting_vaddr
   - name: cp_store_address_misaligned
-    goal: stval is written with faulting VA if misaligned fault occurs
-    description: sw with misaligned address
-    expectation: succeed, or fault with stval containing address
+    goal: Fault writes VA to stval
+    description: Only without MISALIGNED_LDST.  In S-mode and U-mode, each store wider than a byte at offsets 0-7 of a scratch doubleword
+    expectation: stval written with VA for each misaligned store
+    bins: "{S, U} x each store wider than a byte x store/AMO address misaligned x stval = address"
     rules:
       - Sstvala_stval_faulting_vaddr
+  - name: |-
+      cp_load_misaligned_word
+      cp_store_misaligned_word
+      cp_load_misaligned_doubleword
+      cp_store_misaligned_doubleword
+    goal: Fault writes VA to stval for each misalignment
+    description: Only without MISALIGNED_LDST.  The misaligned word and (on RV64) doubleword accesses of cp_load_address_misaligned and cp_store_address_misaligned, binned by the address offset within the access's natural alignment.  A halfword can only be misaligned by 1.
+    expectation: stval written with VA for each misalignment
+    bins: "{S, U} x {lw, lwu} or sw x offsets 1-3 x address misaligned x stval = address; {S, U} x ld or sd x offsets 1-7 x address misaligned x stval = address"
   - name: cp_instr_adr_misaligned_jalr
-    goal: stval is written with faulting VA if misaligned fault occurs
-    description: jalr with misaligned address
-    expectation: succeed, or fault with stval containing address
+    goal: Fault writes VA to stval
+    description: Only without Zca.  In S-mode and U-mode, jalr with each combination of rs1[1:0] and offset[1:0]
+    expectation: stval written with the target address for each target with bit 1 set
+    bins: "{S, U} x jalr x instruction address misaligned x stval = target"
     rules:
       - Sstvala_stval_faulting_vaddr
   - name: cp_illegal_instruction
-    goal: stval is written with the illegal instruction
-    description: Execute 0xFFFFFFFF, 0x00000000
-    expectation: Illegal instruction fault with stval = 0xFFFFFFFF, 0x00000000
-    bins: "2"
+    goal: Fault writes instr to stval
+    description: In S-mode and U-mode, execute the instructions 0x00000000 and 0xFFFFFFFF
+    expectation: stval written with instr
+    bins: "{S, U} x {0x00000000, 0xFFFFFFFF} x illegal instruction x stval = instruction"
     rules:
       - Sstvala_stval_faulting_instruction
   - heading: "Note: breakpoints tested in SstvalaSdtrig because they are generated with debug triggers"

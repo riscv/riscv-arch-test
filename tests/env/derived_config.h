@@ -49,11 +49,13 @@
   #define SM1P12P0_OR_LATER_SUPPORTED
 #endif
 
-// UDB_SCONTEXT_AVAILABLE: UDB has no SCONTEXT_AVAILABLE parameter yet
-// (https://github.com/riscv/riscv-unified-db/pull/2069), so assume scontext is
-// implemented whenever Sdtrig and S are. Remove once UDB emits it.
-#if defined(SDTRIG_SUPPORTED) && defined(S_SUPPORTED) && !defined(UDB_SCONTEXT_AVAILABLE)
-  #define UDB_SCONTEXT_AVAILABLE
+// RVTEST_SGEI_INTR_IMPL: supervisor guest external interrupts exist when H is implemented with
+// GEILEN (NUM_EXTERNAL_GUEST_INTERRUPTS) > 0. check_defines.h then requires
+// RVMODEL_SET/CLR_GUEST_EXT_INT, since hgeip is read-only and only the platform can raise it.
+#if defined(H_SUPPORTED) && defined(UDB_NUM_EXTERNAL_GUEST_INTERRUPTS)
+  #if UDB_NUM_EXTERNAL_GUEST_INTERRUPTS > 0
+    #define RVTEST_SGEI_INTR_IMPL
+  #endif
 #endif
 
 #endif // DERIVED_CONFIG_H

@@ -10,7 +10,7 @@ set -euo pipefail
 INSTALL_DIR="${1:?Usage: install-picorv32.sh <install-dir>}"
 PICORV32_REPO="https://github.com/YosysHQ/picorv32.git"
 PICORV32_COMMIT="ef203c2b0a3fb793280f5114941416c425c5b461"
-VERILATOR_VERSION="v5.036"
+VERILATOR_VERSION="v5.052"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 mkdir -p "$INSTALL_DIR/bin"

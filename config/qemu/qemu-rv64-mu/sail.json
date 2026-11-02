@@ -1035,7 +1035,7 @@
       // . `No_reentrancy_support`: no specific support for reentrancy
       // Note: `Use_tcontrol` hardwires medeleg[3] to 0, which breaks the
       // `sbreak` test in `riscv-tests`.
-      "breakpoint_reentrancy": "Use_interrupt_enables",
+      "breakpoint_reentrancy": "No_reentrancy_support",
       "etrigger": {
         "supported": false,
         // A bit set to 1 in this value specifies that the
@@ -1072,7 +1072,7 @@
         "address_select_matches_all_addresses": true,
         // Maximum length of a chain. This cannot exceed the number of
         // triggers.  A value of 0 implies chains are not supported.
-        "max_chain_length": 4
+        "max_chain_length": 1
       },
       "textra": {
         // Which context matches are supported. Writes of unsupported
@@ -1102,7 +1102,7 @@
       // The number of supported triggers.  This has to be
       // non-negative, and greater than 0 if Sdtrig is supported.
       // The model does not support more than 16 triggers.
-      "num_triggers": 16,
+      "num_triggers": 2,
       "scontext": { "supported": false }
     },
     "Smdbltrp": { "supported": true },

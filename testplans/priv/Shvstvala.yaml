@@ -1,73 +1,76 @@
 # yaml-language-server: $schema=testplan.schema.json
 suite: Shvstvala
 source: https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=970539312#gid=970539312
-notes: |
-  Following tests are done in from VU-mode and VS-mode into VS-mode
+notes: |-
+  Shvstvala boots to HS-mode, which delegates the exceptions to VS-mode with hedeleg.  Each exception is raised in VS-mode and in VU-mode after vstval is set to a random value, so a hart that does not write vstval fails, and the VS-mode trap handler records vstval.  The access-fault and misaligned tests reuse the Exceptions test sequences with vsatp = hgatp = Bare; the page-fault tests run under two-stage translation.
+  Virtual-instruction exceptions are never taken in VS-mode (hedeleg[22] is read-only zero), so the Sstvala case for them does not apply.
+  The access-fault tests need RVMODEL_ACCESS_FAULT_ADDRESS.  The misaligned load and store tests are compiled only without MISALIGNED_LDST, and the misaligned fetch test only without Zca; no current H configuration assembles them, so they were checked only with scratch Sail configurations.
 coverpoints:
-  - heading: Initialize vstval to some random value before each test
   - name: cp_load_page_fault
     goal: Fault writes VA to vstval
-    description: Load from bad page
+    description: In VS-mode and VU-mode under two-stage translation, load from a VS-stage page without R
     expectation: vstval written with VA
-    bins: "2"
+    bins: "{VS, VU} x lw x load page fault x vstval = address"
     rules:
       - Shvstvala_vstval_written
   - name: cp_store_page_fault
     goal: Fault writes VA to vstval
-    description: Store to bad page
+    description: In VS-mode and VU-mode under two-stage translation, store to a VS-stage page without W
     expectation: vstval written with VA
-    bins: "2"
+    bins: "{VS, VU} x sw x store/AMO page fault x vstval = address"
   - name: cp_instr_page_fault
     goal: Fault writes VA to vstval
-    description: Fetch from bad page
+    description: In VS-mode and VU-mode under two-stage translation, fetch from a VS-stage page without X
     expectation: vstval written with VA
-    bins: "2"
+    bins: "{VS, VU} x jalr x instruction page fault x vstval = target"
   - name: cp_load_access_fault
     goal: Fault writes VA to vstval
-    description: Load from ACCESS_FAULT_ADDRESS+4
+    description: In VS-mode and VU-mode, each load (lb, lbu, lh, lhu, lw, and lwu, ld on RV64) from RVMODEL_ACCESS_FAULT_ADDRESS
     expectation: vstval written with VA
-    bins: "2"
-    notes: |-
-      don't use ACCESS_FAULT_ADDR because it is probably 0 and doesn't prove hvstval is writable
+    bins: "{VS, VU} x each load x load access fault x vstval = address"
   - name: cp_store_access_fault
     goal: Fault writes VA to vstval
-    description: Store to ACCESS_FAULT_ADDRESS+4
+    description: In VS-mode and VU-mode, each store (sb, sh, sw, and sd on RV64) to RVMODEL_ACCESS_FAULT_ADDRESS
     expectation: vstval written with VA
-    bins: "2"
+    bins: "{VS, VU} x each store x store/AMO access fault x vstval = address"
   - name: cp_instr_access_fault
     goal: Fault writes VA to vstval
-    description: Fetch from ACCESS_FAULT_ADDRESS+4
+    description: In VS-mode and VU-mode, jalr to RVMODEL_ACCESS_FAULT_ADDRESS
     expectation: vstval written with VA
-    bins: "2"
-  - name: cp_misaligned_load
+    bins: "{VS, VU} x jalr x instruction access fault x vstval = target"
+  - name: cp_load_address_misaligned
     goal: Fault writes VA to vstval
-    description: lw from scratch+2
-    expectation: no fault, or vstval written with VA
-    bins: "2"
-    notes: |-
-      No fault when misaligned load/store supported (e.g. Zicclsm)
-  - name: cp_misaligned_store
+    description: Only without MISALIGNED_LDST.  In VS-mode and VU-mode, each load wider than a byte at offsets 0-7 of a scratch doubleword
+    expectation: vstval written with VA for each misaligned load
+    bins: "{VS, VU} x each load wider than a byte x load address misaligned x vstval = address"
+  - name: cp_store_address_misaligned
     goal: Fault writes VA to vstval
-    description: sw to scratch+2.  Scratch should be 8 bytes
-    expectation: no fault, or vstval written with VA
-    bins: "2"
-    notes: |-
-      No fault when misaligned load/store supported (e.g. Zicclsm)
-  - name: cp_misaligned_instr
+    description: Only without MISALIGNED_LDST.  In VS-mode and VU-mode, each store wider than a byte at offsets 0-7 of a scratch doubleword
+    expectation: vstval written with VA for each misaligned store
+    bins: "{VS, VU} x each store wider than a byte x store/AMO address misaligned x vstval = address"
+  - name: |-
+      cp_load_misaligned_word
+      cp_store_misaligned_word
+      cp_load_misaligned_doubleword
+      cp_store_misaligned_doubleword
+    goal: Fault writes VA to vstval for each misalignment
+    description: Only without MISALIGNED_LDST.  The misaligned word and (on RV64) doubleword accesses of cp_load_address_misaligned and cp_store_address_misaligned, binned by the address offset within the access's natural alignment.  A halfword can only be misaligned by 1.
+    expectation: vstval written with VA for each misalignment
+    bins: "{VS, VU} x {lw, lwu} or sw x offsets 1-3 x address misaligned x vstval = address; {VS, VU} x ld or sd x offsets 1-7 x address misaligned x vstval = address"
+  - name: cp_instr_adr_misaligned_jalr
     goal: Fault writes VA to vstval
-    description: fetch ret from scratch+2.
-    expectation: no fault, or vstval written with VA
-    bins: "2"
-    notes: |-
-      No fault when Zca is supported
-  - name: cp_virt_instr
+    description: Only without Zca.  In VS-mode and VU-mode, jalr with each combination of rs1[1:0] and offset[1:0]
+    expectation: vstval written with the target address for each target with bit 1 set
+    bins: "{VS, VU} x jalr x instruction address misaligned x vstval = target"
+  - name: cp_illegal_instruction
     goal: Fault writes instr to vstval
-    description: Cause virtual instruction fault
+    description: In VS-mode and VU-mode, execute the instructions 0x00000000 and 0xFFFFFFFF
     expectation: vstval written with instr
-    bins: "2"
-  - name: cp_illegal_instr
-    goal: Fault writes instr to vstval
-    description: Cause illegal instruction fault
-    expectation: vstval written with instr
-    bins: "2"
-  - heading: Note that debug breakpoint vstval is checked in Sdtrig ***confirm when written
+    bins: "{VS, VU} x {0x00000000, 0xFFFFFFFF} x illegal instruction x vstval = instruction"
+  - heading: Not tested
+  - goal: Breakpoint exceptions that write an address write it to vstval
+    status: Not tested
+    rules:
+      - Shvstvala_vstval_written
+    notes: |-
+      In VS-mode and VU-mode these come only from Sdtrig triggers.  The SdtrigH suite, which is not yet in act4, delegates them to VS-mode (hedeleg[3] = 1), where the trap handler records vstval.

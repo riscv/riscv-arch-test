@@ -49,3 +49,16 @@ normative_rule_definitions:
       [
         "Not tested: needs satp.MODE read-only zero (UDB TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY)",
       ]
+
+  # When csr::[mprv]=0, explicit memory accesses behave as normal, using the translation
+  # and protection mechanisms of the current privilege mode. When csr::[mprv]=1, load
+  # and store memory addresses are translated and protected, and endianness is applied,
+  # as though the current privilege mode were set to csr::[mpp].
+  - name: mstatus_mprv_ldst_op
+    coverpoint: ["Svbare_Sm_cg/cp_satp_bare_mprv_{load,store}"]
+
+  # Instruction address-translation and protection are unaffected by the setting of
+  # csr::[mprv].
+  # With satp.MODE=Bare a fetch is not translated whatever MPRV is; Sv_Sm shows the rule with translation on.
+  - name: mstatus_mprv_inst_xlat_op
+    coverpoint: ["Sv_Sm_mstatus_mprv_cg/cp_mprv_ins"]

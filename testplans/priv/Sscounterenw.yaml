@@ -9,4 +9,4 @@ coverpoints:
     bins: 2*XLEN
     rules:
       - Sscounterenw_hpmcounter_scounteren
-  - heading: Note that this overlaps tests in ZicntrS
+  - heading: Note that this overlaps tests in S_Zicntr

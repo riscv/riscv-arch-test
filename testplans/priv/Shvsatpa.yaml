@@ -2,13 +2,11 @@
 suite: Shvsatpa
 source: https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=1777147736#gid=1777147736
 coverpoints:
-  - heading: Following tests are done in M-mode
+  - heading: Following tests are done in HS-mode
   - name: cp_shvsatpa
     goal: Check all values writable to vsatp.mode
-    description: |-
-      RV32: write vsatp.mode = 0/1
-      RV64: write vsatp.mode = 0, 8, 9, 10
-    expectation: Matches reference model, which should accept same values as satp.mode
-    bins: 2 or 4
+    description: Write vsatp with MODE = Bare and with Sv32 (MODE 1, RV32) or each of Sv39, Sv48 and Sv57 (MODE 8, 9 and 10, RV64) whose satp mode is supported, with the other fields zero, because Bare with nonzero fields is UNSPECIFIED; read vsatp back.
+    expectation: Each value reads back as written
+    bins: Bare + 1 per supported satp mode (2 on RV32, up to 4 on RV64)
     rules:
       - Shvsatpa_satp_vsatp_modes

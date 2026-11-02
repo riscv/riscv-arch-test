@@ -22,10 +22,12 @@ from testgen.priv.extensions.ZpmCommon import (
     data_slvl_tables,
     generate_edge_case_tests,
     generate_instruction_sweep_tests,
+    generate_mprv_lower_mode_tests,
     generate_sign_extension_tests,
     generate_xlen_change_tests,
     generate_zicfiss_tests,
     map_pm_hi_page,
+    mprv_data_section,
     satp_clear,
     satp_setup,
     set_mxr,
@@ -36,6 +38,7 @@ from testgen.priv.extensions.ZpmCommon import (
 from testgen.priv.registry import add_priv_test_generator
 
 COVERGROUP = "Ssnpm_cg"
+SM_COVERGROUP = "Ssnpm_Sm_cg"
 
 
 def _ssnpm_sweep(test_data: TestData, pmm: int) -> list[TestChunk]:
@@ -205,3 +208,26 @@ def _ssnpm_chunk(
     if guard:
         lines.append(f"#endif // {guard}")
     return lines
+
+
+# M-mode half of Ssnpm: MPRV=1 with MPP=U. The probes run in M-mode but take U-mode's effective
+# privilege, so senvcfg.PMM governs the pointer masking and mseccfg.PMM does not apply.
+@add_priv_test_generator(
+    "Ssnpm",
+    required_extensions=["Ssnpm", "Sm"],
+    march_extensions=["I", "A", "F", "D", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_ssnpmsm(test_data: TestData) -> list[TestChunk]:
+    tc = test_data.begin_test_chunk(split_name="Sm")
+    tc.raw_data.extend(mprv_data_section())
+    tc.code = [
+        *generate_mprv_lower_mode_tests(
+            test_data,
+            SM_COVERGROUP,
+            mpp="PRV_U",
+            pmm_csr="senvcfg",
+            cp="cp_pm_mprv_mpp_u",
+        ),
+    ]
+    return [test_data.end_test_chunk()]

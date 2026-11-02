@@ -466,8 +466,9 @@ covergroup Zfbfmin_fsh_cg with function sample(ins_t ins);
 endgroup
 // ---------------------
 function void zfbfmin_sample(int hart, int issue, ins_t ins);
+    string inst_name = traceDataQ[hart][issue][0].inst_name;
 
-    case (traceDataQ[hart][issue][0].inst_name)
+    case (inst_name)
         "fcvt.bf16.s"     : begin
             Zfbfmin_fcvt_bf16_s_cg.sample(ins);
         end

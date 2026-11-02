@@ -10,6 +10,15 @@ coverpoints:
     bins: |-
       cp_instr x cp_priv x cp_tvm
       = 8 bins on RV64, 8 on RV32
-    id: Svinval_sinval_vma_invalidates_same_as_sfence_vma Svinval_sfence_w_inval_orders_before_sinval_vma Svinval_sequence_rs1_rs2 Svinval_illegal_instruction_u_mode Svinval_sfence_w_inval_inval_u_mode Svinval_sfence_w_inval_inval_s_vs_mode
+    id: Svinval_illegal_instruction_u_mode Svinval_sfence_w_inval_inval_u_mode Svinval_sfence_w_inval_inval_s_vs_mode
     rules:
-      - "[norm:Svinval_sinval_vma_invalidates_same_as_sfence_vma] [norm:Svinval_sfence_w_inval_orders_before_sinval_vma] [norm:Svinval_sequence_rs1_rs2] [norm:Svinval_illegal_instruction_u_mode] [norm:Svinval_sfence_w_inval_inval_u_mode] [norm:Svinval_sfence_w_inval_inval_s_vs_mode]"
+      - "[norm:Svinval_illegal_instruction_u_mode] [norm:Svinval_sfence_w_inval_inval_u_mode] [norm:Svinval_sfence_w_inval_inval_s_vs_mode]"
+  - name: cp_sinval_vma
+    goal: The Svinval sequence removes a stale S-mode translation
+    description: "Sv39 on RV64, Sv32 on RV32, with every implemented satp.ASID bit set.  In S-mode, map a virtual address to page A and load from it.  Point the leaf at page B and run sfence.w.inval, sinval.vma rs1, rs2 and sfence.inval.ir, with rs1 = x0 or the address and rs2 = x0 or the current ASID, and the address with all ASIDMAX bits set in rs2.  Load again."
+    expectation: The load after the sequence reads page B.  Both loads are recorded.  A hart that caches no translation passes.
+    bins: S x sinval.vma x satp paged x rs1 {x0, register} x rs2 {x0, register} = 4 bins
+    rules:
+      - Svinval_sinval_vma_invalidates_same_as_sfence_vma
+      - Svinval_sfence_w_inval_orders_before_sinval_vma
+      - Svinval_sequence_rs1_rs2

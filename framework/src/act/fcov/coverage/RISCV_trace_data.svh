@@ -27,7 +27,7 @@ class riscvTraceData
   parameter int FLEN   = 32,  // FPR length in bits
   parameter int VLEN   = 512  // Vector register size in bits
 );
-  `ifdef COVER_E
+  `ifdef E_SUPPORTED
     localparam NUM_REGS = 16;
   `else
     localparam NUM_REGS = 32;

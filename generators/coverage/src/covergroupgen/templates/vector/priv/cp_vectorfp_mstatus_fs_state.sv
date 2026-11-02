@@ -9,8 +9,12 @@
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 

@@ -273,7 +273,8 @@ def _decode_xstatus(status_bits: int, mode: str) -> str:
     word0 bits [28:27] (xstatus 15:14). In the S/HS handler on a hypervisor build,
     hstatus[8:6] (SPVP, SPV, GVA) are OR'd into word0 bits [29:27] (xstatus 16:14).
     Bit 15 is therefore MPV on an M-mode entry and SPV on an S/HS one; ``mode`` is
-    the entry's MODE_NAMES string.
+    the entry's MODE_NAMES string. A VS-mode entry holds vsstatus, which has only the
+    supervisor fields.
     """
     # Skip WPRI bit 0
     sie = (status_bits >> 1) & 1
@@ -284,6 +285,8 @@ def _decode_xstatus(status_bits: int, mode: str) -> str:
     # Skip UBE bit 6 (not relevant to trap)
     mpie = (status_bits >> 7) & 1
     spp = (status_bits >> 8) & 1
+    if mode == "VS":
+        return f"SIE={sie}, SPIE={spie}, SPP={spp}"
     # Skip VS bits 9-10 (not relevant to trap)
     mpp = (status_bits >> 11) & 0x3
     # Skip FS bits 13-14 (not relevant to trap)

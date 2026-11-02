@@ -7,3 +7,15 @@ parameter_definitions:
       [
         "Reads only hpmcounter<n> (and hpmcounter<n>h on RV32) with HPM_COUNTER_EN[n] true",
       ]
+  - name: MCOUNTENABLE_EN
+    coverpoint: ["cp_cntr_hpm"]
+    effect:
+      [
+        "With U-mode, skip each hpmcounter<n> (and hpmcounter<n>h on RV32) whose bit n is False",
+      ]
+  - name: SCOUNTENABLE_EN
+    coverpoint: ["cp_cntr_hpm"]
+    effect:
+      [
+        "With S-mode, skip each hpmcounter<n> (and hpmcounter<n>h on RV32) whose bit n is False",
+      ]

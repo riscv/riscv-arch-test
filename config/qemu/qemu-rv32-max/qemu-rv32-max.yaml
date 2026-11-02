@@ -144,6 +144,142 @@ implemented_extensions:
   - { name: Zvl128b, version: "= 1.0.0" }
 
 params:
+  # Trap delegation: the writable medeleg and mideleg bits (sail.json base.medeleg and
+  # base.mideleg delegatable_bits; with H, VSSI, VSTI, VSEI and SGEI are always delegated)
+  MEDELEG_DELEGATABLE:
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      true,
+      true,
+      false,
+      true,
+      false,
+      false,
+      true,
+      false,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+  MIDELEG_DELEGATABLE:
+    [
+      false,
+      true,
+      true,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      true,
+      true,
+      false,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
   NON_STANDARD_EXTENSION_IMPLEMENTED: false
   # A params
   MISALIGNED_AMO: false
@@ -456,9 +592,6 @@ params:
   VFREDUSUM_FINAL_NODE_ELEMENT_BEHAVIOR: "additive_identity"
   IMPRECISE_VECTOR_TRAP_SETTABLE: false
   # H params
-  VSEI_INTR_IMPL: false
-  VSSI_INTR_IMPL: false
-  VSTI_INTR_IMPL: true
   MUTABLE_MISA_H: false
   VSXLEN: [32]
   VUXLEN: [32]
@@ -470,7 +603,8 @@ params:
   VSTVEC_MODES: [0, 1]
   HSTATEEN_ENVCFG_TYPE: rw
   IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO: true
-  NUM_EXTERNAL_GUEST_INTERRUPTS: 31
+  # GEILEN is 7: run_cmd.txt selects aia=aplic-imsic,aia-guests=7, the most QEMU's virt machine allows
+  NUM_EXTERNAL_GUEST_INTERRUPTS: 7
   REPORT_ENCODING_IN_VSTVAL_ON_ILLEGAL_INSTRUCTION: true
   REPORT_ENCODING_IN_VSTVAL_ON_VIRTUAL_INSTRUCTION: true
   REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT: true
@@ -490,19 +624,21 @@ params:
   REPORT_VA_IN_VSTVAL_ON_STORE_AMO_PAGE_FAULT: true
   SV32_VSMODE_TRANSLATION: true
   SV32X4_TRANSLATION: true
+  # QEMU writes the transformed instruction for load, store and AMO faults (riscv_transformed_insn in
+  # target/riscv/tcg/cpu_helper.c), except zero for CBOs, which these parameters cannot express
   TINST_VALUE_ON_BREAKPOINT: "always zero"
   TINST_VALUE_ON_FINAL_INSTRUCTION_GUEST_PAGE_FAULT: "always zero"
-  TINST_VALUE_ON_FINAL_LOAD_GUEST_PAGE_FAULT: "always zero"
-  TINST_VALUE_ON_FINAL_STORE_AMO_GUEST_PAGE_FAULT: "always zero"
+  TINST_VALUE_ON_FINAL_LOAD_GUEST_PAGE_FAULT: "always transformed standard instruction"
+  TINST_VALUE_ON_FINAL_STORE_AMO_GUEST_PAGE_FAULT: "always transformed standard instruction"
   TINST_VALUE_ON_INSTRUCTION_ADDRESS_MISALIGNED: "always zero"
-  TINST_VALUE_ON_LOAD_ACCESS_FAULT: "always zero"
-  TINST_VALUE_ON_LOAD_ADDRESS_MISALIGNED: "always zero"
-  TINST_VALUE_ON_LOAD_PAGE_FAULT: "always zero"
+  TINST_VALUE_ON_LOAD_ACCESS_FAULT: "always transformed standard instruction"
+  TINST_VALUE_ON_LOAD_ADDRESS_MISALIGNED: "always transformed standard instruction"
+  TINST_VALUE_ON_LOAD_PAGE_FAULT: "always transformed standard instruction"
   TINST_VALUE_ON_MCALL: "always zero"
   TINST_VALUE_ON_SCALL: "always zero"
-  TINST_VALUE_ON_STORE_AMO_ACCESS_FAULT: "always zero"
-  TINST_VALUE_ON_STORE_AMO_ADDRESS_MISALIGNED: "always zero"
-  TINST_VALUE_ON_STORE_AMO_PAGE_FAULT: "always zero"
+  TINST_VALUE_ON_STORE_AMO_ACCESS_FAULT: "always transformed standard instruction"
+  TINST_VALUE_ON_STORE_AMO_ADDRESS_MISALIGNED: "always transformed standard instruction"
+  TINST_VALUE_ON_STORE_AMO_PAGE_FAULT: "always transformed standard instruction"
   TINST_VALUE_ON_UCALL: "always zero"
   TINST_VALUE_ON_VIRTUAL_INSTRUCTION: "always zero"
   TINST_VALUE_ON_VSCALL: "always zero"
@@ -551,15 +687,15 @@ params:
   REPORT_CAUSE_IN_STVAL_ON_SHADOW_STACK_SOFTWARE_CHECK: true
   REPORT_CAUSE_IN_VSTVAL_ON_SHADOW_STACK_SOFTWARE_CHECK: true
   # Sdtrig params
-  DBG_HCONTEXT_WIDTH: 14
+  DBG_HCONTEXT_WIDTH: 7
   DBG_SCONTEXT_WIDTH: 32
   DCSR_MPRVEN_TYPE: rw
   DCSR_STEPIE_TYPE: rw
   DCSR_STOPCOUNT_TYPE: rw
   DCSR_STOPTIME_TYPE: rw
-  HCONTEXT_AVAILABLE: false
+  HCONTEXT_IMPLEMENTED: false
   HSTATEEN_CONTEXT_TYPE: rw
-  MCONTEXT_AVAILABLE: true
+  MCONTEXT_IMPLEMENTED: true
   # Smstateen params
   MSTATEEN_ENVCFG_TYPE: rw
   MSTATEEN_CONTEXT_TYPE: rw
@@ -592,3 +728,34 @@ params:
   MCTRCTL_TRETINH_IMPLEMENTED: true
   # Zawrs params
   ZAWRS_NTO_IS_NOP: true
+  # Sdtrig and Zkr seed parameters added for riscv-unified-db#2069 (values from sail.json)
+  SSEED_READ_ONLY_ZERO: false
+  USEED_READ_ONLY_ZERO: false
+  SDTRIG_NUM_TRIGGERS: 2
+  SDTRIG_BREAKPOINT_REENTRANCY: No_reentrancy_support
+  TCONTROL_IMPLEMENTED: false
+  TDATA2_IMPLEMENTED: true
+  TDATA3_IMPLEMENTED: true
+  SDTRIG_M_WRITABLE: true
+  SDTRIG_S_WRITABLE: true
+  SDTRIG_U_WRITABLE: true
+  SDTRIG_VS_WRITABLE: true
+  SDTRIG_VU_WRITABLE: true
+  SCONTEXT_IMPLEMENTED: false
+  SDTRIG_MCONTROL6_SUPPORTED_TRIGGERS: [true, true]
+  SDTRIG_ICOUNT_SUPPORTED_TRIGGERS: [false, false]
+  SDTRIG_ITRIGGER_SUPPORTED_TRIGGERS: [false, false]
+  SDTRIG_ETRIGGER_SUPPORTED_TRIGGERS: [false, false]
+  SDTRIG_MCONTROL6_MASKMAX6: 31
+  SDTRIG_MAX_CHAIN_LENGTH: 1
+  SDTRIG_MCONTROL6_MATCH_LEGAL_VALUES: [0]
+  SDTRIG_MCONTROL6_SIZE_LEGAL_VALUES: [0, 1, 2, 3, 5]
+  SDTRIG_MCONTROL6_SELECT_WRITABLE: false
+  SDTRIG_MCONTROL6_EXECUTE_WRITABLE: true
+  SDTRIG_MCONTROL6_LOAD_WRITABLE: true
+  SDTRIG_MCONTROL6_STORE_WRITABLE: true
+  SDTRIG_TEXTRA_MHVALUE_LEN: 6
+  SDTRIG_TEXTRA_SVALUE_LEN: 0
+  SDTRIG_TEXTRA_MHSELECT_MCONTEXT_MATCH: true
+  SDTRIG_TEXTRA_MHSELECT_VMID_MATCH: false
+  SDTRIG_TEXTRA_SSELECT_ASID_MATCH: false

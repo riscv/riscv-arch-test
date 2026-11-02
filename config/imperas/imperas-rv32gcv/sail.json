@@ -1045,7 +1045,7 @@
         // corresponding exception is supported by the trigger.
         // Triggers for reserved exceptions are not supported.  This
         // value is ignored when `etrigger` is not supported.
-        "supported_exceptions": { "len": "xlen", "value": "0xDBBFF" }
+        "supported_exceptions": { "len": "xlen", "value": "0xCBBFF" }
       },
       "hcontext": { "supported": false },
       // Triggers
@@ -1063,7 +1063,7 @@
         // corresponding interrupt is supported by the trigger.
         // Triggers for reserved interrupts are not supported.  This
         // value is ignored when `itrigger` is not supported.
-        "supported_interrupts": { "len": "xlen", "value": "0x3EEE" }
+        "supported_interrupts": { "len": "xlen", "value": "0x2AAA" }
       },
       "mcontrol6": {
         "supported": true,

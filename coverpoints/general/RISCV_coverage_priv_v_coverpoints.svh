@@ -9,7 +9,7 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 // Description:
-//   Vector CSR, vset* and vstart coverpoints common to Sm_V_cg, S_V_cg and U_V_cg
+//   Vector CSR, vset* and vstart coverpoints common to Sm_V_cg, S_V_cg, H_V_cg and U_V_cg
 //   Coverpoints that name mstatus/sstatus, and the crosses, which add the
 //   covergroup's privilege mode, stay in each covergroup.
 //

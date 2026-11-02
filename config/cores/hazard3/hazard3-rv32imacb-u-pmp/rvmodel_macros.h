@@ -70,9 +70,6 @@
 
 ##### Machine Timer #####
 
-// The testbench's mtime advances once per cycle.
-#define RVMODEL_MAX_CYCLES_PER_TIMER_TICK 1
-
 // From U-mode, RVTEST_SET_MTIME_INT_SOON_U makes several T-SBI calls of about 900 cycles
 // each, and the interrupt must not fire before the last one returns.
 #define RVMODEL_TIMER_INT_SOON_DELAY 5000

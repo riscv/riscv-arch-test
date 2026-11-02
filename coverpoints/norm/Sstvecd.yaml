@@ -8,7 +8,7 @@ normative_rule_definitions:
   - name: Sstvecd_stvec_mode_direct
     coverpoint:
       [
-        "Sstvecd_cg/cp_stvec_mode",
+        "Sstvecd_cg/{cp_stvec_vaddr_pc, cp_stvec_vaddr_scratch, cp_stvec_vaddr_walk1, cp_stvec_vaddr_walk0}",
         "S_scsr_cg/cp_stvec_vaddr_walk1",
         "S_scsr_cg/cp_stvec_vaddr_walk0",
       ]
@@ -21,7 +21,7 @@ normative_rule_definitions:
   - name: Sstvecd_stvec_base_aligned_address
     coverpoint:
       [
-        "Sstvecd_cg/cp_stvec_mode",
+        "Sstvecd_cg/{cp_stvec_vaddr_pc, cp_stvec_vaddr_scratch, cp_stvec_vaddr_walk1, cp_stvec_vaddr_walk0}",
         "S_scsr_cg/cp_stvec_vaddr_walk1",
         "S_scsr_cg/cp_stvec_vaddr_walk0",
         "S_scsr_cg/cp_stvec_vaddr_pc",

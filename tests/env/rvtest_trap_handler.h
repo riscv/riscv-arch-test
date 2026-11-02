@@ -2378,7 +2378,8 @@ tsbi_instr_table:
 // word 4 is the second trap value (mtval2 / htval) and word 5 is xtinst.
 
 sv_\__MODE__\()vect:
-        LREG    T3, xtvec_new_off(sp)              // T3 = actual trampoline table address
+        LREG    T3, xtvec_new_off(sp)              // T3 = xTVEC value in use
+        andi    T3, T3, ~WDBYTMSK                   // T3 = trampoline table address (MODE bits cleared)
         sub     T6, T6, T3                          // T6 = vector stub address - trampoline base = spreader offset
         slli    T4, T6, 1                           // T4 = offset * 2 (part of compression: multiply by 3)
         add     T6, T6, T4                          // T6 = offset * 3

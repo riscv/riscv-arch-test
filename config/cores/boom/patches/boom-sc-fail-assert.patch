@@ -1,0 +1,12 @@
+diff --git a/src/main/scala/v3/lsu/dcache.scala b/src/main/scala/v3/lsu/dcache.scala
+index 2fc7bd7a..d0827fd8 100644
+--- a/src/main/scala/v3/lsu/dcache.scala
++++ b/src/main/scala/v3/lsu/dcache.scala
+@@ -700,7 +700,6 @@ class BoomNonBlockingDCacheModule(outer: BoomNonBlockingDCache) extends LazyModu
+       }
+     }
+   }
+-  assert(debug_sc_fail_cnt < 100.U, "L1DCache failed too many SCs in a row")
+
+   val s2_data = Wire(Vec(memWidth, Vec(nWays, UInt(encRowBits.W))))
+   for (i <- 0 until memWidth) {

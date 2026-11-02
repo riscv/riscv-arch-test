@@ -47,7 +47,9 @@ CCLASS_DEPS=(
 )
 # requirements.txt names soc_config 3.0.3; the rest are its dependencies.
 SOC_CONFIG="git+$GITLAB/cores/soc_config.git@823f4ad698567b7de5b25963eb855ebacb44c769" # 3.0.3
-PY_PINS=(Cerberus==1.3.8 ruamel.yaml==0.19.1 pytz==2026.6 GitPython==3.2.1)
+# setuptools: soc_config installs csrbox and riscv-config with `pip install . --no-build-isolation`, and
+# venvs of Python 3.12 and later no longer include setuptools.
+PY_PINS=(Cerberus==1.3.8 ruamel.yaml==0.19.1 pytz==2026.6 GitPython==3.2.1 setuptools==80.9.0)
 
 mkdir -p "$INSTALL_DIR/bin"
 

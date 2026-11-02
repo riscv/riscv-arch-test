@@ -655,9 +655,12 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         `endif
     `endif
 
-    cp_mtime_write :            cross priv_mode_m, csrr,  time_csr; // assumes mtime has been written
-    `ifdef UDB_MXLEN_32
-        cp_mtimeh_write :       cross priv_mode_m, csrr,  timeh_csr; // assumes mtimeh has been written
+    // The time CSR belongs to Zicntr
+    `ifdef ZICNTR_SUPPORTED
+        cp_mtime_write :            cross priv_mode_m, csrr,  time_csr; // assumes mtime has been written
+        `ifdef UDB_MXLEN_32
+            cp_mtimeh_write :       cross priv_mode_m, csrr,  timeh_csr; // assumes mtimeh has been written
+        `endif
     `endif
 
     `ifdef SM1P13P0_OR_LATER_SUPPORTED

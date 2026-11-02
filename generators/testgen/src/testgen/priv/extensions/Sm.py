@@ -1617,7 +1617,8 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     )
     lines.extend(
         [
-            "#ifdef RVMODEL_MTIME_ADDRESS",
+            "// The time CSR belongs to Zicntr: on a hart without it, csrr time is an illegal instruction",
+            "#if defined(RVMODEL_MTIME_ADDRESS) && defined(ZICNTR_SUPPORTED)",
             f"LI(x{r1}, 42)        # value to write to mtime",
             f"LA(x{r2}, RVMODEL_MTIME_ADDRESS)        # load address of mtime",
             f"SREG x{r1}, 0(x{r2})        # write mtime = 42 using memory-mapped I/O",
@@ -1675,7 +1676,8 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
             f"addi x{r_counter}, x{r_counter}, -1",
             f"bnez x{r_counter}, 1b",
             f"csrr x{r_val}, mcycle               # Read mcycle after the bounded wait",
-            f"sltiu x{r_val}, x{r_val}, 1000       # Pass if mcycle wrapped to a small value",
+            f"srli x{r_val}, x{r_val}, 20         # Pass if mcycle wrapped to below 2^20: a hart that takes",
+            f"seqz x{r_val}, x{r_val}             #   many cycles per instruction can exceed 1000 in the wait",
             "#if __riscv_xlen == 32",
             f"csrr x{r_val2}, mcycleh             # Read upper 32 bits after the bounded wait",
             f"sltiu x{r_val2}, x{r_val2}, 1        # Pass if upper 32 bits wrapped to zero",

@@ -19,14 +19,14 @@ exclude_extensions:
   # An AMO to the I/O region raises no exception and returns all ones.
   - Exceptions_Zaamo
   - Sv_ExceptionsZaamo
-  - Sv_ExceptionsZaamoSm
+  - Sv_ExceptionsZaamoSm_sv39_exceptions_Zaamo_mprv
   # Waived: legal implementation-defined behavior that the test does not allow for. An sc.w with
   # no reservation fails without a bus access, so it raises no access fault at
   # RVMODEL_ACCESS_FAULT_ADDRESS (the same case as Hazard3's Exceptions_Zalrsc exclusion,
   # https://github.com/riscv/riscv-isa-manual/issues/3350).
   - Exceptions_Zalrsc
   - Sv_ExceptionsZalrsc
-  - Sv_ExceptionsZalrscSm
+  - Sv_ExceptionsZalrscSm_sv39_exceptions_Zalrsc_mprv
   # mcounteren and scounteren read 0 but do not gate S/U-mode access to cycle, instret and
   # hpmcounter*: PerformanceCounterPlugin only allows the CSR addresses
   # (misc/PerformanceCounterPlugin.scala#L49-L57).
@@ -36,7 +36,9 @@ exclude_extensions:
   # Interrupt priority follows registration order, the last pending source wins: STI over SSI,
   # and an undelegated SEI/SSI/STI over MEI/MSI/MTI (misc/PrivilegedPlugin.scala#L481-L483,
   # #L544-L546, #L645-L660).
-  - InterruptsSm_priority
+  - InterruptsSm_priority_mideleg_M
+  - InterruptsSm_priority_mie
+  - InterruptsSm_priority_mip
   - InterruptsS_priority
   # With mstatus.MPRV = 1 and MPP = S, SUM and the U-page check use the current privilege (M)
   # instead of MPP (misc/MmuPlugin.scala#L322).

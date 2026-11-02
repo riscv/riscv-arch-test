@@ -9,7 +9,7 @@ ci_enabled: true
 exclude_extensions:
   # ebreak and c.ebreak raise an illegal-instruction exception, not a breakpoint: CsrPluginConfig.all
   # leaves ebreakGen false (plugin/CsrPlugin.scala#L63, warning at #L557)
-  - Exceptions_Sm
+  - Exceptions_Sm-
   - Exceptions_Zc
   # mepc[0] is writable: mepc is a full 32-bit register (plugin/CsrPlugin.scala#L982, #L1043)
   - Zicsr

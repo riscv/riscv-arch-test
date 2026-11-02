@@ -70,6 +70,9 @@ if [ "$size" -gt 524288 ]; then
   echo "run-e902.sh: image is $size bytes, larger than the 512 KB SRAM" >&2
   exit 2
 fi
+# Pad the image to whole words: od prints a short last line, which $readmemh would read as
+# a right-justified word and so load into the wrong bytes.
+truncate -s %4 "$WORK/image.bin" || exit 2
 od -An -tx1 -v -w4 "$WORK/image.bin" | tr -d ' ' | grep -v '^$' >"$WORK/mem.pat" || exit 2
 rm -f "$WORK/image.bin"
 

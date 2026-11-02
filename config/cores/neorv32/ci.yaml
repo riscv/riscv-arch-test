@@ -1,0 +1,14 @@
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0
+# CI configuration for the NEORV32 processor
+
+ci_enabled: true
+
+exclude_extensions:
+  # Waived: test assumption, not a DUT bug. cp_mcycle_wraparound requires mcycle < 1000 after a
+  # 100-iteration nop/addi/bnez loop; NEORV32 is multi-cycle and takes 11 cycles per iteration.
+  - Sm_mcsr_cntr
+
+apt_packages: "autoconf flex bison help2man libfl-dev ccache gnat"
+install_script: ".github/scripts/install-neorv32.sh"
+setup_script: ".github/scripts/setup-neorv32.sh"

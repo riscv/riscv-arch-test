@@ -4,7 +4,8 @@
 
 ci_enabled: true
 
-# Both configurations share this list. Paths are under
+# Both configurations share this list (ci.yaml has no per-configuration exclusions), so an entry for
+# one core also skips that group on the other. Paths are under
 #   E-class: https://gitlab.com/shaktiproject/cores/e-class/-/blob/e8a0dfd2d1c4907c74fb58432e379016871fdd3a/src/core/
 #   C-class: https://gitlab.com/shaktiproject/cores/c-class/-/blob/6feeb421f02f5f76dacba3c44caa61cfba60b56f/src/
 exclude_extensions:
@@ -14,7 +15,9 @@ exclude_extensions:
   # C-class also fails U_Zicntr (hpmcounter5 readable, see S_Zicntr), Sm_csr_insufficient_priv
   # (dcsr is readable in M-mode outside Debug mode), InterruptsSm_trigger_M and _U (see
   # InterruptsSm_trigger_S) and InterruptsSm_wfi_timeout_U (see InterruptsS_wfi_timeout_U).
-  - U
+  - U-
+  - U_Zicntr
+  - U_ucsr
   - Exceptions_U
   - Exceptions_Sm-
   - Exceptions_Zc
@@ -23,9 +26,12 @@ exclude_extensions:
   - Sm_inst
   - Sm_Zicntr
   - PMP_U_csr_access
-  - InterruptsSm_enable
-  - InterruptsSm_priority_mie
-  - InterruptsSm_priority_mip
+  - InterruptsSm_enable_M
+  - InterruptsSm_enable_U
+  - InterruptsSm_priority_mie_M
+  - InterruptsSm_priority_mie_U
+  - InterruptsSm_priority_mip_M
+  - InterruptsSm_priority_mip_U
   - InterruptsSm_trigger_M
   - InterruptsSm_trigger_U
   - InterruptsSm_wfi_timeout_U
@@ -59,7 +65,7 @@ exclude_extensions:
   - Exceptions_Zalrsc
   - PMP_Zalrsc_cfg_wr
   - Sv_ExceptionsZalrsc
-  - Sv_ExceptionsZalrscSm
+  - Sv_ExceptionsZalrscSm_sv39_exceptions_Zalrsc_mprv
   # E-class: pmpcfg2 reads entries 12..15 and pmpcfg3 reads 0 (E-class csrfile.bsv#L404).
   # Waived for C-class: a pmpcfg write with a reserved bit set leaves the entry unchanged, which
   # the WARL rules allow and Sail cannot model (the riscv-config "wr_illegal: Unchanged" that
@@ -109,7 +115,7 @@ exclude_extensions:
   # C-class: with a grain of 8 bytes, pmpaddr[0] is read-only zero in NAPOT mode too, so no NAPOT
   # region larger than 8 bytes can be encoded (sample_config/c64/rv64i_isa.yaml, pmpaddr bitmask
   # 0x3FFFFFFE).
-  - PMP_Sm_grain
+  - PMP_Sm_grain-
   # C-class: FENCE and FENCE.I write 0 to a nonzero rd (C-class decoder.bsv#L300-L307).
   - I-fence
   - Zifencei-fence.i

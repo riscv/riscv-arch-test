@@ -47,11 +47,11 @@ exclude_extensions:
   # the bus error is not reported: the store is dropped and the load returns 0. Sail has
   # no memory there and takes an access fault.
   - PMP_Sm
-  # XiangShan implements no tdata3, so an access raises illegal-instruction. tdata3 "is
-  # optional if no implemented triggers use it", and mcontrol6 uses it (textra32/64 is
-  # tdata3 for types 2-6), so riscv-unified-db requires TDATA3_IMPLEMENTED with mcontrol6
-  # and the config claims it. In SdtrigS and SdtrigU the trapping T-SBI access never
-  # returns, so those tests time out.
+  # cp_csr_unimplemented (SdtrigSm_csr_access_global) expects tdata3 to raise
+  # illegal-instruction, as it does on XiangShan, but Sail 0.16 always implements tdata3
+  # (fixed by riscv/sail-riscv#2060). In SdtrigSm/S/U_vector_mask and _vector_accesses, a
+  # load-address mcontrol6 trigger on element 8 of a vle8.v (vl = 9) reports the access's
+  # base address in xtval on XiangShan and the element's address on Sail.
   - SdtrigSm
   - SdtrigS
   - SdtrigU

@@ -440,7 +440,7 @@ int main(void)
     for (unsigned i = 0; i < NUM_PRIV_EXTENSIONS; i++)
         priv_extensions[i].supported = check(priv_extensions[i].name, priv_extensions[i].probe);
     bool has_s = have("S"), has_h = have("H");
-    // Probed individually only to explain a missing Zicntr: the extension needs all three.
+    // Probed individually only to explain a missing Zicntr or a time CSR that traps.
     bool cycle_ok   = PROBE_VALUE("zicsr", CSR_EXISTS(cycle))   != PROBE_TRAPPED;
     bool time_ok    = PROBE_VALUE("zicsr", CSR_EXISTS(time))    != PROBE_TRAPPED;
     bool instret_ok = PROBE_VALUE("zicsr", CSR_EXISTS(instret)) != PROBE_TRAPPED;
@@ -515,10 +515,12 @@ int main(void)
                "#       privileged 1.11 nor 1.12.  Sm is reported as 1.11.0 because that is the\n"
                "#       version it works under; declaring 1.12 makes the trap handler read\n"
                "#       mstatush and every trap then takes a nested trap.\n");
-    if (!have("Zicntr") && cycle_ok && instret_ok && !time_ok)
-        printf("# note: cycle and instret are implemented but time is not, so Zicntr is not\n"
-               "#       reported.  If the platform supplies time some other way, set\n"
-               "#       TIME_CSR_IMPLEMENTED to false and claim Zicntr by hand.\n");
+    if (have("Zicntr") && !time_ok)
+        printf("# note: cycle and instret are implemented but the time CSR traps, so Zicntr is reported\n"
+               "#       with TIME_CSR_IMPLEMENTED false: M-mode must emulate time from the platform timer.\n");
+    else if (!have("Zicntr") && (cycle_ok || instret_ok))
+        printf("# note: %s is implemented but %s is not, so Zicntr is not reported.\n",
+               cycle_ok ? "cycle" : "instret", cycle_ok ? "instret" : "cycle");
     printf("implemented_extensions:\n");
     print_extension(has_i ? "I" : "E", has_i ? "2.1" : "2.0");
     print_extension("Zicsr", "2.0");   // the extractor itself needs it to run

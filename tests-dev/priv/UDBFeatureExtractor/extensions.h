@@ -52,11 +52,11 @@
     X(Zalasr,   "1.0.0", "zicsr",              ".insn r 0x2F, 2, 0x1A, t1, a1, x0") /* lw.aq t1, (a1); binutils 2.45 lacks Zalasr */ \
     /* Zi*: CSRs, fences, conditional ops, may-be-ops, cache-block ops */                     \
     X(Zifencei, "2.0.0", "zifencei",           "fence.i")                                     \
-    /* Zicntr is cycle, time AND instret, so all three are read: a hart that implements only
-       some of them does not implement Zicntr.  VeeR EL2 and Ibex both have cycle and instret
-       but no time, and a cycle-only probe reported Zicntr for both.  See also the note the
-       extractor prints when it finds exactly that combination. */                            \
-    X(Zicntr,   "2.0",   "zicsr",              "csrr t1, cycle\n\tcsrr t1, time\n\tcsrr t1, instret") \
+    /* Zicntr is cycle, time and instret.  The time CSR may instead trap for M-mode to emulate
+       from the platform timer, which UDB models as TIME_CSR_IMPLEMENTED = false (written by
+       parameters.c), so only cycle and instret are required here.  A hart with cycle alone
+       (no instret) does not implement Zicntr. */                                             \
+    X(Zicntr,   "2.0",   "zicsr",              "csrr t1, cycle\n\tcsrr t1, instret")        \
     X(Zihpm,    "2.0.0", "zicsr",              "csrr t1, hpmcounter3")                        \
     X(Zicond,   "1.0",   "zicond",             "czero.eqz t1, t2, t2")                        \
     X(Zimop,    "1.0.0", "zimop",              "mop.r.0 t1, t2")                              \

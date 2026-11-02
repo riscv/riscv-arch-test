@@ -184,10 +184,11 @@ the same as the extension being implemented, and two cases are known:
   output as a starting point to check against the core's documentation, not as a verdict.
 
 The reverse mistake is worth naming too: an extension is reported only when _every_ part of it is
-present. `Zicntr` needs `cycle`, `time` and `instret`, so a hart with two of the three — VeeR EL2
-and Ibex both have `cycle` and `instret` but no `time` — is not reported, and the extractor prints
-a note saying which one is missing. If the platform supplies `time` another way, set
-`TIME_CSR_IMPLEMENTED` to false and claim `Zicntr` by hand.
+present, with one exception: `Zicntr` needs `cycle` and `instret`, but its `time` CSR may instead
+trap for M-mode to emulate from the platform timer. VeeR EL2, Ibex, Hazard3, CV32E40P, BOOM,
+VexRiscv and NaxRiscv have `cycle` and `instret` but no `time`; the extractor reports `Zicntr` for
+them with `TIME_CSR_IMPLEMENTED` false, as UDB models trap-emulated time, and prints a note. A hart
+with only one of `cycle` and `instret` is not reported.
 
 `Sm` is reported as 1.12 only when both `mconfigptr` and, on RV32, `mstatush` are present, since 1.12
 added both (`menvcfg` is not used as the marker because it exists only with U-mode). A hart with

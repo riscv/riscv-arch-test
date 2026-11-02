@@ -388,7 +388,7 @@ params:
     - false
     - false
     - false
-  NUM_PMP_ENTRIES: 16
+  NUM_PMP_ENTRIES: 64
   NUM_USABLE_PMP_ENTRIES: 8
   PMP_GRANULARITY: 3
   PMP_NA4_SUPPORTED: false

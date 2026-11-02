@@ -29,9 +29,10 @@ PMP without NAPOT (riscv-arch-test#2904).
 .github/scripts/install-cva6.sh ~/repos/cva6-builds
 export PATH=$HOME/repos/cva6-builds/bin:$PATH
 export CVA6_SNAPSHOT=$HOME/repos/cva6-builds
-make cv32a65x EXCLUDE_EXTENSIONS=PMP_Sm_cfg_A_tor_zero
-make cv32a60x
-make cv32a6_imac_sv32
+EXCL="$(.github/scripts/ci_config.py --exclusions config/cores/cva6/ci.yaml)"
+make cv32a65x EXCLUDE_EXTENSIONS="$EXCL"
+make cv32a60x EXCLUDE_EXTENSIONS="$EXCL"
+make cv32a6_imac_sv32 EXCLUDE_EXTENSIONS="$EXCL"
 ```
 
 The install script clones CVA6, builds the Verilator and Spike versions CVA6's own CI uses (the

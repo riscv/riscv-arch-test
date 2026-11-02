@@ -127,8 +127,8 @@
     "vmidlen": 7,
     "pmp": {
       "grain": 1,
-      // Sail count is 0, 16, or 64. The RTL has 8 NAPOT entries (G=1); the upper 8 are unusable.
-      "count": 16,
+      // The RTL accepts all 64 pmpaddr CSRs; entries 8-63 read as zero.
+      "count": 64,
       "usable_count": 8,
       "tor_supported": true,
       "na4_supported": false,

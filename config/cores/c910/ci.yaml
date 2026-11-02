@@ -5,7 +5,8 @@
 # Disabled: too slow for a GitHub runner. Run locally with `make c910-openc910`.
 ci_enabled: false
 
-# Each suite below fails at T-head-Semi/openc910 b91c909. RTL paths are relative to
+# Each suite below fails at T-head-Semi/openc910 b91c909 (rechecked on 2026-11-02: every entry still
+# has a failing test). RTL paths are relative to
 # https://github.com/T-head-Semi/openc910/blob/b91c909/C910_RTL_FACTORY/gen_rtl/
 exclude_extensions:
   # D, F (fmin, fmax and fused multiply-add groups): fmin/fmax return the canonical NaN for one sNaN operand
@@ -38,8 +39,9 @@ exclude_extensions:
   - Sv_ExceptionsZalrsc
   - Sv_ExceptionsZalrscSm
   - PMP_Zalrsc
-  # Enable and priority groups for S and U: ACT raises MSI from S- and U-mode, but the CLINT accepts MSIP writes
-  # only from M-mode (clint/rtl/ct_clint_func.v#L216).
+  # Enable and priority groups for S and U: an ACT harness problem, not a C910 bug. The harness raises MSI by
+  # writing MSIP from S- and U-mode, but the CLINT accepts MSIP writes only from M-mode
+  # (clint/rtl/ct_clint_func.v#L216), so these tests need a harness fix rather than a DUT fix.
   - InterruptsSm_enable_S
   - InterruptsSm_enable_U
   - InterruptsSm_priority_mideleg_S

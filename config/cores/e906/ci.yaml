@@ -48,6 +48,7 @@ exclude_extensions:
   - Sm_F
   - Sm_inst
   # A store bus error is imprecise even with mhint.AEE = 1: mepc is a later instruction (rtu/rtl/pa_rtu_retire.v#L476).
+  # The spec allows imprecise bus errors (norm:pma_imprecise_ok), but ACT requires a precise fault: https://github.com/riscv/riscv-arch-test/issues/3127
   - Exceptions_F
   - Exceptions_Sm-
   - Exceptions_U

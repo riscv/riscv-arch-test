@@ -56,9 +56,13 @@ exclude_extensions:
   # Sail 0.16 does not. riscv/riscv-arch-test#3030 leaves those CSRs unwalked where the
   # extensions are declared; with it, Ssstrict_Sm_CSR passes on XiangShan, so that entry can
   # go when #3030 merges. Ssstrict_S_CSR-05 still fails with it: with menvcfg.STCE = 0,
-  # vstimecmp is accessible from HS-mode, where every ISA manual release requires
-  # illegal-instruction (norm:menvcfg_stce_op2; NewCSR/CSRPermitModule.scala L225-L227;
-  # https://github.com/OpenXiangShan/XiangShan/issues/6464, closed as not planned).
+  # vstimecmp is accessible from HS-mode (NewCSR/CSRPermitModule.scala L225-L227). This is
+  # https://github.com/OpenXiangShan/XiangShan/issues/6464, closed as not planned because
+  # XiangShan follows a fixed version of the manual rather than its later updates. But the
+  # requirement is not new: Sstc as added to the manual in 2024 and every ISA manual release say an access
+  # to "stimecmp or vstimecmp in a mode other than M-mode raises an illegal-instruction
+  # exception" (norm:menvcfg_stce_op2); only the unreleased main branch dropped "or
+  # vstimecmp" from December 2025 until riscv/riscv-isa-manual#3344 restored it.
   - Ssstrict_S_CSR
   - Ssstrict_Sm_CSR
   # mstateen0.CSRIND, AIA and IMSIC are writable (XiangShan implements Sscsrind and
@@ -70,7 +74,8 @@ exclude_extensions:
   # reads hstateen3 without first writing it to zero. XiangShan does not reset hstateen3
   # (NewCSR/StateEnBundle.scala L45) and reads bit 63 as 1, which the spec allows: machine-level
   # software "is responsible for initializing the corresponding writable bits of the hstateen
-  # and sstateen CSRs to zeros" (norm:hstateen_sstateen_zero_initialization).
+  # and sstateen CSRs to zeros" (norm:hstateen_sstateen_zero_initialization). Fixed in the
+  # boot code by riscv/riscv-arch-test#3126.
   - Smstateen
   # PMP_Sm_cfg_A_tor_zero stores to and loads from physical address 0. The SimTop PMA
   # table makes 0x0-0x0FFF_FFFF readable and writable I/O with no device behind it, and

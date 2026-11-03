@@ -21,12 +21,15 @@ exclude_extensions:
   # stays writable, and writing 1 clears SIE, while menvcfg.DTE = 0, when the hart must
   # behave as though Ssdbltrp is not implemented (norm:menvcfg_dte_op); NewCSR/MachineLevel.scala
   # L584 gates only the sstatus view on DTE. Only Sm_mcsr_walk-00 and -10 fail, but numbered
-  # files cannot be excluded singly.
+  # files cannot be excluded singly. Filed upstream as
+  # https://github.com/OpenXiangShan/XiangShan/issues/6794 (FIOM) and
+  # https://github.com/OpenXiangShan/XiangShan/issues/6381 (SDT with DTE = 0).
   - Sm_mcsr_access
   - Sm_mcsr_walk
   - Sm_scsr
   - S_scsr-
-  # henvcfg.FIOM is read-only zero in the same way.
+  # henvcfg.FIOM is read-only zero in the same way (also
+  # https://github.com/OpenXiangShan/XiangShan/issues/6794).
   - Sm_H_hcsr_access
   - Sm_H_hcsr_walk
   # Counter reads are not ordered after older instructions (norm:csr_access_order):
@@ -50,7 +53,8 @@ exclude_extensions:
   # The CSR walks differ on the AIA, Sscsrind and Smrnmi CSRs (mtopi, stopi, vstopi,
   # miselect/mireg, siselect/sireg, vsiselect/vsireg, mn*), which XiangShan implements and
   # Sail 0.16 does not. With menvcfg.STCE = 0, vstimecmp is still accessible from HS-mode
-  # (NewCSR/CSRPermitModule.scala L225-L227).
+  # (NewCSR/CSRPermitModule.scala L225-L227;
+  # https://github.com/OpenXiangShan/XiangShan/issues/6464, closed as not planned).
   - Ssstrict_S_CSR
   - Ssstrict_Sm_CSR
   # mstateen0.CSRIND, AIA and IMSIC are writable (XiangShan implements Sscsrind and

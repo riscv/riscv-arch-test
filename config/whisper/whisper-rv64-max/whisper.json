@@ -47,6 +47,9 @@
   },
 
   "csr": {
+    // No tcontrol: SDTRIG_BREAKPOINT_REENTRANCY is Use_interrupt_enables (sail.json has no tcontrol).
+    "tcontrol" : { "exists" : "false" },
+
     // misa.C is writable, so tests can clear it and run with IALIGN = 32 (MUTABLE_MISA_C).  Giving misa a
 
     // mask also needs its reset value, which is otherwise taken from the ISA string.

@@ -70,4 +70,4 @@ apt_packages: "autoconf flex bison help2man libfl-dev ccache zlib1g-dev device-t
 install_script: ".github/scripts/install-cva6.sh"
 setup_script: ".github/scripts/setup-cva6.sh"
 config_shards:
-  cv32a6_imac_sv32: 4
+  cv32a6_imac_sv32: 2

@@ -16,7 +16,12 @@ exclude_extensions:
   - Exceptions_S
   - Exceptions_U
   - Sv_Exceptions_sv39_exceptions
-  # An AMO to the I/O region raises no exception and returns all ones.
+  # Waived: an AMO to the unmapped I/O address RVMODEL_ACCESS_FAULT_ADDRESS raises no exception
+  # and returns all ones. NaxRiscv sends every AMO and SC through the data cache's atomic path,
+  # whatever the address, and only other accesses to I/O to the peripheral bus that reports the
+  # error (lsu2/Lsu2Plugin.scala#L1611-L1612). The spec only recommends that PMA violations trap
+  # precisely and lets error responses be reported as imprecise bus-error interrupts
+  # (norm:pma_precise_recom, norm:pma_imprecise_ok), so ACT cannot require the access fault.
   - Exceptions_Zaamo
   - Sv_ExceptionsZaamo
   - Sv_ExceptionsZaamoSm_sv39_exceptions_Zaamo_mprv

@@ -4,7 +4,7 @@
 # Build the NEORV32 Verilator testbench for CI.
 # Usage: install-neorv32.sh <install-dir>
 # Needs GNAT (to build GHDL) and the Verilator build dependencies; see ci.yaml.
-# Cache key derives from sha256(this file); bump the pins below to invalidate.
+# CI hashes this installer and the harness/runner files listed in neorv32/ci.yaml.
 
 set -euo pipefail
 

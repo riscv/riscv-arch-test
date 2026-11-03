@@ -12,3 +12,7 @@ exclude_extensions:
 apt_packages: "autoconf flex bison help2man libfl-dev ccache gnat"
 install_script: ".github/scripts/install-neorv32.sh"
 setup_script: ".github/scripts/setup-neorv32.sh"
+cache_inputs:
+  - .github/scripts/neorv32-act-top.vhd
+  - .github/scripts/neorv32-act-tb.sv
+  - .github/scripts/run-neorv32.sh

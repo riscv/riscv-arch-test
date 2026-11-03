@@ -310,8 +310,10 @@ exclude_extensions:
   - InterruptsS_wfi_timeout_VU
   - InterruptsSm_wfi_timeout_VU
   # A misaligned load whose second page has a guest-page fault raises load address misaligned:
-  # Rocket translates only the first page before raising misaligned, while the reference model
-  # with MISALIGNED_LDST_EXCEPTION_PRIORITY = low translates both and reports the guest-page fault.
+  # Rocket translates only the first page and then raises misaligned, which the spec permits for a
+  # hart that never performs misaligned accesses. Sail (priority low) splits the access at the page
+  # boundary into aligned pieces and reports the second page's guest-page fault
+  # (https://github.com/riscv/riscv-arch-test/issues/3124).
   - Shtvala_straddle
   # Hypervisor address translation:
   #  - Sv_H_*_gpa_wide: htval on a guest-page fault during the VS-stage walk is not the guest physical

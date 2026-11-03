@@ -35,7 +35,8 @@ exclude_extensions:
   # Counter reads are not ordered after older instructions (norm:csr_access_order):
   # two instret reads 8 instructions apart differ by 0-21, and mhpmcounter11 read right
   # after the counted load is still 0 (and its overflow bit still clear). Counters are
-  # missing from CSROoORead.waitForwardInOrderCsrReadList.
+  # missing from CSROoORead.waitForwardInOrderCsrReadList
+  # (https://github.com/OpenXiangShan/XiangShan/issues/6852).
   - Zicntr
   - Sm_Zicntr-
   - Sscofpmf_Sm_inhibit_lo

@@ -21,14 +21,14 @@ exclude_extensions:
   # whatever the address, and only other accesses to I/O to the peripheral bus that reports the
   # error (lsu2/Lsu2Plugin.scala#L1611-L1612). The spec only recommends that PMA violations trap
   # precisely and lets error responses be reported as imprecise bus-error interrupts
-  # (norm:pma_precise_recom, norm:pma_imprecise_ok), so ACT cannot require the access fault.
+  # (norm:pma_precise_recom, norm:pma_imprecise_ok), so ACT cannot require the access fault (https://github.com/riscv/riscv-arch-test/issues/3127).
   - Exceptions_Zaamo
   - Sv_ExceptionsZaamo
   - Sv_ExceptionsZaamoSm_sv39_exceptions_Zaamo_mprv
   # Waived: legal implementation-defined behavior that the test does not allow for. An sc.w with
   # no reservation fails without a bus access, so it raises no access fault at
   # RVMODEL_ACCESS_FAULT_ADDRESS (the same case as Hazard3's Exceptions_Zalrsc exclusion,
-  # https://github.com/riscv/riscv-isa-manual/issues/3350).
+  # https://github.com/riscv/riscv-isa-manual/issues/3350, https://github.com/riscv/riscv-arch-test/issues/3127).
   - Exceptions_Zalrsc
   - Sv_ExceptionsZalrsc
   - Sv_ExceptionsZalrscSm_sv39_exceptions_Zalrsc_mprv

@@ -17,7 +17,6 @@ from testgen.asm.csr import gen_csr_read_sigupd
 from testgen.asm.helpers import comment_banner, load_float_reg
 from testgen.constants import INDENT
 from testgen.data.state import TestData
-from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.PrivCommon import (
     STATUS_CSR,
     gen_status_read_sigupd,
@@ -31,6 +30,12 @@ from testgen.priv.extensions.PrivCommon import (
 _FCSRS = [("fcsr", None), ("frm", None), ("fflags", None)]
 
 _ACCESS_COVERPOINT = "cp_fcsr_access"
+
+# H_F (VS- and VU-mode) tests only what the hypervisor adds (norm:vsstatus_fs_op): an fp instruction
+# is illegal when either vsstatus.FS or sstatus.FS is Off, and changing fp state sets both to Dirty.
+# Which instructions change fp state is already tested per instruction by Sm_F, S_F and U_F, so H_F
+# uses one instruction of each kind, and accesses the fp CSRs only with both fields Dirty or one Off.
+_H_ACCESS_FS_PAIRS = [(3, 3), (0, 3), (3, 0)]  # (vsstatus.FS, sstatus.FS)
 
 
 @dataclass(frozen=True)
@@ -143,9 +148,18 @@ def _transition_setup(test_data: TestData, priv: str, regs: _FcsrRegs) -> list[s
 
 
 def _gen_fs_transition(
-    test_data: TestData, priv: str, covergroup: str, regs: _FcsrRegs, fs: int, hs: int | None
+    test_data: TestData,
+    priv: str,
+    covergroup: str,
+    regs: _FcsrRegs,
+    fs: int,
+    hs: int | None,
+    representative: bool = False,
 ) -> list[str]:
-    """cp_xstatus_FS_transition testcases for one value of xstatus.FS (and of sstatus.FS in VS- and VU-mode)."""
+    """cp_xstatus_FS_transition testcases for one value of xstatus.FS (and of sstatus.FS in VS- and VU-mode).
+
+    With representative, only one instruction of each kind, and none of the D or Zfa instructions.
+    """
     status = STATUS_CSR[priv]
     coverpoint = _transition_coverpoint(priv)
     temp_reg, scratch_reg = regs.temp, regs.scratch
@@ -193,6 +207,16 @@ def _gen_fs_transition(
         f"add x{temp_reg}, x{temp_reg}, x{temp_reg}",
     ]
     insns = [*nondeterministic_initial_clean_insns, *fp_csr_write_insns, *deterministic_insns, *flag_raising_insns]
+    if representative:  # one instruction of each kind
+        insns = [
+            nondeterministic_initial_clean_insns[0],  # fsw
+            nondeterministic_initial_clean_insns[3],  # csrr fcsr
+            fp_csr_write_insns[0],  # csrrw fcsr
+            deterministic_insns[0],  # flw
+            deterministic_insns[1],  # fadd.s
+            deterministic_insns[-1],  # add, which must not change fp state
+            flag_raising_insns[0],  # feq.s of a signaling NaN, which only sets fflags
+        ]
     # fsw, fmv.x.w, fclass.s, csrr of FP CSRs, and fmvh.x.d have their own cross
     coverpoint_nd = f"{coverpoint}_nondeterministic"
 
@@ -231,6 +255,8 @@ def _gen_fs_transition(
                 gen_status_read_sigupd(temp_reg, test_data, priv),
             ]
         )
+    if representative:
+        return lines
     lines.append("\n#ifdef D_SUPPORTED")
     for insn in ["fcvt.s.d f0, f1"]:
         lines.extend(
@@ -320,34 +346,21 @@ def gen_fcsr_tests(test_data: TestData, priv: str, covergroup: str) -> list[str]
     return lines
 
 
-def gen_fcsr_test_chunks(test_data: TestData, priv: str, covergroup: str, split_name: str) -> list[TestChunk]:
-    """Generate FP CSR and xstatus.FS tests in privilege mode priv as one chunk per FS value.
+def gen_h_fcsr_tests(test_data: TestData, priv: str, covergroup: str) -> list[str]:
+    """Generate the H_F fp CSR and FS tests in VS- or VU-mode (priv) as the code of one chunk.
 
-    Each chunk holds the cp_fcsr_access and cp_xstatus_FS_transition testcases for one
-    (xstatus.FS, sstatus.FS) pair, so the splitter can spread the VS- and VU-mode tests, whose
-    status accesses go through T-SBI, over several files of similar run time. A chunk may start a
-    file, so each one sets up the registers it reads instead of relying on an earlier chunk. The
-    first chunk carries split_name.
+    For each (vsstatus.FS, sstatus.FS) pair: the cp_fcsr_access testcases if the pair is in
+    _H_ACCESS_FS_PAIRS, and the representative cp_vsstatus_FS_transition instructions.
     """
-    test_chunks: list[TestChunk] = []
     regs = _get_fcsr_regs(test_data)
-
-    for idx, (fs, hs) in enumerate(itertools.product(range(4), hs_status_values(priv))):
-        if idx == 0:
-            tc = test_data.begin_test_chunk(split_name)
-            tc.section_header = _access_banner(priv)
-        else:
-            tc = test_data.new_test_chunk(test_chunks)
-        tc.code.extend(_access_setup(regs))
-        tc.code.extend(_gen_fcsr_access(test_data, priv, covergroup, regs, fs, hs))
-        if idx == 0:
-            tc.code.append(_transition_banner(priv))
-        # The fp register loads need FS (and sstatus.FS in VS- and VU-mode) not Off, which the
-        # access testcases may have left behind.
-        tc.code.extend(set_status_fields(regs.temp, priv, fs=3))
-        tc.code.extend(_transition_setup(test_data, priv, regs))
-        tc.code.extend(_gen_fs_transition(test_data, priv, covergroup, regs, fs, hs))
-
+    lines = [_access_banner(priv), *_access_setup(regs)]
+    for fs, hs in _H_ACCESS_FS_PAIRS:
+        lines.extend(_gen_fcsr_access(test_data, priv, covergroup, regs, fs, hs))
+    lines.append(_transition_banner(priv))
+    # The fp register loads need vsstatus.FS and sstatus.FS not Off, which the access testcases leave behind.
+    lines.extend(set_status_fields(regs.temp, priv, fs=3))
+    lines.extend(_transition_setup(test_data, priv, regs))
+    for fs, hs in itertools.product(range(4), hs_status_values(priv)):
+        lines.extend(_gen_fs_transition(test_data, priv, covergroup, regs, fs, hs, representative=True))
     _return_fcsr_regs(test_data, regs)
-    test_chunks.append(test_data.end_test_chunk())
-    return test_chunks
+    return lines

@@ -16,7 +16,7 @@ from testgen.asm.csr import csr_access_test, gen_csr_read_sigupd
 from testgen.asm.helpers import comment_banner, gated, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.FCommon import gen_fcsr_test_chunks
+from testgen.priv.extensions.FCommon import gen_h_fcsr_tests
 from testgen.priv.extensions.HCommon import (
     H_HS_CSRS,
     H_VS_CSRS,
@@ -522,25 +522,24 @@ def make_h_zicntr(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "H",
     required_extensions=["H", "F"],
-    march_extensions=["F", "D", "Zfa"],
+    march_extensions=["F"],
     extra_defines=["#define BOOT_TO_SMODE"],
-    # Every vsstatus/sstatus access from VU-mode (and every sstatus access from VS-mode) is a T-SBI
-    # call, so these testcases run several times as many instructions as typical priv testcases.
-    # Keep each file to one vsstatus.FS value (about 220 testcases).
-    testcases_per_file=256,
 )
 def make_h_f(test_data: TestData) -> list[TestChunk]:
-    """Generate H_F tests: the floating-point CSRs and instructions in VS and VU modes against vsstatus.FS and sstatus.FS."""
+    """Generate H_F tests: the floating-point CSRs and instructions in VS and VU modes against vsstatus.FS and sstatus.FS.
+
+    These test norm:vsstatus_fs_op with one instruction of each kind; see FCommon.gen_h_fcsr_tests.
+    """
 
     test_chunks: list[TestChunk] = []
 
-    for tc in gen_fcsr_test_chunks(test_data, "VS", "H_F_cg", "F_vs"):
-        tc.code = ["RVTEST_TSBI_GOTO_VSMODE", *tc.code, "RVTEST_TSBI_GOTO_SMODE"]
-        test_chunks.append(tc)
-
-    for tc in gen_fcsr_test_chunks(test_data, "VU", "H_F_cg", "F_vu"):
-        tc.code = ["RVTEST_TSBI_GOTO_VUMODE", *tc.code, "RVTEST_TSBI_GOTO_SMODE"]
-        test_chunks.append(tc)
+    for priv, split_name, goto in [
+        ("VS", "F_vs", "RVTEST_TSBI_GOTO_VSMODE"),
+        ("VU", "F_vu", "RVTEST_TSBI_GOTO_VUMODE"),
+    ]:
+        tc = test_data.begin_test_chunk(split_name)
+        tc.code.extend([goto, *gen_h_fcsr_tests(test_data, priv, "H_F_cg"), "RVTEST_TSBI_GOTO_SMODE"])
+        test_chunks.append(test_data.end_test_chunk())
 
     return test_chunks
 

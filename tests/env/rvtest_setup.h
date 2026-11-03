@@ -1563,6 +1563,16 @@
             LI(t0, HSTATEEN0_JVT | HSTATEEN0_FCSR)
             csrw hstateen0, t0
           #endif
+          // mstateen1-3.SE is set above, so hstateen1-3 must be written to zero: the spec
+          // leaves their reset value to machine-level software (norm:hstateen_sstateen_zero_initialization).
+          csrw hstateen1, zero
+          csrw hstateen2, zero
+          csrw hstateen3, zero
+          #if __riscv_xlen == 32
+            csrw hstateen1h, zero
+            csrw hstateen2h, zero
+            csrw hstateen3h, zero
+          #endif
         #endif
       #endif // H_SUPPORTED
     #endif // STANDARD_SM_SUPPORTED
@@ -1636,7 +1646,7 @@
   // Keep custom state and reserved bits disabled.
   #ifdef SSSTATEEN_SUPPORTED
     li t0, SSTATEEN0_JVT | SSTATEEN0_FCSR
-    csrs sstateen0, t0 // enable access from lower privilege mode
+    csrw sstateen0, t0 // enable access from lower privilege mode; clear the other writable bits
   #endif
 
   // Initialize S-mode CSRs

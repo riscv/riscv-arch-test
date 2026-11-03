@@ -65,8 +65,12 @@ exclude_extensions:
   # XiangShan implements no tdata3, so an access raises illegal-instruction. tdata3 "is
   # optional if no implemented triggers use it", and mcontrol6 uses it (textra32/64 is
   # tdata3 for types 2-6), so riscv-unified-db requires TDATA3_IMPLEMENTED with mcontrol6
-  # and the config claims it. In SdtrigS and SdtrigU the trapping T-SBI access never
-  # returns, so those tests time out.
+  # and the config claims it (the spec's inconsistency on this is
+  # https://github.com/riscv/riscv-isa-manual/issues/3491). In SdtrigS and SdtrigU the
+  # trapping T-SBI access never returns, so those tests time out. Separately, a load or
+  # store trigger on a vector element after the first reports the first active byte of the
+  # 16-byte flow in xtval instead of the element's address
+  # (https://github.com/OpenXiangShan/XiangShan/issues/6851).
   - SdtrigSm
   - SdtrigS
   - SdtrigU

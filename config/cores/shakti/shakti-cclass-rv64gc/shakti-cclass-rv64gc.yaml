@@ -86,9 +86,9 @@ params:
   STVEC_MODES: [0, 1]
   STVEC_BASE_ALIGNMENT_VECTORED: 4
   STVAL_WIDTH: 64
-  # test_soc ties the core's machine and supervisor external interrupt inputs to 0
-  # (test_soc/c64_c32/Soc.bsv#L204-L211). mip.SEIP is still writable by software.
-  MEI_INTR_IMPL: false
+  # mie.MEIE and mie.SEIE are writable. ACT's testbench drives their external inputs
+  # independently through byte registers at 0x20004 and 0x20005; mip.SEIP is also writable.
+  MEI_INTR_IMPL: true
   MSI_INTR_IMPL: true
   MTI_INTR_IMPL: true
   SEI_INTR_IMPL: true

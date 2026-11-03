@@ -50,6 +50,8 @@ SOC_CONFIG="git+$GITLAB/cores/soc_config.git@823f4ad698567b7de5b25963eb855ebacb4
 # setuptools: soc_config installs csrbox and riscv-config with `pip install . --no-build-isolation`, and
 # venvs of Python 3.12 and later no longer include setuptools.
 PY_PINS=(Cerberus==1.3.8 ruamel.yaml==0.19.1 pytz==2026.6 GitPython==3.2.1 setuptools==80.9.0)
+# soc_config decodes pip's captured stdout as ASCII, including successful installs.
+export PIP_PROGRESS_BAR=off
 
 mkdir -p "$INSTALL_DIR/bin"
 
@@ -109,6 +111,106 @@ for dep in "${ECLASS_DEPS[@]}"; do
   read -r name url commit <<<"$dep"
   fetch "$url" "$commit" "$ECLASS/base-sim/$name"
 done
+# Add independent byte controls for the testbench's external interrupt inputs.
+patch -p1 -l -d "$ECLASS" <<'ACT_ECLASS_INTERRUPTS'
+--- a/base-sim/sign_dump.bsv
++++ b/base-sim/sign_dump.bsv
+@@ -49,9 +49,11 @@
+     interface AXI4_Master_IFC#(`paddr, XLEN, USERSPACE) master;
+     interface AXI4_Slave_IFC#(`paddr, XLEN, USERSPACE) slave;
+     method Bool mv_end_simulation;
++    method Bit#(2) mv_ext_interrupts;
+   endinterface
+   (*synthesize*)
+   module mksign_dump_axi4(Ifc_sign_dump_axi4);
++    Reg#(Bit#(2)) rg_ext_interrupts <- mkRegA(0);
+     let word_count = 128/valueOf(XLEN);
+
+     Reg#(Bool) rg_start<- mkRegA(False);
+@@ -85,9 +87,20 @@
+     rule configure_registers(!rg_start);
+       let aw <- pop_o (s_xactor.o_wr_addr);
+       let w  <- pop_o (s_xactor.o_wr_data);
++      Bit#(TLog#(TDiv#(XLEN, 8))) byte_offset = truncate(aw.awaddr);
++      let write_data = w.wdata >> {byte_offset, 3'b0};
+       let b = AXI4_Wr_Resp {bresp: AXI4_SLVERR, buser: aw.awuser, bid:aw.awid};
+       if (aw.awaddr[3:0]=='h0) begin
+         rg_start_address<=truncate(w.wdata);
++        b.bresp=AXI4_OKAY;
++      end
++      // ACT interrupt controls: byte 4 drives MEIP, byte 5 drives SEIP.
++      else if (aw.awaddr[3:0]=='h4) begin
++        rg_ext_interrupts <= {rg_ext_interrupts[1], write_data[0]};
++        b.bresp=AXI4_OKAY;
++      end
++      else if (aw.awaddr[3:0]=='h5) begin
++        rg_ext_interrupts <= {write_data[0], rg_ext_interrupts[0]};
+         b.bresp=AXI4_OKAY;
+       end
+       else if (aw.awaddr[3:0]=='h8) begin
+@@ -129,6 +142,7 @@
+       if(rg_total_count==1)
+         rg_start<=False;
+     endrule
++    method mv_ext_interrupts = rg_ext_interrupts;
+     interface master=m_xactor.axi_side;
+     interface slave=s_xactor.axi_side;
+     method mv_end_simulation = rg_end_sim[1];
+@@ -138,10 +152,12 @@
+     interface AXI4_Lite_Master_IFC#(`paddr, XLEN, USERSPACE) master;
+     interface AXI4_Lite_Slave_IFC#(`paddr, XLEN, USERSPACE) slave;
+     method Bool mv_end_simulation;
++    method Bit#(2) mv_ext_interrupts;
+   endinterface
+
+   (*synthesize*)
+   module mksign_dump_axi4lite(Ifc_sign_dump_axi4lite);
++    Reg#(Bit#(2)) rg_ext_interrupts <- mkRegA(0);
+     let word_count = 128/valueOf(XLEN);
+
+     Reg#(Bool) rg_start<- mkRegA(False);
+@@ -175,9 +191,20 @@
+     rule configure_registers(!rg_start);
+       let aw <- pop_o (s_xactor.o_wr_addr);
+       let w  <- pop_o (s_xactor.o_wr_data);
++      Bit#(TLog#(TDiv#(XLEN, 8))) byte_offset = truncate(aw.awaddr);
++      let write_data = w.wdata >> {byte_offset, 3'b0};
+       let b = AXI4_Lite_Wr_Resp {bresp: AXI4_LITE_SLVERR, buser: aw.awuser};
+       if (aw.awaddr[3:0]=='h0) begin
+         rg_start_address<=truncate(w.wdata);
++        b.bresp=AXI4_LITE_OKAY;
++      end
++      // ACT interrupt controls: byte 4 drives MEIP, byte 5 drives SEIP.
++      else if (aw.awaddr[3:0]=='h4) begin
++        rg_ext_interrupts <= {rg_ext_interrupts[1], write_data[0]};
++        b.bresp=AXI4_LITE_OKAY;
++      end
++      else if (aw.awaddr[3:0]=='h5) begin
++        rg_ext_interrupts <= {write_data[0], rg_ext_interrupts[0]};
+         b.bresp=AXI4_LITE_OKAY;
+       end
+       else if (aw.awaddr[3:0]=='h8) begin
+@@ -219,6 +246,7 @@
+       if(rg_total_count==1)
+         rg_start<=False;
+     endrule
++    method mv_ext_interrupts = rg_ext_interrupts;
+     interface master=m_xactor.axi_side;
+     interface slave=s_xactor.axi_side;
+     method mv_end_simulation = rg_end_sim[1];
+--- a/base-sim/Soc.bsv
++++ b/base-sim/Soc.bsv
+@@ -248,6 +248,9 @@
+     mkConnection(eclass.sb_clint_msip,clint.sb_clint_msip);
+     mkConnection(eclass.sb_clint_mtip,clint.sb_clint_mtip);
+     mkConnection(eclass.sb_clint_mtime,clint.sb_clint_mtime);
++    rule rl_connect_external_interrupt;
++      eclass.sb_ext_interrupt.put(signature.mv_ext_interrupts[0]);
++    endrule
+
+     `ifdef rtldump
+       interface io_dump= eclass.io_dump;
+ACT_ECLASS_INTERRUPTS
 (
   cd "$ECLASS/base-sim"
   # Build with the open-source bsc and Verilator 5, as on the upstream fix branch for
@@ -157,6 +259,67 @@ for dep in "${CCLASS_DEPS[@]}"; do
   read -r name url commit <<<"$dep"
   fetch "$url" "$commit" "$CCLASS/$name"
 done
+patch -p1 -l -d "$CCLASS" <<'ACT_CCLASS_INTERRUPTS'
+--- a/test_soc/c64_c32/sign_dump.bsv
++++ b/test_soc/c64_c32/sign_dump.bsv
+@@ -21,11 +21,13 @@
+   interface Ifc_sign_dump;
+     interface AXI4_Master_IFC#(`paddr,`axi4_id_width, `buswidth, `USERSPACE) master;
+     interface AXI4_Slave_IFC#(`paddr, `axi4_id_width, `buswidth, `USERSPACE) slave;
++    method Bit#(2) mv_ext_interrupts;
+   endinterface
+
+   (*synthesize*)
+   module mksign_dump(Ifc_sign_dump);
+
++    Reg#(Bit#(2)) rg_ext_interrupts <- mkReg(0);
+     let word_count = 128/valueOf(`buswidth);
+
+     Reg#(Bool) rg_start<- mkReg(False);
+@@ -59,9 +61,20 @@
+     rule configure_registers(!rg_start);
+       let aw <- pop_o (s_xactor.o_wr_addr);
+       let w  <- pop_o (s_xactor.o_wr_data);
++      Bit#(TLog#(TDiv#(`buswidth, 8))) byte_offset = truncate(aw.awaddr);
++      let write_data = w.wdata >> {byte_offset, 3'b0};
+       let b = AXI4_Wr_Resp {bresp: AXI4_SLVERR, buser: aw.awuser, bid:aw.awid};
+       if (aw.awaddr[3:0]=='h0) begin
+         rg_start_address<=truncate(w.wdata);
++        b.bresp=AXI4_OKAY;
++      end
++      // ACT interrupt controls: byte 4 drives MEIP, byte 5 drives SEIP.
++      else if (aw.awaddr[3:0]=='h4) begin
++        rg_ext_interrupts <= {rg_ext_interrupts[1], write_data[0]};
++        b.bresp=AXI4_OKAY;
++      end
++      else if (aw.awaddr[3:0]=='h5) begin
++        rg_ext_interrupts <= {write_data[0], rg_ext_interrupts[0]};
+         b.bresp=AXI4_OKAY;
+       end
+       else if (aw.awaddr[3:0]=='h8) begin
+@@ -105,6 +118,7 @@
+       if(rg_total_count==1)
+         rg_start<=False;
+     endrule
++    method mv_ext_interrupts = rg_ext_interrupts;
+     interface master=m_xactor.axi_side;
+     interface slave=s_xactor.axi_side;
+   endmodule
+--- a/test_soc/c64_c32/Soc.bsv
++++ b/test_soc/c64_c32/Soc.bsv
+@@ -203,9 +203,9 @@
+     /*doc:rule: */
+     rule rl_connect_plic;
+       for (Integer i = 0; i<`num_harts; i = i + 1) begin
+-         ccore[i].sb_plic_meip(0);
++         ccore[i].sb_plic_meip(signature.mv_ext_interrupts[0]);
+       `ifdef supervisor
+-        ccore[i].sb_plic_seip(0);
++        ccore[i].sb_plic_seip(signature.mv_ext_interrupts[1]);
+       `endif
+       end
+     endrule:rl_connect_plic
+ACT_CCLASS_INTERRUPTS
 python3 -m venv "$INSTALL_DIR/venv"
 "$INSTALL_DIR/venv/bin/pip" install -q "${PY_PINS[@]}" "$SOC_CONFIG"
 (

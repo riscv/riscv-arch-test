@@ -53,7 +53,9 @@ output to `app_log` and always exits 0, so `run-shakti.sh` runs each test in its
 and passes it only if `app_log` holds `RVCP-SUMMARY: TEST PASSED`; a test that never ends is
 stopped by the runner's timeout. On C-class, a byte load from the UART status register never
 completes, so the console macros read it with `lhu`, and committing `j .` also ends the
-simulation. Neither SoC connects an external interrupt source.
+simulation. The installer adds byte registers at 0x20004 (MEIP) and 0x20005 (SEIP on C-class) to the
+signature-dump device and connects them to the core interrupt inputs. The interrupt macros
+set and clear each input independently.
 
 ## Checked with the UDB feature extractor
 
@@ -63,8 +65,8 @@ right and the extractor measured something else or assumed a value:
 
 - E-class `MTVEC_ILLEGAL_WRITE_BEHAVIOR` is `custom`, not `retain`: a write with MODE 2 or 3
   keeps the old MODE but takes the new BASE.
-- `MEI_INTR_IMPL` is false on both: `mie.MEIE` is writable, but neither SoC drives the external
-  interrupt inputs.
+- `MEI_INTR_IMPL` is true on both because `mie.MEIE` is writable. The ACT testbench supplies
+  an external interrupt source through the registers described above.
 - E-class `REPORT_VA_IN_MTVAL_ON_BREAKPOINT` is true: `ebreak` writes PC + 1 to mtval, which is
   neither the PC nor 0, and the tests report it.
 - E-class `Zihintntl` and `Zihintpause` are listed; the extractor does not test them.

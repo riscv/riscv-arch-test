@@ -91,9 +91,9 @@ params:
 
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
 
-  # base-sim connects the CLINT's msip and mtip to the core but nothing to its external
-  # interrupt input (base-sim/Soc.bsv#L248-L250).
-  MEI_INTR_IMPL: false
+  # mie.MEIE is writable. The ACT testbench connects a byte register at 0x20004 to
+  # the external interrupt input; CLINT supplies software and timer interrupts.
+  MEI_INTR_IMPL: true
   MSI_INTR_IMPL: true
   MTI_INTR_IMPL: true
 

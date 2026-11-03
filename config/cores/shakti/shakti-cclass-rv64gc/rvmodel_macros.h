@@ -96,4 +96,18 @@
 
 #define RVMODEL_MSIP_ADDRESS      0x02000000
 
+// The installer adds byte registers to the signature-dump device and connects them to
+// the core's external interrupt inputs. Each register independently sets or clears one input.
+#define SHAKTI_SET_EXT_INT(_R1, _R2, _ADDRESS) \
+  LI(_R1, _ADDRESS);                         \
+  LI(_R2, 1);                                \
+  sb _R2, 0(_R1);
+#define SHAKTI_CLR_EXT_INT(_R1, _R2, _ADDRESS) \
+  LI(_R1, _ADDRESS);                         \
+  sb zero, 0(_R1);
+#define RVMODEL_SET_MEXT_INT(_R1, _R2) SHAKTI_SET_EXT_INT(_R1, _R2, 0x20004)
+#define RVMODEL_CLR_MEXT_INT(_R1, _R2) SHAKTI_CLR_EXT_INT(_R1, _R2, 0x20004)
+#define RVMODEL_SET_SEXT_INT(_R1, _R2) SHAKTI_SET_EXT_INT(_R1, _R2, 0x20005)
+#define RVMODEL_CLR_SEXT_INT(_R1, _R2) SHAKTI_CLR_EXT_INT(_R1, _R2, 0x20005)
+
 #endif // _RVMODEL_MACROS_H

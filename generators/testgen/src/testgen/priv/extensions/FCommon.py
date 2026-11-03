@@ -36,6 +36,11 @@ _ACCESS_COVERPOINT = "cp_fcsr_access"
 # Which instructions change fp state is already tested per instruction by Sm_F, S_F and U_F, so H_F
 # uses one instruction of each kind, and accesses the fp CSRs only with both fields Dirty or one Off.
 _H_ACCESS_FS_PAIRS = [(3, 3), (0, 3), (3, 0)]  # (vsstatus.FS, sstatus.FS)
+# vsstatus.FS values of the cp_vsstatus_FS_transition testcases in each part (file) of H_F_vs and
+# H_F_vu. Every VU-mode testcase sets vsstatus.FS and sstatus.FS through T-SBI calls, so the tests
+# are split in two to keep each file short.
+_H_FILE_VSSTATUS_FS: list[tuple[int, ...]] = [(0,), (1, 2, 3)]
+H_FCSR_TEST_PARTS = len(_H_FILE_VSSTATUS_FS)
 
 
 @dataclass(frozen=True)
@@ -346,21 +351,25 @@ def gen_fcsr_tests(test_data: TestData, priv: str, covergroup: str) -> list[str]
     return lines
 
 
-def gen_h_fcsr_tests(test_data: TestData, priv: str, covergroup: str) -> list[str]:
-    """Generate the H_F fp CSR and FS tests in VS- or VU-mode (priv) as the code of one chunk.
+def gen_h_fcsr_tests(test_data: TestData, priv: str, covergroup: str, part: int) -> list[str]:
+    """Generate part (0 or 1) of the H_F fp CSR and FS tests in VS- or VU-mode (priv) as the code of one chunk.
 
-    For each (vsstatus.FS, sstatus.FS) pair: the cp_fcsr_access testcases if the pair is in
-    _H_ACCESS_FS_PAIRS, and the representative cp_vsstatus_FS_transition instructions.
+    Part 0 holds the cp_fcsr_access testcases for the pairs in _H_ACCESS_FS_PAIRS. Each part holds
+    the representative cp_vsstatus_FS_transition instructions for the vsstatus.FS values in its
+    entry of _H_FILE_VSSTATUS_FS, against every sstatus.FS.
     """
     regs = _get_fcsr_regs(test_data)
-    lines = [_access_banner(priv), *_access_setup(regs)]
-    for fs, hs in _H_ACCESS_FS_PAIRS:
-        lines.extend(_gen_fcsr_access(test_data, priv, covergroup, regs, fs, hs))
+    lines = []
+    if part == 0:
+        lines.extend([_access_banner(priv), *_access_setup(regs)])
+        for fs, hs in _H_ACCESS_FS_PAIRS:
+            lines.extend(_gen_fcsr_access(test_data, priv, covergroup, regs, fs, hs))
     lines.append(_transition_banner(priv))
-    # The fp register loads need vsstatus.FS and sstatus.FS not Off, which the access testcases leave behind.
+    # The fp register loads need vsstatus.FS and sstatus.FS not Off, which the access testcases leave
+    # behind and which each part, starting its own file, cannot assume.
     lines.extend(set_status_fields(regs.temp, priv, fs=3))
     lines.extend(_transition_setup(test_data, priv, regs))
-    for fs, hs in itertools.product(range(4), hs_status_values(priv)):
+    for fs, hs in itertools.product(_H_FILE_VSSTATUS_FS[part], hs_status_values(priv)):
         lines.extend(_gen_fs_transition(test_data, priv, covergroup, regs, fs, hs, representative=True))
     _return_fcsr_regs(test_data, regs)
     return lines

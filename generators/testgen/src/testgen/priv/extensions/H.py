@@ -16,7 +16,7 @@ from testgen.asm.csr import csr_access_test, gen_csr_read_sigupd
 from testgen.asm.helpers import comment_banner, gated, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.FCommon import gen_h_fcsr_tests
+from testgen.priv.extensions.FCommon import H_FCSR_TEST_PARTS, gen_h_fcsr_tests
 from testgen.priv.extensions.HCommon import (
     H_HS_CSRS,
     H_VS_CSRS,
@@ -524,6 +524,8 @@ def make_h_zicntr(test_data: TestData) -> list[TestChunk]:
     required_extensions=["H", "F"],
     march_extensions=["F"],
     extra_defines=["#define BOOT_TO_SMODE"],
+    # Each mode is two chunks of 96 and 64 testcases (see FCommon._H_FILE_VSSTATUS_FS); this puts each in its own file.
+    testcases_per_file=64,
 )
 def make_h_f(test_data: TestData) -> list[TestChunk]:
     """Generate H_F tests: the floating-point CSRs and instructions in VS and VU modes against vsstatus.FS and sstatus.FS.
@@ -537,9 +539,10 @@ def make_h_f(test_data: TestData) -> list[TestChunk]:
         ("VS", "F_vs", "RVTEST_TSBI_GOTO_VSMODE"),
         ("VU", "F_vu", "RVTEST_TSBI_GOTO_VUMODE"),
     ]:
-        tc = test_data.begin_test_chunk(split_name)
-        tc.code.extend([goto, *gen_h_fcsr_tests(test_data, priv, "H_F_cg"), "RVTEST_TSBI_GOTO_SMODE"])
-        test_chunks.append(test_data.end_test_chunk())
+        for part in range(H_FCSR_TEST_PARTS):
+            tc = test_data.begin_test_chunk(split_name)
+            tc.code.extend([goto, *gen_h_fcsr_tests(test_data, priv, "H_F_cg", part), "RVTEST_TSBI_GOTO_SMODE"])
+            test_chunks.append(test_data.end_test_chunk())
 
     return test_chunks
 

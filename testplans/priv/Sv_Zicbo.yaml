@@ -205,7 +205,7 @@ coverpoints:
       = 60 bins on RV64, 12 on RV32
   - name: cp_leaf_PTE_to_nonexistent_pa_cbo_s
     goal: Verify a CBO to a non-existent physical address raises a store/AMO access fault from S-mode
-    description: "S-mode: valid leaf PTE with PTE.U=0 pointing at RVMODEL_ACCESS_FAULT_ADDRESS, at every page-table level (4 KiB page and each superpage size of the Sv mode). Execute the CBOs on va_data."
+    description: "S-mode: valid leaf PTE with PTE.U=0 pointing at RVMODEL_ACCESS_FAULT_ADDRESS_STORE, at every page-table level (4 KiB page and each superpage size of the Sv mode). Execute the CBOs on va_data."
     expectation: Store/AMO access fault (scause = 7); stval = faulting virtual address.
     bins: |-
       PTE_RWX_d x d_phys_address_nonexistent x PageType_d x store_acc_fault x cbo_ins x mode {S-mode}
@@ -215,7 +215,7 @@ coverpoints:
       - "[norm:pma_chk_paddr]"
   - name: cp_leaf_PTE_to_nonexistent_pa_cbo_u
     goal: Verify a CBO to a non-existent physical address raises a store/AMO access fault from U-mode
-    description: "U-mode: valid leaf PTE with PTE.U=1 pointing at RVMODEL_ACCESS_FAULT_ADDRESS, at every page-table level (4 KiB page and each superpage size of the Sv mode). Execute the CBOs on va_data."
+    description: "U-mode: valid leaf PTE with PTE.U=1 pointing at RVMODEL_ACCESS_FAULT_ADDRESS_STORE, at every page-table level (4 KiB page and each superpage size of the Sv mode). Execute the CBOs on va_data."
     expectation: Store/AMO access fault (scause = 7); stval = faulting virtual address.
     bins: |-
       PTE_RWX_d x d_phys_address_nonexistent x PageType_d x store_acc_fault x cbo_ins x mode {U-mode}
@@ -225,7 +225,7 @@ coverpoints:
       - "[norm:pma_chk_paddr]"
   - name: cp_nonleaf_PTE_to_nonexistent_pa_cbo
     goal: Verify a CBO whose page-table walk reads a non-existent physical address raises a store/AMO access fault
-    description: "S-mode and U-mode: non-leaf PTE pointing at RVMODEL_ACCESS_FAULT_ADDRESS instead of the next page table. Execute the CBOs on va_data."
+    description: "S-mode and U-mode: non-leaf PTE pointing at RVMODEL_ACCESS_FAULT_ADDRESS_STORE instead of the next page table. Execute the CBOs on va_data."
     expectation: Store/AMO access fault (scause = 7).
     bins: |-
       pointer_PTE_d x d_phys_address_nonexistent x PageType_d x store_acc_fault x cbo_ins x mode {S/U-mode}

@@ -858,7 +858,7 @@ Sv_HZicbo_cg_cp_vs_gpa_vs_sv32_l0_nonleaf_gpa_unmapped_cbo_flush:
 Sv_HZicbo_cg_cp_vs_gpa_vs_sv32_l0_nonleaf_gpa_unmapped_cbo_inval:
   cbo.inval (x13)
   RVTEST_TSBI_GOTO_SMODE
-#ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
 // VS-mode, sv32 level 0, nonleaf_gpa_access_fault: store access fault on reading a table whose supervisor physical address faults
   LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x6, rvtest_vlvl0_pg_tbl)
@@ -885,11 +885,11 @@ Sv_HZicbo_cg_cp_vs_gpa_vs_sv32_l0_nonleaf_gpa_unmapped_cbo_inval:
   or x15, x15, x8
   SREG x15, 0(x9)
   LA(x9, rvtest_hlvl0_pg_tbl + (((0xd0400000) >> 12) & 0x3ff) * 4)
-  LI(x15, (((((RVMODEL_ACCESS_FAULT_ADDRESS + 3) & ~3)) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
+  LI(x15, (((((RVMODEL_ACCESS_FAULT_ADDRESS_STORE + 3) & ~3)) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x15, 0(x9)
   hfence.gvma
   hfence.vvma
-  LI(x13, ((((0x90407000) & ~0x3ff000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS + 3) & ~3) & 0xFFF) / 4) << 12)) >> 12) << 12)
+  LI(x13, ((((0x90407000) & ~0x3ff000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS_STORE + 3) & ~3) & 0xFFF) / 4) << 12)) >> 12) << 12)
   LA(x8, svhzicbo_data)
   slli x8, x8, 20
   srli x8, x8, 20
@@ -1669,7 +1669,7 @@ Sv_HZicbo_cg_cp_vs_gpa_vu_sv32_l0_nonleaf_gpa_unmapped_cbo_flush:
 Sv_HZicbo_cg_cp_vs_gpa_vu_sv32_l0_nonleaf_gpa_unmapped_cbo_inval:
   cbo.inval (x13)
   RVTEST_TSBI_GOTO_SMODE
-#ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
 // VU-mode, sv32 level 0, nonleaf_gpa_access_fault: store access fault on reading a table whose supervisor physical address faults
   LA(x15, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x8, rvtest_vlvl0_pg_tbl)
@@ -1696,11 +1696,11 @@ Sv_HZicbo_cg_cp_vs_gpa_vu_sv32_l0_nonleaf_gpa_unmapped_cbo_inval:
   or x14, x14, x8
   SREG x14, 0(x15)
   LA(x15, rvtest_hlvl0_pg_tbl + (((0xd0400000) >> 12) & 0x3ff) * 4)
-  LI(x14, (((((RVMODEL_ACCESS_FAULT_ADDRESS + 3) & ~3)) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
+  LI(x14, (((((RVMODEL_ACCESS_FAULT_ADDRESS_STORE + 3) & ~3)) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x15)
   hfence.gvma
   hfence.vvma
-  LI(x13, ((((0x90407000) & ~0x3ff000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS + 3) & ~3) & 0xFFF) / 4) << 12)) >> 12) << 12)
+  LI(x13, ((((0x90407000) & ~0x3ff000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS_STORE + 3) & ~3) & 0xFFF) / 4) << 12)) >> 12) << 12)
   LA(x14, svhzicbo_data)
   slli x14, x14, 20
   srli x14, x14, 20

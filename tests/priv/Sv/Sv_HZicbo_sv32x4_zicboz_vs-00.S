@@ -961,7 +961,7 @@ Sv_HZicbo_cg_cp_vs_gpa_vs_sv32_l0_nonleaf_gpa_unmapped_cbo_zero:
   lw x8, 0(x13)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_cg_cp_vs_gpa_vs_sv32_l0_nonleaf_gpa_unmapped_cbo_zero, Sv_HZicbo_cg_cp_vs_gpa_vs_sv32_l0_nonleaf_gpa_unmapped_cbo_zero_str)
-#ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
 // VS-mode, sv32 level 0, nonleaf_gpa_access_fault: store access fault on reading a table whose supervisor physical address faults
   LA(x8, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x13, rvtest_vlvl0_pg_tbl)
@@ -988,11 +988,11 @@ Sv_HZicbo_cg_cp_vs_gpa_vs_sv32_l0_nonleaf_gpa_unmapped_cbo_zero:
   or x6, x6, x13
   SREG x6, 0(x8)
   LA(x8, rvtest_hlvl0_pg_tbl + (((0xd0400000) >> 12) & 0x3ff) * 4)
-  LI(x6, (((((RVMODEL_ACCESS_FAULT_ADDRESS + 3) & ~3)) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
+  LI(x6, (((((RVMODEL_ACCESS_FAULT_ADDRESS_STORE + 3) & ~3)) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x6, 0(x8)
   hfence.gvma
   hfence.vvma
-  LI(x14, ((((0x90407000) & ~0x3ff000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS + 3) & ~3) & 0xFFF) / 4) << 12)) >> 12) << 12)
+  LI(x14, ((((0x90407000) & ~0x3ff000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS_STORE + 3) & ~3) & 0xFFF) / 4) << 12)) >> 12) << 12)
   LA(x15, svhzicbo_data)
   slli x15, x15, 20
   srli x15, x15, 20
@@ -1873,7 +1873,7 @@ Sv_HZicbo_cg_cp_vs_gpa_vu_sv32_l0_nonleaf_gpa_unmapped_cbo_zero:
   lw x13, 0(x9)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HZicbo_cg_cp_vs_gpa_vu_sv32_l0_nonleaf_gpa_unmapped_cbo_zero, Sv_HZicbo_cg_cp_vs_gpa_vu_sv32_l0_nonleaf_gpa_unmapped_cbo_zero_str)
-#ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
 // VU-mode, sv32 level 0, nonleaf_gpa_access_fault: store access fault on reading a table whose supervisor physical address faults
   LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x13, rvtest_vlvl0_pg_tbl)
@@ -1900,11 +1900,11 @@ Sv_HZicbo_cg_cp_vs_gpa_vu_sv32_l0_nonleaf_gpa_unmapped_cbo_zero:
   or x15, x15, x8
   SREG x15, 0(x13)
   LA(x13, rvtest_hlvl0_pg_tbl + (((0xd0400000) >> 12) & 0x3ff) * 4)
-  LI(x15, (((((RVMODEL_ACCESS_FAULT_ADDRESS + 3) & ~3)) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
+  LI(x15, (((((RVMODEL_ACCESS_FAULT_ADDRESS_STORE + 3) & ~3)) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x15, 0(x13)
   hfence.gvma
   hfence.vvma
-  LI(x14, ((((0x90407000) & ~0x3ff000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS + 3) & ~3) & 0xFFF) / 4) << 12)) >> 12) << 12)
+  LI(x14, ((((0x90407000) & ~0x3ff000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS_STORE + 3) & ~3) & 0xFFF) / 4) << 12)) >> 12) << 12)
   LA(x13, svhzicbo_data)
   slli x13, x13, 20
   srli x13, x13, 20

@@ -27,7 +27,7 @@ coverpoints:
       cp_vs_gpa_implicit
     goal: Verify the faults that G-stage translation gives the final address and the VS-stage page-table reads of a CBO.
     description: |-
-      At each VS-stage level: a leaf whose guest physical address the G-stage does not map; and, below the top level, a non-leaf PTE that points at a table whose guest physical address the G-stage does not map, or maps to the page of RVMODEL_ACCESS_FAULT_ADDRESS (with an index there that selects a PTE inside the access-fault region; only when RVMODEL_ACCESS_FAULT_ADDRESS is defined).
+      At each VS-stage level: a leaf whose guest physical address the G-stage does not map; and, below the top level, a non-leaf PTE that points at a table whose guest physical address the G-stage does not map, or maps to the page of RVMODEL_ACCESS_FAULT_ADDRESS_STORE (with an index there that selects a PTE inside the access-fault region; only when RVMODEL_ACCESS_FAULT_ADDRESS_STORE is defined).
     expectation: |-
       Unmapped final address: store/AMO guest-page fault. Unmapped table: store/AMO guest-page fault, with htinst holding the pseudoinstruction for an implicit VS-stage read (0x2000 on RV32, 0x3000 on RV64, cp_vs_gpa_implicit). Table at a faulting supervisor physical address: store/AMO access fault.
     bins: "{VS, VU} × CBO × {store/AMO guest-page fault, store/AMO access fault}; cp_vs_gpa_implicit: {VS, VU} × CBO × pseudoinstruction"
@@ -42,7 +42,7 @@ coverpoints:
   - name: cp_g_pa
     goal: Verify that a G-stage leaf or table at a faulting supervisor physical address gives a CBO a store/AMO access fault.
     description: |-
-      RVMODEL_ACCESS_FAULT_ADDRESS only. At each G-stage level, a leaf that maps RVMODEL_ACCESS_FAULT_ADDRESS; below the top level, a non-leaf G-stage PTE that points at the page of RVMODEL_ACCESS_FAULT_ADDRESS, with an index there that selects a PTE inside the access-fault region.
+      RVMODEL_ACCESS_FAULT_ADDRESS_STORE only. At each G-stage level, a leaf that maps RVMODEL_ACCESS_FAULT_ADDRESS_STORE; below the top level, a non-leaf G-stage PTE that points at the page of RVMODEL_ACCESS_FAULT_ADDRESS_STORE, with an index there that selects a PTE inside the access-fault region.
     expectation: Store/AMO access fault.
     bins: "{VS, VU} × CBO × store/AMO access fault"
   - heading: Prefetches

@@ -98,12 +98,15 @@ coverpoints:
     description: In VS-mode, load through a VS-stage level-0 page table at a guest physical address whose G-stage leaf is execute-only, with vsstatus.MXR = 0 and 1 and sstatus.MXR = 0 and 1.
     expectation: MXR makes execute-only pages readable only by explicit loads.  Each load raises a load guest-page fault with htinst = the read pseudoinstruction.
     bins: VS x lw x stage_modes x vsstatus.MXR {0, 1} x sstatus.MXR {0, 1} x htinst read pseudoinstruction
-  - name: cp_twostage_access_fault
+  - name: |-
+      cp_twostage_access_fault_load
+      cp_twostage_access_fault_store
+      cp_twostage_access_fault_fetch
     goal: Access faults during two-stage translation report the original access type
-    description: In VS-mode, store, load and fetch where the G-stage leaf maps the page to RVMODEL_ACCESS_FAULT_ADDRESS, where the G-stage maps the VS-stage level-0 page table there, and where a G-stage level-1 PTE points at a table there.
+    description: In VS-mode, store, load and fetch where the G-stage leaf maps the page to the access-fault address of that access type, where the G-stage maps the VS-stage level-0 page table there, and where a G-stage level-1 PTE points at a table there.
     expectation: Each access raises a store/AMO, load or instruction access fault.  A fault on an implicit page-table read is reported for the original access type.
     bins: VS x {sw, lw, jalr} x stage_modes x access fault
-    notes: Generated only when the DUT defines RVMODEL_ACCESS_FAULT_ADDRESS.
+    notes: Each access type is generated only when the DUT defines RVMODEL_ACCESS_FAULT_ADDRESS_{LOAD/STORE/FETCH}.
   - name: |-
       cp_hedeleg_page_fault
       cp_hedeleg_guest_page_fault

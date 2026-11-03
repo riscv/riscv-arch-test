@@ -51,6 +51,7 @@ OPS = {
 }
 _FIELDS = {"zicbom": ("cbie", "cbcfe"), "zicboz": ("cbze",)}
 DATA = "svhzicbo_data"
+_FAULT = "RVMODEL_ACCESS_FAULT_ADDRESS_STORE"
 _DATA_REGION = [".p2align 12", f"{DATA}:", f".fill 1024, 4, {CBO_ZERO_FILL:#x}"]
 
 
@@ -267,7 +268,9 @@ def _vs_cases(test_data: TestData, c: Chunk, mode: str) -> list[str]:
                 *mapping(test_data, vs, level, user),
                 *_pte(test_data, vs, level + 1, PteFlags.nonleaf(), vs.data_va, g_base),
             ]
-            faulting_table = mapping(test_data, g, 0, PteFlags(user=True), vs.access_fault_pte_address(), va=g_base)
+            faulting_table = mapping(
+                test_data, g, 0, PteFlags(user=True), vs.access_fault_pte_address(_FAULT), va=g_base
+            )
             lines.extend(
                 [
                     *case(
@@ -291,8 +294,8 @@ def _vs_cases(test_data: TestData, c: Chunk, mode: str) -> list[str]:
                         [*table, *faulting_table],
                         stage=vs,
                         level=level,
-                        va=vs.access_fault_walk_va(vs.data_va, level),
-                        ifdef="RVMODEL_ACCESS_FAULT_ADDRESS",
+                        va=vs.access_fault_walk_va(vs.data_va, level, _FAULT),
+                        ifdef=_FAULT,
                     ),
                 ]
             )
@@ -330,11 +333,11 @@ def _g_cases(test_data: TestData, c: Chunk, mode: str) -> list[str]:
                     "leaf_access_fault",
                     "cp_g_pa",
                     "store access fault on the final supervisor physical address",
-                    [*identity, *mapping(test_data, g, level, user, "RVMODEL_ACCESS_FAULT_ADDRESS")],
+                    [*identity, *mapping(test_data, g, level, user, _FAULT)],
                     stage=g,
                     level=level,
-                    offset="RVMODEL_ACCESS_FAULT_ADDRESS",
-                    ifdef="RVMODEL_ACCESS_FAULT_ADDRESS",
+                    offset=_FAULT,
+                    ifdef=_FAULT,
                 ),
             ]
         )
@@ -342,7 +345,7 @@ def _g_cases(test_data: TestData, c: Chunk, mode: str) -> list[str]:
         ptes = [
             *identity,
             *mapping(test_data, g, level, user),
-            *_pte(test_data, g, level + 1, PteFlags.nonleaf(), g.data_va, g.access_fault_pte_address()),
+            *_pte(test_data, g, level + 1, PteFlags.nonleaf(), g.data_va, g.access_fault_pte_address(_FAULT)),
         ]
         lines.extend(
             case(
@@ -355,8 +358,8 @@ def _g_cases(test_data: TestData, c: Chunk, mode: str) -> list[str]:
                 ptes,
                 stage=g,
                 level=level,
-                va=g.access_fault_walk_va(g.data_va, level),
-                ifdef="RVMODEL_ACCESS_FAULT_ADDRESS",
+                va=g.access_fault_walk_va(g.data_va, level, _FAULT),
+                ifdef=_FAULT,
             )
         )
     return lines

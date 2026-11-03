@@ -263,11 +263,11 @@ def _add_exception_cases(
                     *create_page_walk(
                         sv,
                         leaf_level=level,
-                        table_addresses={level + 1: "RVMODEL_ACCESS_FAULT_ADDRESS"},
+                        table_addresses={level + 1: "RVMODEL_ACCESS_FAULT_ADDRESS_STORE"},
                     ),
                     leaf(walk_fault_permissions, level),
                 ],
-                ifdef="RVMODEL_ACCESS_FAULT_ADDRESS",
+                ifdef="RVMODEL_ACCESS_FAULT_ADDRESS_STORE",
             )
         if level == 0:
             add(
@@ -279,21 +279,21 @@ def _add_exception_cases(
                     *create_page_walk(
                         sv,
                         leaf_level=level,
-                        table_addresses={1: "RVMODEL_ACCESS_FAULT_ADDRESS"},
+                        table_addresses={1: "RVMODEL_ACCESS_FAULT_ADDRESS_STORE"},
                     ),
                     leaf(leaf_permissions, level),
                 ],
-                physical_address="RVMODEL_ACCESS_FAULT_ADDRESS",
-                ifdef="RVMODEL_ACCESS_FAULT_ADDRESS",
+                physical_address="RVMODEL_ACCESS_FAULT_ADDRESS_STORE",
+                ifdef="RVMODEL_ACCESS_FAULT_ADDRESS_STORE",
             )
         add(
             level,
             "Leaf PTE points to the access-fault region",
             "Store access fault",
             f"cp_leaf_PTE_to_nonexistent_pa_cbo_{m}",
-            [*walk, leaf(leaf_permissions, level, physical_address="RVMODEL_ACCESS_FAULT_ADDRESS")],
-            physical_address="RVMODEL_ACCESS_FAULT_ADDRESS",
-            ifdef="RVMODEL_ACCESS_FAULT_ADDRESS",
+            [*walk, leaf(leaf_permissions, level, physical_address="RVMODEL_ACCESS_FAULT_ADDRESS_STORE")],
+            physical_address="RVMODEL_ACCESS_FAULT_ADDRESS_STORE",
+            ifdef="RVMODEL_ACCESS_FAULT_ADDRESS_STORE",
         )
 
         if not top:

@@ -159,9 +159,9 @@ normative_rule_definitions:
   - name: mcause_exccode_priority_misaligned
     coverpoint:
       [
-        "Exceptions_S_cg/cp_misaligned_priority",
+        "Exceptions_S_cg/cp_misaligned_priority_{load, store, fetch}",
         "Exceptions_Sm_cg/{cp_misaligned_priority_load, cp_misaligned_priority_store}",
-        "ExceptionsSvSm_cg/cp_misaligned_priority_m",
+        "Sv_ExceptionsSm_cg/cp_misaligned_priority_{load, store}_m",
         "Exceptions_U_cg/cp_misaligned_priority_{load, store}",
         "Exceptions_Zalrsc_cg/{cp_load_access_misaligned_priority, cp_store_access_misaligned_priority}",
       ]
@@ -431,7 +431,7 @@ normative_rule_definitions:
   - name: pma_vm_hw_tbl_acc
     coverpoint:
       [
-        "TODO: walk a page table at RVMODEL_ACCESS_FAULT_ADDRESS and check for an access fault",
+        "TODO: walk a page table at RVMODEL_ACCESS_FAULT_ADDRESS_LOAD and check for an access fault",
       ]
   # Within AMOs, there are four levels of support: AMONone, AMOSwap, AMOLogical, and AMOArithmetic.
   # AMONone indicates that no AMO operations are supported. AMOSwap indicates that only amoswap
@@ -940,7 +940,7 @@ normative_rule_definitions:
         "Exceptions_H_cg/cp_virtual_instr_vs_execute_hypervisor",
         "Exceptions_H_cg/cp_virtual_instr_vu_execute_h",
         "Exceptions_H_cg/cp_loadstore_priv",
-        "Exceptions_H_cg/cp_priority",
+        "Exceptions_H_cg/cp_priority_{hlv, hsv}",
       ]
 
   # Attempts to execute HFENCE.VVMA or HFENCE.GVMA when V=1 cause a virtual-instruction
@@ -960,23 +960,36 @@ normative_rule_definitions:
   # hypervisor instructions cause an illegal-instruction exception in U-mode.
   - name: hstatus_hu_op
     coverpoint:
-      ["Exceptions_H_cg/cp_loadstore_priv", "Exceptions_H_cg/cp_priority"]
+      [
+        "Exceptions_H_cg/cp_loadstore_priv",
+        "Exceptions_H_cg/cp_priority_{hlv, hsv}",
+      ]
 
   # Attempts to execute one of these same instructions from U-mode when hstatus.HU=0 cause
   # an illegal-instruction exception.
   - name: hlsv_illegalinst
     coverpoint:
-      ["Exceptions_H_cg/cp_loadstore_priv", "Exceptions_H_cg/cp_priority"]
+      [
+        "Exceptions_H_cg/cp_loadstore_priv",
+        "Exceptions_H_cg/cp_priority_{hlv, hsv}",
+      ]
 
   # Priority of illegal instruction, virtual instruction, access fault and address misaligned
   # Priority of access fault and address misaligned for hlv and hsv in M-mode
   - name: H_exception_priority
-    coverpoint: ["Exceptions_H_cg/cp_priority", "Exceptions_HSm_cg/cp_priority"]
+    coverpoint:
+      [
+        "Exceptions_H_cg/cp_priority_{hlv, hsv}",
+        "Exceptions_HSm_cg/cp_priority",
+      ]
 
   # An hlv or hsv fault taken into HS-mode sets hstatus.GVA, and other traps into HS-mode clear it
   - name: hstatus_gva_op
     coverpoint:
-      ["Exceptions_H_cg/cp_hstatus_gva", "Exceptions_H_cg/cp_ecall_to_hs"]
+      [
+        "Exceptions_H_cg/cp_hstatus_gva_{hlv, hsv}",
+        "Exceptions_H_cg/cp_ecall_to_hs",
+      ]
 
   # The htval register is an HSXLEN-bit read/write register formatted as shown in . When a
   # trap is taken into HS-mode, htval is written with additional exception-specific

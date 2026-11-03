@@ -838,15 +838,16 @@ def _t_implicit_mxr(test_data: TestData, test_chunks: list[TestChunk], g: SvMode
 
 def _t_access_fault(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs: SvMode) -> None:
     """Access faults of the original access type on the final supervisor physical address, on reading a VS-stage leaf
-    table, and on reading a G-stage leaf table, each in the region at the RVMODEL_ACCESS_FAULT_ADDRESS_* macro for
-    that access type."""
+    table, and on reading a G-stage leaf table.  The final address is in the region at the
+    RVMODEL_ACCESS_FAULT_ADDRESS_* macro for that access type.  The page tables are in the LOAD region, because a
+    page-table read is an implicit load."""
     chunk = begin_chunk(
         test_data,
         f"H_{g.name}_access_fault",
         "cp_twostage_access_fault_load, cp_twostage_access_fault_store, cp_twostage_access_fault_fetch",
         "In VS-mode, store, load and fetch where the G-stage leaf maps the access to the access-fault address for its\n"
         "type, where the G-stage maps the VS-stage leaf table there, and where a G-stage non-leaf PTE points at a table\n"
-        "there.  Each takes an access fault of the original access type",
+        "there.  The tables are in the load access-fault region.  Each takes an access fault of the original access type",
         stages=(g, vs),
     )
     table_gpa = f"({g.data_va} + 0x1000)"
@@ -854,14 +855,17 @@ def _t_access_fault(test_data: TestData, test_chunks: list[TestChunk], g: SvMode
     regs = (pte, addr, tmp)
     nonleaf = PteFlags.nonleaf()
     op_cases = []
+    table_fault = "RVMODEL_ACCESS_FAULT_ADDRESS_LOAD"
+    # The guest physical address whose G-stage leaf PTE is at access_fault_pte_address
+    g_fault_gpa = g.access_fault_walk_va(g.data_va, 0, table_fault)
+    table_gate = f"defined({table_fault})"
     for op, kind in (("store", "STORE"), ("load", "LOAD"), ("exec", "FETCH")):
         fault = f"RVMODEL_ACCESS_FAULT_ADDRESS_{kind}"
         coverpoint = f"cp_twostage_access_fault_{kind.lower()}"
-        # The guest physical address whose G-stage leaf PTE is at access_fault_pte_address
-        g_fault_gpa = g.access_fault_walk_va(g.data_va, 0, fault)
         cases = (
             (
                 "leaf",
+                None,
                 f"{vs.data_va} + ({fault} & 0xFFF)",
                 [
                     *create_page_mapping(
@@ -886,7 +890,8 @@ def _t_access_fault(test_data: TestData, test_chunks: list[TestChunk], g: SvMode
             ),
             (
                 "vs_table",
-                vs.access_fault_walk_va(vs.data_va, 0, fault),
+                table_gate,
+                vs.access_fault_walk_va(vs.data_va, 0, table_fault),
                 [
                     *create_page_walk(vs, leaf_level=1, virtual_address=vs.data_va, regs=regs),
                     *write_pte(
@@ -903,7 +908,7 @@ def _t_access_fault(test_data: TestData, test_chunks: list[TestChunk], g: SvMode
                         leaf_level=0,
                         leaf_flags=G_LEAF,
                         virtual_address=table_gpa,
-                        physical_address=fault,
+                        physical_address=table_fault,
                         regs=regs,
                         pa_is_label=False,
                     ),
@@ -911,6 +916,7 @@ def _t_access_fault(test_data: TestData, test_chunks: list[TestChunk], g: SvMode
             ),
             (
                 "g_table",
+                table_gate,
                 vs.data_va,
                 [
                     *create_page_mapping(
@@ -928,7 +934,7 @@ def _t_access_fault(test_data: TestData, test_chunks: list[TestChunk], g: SvMode
                         level=1,
                         flags=nonleaf,
                         virtual_address=g_fault_gpa,
-                        physical_address=g.access_fault_pte_address(fault),
+                        physical_address=g.access_fault_pte_address(table_fault),
                         regs=regs,
                         pa_is_label=False,
                     ),
@@ -940,9 +946,10 @@ def _t_access_fault(test_data: TestData, test_chunks: list[TestChunk], g: SvMode
     code = guest_chunk_setup(test_data, g, vs, "VS")
     for op, fault, coverpoint, cases in op_cases:
         op_code = []
-        for name, va, ptes in cases:
+        for name, gate, va, ptes in cases:
             setup = [*ptes, "hfence.vvma", "hfence.gvma"]
-            op_code.extend(guest_access(test_data, TWO_CG, coverpoint, name, "VS", va, setup=setup, ops=(op,)))
+            access = guest_access(test_data, TWO_CG, coverpoint, name, "VS", va, setup=setup, ops=(op,))
+            op_code.extend(gated(access, gate))
         code.extend(gated(op_code, f"defined({fault})"))
     code.extend(guest_chunk_teardown(test_data, g.xlen))
     any_fault = " || ".join(f"defined({fault})" for _, fault, _, _ in op_cases)

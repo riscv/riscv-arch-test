@@ -980,7 +980,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Exceptions_H_cg/cp_priority_{hlv, hsv}",
-        "Exceptions_HSm_cg/cp_priority",
+        "Exceptions_HSm_cg/cp_priority_{hlv, hsv}",
       ]
 
   # An hlv or hsv fault taken into HS-mode sets hstatus.GVA, and other traps into HS-mode clear it

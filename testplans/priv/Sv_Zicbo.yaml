@@ -225,7 +225,7 @@ coverpoints:
       - "[norm:pma_chk_paddr]"
   - name: cp_nonleaf_PTE_to_nonexistent_pa_cbo
     goal: Verify a CBO whose page-table walk reads a non-existent physical address raises a store/AMO access fault
-    description: "S-mode and U-mode: non-leaf PTE pointing at RVMODEL_ACCESS_FAULT_ADDRESS_STORE instead of the next page table. Execute the CBOs on va_data."
+    description: "S-mode and U-mode: non-leaf PTE pointing at RVMODEL_ACCESS_FAULT_ADDRESS_LOAD instead of the next page table. The page-table read is an implicit load, so the table uses the load access-fault region. Only when RVMODEL_ACCESS_FAULT_ADDRESS_STORE and RVMODEL_ACCESS_FAULT_ADDRESS_LOAD are defined. Execute the CBOs on va_data."
     expectation: Store/AMO access fault (scause = 7).
     bins: |-
       pointer_PTE_d x d_phys_address_nonexistent x PageType_d x store_acc_fault x cbo_ins x mode {S/U-mode}

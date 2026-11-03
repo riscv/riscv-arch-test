@@ -103,10 +103,10 @@ coverpoints:
       cp_twostage_access_fault_store
       cp_twostage_access_fault_fetch
     goal: Access faults during two-stage translation report the original access type
-    description: In VS-mode, store, load and fetch where the G-stage leaf maps the page to the access-fault address of that access type, where the G-stage maps the VS-stage level-0 page table there, and where a G-stage level-1 PTE points at a table there.
+    description: In VS-mode, store, load and fetch where the G-stage leaf maps the page to the access-fault address of that access type, where the G-stage maps the VS-stage level-0 page table to RVMODEL_ACCESS_FAULT_ADDRESS_LOAD, and where a G-stage level-1 PTE points at a table there. The page-table read is an implicit load, so the tables use the load access-fault region.
     expectation: Each access raises a store/AMO, load or instruction access fault.  A fault on an implicit page-table read is reported for the original access type.
     bins: VS x {sw, lw, jalr} x stage_modes x access fault
-    notes: Each access type is generated only when the DUT defines RVMODEL_ACCESS_FAULT_ADDRESS_{LOAD/STORE/FETCH}.
+    notes: Each access type is generated only when the DUT defines RVMODEL_ACCESS_FAULT_ADDRESS_{LOAD/STORE/FETCH}. The page-table cases also need RVMODEL_ACCESS_FAULT_ADDRESS_LOAD.
   - name: |-
       cp_hedeleg_page_fault
       cp_hedeleg_guest_page_fault

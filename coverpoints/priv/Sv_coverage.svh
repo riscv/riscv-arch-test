@@ -1368,20 +1368,23 @@ covergroup Sv_Zicbo_cg with function sample(ins_t ins);
         // Non leaf PTE points to a non existatant phys addr instead of next page table. Store access fault required during walk
         // Example: Setup a giga page in sv48, lvl 3 pte (tera) should point to lvl2 page table, but it points to non existent PA
         // The walk faults before any data physical address exists, so check where the pointer PTE points instead
-        `ifdef UDB_MXLEN_64
-            nonleaf_ppn_nonexistent: coverpoint (ins.current.pte_d[53:10] == 44'(`RVMODEL_ACCESS_FAULT_ADDRESS_STORE >> 12)) {
-                bins non_existent_pa = {1};
-            }
-        `else
-            nonleaf_ppn_nonexistent: coverpoint (ins.current.pte_d[31:10] == 22'(`RVMODEL_ACCESS_FAULT_ADDRESS_STORE >> 12)) {
-                bins non_existent_pa = {1};
+        // The page-table read is an implicit load, so the table is in the load access-fault region
+        `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
+            `ifdef UDB_MXLEN_64
+                nonleaf_ppn_nonexistent: coverpoint (ins.current.pte_d[53:10] == 44'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD >> 12)) {
+                    bins non_existent_pa = {1};
+                }
+            `else
+                nonleaf_ppn_nonexistent: coverpoint (ins.current.pte_d[31:10] == 22'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD >> 12)) {
+                    bins non_existent_pa = {1};
+                }
+            `endif
+            cp_nonleaf_PTE_to_nonexistent_pa_cbo: cross pointer_PTE_d, nonleaf_ppn_nonexistent, PageType_d, store_acc_fault, cbo_ins, priv_mode_s_u {
+                `ifdef SV48_SUPPORTED ignore_bins ig1 = binsof(PageType_d.sv48_tera); `endif     // Here PageType_d will be the page being pointed towards
+                `ifdef SV39_SUPPORTED ignore_bins ig2 = binsof(PageType_d.sv39_giga); `endif
+                `ifdef UDB_MXLEN_32   ignore_bins ig3 = binsof(PageType_d.sv32_mega); `endif
             }
         `endif
-        cp_nonleaf_PTE_to_nonexistent_pa_cbo: cross pointer_PTE_d, nonleaf_ppn_nonexistent, PageType_d, store_acc_fault, cbo_ins, priv_mode_s_u {
-            `ifdef SV48_SUPPORTED ignore_bins ig1 = binsof(PageType_d.sv48_tera); `endif     // Here PageType_d will be the page being pointed towards
-            `ifdef SV39_SUPPORTED ignore_bins ig2 = binsof(PageType_d.sv39_giga); `endif
-            `ifdef UDB_MXLEN_32   ignore_bins ig3 = binsof(PageType_d.sv32_mega); `endif
-        }
     `endif
 
 endgroup
@@ -2618,8 +2621,11 @@ covergroup Sv_HZicbo_cg with function sample(ins_t ins);
   }
   gpa_outcome: coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[4:0]} {
     bins store_guest_page_fault = {6'b110111};
+    // Only a VS-stage table in the load access-fault region raises this fault
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
-      bins store_access_fault   = {6'b100111};
+      `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
+        bins store_access_fault = {6'b100111};
+      `endif
     `endif
   }
   no_fault: coverpoint ins.current.csr_wb[CSR_SCAUSE] {

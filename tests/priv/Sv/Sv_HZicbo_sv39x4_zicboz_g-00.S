@@ -1495,7 +1495,7 @@ Sv_HZicbo_cg_cp_g_pa_vs_sv39x4_l0_leaf_access_fault_cbo_zero:
   cbo.zero (x9)
   RVTEST_TSBI_GOTO_SMODE
 #endif
-#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
+#if defined(RVMODEL_ACCESS_FAULT_ADDRESS_STORE) && defined(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
 // VS-mode, sv39x4 level 1, nonleaf_access_fault: store access fault on reading a G-stage table
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
@@ -1515,11 +1515,11 @@ Sv_HZicbo_cg_cp_g_pa_vs_sv39x4_l0_leaf_access_fault_cbo_zero:
   or x8, x8, x15
   SREG x8, 0(x14)
   LA(x15, rvtest_Hroot_pg_tbl + (((0x2C0802000) >> 30) & 0x7ff) * 8)
-  LI(x14, (((((RVMODEL_ACCESS_FAULT_ADDRESS_STORE + 7) & ~7)) >> 12) << 10) | (PTE_V))
+  LI(x14, (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 7) & ~7)) >> 12) << 10) | (PTE_V))
   SREG x14, 0(x15)
   hfence.gvma
   hfence.vvma
-  LI(x9, ((((0x2C0802000) & ~0x3fe00000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS_STORE + 7) & ~7) & 0xFFF) / 8) << 21)) >> 21) << 21)
+  LI(x9, ((((0x2C0802000) & ~0x3fe00000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 7) & ~7) & 0xFFF) / 8) << 21)) >> 21) << 21)
   LA(x8, svhzicbo_data)
   slli x8, x8, 43
   srli x8, x8, 43
@@ -1534,8 +1534,8 @@ Sv_HZicbo_cg_cp_g_pa_vs_sv39x4_l1_nonleaf_access_fault_cbo_zero:
   lw x13, 0(x8)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HZicbo_cg_cp_g_pa_vs_sv39x4_l1_nonleaf_access_fault_cbo_zero, Sv_HZicbo_cg_cp_g_pa_vs_sv39x4_l1_nonleaf_access_fault_cbo_zero_str)
-#endif
-#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
+#endif // defined(RVMODEL_ACCESS_FAULT_ADDRESS_STORE) && defined(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
+#if defined(RVMODEL_ACCESS_FAULT_ADDRESS_STORE) && defined(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
 // VS-mode, sv39x4 level 0, nonleaf_access_fault: store access fault on reading a G-stage table
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
@@ -1562,11 +1562,11 @@ Sv_HZicbo_cg_cp_g_pa_vs_sv39x4_l1_nonleaf_access_fault_cbo_zero:
   or x13, x13, x6
   SREG x13, 0(x8)
   LA(x6, rvtest_hlvl1_pg_tbl + (((0x2C0802000) >> 21) & 0x1ff) * 8)
-  LI(x13, (((((RVMODEL_ACCESS_FAULT_ADDRESS_STORE + 7) & ~7)) >> 12) << 10) | (PTE_V))
+  LI(x13, (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 7) & ~7)) >> 12) << 10) | (PTE_V))
   SREG x13, 0(x6)
   hfence.gvma
   hfence.vvma
-  LI(x9, ((((0x2C0802000) & ~0x1ff000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS_STORE + 7) & ~7) & 0xFFF) / 8) << 12)) >> 12) << 12)
+  LI(x9, ((((0x2C0802000) & ~0x1ff000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 7) & ~7) & 0xFFF) / 8) << 12)) >> 12) << 12)
   LA(x14, svhzicbo_data)
   slli x14, x14, 52
   srli x14, x14, 52
@@ -1581,7 +1581,7 @@ Sv_HZicbo_cg_cp_g_pa_vs_sv39x4_l0_nonleaf_access_fault_cbo_zero:
   lw x13, 0(x14)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HZicbo_cg_cp_g_pa_vs_sv39x4_l0_nonleaf_access_fault_cbo_zero, Sv_HZicbo_cg_cp_g_pa_vs_sv39x4_l0_nonleaf_access_fault_cbo_zero_str)
-#endif
+#endif // defined(RVMODEL_ACCESS_FAULT_ADDRESS_STORE) && defined(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
   csrw vsatp, zero
   csrw hgatp, zero
   hfence.gvma
@@ -3044,7 +3044,7 @@ Sv_HZicbo_cg_cp_g_pa_vu_sv39x4_l0_leaf_access_fault_cbo_zero:
   cbo.zero (x9)
   RVTEST_TSBI_GOTO_SMODE
 #endif
-#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
+#if defined(RVMODEL_ACCESS_FAULT_ADDRESS_STORE) && defined(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
 // VU-mode, sv39x4 level 1, nonleaf_access_fault: store access fault on reading a G-stage table
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
@@ -3064,11 +3064,11 @@ Sv_HZicbo_cg_cp_g_pa_vu_sv39x4_l0_leaf_access_fault_cbo_zero:
   or x14, x14, x8
   SREG x14, 0(x13)
   LA(x13, rvtest_Hroot_pg_tbl + (((0x2C0802000) >> 30) & 0x7ff) * 8)
-  LI(x15, (((((RVMODEL_ACCESS_FAULT_ADDRESS_STORE + 7) & ~7)) >> 12) << 10) | (PTE_V))
+  LI(x15, (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 7) & ~7)) >> 12) << 10) | (PTE_V))
   SREG x15, 0(x13)
   hfence.gvma
   hfence.vvma
-  LI(x9, ((((0x2C0802000) & ~0x3fe00000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS_STORE + 7) & ~7) & 0xFFF) / 8) << 21)) >> 21) << 21)
+  LI(x9, ((((0x2C0802000) & ~0x3fe00000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 7) & ~7) & 0xFFF) / 8) << 21)) >> 21) << 21)
   LA(x15, svhzicbo_data)
   slli x15, x15, 43
   srli x15, x15, 43
@@ -3083,8 +3083,8 @@ Sv_HZicbo_cg_cp_g_pa_vu_sv39x4_l1_nonleaf_access_fault_cbo_zero:
   lw x14, 0(x15)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_HZicbo_cg_cp_g_pa_vu_sv39x4_l1_nonleaf_access_fault_cbo_zero, Sv_HZicbo_cg_cp_g_pa_vu_sv39x4_l1_nonleaf_access_fault_cbo_zero_str)
-#endif
-#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
+#endif // defined(RVMODEL_ACCESS_FAULT_ADDRESS_STORE) && defined(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
+#if defined(RVMODEL_ACCESS_FAULT_ADDRESS_STORE) && defined(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
 // VU-mode, sv39x4 level 0, nonleaf_access_fault: store access fault on reading a G-stage table
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
@@ -3111,11 +3111,11 @@ Sv_HZicbo_cg_cp_g_pa_vu_sv39x4_l1_nonleaf_access_fault_cbo_zero:
   or x8, x8, x14
   SREG x8, 0(x13)
   LA(x8, rvtest_hlvl1_pg_tbl + (((0x2C0802000) >> 21) & 0x1ff) * 8)
-  LI(x15, (((((RVMODEL_ACCESS_FAULT_ADDRESS_STORE + 7) & ~7)) >> 12) << 10) | (PTE_V))
+  LI(x15, (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 7) & ~7)) >> 12) << 10) | (PTE_V))
   SREG x15, 0(x8)
   hfence.gvma
   hfence.vvma
-  LI(x9, ((((0x2C0802000) & ~0x1ff000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS_STORE + 7) & ~7) & 0xFFF) / 8) << 12)) >> 12) << 12)
+  LI(x9, ((((0x2C0802000) & ~0x1ff000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 7) & ~7) & 0xFFF) / 8) << 12)) >> 12) << 12)
   LA(x13, svhzicbo_data)
   slli x13, x13, 52
   srli x13, x13, 52
@@ -3130,7 +3130,7 @@ Sv_HZicbo_cg_cp_g_pa_vu_sv39x4_l0_nonleaf_access_fault_cbo_zero:
   lw x8, 0(x13)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_cg_cp_g_pa_vu_sv39x4_l0_nonleaf_access_fault_cbo_zero, Sv_HZicbo_cg_cp_g_pa_vu_sv39x4_l0_nonleaf_access_fault_cbo_zero_str)
-#endif
+#endif // defined(RVMODEL_ACCESS_FAULT_ADDRESS_STORE) && defined(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
   csrw vsatp, zero
   csrw hgatp, zero
   hfence.gvma

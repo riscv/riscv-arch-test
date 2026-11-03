@@ -51,7 +51,8 @@ exclude_extensions:
   # illegal-instruction, as it does on XiangShan, but Sail 0.16 always implements tdata3
   # (fixed by riscv/sail-riscv#2060). In SdtrigSm/S/U_vector_mask and _vector_accesses, a
   # load-address mcontrol6 trigger on element 8 of a vle8.v (vl = 9) reports the access's
-  # base address in xtval on XiangShan and the element's address on Sail.
+  # base address in xtval on XiangShan and the element's address on Sail
+  # (https://github.com/OpenXiangShan/XiangShan/issues/6851).
   - SdtrigSm
   - SdtrigS
   - SdtrigU

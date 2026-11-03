@@ -7,7 +7,7 @@ SystemVerilog. Both configurations compile the core with the open-source Bluespe
 | Config                   | Core                                                                                 | ISA                                                               | Modes                         |
 | ------------------------ | ------------------------------------------------------------------------------------ | ----------------------------------------------------------------- | ----------------------------- |
 | `shakti-eclass-rv32imac` | [E-class](https://gitlab.com/shaktiproject/cores/e-class) `e8a0dfd` (release 1.10.2) | RV32IMAC_Zicsr_Zifencei_Zicntr_Zihpm_Zihintntl_Zihintpause        | M + U, 16 PMP entries         |
-| `shakti-cclass-rv64gc`   | [C-class](https://gitlab.com/shaktiproject/cores/c-class) `6feeb42`                  | RV64IMAFDC_Zicsr_Zifencei_Zicntr_Zihpm_Zihintntl_Zihintpause_Sv39 | M + S + U, 8 of 16 PMP usable |
+| `shakti-cclass-rv64gc`   | [C-class](https://gitlab.com/shaktiproject/cores/c-class) `f527753` (release 6.1.0)  | RV64IMAFDC_Zicsr_Zifencei_Zicntr_Zihpm_Zihintntl_Zihintpause_Sv39 | M + S + U, 8 of 16 PMP usable |
 
 E-class implements privileged specification 1.10 and C-class 1.11 with the 1.12 `menvcfg`;
 both configurations declare `Sm` 1.11.
@@ -42,7 +42,7 @@ its upstream fix for [e-class#94](https://gitlab.com/shaktiproject/cores/e-class
 (a smaller GHC stack limit, no `basicinout` Verilog filter, `--no-timing`), and both drop
 `-static` from the Verilator link and silence Verilator 5.052's `MULTIDRIVEN` warning on bsc's
 `FIFOL1.v`. bsc 2026.07.1 stops on E-class with an internal error, so bsc is pinned to
-2025.01.1. C-class's Python configurator, `soc_config` 3.0.3, runs in a virtual environment.
+2025.01.1. C-class's Python configurator, `soc_config` 3.0.4, runs in a virtual environment.
 
 ## The testbenches
 

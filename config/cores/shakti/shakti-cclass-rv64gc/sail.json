@@ -1,5 +1,5 @@
 // Sail configuration for Shakti C-class at shaktiproject/cores/c-class commit
-// 6feeb421f02f5f76dacba3c44caa61cfba60b56f. Must agree with shakti-cclass-rv64gc.yaml. Seeded by
+// f52775317b0e6c16272f5c42d3dd7d52282f0e65. Must agree with shakti-cclass-rv64gc.yaml. Seeded by
 // the UDB feature extractor's udb_to_sail.py (riscv-arch-test #2442) and checked by hand.
 {
   "$schema": "https://github.com/riscv/sail-riscv/releases/download/0.16/sail_riscv_config_schema.json",

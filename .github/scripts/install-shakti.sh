@@ -34,10 +34,10 @@ ECLASS_DEPS=(
   "common_verilog $GITLAB/common_verilog.git         029a15059798d5400d0821934f2f36e192b92d01" # master
 )
 
-CCLASS_COMMIT="6feeb421f02f5f76dacba3c44caa61cfba60b56f" # master, release 2.0.0 era (2026-09-23)
+CCLASS_COMMIT="f52775317b0e6c16272f5c42d3dd7d52282f0e65" # master, release 6.1.0 (2026-11-02)
 # test_soc/c64_c32/c64_deps.yaml lists these dependencies by tag; pinned to the commits of those tags.
 CCLASS_DEPS=(
-  "caches_mmu     $GITLAB/uncore/caches_mmu.git      f92b64b051f0703b470872a6e4ea652a9c5e1763" # 14.5.1
+  "caches_mmu     $GITLAB/uncore/caches_mmu.git      787102aba7af7afeff0755a7bf8ddbfb86ea936b" # 14.6.2
   "common_bsv     $GITLAB/common_bsv.git             42d7768ec81abf7f657ec8302a6ff5a0584ace22" # 3.2.0
   "devices        $GITLAB/uncore/devices.git         60d9dee9090f0015ccd14de47dd09277c3d608a7" # 9.0.8
   "fabrics        $GITLAB/uncore/fabrics.git         c7b2bf7600fc157f327dce29ec0636756fe3e3f0" # 1.3.8
@@ -45,8 +45,8 @@ CCLASS_DEPS=(
   "csrbox         $GITLAB/cores/csrbox.git           d9cedf03e2454f4cbd6b492f5d132f8540483ddc" # 1.12.0
   "riscv-config   $GITLAB/cores/riscv-config.git     70206502f6bb110bd894afd80ee1fd4d24a71076" # 3.8.0
 )
-# requirements.txt names soc_config 3.0.3; the rest are its dependencies.
-SOC_CONFIG="git+$GITLAB/cores/soc_config.git@823f4ad698567b7de5b25963eb855ebacb44c769" # 3.0.3
+# requirements.txt names soc_config 3.0.4; the rest are its dependencies.
+SOC_CONFIG="git+$GITLAB/cores/soc_config.git@7d5beeb60a48fecf84aa1043a158991d5203011e" # 3.0.4
 # setuptools: soc_config installs csrbox and riscv-config with `pip install . --no-build-isolation`, and
 # venvs of Python 3.12 and later no longer include setuptools.
 PY_PINS=(Cerberus==1.3.8 ruamel.yaml==0.19.1 pytz==2026.6 GitPython==3.2.1 setuptools==80.9.0)
@@ -272,10 +272,10 @@ patch -p1 -l -d "$CCLASS" <<'ACT_CCLASS_INTERRUPTS'
    (*synthesize*)
    module mksign_dump(Ifc_sign_dump);
 
-+    Reg#(Bit#(2)) rg_ext_interrupts <- mkReg(0);
++    Reg#(Bit#(2)) rg_ext_interrupts <- mkRegA(0);
      let word_count = 128/valueOf(`buswidth);
 
-     Reg#(Bool) rg_start<- mkReg(False);
+     Reg#(Bool) rg_start<- mkRegA(False);
 @@ -59,9 +61,20 @@
      rule configure_registers(!rg_start);
        let aw <- pop_o (s_xactor.o_wr_addr);

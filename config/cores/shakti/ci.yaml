@@ -7,7 +7,7 @@ ci_enabled: true
 # Both configurations share this list (ci.yaml has no per-configuration exclusions), so an entry for
 # one core also skips that group on the other. Paths are under
 #   E-class: https://gitlab.com/shaktiproject/cores/e-class/-/blob/e8a0dfd2d1c4907c74fb58432e379016871fdd3a/src/core/
-#   C-class: https://gitlab.com/shaktiproject/cores/c-class/-/blob/6feeb421f02f5f76dacba3c44caa61cfba60b56f/src/
+#   C-class: https://gitlab.com/shaktiproject/cores/c-class/-/blob/f52775317b0e6c16272f5c42d3dd7d52282f0e65/src/
 exclude_extensions:
   # E-class: mtval on an illegal instruction is rs1 + immediate, on ecall the PC, on ebreak PC + 1,
   # and on an interrupt a stale address: every trap writes stage 2's effective address
@@ -103,7 +103,7 @@ exclude_extensions:
   - PMP_Zca_misaligned_napot
   - PMP_Zca_misaligned_tor
   # C-class: TOR and NAPOT entries match one granule too many: both compare the request with the
-  # top pmpaddr using <= (caches_mmu src/pmp/pmp_func.bsv#L100-L106 at 14.5.1;
+  # top pmpaddr using <= (caches_mmu src/pmp/pmp_func.bsv#L100-L106 at 14.6.2;
   # https://gitlab.com/shaktiproject/uncore/caches_mmu/-/issues/55; open caches_mmu MR !87 fixes
   # TOR only).
   - PMP_S_napot_legal_lxwr-01-
@@ -133,10 +133,6 @@ exclude_extensions:
   # reservation set; the configuration should describe that reservation strategy instead.
   - Zalrsc-sc.d
   - Zalrsc-sc.w
-  # C-class: fcvt.s.d of a negative value that RUP rounds to the largest subnormal does not raise
-  # UF (https://gitlab.com/shaktiproject/cores/c-class/-/issues/306, fixed by c-class MR !237 after the
-  # pinned commit).
-  - ZicsrF
   # C-class: wfi in U-mode waits forever instead of raising illegal instruction
   # (https://gitlab.com/shaktiproject/cores/c-class/-/issues/324).
   - InterruptsS_wfi_timeout_U

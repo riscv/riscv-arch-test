@@ -3,8 +3,8 @@
  * test_soc has 64 MB of main memory (test_memory_size in sample_config/c64/core64.yaml) at
  * 0x8000_0000, loaded from code.mem, and install-shakti.sh puts the reset vector at its base.
  * RAM_LENGTH must match the main memory region in sail.json.
- * https://gitlab.com/shaktiproject/cores/c-class/-/blob/6feeb421f02f5f76dacba3c44caa61cfba60b56f/sample_config/c64/core64.yaml#L60
- * https://gitlab.com/shaktiproject/cores/c-class/-/blob/6feeb421f02f5f76dacba3c44caa61cfba60b56f/test_soc/c64_c32/Soc.defines
+ * https://gitlab.com/shaktiproject/cores/c-class/-/blob/f52775317b0e6c16272f5c42d3dd7d52282f0e65/sample_config/c64/core64.yaml#L60
+ * https://gitlab.com/shaktiproject/cores/c-class/-/blob/f52775317b0e6c16272f5c42d3dd7d52282f0e65/test_soc/c64_c32/Soc.defines
  */
 RAM_ORIGIN = 0x80000000;
 RAM_LENGTH = 0x04000000;

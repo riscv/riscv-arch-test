@@ -1,6 +1,6 @@
 // rvmodel_macros.h
 // RVMODEL macro definitions for Shakti C-class in its test_soc SoC under Verilator,
-// shaktiproject/cores/c-class commit 6feeb421f02f5f76dacba3c44caa61cfba60b56f.
+// shaktiproject/cores/c-class commit f52775317b0e6c16272f5c42d3dd7d52282f0e65.
 // Copyright (c) 2026, Harvey Mudd College
 // SPDX-License-Identifier: Apache-2.0
 
@@ -12,7 +12,7 @@
 #define STANDARD_SM_SUPPORTED
 
 // test_soc memory map:
-// https://gitlab.com/shaktiproject/cores/c-class/-/blob/6feeb421f02f5f76dacba3c44caa61cfba60b56f/test_soc/c64_c32/Soc.defines
+// https://gitlab.com/shaktiproject/cores/c-class/-/blob/f52775317b0e6c16272f5c42d3dd7d52282f0e65/test_soc/c64_c32/Soc.defines
 // UART registers (devices/uart_v2/uart.defines at devices 9.0.8): TX data at 0x4, and a 16-bit
 // status register at 0xC with bit 0 = transmitter empty and bit 1 = transmitter full. A byte
 // load from the status register never completes, so it is read with lhu.

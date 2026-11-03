@@ -16,7 +16,7 @@ from testgen.asm.csr import csr_access_test, gen_csr_read_sigupd
 from testgen.asm.helpers import comment_banner, gated, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.FCommon import gen_fcsr_tests
+from testgen.priv.extensions.FCommon import gen_fcsr_test_chunks
 from testgen.priv.extensions.HCommon import (
     H_HS_CSRS,
     H_VS_CSRS,
@@ -524,31 +524,23 @@ def make_h_zicntr(test_data: TestData) -> list[TestChunk]:
     required_extensions=["H", "F"],
     march_extensions=["F", "D", "Zfa"],
     extra_defines=["#define BOOT_TO_SMODE"],
+    # Every vsstatus/sstatus access from VU-mode (and every sstatus access from VS-mode) is a T-SBI
+    # call, so these testcases run several times as many instructions as typical priv testcases.
+    # Keep each file to one vsstatus.FS value (about 220 testcases).
+    testcases_per_file=256,
 )
 def make_h_f(test_data: TestData) -> list[TestChunk]:
     """Generate H_F tests: the floating-point CSRs and instructions in VS and VU modes against vsstatus.FS and sstatus.FS."""
 
     test_chunks: list[TestChunk] = []
 
-    tc = test_data.begin_test_chunk("F_vs")
-    tc.code.extend(
-        [
-            "RVTEST_TSBI_GOTO_VSMODE",
-            *gen_fcsr_tests(test_data, "VS", "H_F_cg"),
-            "RVTEST_TSBI_GOTO_SMODE",
-        ]
-    )
-    test_chunks.append(test_data.end_test_chunk())
+    for tc in gen_fcsr_test_chunks(test_data, "VS", "H_F_cg", "F_vs"):
+        tc.code = ["RVTEST_TSBI_GOTO_VSMODE", *tc.code, "RVTEST_TSBI_GOTO_SMODE"]
+        test_chunks.append(tc)
 
-    tc = test_data.begin_test_chunk("F_vu")
-    tc.code.extend(
-        [
-            "RVTEST_TSBI_GOTO_VUMODE",
-            *gen_fcsr_tests(test_data, "VU", "H_F_cg"),
-            "RVTEST_TSBI_GOTO_SMODE",
-        ]
-    )
-    test_chunks.append(test_data.end_test_chunk())
+    for tc in gen_fcsr_test_chunks(test_data, "VU", "H_F_cg", "F_vu"):
+        tc.code = ["RVTEST_TSBI_GOTO_VUMODE", *tc.code, "RVTEST_TSBI_GOTO_SMODE"]
+        test_chunks.append(tc)
 
     return test_chunks
 

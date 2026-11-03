@@ -79,9 +79,12 @@ make e906-rv32imafc-u-pmp
   its trampoline to the mtvec target.
 - In CLIC mode mcause bits 29:27 alias mstatus.MPP and MPIE, so an M-mode trap reads
   `0x3000_000x`. Writing mcause also writes MPP and MPIE.
-- mhpmcounter3-31 count and take writes only while their mhpmevent holds that counter's one event
-  code, and mhpmevent accepts only 0 or that code. ACT never programs an event, so the yaml declares
-  no HPM counters (`HPM_COUNTER_EN` all false).
+- HPM counters 3, 4, 8, 9 and 13-17 are implemented with 64-bit storage. Each mhpmevent
+  accepts only 0 or that counter's fixed event code, and counter writes are accepted only while
+  that event is selected. UDB and Sail declare these nine counters as implemented. Sail's
+  configuration can express their width and selector width, but cannot express the per-counter
+  event restrictions or the event-gated writes; counter tests affected by those differences must
+  remain explicit exclusions rather than describing the counters as absent.
 - `ci.yaml` lists the suites that fail and why: fmin/fmax with a signaling NaN, FMA underflow,
   the mcause alias, imprecise store and LR bus errors, LR exception causes, mstatus.MPP and TW,
   minstret counting its own write and ECALL, and mret keeping MPRV (privileged 1.11 behavior that
@@ -92,6 +95,9 @@ make e906-rv32imafc-u-pmp
 The UDB feature extractor (riscv-arch-test PR 2442) agrees with the yaml on every declared
 extension. Its other differences, each checked by RTL reading or a directed probe, are kept:
 
+- It reports the HPM counters as absent when it probes them with every event selector at zero.
+  Selecting each counter's fixed event enables writes to its 64-bit storage, so the configuration
+  declares counters 3, 4, 8, 9 and 13-17 as implemented.
 - It reports Zcb, Smcsrind and Sdtrig. The Zcb encodings retire without effect (c.zext.b and c.mul
   leave rd unchanged), CSR 0x350 is the CLIC mclicbase and 0x351 traps, and the triggers are debug
   0.13.2 (see above).

@@ -215,53 +215,56 @@ params:
   PMP_NAPOT_SUPPORTED: true
 
   TIME_CSR_IMPLEMENTED: true
-  # mhpmcounter3-31 never count and never take a write while their mhpmevent selects no
-  # event.  Counters 3, 4, 8, 9 and 13-17 each count one fixed event, and their mhpmevent
-  # accepts only 0 or that event's code; the other mhpmevent registers read 0.  ACT never
-  # programs an event, so to the tests every counter reads 0 and ignores writes, which is
-  # what HPM_COUNTER_EN = false gives the reference model.  The UDB feature extractor
-  # measures the same.
-  #   Quote: "assign mhpmevt3_wen = (cp0_hpcp_index[11:0] == MHPMEVT3 ) && cp0_hpcp_wreg
-  #          && ((cp0_hpcp_wdata[4:0] == 5'b0) || (cp0_hpcp_wdata[4:0] == 5'd1));"
-  #   https://github.com/T-head-Semi/opene906/blob/c5b878958e73e0b8f324a8132943f184a7831c07/E906_RTL_FACTORY/gen_rtl/pmu/rtl/pa_hpcp_top.v#L430-L461
-  HPM_COUNTER_EN:
-    [
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
+  # Nine 64-bit HPM counters are implemented. Each mhpmevent accepts zero or one fixed
+  # event code; writes to the counter itself are accepted only while that event is selected.
+  # A stopped counter is still implemented: HPM_COUNTER_EN describes the hardware, not its
+  # current event selection. Other HPM counters and their selectors are read-only zero.
+  #   https://github.com/T-head-Semi/opene906/blob/c5b878958e73e0b8f324a8132943f184a7831c07/E906_RTL_FACTORY/gen_rtl/pmu/rtl/pa_hpcp_top.v#L430-L473
+  HPM_COUNTER_EN: [
+      false, # 0
+      false, # 1
+      false, # 2
+      true, # 3
+      true, # 4
+      false, # 5
+      false, # 6
+      false, # 7
+      true, # 8
+      true, # 9
+      false, # 10
+      false, # 11
+      false, # 12
+      true, # 13
+      true, # 14
+      true, # 15
+      true, # 16
+      true, # 17
+      false, # 18
+      false, # 19
+      false, # 20
+      false, # 21
+      false, # 22
+      false, # 23
+      false, # 24
+      false, # 25
+      false, # 26
+      false, # 27
+      false, # 28
+      false, # 29
+      false, # 30
+      false, # 31
     ]
-  # mcountinhibit: CY (0), IR (2) and bits 3-30 are writable.
-  #   Quote: "assign mcntinhbt_value[31:0] = {1'b0, hpm[27:0], ir, 1'b0, cy};"
-  #   https://github.com/T-head-Semi/opene906/blob/c5b878958e73e0b8f324a8132943f184a7831c07/E906_RTL_FACTORY/gen_rtl/pmu/rtl/pa_hpcp_top.v#L600
+  HPM_EVENTS: [0, 1, 2, 6, 7, 11, 12, 13, 14, 15]
+  HPM_COUNTER3_WIDTH: 64
+  HPM_COUNTER4_WIDTH: 64
+  HPM_COUNTER8_WIDTH: 64
+  HPM_COUNTER9_WIDTH: 64
+  HPM_COUNTER13_WIDTH: 64
+  HPM_COUNTER14_WIDTH: 64
+  HPM_COUNTER15_WIDTH: 64
+  HPM_COUNTER16_WIDTH: 64
+  HPM_COUNTER17_WIDTH: 64
+
   MCOUNTINHIBIT_IMPLEMENTED: true
   COUNTINHIBIT_EN:
     [

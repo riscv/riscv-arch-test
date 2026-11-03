@@ -12,10 +12,12 @@
     "writable_fiom": false,
     "writable_hpm_counters": {
       "len": 32,
-      "value": "0x0"
+      "value": "0x3E318"
     },
     "hpmcounter_width_bits": 64,
-    "hpmevent_width_bits": 32,
+    // Each implemented selector holds five bits and accepts only zero or its fixed event.
+    // Sail cannot express per-counter WARL selectors or E906's event-gated counter writes.
+    "hpmevent_width_bits": 5,
     "hpmcounter_increments_in_self_hpmevent_write": false,
     "scounteren_writable_bits": {
       "len": 32,

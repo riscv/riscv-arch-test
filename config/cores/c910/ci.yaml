@@ -61,7 +61,8 @@ exclude_extensions:
   - Sm_mcsr_cntr
   - Sm_mcsr_walk
   - Sm_xret
-  # xtval keeps VA bits 39:0 (rtu/rtl/ct_rtu_retire.v#L1236-L1239); S-mode fetches from U pages when SUM=1
+  # xtval keeps VA bits 39:0 (rtu/rtl/ct_rtu_retire.v#L1236-L1239,
+  # https://github.com/XUANTIE-RV/openc910/issues/90); S-mode fetches from U pages when SUM=1
   # (mmu/rtl/ct_mmu_iutlb.v#L599). Sail also cannot run Sv_sv39_VA_all_zeros_Smode, which maps VA 0 over the
   # test image.
   - Sv_sv39_VA_all_zeros

@@ -117,12 +117,12 @@ Sv_ExceptionsZaamoSm_cg_cp_misaligned_priority_m_test2_amoadd:
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsZaamoSm_cg_cp_misaligned_priority_m_test2_amoadd, Sv_ExceptionsZaamoSm_cg_cp_misaligned_priority_m_test2_amoadd_str)
 
-#ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-  SUPERPAGE_PTE_SETUP_SV39(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_AMO
+  SUPERPAGE_PTE_SETUP_SV39(RVMODEL_ACCESS_FAULT_ADDRESS_AMO, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
   LI(x8, (va_data >> 30) << 30)
-  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS)
+  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS_AMO)
   slli x6, x6, 34
   srli x6, x6, 34
   add x8, x8, x6
@@ -147,12 +147,12 @@ Sv_ExceptionsZaamoSm_cg_cp_misaligned_priority_m_test3_amoadd:
 
 #endif
 
-#ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-  SUPERPAGE_PTE_SETUP_SV39(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_AMO
+  SUPERPAGE_PTE_SETUP_SV39(RVMODEL_ACCESS_FAULT_ADDRESS_AMO, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
   LI(x8, (va_data >> 30) << 30)
-  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS)
+  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS_AMO)
   slli x6, x6, 34
   srli x6, x6, 34
   add x8, x8, x6
@@ -233,12 +233,12 @@ Sv_ExceptionsZaamoSm_cg_cp_misaligned_priority_m_test6_amoadd:
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsZaamoSm_cg_cp_misaligned_priority_m_test6_amoadd, Sv_ExceptionsZaamoSm_cg_cp_misaligned_priority_m_test6_amoadd_str)
 
-#ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-  SUPERPAGE_PTE_SETUP_SV39(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL2)
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_AMO
+  SUPERPAGE_PTE_SETUP_SV39(RVMODEL_ACCESS_FAULT_ADDRESS_AMO, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL2)
   sfence.vma
 
   LI(x8, (va_data >> 30) << 30)
-  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS)
+  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS_AMO)
   slli x6, x6, 34
   srli x6, x6, 34
   add x8, x8, x6
@@ -263,12 +263,12 @@ Sv_ExceptionsZaamoSm_cg_cp_misaligned_priority_m_test7_amoadd:
 
 #endif
 
-#ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-  SUPERPAGE_PTE_SETUP_SV39(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL2)
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_AMO
+  SUPERPAGE_PTE_SETUP_SV39(RVMODEL_ACCESS_FAULT_ADDRESS_AMO, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL2)
   sfence.vma
 
   LI(x8, (va_data >> 30) << 30)
-  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS)
+  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS_AMO)
   slli x6, x6, 34
   srli x6, x6, 34
   add x8, x8, x6

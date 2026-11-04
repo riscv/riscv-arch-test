@@ -396,12 +396,12 @@ def instret_exception_tests(test_data: TestData, covergroup: str, mode: Mode) ->
 
     r_addr, r_tmp = test_data.int_regs.get_registers(2)
     lines += [
-        "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
+        "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD",
         comment_banner("cp_instret_load_access_fault", f"Load access fault in {mode}-mode: {csr} delta recorded"),
         "",
-        f"LI_FIXED_LEN(x{r_addr}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+        f"LI_FIXED_LEN(x{r_addr}, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)",
         *_instret_case(test_data, covergroup, "load_access_fault", mode, [f"lw x{r_tmp}, 0(x{r_addr})"]),
-        "#endif // RVMODEL_ACCESS_FAULT_ADDRESS",
+        "#endif // RVMODEL_ACCESS_FAULT_ADDRESS_LOAD",
         "",
         comment_banner("cp_instret_load_misaligned", f"Load address misaligned in {mode}-mode: {csr} delta recorded"),
         "",

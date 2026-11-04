@@ -661,9 +661,9 @@ covergroup U_Zicntr_cg with function sample(ins_t ins);
     adr_misaligned_1: coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] {
         bins one = {3'b001};  // scratch + 1
     }
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
         illegal_address: coverpoint ins.current.imm + ins.current.rs1_val {
-            bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
+            bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD};
         }
     `endif
     wfi: coverpoint ins.current.insn {
@@ -701,7 +701,7 @@ covergroup U_Zicntr_cg with function sample(ins_t ins);
     // instructions that trap before retiring
     cp_instret_ecall:  cross priv_mode_u, ecall, prev_ecall_li;
     cp_instret_ebreak: cross priv_mode_u, ebreak, prev_instret_read;
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
         cp_instret_load_access_fault: cross priv_mode_u, insn_lw, illegal_address, prev_instret_read;
     `endif
     cp_instret_load_misaligned: cross priv_mode_u, insn_lw, adr_misaligned_1, prev_instret_read;

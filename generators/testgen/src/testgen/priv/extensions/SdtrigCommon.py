@@ -182,6 +182,12 @@ _ETRIGGER_MISMATCH_ONLY_CODES = (0, 3, 4, 6)
 _ETRIGGER_ECALL_CODE = {"Sm": 11, "S": 9, "U": 8}  # each mode raises only its own ecall
 _ETRIGGER_NOT_DELEGATABLE = (3, 11)  # medeleg[3] must stay 0 (trigger breakpoint goes to M); medeleg[11] is read-only 0
 _PAGE_FAULT_CODES = (12, 13, 15)
+# Access faults are raised only when the DUT defines an access-fault address for the access type
+_ACCESS_FAULT_MACROS = {
+    1: "RVMODEL_ACCESS_FAULT_ADDRESS_FETCH",
+    5: "RVMODEL_ACCESS_FAULT_ADDRESS_LOAD",
+    7: "RVMODEL_ACCESS_FAULT_ADDRESS_STORE",
+}
 # Page faults need translation: Sv39 on RV64, Sv32 on RV32. A hart without it may have no satp (no S-mode), and
 # VA_TARGET is then a physical address that may be RAM (it is on rv32 harts), so no page fault can be raised.
 _PAGING_GUARD = "#if (__riscv_xlen == 64 && defined(SV39_SUPPORTED)) || (__riscv_xlen == 32 && defined(SV32_SUPPORTED))"
@@ -570,7 +576,7 @@ def _cause_exception(
             raise ValueError("addr_reg is required for instruction access fault")
 
         return [
-            f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+            f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_FETCH)",
             f"jalr ra, 0(x{addr_reg})",
             "nop # spacer; trap handler returns here",
         ]
@@ -583,7 +589,7 @@ def _cause_exception(
             raise ValueError("addr_reg is required for load access fault")
 
         return [
-            f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+            f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)",
             f"lw x{data_reg}, 0(x{addr_reg}) # load access fault",
         ]
 
@@ -591,7 +597,7 @@ def _cause_exception(
         if addr_reg is None or data_reg is None:
             raise ValueError("addr_reg and data_reg are required for store access fault")
         return [
-            f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+            f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)",
             f"sw x0, 0(x{addr_reg}) # store access fault",
             "nop # spacer; trap handler returns here",
         ]
@@ -4051,6 +4057,9 @@ def _generate_etrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
 
                     label_cp = coverpoint if raised_code == code else f"{coverpoint}_other"
 
+                    fault_macro = _ACCESS_FAULT_MACROS.get(raised_code)
+                    if fault_macro:
+                        lines.append(f"#ifdef {fault_macro}")
                     if is_pf:
                         lines.append(_PAGING_GUARD)
                     lines.extend(
@@ -4077,6 +4086,8 @@ def _generate_etrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                     lines.extend([*_sign_trap_count(data_reg, test_data), *_disable_trigger(mode)])
                     if is_pf:
                         lines.append("#endif // paging")
+                    if fault_macro:
+                        lines.append(f"#endif // {fault_macro}")
             lines.append(f"#endif // UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_{code}")
         lines.extend(
             [f"#endif // {_mode_writable(mode)}", f"#endif // UDB_SDTRIG_ETRIGGER_SUPPORTED_TRIGGERS_{trig_num}"]
@@ -4161,6 +4172,9 @@ def etrigger_cross_priv_delegate_test(test_data: TestData, target_mode: str) -> 
                         else:
                             label_cp = f"{coverpoint}_deleg" if medeleg_en else coverpoint
 
+                        fault_macro = _ACCESS_FAULT_MACROS.get(raised_code)
+                        if fault_macro:
+                            lines.append(f"#ifdef {fault_macro}")
                         if is_pf:
                             lines.append(_PAGING_GUARD)
                         lines.extend(
@@ -4181,6 +4195,8 @@ def etrigger_cross_priv_delegate_test(test_data: TestData, target_mode: str) -> 
                         lines.extend([*_sign_trap_count(data_reg, test_data), *_disable_trigger("Sm")])
                         if is_pf:
                             lines.append("#endif // paging")
+                        if fault_macro:
+                            lines.append(f"#endif // {fault_macro}")
             lines.append(f"#endif // UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_{code}")
         lines.extend(
             [f"#endif // {_mode_writable(target_mode)}", f"#endif // UDB_SDTRIG_ETRIGGER_SUPPORTED_TRIGGERS_{trig_num}"]
@@ -4202,7 +4218,12 @@ def etrigger_cross_priv_delegate_test(test_data: TestData, target_mode: str) -> 
             )
         )
         lines.extend(
-            ["#ifdef S_SUPPORTED", "#ifdef UDB_SDTRIG_S_WRITABLE", "#ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_5"]
+            [
+                "#ifdef S_SUPPORTED",
+                "#ifdef UDB_SDTRIG_S_WRITABLE",
+                "#ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_5",
+                "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD",
+            ]
         )
         for ctx, gate, set_ctx, clear_ctx, cases in _trap_textra_blocks(cfg_reg, temp_reg):
             lines.extend([f"\n{gate}", *set_ctx])
@@ -4235,6 +4256,7 @@ def etrigger_cross_priv_delegate_test(test_data: TestData, target_mode: str) -> 
             lines.extend([*clear_ctx, f"#endif // {ctx} textra match"])
         lines.extend(
             [
+                "#endif // RVMODEL_ACCESS_FAULT_ADDRESS_LOAD",
                 "#endif // UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_5",
                 "#endif // UDB_SDTRIG_S_WRITABLE",
                 "#endif // S_SUPPORTED",

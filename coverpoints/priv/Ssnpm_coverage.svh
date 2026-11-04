@@ -58,9 +58,13 @@ covergroup Ssnpm_cg with function sample(ins_t ins);
         cp_pmm_uxl_clear: cross priv_mode_s, pmm, uxl_rv32;
     `endif // UDB_UXLEN_32
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-        // Fault crosses confirm lw/sw executed in U-mode at the illegal address.
-        cp_hardware_csr_writes_fault: cross priv_mode_u, satp_mode, pmm, a_upper_bits, sw_lw_insn, illegal_addr;
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
+        // Fault cross confirms lw executed in U-mode at the illegal address.
+        cp_hardware_csr_writes_fault_load: cross priv_mode_u, satp_mode, pmm, a_upper_bits, lw_insn, illegal_addr_load;
+    `endif
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
+        // Fault cross confirms sw executed in U-mode at the illegal address.
+        cp_hardware_csr_writes_fault_store: cross priv_mode_u, satp_mode, pmm, a_upper_bits, sw_insn, illegal_addr_store;
     `endif
 
 endgroup

@@ -295,13 +295,13 @@ def exception_priority_tests(test_data: TestData, priv: Mode, covergroup: str) -
             comment_banner(
                 coverpoint,
                 f"{priv}-mode xLPE=1, jalr through a non-link register:\n"
-                "to RVMODEL_ACCESS_FAULT_ADDRESS, the instruction access fault is taken with xPELP=LP_EXPECTED;\n"
+                "to RVMODEL_ACCESS_FAULT_ADDRESS_FETCH, the instruction access fault is taken with xPELP=LP_EXPECTED;\n"
                 "the handler resumes at ra and xRET restores ELP, so the non-LPAD instruction there traps.\n"
                 "To an illegal instruction, the software-check exception is taken instead of the illegal instruction.",
             ),
             *set_lpe(priv, priv, temp_reg, True),
-            "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
-            f"LI_FIXED_LEN(x{jump_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+            "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_FETCH",
+            f"LI_FIXED_LEN(x{jump_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_FETCH)",
             test_data.add_testcase(_bin(priv, "instr_access_fault"), coverpoint, covergroup),
             f"jalr x1, 0(x{jump_reg}) # instruction access fault; the handler resumes at ra",
             *RESUME,

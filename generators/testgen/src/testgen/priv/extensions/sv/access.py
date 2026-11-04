@@ -95,6 +95,7 @@ def add_rwx_test(
     repeat_setup: bool = False,
     physical_fetch: bool = False,
     include_exec: bool = True,
+    operations: Sequence[str] | None = None,
     coverpoints: Mapping[str, str] | None = None,
     covergroup: str | None = None,
     crosses: Crosses | None = None,
@@ -104,13 +105,15 @@ def add_rwx_test(
     ``address`` replaces the default sequence that builds ``va`` in ``regs.addr``. ``repeat_setup`` reruns
     ``setup`` after the store and the load, because a trap taken in M-mode changes mstatus.MPP. ``setup`` and
     ``cleanup`` may use only ``regs.scratch``. ``crosses`` names the covergroup and crosses of the testcases,
-    in place of ``covergroup`` and ``coverpoints``.
+    in place of ``covergroup`` and ``coverpoints``. ``operations`` selects a subset of store, load and exec, in
+    place of ``include_exec``.
     """
     assert test_data.test_chunk is not None
     if crosses is not None:
         coverpoints, covergroup = crosses.by_operation(), crosses.covergroup
     default_coverpoint = f"cp_{test_data.test_chunk.split_name}"
-    operations = ("store", "load", "exec") if include_exec else ("store", "load")
+    if operations is None:
+        operations = ("store", "load", "exec") if include_exec else ("store", "load")
     labels = {
         operation: test_data.add_testcase(
             f"{name}_{operation}",
@@ -127,20 +130,30 @@ def add_rwx_test(
         *enter,
         *setup,
         f"addi {value}, {value}, 16",
-        "",
-        "// Store",
-        f"{labels['store']}:",
-        f"sw {value}, 20({addr})",
-        "nop",
-        *repeated,
-        "",
-        "// Load",
-        f"{labels['load']}:",
-        f"lw {load}, 20({addr})",
-        "nop",
-        *repeated,
     ]
-    if include_exec:
+    if "store" in labels:
+        lines.extend(
+            [
+                "",
+                "// Store",
+                f"{labels['store']}:",
+                f"sw {value}, 20({addr})",
+                "nop",
+                *repeated,
+            ]
+        )
+    if "load" in labels:
+        lines.extend(
+            [
+                "",
+                "// Load",
+                f"{labels['load']}:",
+                f"lw {load}, 20({addr})",
+                "nop",
+                *repeated,
+            ]
+        )
+    if "exec" in labels:
         lines.extend(
             [
                 *((f"LA({addr}, rvtest_data_1)",) if physical_fetch else ()),
@@ -155,13 +168,11 @@ def add_rwx_test(
         lines.extend(["", *cleanup])
     if leave:
         lines.extend(["", *leave])
-    lines.extend(
-        [
-            "",
-            write_sigupd(regs.value, test_data, label=labels["store"]),
-            write_sigupd(regs.load, test_data, label=labels["load"]),
-        ]
-    )
-    if include_exec:
+    lines.append("")
+    if "store" in labels:
+        lines.append(write_sigupd(regs.value, test_data, label=labels["store"]))
+    if "load" in labels:
+        lines.append(write_sigupd(regs.load, test_data, label=labels["load"]))
+    if "exec" in labels:
         lines.append(write_sigupd(regs.result, test_data, label=labels["exec"]))
     return lines

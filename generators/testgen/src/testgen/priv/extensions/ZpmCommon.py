@@ -1051,28 +1051,31 @@ def generate_fault_address_tests(prefix: str, test_data: TestData, cg: str) -> l
     """Check that masking also applies before the model access-fault address is used."""
     cp = "cp_hardware_csr_writes_fault"
     base, a, data, chk = test_data.int_regs.get_registers(4)
-    lines = [
-        comment_banner(f"{prefix}: masked address resolves to the model's access-fault address"),
-        "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
-        f"LI_FIXED_LEN(x{base}, RVMODEL_ACCESS_FAULT_ADDRESS)",
-    ]
+    lines = [comment_banner(f"{prefix}: masked address resolves to the model's access-fault address")]
     for upper in UPPER_PATTERNS:
         lines.extend(
             [
+                "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD",
+                f"LI_FIXED_LEN(x{base}, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)",
                 f"LI(x{a}, {hex(upper << 48)})",
                 f"xor x{a}, x{a}, x{base}",
                 f"LI(x{chk}, {hex(SENTINEL)})",
-                test_data.add_testcase(_binname(f"{prefix}_flt", upper, "lw"), cp, cg),
+                test_data.add_testcase(_binname(f"{prefix}_flt", upper, "lw"), f"{cp}_load", cg),
                 f"lw x{chk}, 0(x{a})",
                 write_sigupd(chk, test_data),
+                "#endif // RVMODEL_ACCESS_FAULT_ADDRESS_LOAD",
+                "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE",
+                f"LI_FIXED_LEN(x{base}, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)",
+                f"LI(x{a}, {hex(upper << 48)})",
+                f"xor x{a}, x{a}, x{base}",
                 f"LI(x{data}, {hex(VALUE_NEW)})",
                 f"LI(x{chk}, {hex(SENTINEL)})",
-                test_data.add_testcase(_binname(f"{prefix}_flt", upper, "sw"), cp, cg),
+                test_data.add_testcase(_binname(f"{prefix}_flt", upper, "sw"), f"{cp}_store", cg),
                 f"sw x{data}, 0(x{a})",
                 write_sigupd(chk, test_data),
+                "#endif // RVMODEL_ACCESS_FAULT_ADDRESS_STORE",
             ]
         )
-    lines.append("#endif // RVMODEL_ACCESS_FAULT_ADDRESS")
     test_data.int_regs.return_registers([base, a, data, chk])
     return lines
 

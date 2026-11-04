@@ -293,13 +293,13 @@ Sv_Zicbo_cg_cp_misaligned_page_cbo_u_test8_inval:
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_misaligned_page_cbo_u_test8_inval, Sv_Zicbo_cg_cp_misaligned_page_cbo_u_test8_inval_str)
 
-#ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
   // Test case 9: Leaf PTE points to the access-fault region | Test in U-Mode | expected = Store access fault
-  SUPERPAGE_PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
+  SUPERPAGE_PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS_STORE, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
   LI(x15, (va_data >> 22) << 22)
-  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS)
+  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
   slli x6, x6, 10
   srli x6, x6, 10
   add x15, x15, x6
@@ -527,9 +527,9 @@ Sv_Zicbo_cg_cp_PTE_nonleaf_lvl0_cbo_u_test17_inval:
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_PTE_nonleaf_lvl0_cbo_u_test17_inval, Sv_Zicbo_cg_cp_PTE_nonleaf_lvl0_cbo_u_test17_inval_str)
 
-#ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+#if defined(RVMODEL_ACCESS_FAULT_ADDRESS_STORE) && defined(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
   // Test case 18: Access fault on the page-table walk | Test in U-Mode | expected = Store access fault
-  PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_V), va_data, LEVEL1)
+  PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
@@ -552,12 +552,12 @@ Sv_Zicbo_cg_cp_nonleaf_PTE_to_nonexistent_pa_cbo_test18_inval:
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Zicbo_cg_cp_nonleaf_PTE_to_nonexistent_pa_cbo_test18_flush, Sv_Zicbo_cg_cp_nonleaf_PTE_to_nonexistent_pa_cbo_test18_flush_str)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_Zicbo_cg_cp_nonleaf_PTE_to_nonexistent_pa_cbo_test18_inval, Sv_Zicbo_cg_cp_nonleaf_PTE_to_nonexistent_pa_cbo_test18_inval_str)
-#endif
+#endif // defined(RVMODEL_ACCESS_FAULT_ADDRESS_STORE) && defined(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
 
-#ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
   // Test case 19: Leaf PTE points to the access-fault region | Test in U-Mode | expected = Store access fault
   PTE_SETUP_SV32(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
-  PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
+  PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS_STORE, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
   LI(x15, va_data)

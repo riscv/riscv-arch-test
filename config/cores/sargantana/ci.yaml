@@ -130,33 +130,64 @@ exclude_extensions:
   - Sm_H_hcsr_walk
   - Sm_H_trap
   - Sm_H_tvm
-  # Two-stage translation bugs in the MMU (mmu:ptw/ptw.sv, mmu:tlb/tlb.sv). Sv_H_sv39x4_bare, _g_perm_vs,
-  # _g_pte and _gpa_width pass. Deadlock ("200 cycles without a valid commit") under full two-stage
-  # translation, on a VS fetch page fault, or on HLV through two stages:
+  # Two-stage translation. Sv_H_sv39x4_bare, _fence, _g_perm_vs, _g_pte, _gpa_width and
+  # Sv_HZicbo_sv39x4_zicbop_prefetch pass. GVA is 0 on load and store page faults from VS-stage translation:
+  # core:datapath/rtl/exe_stage/rtl/load_store_queue.sv#L167, #L174 (https://github.com/bsc-loca/sargantana/issues/135)
+  - Sv_H_sv39x4_two_stage_vs
+  - Sv_HSm_sv39x4_mprv_sum_mxr
+  # The GVA bug (#135), and a VU-mode access through an invalid VS-stage root PTE raises a guest-page fault: the TLB
+  # ignores resp.error and uses stale VS-stage permission bits, mmu:tlb/tlb.sv#L83-L104 and mmu:ptw/ptw.sv#L225-L227
+  # (the bug behind https://github.com/bsc-loca/sargantana/issues/110)
+  - Sv_H_sv39x4_two_stage_vu
+  # With hgatp = Bare, a VS-stage superpage translates every address to its first page: mmu:tlb/tlb.sv#L518-L521
+  # (https://github.com/bsc-loca/sargantana/issues/136)
+  - Sv_H_sv39x4_atp_mode
+  # The GVA (#135) and hgatp = Bare superpage (#136) bugs, and VS-stage page-fault checks are enabled by the G-stage
+  # enable, so with hgatp = Bare no VS-stage permission is checked: mmu:tlb/tlb.sv#L478-L489
+  # (https://github.com/bsc-loca/sargantana/issues/137); Sv_H_sv39_vs_pte also hits the #110 TLB bug
+  - Sv_H_sv39_vs_perm
   - Sv_H_sv39_vs_pte
-  - Sv_H_sv39x4_access_fault
+  # The same check with vsatp = Bare: user-level accesses (VU, HLV with SPVP = 0, MPRV with MPP = U and MPV = 1) take a
+  # spurious page fault (https://github.com/bsc-loca/sargantana/issues/137). Sv_HSm_sv39_mprv_vsatp also hits the
+  # GVA bug (#135), and Sv_HSm_sv39x4_mprv_hgatp translates M-mode MPRV accesses with MPP = M when MPV = 1:
+  # csr:csr_bsc.sv#L2227, #L2237, #L2249 (https://github.com/bsc-loca/csr/issues/17)
+  - Sv_H_sv39x4_g_perm_vu
+  - Sv_HSm_sv39_mprv_vsatp
+  - Sv_HSm_sv39x4_mprv_hgatp
+  # A VS-stage superpage over a smaller G-stage page is translated through the superpage's base guest physical address:
+  # mmu:ptw/ptw.sv#L564 (https://github.com/bsc-loca/sargantana/issues/138)
+  - Sv_H_sv39x4_page_sizes
+  # A non-canonical VA is checked at 41 bits, for VS-stage translation too:
+  # core:datapath/rtl/exe_stage/rtl/load_store_queue.sv#L197 (https://github.com/bsc-loca/sargantana/issues/113 item 4)
   - Sv_H_sv39x4_canonical
-  - Sv_H_sv39x4_fence
+  # A translated fetch, and a PTE read, are not PMA-checked (https://github.com/bsc-loca/sargantana/issues/113 items 16
+  # and 3)
+  - Sv_H_sv39x4_access_fault
+  # hedeleg[23:20] are writable (https://github.com/bsc-loca/sargantana/issues/126); _vu also hits the #110 TLB bug
+  - Sv_H_sv39x4_hedeleg
+  # htval of a fault on a VS-stage page-table read (https://github.com/bsc-loca/sargantana/issues/123), and htval drops
+  # guest-physical-address bits above bit 41: mmu:ptw/ptw.sv#L407, #L567 (https://github.com/bsc-loca/sargantana/issues/142)
+  - Sv_H_sv39x4_gpa_wide
+  # The GVA bug (#135), #123, and the G-stage leaf of a VS-level page table is not checked for R and A:
+  # mmu:ptw/ptw.sv#L546 (https://github.com/bsc-loca/sargantana/issues/141). Sv_H_sv39x4_hlv also hits HLVX ignoring
+  # vsstatus.SUM: mmu:tlb/tlb.sv#L475 (https://github.com/bsc-loca/sargantana/issues/139)
   - Sv_H_sv39x4_hlv
   - Sv_H_sv39x4_implicit
-  - Sv_H_sv39x4_two_stage
-  # Accesses still succeed with the old permissions after a VS-stage PTE loses them and hfence runs
-  # (mmu:tlb/tlb.sv#L248-L283)
-  - Sv_H_sv39_vs_perm
-  # A fetch page fault in VU with vsatp = Bare, a spurious guest-page fault for a VS 1 GiB page over a G 2 MiB
-  # page, and the wrong instruction fetched right after csrw vsatp in VS-mode
-  - Sv_H_sv39x4_atp_mode
-  - Sv_H_sv39x4_g_perm_vu
-  - Sv_H_sv39x4_page_sizes
-  # htval gets the final-access GPA instead of the PTE's GPA (https://github.com/bsc-loca/sargantana/issues/123)
-  - Sv_H_sv39x4_gpa_wide
-  # A VS-stage page fault is reported as a guest-page fault (mmu:tlb/tlb.sv#L390-L470)
-  - Sv_H_sv39x4_hedeleg
-  # Sv_HSm and Sv_HZicbo: every test hits one of the bugs above, the GVA bugs
-  # (https://github.com/bsc-loca/sargantana/issues/119, #128), or unchecked G-stage PTE PMAs
-  # (mmu:dcache_adapters/bsc_mmu_hpdc_adapter.sv#L87-L93)
-  - Sv_HSm
-  - Sv_HZicbo
+  # The GVA bug (#135) and #123; _vu also hits the #110 TLB bug
+  - Sv_HSm_sv39x4_guest_faults
+  # Zicbo under two-stage translation: VS-stage and G-stage PTE reads are not PMA-checked
+  # (https://github.com/bsc-loca/sargantana/issues/113 item 3), and the superpage bug of #138 (_g). _zicbom_g also needs
+  # G-stage write permission for cbo.clean/flush/inval: core:datapath/rtl/exe_stage/rtl/load_store_queue.sv#L177-L178
+  # (https://github.com/bsc-loca/sargantana/issues/140). _zicbom_g and _zicbom_vs also hit the PTE cache keeping a
+  # non-leaf PTE that failed its checks: mmu:ptw/ptw.sv#L263 (https://github.com/bsc-loca/sargantana/issues/113 item 7).
+  # The _vs tests also hit the GVA bug (#135), the #110 TLB bug and #123.
+  - Sv_HZicbo_sv39x4_zicbom_g
+  - Sv_HZicbo_sv39x4_zicbom_vs
+  - Sv_HZicbo_sv39x4_zicboz_g
+  - Sv_HZicbo_sv39x4_zicboz_vs
+  # Virtual-instruction exceptions set GVA = 1 (https://github.com/bsc-loca/sargantana/issues/128)
+  - Sv_HZicbo_zicbom_henvcfg
+  - Sv_HZicbo_zicboz_henvcfg
   # Wrong htval on a VS-stage PTE fault (https://github.com/bsc-loca/sargantana/issues/123)
   - Shtvala-
   - Shtvala_amo

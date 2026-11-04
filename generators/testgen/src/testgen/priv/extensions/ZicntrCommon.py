@@ -10,6 +10,7 @@
 
 from typing import Literal
 
+from testgen.asm.csr import write_stce
 from testgen.asm.helpers import comment_banner, write64_csr, write_sigupd
 from testgen.asm.tsbi import tsbi_call_or_direct
 from testgen.data.state import TestData
@@ -238,13 +239,13 @@ def htimedelta_tests(test_data: TestData, covergroup: str, mode: Mode) -> list[s
 
 
 def _counter_prep(test_data: TestData, mode: Mode) -> list[str]:
-    """Start the counters and, in U-mode, make them readable."""
+    """Start the counters and, below M-mode, make them readable."""
     lines = [
         "#ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED",
         tsbi_call_or_direct("csrw mcountinhibit, zero  # run all counters", mode),
         "#endif // UDB_MCOUNTINHIBIT_IMPLEMENTED",
     ]
-    if mode == "U":
+    if mode != "M":
         r_tmp = test_data.int_regs.get_register()
         lines += [f"LI(x{r_tmp}, -1)", *_set_counterens(f"x{r_tmp}", mode)]
         test_data.int_regs.return_register(r_tmp)
@@ -260,7 +261,7 @@ def _instret_case(
 ) -> list[str]:
     """Read the counter before and after body and sigupd the delta."""
     r_before, r_after, r_diff = test_data.int_regs.get_registers(3)
-    counter = "instret" if mode == "U" else "minstret"
+    counter = "minstret" if mode == "M" else "instret"
     lines = [
         test_data.add_testcase(f"{counter}_{name}", f"cp_instret_{name}", covergroup),
         f"csrr x{r_before}, {counter}",
@@ -274,53 +275,10 @@ def _instret_case(
     return lines
 
 
-def _instret_wait_case(test_data: TestData, covergroup: str, name: str, mode: Mode, wait: str) -> list[str]:
-    """Delta around a wait instruction (wfi) that a timer interrupt ends."""
-    csr = "instret" if mode == "U" else "minstret"
-    r_before, r_after, r_diff = test_data.int_regs.get_registers(3)
-    r_count, r_addr = test_data.int_regs.get_registers(2)
-
-    trip = [
-        f"LREG x{r_after}, 0(x{r_addr})  # trap count now",
-        f"bne x{r_after}, x{r_count}, 2f  # interrupt taken: leave the loop",
-        wait,
-    ]
-    insns_per_trip = len(trip) + 2  # plus the addi and j below
-
-    lines = [
-        tsbi_call_or_direct("csrw mie, zero", mode),
-        *(["csrci mstatus, MSTATUS_MIE"] if mode == "M" else []),
-        f"LI(x{r_after}, 0x80)",
-        tsbi_call_or_direct(f"csrw mie, x{r_after}  # MTIE only", mode),
-        f"RVTEST_SET_MTIME_INT_SOON_{mode}",
-        # Read the trap count after the T-SBI ecalls above, so only the timer interrupt can change it from here
-        f"LA(x{r_addr}, rvtest_trap_count)",
-        f"LREG x{r_count}, 0(x{r_addr})  # trap count before waiting",
-        f"LI(x{r_diff}, 0)  # tally of instructions retired by the loop",
-        *(["csrsi mstatus, 8  # MIE = 1"] if mode == "M" else []),
-        test_data.add_testcase(f"{csr}_{name}", f"cp_instret_{name}", covergroup),
-        f"csrr x{r_before}, {csr}",
-        "1:",
-        *trip,
-        f"addi x{r_diff}, x{r_diff}, {insns_per_trip}  # tally this trip",
-        "j 1b",
-        "2:",
-        f"csrr x{r_after}, {csr}",
-        f"sub x{r_after}, x{r_after}, x{r_diff}  # remove the timing-dependent part",
-        f"sub x{r_diff}, x{r_after}, x{r_before}",
-        write_sigupd(r_diff, test_data),
-        *(["csrci mstatus, 8  # MIE = 0"] if mode == "M" else []),
-        f"RVTEST_CLR_MTIME_INT_{mode}",
-        "",
-    ]
-    test_data.int_regs.return_registers([r_before, r_after, r_diff, r_count, r_addr])
-    return lines
-
-
 def instret_retire_tests(test_data: TestData, covergroup: str, mode: Mode) -> list[str]:
-    """Normally retiring instructions: add (M, U), mret and sret (M only)."""
-    assert mode in ("M", "U")
-    csr = "instret" if mode == "U" else "minstret"
+    """Normally retiring instructions: add, mret (M only) and sret (M and S)."""
+    assert mode in ("M", "S", "U")
+    csr = "minstret" if mode == "M" else "instret"
     lines = _counter_prep(test_data, mode)
 
     r_tmp = test_data.int_regs.get_register()
@@ -347,42 +305,47 @@ def instret_retire_tests(test_data: TestData, covergroup: str, mode: Mode) -> li
         ]
         test_data.int_regs.return_registers([r_save, r_mask])
 
-        # sret returns to U-mode: read instret there, then T-SBI back to M
-        r_save, r_tmp, r_before, r_after, r_diff = test_data.int_regs.get_registers(5)
-        lines += [
-            "#ifdef S_SUPPORTED",
-            comment_banner("cp_instret_sret", "minstret delta around sret (SPP = U)"),
-            "",
-            f"csrr x{r_save}, sstatus",
-            f"LI(x{r_tmp}, 0x100)",
-            f"csrc sstatus, x{r_tmp}  # SPP = U",
-            f"LA(x{r_tmp}, 1f)",
-            f"csrw sepc, x{r_tmp}",
-            f"LI(x{r_tmp}, -1)",
-            f"csrw mcounteren, x{r_tmp}  # instret readable from U-mode",
-            f"csrw scounteren, x{r_tmp}",
-            test_data.add_testcase("minstret_sret", "cp_instret_sret", covergroup),
-            f"csrr x{r_before}, minstret",
-            "sret  # instruction under test",
-            "1:",
-            f"csrr x{r_after}, instret",
-            "RVTEST_TSBI_GOTO_MMODE",
-            f"sub x{r_diff}, x{r_after}, x{r_before}",
-            write_sigupd(r_diff, test_data),
-            f"csrw sstatus, x{r_save}",
-            "",
-        ]
-        test_data.int_regs.return_registers([r_save, r_tmp, r_before, r_after, r_diff])
+        lines += ["#ifdef S_SUPPORTED", *_instret_sret_case(test_data, covergroup, mode), "#endif // S_SUPPORTED"]
+    elif mode == "S":
+        lines += _instret_sret_case(test_data, covergroup, mode)
 
-        lines.append("#endif // S_SUPPORTED")
+    return lines
 
+
+def _instret_sret_case(test_data: TestData, covergroup: str, mode: Mode) -> list[str]:
+    """sret returns to U-mode: read instret there, then T-SBI back to ``mode``."""
+    csr = "minstret" if mode == "M" else "instret"
+    r_save, r_tmp, r_before, r_after, r_diff = test_data.int_regs.get_registers(5)
+    lines = [
+        comment_banner("cp_instret_sret", f"{csr} delta around sret (SPP = U)"),
+        "",
+        f"csrr x{r_save}, sstatus",
+        f"LI(x{r_tmp}, 0x100)",
+        f"csrc sstatus, x{r_tmp}  # SPP = U",
+        f"LA(x{r_tmp}, 1f)",
+        f"csrw sepc, x{r_tmp}",
+        f"LI(x{r_tmp}, -1)",
+        _write_counteren("mcounteren", f"x{r_tmp}", mode, "instret readable from U-mode"),
+        f"csrw scounteren, x{r_tmp}",
+        test_data.add_testcase(f"{csr}_sret", "cp_instret_sret", covergroup),
+        f"csrr x{r_before}, {csr}",
+        "sret  # instruction under test",
+        "1:",
+        f"csrr x{r_after}, instret",
+        f"RVTEST_TSBI_GOTO_{mode}MODE",
+        f"sub x{r_diff}, x{r_after}, x{r_before}",
+        write_sigupd(r_diff, test_data),
+        f"csrw sstatus, x{r_save}",
+        "",
+    ]
+    test_data.int_regs.return_registers([r_save, r_tmp, r_before, r_after, r_diff])
     return lines
 
 
 def instret_exception_tests(test_data: TestData, covergroup: str, mode: Mode) -> list[str]:
     """Instructions that trap before retiring: ecall, ebreak, load access fault, load misaligned."""
-    assert mode in ("M", "U")
-    csr = "instret" if mode == "U" else "minstret"
+    assert mode in ("M", "S", "U")
+    csr = "minstret" if mode == "M" else "instret"
     lines = _counter_prep(test_data, mode)
 
     lines += [
@@ -414,17 +377,20 @@ def instret_exception_tests(test_data: TestData, covergroup: str, mode: Mode) ->
 
 
 def instret_interrupt_tests(test_data: TestData, covergroup: str, mode: Mode) -> list[str]:
-    """wfi and wrs cases in M-mode (minstret) or U-mode (instret).
+    """wfi and wrs cases in M-mode (minstret), S-mode or U-mode (instret).
 
-    wfi_taken goes through _instret_wait_case; wfi_timeout, wfi_pending, wrs_nto and wrs_sto
-    record the raw delta through _instret_case. wfi_pending and wfi_taken need the machine
-    timer interrupt, so they are skipped when the platform cannot raise it.
+    No case takes an interrupt, so the delta never includes a trap handler. A wfi that ends with a
+    taken interrupt is not measured: whether the wfi retires before the trap depends on when the
+    interrupt is taken, and the handler's retired-instruction count is implementation-defined.
+    M-mode wfi_pending wakes on a machine timer interrupt that mstatus.MIE = 0 keeps from being
+    taken. S-mode uses delegated supervisor interrupts with sstatus.SIE = 0: wfi_pending with SSIP
+    already pending, and wfi_wake with an Sstc timer that fires while the wfi waits.
     """
 
-    assert mode in ("M", "U")
-    csr = "instret" if mode == "U" else "minstret"
+    assert mode in ("M", "S", "U")
+    csr = "minstret" if mode == "M" else "instret"
     lines = _counter_prep(test_data, mode)
-    if mode == "U":
+    if mode != "M":
         r_tmp = test_data.int_regs.get_register()
         lines += [f"LI(x{r_tmp}, 0x200000)", tsbi_call_or_direct(f"csrc mstatus, x{r_tmp}  # mstatus.TW = 0", mode)]
         test_data.int_regs.return_register(r_tmp)
@@ -447,36 +413,10 @@ def instret_interrupt_tests(test_data: TestData, covergroup: str, mode: Mode) ->
         f"#endif // {cond}",
     ]
 
-    lines.append("#ifdef UDB_MTI_INTR_IMPL")
     if mode == "M":
-        r_tmp = test_data.int_regs.get_register()
-        lines += [
-            comment_banner("cp_instret_wfi_pending", "wfi with timer interrupt pending and MIE = 0: no trap."),
-            "",
-            tsbi_call_or_direct("csrw mie, zero", mode),
-            "csrci mstatus, 8  # MIE = 0",
-            f"LI(x{r_tmp}, 0x80)",
-            tsbi_call_or_direct(f"csrw mie, x{r_tmp}  # MTIE only", mode),
-            "RVTEST_SET_MTIME_INT_SOON_M",
-            "1:",
-            f"csrr x{r_tmp}, mip",
-            f"andi x{r_tmp}, x{r_tmp}, 0x80  # mip.MTIP",
-            f"beqz x{r_tmp}, 1b  # wait until MTIP is really pending",
-            *_instret_case(test_data, covergroup, "wfi_pending", mode, ["wfi  # already pending, not taken"]),
-            "RVTEST_CLR_MTIME_INT_M",
-        ]
-        test_data.int_regs.return_register(r_tmp)
-
-    if mode == "U":
-        lines.append("#ifdef UDB_WFI_U_MODE")
-    lines += [
-        comment_banner("cp_instret_wfi_taken", f"wfi in {mode}-mode: timer interrupt taken, {csr} delta recorded"),
-        "",
-        *_instret_wait_case(test_data, covergroup, "wfi_taken", mode, "wfi"),
-    ]
-    if mode == "U":
-        lines.append("#endif // UDB_WFI_U_MODE")
-    lines.append("#endif // UDB_MTI_INTR_IMPL")
+        lines += _instret_wfi_m_tests(test_data, covergroup)
+    elif mode == "S":
+        lines += _instret_wfi_s_tests(test_data, covergroup)
 
     lines += [
         "#ifdef ZAWRS_SUPPORTED",
@@ -504,4 +444,88 @@ def instret_interrupt_tests(test_data: TestData, covergroup: str, mode: Mode) ->
         ),
         "#endif // ZAWRS_SUPPORTED",
     ]
+    return lines
+
+
+def _instret_wfi_m_tests(test_data: TestData, covergroup: str) -> list[str]:
+    """M-mode wfi with a machine timer interrupt pending that mstatus.MIE = 0 keeps from being taken."""
+    r_tmp = test_data.int_regs.get_register()
+    lines = [
+        "#ifdef UDB_MTI_INTR_IMPL",
+        comment_banner("cp_instret_wfi_pending", "wfi with timer interrupt pending and MIE = 0: no trap."),
+        "",
+        "csrw mie, zero",
+        "csrci mstatus, 8  # MIE = 0",
+        f"LI(x{r_tmp}, 0x80)",
+        f"csrw mie, x{r_tmp}  # MTIE only",
+        "RVTEST_SET_MTIME_INT_SOON_M",
+        "1:",
+        f"csrr x{r_tmp}, mip",
+        f"andi x{r_tmp}, x{r_tmp}, 0x80  # mip.MTIP",
+        f"beqz x{r_tmp}, 1b  # wait until MTIP is really pending",
+        *_instret_case(test_data, covergroup, "wfi_pending", "M", ["wfi  # already pending, not taken"]),
+        "RVTEST_CLR_MTIME_INT_M",
+        "#endif // UDB_MTI_INTR_IMPL",
+    ]
+    test_data.int_regs.return_register(r_tmp)
+    return lines
+
+
+def _instret_wfi_s_tests(test_data: TestData, covergroup: str) -> list[str]:
+    """S-mode wfi woken by a delegated supervisor interrupt that sstatus.SIE = 0 keeps from being taken.
+
+    The boot code delegates SSI and STI to S-mode. With no trap, the instret delta has no handler in it.
+    """
+    r_tmp = test_data.int_regs.get_register()
+    lines = [
+        comment_banner("cp_instret_wfi_pending", "wfi with SSIP pending, sie.SSIE = 1 and sstatus.SIE = 0: no trap."),
+        "",
+        "csrci sstatus, 2  # SIE = 0",
+        f"LI(x{r_tmp}, 0x2)",
+        f"csrw sie, x{r_tmp}  # SSIE only",
+        "csrsi sip, 2  # SSIP pending",
+        *_instret_case(test_data, covergroup, "wfi_pending", "S", ["wfi  # already pending, not taken"]),
+        "csrci sip, 2  # clear SSIP",
+        "csrw sie, zero",
+        "",
+    ]
+    test_data.int_regs.return_register(r_tmp)
+
+    lines += [
+        "#ifdef SSTC_SUPPORTED",
+        comment_banner(
+            "cp_instret_wfi_wake",
+            "wfi woken by an Sstc timer interrupt with sie.STIE = 1 and sstatus.SIE = 0: no trap.\n"
+            "wfi may resume early, so it repeats until STIP is pending. Each pass retires 6 instructions\n"
+            "and is tallied, so the delta minus the tally is the same on every implementation.",
+        ),
+        "",
+        *write_stce(test_data, True, "S"),
+    ]
+    r_tmp, r_tally, r_before, r_after, r_diff = test_data.int_regs.get_registers(5)
+    lines += [
+        "RVTEST_CLR_SSTC_INT_S",
+        f"LI(x{r_tmp}, 0x20)",
+        f"csrw sie, x{r_tmp}  # STIE only",
+        "RVTEST_SET_SSTC_INT_SOON_S",
+        f"LI(x{r_tally}, 0)  # instructions retired by the passes below",
+        test_data.add_testcase("instret_wfi_wake", "cp_instret_wfi_wake", covergroup),
+        f"csrr x{r_before}, instret",
+        "1:",
+        f"csrr x{r_tmp}, sip",
+        f"andi x{r_tmp}, x{r_tmp}, 0x20  # sip.STIP",
+        f"bnez x{r_tmp}, 2f  # woken by the pending timer",
+        "wfi  # instruction under test",
+        f"addi x{r_tally}, x{r_tally}, 6",
+        "j 1b",
+        "2:",
+        f"csrr x{r_after}, instret",
+        f"sub x{r_after}, x{r_after}, x{r_tally}",
+        f"sub x{r_diff}, x{r_after}, x{r_before}",
+        write_sigupd(r_diff, test_data),
+        "RVTEST_CLR_SSTC_INT_S",
+        "csrw sie, zero",
+    ]
+    test_data.int_regs.return_registers([r_tmp, r_tally, r_before, r_after, r_diff])
+    lines += [*write_stce(test_data, False, "S"), "#endif // SSTC_SUPPORTED", ""]
     return lines

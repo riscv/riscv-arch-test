@@ -246,6 +246,7 @@ The ACT Framework uses a selection of assembly macros to run DUT-specific code t
 - `RVMODEL_DATA_SECTION`
 - `RVMODEL_BOOT` (can be omitted if not needed)
 - `RVMODEL_ACCESS_FAULT_ADDRESS` (can be omitted if DUT does not generate some/all access faults)
+- `RVMODEL_ACCESS_FAULT_ADDRESS_{LOAD,STORE,FETCH,AMO,LRSC}` (default to `RVMODEL_ACCESS_FAULT_ADDRESS`; define one to override the address for that type of access, or define only some to test only those types of access)
 - `RVMODEL_INVISIBLE_TRAP_HANDLER(_PC_REG, _INSTRUCTION_REG, _ACTION_REG, _DEST_REG, _VALUE_REG)` (can be omitted if the DUT does not trap and emulate instructions)
 - `RVMODEL_FENCEI` (can be omitted to use `fence.i`, or `nop` without Zifencei)
 - `RVMODEL_BOOT_TO_MMODE` (omit unless the DUT has a custom M-mode that cannot run the default M-mode boot)

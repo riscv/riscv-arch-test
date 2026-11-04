@@ -75,15 +75,15 @@ def hedeleg_tests(
 
 
 def hlv_priority_tests(test_data: TestData, covergroup: str, mode: str, home: str) -> list[str]:
-    """cp_loadstore_priv and cp_priority: hlv.w, hlvx.wu and hsv.w in mode with hstatus.HU = 0 and 1.
+    """cp_loadstore_priv, cp_priority_hlv and cp_priority_hsv: hlv.w, hlvx.wu and hsv.w in mode with hstatus.HU = 0 and 1.
 
-    vsatp and hgatp are Bare, so each guest virtual address is a physical address.  cp_priority accesses a word of
+    vsatp and hgatp are Bare, so each guest virtual address is a physical address.  The cp_priority crosses access a word of
     scratch and the access-fault address, aligned and misaligned.  hsv.w results are read back from scratch.
     """
     addr_reg, data_reg, rd = test_data.int_regs.get_registers(3)
     lines = [
         comment_banner(
-            f"cp_loadstore_priv, cp_priority ({mode.upper()}-mode)",
+            f"cp_loadstore_priv, cp_priority_hlv, cp_priority_hsv ({mode.upper()}-mode)",
             f"In {mode.upper()}-mode with hstatus.HU = 0 and 1, execute hlv.w, hlvx.wu and hsv.w on scratch, then\n"
             "hlv.w and hsv.w on aligned and misaligned legal and access-fault addresses",
         )
@@ -116,25 +116,31 @@ def hlv_priority_tests(test_data: TestData, covergroup: str, mode: str, home: st
                 write_sigupd(rd, test_data),
             ]
         )
-        for legal, base in ((True, "scratch"), (False, "RVMODEL_ACCESS_FAULT_ADDRESS")):
+        for legal in (True, False):
+            load_base = "scratch" if legal else "RVMODEL_ACCESS_FAULT_ADDRESS_LOAD"
+            store_base = "scratch" if legal else "RVMODEL_ACCESS_FAULT_ADDRESS_STORE"
             for offset in (0, 1):
                 name = f"{'legal' if legal else 'illegal'}_off{offset}_{suffix}"
-                body = [
-                    f"LA(x{addr_reg}, {base})",
+                load_body = [
+                    f"LA(x{addr_reg}, {load_base})",
                     f"addi x{addr_reg}, x{addr_reg}, {offset}",
                     f"LI(x{rd}, 42)",
-                    test_data.add_testcase(f"hlv.w_{name}", "cp_priority", covergroup),
+                    test_data.add_testcase(f"hlv.w_{name}", "cp_priority_hlv", covergroup),
                     f"hlv.w x{rd}, (x{addr_reg})",
                     write_sigupd(rd, test_data),
+                ]
+                store_body = [
+                    *([] if legal else [f"LA(x{addr_reg}, {store_base})", f"addi x{addr_reg}, x{addr_reg}, {offset}"]),
                     f"LI(x{data_reg}, {0x600D0000 + 2 * offset + hu:#x})",
-                    test_data.add_testcase(f"hsv.w_{name}", "cp_priority", covergroup),
+                    test_data.add_testcase(f"hsv.w_{name}", "cp_priority_hsv", covergroup),
                     f"hsv.w x{data_reg}, (x{addr_reg})",
                 ]
                 if legal:
-                    body.append(f"LA(x{addr_reg}, scratch)")
+                    store_body.append(f"LA(x{addr_reg}, scratch)")
                     for word in (0, 4):
-                        body.extend([f"lw x{rd}, {word}(x{addr_reg})", write_sigupd(rd, test_data)])
-                lines.extend(gated(body, None if legal else "defined(RVMODEL_ACCESS_FAULT_ADDRESS)"))
+                        store_body.extend([f"lw x{rd}, {word}(x{addr_reg})", write_sigupd(rd, test_data)])
+                lines.extend(gated(load_body, None if legal else f"defined({load_base})"))
+                lines.extend(gated(store_body, None if legal else f"defined({store_base})"))
         lines.extend([f"RVTEST_TSBI_GOTO_{home.upper()}MODE"] if mode != home else [])
     lines.extend([f"LI(x{data_reg}, HSTATUS_HU)", f"csrc hstatus, x{data_reg}"])
     test_data.int_regs.return_registers([addr_reg, data_reg, rd])
@@ -171,8 +177,13 @@ def xtinst_exception_tests(test_data: TestData, covergroup: str, home: str) -> l
         if home == "m"
         else ["RVTEST_TSBI_GOTO_VSMODE"]
     )
-    fault = f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)"
-    fault_gate = "defined(RVMODEL_ACCESS_FAULT_ADDRESS)"
+
+    def fault(kind: str) -> str:
+        return f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_{kind})"
+
+    def fault_gate(kind: str) -> str:
+        return f"defined(RVMODEL_ACCESS_FAULT_ADDRESS_{kind})"
+
     # Misaligned fetches trap only when IALIGN = 32, and misaligned loads and stores only when the hart does not
     # perform them
     misaligned_ldst_gate = "!defined(UDB_MISALIGNED_LDST)"
@@ -185,7 +196,7 @@ def xtinst_exception_tests(test_data: TestData, covergroup: str, home: str) -> l
             ["jal x0, .+6", "addi x0, x2, 0", "nop"],
             None,
         ),
-        ("instr_access", fault_gate, [fault], [f"jalr x1, 0(x{addr_reg})"], None),
+        ("instr_access", fault_gate("FETCH"), [fault("FETCH")], [f"jalr x1, 0(x{addr_reg})"], None),
         ("illegalinstr", None, [".p2align 2"], [".word 0x00000000"], None),
         ("breakpoint", None, [], ["ebreak"], None),
         ("virtinstr", None, [f"LI(x{rd}, 42)"], [f"csrr x{rd}, vstval"], "rd"),
@@ -196,7 +207,7 @@ def xtinst_exception_tests(test_data: TestData, covergroup: str, home: str) -> l
             [f"lw x{rd}, 1(x{addr_reg})"],
             "rd",
         ),
-        ("load_access", fault_gate, [fault, f"LI(x{rd}, 42)"], [f"lw x{rd}, 0(x{addr_reg})"], "rd"),
+        ("load_access", fault_gate("LOAD"), [fault("LOAD"), f"LI(x{rd}, 42)"], [f"lw x{rd}, 0(x{addr_reg})"], "rd"),
         (
             "store_misaligned",
             misaligned_ldst_gate,
@@ -206,8 +217,8 @@ def xtinst_exception_tests(test_data: TestData, covergroup: str, home: str) -> l
         ),
         (
             "store_access",
-            fault_gate,
-            [fault, f"LI(x{data_reg}, 0xC0FFEE22)"],
+            fault_gate("STORE"),
+            [fault("STORE"), f"LI(x{data_reg}, 0xC0FFEE22)"],
             [f"sw x{data_reg}, 0(x{addr_reg})"],
             None,
         ),

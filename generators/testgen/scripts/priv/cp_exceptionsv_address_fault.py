@@ -36,14 +36,15 @@ def make_exceptionsv_address_fault(instruction: str) -> None:
 
     # Setup: valid vtype (vill=0), vstart=0, vl=1
     common.writeLine(f"\n# Testcase {CP}")
-    common.writeLine("#ifdef RVMODEL_ACCESS_FAULT_ADDRESS")
+    fault_address = "RVMODEL_ACCESS_FAULT_ADDRESS_LOAD" if instruction.startswith("vl") else "RVMODEL_ACCESS_FAULT_ADDRESS_STORE"
+    common.writeLine(f"#ifdef {fault_address}")
     from .cp_exceptionsv_LS import _emit_setup
     _emit_setup(instruction, instruction_data, sew)
 
-    # rs1 = RVMODEL_ACCESS_FAULT_ADDRESS → triggers address fault. Use the
+    # rs1 = the access-fault address for the access type → triggers address fault. Use the
     # randomly chosen rs1 register, not a hardcoded one.
     rs1_reg = instruction_data[1]["rs1"]["reg"]
-    common.writeLine(f"li x{rs1_reg}, RVMODEL_ACCESS_FAULT_ADDRESS", f"# rs1 (x{rs1_reg}) = RVMODEL_ACCESS_FAULT_ADDRESS → address fault trigger")
+    common.writeLine(f"li x{rs1_reg}, {fault_address}", f"# rs1 (x{rs1_reg}) = {fault_address} → address fault trigger")
 
     # Build testline: unmasked to ensure memory access actually occurs
     vec_data, scalar_data, fp_data, imm_val = instruction_data

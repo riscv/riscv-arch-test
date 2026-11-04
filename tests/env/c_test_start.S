@@ -19,7 +19,6 @@ RVTEST_BEGIN
   LREG  t1, 0(t1)
   bltu  a0, t1, 1f
 c_park_extra_hart:
-  wfi
   j     c_park_extra_hart
 1:
 
@@ -63,14 +62,16 @@ c_released:
   call  main
 
   // Only hart 0 reports the C test result.
+  mv    s1, a0
   RVTEST_TSBI_CSR_READ(CSR_MHARTID)
   beqz  a0, 1f
 c_park_done_hart:
-  wfi
   j     c_park_done_hart
 1:
+  mv    a0, s1
   call  c_test_exit
-  j     .
+c_test_exit_returned:
+  j     c_test_exit_returned
 
 // Route pass/fail through ACT cleanup so DUT trap state is unwound normally.
 .global c_halt_pass

@@ -299,7 +299,7 @@ Sv_Zicbo_cg_cp_misaligned_page_cbo_u_test8_inval:
   sfence.vma
 
   LI(x9, (va_data >> 30) << 30)
-  LI(x8, RVMODEL_ACCESS_FAULT_ADDRESS)
+  LI_FIXED_LEN(x8, RVMODEL_ACCESS_FAULT_ADDRESS)
   slli x8, x8, 34
   srli x8, x8, 34
   add x9, x9, x8
@@ -597,7 +597,7 @@ Sv_Zicbo_cg_cp_nonleaf_PTE_to_nonexistent_pa_cbo_test18_inval:
   sfence.vma
 
   LI(x9, (va_data >> 21) << 21)
-  LI(x8, RVMODEL_ACCESS_FAULT_ADDRESS)
+  LI_FIXED_LEN(x8, RVMODEL_ACCESS_FAULT_ADDRESS)
   slli x8, x8, 43
   srli x8, x8, 43
   add x9, x9, x8
@@ -966,7 +966,7 @@ Sv_Zicbo_cg_cp_PTE_nonleaf_lvl0_cbo_u_test30_inval:
   sfence.vma
 
   LI(x9, (va_data >> 12) << 12)
-  LI(x8, RVMODEL_ACCESS_FAULT_ADDRESS)
+  LI_FIXED_LEN(x8, RVMODEL_ACCESS_FAULT_ADDRESS)
   slli x8, x8, 52
   srli x8, x8, 52
   add x9, x9, x8
@@ -998,7 +998,7 @@ Sv_Zicbo_cg_cp_nonleaf_PTE_to_nonexistent_pa_cbo_test31_inval:
   sfence.vma
 
   LI(x9, (va_data >> 12) << 12)
-  LI(x8, RVMODEL_ACCESS_FAULT_ADDRESS)
+  LI_FIXED_LEN(x8, RVMODEL_ACCESS_FAULT_ADDRESS)
   slli x8, x8, 52
   srli x8, x8, 52
   add x9, x9, x8

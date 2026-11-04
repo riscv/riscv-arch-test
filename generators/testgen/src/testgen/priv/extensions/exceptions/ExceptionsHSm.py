@@ -91,7 +91,7 @@ def _hlv_fault_tests(test_data: TestData) -> list[str]:
             "cp_hlv_access_fault, cp_hsv_access_fault",
             "In M-mode, execute each hlv, hlvx and hsv at the access-fault address",
         ),
-        f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+        f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
     ]
     for instr, rv64 in (*HLV_INSTRS, *HLVX_INSTRS):
         body = [

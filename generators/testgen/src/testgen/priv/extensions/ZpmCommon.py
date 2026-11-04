@@ -1054,7 +1054,7 @@ def generate_fault_address_tests(prefix: str, test_data: TestData, cg: str) -> l
     lines = [
         comment_banner(f"{prefix}: masked address resolves to the model's access-fault address"),
         "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
-        f"LI(x{base}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+        f"LI_FIXED_LEN(x{base}, RVMODEL_ACCESS_FAULT_ADDRESS)",
     ]
     for upper in UPPER_PATTERNS:
         lines.extend(

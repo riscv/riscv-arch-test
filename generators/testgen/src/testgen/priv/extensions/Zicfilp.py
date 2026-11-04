@@ -301,7 +301,7 @@ def exception_priority_tests(test_data: TestData, priv: Mode, covergroup: str) -
             ),
             *set_lpe(priv, priv, temp_reg, True),
             "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
-            f"LA(x{jump_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+            f"LI_FIXED_LEN(x{jump_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
             test_data.add_testcase(_bin(priv, "instr_access_fault"), coverpoint, covergroup),
             f"jalr x1, 0(x{jump_reg}) # instruction access fault; the handler resumes at ra",
             *RESUME,

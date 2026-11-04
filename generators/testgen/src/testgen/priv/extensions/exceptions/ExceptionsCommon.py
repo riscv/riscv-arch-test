@@ -195,7 +195,7 @@ def generate_instr_access_fault_tests(
     lines = [
         "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
         comment_banner(coverpoint, "Instruction Access Fault"),
-        f"LA(x{addr_reg}, {address})",
+        f"LI_FIXED_LEN(x{addr_reg}, {address})",
         *setup,
         test_data.add_testcase("instr_access_fault", coverpoint, covergroup),
         f"jalr x1, 0(x{addr_reg})",
@@ -253,7 +253,7 @@ def generate_delegated_fault_tests(
         [
             "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
             test_data.add_testcase(tag, coverpoints["instrmisaligned"], covergroup),
-            f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+            f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
             f"jalr x1, 2(x{addr_reg})  # misaligned target",
             "#endif",
         ]
@@ -264,7 +264,7 @@ def generate_delegated_fault_tests(
         [
             "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
             test_data.add_testcase(tag, coverpoints["instraccessfault"], covergroup),
-            f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+            f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
             f"jalr x1, 0(x{addr_reg})",
             "#endif",
         ]
@@ -315,7 +315,7 @@ def generate_delegated_fault_tests(
     lines.extend(
         [
             test_data.add_testcase(tag, coverpoints["loadaccessfault"], covergroup),
-            f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+            f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
         ]
     )
     for op in ["lw", "lh", "lhu", "lb", "lbu"]:
@@ -354,7 +354,7 @@ def generate_delegated_fault_tests(
     lines.extend(
         [
             test_data.add_testcase(tag, coverpoints["storeaccessfault"], covergroup),
-            f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+            f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
             f"LI(x{data_reg}, 0xADDEDCAB)",
         ]
     )
@@ -587,7 +587,7 @@ def generate_load_access_fault_tests(
 
     for op in load_ops:
         lines.append(f"\n# Testcase: {op} access fault")
-        lines.append(f"LA(x{addr_reg}, {address})")
+        lines.append(f"LI_FIXED_LEN(x{addr_reg}, {address})")
         if use_sigupd:
             lines.append(f"LI(x{check_reg}, 0xB0BACAFE)")
         lines.extend(
@@ -603,7 +603,7 @@ def generate_load_access_fault_tests(
     lines.extend(["", "#if __riscv_xlen == 64"])
     for op in ["lwu", "ld"]:
         lines.append(f"\n# Testcase: {op} access fault")
-        lines.append(f"LA(x{addr_reg}, {address})")
+        lines.append(f"LI_FIXED_LEN(x{addr_reg}, {address})")
         if use_sigupd:
             lines.append(f"LI(x{check_reg}, 0xB0BACAFE)")
         lines.extend(
@@ -640,7 +640,7 @@ def generate_store_access_fault_tests(
         lines.extend(
             [
                 f"\n# Testcase: {op} access fault",
-                f"LI(x{addr_reg}, {address})",
+                f"LI_FIXED_LEN(x{addr_reg}, {address})",
                 f"LI(x{data_reg}, {test_values[op]})",
                 *setup,
                 test_data.add_testcase(f"{op}_fault", coverpoint, covergroup),
@@ -653,7 +653,7 @@ def generate_store_access_fault_tests(
             "",
             "#if __riscv_xlen == 64",
             "\n# Testcase: sd access fault",
-            f"LI(x{addr_reg}, {address})",
+            f"LI_FIXED_LEN(x{addr_reg}, {address})",
             f"LI(x{data_reg}, {test_values['sd']})",
             *setup,
             test_data.add_testcase("sd_fault", coverpoint, covergroup),
@@ -681,7 +681,7 @@ def generate_misaligned_priority_load_tests(
     load_ops_base = ["lh", "lhu", "lw", "lb", "lbu"]
     load_ops_64 = ["lwu", "ld"]
 
-    lines.append(f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)")
+    lines.append(f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)")
 
     for offset in range(8):
         lines.append(f"addi x{temp_reg}, x{addr_reg}, {offset}")
@@ -726,7 +726,7 @@ def generate_misaligned_priority_store_tests(
     for offset in range(8):
         lines.extend(
             [
-                f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+                f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
                 f"addi x{addr_reg}, x{addr_reg}, {offset}",
                 f"LI(x{data_reg}, 0xDECAFCAB)",
             ]
@@ -785,7 +785,7 @@ def generate_misaligned_priority_fetch_tests(
             "addi x0, x2, 0",
             "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
             "\n# misaligned fetch - non-existent (fault) address",
-            f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+            f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
             f"addi x{addr_reg}, x{addr_reg}, 2",
             test_data.add_testcase(f"{name_prefix}misaligned_nonexistent{name_suffix}", coverpoint, covergroup),
             f"jalr x1, 0(x{addr_reg})",

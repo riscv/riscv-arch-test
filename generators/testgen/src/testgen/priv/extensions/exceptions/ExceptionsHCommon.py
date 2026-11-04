@@ -120,7 +120,7 @@ def hlv_priority_tests(test_data: TestData, covergroup: str, mode: str, home: st
             for offset in (0, 1):
                 name = f"{'legal' if legal else 'illegal'}_off{offset}_{suffix}"
                 body = [
-                    f"LA(x{addr_reg}, {base})",
+                    f"LA(x{addr_reg}, {base})" if legal else f"LI_FIXED_LEN(x{addr_reg}, {base})",
                     f"addi x{addr_reg}, x{addr_reg}, {offset}",
                     f"LI(x{rd}, 42)",
                     test_data.add_testcase(f"hlv.w_{name}", "cp_priority", covergroup),
@@ -171,7 +171,7 @@ def xtinst_exception_tests(test_data: TestData, covergroup: str, home: str) -> l
         if home == "m"
         else ["RVTEST_TSBI_GOTO_VSMODE"]
     )
-    fault = f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)"
+    fault = f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)"
     fault_gate = "defined(RVMODEL_ACCESS_FAULT_ADDRESS)"
     # Misaligned fetches trap only when IALIGN = 32, and misaligned loads and stores only when the hart does not
     # perform them

@@ -11,7 +11,7 @@
 from collections.abc import Mapping, Sequence
 from typing import NamedTuple
 
-from testgen.asm.helpers import write_sigupd
+from testgen.asm.helpers import load_constant, write_sigupd
 from testgen.data.state import TestData
 from testgen.priv.extensions.sv.generate import SvRegs
 from testgen.priv.extensions.sv.page_tables import SvMode
@@ -33,13 +33,14 @@ def virtual_address(
     x``scratch`` is clobbered.
     """
     if sv.xlen == 32 and level == 0 and not merge_sv32_base_page:
-        return [f"LI(x{destination}, {va})"]
+        return [load_constant(f"x{destination}", va)]
 
     shift = sv.page_offset_bits(level)
-    load = "LA" if physical_address_is_label else "LI"
     return [
-        f"LI(x{destination}, ({va} >> {shift}) << {shift})",
-        f"{load}(x{scratch}, {physical_address})",
+        load_constant(f"x{destination}", f"({va} >> {shift}) << {shift}"),
+        f"LA(x{scratch}, {physical_address})"
+        if physical_address_is_label
+        else load_constant(f"x{scratch}", physical_address),
         f"slli x{scratch}, x{scratch}, {sv.xlen - shift}",
         f"srli x{scratch}, x{scratch}, {sv.xlen - shift}",
         f"add x{destination}, x{destination}, x{scratch}",

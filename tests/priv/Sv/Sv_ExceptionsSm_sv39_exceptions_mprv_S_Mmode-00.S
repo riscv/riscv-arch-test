@@ -182,7 +182,7 @@ Sv_ExceptionsSm_cg_cp_misaligned_priority_fetch_m_test2_exec:
   sfence.vma
 
   LI(x13, (va_data >> 30) << 30)
-  LI(x6, RVMODEL_ACCESS_FAULT_ADDRESS)
+  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS)
   slli x6, x6, 34
   srli x6, x6, 34
   add x13, x13, x6
@@ -239,7 +239,7 @@ Sv_ExceptionsSm_cg_cp_instr_page_fault_m_test3_exec:
   sfence.vma
 
   LI(x13, (va_data >> 30) << 30)
-  LI(x6, RVMODEL_ACCESS_FAULT_ADDRESS)
+  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS)
   slli x6, x6, 34
   srli x6, x6, 34
   add x13, x13, x6
@@ -406,7 +406,7 @@ Sv_ExceptionsSm_cg_cp_misaligned_priority_fetch_m_test6_exec:
   sfence.vma
 
   LI(x13, (va_data >> 30) << 30)
-  LI(x6, RVMODEL_ACCESS_FAULT_ADDRESS)
+  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS)
   slli x6, x6, 34
   srli x6, x6, 34
   add x13, x13, x6
@@ -463,7 +463,7 @@ Sv_ExceptionsSm_cg_cp_instr_page_fault_m_test7_exec:
   sfence.vma
 
   LI(x13, (va_data >> 30) << 30)
-  LI(x6, RVMODEL_ACCESS_FAULT_ADDRESS)
+  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS)
   slli x6, x6, 34
   srli x6, x6, 34
   add x13, x13, x6

@@ -12,6 +12,8 @@ from collections.abc import Mapping
 from dataclasses import dataclass, replace
 from typing import Literal
 
+from testgen.asm.helpers import load_constant
+
 # Root and lower-level page-table labels of each translation stage
 _TABLES = {"s": ("Sroot", "slvl"), "vs": ("Vroot", "vlvl"), "g": ("Hroot", "hlvl")}
 
@@ -259,7 +261,7 @@ def write_pte(
         )
     else:
         pte_value = f"(({physical_address}) >> {ppn_shift}) << {ppn_shift - 2}"
-        lines.append(f"LI(x{pte}, ({pte_value}) | ({_pte_expression(flags)}))")
+        lines.append(load_constant(f"x{pte}", f"({pte_value}) | ({_pte_expression(flags)})"))
     lines.append(f"SREG x{pte}, 0(x{addr})")
     return lines
 

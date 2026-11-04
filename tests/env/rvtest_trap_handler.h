@@ -2245,6 +2245,7 @@ tsbi_csr_mstatus:                                 // dispatcher fast path
 #ifdef H_SUPPORTED
         TSBI_CSR_INSTR_TABLE(0xE12) // hgeip
 #endif
+        TSBI_CSR_INSTR_TABLE(0xF14) // mhartid
 tsbi_csr_table_end:
 
 // Instructions other than CSR accesses, searched in order up to the sentinel.

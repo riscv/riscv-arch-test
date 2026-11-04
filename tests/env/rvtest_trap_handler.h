@@ -267,7 +267,7 @@
 //      - csrrw sp, xSCRATCH, sp    (swap sp with save area pointer)
 //      - SREG T6, offset(sp)       (save T6 in temp save area)
 //      - jal T6, common_Xhandler   (jump to common handler, T6 = vector addr)
-//   3. ENDTEST TRAMPOLINE: 9 instructions (long jump to rvtest_Xend)
+//   3. ENDTEST TRAMPOLINE: 3 instructions (long jump to rvtest_Xend)
 //   4. COMMON HANDLER ENTRY: 5 instructions (save T5, restore xSCRATCH, jump)
 //
 // actual_tramp_sz = total bytes of trampoline code
@@ -275,7 +275,7 @@
 // sv_area_sz      = total save area per mode (trampoline save + pointers + regs)
 //==============================================================================
 
-#define actual_tramp_sz ((UDB_MXLEN + 3* NUM_SPECD_INTCAUSES + 9 + 5) * 4)  // total trampoline bytes
+#define actual_tramp_sz ((UDB_MXLEN + 3* NUM_SPECD_INTCAUSES + 3 + 5) * 4)  // total trampoline bytes
 #define tramp_sz        ((actual_tramp_sz+4) & -8)                       // round up to dword alignment
 #define ptr_sv_sz       (18*8)                                           // 18 metadata slots × 8 bytes each
 #define reg_sv_sz       ( 8*REGWIDTH)                                    // 8 handler temp regs saved

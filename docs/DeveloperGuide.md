@@ -687,7 +687,7 @@ The coverpoints given in the spreadsheet are usually cross-products of simpler c
     `endif
 ```
 
-Access-fault tests and coverpoints use the `RVMODEL_ACCESS_FAULT_ADDRESS_<TYPE>` macro for their type of access: `LOAD`, `STORE`, `FETCH`, `AMO` or `LRSC`. Do not use `RVMODEL_ACCESS_FAULT_ADDRESS` directly. Put each access type in its own `#ifdef` or `` `ifdef `` block, so a DUT that does not define one type still runs the others. A cross must not combine two access types; split it into one cross for each type.
+Access-fault tests and coverpoints use the `RVMODEL_ACCESS_FAULT_ADDRESS_<TYPE>` macro for their type of access: `LOAD`, `STORE`, `FETCH`, `AMO` or `LRSC`. Do not use `RVMODEL_ACCESS_FAULT_ADDRESS` directly. Put each access type in its own `#ifdef` or `` `ifdef `` block, so a DUT that does not define one type still runs the others. A cross must not combine two access types; split it into one cross for each type. A DUT can give precise access faults for some access types and not for others. The privileged specification permits imprecise bus-error reporting instead of precise access faults (`norm:pma_imprecise_ok`). A DUT defines only the macros for types with precise access faults. See the `RVMODEL_ACCESS_FAULT_ADDRESS` notes in the CTP abstraction chapter.
 
 #### Extending RVVI
 

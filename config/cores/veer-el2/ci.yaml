@@ -9,17 +9,12 @@ exclude_extensions:
   # Writes to the read-only cycle CSR do not trap, in M-mode or in U-mode with mcounteren.CY set
   # (https://github.com/chipsalliance/Cores-VeeR-EL2/issues/563): design/dec/el2_dec_tlu_ctl.sv#L2918-L2921
   - Sm_csr_ro
-  - Sm_Zicntr
-  - U_Zicntr
   - U_ucsr_ro
   # mstatus.TW is read-only 0 although U-mode exists
   # (https://github.com/chipsalliance/Cores-VeeR-EL2/issues/600). The numbered Sm_mcsr_walk
   # files cannot be excluded one at a time.
   - Sm_mcsr_access
   - Sm_mcsr_walk
-  # Testbench: there is no mtime, so the emulated time CSR reads plain memory at
-  # RVMODEL_MTIME_ADDRESS, and cp_mtime_wraparound never sees it wrap
-  - Sm_mcsr_cntr
   # Legal behavior Sail cannot model: EL2 writes mtval = 0 for a U-mode mret or CSR privilege trap
   # and the encoding for other illegal instructions, as the spec allows (norm:mtval_instr_bits_lead_in),
   # but Sail has one xtval_nonzero.illegal_instruction flag for all of them: design/dec/el2_dec_tlu_ctl.sv#L1889

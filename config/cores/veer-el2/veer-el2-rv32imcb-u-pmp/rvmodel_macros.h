@@ -91,12 +91,6 @@
 # EL2 has no mtime or mtimecmp; the SoC must provide them and the testbench does not.
 #define RVMODEL_TIMER_INT_SOON_DELAY 100
 
-# EL2 has no time CSR, so ACT emulates time reads from RVMODEL_MTIME_ADDRESS, which must be
-# defined. These are the addresses in Sail's CLINT (clint.base in sail.json); on the testbench
-# they are plain memory, so the emulated time never advances on its own.
-#define RVMODEL_MTIME_ADDRESS    0xD000BFF8
-#define RVMODEL_MTIMECMP_ADDRESS 0xD0004000
-
 ##### Machine Interrupts #####
 
 # A word store of 0x81 | (N << 8) to the mailbox raises external interrupt source N, and 0x90

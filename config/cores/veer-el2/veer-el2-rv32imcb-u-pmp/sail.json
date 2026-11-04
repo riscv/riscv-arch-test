@@ -62,7 +62,8 @@
     // corresponding bit of `mcounteren` is writable, otherwise the
     // bit is read-only zero.
     // VeeR EL2 makes CY (0), IR (2) and HPM3..HPM6 (6:3) writable; TM (1) is read-only zero
-    // because there is no time CSR, matching MCOUNTENABLE_EN in the yaml.
+    // because there is no time CSR. MCOUNTENABLE_EN in the yaml marks only bits 3..6, because
+    // UDB requires bits 0..2 to be read-only zero without Zicntr.
     //   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/el2_dec_tlu_ctl.sv#L2856
     "mcounteren_writable_bits": {
       "len": 32,
@@ -201,9 +202,8 @@
       "fs_legal_states": "ExtContext_Off",
       "vs_legal_states": "ExtContext_Off"
     },
-    // The yaml declares Sm 1.11 because EL2 has no mstatush or mconfigptr, but Sail rejects
-    // more than 16 PMP entries before 1.12. EL2 implements the 1.12 CSRs menvcfg(h) and
-    // mseccfg(h) and all 64 PMP entries, so 1.12 is the closer model here.
+    // The yaml declares Sm 1.11 because EL2 has no mstatush or mconfigptr, but EL2 implements
+    // the 1.12 CSRs menvcfg(h) and mseccfg(h), so 1.12 is the closer model here.
     //   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/csrdecode_mu#L79-L85
     "privileged_isa_version": "Privileged_ISA_1_12"
   },
@@ -217,9 +217,9 @@
     "pmp": {
       // G=0 (4-byte granule), hardwired in design/el2_pmp.sv.
       "grain": 0,
-      // EL2 supports 0, 16 or 64 entries; built here with 64 (-set pmp_entries=64).
-      "count": 64,
-      "usable_count": 64,
+      // EL2 supports 0, 16 or 64 entries; built here with the default 16 (-set pmp_entries=16).
+      "count": 16,
+      "usable_count": 16,
       "tor_supported": true,
       "na4_supported": true,
       "napot_supported": true
@@ -587,8 +587,9 @@
     "Zicond": {
       "supported": false
     },
-    // EL2 implements cycle(h) and instret(h) but no time CSR; ACT emulates time reads on the
-    // DUT (TIME_CSR_IMPLEMENTED: false in the yaml), and Sail reads its own time.
+    // Sail-only: EL2 implements cycle(h) and instret(h) but no time CSR, so the yaml cannot
+    // claim Zicntr. Sail makes cycle and instret accessible only with Zicntr
+    // (model/extensions/Zicntr/zicntr_control.sail:18-23), so it is enabled here to model them.
     //   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/csrdecode_mu#L86-L89
     "Zicntr": {
       "supported": true

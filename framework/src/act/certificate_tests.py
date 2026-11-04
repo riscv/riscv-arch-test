@@ -7,6 +7,11 @@ A test belongs to a certificate if every extension it requires is in the certifi
 For a group of alternative extensions, one member in the list is enough.
 """
 
+# Mandatory and optional extensions of the RVA23U64 and RVA23S64 profiles, with the extensions they
+# imply or require, as UDB resolves the profiles. Group names (B, Sha, Zvkn, Zvkng, Zvks, Zvksg) are
+# listed with their components. A test is selected only if the DUT's configuration also selects it, so
+# an optional extension adds tests only for a DUT that implements it. Sm is left out: RVA23 sets no
+# machine-mode requirements, and machine-mode tests are not part of the certificate.
 RVA23_EXTENSIONS = frozenset(
     {
         # Single letter extensions
@@ -28,6 +33,7 @@ RVA23_EXTENSIONS = frozenset(
         "Ziccamoa",
         "Ziccamoc",
         "Ziccif",
+        "Zicclsm",
         "Ziccrse",
         "Zicfilp",
         "Zicfiss",
@@ -45,6 +51,7 @@ RVA23_EXTENSIONS = frozenset(
         "Zkt",
         # Za extensions
         "Za64rs",
+        "Za128rs",
         "Zaamo",
         "Zabha",
         "Zacas",
@@ -61,10 +68,12 @@ RVA23_EXTENSIONS = frozenset(
         "Zcb",
         "Zcd",
         "Zcmop",
-        # Zb extensions
+        # Zb extensions (B; Zbc requires Zbkc)
+        "B",
         "Zba",
         "Zbb",
         "Zbc",
+        "Zbkc",
         "Zbs",
         # Zk extensions
         "Zkr",
@@ -82,15 +91,25 @@ RVA23_EXTENSIONS = frozenset(
         "Zvfhmin",
         "Zvkb",
         "Zvkg",
+        "Zvkn",
         "Zvkned",
+        "Zvkng",
         "Zvknha",
         "Zvknhb",
+        "Zvks",
         "Zvksed",
+        "Zvksg",
         "Zvksh",
-        # Sh extensions
+        "Zvkt",
+        "Zvl32b",
+        "Zvl64b",
+        "Zvl128b",
+        # Sd extensions
+        "Sdtrig",
+        # Sh extensions (Sha)
+        "Sha",
         "Shcounterenw",
         "Shgatpa",
-        "Shlcofideleg",
         "Shtvala",
         "Shvsatpa",
         "Shvstvala",
@@ -98,6 +117,8 @@ RVA23_EXTENSIONS = frozenset(
         # Ss extensions
         "Ssccptr",
         "Sscofpmf",
+        "Sscounterenw",
+        "Sspm",
         "Ssstateen",
         "Ssstrict",
         "Sstc",
@@ -106,6 +127,7 @@ RVA23_EXTENSIONS = frozenset(
         "Ssu64xl",
         "Ssnpm",
         "Smnpm",
+        "Supm",
         # Sv extensions
         "Sv39",
         "Sv48",

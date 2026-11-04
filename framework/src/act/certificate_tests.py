@@ -7,11 +7,6 @@ A test belongs to a certificate if every extension it requires is in the certifi
 For a group of alternative extensions, one member in the list is enough.
 """
 
-# Mandatory and optional extensions of the RVA23U64 and RVA23S64 profiles, with the extensions they
-# imply or require, as UDB resolves the profiles. Group names (B, Sha, Zvkn, Zvkng, Zvks, Zvksg) are
-# listed with their components. A test is selected only if the DUT's configuration also selects it, so
-# an optional extension adds tests only for a DUT that implements it. Sm is left out: RVA23 sets no
-# machine-mode requirements, and machine-mode tests are not part of the certificate.
 RVA23_EXTENSIONS = frozenset(
     {
         # Single letter extensions

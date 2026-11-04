@@ -1563,8 +1563,15 @@
             LI(t0, HSTATEEN0_JVT | HSTATEEN0_FCSR)
             csrw hstateen0, t0
           #endif
-          // mstateen1-3.SE is set above, so hstateen1-3 must be written to zero: the spec
-          // leaves their reset value to machine-level software (norm:hstateen_sstateen_zero_initialization).
+          // Setting mstateen1-3.SE above makes machine-level software responsible for zeroing the
+          // writable bits of the matching hstateen and sstateen CSRs, whose reset values are
+          // unspecified (norm:hstateen_sstateen_zero_initialization).
+          // hstateen1-3 need it: bit 63 (SE) of each hstateen is always writable
+          // (norm:hstateen_bit_63_writable), and a hart may reset it to 1.
+          // sstateen1-3 do not: they mirror bits 31:0 of mstateen1-3, which are reserved and
+          // read-only zero (norm:stateen_reserved_roz), and a zero mstateen bit makes the same
+          // sstateen bit read-only zero (norm:mstateen_lower_priv_roz). So no sstateen1-3 bit is
+          // writable.
           csrw hstateen1, zero
           csrw hstateen2, zero
           csrw hstateen3, zero

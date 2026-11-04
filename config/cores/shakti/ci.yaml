@@ -128,9 +128,10 @@ exclude_extensions:
   # https://gitlab.com/shaktiproject/cores/c-class/-/issues/322; the FENCE.I case was closed #48).
   - I-fence
   - Zifencei-fence.i
-  # C-class: an SC pairs with an older LR after a newer LR to an address 256 bytes away. Not a
-  # bug: the reservation compares only some address bits, and the spec allows an arbitrarily large
-  # reservation set; the configuration should describe that reservation strategy instead.
+  # C-class: an SC pairs with an older LR after a newer LR to an address 256 bytes away. Legal: the
+  # reservation compares only address bits 2:0, and the spec allows an arbitrarily large
+  # reservation set. Asked whether the mask is meant to be inverted in
+  # https://gitlab.com/shaktiproject/uncore/caches_mmu/-/issues/56.
   - Zalrsc-sc.d
   - Zalrsc-sc.w
   # C-class: wfi in U-mode waits forever instead of raising illegal instruction

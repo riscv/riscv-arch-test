@@ -3,14 +3,7 @@
 # CI configuration for Sail reference model
 
 ci_enabled: true
-exclude_extensions:
-  # Zvabd is a draft extension: the GNU assembler rejects zvabd in -march and Zvabd is not in
-  # act's EXPERIMENTAL_EXTENSIONS, so its tests cannot be built yet. Exclusions match suite
-  # directory names, which are per-SEW, so all four variants have to be listed.
-  - Zvabd8
-  - Zvabd16
-  - Zvabd32
-  - Zvabd64
+exclude_extensions: []
 shards: 1
 config_shards:
   sail-RVA22S64-optional: 3

@@ -42,8 +42,6 @@ RVA23_EXTENSIONS = frozenset(
         "Zimop",
         # Zm extensions
         "Zmmul",
-        # Zk extensions
-        "Zkt",
         # Za extensions
         "Za64rs",
         "Za128rs",

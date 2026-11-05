@@ -37,10 +37,7 @@ covergroup Ssnpm_cg with function sample(ins_t ins);
     //Declare pmm before including the shared PMM coverpoint file so the include can reference it.
     `include "general/RISCV_coverage_pmm_coverpoints.svh"
 
-    mxr_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "mxr") {
-        bins mxr_1 = {1'b1};   // MXR=1: execute-only pages readable
-        bins mxr_0 = {1'b0};   // MXR=0: normal permission checks
-    }
+    mxr_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "mxr")[0] {}
 
     `ifdef UDB_UXLEN_32  // UXL=01 is only reachable when U-mode supports RV32; checked from S-mode
         uxl_rv32: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "uxl") {
@@ -61,9 +58,13 @@ covergroup Ssnpm_cg with function sample(ins_t ins);
         cp_pmm_uxl_clear: cross priv_mode_s, pmm, uxl_rv32;
     `endif // UDB_UXLEN_32
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-        // Fault crosses confirm lw/sw executed in U-mode at the illegal address.
-        cp_hardware_csr_writes_fault: cross priv_mode_u, satp_mode, pmm, a_upper_bits, sw_lw_insn, illegal_addr;
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
+        // Fault cross confirms lw executed in U-mode at the illegal address.
+        cp_hardware_csr_writes_fault_load: cross priv_mode_u, satp_mode, pmm, a_upper_bits, lw_insn, illegal_addr_load;
+    `endif
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
+        // Fault cross confirms sw executed in U-mode at the illegal address.
+        cp_hardware_csr_writes_fault_store: cross priv_mode_u, satp_mode, pmm, a_upper_bits, sw_insn, illegal_addr_store;
     `endif
 
 endgroup
@@ -98,10 +99,7 @@ covergroup Ssnpm_Sm_cg with function sample(ins_t ins);
         }
     `endif // SMMPM_SUPPORTED
 
-    mxr_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mxr") {
-        bins mxr_1 = {1'b1};   // MXR=1: execute-only pages readable
-        bins mxr_0 = {1'b0};   // MXR=0: normal permission checks
-    }
+    mxr_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mxr")[0] {}
     mprv_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv") {
         bins mprv_1 = {1'b1};   // MPRV=1: memory access uses MPP privilege
     }
@@ -156,10 +154,7 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
         bins sv48x4 = {9};
         bins sv57x4 = {10};
     }
-    spvp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "spvp") {
-        bins vu = {0};
-        bins vs = {1};
-    }
+    spvp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "spvp")[0] {}
     spvp_vu: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "spvp") {
         bins vu = {0};
     }

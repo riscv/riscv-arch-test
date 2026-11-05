@@ -108,14 +108,15 @@
     // Check the regular signature offset to make sure the correct number of
     // signature updates occurred.
     check_regular_sig_offset:
-      LA(     T1, signature_base)
-      sub     T1, DEFAULT_SIG_REG, T1
+      // Keep the actual offset in DEFAULT_TEMP_REG: rvmodel_io_write_str clobbers T1-T3
+      LA(     DEFAULT_TEMP_REG, signature_base)
+      sub     DEFAULT_TEMP_REG, DEFAULT_SIG_REG, DEFAULT_TEMP_REG
       LA(     T3, final_sig_offset)
     #ifdef RVTEST_SELFCHECK
-      LREG    DEFAULT_TEMP_REG, 0(T3)
-      beq     DEFAULT_TEMP_REG, T1, check_regular_sig_offset_done
+      LREG    T1, 0(T3)
+      beq     T1, DEFAULT_TEMP_REG, check_regular_sig_offset_done
     #else
-      SREG    T1, 0(T3)
+      SREG    DEFAULT_TEMP_REG, 0(T3)
       beq     x0, x0, check_regular_sig_offset_done
     #endif
 
@@ -128,8 +129,7 @@
       call rvmodel_io_write_str
       LA(a0, regular_sig_offset_actual_str)
       call rvmodel_io_write_str
-      LA(     a0, signature_base)     // Recompute: rvmodel_io_write_str clobbers T1
-      sub     a0, DEFAULT_SIG_REG, a0
+      mv      a0, DEFAULT_TEMP_REG
       li      a1, UDB_MXLEN
       jal     ra, failedtest_hex_to_str
       LA(a0, ascii_buffer)

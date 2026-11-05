@@ -374,10 +374,10 @@ normative_rule_definitions:
   # stalled, the interrupt trap will be taken on the following instruction, i.e.,
   # execution resumes in the trap handler and mepc = pc + 4.
   - name: wfi_mepc_val
-    # Covered but not checked: mepc is not recorded for interrupts, and the trap handler resumes a WFI wait loop
-    # at its exit whatever mepc is (testgen/asm/wait.py). mepc = WFI is also indistinguishable from a legal
-    # interrupt taken just before the WFI.
-    coverpoint: ["InterruptsSm_cg/{cp_wfi_m, cp_wfi}"]
+    coverpoint:
+      [
+        "Untestable: mepc = WFI is indistinguishable from a legal interrupt taken just before the WFI, and mepc = WFI + 8 from a legal early resume",
+      ]
 
   # Implementations are permitted to resume execution for any reason, even if an
   # enabled interrupt has not become pending. Hence, a legal implementation is to

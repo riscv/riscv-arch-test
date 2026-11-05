@@ -8,20 +8,17 @@
 #define TRAP_SIGUPD_COUNT 0
 #endif
 
-#define BOOT_TO_MMODE // TODO: Remove when boot code changes are complete
-
 #include "riscv_arch_test.h"
 
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
   // Park harts beyond the configured hart count.
-  csrr  t0, mhartid
+  RVTEST_TSBI_CSR_READ(CSR_MHARTID)
   LA(t1, c_num_harts)
   LREG  t1, 0(t1)
-  bltu  t0, t1, 1f
+  bltu  a0, t1, 1f
 c_park_extra_hart:
-  wfi
   j     c_park_extra_hart
 1:
 
@@ -30,16 +27,16 @@ c_park_extra_hart:
   LA(t1, c_stack_size)
   LREG  t1, 0(t1)
 1:
-  beqz  t0, 2f
+  beqz  a0, 2f
   sub   sp, sp, t1
-  addi  t0, t0, -1
+  addi  a0, a0, -1
   j     1b
 2:
   andi  sp, sp, -16
 
   // Hart 0 initializes .bss before releasing the other harts.
-  csrr  t0, mhartid
-  bnez  t0, c_wait_release
+  RVTEST_TSBI_CSR_READ(CSR_MHARTID)
+  bnez  a0, c_wait_release
   LA(t1, __bss_start)
   LA(t2, __bss_end)
 1:
@@ -65,14 +62,16 @@ c_released:
   call  main
 
   // Only hart 0 reports the C test result.
-  csrr  t0, mhartid
-  beqz  t0, 1f
+  mv    s1, a0
+  RVTEST_TSBI_CSR_READ(CSR_MHARTID)
+  beqz  a0, 1f
 c_park_done_hart:
-  wfi
   j     c_park_done_hart
 1:
+  mv    a0, s1
   call  c_test_exit
-  j     .
+c_test_exit_returned:
+  j     c_test_exit_returned
 
 // Route pass/fail through ACT cleanup so DUT trap state is unwound normally.
 .global c_halt_pass

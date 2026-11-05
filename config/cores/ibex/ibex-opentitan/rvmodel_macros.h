@@ -51,10 +51,15 @@
 
 ##### Access faults #####
 
-# RVMODEL_ACCESS_FAULT_ADDRESS is left undefined because no fetch address faults. Simple System
-# ties the instruction error off and indexes the RAM with addr[19:2] for every fetch.
+# No fetch address faults. Simple System ties the instruction error off and indexes the RAM
+# with addr[19:2] for every fetch. So RVMODEL_ACCESS_FAULT_ADDRESS and
+# RVMODEL_ACCESS_FAULT_ADDRESS_FETCH are not defined.
 #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/examples/simple_system/rtl/ibex_simple_system.sv#L134
 #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/shared/rtl/ram_2p.sv#L48
+# Loads and stores to an address that no bus device decodes get a bus error.
+#   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/shared/rtl/bus.sv#L99
+#define RVMODEL_ACCESS_FAULT_ADDRESS_LOAD  0x80000000
+#define RVMODEL_ACCESS_FAULT_ADDRESS_STORE 0x80000000
 
 ##### Interrupt Latency #####
 

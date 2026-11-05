@@ -53,6 +53,32 @@ coverpoints:
       - vscause_sz_acc_op
       - vsatp_sz_acc_op
   - name: |-
+      cp_hcsr_imm
+      cp_hcsr_imm_zero
+      cp_hcsr_imm_masked
+    goal: Immediate-form CSR access and uimm-zero write suppression
+    description: In HS-mode, run CSRRWI, CSRRSI and CSRRCI with zimm 0 and 5 on each tested HS/VS H CSR. Check rd against the pre-instruction value and the CSR readback in the same testcase, including the write-suppressed zero-immediate forms; follow the existing H CSR WARL/mask rules. Before CSRRWI with zimm 0, initialize and verify a nonzero bit for hstatus, hvip, vsstatus, vsscratch, htimedelta and vstimecmp (including supported RV32 high halves). Zero-only and implementation-dependent fields do not require nonzero readback.
+    expectation: CSRRSI/CSRRCI with zimm 0 only read; CSRRWI with zimm 0 writes zero. All three forms with zimm 5 attempt a write; rd returns the pre-instruction CSR value.
+    bins: 6 operations per eligible H CSR
+  - name: cp_hcsr_imm_ro
+    goal: Read-only hgeip distinguishes zero-immediate reads from write attempts
+    description: In HS-mode, run all three immediate CSR forms on hgeip with zimm 0 and 5.
+    expectation: CSRRSI/CSRRCI with zimm 0 read; CSRRWI with zimm 0 or 5 and CSRRSI/CSRRCI with zimm 5 raise illegal instruction without changing rd.
+    bins: 6 forms
+  - name: cp_hcsr_ro_reg0
+    goal: Read-only hgeip distinguishes rs1=x0 from a nonzero rs1 containing zero
+    description: In HS-mode, run CSRRS/CSRRC with rs1=x0 and with a nonzero register containing zero.
+    expectation: x0 forms read; nonzero-register forms attempt a write and raise illegal instruction, leaving rd unchanged.
+    bins: 4 forms
+  - name: |-
+      cp_hcsr_oldvalue
+      cp_hcsr_oldvalue_zero
+      cp_hcsr_oldvalue_masked
+    goal: Register-form read-modify-write instructions return the old CSR value
+    description: In HS-mode, check the returned old value from CSRRW, CSRRS and CSRRC with nonzero rs1, CSRRS/CSRRC with rs1=x0, and CSRRW with rs1=x0, after initializing each HS/VS H CSR to a legal value. Check readback within the corresponding testcase for the zero-source boundary forms. On RV32 with Sm 1.13 or later, classify reserved hedelegh under cp_hcsr_oldvalue; preserve its existing access/walk classification.
+    expectation: rd returns the value before the operation. CSRRS/CSRRC with rs1=x0 do not write; CSRRW with rs1=x0 writes zero (it does not suppress writes).
+    bins: 6 register forms per eligible H CSR
+  - name: |-
       cp_hcsrwalk
       cp_hcsrwalk_masked
     goal: Exercise each bit of H-extension CSRs

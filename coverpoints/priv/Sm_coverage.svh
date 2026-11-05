@@ -1972,6 +1972,35 @@ covergroup Sm_H_mcsr_cg with function sample(ins_t ins);
     cp_hcsr_access_zero:    cross priv_mode_m, hcsrname_zero, csraccesses;
     cp_hcsr_access_masked:  cross priv_mode_m, hcsrname_masked, csraccesses_masked;
     cp_hcsr_access_ro:      cross priv_mode_m, hgeip, csraccesses;
+
+    // With a non-x0 register containing zero, CSRRS/CSRRC still attempt a write.
+    // With rs1=x0 they read without writing, including on read-only hgeip.
+    hgeip_zero_regop : coverpoint ins.current.insn {
+        wildcard bins csrrs_x0   = {CSRRS} iff (ins.current.insn[19:15] == 5'd0);
+        wildcard bins csrrc_x0   = {CSRRC} iff (ins.current.insn[19:15] == 5'd0);
+        wildcard bins csrrs_reg0 = {CSRRS} iff (ins.current.insn[19:15] != 5'd0 && ins.current.rs1_val == 0);
+        wildcard bins csrrc_reg0 = {CSRRC} iff (ins.current.insn[19:15] != 5'd0 && ins.current.rs1_val == 0);
+    }
+    cp_hcsr_ro_reg0: cross priv_mode_m, hgeip, hgeip_zero_regop;
+
+    // rd receives the old value. CSRRW with rs1=x0 writes zero;
+    // only CSRRS/CSRRC with rs1=x0 suppress the write.
+    hcsr_regops : coverpoint ins.current.insn {
+        wildcard bins csrrw      = {CSRRW} iff (ins.current.insn[19:15] != 5'd0);
+        wildcard bins csrrs_reg0 = {CSRRS} iff (ins.current.insn[19:15] != 5'd0 && ins.current.rs1_val == 0);
+        wildcard bins csrrc_reg0 = {CSRRC} iff (ins.current.insn[19:15] != 5'd0 && ins.current.rs1_val == 0);
+        wildcard bins csrrs_x0   = {CSRRS} iff (ins.current.insn[19:15] == 5'd0);
+        wildcard bins csrrc_x0   = {CSRRC} iff (ins.current.insn[19:15] == 5'd0);
+        wildcard bins csrrw_x0   = {CSRRW} iff (ins.current.insn[19:15] == 5'd0);
+    }
+    hcsr_nonzero_rd : coverpoint ins.current.insn[11:7] {
+        type_option.weight = 0;
+        bins nonzero = {[1:31]};
+    }
+    cp_hcsr_oldvalue:        cross priv_mode_m, hcsrname, hcsr_regops, hcsr_nonzero_rd;
+    cp_hcsr_oldvalue_zero:   cross priv_mode_m, hcsrname_zero, hcsr_regops, hcsr_nonzero_rd;
+    cp_hcsr_oldvalue_masked: cross priv_mode_m, hcsrname_masked, hcsr_regops, hcsr_nonzero_rd;
+
     cp_hcsrwalk:            cross priv_mode_m, hcsrname, csrop, walking_ones {
         // vsepc and vstval may legalize invalid addresses, so they are walked with valid addresses instead
         ignore_bins vaddr = binsof(hcsrname.vsepc) || binsof(hcsrname.vstval);

@@ -24,6 +24,7 @@ from testgen.priv.extensions.HCommon import (
     REPLICA_ATP_GATE,
     REPLICAS,
     guest_page_fault_tests,
+    hcsr_semantics_tests,
     hcsr_tests,
     hlv_tests,
     replica_read,
@@ -2131,6 +2132,15 @@ def make_smh(test_data: TestData) -> list[TestChunk]:
     """Generate Sm_H tests: the hypervisor CSRs and instructions from M-mode, and mstatus.TVM below M-mode."""
     test_chunks: list[TestChunk] = []
     hcsr_tests(test_data, test_chunks, [*H_M_CSRS, *H_HS_CSRS, *H_VS_CSRS], _H_CSR_CG, prefix="H_")
+    hcsr_semantics_tests(
+        test_data,
+        test_chunks,
+        [*H_M_CSRS, *H_HS_CSRS, *H_VS_CSRS],
+        _H_CSR_CG,
+        prefix="H_",
+        include_immediate=False,
+        reserved_oldvalue_zero=True,
+    )
 
     tc = test_data.new_test_chunk(test_chunks, "H_replica")
     tc.code.extend([*_h_replica_tests(test_data), *_h_replica_vs_tests(test_data), *_h_mtvala_tests(test_data)])

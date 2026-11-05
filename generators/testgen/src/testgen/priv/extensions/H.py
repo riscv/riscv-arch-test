@@ -25,6 +25,7 @@ from testgen.priv.extensions.HCommon import (
     REPLICAS,
     HCsr,
     guest_page_fault_tests,
+    hcsr_semantics_tests,
     hcsr_tests,
     hlv_tests,
     replica_read,
@@ -404,6 +405,7 @@ def make_h(test_data: TestData) -> list[TestChunk]:
     """Generate tests for the H hypervisor testsuite."""
     test_chunks: list[TestChunk] = []
     hcsr_tests(test_data, test_chunks, [*H_HS_CSRS, *H_VS_CSRS], HS_CG)
+    hcsr_semantics_tests(test_data, test_chunks, [*H_HS_CSRS, *H_VS_CSRS], HS_CG)
 
     tc = test_data.new_test_chunk(test_chunks, "hscsr_fields")
     tc.code.extend(

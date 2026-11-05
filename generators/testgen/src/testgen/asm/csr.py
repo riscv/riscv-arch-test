@@ -483,29 +483,32 @@ def cntr_access_test(test_data: TestData, csr: tuple, covergroup: str, coverpoin
     return lines
 
 
-def write_stce(test_data: TestData, enable: bool, priv: str) -> list[str]:
+def write_stce(test_data: TestData, enable: bool, priv: str, henvcfg: bool = False) -> list[str]:
     """
-    Generate assembly to set or clear menvcfg.STCE (menvcfgh.STCE on RV32).
+    Generate assembly to set or clear menvcfg.STCE (menvcfgh.STCE on RV32), or henvcfg.STCE with henvcfg.
 
     Args:
         test_data: TestData object used to allocate a temporary register
         enable: True to set STCE, False to clear it
-        priv: Privilege mode the code runs in ("M", "S", or "U"); below M the write goes through T-SBI
+        priv: Privilege mode the code runs in ("M", "S", or "U"); below the CSR's level the write goes through T-SBI
+        henvcfg: Write henvcfg.STCE (henvcfgh.STCE on RV32) instead of menvcfg.STCE
 
     Returns:
         List of assembly lines
     """
     op = "csrs" if enable else "csrc"
+    csr = "henvcfg" if henvcfg else "menvcfg"
     reg = test_data.int_regs.get_register()
+    write = tsbi_call_or_direct(f"{op} {csr}, x{reg}", priv)
 
     lines = [
-        f"# {'Enable' if enable else 'Disable'} menvcfg.STCE{'' if priv == 'M' else ' via T-SBI'}",
+        f"# {'Enable' if enable else 'Disable'} {csr}.STCE{'' if write.startswith(op) else ' via T-SBI'}",
         "#if __riscv_xlen == 64",
-        f"LI(x{reg}, MENVCFG_STCE)",
-        tsbi_call_or_direct(f"{op} menvcfg, x{reg}", priv),
+        f"LI(x{reg}, {csr.upper()}_STCE)",
+        write,
         "#else",
-        f"LI(x{reg}, MENVCFGH_STCE)",
-        tsbi_call_or_direct(f"{op} menvcfgh, x{reg}", priv),
+        f"LI(x{reg}, {csr.upper()}H_STCE)",
+        tsbi_call_or_direct(f"{op} {csr}h, x{reg}", priv),
         "#endif",
     ]
     test_data.int_regs.return_register(reg)

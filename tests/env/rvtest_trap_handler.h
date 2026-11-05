@@ -279,6 +279,50 @@
 #define rvmodel_sv_off  (trap_sv_off+8*(REGWIDTH))    // offset to RVMODEL macro scratch area (8 regs)
 #define int_clr_sv_off  (rvmodel_sv_off+8*(REGWIDTH))   // a0/a1/a2 save slots for interrupt clearing routines
 
+//==============================================================================
+// TRAP LOG (builds without a signature, RVTEST_NOSIG)
+//
+// A build without a signature has no trap signature region. Instead, the trap
+// handlers record each trap in a small ring, the trap log, at the start of the
+// signature section, and the test checks the log itself. The log is ordinary
+// data, so a test can read and write it from any privilege mode.
+//
+//   rvtest_trap_allow  number of traps the test permits now. The handler fails
+//                      the test on a trap when it is 0, and decrements it otherwise.
+//   rvtest_trap_resume when nonzero, the address the handler resumes at instead
+//                      of the next instruction (or ra, after a fetch fault). The
+//                      handler clears it when it uses it.
+//   rvtest_trap_log    RVTEST_TRAP_LOG_N entries of TRAPLOG_ENTRY_WORDS words.
+//                      Trap n (counting from 0 after boot) is in entry n mod N,
+//                      and rvtest_trap_count is the number of traps logged.
+//
+// T-SBI calls and traps that the invisible trap handler emulates are not traps
+// of the test: they are neither logged nor counted against rvtest_trap_allow.
+//==============================================================================
+#ifndef RVTEST_TRAP_LOG_N
+  #define RVTEST_TRAP_LOG_N   4                   // entries in the ring (a power of two)
+#endif
+#define TRAPLOG_ALLOW_OFF     (0*REGWIDTH)        // offsets from rvtest_sig_begin
+#define TRAPLOG_RESUME_OFF    (1*REGWIDTH)
+#define TRAPLOG_LOG_OFF       (4*REGWIDTH)
+#define TRAPLOG_ENTRY_WORDS   16
+#if UDB_MXLEN == 64
+  #define TRAPLOG_ENTRY_SHIFT 7                   // log2(TRAPLOG_ENTRY_WORDS*REGWIDTH)
+#else
+  #define TRAPLOG_ENTRY_SHIFT 6
+#endif
+// Words of a log entry (multiply by REGWIDTH for the byte offset)
+#define TRAPLOG_VECT     0   // trap signature word 0: handler mode in bits 1:0 (3 M, 1 S/HS, 2 VS)
+#define TRAPLOG_CAUSE    1   // xcause
+#define TRAPLOG_EPC_IP   2   // xepc for an exception, xip for an interrupt
+#define TRAPLOG_TVAL     3   // xtval
+#define TRAPLOG_TVAL2    4   // mtval2 (M) or htval (HS) with H, otherwise 0
+#define TRAPLOG_TINST    5   // mtinst (M) or htinst (HS) with H, otherwise 0
+#define TRAPLOG_STATUS   6   // xstatus on handler entry
+#define TRAPLOG_STATUS2  7   // mstatush (M on RV32) or hstatus (HS with H) on entry, otherwise 0
+#define TRAPLOG_EPC      8   // xepc on handler entry (exceptions and interrupts)
+#define TRAPLOG_RESUME   9   // address the handler returned to
+
 
 // Invisible trap handling requires illegal instruction exceptions to always go through M-mode for possible
 // emulation. When emulation does not occur, the trap must be forwarded to S-mode if delegation is supposed to
@@ -2237,6 +2281,7 @@ tsbi_instr_table:
 //==============================================================================
 
 \__MODE__\()trapsig_ptr_upd:                      // pre-update trap signature pointer
+#ifndef RVTEST_NOSIG
         LA(     T1, rvtest_trap_count)            // T1 = address of trap_count
         LREG    T2, 0(T1)                         // T2 = current count
         addi    T2, T2, 1                         // count++
@@ -2277,6 +2322,7 @@ tsbi_instr_table:
         addi    sp, sp, 1*sv_area_sz               // undo sp adjustment
         LREG    T3, sig_bgn_off+          0(sp)    // T3 = this mode's signature begin address
         add     T1, T1, T3                          // T1 = this mode's current trap sig write address
+#endif
 
         // Snapshot xEPC/xCAUSE/xTVAL/xSTATUS to the saved_x* slots before the
         // first TRAP_SIGUPD so failedtest_print_csr_context reports THIS trap's
@@ -2302,6 +2348,52 @@ tsbi_instr_table:
         csrr    T3, CSR_XSTATUS
         SREG    T3, 24(T4)
 
+#ifdef RVTEST_NOSIG
+        // Trap log (see TRAP LOG above): fail on a trap the test did not permit;
+        // otherwise count it and point T1 at its log entry. The words below are
+        // written in the same order as the trap signature, plus words 6-9.
+        LREG    T3, sig_bgn_off(sp)                 // T3 = this mode's address of rvtest_sig_begin
+        LREG    T4, TRAPLOG_ALLOW_OFF(T3)           // T4 = traps the test still permits
+        beqz    T4, \__MODE__\()traplog_unexpected
+        addi    T4, T4, -1
+        SREG    T4, TRAPLOG_ALLOW_OFF(T3)
+        LA(     T1, rvtest_trap_count)
+        LREG    T2, 0(T1)                           // T2 = number of traps logged so far
+        addi    T4, T2, 1
+        SREG    T4, 0(T1)
+        andi    T2, T2, RVTEST_TRAP_LOG_N-1
+        slli    T2, T2, TRAPLOG_ENTRY_SHIFT
+        add     T1, T3, T2
+        addi    T1, T1, TRAPLOG_LOG_OFF             // T1 = this trap's log entry
+        csrr    T3, CSR_XSTATUS
+        SREG    T3, TRAPLOG_STATUS*REGWIDTH(T1)
+        li      T3, 0
+  .ifc \__MODE__ , M
+    #if (UDB_MXLEN == 32) && defined(SM1P12P0_OR_LATER_SUPPORTED)
+        csrr    T3, CSR_MSTATUSH
+    #endif
+  .endif
+  .ifc \__MODE__ , S
+    #ifdef H_SUPPORTED
+        csrr    T3, CSR_HSTATUS
+    #endif
+  .endif
+        SREG    T3, TRAPLOG_STATUS2*REGWIDTH(T1)
+        SREG    zero, TRAPLOG_TVAL2*REGWIDTH(T1)    // words 4 and 5 are rewritten below with H
+        SREG    zero, TRAPLOG_TINST*REGWIDTH(T1)
+        csrr    T3, CSR_XEPC
+        SREG    T3, TRAPLOG_EPC*REGWIDTH(T1)
+        li      T2, 0                               // word 0's entry size field is 0 in the log
+        j       sv_\__MODE__\()vect
+
+\__MODE__\()traplog_unexpected:                  // a trap while rvtest_trap_allow is 0
+        mv      T1, T5                              // actual value: xcause
+        li      DEFAULT_TEMP_REG, 0
+        jal     T2, failedtest_trap_x7_x9
+        RVTEST_WORD_PTR \__MODE__\()traplog_unexpected
+        RVTEST_WORD_PTR traplog_unexpected_str
+        .word   CSR_XEPC
+#else
         // Check before any trap signature stores. The end canary immediately follows
         // trap_sigptr's allocated space, so the updated write pointer may equal
         // sig_end_canary but must never pass it.
@@ -2312,6 +2404,7 @@ tsbi_instr_table:
   .else
         bgtu    T4, T3, trap_sig_overflow
   .endif
+#endif
 
 //---------- Trap Signature Word 0: vect+mode+status ----------
 // Packed format:
@@ -2576,6 +2669,17 @@ skp_\__MODE__\()tval:
   .endif
 
 1:
+#ifdef RVTEST_NOSIG
+        // Trap log: resume at rvtest_trap_resume if the test set it, and log the resume address.
+        LREG    T2, sig_bgn_off(sp)
+        LREG    T3, TRAPLOG_RESUME_OFF(T2)
+        beqz    T3, \__MODE__\()traplog_resume
+        SREG    zero, TRAPLOG_RESUME_OFF(T2)
+        csrw    CSR_XEPC, T3
+\__MODE__\()traplog_resume:
+        csrr    T3, CSR_XEPC
+        SREG    T3, TRAPLOG_RESUME*REGWIDTH(T1)
+#endif
         bltz    T5, dispatch_\__MODE__\()int_handler  // interrupt -> clear its source
 // --- Dispatch special exception handlers ---
 dispatch_\__MODE__\()spcl_excpt_handler:

@@ -5,7 +5,7 @@
 
     // vstart >= VLMAX is reserved (out of bounds for current vtype)
     vstart_ge_vlmax: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins true = {1'b1};
     }
 

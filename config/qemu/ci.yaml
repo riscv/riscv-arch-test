@@ -4,7 +4,7 @@
 # Shared across all QEMU configs
 
 ci_enabled: true
-# Status as of QEMU v11.1.2, by test group (other groups of these suites pass).
+# Status as of QEMU v11.1.3, by test group (other groups of these suites pass).
 exclude_extensions:
   # Multiple issues:
   #     menvcfg.CBIE can be written with reserved 0b10 QEMU #4216
@@ -16,9 +16,11 @@ exclude_extensions:
   - Sm_mcsr_walk
   - Sm_shadow
   - Sm_xret
-  # sie mismatches on bit 13 (LCOFIE) https://gitlab.com/qemu-project/qemu/-/work_items/3969;
   # QEMU accepts UXL=1, which Sail cannot model yet (https://github.com/riscv/sail-riscv/issues/1150)
   - S-
+  # senvcfg.CBIE can be written with reserved 0b10 (same as menvcfg, QEMU #4216). On RV32, a write to mstateen0
+  # clears mstateen0h.ENVCFG, so S-mode senvcfg accesses raise an illegal instruction
+  # (https://gitlab.com/qemu-project/qemu/-/issues/4611).
   - S_scsr-
   # qemu#4200, qemu#4201
   - Ssstrict_Sm_CSR
@@ -30,21 +32,39 @@ exclude_extensions:
   - SsstrictV
   # amocas with rd=x0 corrupts subsequent branch on x0 (https://gitlab.com/qemu-project/qemu/-/work_items/3526)
   - Zacas
-  # https://gitlab.com/qemu-project/qemu/-/work_items/3969 seems to apply to mip.LCOFIP not writable either
-  - InterruptsSm_enable
-  - InterruptsSm_priority
-  - InterruptsSm_trigger
-  - InterruptsS_enable
-  - InterruptsS_priority
-  - InterruptsS_trigger
-  # Interrupt WFI tests never enter VS/VU; the tests record SPV/MPV = 0, and InterruptsS_wfi_VS then waits in HS-mode
-  # for a timer interrupt that SIE = 0 masks (https://gitlab.com/qemu-project/qemu/-/issues/4620)
+  # Interrupt tests never enter VS/VU (https://gitlab.com/qemu-project/qemu/-/issues/4620). The WFI tests record
+  # SPV/MPV = 0, and InterruptsS_wfi_VS then waits in HS-mode for a timer interrupt that SIE = 0 masks.
+  # InterruptsS_trigger_vsti_sstc_U also fails on RV32 because a write to mstateen0 clears mstateen0h.ENVCFG, so
+  # henvcfgh accesses raise an illegal instruction (https://gitlab.com/qemu-project/qemu/-/issues/4611).
+  - InterruptsSm_enable_VS
+  - InterruptsSm_enable_VU
+  - InterruptsSm_priority_mideleg_VS
+  - InterruptsSm_priority_mideleg_VU
+  - InterruptsSm_priority_mie_VS
+  - InterruptsSm_priority_mie_VU
+  - InterruptsSm_priority_mip_VS
+  - InterruptsSm_priority_mip_VU
+  - InterruptsSm_trigger_VS
+  - InterruptsSm_trigger_VU
+  - InterruptsSm_trigger_vsti_sstc
+  - InterruptsS_enable_VS
+  - InterruptsS_enable_VU
+  - InterruptsS_priority_sie_VS
+  - InterruptsS_priority_sie_VU
+  - InterruptsS_priority_sip_VS
+  - InterruptsS_priority_sip_VU
+  - InterruptsS_trigger_VS
+  - InterruptsS_trigger_VU
+  - InterruptsS_trigger_vsti_sstc
   - InterruptsSm_wfi_VS
   - InterruptsSm_wfi_timeout_VS
   - InterruptsSm_wfi_timeout_VU
   - InterruptsS_wfi_VS
   - InterruptsS_wfi_timeout_VS
   - InterruptsS_wfi_timeout_VU
+  # qemu-rv32-m: mstatus.SIE and mstatus.SPIE are writable without S-mode (not filed separately; the reproducer
+  # output in https://gitlab.com/qemu-project/qemu/-/work_items/4456 shows it).
+  - InterruptsSm_trigger_M
   # sc.w to no-permission region returns failure instead of raising
   # store/AMO access fault (https://gitlab.com/qemu-project/qemu/-/work_items/4100, still failing in v11.1.1)
   - Exceptions_Zalrsc
@@ -68,8 +88,7 @@ exclude_extensions:
   - Zama16b
   # mstateen0 bits are writable for state the hart lacks: P1P13 on RV64 and on RV32 without H
   # (https://gitlab.com/qemu-project/qemu/-/work_items/4495), and ENVCFG, CSRIND, AIA and IMSIC without S
-  # (https://gitlab.com/qemu-project/qemu/-/work_items/4655). On the max configs CSRIND, AIA and IMSIC are
-  # legally writable, but Sail does not model Sscsrind or Ssaia.
+  # (https://gitlab.com/qemu-project/qemu/-/work_items/4655).
   - Smstateen
   # On RV64, reserved bit 63 of sstateen1-3 is writable while mstateenN bit 63 is set, but sstateen1-3 have no
   # defined bits and must read zero (https://gitlab.com/qemu-project/qemu/-/work_items/4726). Smstateen fails too.
@@ -88,11 +107,17 @@ exclude_extensions:
   # (https://gitlab.com/qemu-project/qemu/-/issues/4620). QEMU has further hypervisor bugs
   # filed the same day, 4611 through 4617, so this exclusion will be needed for a while.
   - H
+  - Sv_H
+  - Sv_HSm
+  - Sv_HZicbo
+  - PMP_HSvZicbo
   - Exceptions_H
   - Exceptions_HSm
+  - Zicfilp_H
   # The same mstatus.MPV bug breaks the mret and mstatus.TVM tests, and every vsstatus bit is
   # writable (https://gitlab.com/qemu-project/qemu/-/work_items/4589).
   - Sm_H
+  - Zicfilp_SmH
   # mstatus.MPV is read-only, so no VS/VU-mode (https://gitlab.com/qemu-project/qemu/-/work_items/4588);
   # hlvx.wu raises the wrong fault (https://gitlab.com/qemu-project/qemu/-/work_items/4595)
   - Shtvala
@@ -101,56 +126,63 @@ exclude_extensions:
   # (https://gitlab.com/qemu-project/qemu/-/issues/4620).
   - Svinval_H
   - Svinval_SmH
-  # With ADUE=1, QEMU sets A/D on a PTE with a reserved Svnapot encoding before raising the page fault
-  # (https://gitlab.com/qemu-project/qemu/-/work_items/4636)
-  - Svadu_sv39_Svadu_fault
-  - Svadu_sv48_Svadu_fault
-  - Svadu_sv57_Svadu_fault
+  - Svadu_H
+  - Svpbmt_H
+  - Svnapot_H
+  # The same mstatus.MPV bug keeps the VS-mode and VU-mode sweeps in HS-mode
+  # (https://gitlab.com/qemu-project/qemu/-/work_items/4588).
+  - Ssstrict_H
+  # mret never enters VS/VU (https://gitlab.com/qemu-project/qemu/-/issues/4620), so the VS/VU
+  # accesses and the VS timer interrupts fail, and M-mode writes of hvip.VSTIP are dropped while
+  # menvcfg.STCE = henvcfg.STCE = 1 (https://gitlab.com/qemu-project/qemu/-/work_items/4593).
+  - Sstc_H
+  - Sstc_HSm
+  # Runs in VS-mode and VU-mode, which QEMU never enters (see H above).
+  - Ssnpm_H
   # QEMU CBOs do not fault on inaccessible addresses in bare mode, shifting trap signatures;
   # same issue as Exceptions_ZicboU/Exceptions_ZicboS and Sv_Zicbo (https://gitlab.com/qemu-project/qemu/-/work_items/3501).
   - Ssnpm_bare_pmm00_sweep
   - Ssnpm_bare_pmm10_sweep
-  - Ssnpm_sv39_pmm10_sweep
-  - Ssnpm_sv39_pmm11_sweep
-  - Ssnpm_sv48_pmm10_sweep
-  - Ssnpm_sv48_pmm11_sweep
-  - Ssnpm_sv57_pmm10_sweep
-  - Ssnpm_sv57_pmm11_sweep
   - Smmpm_pmm00_sweep
   - Smmpm_pmm10_sweep
   - Smnpm_S_bare_pmm00_sweep
   - Smnpm_S_bare_pmm10_sweep
-  - Smnpm_S_sv39_pmm10_sweep
-  - Smnpm_S_sv39_pmm11_sweep
-  - Smnpm_S_sv48_pmm10_sweep
-  - Smnpm_S_sv48_pmm11_sweep
-  - Smnpm_S_sv57_pmm10_sweep
-  - Smnpm_S_sv57_pmm11_sweep
-  - Smnpm_U
-  - Smnpm_USm
-  # On a store/AMO page fault from ssamoswap.w, QEMU writes a
-  # transformed instruction to htinst, but SSAMOSWAP has no defined transformation, so it must be 0
-  # (https://gitlab.com/qemu-project/qemu/-/work_items/4721).
+  # On a store/AMO page fault from ssamoswap.w, QEMU writes a transformed instruction to htinst, but SSAMOSWAP
+  # has no defined transformation, so it must be 0 (https://gitlab.com/qemu-project/qemu/-/work_items/4721).
+  # The pmm00 sweeps fail only on this; the pmm10 sweeps also fail on the SSPUSH/SSPOPCHK bug below.
   - Ssnpm_sv39_pmm00_sweep
   - Ssnpm_sv48_pmm00_sweep
   - Ssnpm_sv57_pmm00_sweep
   - Smnpm_S_sv39_pmm00_sweep
   - Smnpm_S_sv48_pmm00_sweep
   - Smnpm_S_sv57_pmm00_sweep
-  # Fails on qemu because ecall, ebreak and illegal instruction increments minstret/instret. Filed QEMU issue: https://gitlab.com/qemu-project/qemu/-/work_items/4227
-  # Also fails because minstret/instret overcounts by 1 for wfi with a pending or taken interrupt. Filed QEMU issue: https://gitlab.com/qemu-project/qemu/-/work_items/4230
-  - Sm_Zicntr
+  # SSPUSH and SSPOPCHK do not apply pointer masking to ssp, so a shadow-stack access through a tag that PMLEN
+  # masks raises a store/AMO page fault (https://gitlab.com/qemu-project/qemu/-/work_items/4758). PMLEN = 16
+  # masks every tag, so the pmm11 sweeps fail only on this.
+  - Ssnpm_sv39_pmm10_sweep
+  - Ssnpm_sv39_pmm11_sweep
+  - Ssnpm_sv48_pmm10_sweep
+  - Ssnpm_sv48_pmm11_sweep
+  - Ssnpm_sv57_pmm10_sweep
+  - Ssnpm_sv57_pmm11_sweep
+  - Smnpm_S_sv39_pmm10_sweep
+  - Smnpm_S_sv39_pmm11_sweep
+  - Smnpm_S_sv48_pmm10_sweep
+  - Smnpm_S_sv48_pmm11_sweep
+  - Smnpm_S_sv57_pmm10_sweep
+  - Smnpm_S_sv57_pmm11_sweep
+  # Selected only on qemu-rv64-mu, where U-mode CBOs raise illegal-instruction without S-mode because QEMU also
+  # requires senvcfg (https://gitlab.com/qemu-project/qemu/-/work_items/4596).
+  - Smnpm_U
   # RV32: mhpmevent[57:56] (WPRI) are writable (https://gitlab.com/qemu-project/qemu/-/work_items/4722).
   # The other Sscofpmf groups pass.
   - Sscofpmf_Sm_access
-  # mie/sie drop LCOFIE and sip neither writes nor reads LCOFIP, so LCOFI is never taken
-  # (https://gitlab.com/qemu-project/qemu/-/work_items/3969); on RV32 overflows are also lost
-  # (https://gitlab.com/qemu-project/qemu/-/work_items/4723).
+  # RV32: overflows are lost, so LCOFIP is not set (https://gitlab.com/qemu-project/qemu/-/work_items/4723).
+  # These pass on RV64.
   - Sscofpmf_Sm_interrupt
   - Sscofpmf_S_interrupt
-  - Sscofpmf_U_interrupt
-  # Overflow needs 3969 fixed, and on RV32 also 4723 and
-  # https://gitlab.com/qemu-project/qemu/-/work_items/4724 (mhpmcounterNh reads wrong).
+  # RV32: overflows are lost (4723) and mhpmcounterNh reads wrong
+  # (https://gitlab.com/qemu-project/qemu/-/work_items/4724). These pass on RV64.
   - Sscofpmf_Sm_overflow
   - Sscofpmf_S_overflow
   - Sscofpmf_U_overflow

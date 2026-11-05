@@ -88,7 +88,7 @@ coverpoints:
     bins: 5 ops (7 on RV64) * 8 lsbs
   - name: cp_misaligned_priority_store
     goal: Priority of exceptions
-    description: Attempt sb, sh, sw, (sd) from memory location causing access fault and misaligned
+    description: Attempt sb, sh, sw, (sd) to memory location causing access fault and misaligned
     expectation: priority may vary.
     bins: 3 ops (4 on RV64) * 8 lsbs
   - name: cp_mstatus_ie

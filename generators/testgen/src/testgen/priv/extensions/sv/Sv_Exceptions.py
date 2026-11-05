@@ -29,16 +29,27 @@ _INVALID_VA = {"sv32": "0x90807000", "sv39": "0x1c0802000"}
 _DATA_REGION = DATA_REGION.replace(
     "rvtest_data_1:\nnop\n", "rvtest_data_1:\n.insn i 0x13, 0, {result}, x2, 0 # mv {result}, sp\n", 1
 )
+# A physical address of None selects the access-fault address for each access type
 _BASE_CASES = (
     (True, "rvtest_data_1", False),
     (True, "rvtest_data_1", True),
-    (True, "RVMODEL_ACCESS_FAULT_ADDRESS", False),
-    (True, "RVMODEL_ACCESS_FAULT_ADDRESS", True),
+    (True, None, False),
+    (True, None, True),
     (False, "rvtest_data_1", False),
     (False, "rvtest_data_1", True),
-    (False, "RVMODEL_ACCESS_FAULT_ADDRESS", False),
-    (False, "RVMODEL_ACCESS_FAULT_ADDRESS", True),
+    (False, None, False),
+    (False, None, True),
 )
+# The RVMODEL_ACCESS_FAULT_ADDRESS_* macro for each operation, and the add_rwx_test operations it covers
+_FAULT_ADDRESSES = {
+    "rwx": (
+        ("RVMODEL_ACCESS_FAULT_ADDRESS_STORE", ("store",)),
+        ("RVMODEL_ACCESS_FAULT_ADDRESS_LOAD", ("load",)),
+        ("RVMODEL_ACCESS_FAULT_ADDRESS_FETCH", ("exec",)),
+    ),
+    "Zaamo": (("RVMODEL_ACCESS_FAULT_ADDRESS_AMO", None),),
+    "Zalrsc": (("RVMODEL_ACCESS_FAULT_ADDRESS_LRSC", None),),
+}
 
 
 @dataclass(frozen=True)
@@ -74,8 +85,10 @@ class _Target:
                 "exec": f"cp_medeleg_fetch_{suffix}",
             }
         if misaligned:
-            return dict.fromkeys(("store", "load"), f"cp_misaligned_priority_{suffix}") | {
-                "exec": f"cp_misaligned_priority_fetch_{suffix}"
+            return {
+                "store": f"cp_misaligned_priority_store_{suffix}",
+                "load": f"cp_misaligned_priority_load_{suffix}",
+                "exec": f"cp_misaligned_priority_fetch_{suffix}",
             }
         return {
             "store": f"cp_store_page_fault_{suffix}",
@@ -136,6 +149,7 @@ def _add_access(
     physical_address: str = "rvtest_data_1",
     misaligned: bool = False,
     medeleg: bool = False,
+    operations: tuple[str, ...] | None = None,
 ) -> list[str]:
     level = sv.levels - 1
     permissions = PteFlags(user=target.effective_mode == "Umode", valid=valid)
@@ -166,6 +180,7 @@ def _add_access(
             cleanup=mprv_cleanup(regs.scratch) if target.mprv else (),
             repeat_setup=target.mprv,
             physical_fetch=target.mprv,
+            operations=operations,
             coverpoints=coverpoints,
             covergroup=f"Sv_{target.group}_cg",
         )
@@ -237,18 +252,33 @@ def _make_mode_test(
     number = 1
     if base_cases:
         for valid, physical_address, misaligned in _BASE_CASES:
-            guarded = physical_address == "RVMODEL_ACCESS_FAULT_ADDRESS"
-            access = _add_access(
-                test_data,
-                sv,
-                regs,
-                target,
-                number,
-                valid=valid,
-                physical_address=physical_address,
-                misaligned=misaligned,
-            )
-            chunk.code.extend(["#ifdef RVMODEL_ACCESS_FAULT_ADDRESS", *access, "#endif", ""] if guarded else access)
+            if physical_address is not None:
+                chunk.code.extend(
+                    _add_access(
+                        test_data,
+                        sv,
+                        regs,
+                        target,
+                        number,
+                        valid=valid,
+                        physical_address=physical_address,
+                        misaligned=misaligned,
+                    )
+                )
+            else:
+                for fault_address, operations in _FAULT_ADDRESSES[target.operation]:
+                    access = _add_access(
+                        test_data,
+                        sv,
+                        regs,
+                        target,
+                        number,
+                        valid=valid,
+                        physical_address=fault_address,
+                        misaligned=misaligned,
+                        operations=operations,
+                    )
+                    chunk.code.extend([f"#ifdef {fault_address}", *access, "#endif", ""])
             number += 1
 
     if medeleg_cases:

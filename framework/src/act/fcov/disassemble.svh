@@ -57,7 +57,7 @@ function string disassemble (logic [31:0] instrRaw);
   automatic bit        [4:0]  uimm5    = instr[19:15];
   automatic bit        [5:0]  uimm6_v  = {instr[26], instr[19:15]};
   automatic bit signed [4:0]  imm5     = instr[19:15];
-  automatic int cimm5 = (instr[24:20] == 0) ? -1 : instr[24:20];
+  automatic int cimm5 = (instr[24:20] == 0) ? -1 : int'(instr[24:20]);
 
   // Compressed immediates
   automatic bit signed [5:0]  immCIType     = {instr[12], instr[6:2]};

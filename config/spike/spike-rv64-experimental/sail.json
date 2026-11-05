@@ -248,7 +248,7 @@
       // This specifies the number of usable PMP entries.
       // Entries higher than this are read-only-zero.
       // The value must be less than or equal to `count`.
-      "usable_count": 64,
+      "usable_count": 16,
       "tor_supported": true,
       "na4_supported": true,
       "napot_supported": true
@@ -1080,14 +1080,14 @@
         "mhselect": {
           // Values 1, 4 and 5, match on `mcontext`. Requires the
           // `mcontext` CSR. Values 1 and 5 also require H.
-          "mcontext_match": false,
+          "mcontext_match": true,
           // Values 2 and 6, match on the VMID in `hgatp`. Requires H.
           "vmid_match": false
         },
         "sselect": {
           // Value 1, match on `scontext`. Requires S and the `scontext`
           // CSR.
-          "scontext_match": false,
+          "scontext_match": true,
           // Value 2, match on the ASID in `satp` or `vsatp`. Requires S.
           "asid_match": true
         },

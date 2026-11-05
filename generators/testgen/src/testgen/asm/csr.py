@@ -267,10 +267,10 @@ def csr_walk_test(
             other iterations check the field exactly as usual (see _warl_reserved_check).
         maskedwrites: If True, the CSR is written with a mask applied to the value being written.
         bin_prefix: Prefix for testcase bin names, to walk the same CSR more than once under one coverpoint.
-        unwalked_bits: Optional (bits, define) pairs for state the reference model cannot model. When
-            `define` is defined for the config, the bits are neither written nor checked, so their
-            coverage reports missing; otherwise they are walked and checked (read-only zero). Implies
-            maskedwrites, starting from the csr mask, or all ones if None.
+        unwalked_bits: Optional (bits, cond) pairs for state the reference model cannot model. `cond` is a
+            define name, or an #if expression. Where it holds, the bits are neither written nor checked,
+            so their coverage reports missing; elsewhere they are walked and checked (read-only). Implies
+            maskedwrites, with the bits added to the csr mask, or all ones if None.
     """
     assert 0 <= start_bit < 32, f"start_bit must be in 0..31, got {start_bit}"
     csr_name, mask = csr
@@ -278,7 +278,9 @@ def csr_walk_test(
         maskedwrites = True
         if mask is None:
             mask = (1 << 64) - 1
-            csr = (csr_name, mask)
+        for bits, _cond in unwalked_bits:
+            mask |= bits
+        csr = (csr_name, mask)
     if maskedwrites:
         assert mask is not None, f"maskedwrites requires a csr mask (got None for {csr_name})"
     if mask is not None:
@@ -363,12 +365,12 @@ def csr_walk_test(
     ]
     if mask is not None:
         lines.append(f"LI(x{mask_reg}, {mask})    # Load mask ({mask:#x})")
-        for bits, define in unwalked_bits or []:
+        for bits, cond in unwalked_bits or []:
             lines += [
-                f"#ifdef {define}",
+                f"#ifdef {cond}" if cond.isidentifier() else f"#if {cond}",
                 f"LI(x{check_reg}, {~bits & ((1 << 64) - 1)})    # Do not walk bits {bits:#x}",
                 f"and x{mask_reg}, x{mask_reg}, x{check_reg}",
-                f"#endif // {define}",
+                f"#endif // {cond}",
             ]
     if walk_zeros:
         lines.append(f"LI(x{temp_reg}, -1)             # x{temp_reg} = all 1s")
@@ -487,29 +489,32 @@ def cntr_access_test(test_data: TestData, csr: tuple, covergroup: str, coverpoin
     return lines
 
 
-def write_stce(test_data: TestData, enable: bool, priv: str) -> list[str]:
+def write_stce(test_data: TestData, enable: bool, priv: str, henvcfg: bool = False) -> list[str]:
     """
-    Generate assembly to set or clear menvcfg.STCE (menvcfgh.STCE on RV32).
+    Generate assembly to set or clear menvcfg.STCE (menvcfgh.STCE on RV32), or henvcfg.STCE with henvcfg.
 
     Args:
         test_data: TestData object used to allocate a temporary register
         enable: True to set STCE, False to clear it
-        priv: Privilege mode the code runs in ("M", "S", or "U"); below M the write goes through T-SBI
+        priv: Privilege mode the code runs in ("M", "S", or "U"); below the CSR's level the write goes through T-SBI
+        henvcfg: Write henvcfg.STCE (henvcfgh.STCE on RV32) instead of menvcfg.STCE
 
     Returns:
         List of assembly lines
     """
     op = "csrs" if enable else "csrc"
+    csr = "henvcfg" if henvcfg else "menvcfg"
     reg = test_data.int_regs.get_register()
+    write = tsbi_call_or_direct(f"{op} {csr}, x{reg}", priv)
 
     lines = [
-        f"# {'Enable' if enable else 'Disable'} menvcfg.STCE{'' if priv == 'M' else ' via T-SBI'}",
+        f"# {'Enable' if enable else 'Disable'} {csr}.STCE{'' if write.startswith(op) else ' via T-SBI'}",
         "#if __riscv_xlen == 64",
-        f"LI(x{reg}, MENVCFG_STCE)",
-        tsbi_call_or_direct(f"{op} menvcfg, x{reg}", priv),
+        f"LI(x{reg}, {csr.upper()}_STCE)",
+        write,
         "#else",
-        f"LI(x{reg}, MENVCFGH_STCE)",
-        tsbi_call_or_direct(f"{op} menvcfgh, x{reg}", priv),
+        f"LI(x{reg}, {csr.upper()}H_STCE)",
+        tsbi_call_or_direct(f"{op} {csr}h, x{reg}", priv),
         "#endif",
     ]
     test_data.int_regs.return_register(reg)

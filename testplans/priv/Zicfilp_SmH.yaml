@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Zicfilp_SmH
+notes: |-
+  Zicfilp_SmH boots to M-mode with medeleg[3] = medeleg[18] = 0, so breakpoints and software-check exceptions from VS-mode and VU-mode are taken in M-mode.  The number of traps is recorded after each case.  Traps taken in HS-mode are in Zicfilp_H.
+coverpoints:
+  - name: cp_trap_mpelp_virt
+    goal: A trap from VS-mode or VU-mode into M-mode saves ELP in MPELP
+    description: |-
+      medeleg[3] = medeleg[18] = 0.  With henvcfg.LPE = 1 in VS-mode or senvcfg.LPE = 1 in VU-mode:
+      - ELP = LP_EXPECTED: jalr through a register other than x1, x5 and x7 to a non-LPAD instruction, which raises a software-check exception.
+      - ELP = NO_LP_EXPECTED: an ebreak that no indirect jump precedes.
+      Record the trap count afterwards.
+    expectation: The trap saves ELP in MPELP and sets MPV.  The handler's mret restores ELP, so after the LP_EXPECTED trap the next non-LPAD instruction traps again before the LPAD; after the ebreak the next instruction does not trap.
+    bins: |-
+      priv_mode {VS, VU} x LPE of the mode enabled x ELP {lp_expected, no_lp_expected}
+      = 4 bins
+  - name: cp_mret_mpelp_virt
+    goal: mret to VS-mode or VU-mode restores ELP from MPELP using the landing pad enable of the new mode
+    description: |-
+      For each value of henvcfg.LPE, senvcfg.LPE and MPELP: execute mret with MPV = 1 and MPP = S (VS-mode) or U (VU-mode) to a non-LPAD instruction.  menvcfg.LPE holds the opposite of the new mode's enable.  Record the trap count afterwards.
+    expectation: Software-check exception, taken in M-mode, exactly when MPELP = 1 and the new mode's enable (henvcfg.LPE for VS-mode, senvcfg.LPE for VU-mode) is 1.
+    bins: |-
+      priv_mode M x mret x new mode {VU, VS} x henvcfg.LPE {0, 1} x senvcfg.LPE {0, 1} x MPELP {0, 1}
+      = 16 bins
+  - name: cp_vs_sstatus_spelp_mstatus
+    goal: A VS-mode write to sstatus.SPELP writes vsstatus.SPELP and leaves mstatus.SPELP unchanged
+    description: |-
+      medeleg[10] = 0.  For each value of mstatus.SPELP, set vsstatus.SPELP to the opposite of the write.  In VS-mode, csrrs or csrrc sstatus with the SPELP bit, then read sstatus.  In M-mode, read mstatus.SPELP and vsstatus.SPELP.
+    expectation: sstatus in VS-mode and vsstatus hold the written value.  mstatus.SPELP is unchanged.
+    bins: |-
+      priv_mode VS x {csrrs, csrrc} x mstatus.SPELP {0, 1}
+      = 4 bins

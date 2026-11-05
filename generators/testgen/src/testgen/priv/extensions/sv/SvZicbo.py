@@ -8,6 +8,9 @@
 
 """Generate cache-block operation tests under virtual memory."""
 
+from dataclasses import replace
+from typing import NamedTuple
+
 from testgen.asm.helpers import write_sigupd
 from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
@@ -27,6 +30,37 @@ from testgen.priv.extensions.sv.page_tables import (
     create_page_walk,
 )
 from testgen.priv.registry import add_priv_test_generator
+
+
+class CboLeaf(NamedTuple):
+    """A leaf PTE case for a CBO: a short name, a description, the leaf's flags, whether the CBO faults, and whether
+    the leaf uses a reserved R/W/X encoding."""
+
+    name: str
+    description: str
+    flags: PteFlags
+    faults: bool
+    reserved: bool = False
+
+
+def cbo_leaves(family: str, valid: PteFlags) -> list[CboLeaf]:
+    """The leaf PTE cases for ``family``'s CBOs, each a change to the ``valid`` leaf.
+
+    A CBO checks a leaf like a store, except that a cache-block management instruction needs only read or write
+    permission and never checks D (cmo.adoc).  With menvcfg.ADUE = 0, a clear A or a needed D bit faults.  Whether a
+    cache-block management instruction may access an execute-only page is UNSPECIFIED (cmo.adoc, after cbm_access),
+    so only cbo.zero gets the execute-only leaf.
+    """
+    zicbom = family == "zicbom"
+    return [
+        CboLeaf("v0", "PTE.V unset", replace(valid, valid=False), faults=True),
+        CboLeaf("wx", "Reserved W+X without R", replace(valid, read=False), faults=True, reserved=True),
+        CboLeaf("w", "Reserved W without R", replace(valid, read=False, execute=False), faults=True, reserved=True),
+        CboLeaf("rx", "RX permissions", replace(valid, write=False), faults=not zicbom),
+        *([] if zicbom else [CboLeaf("x", "Execute-only page", replace(valid, read=False, write=False), faults=True)]),
+        CboLeaf("a0", "PTE.A unset", replace(valid, accessed=False), faults=True),
+        CboLeaf("d0", "PTE.D unset", replace(valid, dirty=False), faults=not zicbom),
+    ]
 
 
 def _add_operation(
@@ -82,9 +116,15 @@ def _add_exception_cases(
     """Add the cache-block exception cases for each page-table level."""
     number = 0
     m = mode[0].lower()
-    # Zicbom needs read or write permission and ignores PTE.D; Zicboz needs write permission and PTE.D.
-    no_write = f"cp_PTE_r_set_w_unset_zicbom_{m}" if family == "zicbom" else f"cp_PTE_w_unset_zicboz_{m}"
-    dirty_unset = f"cp_Dbit_unset_{family}_{m}"
+    crosses = {
+        "v0": f"cp_PTE_inv_cbo_{m}",
+        "wx": f"cp_PTE_res_rwx_cbo_{m}",
+        "w": f"cp_PTE_res_rwx_cbo_{m}",
+        "rx": f"cp_PTE_r_set_w_unset_zicbom_{m}" if family == "zicbom" else f"cp_PTE_w_unset_zicboz_{m}",
+        "x": f"cp_PTE_w_unset_zicboz_{m}",
+        "a0": f"cp_Abit_unset_cbo_{m}",
+        "d0": f"cp_Dbit_unset_{family}_{m}",
+    }
 
     def leaf(
         permissions: PteExpression,
@@ -169,24 +209,15 @@ def _add_exception_cases(
         leaf_permissions = PteFlags(user=umode)
         walk_fault_permissions = f"PTE_A | PTE_D | {'PTE_U | ' if umode else ''}PTE_X | PTE_W | PTE_R | PTE_V"
 
-        add_standard(level, PteFlags(user=umode, valid=False), "PTE.V unset", "Store page fault", f"cp_PTE_inv_cbo_{m}")
-        add_standard(
-            level,
-            PteFlags(user=umode, read=False),
-            "Reserved W+X without R",
-            "Store page fault",
-            f"cp_PTE_res_rwx_cbo_{m}",
-            ifdef="S1P12P0_OR_LATER_SUPPORTED",
-        )
-        add_standard(
-            level,
-            PteFlags(user=umode, read=False, execute=False),
-            "Reserved W without R",
-            "Store page fault",
-            f"cp_PTE_res_rwx_cbo_{m}",
-            ifdef="S1P12P0_OR_LATER_SUPPORTED",
-        )
-        add_standard(level, PteFlags(user=umode, write=False), "RX permissions", "Store page fault", no_write)
+        for case in cbo_leaves(family, leaf_permissions):
+            add_standard(
+                level,
+                case.flags,
+                case.description,
+                "Store page fault" if case.faults else "No fault",
+                crosses[case.name],
+                ifdef="S1P12P0_OR_LATER_SUPPORTED" if case.reserved else None,
+            )
         if umode:
             add_standard(level, PteFlags(), "Supervisor page from U-Mode", "Store page fault", "cp_spage_rwx_cbo_u")
         else:
@@ -194,18 +225,14 @@ def _add_exception_cases(
                 level,
                 PteFlags(write=False),
                 "RX permissions with sstatus.SUM set",
-                "Store page fault",
-                no_write,
+                "No fault" if family == "zicbom" else "Store page fault",
+                crosses["rx"],
                 before=(f"  LI(x{regs.scratch}, MSTATUS_SUM)", f"  csrs sstatus, x{regs.scratch}"),
                 after=(f"  LI(x{regs.scratch}, MSTATUS_SUM)", f"  csrc sstatus, x{regs.scratch}"),
             )
             add_standard(
                 level, PteFlags(user=True), "User page from S-Mode", "Store page fault", "cp_upage_sumunset_cbo_s"
             )
-        add_standard(
-            level, PteFlags(user=umode, accessed=False), "PTE.A unset", "Store page fault", f"cp_Abit_unset_cbo_{m}"
-        )
-        add_standard(level, PteFlags(user=umode, dirty=False), "PTE.D unset", "No fault", dirty_unset)
 
         walk = create_page_walk(sv, leaf_level=level)
         if level > 0:

@@ -78,16 +78,8 @@
         `endif
     }
 
-    vs2_0_recip7_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm") {
-            bins rne = {0};
-            bins rtz = {1};
-            bins rdn = {2};
-            bins rup = {3};
-            bins rmm = {4};
-    }
-
     cp_custom_FpRecipEst_flag_edges: cross std_vec, vs2_0_recip7_edges, fp_flags_clear;
-    cp_custom_FpRecipEst_flag_edges_frm: cross std_vec, vs2_0_recip7_ovf, fp_flags_clear, vs2_0_recip7_frm;
+    cp_custom_FpRecipEst_flag_edges_frm: cross std_vec, vs2_0_recip7_ovf, fp_flags_clear, cp_csr_frm_v;
 `else
     `ifdef D_SUPPORTED
     fp_flags_clear : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0] {
@@ -130,16 +122,8 @@
             bins vs1_0_pos_sub_tiny = {64'h0000_0000_0000_0001}; // positive subnormal, tiny magnitude, in row +0.0 < x < 2^-(B+1)
     }
 
-    vs2_0_recip7_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm") {
-            bins rne = {0};
-            bins rtz = {1};
-            bins rdn = {2};
-            bins rup = {3};
-            bins rmm = {4};
-    }
-
     cp_custom_FpRecipEst_flag_edges: cross std_vec, vs2_0_recip7_edges, fp_flags_clear;
-    cp_custom_FpRecipEst_flag_edges_frm: cross std_vec, vs2_0_recip7_ovf, fp_flags_clear, vs2_0_recip7_frm;
+    cp_custom_FpRecipEst_flag_edges_frm: cross std_vec, vs2_0_recip7_ovf, fp_flags_clear, cp_csr_frm_v;
     `endif
 `endif
 

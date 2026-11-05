@@ -478,15 +478,17 @@ def _instret_wfi_s_tests(test_data: TestData, covergroup: str) -> list[str]:
     """
     r_tmp = test_data.int_regs.get_register()
     lines = [
+        "csrci sstatus, 2  # SIE = 0",
+        "#ifdef UDB_SSI_INTR_IMPL",
         comment_banner("cp_instret_wfi_pending", "wfi with SSIP pending, sie.SSIE = 1 and sstatus.SIE = 0: no trap."),
         "",
-        "csrci sstatus, 2  # SIE = 0",
         f"LI(x{r_tmp}, 0x2)",
         f"csrw sie, x{r_tmp}  # SSIE only",
         "csrsi sip, 2  # SSIP pending",
         *_instret_case(test_data, covergroup, "wfi_pending", "S", ["wfi  # already pending, not taken"]),
         "csrci sip, 2  # clear SSIP",
         "csrw sie, zero",
+        "#endif // UDB_SSI_INTR_IMPL",
         "",
     ]
     test_data.int_regs.return_register(r_tmp)

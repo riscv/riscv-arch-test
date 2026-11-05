@@ -1400,12 +1400,14 @@ covergroup S_Zicntr_cg with function sample(ins_t ins);
     mstatus_sie_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")[0] {
         bins zero = {0};
     }
-    mip_ssip_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mip", "ssip")[0] {
-        bins one = {1};
-    }
-    mie_ssie_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "ssie")[0] {
-        bins one = {1};
-    }
+    `ifdef UDB_SSI_INTR_IMPL
+        mip_ssip_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mip", "ssip")[0] {
+            bins one = {1};
+        }
+        mie_ssie_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "ssie")[0] {
+            bins one = {1};
+        }
+    `endif
     `ifdef SSTC_SUPPORTED
         mip_stip_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mip", "stip")[0] {
             bins zero = {0};
@@ -1431,7 +1433,9 @@ covergroup S_Zicntr_cg with function sample(ins_t ins);
     `ifdef UDB_WFI_FINITE
         cp_instret_wfi_timeout: cross priv_mode_s, wfi, mie_zero, prev_instret_read;
     `endif
-    cp_instret_wfi_pending: cross priv_mode_s, wfi, mip_ssip_one, mie_ssie_one, mstatus_sie_zero, prev_instret_read;
+    `ifdef UDB_SSI_INTR_IMPL
+        cp_instret_wfi_pending: cross priv_mode_s, wfi, mip_ssip_one, mie_ssie_one, mstatus_sie_zero, prev_instret_read;
+    `endif
     `ifdef SSTC_SUPPORTED
         cp_instret_wfi_wake: cross priv_mode_s, wfi, mip_stip_zero, mie_stie_one, mstatus_sie_zero;
     `endif

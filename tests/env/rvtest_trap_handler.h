@@ -2689,6 +2689,22 @@ common_\__MODE__\()int_handler:
 sv_\__MODE__\()ip:
         TRAP_SIGUPD(T4, T3, 2, sv_\__MODE__\()ip, sv_\__MODE__\()ip_str) // write word 2: xIP
 
+// Release an armed wait loop (wait_loop_arm/wait_loop in the test generator). The loop checks
+// rvtest_wait_loop's exit before each WFI or WRS and leaves when it is 0, so clearing it ends
+// the wait. If the interrupt was taken inside the loop, between that check and the wait
+// instruction, returning there would wait for an interrupt that this handler has just
+// cleared, so resume at the loop's exit instead. Leaving early is legal: a wait
+// instruction may complete at any time.
+        LA(     T6, rvtest_wait_loop)
+        LREG    T2, REGWIDTH(T6)                     // T2 = loop exit, 0 if no loop is armed
+        beqz    T2, nowait_\__MODE__\()int
+        SREG    zero, REGWIDTH(T6)                   // release the loop
+        LREG    T6, 0(T6)                            // T6 = first instruction of the loop
+        csrr    T3, CSR_XEPC
+        bltu    T3, T6, nowait_\__MODE__\()int     // interrupted outside the loop: return normally
+        bgeu    T3, T2, nowait_\__MODE__\()int
+        csrw    CSR_XEPC, T2                         // interrupted inside the loop: resume at its exit
+nowait_\__MODE__\()int:
         j       sv_\__MODE__\()tval_words           // words 3-5: xtval and, with H, second trap value and xtinst
 
 dispatch_\__MODE__\()int_handler:

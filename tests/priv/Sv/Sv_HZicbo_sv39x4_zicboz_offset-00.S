@@ -307,7 +307,7 @@ Sv_HZicbo_cg_cp_offset_vs_sv39x4_l0_offset_g_v0_cbo_zero:
   lw x14, 0(x8)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_HZicbo_cg_cp_offset_vs_sv39x4_l0_offset_g_v0_cbo_zero, Sv_HZicbo_cg_cp_offset_vs_sv39x4_l0_offset_g_v0_cbo_zero_str)
-#ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
 // VS-mode, sv39x4 level 0, offset_access_fault: store access fault, stval = rs1
   LA(x9, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x6, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
@@ -327,12 +327,12 @@ Sv_HZicbo_cg_cp_offset_vs_sv39x4_l0_offset_g_v0_cbo_zero:
   or x6, x6, x14
   SREG x6, 0(x8)
   LA(x8, rvtest_hlvl0_pg_tbl + (((0x2C0802000) >> 12) & 0x1ff) * 8)
-  LI(x6, (((RVMODEL_ACCESS_FAULT_ADDRESS) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
+  LI(x6, (((RVMODEL_ACCESS_FAULT_ADDRESS_STORE) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x6, 0(x8)
   hfence.gvma
   hfence.vvma
   LI(x15, (0x2C0802000 >> 12) << 12)
-  LI(x9, RVMODEL_ACCESS_FAULT_ADDRESS)
+  LI(x9, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
   slli x9, x9, 52
   srli x9, x9, 52
   add x15, x15, x9
@@ -616,7 +616,7 @@ Sv_HZicbo_cg_cp_offset_vu_sv39x4_l0_offset_g_v0_cbo_zero:
   lw x6, 0(x14)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, Sv_HZicbo_cg_cp_offset_vu_sv39x4_l0_offset_g_v0_cbo_zero, Sv_HZicbo_cg_cp_offset_vu_sv39x4_l0_offset_g_v0_cbo_zero_str)
-#ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
 // VU-mode, sv39x4 level 0, offset_access_fault: store access fault, stval = rs1
   LA(x6, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x8, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
@@ -636,12 +636,12 @@ Sv_HZicbo_cg_cp_offset_vu_sv39x4_l0_offset_g_v0_cbo_zero:
   or x6, x6, x9
   SREG x6, 0(x8)
   LA(x8, rvtest_hlvl0_pg_tbl + (((0x2C0802000) >> 12) & 0x1ff) * 8)
-  LI(x6, (((RVMODEL_ACCESS_FAULT_ADDRESS) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
+  LI(x6, (((RVMODEL_ACCESS_FAULT_ADDRESS_STORE) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x6, 0(x8)
   hfence.gvma
   hfence.vvma
   LI(x15, (0x2C0802000 >> 12) << 12)
-  LI(x14, RVMODEL_ACCESS_FAULT_ADDRESS)
+  LI(x14, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
   slli x14, x14, 52
   srli x14, x14, 52
   add x15, x15, x14

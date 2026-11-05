@@ -299,7 +299,7 @@ Sv_HZicbo_cg_cp_offset_vs_sv39x4_l0_offset_g_v0_cbo_flush:
 Sv_HZicbo_cg_cp_offset_vs_sv39x4_l0_offset_g_v0_cbo_inval:
   cbo.inval (x6)
   RVTEST_TSBI_GOTO_SMODE
-#ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
 // VS-mode, sv39x4 level 0, offset_access_fault: store access fault, stval = rs1
   LA(x13, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x8, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
@@ -319,12 +319,12 @@ Sv_HZicbo_cg_cp_offset_vs_sv39x4_l0_offset_g_v0_cbo_inval:
   or x8, x8, x13
   SREG x8, 0(x15)
   LA(x15, rvtest_hlvl0_pg_tbl + (((0x2C0802000) >> 12) & 0x1ff) * 8)
-  LI(x8, (((RVMODEL_ACCESS_FAULT_ADDRESS) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
+  LI(x8, (((RVMODEL_ACCESS_FAULT_ADDRESS_STORE) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x8, 0(x15)
   hfence.gvma
   hfence.vvma
   LI(x6, (0x2C0802000 >> 12) << 12)
-  LI(x9, RVMODEL_ACCESS_FAULT_ADDRESS)
+  LI(x9, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
   slli x9, x9, 52
   srli x9, x9, 52
   add x6, x6, x9
@@ -604,7 +604,7 @@ Sv_HZicbo_cg_cp_offset_vu_sv39x4_l0_offset_g_v0_cbo_flush:
 Sv_HZicbo_cg_cp_offset_vu_sv39x4_l0_offset_g_v0_cbo_inval:
   cbo.inval (x6)
   RVTEST_TSBI_GOTO_SMODE
-#ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
 // VU-mode, sv39x4 level 0, offset_access_fault: store access fault, stval = rs1
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x9, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
@@ -624,12 +624,12 @@ Sv_HZicbo_cg_cp_offset_vu_sv39x4_l0_offset_g_v0_cbo_inval:
   or x15, x15, x9
   SREG x15, 0(x14)
   LA(x14, rvtest_hlvl0_pg_tbl + (((0x2C0802000) >> 12) & 0x1ff) * 8)
-  LI(x15, (((RVMODEL_ACCESS_FAULT_ADDRESS) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
+  LI(x15, (((RVMODEL_ACCESS_FAULT_ADDRESS_STORE) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x15, 0(x14)
   hfence.gvma
   hfence.vvma
   LI(x6, (0x2C0802000 >> 12) << 12)
-  LI(x15, RVMODEL_ACCESS_FAULT_ADDRESS)
+  LI(x15, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
   slli x15, x15, 52
   srli x15, x15, 52
   add x6, x6, x15

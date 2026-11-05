@@ -1,0 +1,21 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Svpbmt_H
+source: https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=747120884#gid=747120884
+notes: |-
+  Svpbmt_H uses the Sv_H test environment (see Sv_H).  Svpbmt exists only on RV64.  henvcfg.PBMTE enables PBMT in the VS-stage and menvcfg.PBMTE in the G-stage.  The test page is flushed (fence, and cbo.flush with Zicbom) between accesses with different attributes.
+coverpoints:
+  - name: cp_vsatp_pbmt
+    goal: henvcfg.PBMTE gates Svpbmt in the VS-stage
+    description: In VS-mode with hgatp = Bare and menvcfg.PBMTE = 1, store, load and fetch through a VS-stage leaf with PBMT = 1 (NC), 2 (IO) and 3 (reserved), with henvcfg.PBMTE = 0 and 1.
+    expectation: With henvcfg.PBMTE = 0, the PBMT bits are reserved and every access raises a page fault.  With henvcfg.PBMTE = 1, the PBMT = 1 and 2 accesses complete (the attributes themselves are not observable) and PBMT = 3 raises a page fault.
+    bins: VS x {sw, lw, jalr} x vsatp_mode x hgatp Bare x {henvcfg.PBMTE 0 with page fault, henvcfg.PBMTE 1 with {no trap, page fault}}
+  - name: cp_hgatp_pbmt
+    goal: menvcfg.PBMTE gates Svpbmt in the G-stage
+    description: In VS-mode with vsatp = Bare, store, load and fetch through a G-stage leaf with PBMT = 1, 2 and 3, with menvcfg.PBMTE = 0 and 1.
+    expectation: With menvcfg.PBMTE = 0, the PBMT bits are reserved and every access raises a guest-page fault.  With menvcfg.PBMTE = 1, the PBMT = 1 and 2 accesses complete and PBMT = 3 raises a guest-page fault.
+    bins: VS x {sw, lw, jalr} x vsatp Bare x hgatp_mode x {menvcfg.PBMTE 0 with guest-page fault, menvcfg.PBMTE 1 with {no trap, guest-page fault}}
+  - name: cp_henvcfg_menvcfg
+    goal: henvcfg.PBMTE is read-only zero while menvcfg.PBMTE = 0
+    description: In HS-mode with menvcfg.PBMTE = 0, then 1, set henvcfg.PBMTE and read it back.
+    expectation: henvcfg.PBMTE reads as zero while menvcfg.PBMTE = 0, and reads back as written while menvcfg.PBMTE = 1.
+    bins: HS x csrrs henvcfg x menvcfg.PBMTE {0, 1}

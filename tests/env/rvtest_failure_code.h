@@ -84,6 +84,9 @@
         SREG DEFAULT_TEMP_REG, 280(x9) # expected_value = expected value
         mv DEFAULT_TEMP_REG, x9        # move scratch base into DEFAULT_TEMP_REG
         mv DEFAULT_LINK_REG, x7        # move return address into DEFAULT_LINK_REG
+        LI(x1, 4)                      # x1 and x9 are already saved/consumed; x16 must stay intact
+        LA(x9, trap_diag_mode)
+        sw x1, 0(x9)                   # unknown trap mode until the string is decoded
         # now DEFAULT_LINK_REG has the return address of jal from the failure and DEFAULT_TEMP_REG is a vacant temporary register.
         # NOTE: do NOT read mcause/mtval/mstatus here.  This entry point is
         # reached from whichever mode's trap handler detected the mismatch;
@@ -1042,6 +1045,14 @@
         la x7, trap_sig_offset_mismatch
         beq x6, x7, trap_diag_offset_mismatch
 
+        // ---- Check for abortstr (from RVTEST_CODE_END, which runs in M-mode) ----
+        la x7, abortstr
+        bne x6, x7, 1f
+        LA(x7, trap_diag_mode)
+        sw zero, 0(x7)
+        j trap_diag_generic_report
+    1:
+
         // ---- Determine mode from string pointer ----
         // Mode is encoded in string name: sv_M*_str, sv_S*_str, sv_H*_str, sv_V*_str
         // and Xclr_Xext_int_str variants
@@ -1242,6 +1253,8 @@
         li x8, 9                                     # subtype: offset mismatch
         la x7, trap_diag_subtype
         sw x8, 0(x7)
+        LA(x7, trap_diag_mode)
+        sw zero, 0(x7)                              # this check runs in M-mode
 
         j failedtest_saveresults_common
 
@@ -1971,7 +1984,17 @@
         call rvmodel_io_write_str
 
     failedtest_terminate:
-        call rvmodel_halt_fail
+        # A failure found by the M-mode trap handler is already in M-mode trap context.
+        lw a0, failure_type
+        LI(a1, 3)
+        bne a0, a1, 1f
+        lw a0, trap_diag_mode
+        bnez a0, 1f
+        LA(T1, rvtest_fail_epilogs_mmode)
+        jr T1
+    1:
+        LA(T1, rvtest_fail_epilogs)
+        jr T1
 
 
     # Print saved xepc, xcause, xtval, xstatus for trap failure diagnostics.

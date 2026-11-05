@@ -140,7 +140,8 @@ normative_rule_definitions:
   - name: pm_csr_hw_apply
     coverpoint:
       [
-        "{Smmpm_cg, Smnpm_S_cg, Smnpm_U_cg, Ssnpm_cg}/cp_hardware_csr_writes_fault",
+        "{Smmpm_cg, Smnpm_S_cg, Smnpm_U_cg, Ssnpm_cg}/cp_hardware_csr_writes_fault_load",
+        "{Smmpm_cg, Smnpm_S_cg, Smnpm_U_cg, Ssnpm_cg}/cp_hardware_csr_writes_fault_store",
       ]
 
   # Pointer masking is also applied, when applicable, to the memory access address

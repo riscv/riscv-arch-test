@@ -26,6 +26,7 @@ void print_error(const char *fmt, ...) __attribute__((noreturn)); // Print an er
 // Returns the value that T-SBI puts in a0.
 // Example: tsbi_call(TSBI_CSR_READ(CSR_MHARTID), 0, 0) reads mhartid.
 // Only CSRs in the T-SBI CSR table are supported.
+// Use the tsbi_goto_* functions for privilege-mode switches, not tsbi_call.
 unsigned long tsbi_call(unsigned int op, unsigned long arg1, unsigned long arg2);
 
 // CSR accesses. csr is a CSR number such as CSR_MSTATUS from encoding.h.

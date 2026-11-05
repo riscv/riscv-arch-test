@@ -42,10 +42,16 @@
 // CSR accesses. csr is a 12-bit CSR number such as CSR_MIP from encoding.h.
 // The CSR must be in the T-SBI CSR table in rvtest_trap_handler.h.
 // Writes take the value in a1. Reads return the value in a0.
-#define TSBI_CSR_SET(csr)    ((((csr) & 0xFFF) << 20) | 0x0005a073)  // csrrs x0, csr, a1
-#define TSBI_CSR_CLEAR(csr)  ((((csr) & 0xFFF) << 20) | 0x0005b073)  // csrrc x0, csr, a1
-#define TSBI_CSR_WRITE(csr)  ((((csr) & 0xFFF) << 20) | 0x00059073)  // csrrw x0, csr, a1
-#define TSBI_CSR_READ(csr)   ((((csr) & 0xFFF) << 20) | 0x00002573)  // csrrs a0, csr, x0
+// In C, the CSR number is unsigned so that the shift into bit 31 is defined.
+#ifdef __ASSEMBLER__
+  #define TSBI_CSR_NUM(csr)  ((csr) & 0xFFF)
+#else
+  #define TSBI_CSR_NUM(csr)  ((unsigned int)(csr) & 0xFFFu)
+#endif
+#define TSBI_CSR_SET(csr)    ((TSBI_CSR_NUM(csr) << 20) | 0x0005a073)  // csrrs x0, csr, a1
+#define TSBI_CSR_CLEAR(csr)  ((TSBI_CSR_NUM(csr) << 20) | 0x0005b073)  // csrrc x0, csr, a1
+#define TSBI_CSR_WRITE(csr)  ((TSBI_CSR_NUM(csr) << 20) | 0x00059073)  // csrrw x0, csr, a1
+#define TSBI_CSR_READ(csr)   ((TSBI_CSR_NUM(csr) << 20) | 0x00002573)  // csrrs a0, csr, x0
 
 // Value returned in a0 for some unsupported operations.
 #define TSBI_RESERVED_RET   (-1)

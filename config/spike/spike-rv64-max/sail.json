@@ -248,7 +248,7 @@
       // This specifies the number of usable PMP entries.
       // Entries higher than this are read-only-zero.
       // The value must be less than or equal to `count`.
-      "usable_count": 64,
+      "usable_count": 16,
       "tor_supported": true,
       "na4_supported": true,
       "napot_supported": true
@@ -549,7 +549,7 @@
       //                      if that flag is already set.
       // - Fflags_Dirty_Instruction: Set FS/SD when we execute an instruction that
       //                             might set a flag, even if it actually doesn't.
-      "fflags_dirty_policy": "Fflags_Dirty_Precise"
+      "fflags_dirty_policy": "Fflags_Dirty_Flag"
     },
     "D": {
       "mutable_misa": true,
@@ -588,7 +588,7 @@
         // vector spec marks reserved and recommends, but does not require, trapping.
         // "Vstart_Illegal" - raise an illegal instruction exception.
         // "Vstart_Ignore"  - treat as a no-op, the instruction writes nothing.
-        "vstart_out_of_bounds": "Vstart_Illegal"
+        "vstart_out_of_bounds": "Vstart_Ignore"
       },
       "vl_use_ceil": false,
       // The maximum index EEW for indexed vector addressing mode, as
@@ -617,7 +617,7 @@
       "supported": true
     },
     "S": {
-      "mutable_misa": true,
+      "mutable_misa": false,
       "supported": true,
       "interrupts": {
         "software": { "supported": true },
@@ -626,7 +626,7 @@
       }
     },
     "U": {
-      "mutable_misa": true,
+      "mutable_misa": false,
       "supported": true
     },
 
@@ -643,14 +643,14 @@
       // (including compressed forms), LR/SC, AMOs, HLV/HLVX/HSV and CBOs.
       // If false, zero is written instead.
       "transformed_instruction": {
-        "load_access_fault": true,
+        "load_access_fault": false,
         "load_address_misaligned": true,
-        "load_guest_page_fault": true,
-        "load_page_fault": true,
-        "samo_access_fault": true,
+        "load_guest_page_fault": false,
+        "load_page_fault": false,
+        "samo_access_fault": false,
         "samo_address_misaligned": true,
-        "samo_guest_page_fault": true,
-        "samo_page_fault": true
+        "samo_guest_page_fault": false,
+        "samo_page_fault": false
       },
       "hgatp_modes": {
         "Sv32x4": false,

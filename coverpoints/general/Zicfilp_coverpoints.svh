@@ -75,10 +75,7 @@
     }
 
     // Current instruction
-    lpad_dest: coverpoint (ins.current.insn ==? LPAD) {
-        bins not_lpad = {1'b0};
-        bins lpad     = {1'b1};
-    }
+    lpad_dest: coverpoint (ins.current.insn ==? LPAD) {}
     not_lpad: coverpoint (ins.current.insn ==? LPAD) {
         bins not_lpad = {1'b0};
     }
@@ -124,10 +121,7 @@
         bins label_zero    = {20'h0};
         bins label_nonzero = {[20'h1:20'hFFFFF]};
     }
-    lpl_match: coverpoint (ins.current.insn[31:12] == ins.prev.x_wdata[7][31:12]) {
-        bins mismatch = {1'b0};
-        bins match    = {1'b1};
-    }
+    lpl_match: coverpoint (ins.current.insn[31:12] == ins.prev.x_wdata[7][31:12]) {}
     lpl_match_only: coverpoint (ins.current.insn[31:12] == ins.prev.x_wdata[7][31:12]) {
         bins match    = {1'b1};
     }
@@ -159,15 +153,15 @@
     // Exception priority at the target of an ELP-setting Indirect_CT:
     // an instruction access fault (logged with the JALR, which has no target record) or an illegal instruction
     priority_case: coverpoint {
-        `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_FETCH
             (`ZICFILP_LP_JALR(ins.current) &&
-             ((ins.current.imm + ins.current.rs1_val) == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS))),
+             ((ins.current.imm + ins.current.rs1_val) == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS_FETCH))),
         `else
             1'b0,
         `endif
         (`ZICFILP_LP_BRANCH(ins.prev) && (ins.current.insn == 32'hFFFFFFFF))
     } {
-        `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_FETCH
             bins instr_access_fault = {2'b10};
         `endif
         bins illegal_instruction = {2'b01};

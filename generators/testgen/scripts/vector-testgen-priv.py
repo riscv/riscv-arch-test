@@ -317,21 +317,6 @@ def makeTest(coverpoints, instruction):
         else:
             print("Warning: " + coverpoint + " not implemented yet for " + instruction)
 
-def _emul_lmul_str(group_size):
-    # Convert an EMUL group size (number of architectural vregs) to the LMUL
-    # field encoding string used by vsetvli (e.g. 1 -> "m1", 2 -> "m2", 8 -> "m8").
-    # Group sizes that are not powers of two (segment NF=3,5,6,7) are clamped to
-    # the smallest legal LMUL ≥ group_size so the init load covers all
-    # constituent registers.
-    if group_size <= 1:
-        return "m1"
-    if group_size <= 2:
-        return "m2"
-    if group_size <= 4:
-        return "m4"
-    return "m8"
-
-
 def writePrivTestPrep(description, instruction, instruction_data=None, lmul = 1, vl = 1, vstart = False, sew = None, scratch=None, maskval=None):
     instruction_arguments = getInstructionArguments(instruction)
     if sew is None:

@@ -34,11 +34,6 @@ def _get_vs2_reg(data: list) -> int:
     return int(data[0]["vs2"]["reg"])
 
 
-def _get_rs1_reg(data: list) -> int:
-    """Extract the rs1 register number from randomized instruction data."""
-    return int(data[1]["rs1"]["reg"])
-
-
 @register("cp_custom_ls_indexed")
 def make(test: str, sew: int) -> None:
     # Part 3: truncated on XLEN32 (VlsCustom64 only)

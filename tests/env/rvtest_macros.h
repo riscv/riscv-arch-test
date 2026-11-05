@@ -29,7 +29,6 @@
 #define CODE code_bgn_off
 #define DATA data_bgn_off
 #define SIG  sig_bgn_off
-#define VMEM vmem_bgn_off
 
 
 //****NOTE: label `rvtest_Sroot_pg_tbl` must be declared after RVTEST_DATA_END
@@ -192,23 +191,6 @@
     slli a0, a0, PA_SHIFT                                       ;\
     LI(a1, PERMS)                                               ;\
     PTE_SETUP_RV64(a0, a1, t0, t1, VA, level, sv57)             ;
-
-#define PTE_PERMUPD_RV32(_PR, _TR0, _TR1, VA, level)            ;\
-    .if (level==1)                                              ;\
-        LA(_TR1, rvtest_Sroot_pg_tbl)                           ;\
-        .set vpn, ((VA>>22)&0x3FF)<<2                           ;\
-    .endif                                                      ;\
-    .if (level==0)                                              ;\
-        LA(_TR1, rvtest_slvl1_pg_tbl)                           ;\
-        .set vpn, ((VA>>12)&0x3FF)<<2                           ;\
-    .endif                                                      ;\
-    LI(_TR0, vpn)                                               ;\
-    add _TR1, _TR1, _TR0                                        ;\
-    LREG _TR0, 0(_TR1)                                          ;\
-    srli _TR0, _TR0, 10                                         ;\
-    slli _TR0, _TR0, 10                                         ;\
-    or _TR0, _TR0, _PR                                          ;\
-    SREG _TR0, 0(_TR1)                                          ;
 
 #define SATP_SETUP_SV32                                         ;\
     LA(t6, rvtest_Sroot_pg_tbl)                                 ;\

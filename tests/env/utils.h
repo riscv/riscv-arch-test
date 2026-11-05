@@ -4,33 +4,25 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 // General utility macros
-#define MIN(a,b) (((a)<(b))?(a):(b))
-#define MAX(a,b) (((a)>(b))?(a):(b))
 #define BIT(addr, bit) (((addr)>>(bit))&1)
 #define MASK (((1<<(UDB_MXLEN-1))-1) + (1<<(UDB_MXLEN-1))) // UDB_MXLEN bits of 1s
-#define MASK_XLEN(val)  val&MASK // shortens 64b values to UDB_MXLEN when UDB_MXLEN==32
 
-// Constants and sign extension macros (TODO: Check which of these are actually needed for ACT 4.0)
+// Constants and sign extension macros
 #define WDSZ 32
 #define WDSGN (WDSZ -1)
-#define WDMSK ((1 << WDSZ) -1)
-#define SEXT_WRD(x) ((x & WDMSK) | (-BIT((x), WDSGN)<< WDSZ))
 #define IMMSZ 12
 #define IMMSGN (IMMSZ -1)
 #define IMMMSK ((1 << IMMSZ)-1)
 #define SEXT_IMM(x) ((x & IMMMSK) | (-BIT((x), IMMSGN)<< IMMSZ))
 
 #define LIMMSZ (WDSZ - IMMSZ)
-#define LIMMSGN (LIMMSZ -1)
 #define LIMMMSK ((1 <<LIMMSZ)-1)
-#define SEXT_LIMM(x) ((x &LIMMMSK) | (-BIT((x),LIMMSGN)<<LIMMSZ))
 
 #define WDBYTSZ (WDSZ >> 3)  // in units of #bytes
 #define WDBYTMSK (WDBYTSZ-1)
 
 // XLEN specific macros
 #define REGWIDTH (UDB_MXLEN>>3)      // in units of #bytes
-#define ALIGNSZ ((UDB_MXLEN>>5)+2)   // log2(UDB_MXLEN): 2,3,4 for UDB_MXLEN 32,64,128
 
 #if   UDB_MXLEN==32
     #define SREG sw
@@ -229,7 +221,6 @@
 #define PMP14_CFG_SHIFT        PMP_CFG_SHIFT(14)
 #define PMP15_CFG_SHIFT        PMP_CFG_SHIFT(15)
 #define NOP                    0x13
-#define DOUBLE_NOP             (0x13<<32)+0x13
 
 // Determine the appropriate CSR to test based on the supported extensions and set boot mode
 // if necessary. Only unpriv CSR tests need this selection.

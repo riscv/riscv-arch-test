@@ -198,7 +198,6 @@
 #define MPRV_LSB  17                             // mstatus.MPRV bit position (modify privilege for loads/stores)
 #define MPV_LSB    7                             // mstatush.MPV bit position (previous virtualization mode)
 #define MPP_SMODE (1<<MPP_LSB)                   // MPP value for S-mode (01 << 11 = 0x800)
-#define MPP_HMODE (2<<MPP_LSB)                   // MPP value for reserved/HS (10 << 11 = 0x1000)
 #define MPP_MMODE (3<<MPP_LSB)                   // MPP value for M-mode (11 << 11 = 0x1800)
 #define SUM_LSB    18                             // mstatus.SUM bit position (permit supervisor/user memory access)
 #define MXR_LSB    19                             // mstatus.MXR bit position (make executable readable)

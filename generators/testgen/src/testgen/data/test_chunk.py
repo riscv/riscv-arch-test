@@ -37,6 +37,11 @@ class TestChunk:
         split_name: Optional named-split marker. A non-None value starts a new
                     named file group (unless the current group already has the
                     same name); subsequent None chunks stay in that group.
+        required_extensions: Extensions added to the header's REQUIRED_EXTENSIONS for every file of
+                             the named split this chunk starts, when the split's code is guarded
+                             by a condition that the generator's own requirements do not imply.
+        forbidden_extensions: Extensions added to the header's FORBIDDEN_EXTENSIONS for that split
+        params: Parameter constraints added to the header's params for that split
         start_sig_reg: Signature pointer register expected at the start of this chunk
         start_data_reg: Data pointer register expected at the start of this chunk
         end_sig_reg: Signature pointer register in use at the end of this chunk
@@ -53,6 +58,9 @@ class TestChunk:
     trap_sigupd_count: int = 0
     num_testcases: int = 0
     split_name: str | None = None
+    required_extensions: list[str | list[str]] = field(default_factory=list)
+    forbidden_extensions: list[str] = field(default_factory=list)
+    params: list[str] = field(default_factory=list)
     start_sig_reg: int = 2
     start_data_reg: int = 3
     end_sig_reg: int = 2
@@ -95,7 +103,8 @@ def group_test_chunks(
     A chunk with a non-None split_name starts a new named group unless the current
     group already has that name; chunks with split_name=None stay in the current
     group. An unnamed group can only occur before the first named chunk. Reusing a
-    name non-contiguously raises ValueError.
+    name non-contiguously raises ValueError, as do header constraints on a chunk that
+    does not start a named group.
 
     Returns an ordered list of (group_name, test_files) pairs, where test_files is
     the length-based split of that group's chunks (max_per_file testcases per file).
@@ -117,6 +126,8 @@ def group_test_chunks(
                 groups.append((current_name, current_group))
             current_name = tc.split_name
             current_group = []
+        elif tc.required_extensions or tc.forbidden_extensions or tc.params:
+            raise ValueError("Header constraints are only allowed on the first chunk of a named split!")
         current_group.append(tc)
     groups.append((current_name, current_group))
 

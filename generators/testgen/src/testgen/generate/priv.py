@@ -8,6 +8,7 @@
 
 """Privileged test generation orchestration."""
 
+from dataclasses import replace
 from pathlib import Path
 from random import seed
 
@@ -15,7 +16,7 @@ from testgen.asm.helpers import reproducible_hash
 from testgen.constants import PRIV_TRAP_SIGUPD_COUNT
 from testgen.data.config import TestConfig
 from testgen.data.state import TestData
-from testgen.data.test_chunk import group_test_chunks
+from testgen.data.test_chunk import TestChunk, group_test_chunks
 from testgen.io.writer import write_test_file
 from testgen.priv import get_priv_test_generators
 from testgen.priv.registry import PrivTestRegistryEntry
@@ -81,6 +82,7 @@ def _generate_priv_test_entry(
 
     # Group by named split, split each group into test files, and write
     for split_name, test_files in group_test_chunks(chunks, entry.testcases_per_file):
+        split_config = _split_test_config(test_config, test_files[0][0])
         first_file_idx = next_file_indices.get(split_name, 0)
         for file_idx, test_file_chunks in enumerate(test_files, start=first_file_idx):
             extra_defines = list(entry.extra_defines)
@@ -88,7 +90,7 @@ def _generate_priv_test_entry(
             if not any(tc.trap_sigupd_count for tc in test_file_chunks):
                 extra_defines.append(f"#define TRAP_SIGUPD_COUNT {PRIV_TRAP_SIGUPD_COUNT}")
             generated_files.add(
-                write_test_file(test_config, None, test_file_chunks, output_path, file_idx, extra_defines, split_name)
+                write_test_file(split_config, None, test_file_chunks, output_path, file_idx, extra_defines, split_name)
             )
         next_file_indices[split_name] = first_file_idx + len(test_files)
 
@@ -96,3 +98,29 @@ def _generate_priv_test_entry(
     test_data.int_regs.return_registers(priv_exclude_regs)
     test_data.destroy()
     return generated_files
+
+
+def _split_test_config(test_config: TestConfig, first_chunk: TestChunk) -> TestConfig:
+    """Add the header constraints of a named split (set on its first chunk) to the entry's configuration.
+
+    The march string stays the entry's, so the constraints change only which targets select the files.
+    """
+    if not (first_chunk.required_extensions or first_chunk.forbidden_extensions or first_chunk.params):
+        return test_config
+    if test_config.required_extensions is None:
+        raise ValueError(f"{test_config.testsuite}: split header constraints need explicit required_extensions")
+    march_extensions = test_config.march_extensions
+    if march_extensions is None:
+        march_extensions = [
+            ext for req in test_config.required_extensions for ext in (req if isinstance(req, list) else [req])
+        ]
+    return replace(
+        test_config,
+        required_extensions=[
+            *test_config.required_extensions,
+            *(ext for ext in first_chunk.required_extensions if ext not in test_config.required_extensions),
+        ],
+        forbidden_extensions=[*(test_config.forbidden_extensions or []), *first_chunk.forbidden_extensions],
+        march_extensions=march_extensions,
+        extra_params=[*(test_config.extra_params or []), *first_chunk.params],
+    )

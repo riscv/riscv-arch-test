@@ -59,6 +59,7 @@ def _smnpms_sweep(test_data: TestData, pmm: int) -> list[TestChunk]:
             tc = test_data.begin_test_chunk(f"S_{mode}_{label}_{split}")
             guard = MODE_GUARDS[mode]
             if guard:
+                tc.required_extensions = [mode.capitalize()]  # Sv39, Sv48 or Sv57
                 tc.raw_data.append(f"#ifdef {guard}")
             tc.raw_data.extend(data_page("pm_lo_page"))
             if mode != "bare":

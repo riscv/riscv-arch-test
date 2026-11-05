@@ -4106,7 +4106,6 @@ def etrigger_cross_priv_delegate_test(test_data: TestData, target_mode: str) -> 
     covergroup = "SdtrigSm_etrigger_cg"
     chunks: list[TestChunk] = []
     lines = test_data.new_test_chunk(chunks, f"etrigger_cross_priv_{target_mode.lower()}").code
-    lines.append("#ifdef S_SUPPORTED")
 
     cfg_reg, data_reg, temp_reg = test_data.int_regs.get_registers(3, exclude_regs=[2], reg_range=list(range(8, 16)))
 
@@ -4201,7 +4200,6 @@ def etrigger_cross_priv_delegate_test(test_data: TestData, target_mode: str) -> 
         lines.extend(
             [f"#endif // {_mode_writable(target_mode)}", f"#endif // UDB_SDTRIG_ETRIGGER_SUPPORTED_TRIGGERS_{trig_num}"]
         )
-    lines.append("#endif // S_SUPPORTED")
 
     ######################################
     coverpoint = "cp_textra_etrigger"
@@ -4653,16 +4651,17 @@ def register_sdtrig_suite(mode: str, required_extensions: list[str | list[str]],
         return _with_trap_counts(_generate_etrigger_tests(test_data, mode))
 
     if mode == "Sm":
+        # medeleg exists only with S-mode
 
         @add_priv_test_generator(
-            suite, required_extensions=required_extensions, march_extensions=[], extra_defines=extra_defines
+            suite, required_extensions=[*required_extensions, "S"], march_extensions=[], extra_defines=extra_defines
         )
         def make_sdtrig_etrigger_cross_priv_s(test_data: TestData) -> list[TestChunk]:
             """etrigger configured in M, exceptions raised in S."""
             return _with_trap_counts(etrigger_cross_priv_delegate_test(test_data, "S"))
 
         @add_priv_test_generator(
-            suite, required_extensions=required_extensions, march_extensions=[], extra_defines=extra_defines
+            suite, required_extensions=[*required_extensions, "S"], march_extensions=[], extra_defines=extra_defines
         )
         def make_sdtrig_etrigger_cross_priv_u(test_data: TestData) -> list[TestChunk]:
             """etrigger configured in M, exceptions raised in U."""

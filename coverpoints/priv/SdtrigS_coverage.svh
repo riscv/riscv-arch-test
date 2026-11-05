@@ -49,6 +49,7 @@ covergroup SdtrigS_trig_module_reg_cg with function sample(ins_t ins);
     cp_csr_access_global:     cross priv_mode_m, csr_global_reg, csr_access;                                // implemented global CSRs * 2 values
     cp_csr_access_local:      cross priv_mode_m, triggernum, csr_local_reg, csr_access;                     // NTRIG * 4 CSRs * 2 values
     cp_tselect_trigs:         cross priv_mode_m, triggernum, csrr, csr_tinfo, tinfo_exists, tinfo_version;  // NTRIG
+    cp_tselect_nonexistent:   cross priv_mode_m, csrw, csr_tselect, tselect_past_last;                      // 1
     `ifdef SDTRIG_MCONTROL6_ANY
         cp_tdata1_mode_hardwired: cross priv_mode_m, triggernum_mcontrol6, csrw, csr_tdata1, tdata1_type_six, priv_bits;  // mcontrol6 triggers
     `endif

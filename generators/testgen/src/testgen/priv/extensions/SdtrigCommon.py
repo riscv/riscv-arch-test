@@ -4564,16 +4564,20 @@ def register_sdtrig_suite(mode: str, required_extensions: list[str | list[str]],
         @add_priv_test_generator(
             suite, required_extensions=required_extensions, march_extensions=[], extra_defines=extra_defines
         )
-        def make_sdtrig_tcontrol(test_data: TestData) -> list[TestChunk]:
-            """tcontrol tests."""
-            return _with_trap_counts(_generate_tcontrol_tests(test_data, mode))
+        def make_sdtrig_address_matches(test_data: TestData) -> list[TestChunk]:
+            """tdata2 address storage and translated execute-trigger tests."""
+            return _with_trap_counts(_generate_address_matches_tests(test_data, mode))
+
+    if mode == "Sm":
+        # tcontrol is an M-mode CSR that gates only M-mode triggers, so SdtrigS, which runs its tests in S-mode,
+        # cannot exercise it.
 
         @add_priv_test_generator(
             suite, required_extensions=required_extensions, march_extensions=[], extra_defines=extra_defines
         )
-        def make_sdtrig_address_matches(test_data: TestData) -> list[TestChunk]:
-            """tdata2 address storage and translated execute-trigger tests."""
-            return _with_trap_counts(_generate_address_matches_tests(test_data, mode))
+        def make_sdtrig_tcontrol(test_data: TestData) -> list[TestChunk]:
+            """tcontrol tests."""
+            return _with_trap_counts(_generate_tcontrol_tests(test_data, mode))
 
     @add_priv_test_generator(
         suite, required_extensions=required_extensions, march_extensions=[], extra_defines=extra_defines

@@ -99,6 +99,24 @@ Sv_ExceptionsSm_cg_cp_load_page_fault_m_test1_load:
   csrs mstatus, x6
   LI(x6, 0x1800)
   csrc mstatus, x6
+
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
+// Clear X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  andi x14, x14, ~PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
   LA(x14, rvtest_data_1)
 
 // Execute
@@ -108,6 +126,17 @@ Sv_ExceptionsSm_cg_cp_instr_page_fault_m_test1_exec:
 
   LI(x6, MSTATUS_MPRV)
   csrc mstatus, x6
+// Restore X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  ori x14, x14, PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
 
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsSm_cg_cp_store_page_fault_m_test1_store, Sv_ExceptionsSm_cg_cp_store_page_fault_m_test1_store_str)
@@ -235,6 +264,24 @@ Sv_ExceptionsSm_cg_cp_load_page_fault_m_test3_load:
   LI(x6, 0x1800)
   csrc mstatus, x6
   addi x9, x9, 16
+
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
+// Clear X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  andi x14, x14, ~PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
   LA(x14, rvtest_data_1)
 
 // Execute
@@ -244,6 +291,17 @@ Sv_ExceptionsSm_cg_cp_instr_page_fault_m_test3_exec:
 
   LI(x6, MSTATUS_MPRV)
   csrc mstatus, x6
+// Restore X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  ori x14, x14, PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_ExceptionsSm_cg_cp_instr_page_fault_m_test3_exec, Sv_ExceptionsSm_cg_cp_instr_page_fault_m_test3_exec_str)
@@ -369,6 +427,24 @@ Sv_ExceptionsSm_cg_cp_load_page_fault_m_test5_load:
   csrs mstatus, x6
   LI(x6, 0x1800)
   csrc mstatus, x6
+
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
+// Clear X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  andi x14, x14, ~PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
   LA(x14, rvtest_data_1)
 
 // Execute
@@ -378,6 +454,17 @@ Sv_ExceptionsSm_cg_cp_instr_page_fault_m_test5_exec:
 
   LI(x6, MSTATUS_MPRV)
   csrc mstatus, x6
+// Restore X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  ori x14, x14, PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
 
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsSm_cg_cp_store_page_fault_m_test5_store, Sv_ExceptionsSm_cg_cp_store_page_fault_m_test5_store_str)
@@ -505,6 +592,24 @@ Sv_ExceptionsSm_cg_cp_load_page_fault_m_test7_load:
   LI(x6, 0x1800)
   csrc mstatus, x6
   addi x9, x9, 16
+
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
+// Clear X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  andi x14, x14, ~PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
   LA(x14, rvtest_data_1)
 
 // Execute
@@ -514,6 +619,17 @@ Sv_ExceptionsSm_cg_cp_instr_page_fault_m_test7_exec:
 
   LI(x6, MSTATUS_MPRV)
   csrc mstatus, x6
+// Restore X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  ori x14, x14, PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_ExceptionsSm_cg_cp_instr_page_fault_m_test7_exec, Sv_ExceptionsSm_cg_cp_instr_page_fault_m_test7_exec_str)
@@ -641,6 +757,24 @@ Sv_ExceptionsSm_cg_cp_medeleg_m_test9_load:
   csrs mstatus, x6
   LI(x6, 0x1800)
   csrc mstatus, x6
+
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
+// Clear X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  andi x14, x14, ~PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
   LA(x14, rvtest_data_1)
 
 // Execute
@@ -650,6 +784,17 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test9_exec:
 
   LI(x6, MSTATUS_MPRV)
   csrc mstatus, x6
+// Restore X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  ori x14, x14, PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
 
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsSm_cg_cp_medeleg_m_test9_store, Sv_ExceptionsSm_cg_cp_medeleg_m_test9_store_str)
@@ -689,6 +834,24 @@ Sv_ExceptionsSm_cg_cp_medeleg_m_test10_load:
   csrs mstatus, x6
   LI(x6, 0x1800)
   csrc mstatus, x6
+
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
+// Clear X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  andi x14, x14, ~PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
   LA(x14, rvtest_data_1)
 
 // Execute
@@ -698,6 +861,17 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test10_exec:
 
   LI(x6, MSTATUS_MPRV)
   csrc mstatus, x6
+// Restore X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  ori x14, x14, PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
 
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsSm_cg_cp_medeleg_m_test10_store, Sv_ExceptionsSm_cg_cp_medeleg_m_test10_store_str)
@@ -739,6 +913,24 @@ Sv_ExceptionsSm_cg_cp_medeleg_m_test11_load:
   csrs mstatus, x6
   LI(x6, 0x1800)
   csrc mstatus, x6
+
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
+// Clear X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  andi x14, x14, ~PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
   LA(x14, rvtest_data_1)
 
 // Execute
@@ -748,6 +940,17 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test11_exec:
 
   LI(x6, MSTATUS_MPRV)
   csrc mstatus, x6
+// Restore X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  ori x14, x14, PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
 
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsSm_cg_cp_medeleg_m_test11_store, Sv_ExceptionsSm_cg_cp_medeleg_m_test11_store_str)
@@ -787,6 +990,24 @@ Sv_ExceptionsSm_cg_cp_medeleg_m_test12_load:
   csrs mstatus, x6
   LI(x6, 0x1800)
   csrc mstatus, x6
+
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
+// Clear X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  andi x14, x14, ~PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
   LA(x14, rvtest_data_1)
 
 // Execute
@@ -796,6 +1017,17 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test12_exec:
 
   LI(x6, MSTATUS_MPRV)
   csrc mstatus, x6
+// Restore X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  ori x14, x14, PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
 
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsSm_cg_cp_medeleg_m_test12_store, Sv_ExceptionsSm_cg_cp_medeleg_m_test12_store_str)
@@ -837,6 +1069,24 @@ Sv_ExceptionsSm_cg_cp_medeleg_m_test13_load:
   csrs mstatus, x6
   LI(x6, 0x1800)
   csrc mstatus, x6
+
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
+// Clear X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  andi x14, x14, ~PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
   LA(x14, rvtest_data_1)
 
 // Execute
@@ -846,6 +1096,17 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test13_exec:
 
   LI(x6, MSTATUS_MPRV)
   csrc mstatus, x6
+// Restore X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  ori x14, x14, PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
 
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsSm_cg_cp_medeleg_m_test13_store, Sv_ExceptionsSm_cg_cp_medeleg_m_test13_store_str)
@@ -885,6 +1146,24 @@ Sv_ExceptionsSm_cg_cp_medeleg_m_test14_load:
   csrs mstatus, x6
   LI(x6, 0x1800)
   csrc mstatus, x6
+
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
+// Clear X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  andi x14, x14, ~PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
   LA(x14, rvtest_data_1)
 
 // Execute
@@ -894,6 +1173,17 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test14_exec:
 
   LI(x6, MSTATUS_MPRV)
   csrc mstatus, x6
+// Restore X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  ori x14, x14, PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
 
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsSm_cg_cp_medeleg_m_test14_store, Sv_ExceptionsSm_cg_cp_medeleg_m_test14_store_str)
@@ -935,6 +1225,24 @@ Sv_ExceptionsSm_cg_cp_medeleg_m_test15_load:
   csrs mstatus, x6
   LI(x6, 0x1800)
   csrc mstatus, x6
+
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
+// Clear X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  andi x14, x14, ~PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
   LA(x14, rvtest_data_1)
 
 // Execute
@@ -944,6 +1252,17 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test15_exec:
 
   LI(x6, MSTATUS_MPRV)
   csrc mstatus, x6
+// Restore X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  ori x14, x14, PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
 
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsSm_cg_cp_medeleg_m_test15_store, Sv_ExceptionsSm_cg_cp_medeleg_m_test15_store_str)
@@ -983,6 +1302,24 @@ Sv_ExceptionsSm_cg_cp_medeleg_m_test16_load:
   csrs mstatus, x6
   LI(x6, 0x1800)
   csrc mstatus, x6
+
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
+// Clear X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  andi x14, x14, ~PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
   LA(x14, rvtest_data_1)
 
 // Execute
@@ -992,6 +1329,17 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test16_exec:
 
   LI(x6, MSTATUS_MPRV)
   csrc mstatus, x6
+// Restore X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  ori x14, x14, PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
 
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsSm_cg_cp_medeleg_m_test16_store, Sv_ExceptionsSm_cg_cp_medeleg_m_test16_store_str)
@@ -1033,6 +1381,24 @@ Sv_ExceptionsSm_cg_cp_medeleg_m_test17_load:
   csrs mstatus, x6
   LI(x6, 0x1800)
   csrc mstatus, x6
+
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
+// Clear X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  andi x14, x14, ~PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
   LA(x14, rvtest_data_1)
 
 // Execute
@@ -1042,6 +1408,17 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test17_exec:
 
   LI(x6, MSTATUS_MPRV)
   csrc mstatus, x6
+// Restore X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  ori x14, x14, PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
 
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsSm_cg_cp_medeleg_m_test17_store, Sv_ExceptionsSm_cg_cp_medeleg_m_test17_store_str)
@@ -1081,6 +1458,24 @@ Sv_ExceptionsSm_cg_cp_medeleg_m_test18_load:
   csrs mstatus, x6
   LI(x6, 0x1800)
   csrc mstatus, x6
+
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
+// Clear X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  andi x14, x14, ~PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
   LA(x14, rvtest_data_1)
 
 // Execute
@@ -1090,6 +1485,17 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test18_exec:
 
   LI(x6, MSTATUS_MPRV)
   csrc mstatus, x6
+// Restore X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  ori x14, x14, PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
 
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsSm_cg_cp_medeleg_m_test18_store, Sv_ExceptionsSm_cg_cp_medeleg_m_test18_store_str)
@@ -1131,6 +1537,24 @@ Sv_ExceptionsSm_cg_cp_medeleg_m_test19_load:
   csrs mstatus, x6
   LI(x6, 0x1800)
   csrc mstatus, x6
+
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
+// Clear X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  andi x14, x14, ~PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
   LA(x14, rvtest_data_1)
 
 // Execute
@@ -1140,6 +1564,17 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test19_exec:
 
   LI(x6, MSTATUS_MPRV)
   csrc mstatus, x6
+// Restore X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  ori x14, x14, PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
 
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsSm_cg_cp_medeleg_m_test19_store, Sv_ExceptionsSm_cg_cp_medeleg_m_test19_store_str)
@@ -1179,6 +1614,24 @@ Sv_ExceptionsSm_cg_cp_medeleg_m_test20_load:
   csrs mstatus, x6
   LI(x6, 0x1800)
   csrc mstatus, x6
+
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
+// Clear X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  andi x14, x14, ~PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
   LA(x14, rvtest_data_1)
 
 // Execute
@@ -1188,6 +1641,17 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test20_exec:
 
   LI(x6, MSTATUS_MPRV)
   csrc mstatus, x6
+// Restore X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  ori x14, x14, PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
 
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsSm_cg_cp_medeleg_m_test20_store, Sv_ExceptionsSm_cg_cp_medeleg_m_test20_store_str)
@@ -1229,6 +1693,24 @@ Sv_ExceptionsSm_cg_cp_medeleg_m_test21_load:
   csrs mstatus, x6
   LI(x6, 0x1800)
   csrc mstatus, x6
+
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
+// Clear X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  andi x14, x14, ~PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
   LA(x14, rvtest_data_1)
 
 // Execute
@@ -1238,6 +1720,17 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test21_exec:
 
   LI(x6, MSTATUS_MPRV)
   csrc mstatus, x6
+// Restore X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  ori x14, x14, PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
 
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsSm_cg_cp_medeleg_m_test21_store, Sv_ExceptionsSm_cg_cp_medeleg_m_test21_store_str)
@@ -1277,6 +1770,24 @@ Sv_ExceptionsSm_cg_cp_medeleg_m_test22_load:
   csrs mstatus, x6
   LI(x6, 0x1800)
   csrc mstatus, x6
+
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
+// Clear X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  andi x14, x14, ~PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
   LA(x14, rvtest_data_1)
 
 // Execute
@@ -1286,6 +1797,17 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test22_exec:
 
   LI(x6, MSTATUS_MPRV)
   csrc mstatus, x6
+// Restore X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  ori x14, x14, PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
 
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsSm_cg_cp_medeleg_m_test22_store, Sv_ExceptionsSm_cg_cp_medeleg_m_test22_store_str)
@@ -1327,6 +1849,24 @@ Sv_ExceptionsSm_cg_cp_medeleg_m_test23_load:
   csrs mstatus, x6
   LI(x6, 0x1800)
   csrc mstatus, x6
+
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
+// Clear X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  andi x14, x14, ~PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
   LA(x14, rvtest_data_1)
 
 // Execute
@@ -1336,6 +1876,17 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test23_exec:
 
   LI(x6, MSTATUS_MPRV)
   csrc mstatus, x6
+// Restore X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  ori x14, x14, PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
 
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsSm_cg_cp_medeleg_m_test23_store, Sv_ExceptionsSm_cg_cp_medeleg_m_test23_store_str)
@@ -1375,6 +1926,24 @@ Sv_ExceptionsSm_cg_cp_medeleg_m_test24_load:
   csrs mstatus, x6
   LI(x6, 0x1800)
   csrc mstatus, x6
+
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
+// Clear X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  andi x14, x14, ~PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
   LA(x14, rvtest_data_1)
 
 // Execute
@@ -1384,6 +1953,17 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test24_exec:
 
   LI(x6, MSTATUS_MPRV)
   csrc mstatus, x6
+// Restore X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  ori x14, x14, PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
 
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsSm_cg_cp_medeleg_m_test24_store, Sv_ExceptionsSm_cg_cp_medeleg_m_test24_store_str)
@@ -1425,6 +2005,24 @@ Sv_ExceptionsSm_cg_cp_medeleg_m_test25_load:
   csrs mstatus, x6
   LI(x6, 0x1800)
   csrc mstatus, x6
+
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
+// Clear X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  andi x14, x14, ~PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
   LA(x14, rvtest_data_1)
 
 // Execute
@@ -1434,6 +2032,17 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test25_exec:
 
   LI(x6, MSTATUS_MPRV)
   csrc mstatus, x6
+// Restore X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  ori x14, x14, PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
 
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsSm_cg_cp_medeleg_m_test25_store, Sv_ExceptionsSm_cg_cp_medeleg_m_test25_store_str)
@@ -1473,6 +2082,24 @@ Sv_ExceptionsSm_cg_cp_medeleg_m_test26_load:
   csrs mstatus, x6
   LI(x6, 0x1800)
   csrc mstatus, x6
+
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
+// Clear X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  andi x14, x14, ~PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
   LA(x14, rvtest_data_1)
 
 // Execute
@@ -1482,6 +2109,17 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test26_exec:
 
   LI(x6, MSTATUS_MPRV)
   csrc mstatus, x6
+// Restore X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  ori x14, x14, PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
 
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsSm_cg_cp_medeleg_m_test26_store, Sv_ExceptionsSm_cg_cp_medeleg_m_test26_store_str)
@@ -1523,6 +2161,24 @@ Sv_ExceptionsSm_cg_cp_medeleg_m_test27_load:
   csrs mstatus, x6
   LI(x6, 0x1800)
   csrc mstatus, x6
+
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
+// Clear X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  andi x14, x14, ~PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
   LA(x14, rvtest_data_1)
 
 // Execute
@@ -1532,6 +2188,17 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test27_exec:
 
   LI(x6, MSTATUS_MPRV)
   csrc mstatus, x6
+// Restore X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  ori x14, x14, PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
 
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsSm_cg_cp_medeleg_m_test27_store, Sv_ExceptionsSm_cg_cp_medeleg_m_test27_store_str)
@@ -1571,6 +2238,24 @@ Sv_ExceptionsSm_cg_cp_medeleg_m_test28_load:
   csrs mstatus, x6
   LI(x6, 0x1800)
   csrc mstatus, x6
+
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
+// Clear X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  andi x14, x14, ~PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
   LA(x14, rvtest_data_1)
 
 // Execute
@@ -1580,6 +2265,17 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test28_exec:
 
   LI(x6, MSTATUS_MPRV)
   csrc mstatus, x6
+// Restore X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  ori x14, x14, PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
 
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsSm_cg_cp_medeleg_m_test28_store, Sv_ExceptionsSm_cg_cp_medeleg_m_test28_store_str)
@@ -1621,6 +2317,24 @@ Sv_ExceptionsSm_cg_cp_medeleg_m_test29_load:
   csrs mstatus, x6
   LI(x6, 0x1800)
   csrc mstatus, x6
+
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
+// Clear X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  andi x14, x14, ~PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
   LA(x14, rvtest_data_1)
 
 // Execute
@@ -1630,6 +2344,17 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test29_exec:
 
   LI(x6, MSTATUS_MPRV)
   csrc mstatus, x6
+// Restore X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  ori x14, x14, PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
 
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsSm_cg_cp_medeleg_m_test29_store, Sv_ExceptionsSm_cg_cp_medeleg_m_test29_store_str)
@@ -1669,6 +2394,24 @@ Sv_ExceptionsSm_cg_cp_medeleg_m_test30_load:
   csrs mstatus, x6
   LI(x6, 0x1800)
   csrc mstatus, x6
+
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
+// Clear X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  andi x14, x14, ~PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
   LA(x14, rvtest_data_1)
 
 // Execute
@@ -1678,6 +2421,17 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test30_exec:
 
   LI(x6, MSTATUS_MPRV)
   csrc mstatus, x6
+// Restore X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  ori x14, x14, PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
 
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsSm_cg_cp_medeleg_m_test30_store, Sv_ExceptionsSm_cg_cp_medeleg_m_test30_store_str)
@@ -1719,6 +2473,24 @@ Sv_ExceptionsSm_cg_cp_medeleg_m_test31_load:
   csrs mstatus, x6
   LI(x6, 0x1800)
   csrc mstatus, x6
+
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
+// Clear X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  andi x14, x14, ~PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
   LA(x14, rvtest_data_1)
 
 // Execute
@@ -1728,6 +2500,17 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test31_exec:
 
   LI(x6, MSTATUS_MPRV)
   csrc mstatus, x6
+// Restore X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  ori x14, x14, PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
 
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsSm_cg_cp_medeleg_m_test31_store, Sv_ExceptionsSm_cg_cp_medeleg_m_test31_store_str)
@@ -1767,6 +2550,24 @@ Sv_ExceptionsSm_cg_cp_medeleg_m_test32_load:
   csrs mstatus, x6
   LI(x6, 0x1800)
   csrc mstatus, x6
+
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
+// Clear X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  andi x14, x14, ~PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
   LA(x14, rvtest_data_1)
 
 // Execute
@@ -1776,6 +2577,17 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test32_exec:
 
   LI(x6, MSTATUS_MPRV)
   csrc mstatus, x6
+// Restore X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  ori x14, x14, PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
 
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsSm_cg_cp_medeleg_m_test32_store, Sv_ExceptionsSm_cg_cp_medeleg_m_test32_store_str)
@@ -1817,6 +2629,24 @@ Sv_ExceptionsSm_cg_cp_medeleg_m_test33_load:
   csrs mstatus, x6
   LI(x6, 0x1800)
   csrc mstatus, x6
+
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
+// Clear X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  andi x14, x14, ~PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
   LA(x14, rvtest_data_1)
 
 // Execute
@@ -1826,6 +2656,17 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test33_exec:
 
   LI(x6, MSTATUS_MPRV)
   csrc mstatus, x6
+// Restore X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  ori x14, x14, PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
 
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsSm_cg_cp_medeleg_m_test33_store, Sv_ExceptionsSm_cg_cp_medeleg_m_test33_store_str)
@@ -1865,6 +2706,24 @@ Sv_ExceptionsSm_cg_cp_medeleg_m_test34_load:
   csrs mstatus, x6
   LI(x6, 0x1800)
   csrc mstatus, x6
+
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
+// Clear X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  andi x14, x14, ~PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
   LA(x14, rvtest_data_1)
 
 // Execute
@@ -1874,6 +2733,17 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test34_exec:
 
   LI(x6, MSTATUS_MPRV)
   csrc mstatus, x6
+// Restore X in the root PTE that maps rvtest_data_1
+  LA(x6, rvtest_data_1)
+  srli x6, x6, 30
+  andi x6, x6, 0x1ff
+  slli x6, x6, 3
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x6, x6, x14
+  LREG x14, 0(x6)
+  ori x14, x14, PTE_X
+  SREG x14, 0(x6)
+  sfence.vma
 
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsSm_cg_cp_medeleg_m_test34_store, Sv_ExceptionsSm_cg_cp_medeleg_m_test34_store_str)

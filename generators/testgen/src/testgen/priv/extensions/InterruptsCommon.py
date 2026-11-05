@@ -112,8 +112,7 @@ class InterruptSuite:
     ip: str  # pending CSR
     ie: str  # enable CSR
     status: dict  # global enable written in the boot mode: csr, mask, field
-    # cp_wfi timer: the extensions or params it needs, timer macro, ie (name, mask), ip (csr, name, mask), stce
-    wfi: dict
+    wfi: dict  # cp_wfi timer: guard, timer macro, ie (name, mask), ip (csr, name, mask), stce
     deleg: list[str]  # default delegation setup before each case
     hie: bool = False  # also write the enables to hie, which holds the VS-level enables that sie cannot reach
 
@@ -384,14 +383,10 @@ def generate_cp_wfi(test_data: TestData, test_chunks: list[TestChunk], suite: In
     ie_name, ie_mask = wfi["ie"]
     ip_csr, ip_name, ip_mask = wfi["ip"]
     tc = test_data.new_test_chunk(test_chunks, f"wfi_{priv}")
-    tc.required_extensions = wfi.get("extensions", [])
-    tc.params = wfi.get("params", [])
     tc.section_header = comment_banner(
         coverpoint,
         f"WFI until the timer interrupt in {priv} mode with {status['csr']}.{status['field']} = 0/1",
     )
-    if priv == "U":
-        tc.forbidden_extensions = ["S"]  # U-mode WFI only waits when S-mode is not implemented
     count_reg, tmp_reg = test_data.int_regs.get_registers(2)
 
     # mstatus.TW only affects modes below M, so sweep it in M-mode where it must not matter
@@ -403,6 +398,7 @@ def generate_cp_wfi(test_data: TestData, test_chunks: list[TestChunk], suite: In
             # S-mode suite with SIE = 0); lower modes take it regardless of the global enable.
             taken = enable == 1 or priv != boot
             tc.code += [
+                f"#ifdef {wfi['guard']}",
                 *suite.deleg,
                 *(write_stce(test_data, True, boot) if wfi["stce"] else []),
                 f"LI(x{tmp_reg}, 0x200000)",
@@ -449,6 +445,7 @@ def generate_cp_wfi(test_data: TestData, test_chunks: list[TestChunk], suite: In
                 "2:",
                 f"RVTEST_CLR_{wfi['timer']}_INT_{flavor(priv)} # Clear the timer interrupt",
                 *mode_exit(suite, priv),
+                f"#endif // {wfi['guard']}",
                 "",
             ]
 
@@ -473,7 +470,6 @@ def generate_cp_trigger_vsti_sstc(
     boot = suite.boot
     in_vs = priv == "VS"
     tc = test_data.new_test_chunk(test_chunks, f"trigger_vsti_sstc_{priv}")
-    tc.required_extensions = ["H", "Sstc"]
     tc.section_header = comment_banner(
         coverpoint,
         "With menvcfg.STCE = henvcfg.STCE = 1 and hie.VSTIE = 1, set "
@@ -482,6 +478,8 @@ def generate_cp_trigger_vsti_sstc(
     )
     tmp_reg = test_data.int_regs.get_register()
     tc.code += [
+        "#ifdef H_SUPPORTED",
+        "#ifdef SSTC_SUPPORTED",
         *write_stce(test_data, True, boot),
         *write_stce(test_data, True, boot, henvcfg=True),
         f"LI(x{tmp_reg}, SSTATUS_SIE)",
@@ -534,6 +532,8 @@ def generate_cp_trigger_vsti_sstc(
         f"csrc vsstatus, x{tmp_reg} # vsstatus.SIE = 0",
         *write_stce(test_data, False, boot, henvcfg=True),
         *write_stce(test_data, False, boot),
+        "#endif // SSTC_SUPPORTED",
+        "#endif // H_SUPPORTED",
         "",
     ]
     test_data.int_regs.return_register(tmp_reg)

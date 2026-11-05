@@ -45,63 +45,52 @@ COVERGROUP_USM = "Smnpm_USm_cg"
 # ── S-mode probes from M-mode-configured pointer masking (group S) ─────────
 
 
-def _smnpms_sweep(test_data: TestData, pmm: int) -> list[TestChunk]:
-    """Build the chunks for one menvcfg.PMM setting, across every satp mode."""
+def _smnpms_sweep(test_data: TestData, pmm: int, mode: str) -> list[TestChunk]:
+    """Build the chunks for one menvcfg.PMM setting and one satp mode."""
     pmlen = PMLEN_BY_PMM[pmm]
     label = f"pmm{pmm:02b}"
     chunks = []
-    for mode in MODES:
-        # Each PMM setting is split into three files to keep every test under 100k instructions.
-        # sweep_lowtags and sweep_hightags run every load, store, AMO, CBO and vector instruction through
-        # a tagged pointer: the first with tags that leave bit 63 clear, the second with tags that set it.
-        # edgecases holds the remaining checks, such as misaligned accesses, JALR, access faults and MXR.
-        for split, uppers in SPLITS:
-            tc = test_data.begin_test_chunk(f"S_{mode}_{label}_{split}")
-            guard = MODE_GUARDS[mode]
-            if guard:
-                tc.required_extensions = [mode.capitalize()]  # Sv39, Sv48 or Sv57
-                tc.raw_data.append(f"#ifdef {guard}")
-            tc.raw_data.extend(data_page("pm_lo_page"))
-            if mode != "bare":
-                tc.raw_data.extend([*data_page("pm_hi_page"), *data_slvl_tables(mode), *ss_data_page(mode)])
-            if guard:
-                tc.raw_data.append(f"#endif // {guard}")
-            tc.code = _smnpms_chunk(mode, pmm, pmlen, label, split, uppers, test_data)
-            chunks.append(test_data.end_test_chunk())
+    # Each PMM setting is split into three files to keep every test under 100k instructions.
+    # sweep_lowtags and sweep_hightags run every load, store, AMO, CBO and vector instruction through
+    # a tagged pointer: the first with tags that leave bit 63 clear, the second with tags that set it.
+    # edgecases holds the remaining checks, such as misaligned accesses, JALR, access faults and MXR.
+    for split, uppers in SPLITS:
+        tc = test_data.begin_test_chunk(f"S_{mode}_{label}_{split}")
+        guard = MODE_GUARDS[mode]
+        if guard:
+            tc.raw_data.append(f"#ifdef {guard}")
+        tc.raw_data.extend(data_page("pm_lo_page"))
+        if mode != "bare":
+            tc.raw_data.extend([*data_page("pm_hi_page"), *data_slvl_tables(mode), *ss_data_page(mode)])
+        if guard:
+            tc.raw_data.append(f"#endif // {guard}")
+        tc.code = _smnpms_chunk(mode, pmm, pmlen, label, split, uppers, test_data)
+        chunks.append(test_data.end_test_chunk())
     return chunks
 
 
-# One generator per PMLEN. The header params select the file only when the config supports that PMLEN.
-@add_priv_test_generator(
-    "Smnpm",
-    required_extensions=["Smnpm", "S"],
-    march_extensions=["I", "A", "F", "D", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz", "Zicfiss"],
-    extra_defines=["#define BOOT_TO_SMODE"],
-)
-def make_smnpms_pmm00(test_data: TestData) -> list[TestChunk]:
-    return _smnpms_sweep(test_data, 0b00)
+def _register_smnpms(pmm: int, mode: str, params: list[str]) -> None:
+    """Register the sweep for one menvcfg.PMM setting and satp mode as its own generator.
+
+    The header params select the files only when the config supports the PMLEN, and required_extensions only
+    when it supports the satp mode.
+    """
+
+    @add_priv_test_generator(
+        "Smnpm",
+        required_extensions=["Smnpm", "S", *([] if mode == "bare" else [mode.capitalize()])],
+        march_extensions=["I", "A", "F", "D", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz", "Zicfiss"],
+        extra_defines=["#define BOOT_TO_SMODE"],
+        params=params,
+    )
+    def make_smnpms(test_data: TestData) -> list[TestChunk]:
+        return _smnpms_sweep(test_data, pmm, mode)
 
 
-@add_priv_test_generator(
-    "Smnpm",
-    required_extensions=["Smnpm", "S"],
-    march_extensions=["I", "A", "F", "D", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz", "Zicfiss"],
-    extra_defines=["#define BOOT_TO_SMODE"],
-    params=["SUPPORTED_PMLEN_SMNPM: 7"],
-)
-def make_smnpms_pmm10(test_data: TestData) -> list[TestChunk]:
-    return _smnpms_sweep(test_data, 0b10)
-
-
-@add_priv_test_generator(
-    "Smnpm",
-    required_extensions=["Smnpm", "S"],
-    march_extensions=["I", "A", "F", "D", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz", "Zicfiss"],
-    extra_defines=["#define BOOT_TO_SMODE"],
-    params=["SUPPORTED_PMLEN_SMNPM: 16"],
-)
-def make_smnpms_pmm11(test_data: TestData) -> list[TestChunk]:
-    return _smnpms_sweep(test_data, 0b11)
+for _mode in MODES:
+    _register_smnpms(0b00, _mode, [])
+    _register_smnpms(0b10, _mode, ["SUPPORTED_PMLEN_SMNPM: 7"])
+    _register_smnpms(0b11, _mode, ["SUPPORTED_PMLEN_SMNPM: 16"])
 
 
 def _smnpms_chunk(

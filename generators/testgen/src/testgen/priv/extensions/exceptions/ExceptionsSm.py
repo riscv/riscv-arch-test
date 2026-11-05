@@ -318,7 +318,8 @@ def make_exceptionssm(test_data: TestData) -> list[TestChunk]:
     # every misaligned access records ~700 traps.
     for mode_tag, priv_mode in (("mode_m", 3), ("mode_s", 1), ("mode_u", 0)):
         tc = test_data.begin_test_chunk(f"Sm_medeleg_{mode_tag[-1]}")
-        tc.required_extensions = ["S"]
+        tc.code.append("#ifdef S_SUPPORTED")
         tc.code.extend(_generate_medeleg_msu_tests(test_data, mode_tag, priv_mode))
+        tc.code.append("#endif // S_SUPPORTED")
         test_chunks.append(test_data.end_test_chunk())
     return test_chunks

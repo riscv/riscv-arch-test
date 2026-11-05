@@ -753,9 +753,13 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     )
     tc.code.append("#endif")
 
-    tc = test_data.new_test_chunk(test_chunks, "mcsr_walk_rv32")
-    tc.params = ["MXLEN: 32"]
-    tc.code.append("// RV32-only h CSRs")
+    tc = test_data.new_test_chunk(test_chunks)
+    tc.code.extend(
+        [
+            "// RV32-only h CSRs",
+            "#if __riscv_xlen == 32",
+        ]
+    )
 
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
     tc.code.extend(csr_walk_test(test_data, csr_mstatush, covergroup, coverpoint_masked, maskedwrites=True))
@@ -767,6 +771,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     tc.code.append("\n#ifdef SM1P13P0_OR_LATER_SUPPORTED")
     tc.code.extend(csr_walk_test(test_data, csr_medelegh, covergroup, coverpoint))
     tc.code.append("#endif // MEDELEGH")
+    tc.code.append("#endif // __riscv_xlen == 32")
 
     tc = test_data.new_test_chunk(test_chunks, "mcsr_addr")
     tc.section_header = comment_banner(
@@ -791,12 +796,12 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     coverpoint = "cp_scsr_from_m"
     ######################################
     tc = test_data.new_test_chunk(test_chunks, "scsr_from_m")
-    tc.required_extensions = ["S"]
     tc.section_header = comment_banner(
         coverpoint,
         "Read, write all 1s, write all 0s, set all 1s, set all 0s, restore all S-mode CSRs from M-mode",
     )
 
+    tc.code.append("#ifdef S_SUPPORTED")
     for csr in S_CSRS:
         tc.code.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
     tc.code.extend(["", "#ifdef S1P12P0_OR_LATER_SUPPORTED"])
@@ -819,16 +824,17 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         tc.code.extend(gated(body, gate))
     tc.code.append(f"csrw scause, x{save_reg} # restore")
     test_data.int_regs.return_registers([save_reg, val_reg, check_reg])
+    tc.code.append("#endif // S_SUPPORTED")
 
     ######################################
     coverpoint = "cp_satp_from_m"
     ######################################
     tc = test_data.new_test_chunk(test_chunks, "satp_from_m")
-    tc.required_extensions = ["S"]
     tc.section_header = comment_banner(coverpoint, "Read satp from M-mode with mstatus.TVM = 1 and 0")
     temp_reg, tvm_reg = test_data.int_regs.get_registers(2)
     tc.code.extend(
         [
+            "#ifdef S_SUPPORTED",
             f"LI(x{tvm_reg}, 0x00100000) # mstatus.TVM (bit 20)",
             f"csrs mstatus, x{tvm_reg}",
             test_data.add_testcase("tvm_enabled", coverpoint, covergroup),
@@ -836,6 +842,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
             f"csrc mstatus, x{tvm_reg}",
             test_data.add_testcase("tvm_disabled", coverpoint, covergroup),
             f"csrr x{temp_reg}, satp # read satp with mstatus.TVM = 0; expect no trap.  Value is WARL and unpredictable so don't sigupd it",
+            "#endif // S_SUPPORTED",
         ]
     )
     test_data.int_regs.return_registers([temp_reg, tvm_reg])
@@ -844,7 +851,6 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     coverpoint = "cp_satp_from_s"
     ######################################
     tc = test_data.new_test_chunk(test_chunks, "satp_from_s")
-    tc.required_extensions = ["S"]
     tc.section_header = comment_banner(coverpoint, "Read satp from S-mode with mstatus.TVM = 1 and 0")
     temp_reg, tvm_reg = test_data.int_regs.get_registers(2)
     # This suite does not delegate illegal instructions, so the TVM = 1 trap is taken in M-mode,
@@ -852,6 +858,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     # the S-mode handler reads satp itself.
     tc.code.extend(
         [
+            "#ifdef S_SUPPORTED",
             f"LI(x{tvm_reg}, 0x00100000) # mstatus.TVM (bit 20)",
             f"csrs mstatus, x{tvm_reg}",
             "RVTEST_TSBI_GOTO_SMODE",
@@ -863,6 +870,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
             test_data.add_testcase("tvm_disabled", coverpoint, covergroup),
             f"csrr x{temp_reg}, satp # read satp from S-mode with mstatus.TVM = 0; expect no trap.  Value is WARL and unpredictable so don't sigupd it",
             "RVTEST_TSBI_GOTO_MMODE",
+            "#endif // S_SUPPORTED",
         ]
     )
     test_data.int_regs.return_registers([temp_reg, tvm_reg])
@@ -871,7 +879,6 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     coverpoint = "cp_shadow"
     ######################################
     tc = test_data.new_test_chunk(test_chunks, "shadow")
-    tc.required_extensions = ["S"]
     tc.section_header = comment_banner(
         coverpoint,
         "Check that values written to shadowed registers are consistent between machine and supervisor mode",
@@ -881,6 +888,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     r1, r2, rmask, rsave = test_data.int_regs.get_registers(4)
     tc.code.extend(
         [
+            "#ifdef S_SUPPORTED",
             f"LI(x{r1}, 0x007FFFBF) # skip UBE, UXL bits which would cause weird behavior",
             _add_shadow(r1, r2, rmask, rsave, "mstatus", "sstatus", 0xCFFFFFFCF, coverpoint, covergroup, test_data),
             _add_shadow(r1, r2, rmask, rsave, "sstatus", "mstatus", 0xCFFFFFFCF, coverpoint, covergroup, test_data),
@@ -899,6 +907,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
             _add_shadow(r1, r2, rmask, rsave, "sip", "mip", 0x3EEE, coverpoint, covergroup, test_data, "_deleg"),
             *_add_deleg_alias(r1, r2, coverpoint, covergroup, test_data),
             # mideleg restored to 0 by _add_deleg_alias()
+            "#endif // S_SUPPORTED",
         ]
     )
     test_data.int_regs.return_registers([r1, r2, rmask, rsave])
@@ -2151,9 +2160,6 @@ def make_smh(test_data: TestData) -> list[TestChunk]:
     )
 
     tc = test_data.new_test_chunk(test_chunks, "H_vsepc")
-    # The header form of IALIGN32_GATE, which guards the whole section
-    tc.required_extensions = ["Zca"]
-    tc.params = ["MUTABLE_MISA_C: true"]
     tc.code.extend(
         [
             comment_banner(

@@ -32,8 +32,6 @@ class HCsr:
     vaddr: the CSR holds a virtual address, which it may legalize when invalid, so the walk test writes only valid
         addresses (addr_csr_tests)
     gate: preprocessor condition under which the CSR exists
-    extension: an extension the CSR requires, which the suite does not.  The walk test puts the CSR in a separate
-        split whose files require the extension, so that no file walks only CSRs that the target may lack
     warl_fields: WARL fields with reserved encodings, as for csr_walk_test
     setup, restore: lines before and after the test that make the CSR accessible or its value visible
     asm: the operand instructions use when the assembler does not know the name (an encoding.h constant)
@@ -45,7 +43,6 @@ class HCsr:
     zero: bool = False
     vaddr: bool = False
     gate: str | None = None
-    extension: str | None = None
     warl_fields: tuple[tuple, ...] = ()
     setup: tuple[str, ...] = ()
     restore: tuple[str, ...] = ()
@@ -157,14 +154,8 @@ H_VS_CSRS = [
     HCsr("vsscratch"),
     HCsr("vsepc", vaddr=True),
     HCsr("vsatp", zero=True),
-    HCsr("vstimecmp", gate="defined(SSTC_SUPPORTED)", extension="Sstc", setup=STCE_ON, restore=STCE_OFF),
-    HCsr(
-        "vstimecmph",
-        gate="__riscv_xlen == 32 && defined(SSTC_SUPPORTED)",
-        extension="Sstc",
-        setup=STCE_ON,
-        restore=STCE_OFF,
-    ),
+    HCsr("vstimecmp", gate="defined(SSTC_SUPPORTED)", setup=STCE_ON, restore=STCE_OFF),
+    HCsr("vstimecmph", gate="__riscv_xlen == 32 && defined(SSTC_SUPPORTED)", setup=STCE_ON, restore=STCE_OFF),
 ]
 
 # Configs where Sv39/Sv39x4 (RV64) or Sv32/Sv32x4 (RV32) can be selected
@@ -242,13 +233,8 @@ def hcsr_tests(
     tc.section_header = comment_banner(
         "cp_hcsrwalk", "Set and clear each bit of each H CSR that holds more than zero and is not an address"
     )
-    walk_csrs = [csr for csr in csrs if not (csr.zero or csr.vaddr)]
-    extensions = list(dict.fromkeys(csr.extension for csr in walk_csrs if csr.extension))
-    for extension in [None, *extensions]:
-        if extension:
-            tc = test_data.new_test_chunk(test_chunks, f"{prefix}hcsr_walk_{extension.lower()}")
-            tc.required_extensions = [extension]
-        for csr in (csr for csr in walk_csrs if csr.extension == extension):
+    for csr in csrs:
+        if not (csr.zero or csr.vaddr):
             tc = test_data.new_test_chunk(test_chunks)
             coverpoint = "cp_hcsrwalk_masked" if csr.masked else "cp_hcsrwalk"
             lines = csr_walk_test(

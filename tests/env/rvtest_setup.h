@@ -128,7 +128,8 @@
       call rvmodel_io_write_str
       LA(a0, regular_sig_offset_actual_str)
       call rvmodel_io_write_str
-      mv      a0, T1
+      LA(     a0, signature_base)     // Recompute: rvmodel_io_write_str clobbers T1
+      sub     a0, DEFAULT_SIG_REG, a0
       li      a1, UDB_MXLEN
       jal     ra, failedtest_hex_to_str
       LA(a0, ascii_buffer)

@@ -33,16 +33,15 @@ def make_cntr(instr_name: str, instr_type: str, coverpoint: str, test_data: Test
                     "#endif\n",
                 ]
             )
-        tc.code.append("#if __riscv_xlen == 32\n")
-        for bit, cntr in enumerate(counters):
-            tc.code.extend(
-                [
-                    f"#if {cntr_readable(bit)}\n",
-                    gen_cntr_test(instr_name, f"{cntr}h", r1, r2, r3, coverpoint, test_data),
-                    "#endif\n",
-                ]
-            )
-        tc.code.append("#endif\n")
+        if test_data.xlen == 32:
+            for bit, cntr in enumerate(counters):
+                tc.code.extend(
+                    [
+                        f"#if {cntr_readable(bit)}\n",
+                        gen_cntr_test(instr_name, f"{cntr}h", r1, r2, r3, coverpoint, test_data),
+                        "#endif\n",
+                    ]
+                )
     elif coverpoint == "cp_cntr_hpm":
         # hpmcounter3 through hpmcounter31, each read only if the configuration implements it and
         # the test's mode can access it. Accessing an unimplemented counter may trap or return a
@@ -51,13 +50,12 @@ def make_cntr(instr_name: str, instr_type: str, coverpoint: str, test_data: Test
             tc.code.append(f"#if defined(UDB_HPM_COUNTER_EN_{hpm}) && {cntr_readable(hpm)}\n")
             tc.code.append(gen_cntr_test(instr_name, f"hpmcounter{hpm}", r1, r2, r3, coverpoint, test_data))
             tc.code.append("#endif\n")
-        tc.code.append("#if __riscv_xlen == 32\n")
-        # hpmcounter3h through hpmcounter31h
-        for hpm in range(3, 32):
-            tc.code.append(f"#if defined(UDB_HPM_COUNTER_EN_{hpm}) && {cntr_readable(hpm)}\n")
-            tc.code.append(gen_cntr_test(instr_name, f"hpmcounter{hpm}h", r1, r2, r3, coverpoint, test_data))
-            tc.code.append("#endif\n")
-        tc.code.append("#endif\n")
+        if test_data.xlen == 32:
+            # hpmcounter3h through hpmcounter31h
+            for hpm in range(3, 32):
+                tc.code.append(f"#if defined(UDB_HPM_COUNTER_EN_{hpm}) && {cntr_readable(hpm)}\n")
+                tc.code.append(gen_cntr_test(instr_name, f"hpmcounter{hpm}h", r1, r2, r3, coverpoint, test_data))
+                tc.code.append("#endif\n")
     else:
         raise ValueError(f"Unknown cp_cntr coverpoint variant: {coverpoint} for {instr_name}")
 

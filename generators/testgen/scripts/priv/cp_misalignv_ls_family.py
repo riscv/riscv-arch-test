@@ -119,6 +119,12 @@ def _ls_test(instruction: str, cp: str, sew: int, lmul_flag: str, *,
              override_vd: int | None = None,
              addr_offset: int = 0) -> None:
     """Run one LS test with the given vsetivli + optional address offset."""
+    # Skip indexed LS whose index EEW exceeds XLEN (EEW=64 on RV32). Sail RV32 takes illegal-instruction on
+    # EEW=64 indexed LS while other sims take a load access fault, producing a mismatched mcause in the
+    # signature (see sail-riscv issue 1719).
+    index_eew = common.getInstructionEEW(instruction) if instruction in common.indexed_ls_ins else None
+    if index_eew is not None and index_eew > common.xlen:
+        return
     set_seed(common.myhash(instruction + cp + lmul_flag + str(addr_offset) + str(override_vd)))
 
     instruction_data = common.randomizeVectorInstructionData(
@@ -129,14 +135,7 @@ def _ls_test(instruction: str, cp: str, sew: int, lmul_flag: str, *,
     )
     common.remapPrivScalarRegs(instruction_data, instruction)
 
-    # For indexed LS, gate emission on XLEN so EEW=64 indexed-LS priv tests
-    # are skipped on RV32. Sail RV32 takes illegal-instruction on EEW=64
-    # indexed LS while other sims take a load access fault, producing a
-    # mismatched mcause in the signature (see sail-riscv issue 1719).
     indexed = instruction in common.indexed_ls_ins
-    index_eew = common.getInstructionEEW(instruction) if indexed else None
-    if indexed and index_eew is not None:
-        common.writeLine(f"#if __riscv_xlen >= {index_eew}")
 
     common.writeLine(f"\n# Testcase {cp} (sew={sew}, lmul={lmul_flag}, vd_off={override_vd}, addr_off={addr_offset})")
     scratch = common.pickPrivScratch(instruction_data[1])
@@ -178,9 +177,6 @@ def _ls_test(instruction: str, cp: str, sew: int, lmul_flag: str, *,
         sig_lmul=1, sig_whole_register_store=True,
         priv=True, skip_sigupd=False,
     )
-
-    if indexed and index_eew is not None:
-        common.writeLine("#endif")
 
 
 def _eew(instruction: str) -> int:

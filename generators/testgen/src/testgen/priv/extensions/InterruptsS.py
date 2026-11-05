@@ -23,6 +23,7 @@ from testgen.priv.extensions.InterruptsCommon import (
     generate_cp_wfi,
     generate_cp_wfi_timeout,
     guard_symbol,
+    ifdef,
     int_coverpoint,
     int_macro,
     label_coverpoint,
@@ -86,11 +87,10 @@ def _generate_cp_trigger_s(test_data: TestData, test_chunks: list[TestChunk], su
                 # stvec.MODE
                 modecmd = "csrs" if mode == 1 else "csrc"
                 enablecmd = "csrs" if enable == 1 else "csrc"
-                tc.code += [
-                    f"#ifdef {guard}",
+                case = [
                     f"#ifdef UDB_STVEC_MODES_{mode}",
                     f"LI(x{tmp_reg}, -1)",
-                    *write_ie(suite, tmp_reg, "1s"),
+                    *write_ie(suite, priv, tmp_reg, "1s"),
                     f"LI(x{tmp_reg}, 1)",
                     f"{modecmd} stvec, x{tmp_reg} # stvec.mode = {mode}",
                     f"LI(x{tmp_reg}, 0x22) # SIE, SPIE",
@@ -100,11 +100,16 @@ def _generate_cp_trigger_s(test_data: TestData, test_chunks: list[TestChunk], su
                     f"csrw stval, x{tmp_reg} # stval = nonzero",
                     # Likewise htval and htinst, which an interrupt taken into HS-mode must also zero.
                     # htinst gets a transformed load, lw x1, 0(x0).
-                    "#ifdef H_SUPPORTED",
-                    f"csrw htval, x{tmp_reg} # htval = nonzero",
-                    f"LI(x{tmp_reg}, 0x2083) # transformed lw x1, 0(x0)",
-                    f"csrw htinst, x{tmp_reg} # htinst = nonzero",
-                    "#endif // H_SUPPORTED",
+                    *ifdef(
+                        suite,
+                        priv,
+                        "H_SUPPORTED",
+                        [
+                            f"csrw htval, x{tmp_reg} # htval = nonzero",
+                            f"LI(x{tmp_reg}, 0x2083) # transformed lw x1, 0(x0)",
+                            f"csrw htinst, x{tmp_reg} # htinst = nonzero",
+                        ],
+                    ),
                     test_data.add_testcase(
                         f"priv_{priv}_{int_type}_mode_{mode}_enable_{enable}",
                         cp,
@@ -116,9 +121,8 @@ def _generate_cp_trigger_s(test_data: TestData, test_chunks: list[TestChunk], su
                     f"RVTEST_CLR_{macro}_INT_{flavor(priv)} # Clear the interrupt if the handler hasn't done so",
                     *mode_exit(suite, priv),
                     f"#endif // UDB_STVEC_MODES_{mode}",
-                    f"#endif // {guard}",
-                    "",
                 ]
+                tc.code += [*ifdef(suite, priv, guard, case), ""]
 
     test_data.int_regs.return_register(tmp_reg)
 

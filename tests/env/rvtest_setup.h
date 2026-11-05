@@ -1082,7 +1082,8 @@
     .p2align 12
     rvtest_Sroot_pg_tbl:
       .zero(4096)                // 4KB page table
-    #ifdef H_SUPPORTED
+    // Only tests that use them (testgen defines RVTEST_USES_H_PAGE_TABLES) get the G-stage and VS-stage roots
+    #if defined(H_SUPPORTED) && defined(RVTEST_USES_H_PAGE_TABLES)
       .p2align 14
       rvtest_Hroot_pg_tbl:
         .zero(16384)               // 16KB page table

@@ -66,6 +66,13 @@
     bins HS_mode = {3'b001};
     bins VS_mode = {3'b101};
   }
+  priv_mode_s_maybevs: coverpoint {ins.prev.mode_virt, ins.prev.mode} {
+    type_option.weight = 0;
+    bins S_mode = {3'b001};
+    `ifdef H_SUPPORTED
+    bins VS_mode = {3'b101};
+    `endif
+  }
   priv_mode_s_u: coverpoint {ins.prev.mode_virt, ins.prev.mode} {
     type_option.weight = 0;
     bins S_mode = {3'b001};
@@ -92,6 +99,13 @@
     type_option.weight = 0;
     bins U_mode = {3'b000};
     bins VU_mode = {3'b100};
+  }
+  priv_mode_u_maybevu: coverpoint {ins.prev.mode_virt, ins.prev.mode} {
+    type_option.weight = 0;
+    bins U_mode = {3'b000};
+    `ifdef H_SUPPORTED
+    bins VU_mode = {3'b100};
+    `endif
   }
 
 
@@ -149,6 +163,14 @@
     bins HS_mode = {3'b001};
     bins U_mode = {3'b000};
     bins VU_mode = {3'b100};
+  }
+  priv_mode_s_u_maybevu: coverpoint {ins.prev.mode_virt, ins.prev.mode} {
+    type_option.weight = 0;
+    bins S_mode = {3'b001};
+    bins U_mode = {3'b000};
+    `ifdef H_SUPPORTED
+    bins VU_mode = {3'b100};
+    `endif
   }
 
   priv_mode_vs_u_vu: coverpoint {ins.prev.mode_virt, ins.prev.mode} {

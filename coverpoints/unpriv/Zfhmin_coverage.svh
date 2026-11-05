@@ -801,8 +801,9 @@ endgroup
 // ---------------------
 `endif
 function void zfhmin_sample(int hart, int issue, ins_t ins);
+    string inst_name = traceDataQ[hart][issue][0].inst_name;
 
-    case (traceDataQ[hart][issue][0].inst_name)
+    case (inst_name)
 `ifdef D_SUPPORTED
         "fcvt.d.h"     : begin
             ZfhminD_fcvt_d_h_cg.sample(ins);

@@ -31,6 +31,7 @@ implemented_extensions:
   - { name: Zmmul, version: "= 1.0.0" }
   - { name: C, version: "= 2.0" }
   - { name: Zca, version: "= 1.0.0" }
+  - { name: Zicclsm, version: "= 1.0.0" }
   - { name: Zicsr, version: "= 2.0" }
   # Zba, Zbb, Zbc and Zbs are built in (bitmanip_zba/zbb/zbc/zbs=1). Their 0.94 encodings match
   # the ratified ones. Zbc includes clmul and clmulh, which make up Zbkc. Zbkb and Zbkx need

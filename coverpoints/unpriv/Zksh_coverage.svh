@@ -127,8 +127,9 @@ covergroup Zksh_sm3p1_cg with function sample(ins_t ins);
 endgroup
 // ---------------------
 function void zksh_sample(int hart, int issue, ins_t ins);
+    string inst_name = traceDataQ[hart][issue][0].inst_name;
 
-    case (traceDataQ[hart][issue][0].inst_name)
+    case (inst_name)
         "sm3p0"     : begin
             Zksh_sm3p0_cg.sample(ins);
         end

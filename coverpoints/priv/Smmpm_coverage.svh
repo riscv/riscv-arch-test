@@ -40,10 +40,7 @@
     `include "general/RISCV_coverage_pmm_coverpoints.svh"
 
     `ifdef S_SUPPORTED  //As MXR is read-only zero if S mode is not supported
-        mxr_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mxr") {
-            bins mxr_1 = {1'b1};   // MXR=1: execute-only pages readable
-            bins mxr_0 = {1'b0};   // MXR=0: normal permission checks
-        }
+        mxr_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mxr")[0] {}
     `endif
 
     `ifdef U_SUPPORTED  // MPRV is read-only zero if U mode is not supported
@@ -82,9 +79,13 @@
         cp_pmm_mxr: cross priv_mode_m, pmm, mxr_bit, a_upper_bits, sw_lw_insn;
     `endif
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-        // Fault crosses confirm lw/sw executed in M-mode at the illegal address.
-        cp_hardware_csr_writes_fault: cross priv_mode_m, pmm, a_upper_bits, sw_lw_insn, illegal_addr;
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
+        // Fault cross confirms lw executed in M-mode at the illegal address.
+        cp_hardware_csr_writes_fault_load: cross priv_mode_m, pmm, a_upper_bits, lw_insn, illegal_addr_load;
+    `endif
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
+        // Fault cross confirms sw executed in M-mode at the illegal address.
+        cp_hardware_csr_writes_fault_store: cross priv_mode_m, pmm, a_upper_bits, sw_insn, illegal_addr_store;
     `endif
 
 endgroup

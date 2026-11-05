@@ -97,14 +97,8 @@ covergroup SdtrigSm_tcontrol_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_standard_coverpoints.svh"
     `include "general/RISCV_coverage_sdtrig_coverpoints.svh"
 
-    mte: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tcontrol", "mte")[0] {
-        bins disabled = {1'b0};
-        bins enabled  = {1'b1};
-    }
-    mpte: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tcontrol", "mpte")[0] {
-        bins disabled = {1'b0};
-        bins enabled  = {1'b1};
-    }
+    mte: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tcontrol", "mte")[0] {}
+    mpte: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tcontrol", "mpte")[0] {}
     tcontrol_exec_outcome: coverpoint sdtrig_tcontrol_exec_outcome(ins) {
         bins mte_0_not_fired = {2'd1};
         bins mte_1_fired     = {2'd2};
@@ -424,10 +418,10 @@ covergroup SdtrigSm_mcontrol6_cg with function sample(ins_t ins);
         cp_mcontrol6_size_data: cross priv_mode_m, triggernum_mcontrol6, tdata1_type_mcontrol6, tdata1_m_on, tdata1_chain_disabled, tdata1_select_data, tdata1_xsl_store, tdata1_size_data, size_data_case, size_data_outcome; // NTRIG * sizes * 3
     `endif
     `ifdef SDTRIG_MATCH_SIZE_STORE
-        cp_mcontrol6_match_size_store:   cross priv_mode_m, triggernum_mcontrol6, ms_match, ms_size_data, ms_store_case;  // NTRIG * legal matches * legal sizes * 3
+        cp_mcontrol6_match_size_store:   cross priv_mode_m, triggernum_mcontrol6, ms_match, tdata1_size_data, ms_store_case;  // NTRIG * legal matches * legal sizes * 3
     `endif
     `ifdef SDTRIG_MATCH_SIZE_LOAD
-        cp_mcontrol6_match_size_load:    cross priv_mode_m, triggernum_mcontrol6, ms_match, ms_size_data, ms_load_case;   // NTRIG * legal matches * legal sizes * 3
+        cp_mcontrol6_match_size_load:    cross priv_mode_m, triggernum_mcontrol6, ms_match, tdata1_size_data, ms_load_case;   // NTRIG * legal matches * legal sizes * 3
     `endif
     `ifdef SDTRIG_MATCH_SIZE_EXEC
         cp_mcontrol6_match_size_execute: cross priv_mode_m, triggernum_mcontrol6, ms_match_exec, ms_size_exec, ms_exec_case; // NTRIG * legal matches * sizes 2/3 * 2

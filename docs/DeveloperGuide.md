@@ -677,13 +677,17 @@ The coverpoints given in the spreadsheet are usually cross-products of simpler c
     adr_LSBs: coverpoint {ins.current.rs1_val + ins.current.imm}[2:0]  {
         // auto fills 000 through 111
     }
-    illegal_address: coverpoint ins.current.imm + ins.current.rs1_val {
-        bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
-    }
-
     cp_store_address_misaligned:             cross storeops, adr_LSBs;
-    cp_store_access_fault:                   cross storeops, illegal_address;
+
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
+        illegal_address: coverpoint ins.current.imm + ins.current.rs1_val {
+            bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_STORE};
+        }
+        cp_store_access_fault:               cross storeops, illegal_address;
+    `endif
 ```
+
+Access-fault tests and coverpoints use the `RVMODEL_ACCESS_FAULT_ADDRESS_<TYPE>` macro for their type of access: `LOAD`, `STORE`, `FETCH`, `AMO` or `LRSC`. Do not use `RVMODEL_ACCESS_FAULT_ADDRESS` directly. Put each access type in its own `#ifdef` or `` `ifdef `` block, so a DUT that does not define one type still runs the others. A cross must not combine two access types; split it into one cross for each type. A DUT can give precise access faults for some access types and not for others. The privileged specification permits imprecise bus-error reporting instead of precise access faults (`norm:pma_imprecise_ok`). A DUT defines only the macros for types with precise access faults. See the `RVMODEL_ACCESS_FAULT_ADDRESS` notes in the CTP abstraction chapter.
 
 #### Extending RVVI
 
@@ -765,6 +769,8 @@ A suite can also hold tests that need an extension beyond the suite's own, such 
 ## Debugging Coverage
 
 After writing initial drafts of coverpoints and tests, run them with `make coverage EXTENSIONS=ExceptionsZc`. Omit the `--jobs` flag so they run in order and it is easier to localize which one failed. By giving the name of the test suite (e.g. ExceptionsZc), you only run the new suite of interest, saving runtime.
+
+Set `COVERAGE_SIMULATOR=verilator` to collect coverage with Verilator:
 
 You can expect syntax errors in the tests that are easy to locate based on the compiler messages.
 

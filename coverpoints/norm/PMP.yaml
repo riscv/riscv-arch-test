@@ -46,6 +46,7 @@ normative_rule_definitions:
         "PMP_Zaamo_cg/cp_cfg_RW",
         "PMP_Zalrsc_cg/cp_cfg_RW",
         "PMP_Zca_cg/cp_cfg_W",
+        "PMP_HSvZicbo_cg/cp_pmp",
         "PMP_Zicbo_cg/cp_cbo_zero",
         "PMP_H_cg/{cp_cfg_X,cp_cfg_R,cp_cfg_W}",
         "PMP_H_hlv_cg/cp_pmp_hlv",
@@ -483,7 +484,11 @@ normative_rule_definitions:
   # defined in the CMO chapter; when such access is not permitted, the instruction raises a store
   # access-fault exception.
   - name: pmp_cbm_fault
-    coverpoint: ["PMP_Zicbo_cg/{cp_cbo_inval, cp_cbo_flush, cp_cbo_clean}"]
+    coverpoint:
+      [
+        "PMP_Zicbo_cg/{cp_cbo_inval, cp_cbo_flush, cp_cbo_clean}",
+        "PMP_HSvZicbo_cg/cp_pmp",
+      ]
 
   # If access to the cache block is not permitted, a cache-block zero instruction
   # raises a store page-fault or store guest-page-fault exception if address
@@ -603,13 +608,14 @@ normative_rule_definitions:
         "PMP_Svadu_cg/{Abit_unset_pmpW_unset_exec_s, Abit_unset_pmpW_unset_read_s, Abit_unset_pmpW_unset_write_u, Dbit_unset_pmpW_unset_write_s}",
       ]
 
-  # PMP checks the supervisor physical address in every virtualization mode
+  # PMP checks the supervisor physical address in every virtualization mode, including CBOs from VS-mode or VU-mode
   - name: H_pmp
     coverpoint:
       [
         "PMP_H_cg/{cp_cfg_X,cp_cfg_R}",
         "PMP_H_cg/cp_mprv_lw",
         "PMP_H_guest_cg/cp_pmp_after_translation",
+        "PMP_HSvZicbo_cg/cp_pmp",
       ]
 
   # Representative coverpoints; also PMP_H_hlv_cg/cp_pmp_hsv

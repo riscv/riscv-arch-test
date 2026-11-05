@@ -414,10 +414,8 @@ covergroup Zca_c_beqz_cg with function sample(ins_t ins);
         bins b_m256 = {-256};
     }
 
-    cp_offset : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
-        // Branch Immediate Offset value
-        bins neg  = {[$:-1]};
-        bins pos  = {[1:$]};
+    cp_offset : coverpoint ins.current.imm[`UDB_MXLEN-1]  iff (ins.trap == 0 & ins.current.imm != 0)  {
+        // Branch Immediate Offset value is forward/backward
     }
 
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
@@ -488,10 +486,8 @@ covergroup Zca_c_bnez_cg with function sample(ins_t ins);
         bins b_m256 = {-256};
     }
 
-    cp_offset : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
-        // Branch Immediate Offset value
-        bins neg  = {[$:-1]};
-        bins pos  = {[1:$]};
+    cp_offset : coverpoint ins.current.imm[`UDB_MXLEN-1]  iff (ins.trap == 0 & ins.current.imm != 0)  {
+        // Branch Immediate Offset value is forward/backward
     }
 
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
@@ -569,10 +565,8 @@ covergroup Zca_c_j_cg with function sample(ins_t ins);
         bins b_m2048 = {-2048};
     }
 
-    cp_offset : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
-        // Branch Immediate Offset value
-        bins neg  = {[$:-1]};
-        bins pos  = {[1:$]};
+    cp_offset : coverpoint ins.current.imm[`UDB_MXLEN-1]  iff (ins.trap == 0 & ins.current.imm != 0)  {
+        // Branch Immediate Offset value is forward/backward
     }
 
 endgroup
@@ -584,10 +578,8 @@ covergroup Zca_c_jalr_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_offset : coverpoint signed'(ins.current.rs1_val) - ins.get_pc() iff (ins.trap == 0 )  {
-        // c.jalr / c.jr destination in rs1
-        bins neg  = {[$:-1]};
-        bins pos  = {[1:$]};
+    cp_offset : coverpoint {ins.current.rs1_val - ins.get_pc()}[`UDB_MXLEN-1]  iff (ins.trap == 0 )  {
+        // c.jalr / c.jr destination in rs1 is forward/backward
     }
     cp_offset_lsbs : coverpoint ins.current.rs1_val[1:0]  iff (ins.trap == 0 )  {
         // c.jalr / c.jr destination is a multiple of 4 + 0/1/2/3
@@ -607,10 +599,8 @@ covergroup Zca_c_jr_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_offset : coverpoint signed'(ins.current.rs1_val) - ins.get_pc() iff (ins.trap == 0 )  {
-        // c.jalr / c.jr destination in rs1
-        bins neg  = {[$:-1]};
-        bins pos  = {[1:$]};
+    cp_offset : coverpoint {ins.current.rs1_val - ins.get_pc()}[`UDB_MXLEN-1]  iff (ins.trap == 0 )  {
+        // c.jalr / c.jr destination in rs1 is forward/backward
     }
     cp_offset_lsbs : coverpoint ins.current.rs1_val[1:0]  iff (ins.trap == 0 )  {
         // c.jalr / c.jr destination is a multiple of 4 + 0/1/2/3
@@ -1504,10 +1494,8 @@ covergroup Zca_c_jal_cg with function sample(ins_t ins);
         bins b_m2048 = {-2048};
     }
 
-    cp_offset : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
-        // Branch Immediate Offset value
-        bins neg  = {[$:-1]};
-        bins pos  = {[1:$]};
+    cp_offset : coverpoint ins.current.imm[`UDB_MXLEN-1]  iff (ins.trap == 0 & ins.current.imm != 0)  {
+        // Branch Immediate Offset value is forward/backward
     }
 
 endgroup
@@ -1952,8 +1940,9 @@ endgroup
 // ---------------------
 `endif
 function void zca_sample(int hart, int issue, ins_t ins);
+    string inst_name = traceDataQ[hart][issue][0].inst_name;
 
-    case (traceDataQ[hart][issue][0].inst_name)
+    case (inst_name)
         "c.add"     : begin
             Zca_c_add_cg.sample(ins);
         end

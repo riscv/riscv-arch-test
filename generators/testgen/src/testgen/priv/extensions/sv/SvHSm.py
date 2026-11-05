@@ -26,6 +26,7 @@ from testgen.priv.extensions.sv.page_tables import (
     create_page_mapping,
 )
 from testgen.priv.extensions.sv.SvH import (
+    CBO_OPS,
     G_LEAF,
     LOADS,
     MISALIGNED_PARAMS,
@@ -128,23 +129,14 @@ def _t_mprv_vsatp(test_data: TestData, test_chunks: list[TestChunk], vs: SvMode)
     test_chunks.append(test_data.end_test_chunk())
 
 
-def _t_mprv_hgatp(test_data: TestData, test_chunks: list[TestChunk], g: SvMode) -> None:
-    """HLV and HSV use the G-stage whatever MPRV is; loads and stores use it only with MPRV = 1 and MPV = 1."""
-    chunk = begin_chunk(
-        test_data,
-        f"HSm_{g.name}_mprv_hgatp",
-        "cp_hgatp_mprv_effects",
-        "In M-mode with vsatp and satp Bare and a G-stage identity map that makes svh_page execute-only, execute\n"
-        "lw, sw, hlv.w and hsv.w on svh_page with mstatus.MPRV = 0, 1 and MPP/MPV = M, M with MPV = 1, HS, VS, U,\n"
-        "VU.  Only hlv.w, hsv.w, and lw and sw with MPRV = 1, MPV = 1 and MPP = S or U, raise guest-page faults",
-    )
+def _g_stage_svh_page(test_data: TestData, g: SvMode, flags: PteFlags) -> list[str]:
+    """Map svh_page to itself with a G-stage kilopage leaf with ``flags``, with vsatp and satp Bare."""
     pte, addr, tmp = test_data.int_regs.get_registers(3)
-    # M-mode makes every access, so no guest code alias is needed
-    code = [
+    lines = [
         *create_page_mapping(
             g,
             leaf_level=0,
-            leaf_flags=perm_flags("x", True),
+            leaf_flags=flags,
             virtual_address="svh_page",
             physical_address="svh_page",
             regs=(pte, addr, tmp),
@@ -158,6 +150,21 @@ def _t_mprv_hgatp(test_data: TestData, test_chunks: list[TestChunk], g: SvMode) 
         "hfence.vvma",
     ]
     test_data.int_regs.return_registers([pte, addr, tmp])
+    return lines
+
+
+def _t_mprv_hgatp(test_data: TestData, test_chunks: list[TestChunk], g: SvMode) -> None:
+    """HLV and HSV use the G-stage whatever MPRV is; loads and stores use it only with MPRV = 1 and MPV = 1."""
+    chunk = begin_chunk(
+        test_data,
+        f"HSm_{g.name}_mprv_hgatp",
+        "cp_hgatp_mprv_effects",
+        "In M-mode with vsatp and satp Bare and a G-stage identity map that makes svh_page execute-only, execute\n"
+        "lw, sw, hlv.w and hsv.w on svh_page with mstatus.MPRV = 0, 1 and MPP/MPV = M, M with MPV = 1, HS, VS, U,\n"
+        "VU.  Only hlv.w, hsv.w, and lw and sw with MPRV = 1, MPV = 1 and MPP = S or U, raise guest-page faults",
+    )
+    # M-mode makes every access, so no guest code alias is needed
+    code = _g_stage_svh_page(test_data, g, perm_flags("x", True))
     for mprv in (0, 1):
         for mode, mpp, mpv in MPP_MPV:
             name = f"mprv{mprv}_{mode}"
@@ -239,6 +246,59 @@ def _t_mprv_sum_mxr(test_data: TestData, test_chunks: list[TestChunk], g: SvMode
     code.extend(status_bits("mstatus", reg))
     test_data.int_regs.return_register(reg)
     chunk.code.extend([*code, *guest_chunk_teardown(test_data, g.xlen)])
+    test_chunks.append(test_data.end_test_chunk())
+
+
+def _t_mprv_cbo(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs: SvMode, family: str) -> None:
+    """CBOs in M-mode follow MPRV, MPP and MPV like stores (cmo.adoc), but menvcfg enables them by the mode that
+    executes them, which is M-mode, so they run with the menvcfg CBO fields clear."""
+    chunk = begin_chunk(
+        test_data,
+        f"HSm_{g.name}_mprv_{family}",
+        "cp_mprv_cbo_vsatp, cp_mprv_cbo_hgatp, cp_mprv_cbo_mtinst",
+        f"In M-mode with the menvcfg CBO fields clear, execute {', '.join(CBO_OPS[family])}:\n"
+        "with mstatus.MPRV = 1, MPV = 1 and MPP = S, U, hgatp and satp Bare, on VS-stage supervisor and user\n"
+        "pages (a store page fault where the page's U does not match MPP);\n"
+        "with vsatp and satp Bare, on a page whose G-stage leaf has U = 0, with MPRV = 0, 1 and MPP/MPV = M,\n"
+        "M with MPV = 1, HS, VS, U, VU.  Only MPRV = 1 with MPV = 1 and MPP = S or U uses the G-stage, which raises a\n"
+        "store guest-page fault with the transformed CBO or zero in mtinst",
+    )
+    ops = CBO_OPS[family]
+    reg = test_data.int_regs.get_register()
+    enables = "MENVCFG_CBIE | MENVCFG_CBCFE | MENVCFG_CBZE"
+    code = [f"LI(x{reg}, {enables})", f"csrc menvcfg, x{reg}"]
+    # VS-stage translation with MPRV = 1 and MPV = 1
+    code.extend([*guest_chunk_setup(test_data, None, vs, "VS"), "csrw satp, zero", "sfence.vma"])
+    for mpp_name, mpp in (("s", "MPP_SMODE"), ("u", "0")):
+        for user in (False, True):
+            code.extend(map_test_page(test_data, None, vs, vs_flags=PteFlags(user=user)))
+            name = f"vs_mpp_{mpp_name}_u{int(user)}"
+            code.extend(
+                mprv_access(test_data, "cp_mprv_cbo_vsatp", name, vs.xlen, vs.data_va, mprv=1, mpp=mpp, mpv=1, ops=ops)
+            )
+    code.extend(guest_chunk_teardown(test_data, vs.xlen))
+    # G-stage translation, which only MPRV = 1 with MPV = 1 uses.  Every G-stage access is a user access, so a leaf
+    # with U = 0 faults.
+    code.extend(_g_stage_svh_page(test_data, g, PteFlags()))
+    for mprv in (0, 1):
+        for mode, mpp, mpv in MPP_MPV:
+            code.extend(
+                mprv_access(
+                    test_data,
+                    "cp_mprv_cbo_hgatp",
+                    f"g_mprv{mprv}_{mode}",
+                    g.xlen,
+                    "svh_page",
+                    mprv=mprv,
+                    mpp=mpp,
+                    mpv=mpv,
+                    ops=ops,
+                    va_is_label=True,
+                )
+            )
+    code.extend([*guest_chunk_teardown(test_data, g.xlen), f"LI(x{reg}, {enables})", f"csrs menvcfg, x{reg}"])
+    test_data.int_regs.return_register(reg)
+    chunk.code.extend(code)
     test_chunks.append(test_data.end_test_chunk())
 
 
@@ -385,3 +445,49 @@ def make_svhsm_ldst_straddle_sv39(test_data: TestData) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
     _t_straddle_m(test_data, test_chunks, SV39X4, VS_SV39, fetch=False)
     return test_chunks
+
+
+def _make_svhsm_cbo(test_data: TestData, g: SvMode, vs: SvMode, family: str) -> list[TestChunk]:
+    test_chunks: list[TestChunk] = []
+    _t_mprv_cbo(test_data, test_chunks, g, vs, family)
+    return test_chunks
+
+
+@add_priv_test_generator(
+    "Sv",
+    required_extensions=["Sm", "H", "Zicbom"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+    params=["SV32X4_TRANSLATION: true", "SV32_VSMODE_TRANSLATION: true"],
+)
+def make_svhsm_sv32_zicbom(test_data: TestData) -> list[TestChunk]:
+    return _make_svhsm_cbo(test_data, SV32X4, VS_SV32, "zicbom")
+
+
+@add_priv_test_generator(
+    "Sv",
+    required_extensions=["Sm", "H", "Zicboz"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+    params=["SV32X4_TRANSLATION: true", "SV32_VSMODE_TRANSLATION: true"],
+)
+def make_svhsm_sv32_zicboz(test_data: TestData) -> list[TestChunk]:
+    return _make_svhsm_cbo(test_data, SV32X4, VS_SV32, "zicboz")
+
+
+@add_priv_test_generator(
+    "Sv",
+    required_extensions=["Sm", "H", "Zicbom"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+    params=["SV39X4_TRANSLATION: true", "SV39_VSMODE_TRANSLATION: true"],
+)
+def make_svhsm_sv39_zicbom(test_data: TestData) -> list[TestChunk]:
+    return _make_svhsm_cbo(test_data, SV39X4, VS_SV39, "zicbom")
+
+
+@add_priv_test_generator(
+    "Sv",
+    required_extensions=["Sm", "H", "Zicboz"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+    params=["SV39X4_TRANSLATION: true", "SV39_VSMODE_TRANSLATION: true"],
+)
+def make_svhsm_sv39_zicboz(test_data: TestData) -> list[TestChunk]:
+    return _make_svhsm_cbo(test_data, SV39X4, VS_SV39, "zicboz")

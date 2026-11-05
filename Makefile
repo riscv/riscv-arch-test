@@ -18,19 +18,17 @@ EXCLUDE_EXTENSIONS ?=
 CERTIFICATE ?=
 ENABLE_EXPERIMENTAL_EXTENSIONS ?=
 
-# DEBUG, FAST, VERBOSE, and CLEAN_INTERMEDIATES are runtime options for controlling build output. DEBUG is mutually exclusive with FAST and CLEAN_INTERMEDIATES.
+# DEBUG, VERBOSE, and CLEAN_INTERMEDIATES are runtime options for controlling build output. DEBUG is mutually exclusive with CLEAN_INTERMEDIATES.
 # Set to True to enable, or leave blank to disable.
-# DEBUG enables debug output (signature objdump, trace files, and trap report). This will slow down ELF generation significantly.
-# FAST disables objdump generation for faster builds. This speeds up ELF generation significantly, but makes debugging mismatches harder.
+# DEBUG enables debug output (ELF objdumps, trace files, and trap report). This will slow down ELF generation significantly.
 # VERBOSE implies DEBUG, serializes all commands (JOBS=1), and prints each command as it is issued.
-# CLEAN_INTERMEDIATES deletes each config's intermediate build/ dir after a successful build to save disk space (only final ELFs/objdumps are kept).
+# CLEAN_INTERMEDIATES deletes each config's intermediate build/ dir after a successful build to save disk space (only final ELFs are kept).
 DEBUG       ?=
-FAST        ?=
 VERBOSE     ?=
 CLEAN_INTERMEDIATES ?=
 
 # COVERAGE_SIMULATOR is only used when collecting coverage (make coverage)
-COVERAGE_SIMULATOR ?= questa # Coverage simulator backend: questa or vcs
+COVERAGE_SIMULATOR ?= questa # Coverage simulator backend: questa, vcs, or verilator
 
 # WORKDIR is where all of the generated files are created
 WORKDIR     ?= work
@@ -153,10 +151,9 @@ help:
 	  'ENABLE_EXPERIMENTAL_EXTENSIONS' 'Enable tests for unratified extensions' \
 	  'JOBS'                'Parallel build jobs (0 = auto, also honors -j)' \
 	  'DEBUG'               'Emit objdump/trace/trap reports (slower)' \
-	  'FAST'                'Skip objdump for faster ELF builds' \
 	  'CLEAN_INTERMEDIATES' 'Delete intermediate build/ dirs after build (saves disk)' \
 	  'VERBOSE'             'Implies DEBUG, JOBS=1, prints each command' \
-	  'COVERAGE_SIMULATOR'  'questa or vcs (used with make coverage)'
+	  'COVERAGE_SIMULATOR'  'questa, vcs, or verilator (used with make coverage)'
 	@printf '\n\033[1mExamples:\033[0m\n'
 	@printf '  make CONFIG_FILES=config/spike/spike-rv64-max/test_config.yaml  # build ELFs for one config\n'
 	@printf '  make spike-rv64-max                  # build & run a single config\n'
@@ -187,7 +184,6 @@ elfs: check-config-files tests
 		$(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS)) \
 		$(if $(ENABLE_EXPERIMENTAL_EXTENSIONS),--enable-experimental-extensions) \
 		$(if $(DEBUG),--debug) \
-		$(if $(FAST),--fast) \
 		$(if $(CLEAN_INTERMEDIATES),--clean-intermediates) \
 		$(if $(VERBOSE),--verbose) \
 		$(if $(COVERAGE),--coverage) \

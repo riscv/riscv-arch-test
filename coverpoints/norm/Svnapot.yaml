@@ -56,4 +56,4 @@ normative_rule_definitions:
 
   # If the hypervisor extension is also implemented, Svnapot is also supported in G-stage translation.
   - name: Svnapot_hyp_gstage
-    coverpoint: ["TODO: test in hypervisor tests"]
+    coverpoint: ["Svnapot_H_cg/{cp_hgatp_napot,cp_twostage_napot}"]

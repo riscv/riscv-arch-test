@@ -1,0 +1,29 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Sstc_HSm
+notes: |-
+  The suite boots to M-mode, where vstimecmp is always accessible.
+  time has no reset value, so a check whose result depends on time compares hip.VSTIP with the comparison computed from a read of time.
+  A change of the comparison reaches hip.VSTIP eventually, so hip is read after waiting RVMODEL_INTERRUPT_LATENCY.
+  cp_vstip and cp_htimedelta are also in Sstc_H, from HS-mode.
+coverpoints:
+  - heading: In M-Mode
+  - name: cp_vstip
+    goal: OR of vstimecmp and hvip
+    description: Cross of menvcfg.STCE = {0/1}, henvcfg.STCE = {0/1}, hvip.VSTIP = {0/1}, htimedelta = 0, vstimecmp = {0, all 1s}.  Check hip.VSTIP.  henvcfg.STCE = 1 with menvcfg.STCE = 0 is skipped because henvcfg.STCE is read-only zero then.  For RV32, htimedeltah and vstimecmph are also written.
+    expectation: If both STCE = 1 and vstimecmp = 0, hip.VSTIP = 1.  Else hip.VSTIP = hvip.VSTIP.
+    bins: 3 STCE * 2 hvip * 2 vstimecmp
+  - name: cp_htimedelta
+    goal: htimedelta affects vstimecmp
+    description: menvcfg.STCE = 1, henvcfg.STCE = 1, hvip.VSTIP = 0, htimedelta = {0, 2^30, 2^32-1, 2^60, -1, -2^30, -2^60}, vstimecmp = {0, 2^29, 2^31, 2^61, -2^29, -2^31, -2^61}.  Check hip.VSTIP against the value computed from a read of time.  For RV32, htimedeltah and vstimecmph are involved; htimedelta = 2^32-1 exercises the carry into the high half and -1 the 64-bit wrap.
+    expectation: hip.VSTIP = ((time + htimedelta) mod 2^64 >= vstimecmp), unsigned
+    bins: 7 htimedelta * 7 vstimecmp
+  - name: cp_m_vstimecmp_accessible
+    goal: TM and STCE control access depending on priv level
+    description: With cross of menvcfg.STCE = {0/1}, henvcfg.STCE = {0/1} mcounteren.TM = {0/1}, hcounteren.TM = {0/1} read vstimecmp.  For RV32, also vstimecmph.  henvcfg.STCE = 1 with menvcfg.STCE = 0 is skipped.
+    expectation: success
+    bins: 3 STCE * 2 mTM * 2 hTM * up to 2 regs
+  - name: cp_m_vstimecmp_accesses
+    goal: All types of access
+    description: With cross of menvcfg.STCE = 1, henvcfg.STCE = 0 mcounteren.TM = 0, hcounteren.TM =0, read/write (0s,1s)/set/clear vstimecmp.  For RV32, also vstimecmph
+    expectation: success
+    bins: 5 accesses * up to 2 regs

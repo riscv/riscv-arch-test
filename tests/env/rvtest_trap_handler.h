@@ -17,7 +17,7 @@
 //                                  deliberately NOT used as handler temporaries: they
 //                                  are the T-SBI argument/return registers.
 //    2. ARCHITECTURE CONSTANTS  — interrupt/exception cause counts, masks, mode encodings
-//    3. T-SBI DEFINITIONS       — Test Supervisor Binary Interface operation codes and macros
+//    3. T-SBI DEFINITIONS       — Test Supervisor Binary Interface operation codes (in tsbi.h)
 //    4. CSR RENAME MACROS       — XCSR_RENAME parameterizes CSR names by privilege mode
 //    5. T-SBI CONVENIENCE MACROS— Test-facing macros for the a0-based SBI calling convention
 //    6. DEFAULT INTERRUPT MACROS— Stubs for RVMODEL interrupt set/clear if not DUT-defined
@@ -110,7 +110,7 @@
 //    CSR_ACCESS       (a0=CSR opcode) — Execute CSR instruction; rd must be a0
 //    TSBI_LW/LWP4/LD  (a0=load opcode) — Load from physical address a1 into a0
 //    TSBI_SW/SWP4/SD  (a0=store opcode)— Store a2 to physical address a1
-//    Any other value                  — Returns -1 in a0 (TSBI_RESERVED_RET)
+//    Any other value                  — Fails the test or returns -1 in a0 (TSBI_RESERVED_RET)
 //
 //  Dispatch hierarchy:
 //    M-mode handler:  handles all operations directly
@@ -175,59 +175,6 @@
   #define NUM_SPECD_EXCPTCAUSES 24               // causes 0..23 have defined dispatch entries
   #define EXCPT_CAUSE_MSK ((1<<5)-1)             // 5-bit mask to extract cause index
 #endif
-
-//==============================================================================
-// SECTION 3: T-SBI (TEST SUPERVISOR BINARY INTERFACE) CONSTANTS
-//
-// These #define constants specify the operation codes passed in a0 when making
-// T-SBI calls via ecall. The handler checks a0 against these values to dispatch
-// the appropriate service routine.
-//
-// Design rationale for the operation code values:
-//   - GOTO_xMODE uses small integers (1-5) for easy range checking
-//   - ECALL_TEST uses the ecall instruction encoding (0x73) itself, which is
-//     mnemonic and doesn't conflict with GOTO codes or CSR encodings
-//   - CSR_ACCESS uses the actual CSR instruction encoding (opcode 0x73 with
-//     funct3 != 0), making it self-describing — the handler doesn't need a
-//     lookup table; it just executes the encoding directly
-//     GOTO_MMODE fast path
-//
-// Dispatch order in the handler:
-//   1. If (a0-1) < 5  -> GOTO_xMODE      (a0 in range [1..5])
-//   2. If a0 == 0x73  -> ECALL_TEST      (exact match on ecall encoding)
-//   3. If a0[6:0]==0x73 && a0[14:12]!=0 -> CSR_ACCESS (SYSTEM opcode with funct3)
-//   4. Otherwise       -> RESERVED        (return -1)
-//==============================================================================
-
-// a0 values for TSBI_GOTO_xMODE.
-#define TSBI_GOTO_MMODE     0x00000001
-#define TSBI_GOTO_SMODE     0x00000002
-#define TSBI_GOTO_UMODE     0x00000003
-#define TSBI_GOTO_VSMODE    0x00000004
-#define TSBI_GOTO_VUMODE    0x00000005
-#define TSBI_ECALL_TEST     0x00000073
-#define TSBI_SFENCE_VMA     0x12000073           // sfence.vma x0, x0: flush address-translation caches
-#define TSBI_LW             0x0005a503
-#define TSBI_LWP4           0x0045a503
-#define TSBI_LD             0x0005b503
-#define TSBI_SW             0x00c5a023
-#define TSBI_SWP4           0x00c5a223
-#define TSBI_SD             0x00c5b023
-
-// CSR access operation codes: the encoding of a CSR instruction with rs1 = a1 and rd = a0.
-// csr is a 12-bit CSR number such as CSR_MIP from encoding.h.
-#define TSBI_CSR_SET(csr)    ((((csr) & 0xFFF) << 20) | 0x0005a073)  // csrrs x0, csr, a1
-#define TSBI_CSR_CLEAR(csr)  ((((csr) & 0xFFF) << 20) | 0x0005b073)  // csrrc x0, csr, a1
-#define TSBI_CSR_WRITE(csr)  ((((csr) & 0xFFF) << 20) | 0x00059073)  // csrrw x0, csr, a1
-#define TSBI_CSR_READ(csr)   ((((csr) & 0xFFF) << 20) | 0x00002573)  // csrrs a0, csr, x0
-
-// CSR_ACCESS is not a single #define — it's any value where:
-//   bits[6:0]   == 0x73 (SYSTEM opcode)    AND
-//   bits[14:12] != 0    (funct3 selects CSRRW/CSRRS/CSRRC/CSRRWI/CSRRSI/CSRRCI)
-// The caller constructs this encoding. Example for "csrrs a0, mstatus, x0":
-//   encoding = 0x30002573  (CSR=0x300, rs1=x0=0, funct3=010, rd=a0=x10)
-
-#define TSBI_RESERVED_RET   (-1)                 // return value for unrecognized operations
 
 //==============================================================================
 // SECTION 5: MODE ENCODING CONSTANTS
@@ -880,7 +827,7 @@
 // SECTION 11: DEFAULT INTERRUPT MACROS
 //
 // If the DUT does not define RVMODEL_SET/CLR_xxx_INT macros, these defaults
-// are used. The default action is to jump to cleanup_epilogs, which terminates
+// are used. The default action is to jump to rvtest_code_end, which terminates
 // the test. This ensures that if an unexpected interrupt fires for an
 // undefined interrupt type, the test fails cleanly rather than hanging.
 //
@@ -888,7 +835,18 @@
 // RVMODEL macros in their rvmodel_macros.h to actually set/clear the interrupt.
 //==============================================================================
 
-#define RVTEST_DFLT_INT_HNDLR      la T1, cleanup_epilogs; jr T1  // default: abort test on unexpected interrupt
+#define RVTEST_DFLT_INT_HNDLR      la T1, rvtest_code_end; jr T1  // default: abort test on unexpected interrupt
+
+// Trap handler version. The M-mode handler uses rvtest_code_end_mmode: with Smdbltrp,
+// mstatus.MDT=1 there and the ecall to switch to M-mode is a double trap.
+.macro RVTEST_DFLT_INT_HNDLR_MODE __MODE__
+  .ifc \__MODE__ , M
+        LA(     T1, rvtest_code_end_mmode)
+  .else
+        LA(     T1, rvtest_code_end)
+  .endif
+        jr      T1
+.endm
 
 // M-mode interrupt defaults
 #ifndef RVMODEL_SET_MSW_INT
@@ -1120,6 +1078,7 @@ endcopy_\__MODE__\()tramp:
 abort\__MODE__\()test:
         LA(     T6, rvtest_trap_prolog_error)
         SREG    T5, 0(T6)
+        LI(     T5, 0)                              // mark setup failure as not yet reported
         LA(     T2, exit_\__MODE__\()cleanup)        // load address of cleanup label
         jr      T2                                   // long jump to cleanup; x7 does not set ELP (Zicfilp)
 
@@ -1278,11 +1237,15 @@ rvtest_\__MODE__\()prolog_done:
   .endr
 //---------- End-of-test trampoline ----------
 // Reached for impossible/unhandled interrupt causes.
-// Long-jumps to rvtest_Xend which is the epilog cleanup entry.
+// Long-jumps to the failure summary entry, which prints the summary and runs the epilogs.
 
 rvtest_\__MODE__\()endtest:                      // impossible cause landed here
-        LA(     T2, rvtest_\__MODE__\()end)      // load epilog cleanup address (may be far away)
-        jr      T2                                // long jump to epilog cleanup; x7 does not set ELP (Zicfilp)
+.ifc \__MODE__ , M
+        LA(     T2, rvtest_fail_summary_mmode)    // M-mode is already in trap context
+.else
+        LA(     T2, rvtest_fail_summary)          // switch to M-mode before cleanup
+.endif
+        jr      T2                                // long jump to failure summary and cleanup
 
 //---------- Common Handler ----------
 // Entered via jal from per-cause stub. T6 has the stub's return address
@@ -1414,6 +1377,9 @@ tsbi_\__MODE__\()goto_mode:
         addi    T4, T4, 4                            // T4 = mepc + 4 (instruction after ecall)
         csrw    CSR_XEPC, T4                         // mepc = mepc + 4
         TSBI_RELOCATE_EPC \__MODE__                  // move between code region and its alias if needed
+        LA(     T4, rvtest_current_mode)
+        addi    T2, a0, -TSBI_GOTO_MMODE             // 0 for M-mode, nonzero for lower modes
+        SREG    T2, 0(T4)
 
         // Dispatch based on caller's a0 (still live in a0 from the ecall)
         li      T2, TSBI_GOTO_MMODE                  // T2 = 1
@@ -1877,11 +1843,11 @@ tsbi_\__MODE__\()instr_dispatch:
         bltu    T5, T4, 2f                        // middle CSR below the key: search the upper half
         mv      T2, T3                            // key below the middle CSR: hi = middle
         bltu    T1, T2, 1b
-        j       tsbi_instr_not_found              // range empty: CSR is not in the table
+        j       tsbi_\__MODE__\()instr_not_found  // range empty: CSR is not in the table
 2:
         addi    T1, T3, 32                        // lo = group after the middle
         bltu    T1, T2, 1b
-        j       tsbi_instr_not_found              // range empty: CSR is not in the table
+        j       tsbi_\__MODE__\()instr_not_found  // range empty: CSR is not in the table
 3:
         mv      T2, T3                            // T2 = first entry of the matching group
         addi    T1, T3, 32                        // T1 = end of the group
@@ -1894,7 +1860,7 @@ tsbi_\__MODE__\()instr_dispatch:
         beq     T3, a0, tsbi_\__MODE__\()instr_found
         addi    T2, T2, 8                         // skip instruction and ret
         bltu    T2, T1, 4b
-        j       tsbi_instr_not_found              // CSR is in the table, but not this access
+        j       tsbi_\__MODE__\()instr_not_found  // CSR is in the table, but not this access
 
         // Other instructions: search tsbi_instr_table in order
 tsbi_\__MODE__\()instr_other:
@@ -1906,7 +1872,7 @@ tsbi_\__MODE__\()instr_other:
           lwu     T3, 0(T2)                       // T3 = table instruction
         #endif
         beq     T3, a0, tsbi_\__MODE__\()instr_found
-        beqz    T3, tsbi_instr_not_found
+        beqz    T3, tsbi_\__MODE__\()instr_not_found
         addi    T2, T2, 8                          // skip instruction and ret
         j       5b
 tsbi_\__MODE__\()instr_found:
@@ -1919,8 +1885,18 @@ tsbi_\__MODE__\()instr_found:
         j       resto_\__MODE__\()rtn           // restore handler regs and xret
 .endif
 
+.ifc \__MODE__ , S
+tsbi_\__MODE__\()instr_not_found:
+        // The epilogs read M-mode CSRs: switch to M-mode first. a1 keeps the encoding.
+        mv      a1, a0
+        RVTEST_TSBI_GOTO_MMODE
+        mv      a0, a1
+        j       tsbi_instr_not_found
+.endif
+
 .ifc \__MODE__ , M
 
+tsbi_Minstr_not_found:
 tsbi_instr_not_found:
         // Requested instruction is not in the table: print the offending encoding and
         // terminate the simulation. Registers may be clobbered freely: this never returns.
@@ -1936,7 +1912,8 @@ tsbi_instr_not_found:
         call    rvmodel_io_write_str
         LA(a0, failstr)                         // RVCP-SUMMARY: TEST FAILED line so the harness classifies this run
         call    rvmodel_io_write_str
-        call    rvmodel_halt_fail
+        LA(     T1, rvtest_fail_epilogs_mmode)
+        jr      T1
 
 // Emit the 32-byte group for one CSR: csrr a0 / csrw a1 / csrs a1 / csrc a1, each followed by ret.
 // The groups must be in ascending CSR-address order for the binary search, so each use checks that
@@ -2215,6 +2192,7 @@ tsbi_csr_mstatus:                                 // dispatcher fast path
 #ifdef H_SUPPORTED
         TSBI_CSR_INSTR_TABLE(0xE12) // hgeip
 #endif
+        TSBI_CSR_INSTR_TABLE(0xF14) // mhartid
 tsbi_csr_table_end:
 
 // Instructions other than CSR accesses, searched in order up to the sentinel.
@@ -2329,7 +2307,11 @@ tsbi_instr_table:
         // sig_end_canary but must never pass it.
         LA(     T3, sig_end_canary)
         add     T4, T1, T2                          // T4 = this mode's updated trap sig write pointer
-        bgtu    T4, T3, trap_sig_overflow           // overrun -> fail before corrupting the signature/tohost
+  .ifc \__MODE__ , M
+        bgtu    T4, T3, trap_sig_overflow_mmode     // overrun -> fail before corrupting the signature/tohost
+  .else
+        bgtu    T4, T3, trap_sig_overflow
+  .endif
 
 //---------- Trap Signature Word 0: vect+mode+status ----------
 // Packed format:
@@ -2682,7 +2664,11 @@ spcl_\__MODE__\()dispatch_handling:
         srli    T2, T2,1                //odd entry>0, remove LSB, normalizing to cause range
         beq     T5, T2, resto_\__MODE__\()rtn // case range matches, not an error, just noop
 1:
+  .ifc \__MODE__ , M
+        j       abort_test_mmode
+  .else
         j       abort_test
+  .endif
 
 // The entry is in T2 (x7) because a jump through x7 does not set ELP (Zicfilp), so the
 // handler routines need no landing pad. The 15*4 offset above counts the instructions
@@ -2801,8 +2787,8 @@ excpt_\__MODE__\()hndlr_tbl:
 
 // Each routine below clears its interrupt source through the RVTEST_CLR_*_INT
 // flavor for the mode this handler runs in: _M performs the operation directly,
-// _S (S/HS handlers) goes through T-SBI. Both flavors live in rvtest_setup.h and
-// exist only when Sm is supported; without Sm these interrupts are unexpected.
+// _S (S/HS handlers) goes through T-SBI. Both flavors live in rvtest_setup.h.
+// Without a standard M-mode these handlers are not emitted.
 #ifdef STANDARD_SM_SUPPORTED
 
 \__MODE__\()clr_Msw_int:                             // M-mode software interrupt
@@ -2843,7 +2829,7 @@ excpt_\__MODE__\()hndlr_tbl:
         CLR_INT_RETURN \__MODE__
 #else
 \__MODE__\()clr_Ssw_int:
-        RVTEST_DFLT_INT_HNDLR
+        RVTEST_DFLT_INT_HNDLR_MODE \__MODE__
 #endif
 
 #ifdef S_SUPPORTED
@@ -2877,9 +2863,9 @@ excpt_\__MODE__\()hndlr_tbl:
 2:      CLR_INT_RETURN \__MODE__
 #else
 \__MODE__\()clr_Stmr_int:
-        RVTEST_DFLT_INT_HNDLR
+        RVTEST_DFLT_INT_HNDLR_MODE \__MODE__
 \__MODE__\()clr_Sext_int:
-        RVTEST_DFLT_INT_HNDLR
+        RVTEST_DFLT_INT_HNDLR_MODE \__MODE__
 #endif
 
 #else
@@ -2889,7 +2875,7 @@ excpt_\__MODE__\()hndlr_tbl:
 \__MODE__\()clr_Mext_int:
 \__MODE__\()clr_Ssw_int:
 \__MODE__\()clr_Sext_int:
-        RVTEST_DFLT_INT_HNDLR
+        RVTEST_DFLT_INT_HNDLR_MODE \__MODE__
 
 \__MODE__\()clr_Stmr_int:                            // S-mode timer interrupt: STIP comes from stimecmp or
         la      T2, resto_\__MODE__\()rtn            //   an M-mode mip write, which the test clears;
@@ -2934,7 +2920,7 @@ excpt_\__MODE__\()hndlr_tbl:
 #ifdef RVTEST_SGEI_INTR_IMPL
 \__MODE__\()clr_Sgei_int:                            // supervisor guest external interrupt
   .ifc \__MODE__ , V
-        RVTEST_DFLT_INT_HNDLR
+        RVTEST_DFLT_INT_HNDLR_MODE \__MODE__
   .else
         CLR_INT_ENTER
         csrr    T3, CSR_HGEIP                        // T3 = pending guest external interrupts
@@ -2956,7 +2942,7 @@ excpt_\__MODE__\()hndlr_tbl:
   .endif
 #else
 \__MODE__\()clr_Sgei_int:                            // no guest interrupt files: hgeip is always 0
-        RVTEST_DFLT_INT_HNDLR
+        RVTEST_DFLT_INT_HNDLR_MODE \__MODE__
 #endif
 #endif
 
@@ -3004,7 +2990,9 @@ excpt_\__MODE__\()hndlr_tbl:
 //
 //  S-mode handler (stvec, S_SUPPORTED only): handles illegal-instruction
 //  traps delegated to S-mode via medeleg[2] (set by RVTEST_BOOT_TO_SMODE).
-//  Any other S-mode trap is forwarded to Strampoline.
+//  With H, it also handles the virtual-instruction traps from VS and VU
+//  delegated to HS-mode via medeleg[22] (hedeleg = 0), and sret returns to
+//  the virtual mode. Any other S-mode trap is forwarded to Strampoline.
 //
 //  Assumptions:
 //    - The tests do not enable interrupts when the handler uses vectored mode.
@@ -3163,9 +3151,14 @@ strap_handler_fastillegalinstr:
         SREG a1, rvmodel_sv_off+2*REGWIDTH(a0)  // stash caller's a1
         csrr a1, scause
         xori a1, a1, 2                  // a1 = 0 iff scause == 2 (illegal instruction)
-        bnez a1, fast_Sothertrap        // not illegal — restore regs and use the S framework handler
-                                        // (NOT fast_Mothertrap: the M trampoline's mscratch access
-                                        // is itself illegal from S-mode and creates a trap loop)
+#ifdef H_SUPPORTED
+        beqz a1, fast_Shandled_cause
+        xori a1, a1, 2 ^ 22             // a1 = 0 iff scause == 22 (virtual instruction, from VS or VU)
+#endif
+        bnez a1, fast_Sothertrap        // not illegal (or virtual) instruction — restore regs and use the S
+                                        // framework handler (NOT fast_Mothertrap: the M trampoline's mscratch
+                                        // access is itself illegal from S-mode and creates a trap loop)
+fast_Shandled_cause:
         // Same test-body check as the M handler: only traps taken in the test code segment
         // may use the fast path, because it signature-updates through x2, which is not
         // loaded until the end of boot. See the M handler for the full rationale.

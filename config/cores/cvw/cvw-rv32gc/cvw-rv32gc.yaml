@@ -63,6 +63,7 @@ implemented_extensions:
   - { name: Svadu, version: "= 1.0.0" }
   - { name: Svbare, version: "= 1.0.0" }
   - { name: Svinval, version: "= 1.0.0" }
+  - { name: Svvptc, version: "= 1.0.0" }
   - { name: Sm, version: "= 1.12.0" }
 
 params:
@@ -71,7 +72,7 @@ params:
   MISALIGNED_AMO: false
   LRSC_RESERVATION_STRATEGY: "reserve exactly enough to cover the access" # XLEN size reservation
   LRSC_FAIL_ON_VA_SYNONYM: false
-  LRSC_MISALIGNED_BEHAVIOR: "always raise access fault"
+  LRSC_MISALIGNED_BEHAVIOR: "always raise misaligned exception" # no Zicclsm: raised before translation (mmu.sv)
   LRSC_FAIL_ON_NON_EXACT_LRSC: true
   MUTABLE_MISA_A: false
   # M params
@@ -85,7 +86,7 @@ params:
   # C params
   MUTABLE_MISA_C: false
   # B params
-  MUTABLE_MISA_B: true
+  MUTABLE_MISA_B: false
   # CBO params
   CACHE_BLOCK_SIZE: 64
   FORCE_UPGRADE_CBO_INVAL_TO_FLUSH: false
@@ -156,7 +157,7 @@ params:
       true,
     ]
   STVEC_MODES: [0, 1]
-  STVEC_BASE_ALIGNMENT_VECTORED: 4
+  STVEC_BASE_ALIGNMENT_VECTORED: 64
   SATP_MODE_BARE: true
   TRAP_ON_ECALL_FROM_S: true
   MSTATUS_VS_LEGAL_VALUES: [0]
@@ -199,7 +200,7 @@ params:
   MTVEC_MODES: [0, 1]
   MTVEC_BASE_ALIGNMENT_DIRECT: 4
   MTVEC_BASE_ALIGNMENT_VECTORED: 64
-  MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom
   NUM_PMP_ENTRIES: 16
   PMP_GRANULARITY: 6
   NUM_USABLE_PMP_ENTRIES: 16
@@ -342,9 +343,10 @@ params:
       true,
       true,
     ]
+  # instruction-address-misaligned cannot occur with Zca, so medeleg[0] is read-only zero (csrm.sv MEDELEG_MASK)
   MEDELEG_DELEGATABLE:
     [
-      true,
+      false,
       true,
       true,
       true,

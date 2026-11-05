@@ -7589,8 +7589,9 @@ endgroup
 `endif
 `endif
 function void zkt_sample(int hart, int issue, ins_t ins);
+    string inst_name = traceDataQ[hart][issue][0].inst_name;
 
-    case (traceDataQ[hart][issue][0].inst_name)
+    case (inst_name)
         "add"     : begin
             Zkt_add_cg.sample(ins);
         end

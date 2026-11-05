@@ -1669,8 +1669,9 @@ covergroup Zabha_amoxor_h_cg with function sample(ins_t ins);
 endgroup
 // ---------------------
 function void zabha_sample(int hart, int issue, ins_t ins);
+    string inst_name = traceDataQ[hart][issue][0].inst_name;
 
-    case (traceDataQ[hart][issue][0].inst_name)
+    case (inst_name)
         "amoadd.b"     : begin
             Zabha_amoadd_b_cg.sample(ins);
         end

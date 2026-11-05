@@ -1,6 +1,6 @@
 # Mapping of normative rules to coverpoints for a test suite
 #
-# Rules for the Sm, S and U groups of the Ssstrict suite.
+# Rules for the Sm, S, U and H groups of the Ssstrict suite.
 # Only rules about reserved instruction encodings are listed here (plus the
 # rules defining Ssstrict). Reserved encodings whose legality depends on
 # system state (mstatus.TW/TSR/FS/VS, envcfg, stateen, misa, vtype, vstart,
@@ -29,7 +29,28 @@ normative_rule_definitions:
         "Ssstrict_S_scsr_cg/cp_csrw_edges",
         "Ssstrict_S_scsr_cg/cp_csrcs",
         "Ssstrict_S_instr_cg/cp_illegal",
+        "Ssstrict_H_vscsr_cg/cp_csrr",
+        "Ssstrict_H_vucsr_cg/cp_csrr",
+        "Ssstrict_H_instr_cg/cp_illegal",
       ]
+
+  # Ssstrict_H rules
+  # When V=1, a virtual-instruction exception (code 22) is normally raised instead of an illegal-instruction
+  # exception if the attempted instruction is HS-qualified but is prevented from executing when V=1.
+  # Ssstrict_H sweeps the hypervisor and VS CSR addresses from VS-mode, and the instruction encodings
+  # (including the hypervisor instructions) from VS-mode and VU-mode.
+  - name: H_cause_virtual_instruction
+    coverpoint:
+      [
+        "Ssstrict_H_vscsr_cg/{cp_csrr, cp_csrw_edges, cp_csrcs}",
+        "Ssstrict_H_instr_cg/cp_privileged_000",
+      ]
+  # When V=1 and XLEN=32, an invalid attempt to access a high-half CSR raises a virtual-instruction
+  # exception instead of an illegal-instruction exception if the same CSR instruction for the low half
+  # would raise a virtual-instruction exception. Ssstrict_H sweeps htimedeltah, henvcfgh, hedelegh and
+  # the hstateen*h CSRs from VS-mode.
+  - name: H_cause_virtual_instruction_high
+    coverpoint: ["Ssstrict_H_vscsr_cg/{cp_csrr, cp_csrw_edges, cp_csrcs}"]
 
   # insn:slliw[], insn:srliw[], and insn:sraiw[] encodings with imm[5]≠0 are reserved.
   - name: slliw_srliw_sraiw_imm5_rsv

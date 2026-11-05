@@ -9,7 +9,6 @@
 
 from dataclasses import replace
 
-from testgen.asm.helpers import gated
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.StateenCommon import (
@@ -65,8 +64,11 @@ def _se_tests(test_data: TestData, n: int, csr: str) -> list[str]:
     return feature_tests(test_data, CG, cp, feat, states=_mstateen_states(feat, f"mstateen{n}"), modes=modes, base="M")
 
 
-def _se0_only_walk(test_data: TestData, csr: str, guard: str) -> list[str]:
-    """Walk sstateen0 or hstateen0 from M-mode and S-mode with only mstateen0.SE0 set."""
+def _se0_only_walk(test_data: TestData, csr: str) -> list[str]:
+    """Walk sstateen0 or hstateen0 from M-mode and S-mode with only mstateen0.SE0 set.
+
+    The generator header requires S for sstateen0 and H for hstateen0.
+    """
     cp = f"cp_mstateen0_se0_only_{csr}"
     walk = walk_tests(test_data, CG, cp, csr, modes=["M", "S"], base="M")
     save, saveh, tmp = test_data.int_regs.get_registers(3)
@@ -90,7 +92,7 @@ def _se0_only_walk(test_data: TestData, csr: str, guard: str) -> list[str]:
         f"mv x{saveh}, zero",
     ]
     test_data.int_regs.return_registers([save, saveh, tmp])
-    return gated(lines, guard)
+    return lines
 
 
 @add_priv_test_generator(
@@ -121,14 +123,40 @@ def make_smstateen(test_data: TestData) -> list[TestChunk]:
         feat = FEATURES[key]
         tc = test_data.new_test_chunk(test_chunks)
         tc.code.extend(feature_tests(test_data, CG, cp, feat, states=_mstateen_states(feat), modes=MODES, base="M"))
-    for csr in ("sstateen", "hstateen"):
-        for n in range(4):
-            tc = test_data.new_test_chunk(test_chunks)
-            tc.code.extend(_se_tests(test_data, n, csr))
-    tc = test_data.new_test_chunk(test_chunks)
-    tc.code.extend(_se0_only_walk(test_data, "sstateen0", "defined(S_SUPPORTED)"))
-    tc = test_data.new_test_chunk(test_chunks)
-    tc.code.extend(_se0_only_walk(test_data, "hstateen0", "defined(H_SUPPORTED)"))
     stateen_walk_tests(test_data, test_chunks, CG, "cp_walking_ones", MSTATEEN_REGS, base="M")
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks
+
+
+def _se_csr_tests(test_data: TestData, csr: str) -> list[TestChunk]:
+    """Access sstateen<n> or hstateen<n> under mstateen<n>.SE<n>, and walk the 0 register with only SE0 set."""
+    test_chunks: list[TestChunk] = []
+    for n in range(4):
+        tc = test_data.new_test_chunk(test_chunks, csr if n == 0 else None)
+        tc.code.extend(_se_tests(test_data, n, csr))
+    tc = test_data.new_test_chunk(test_chunks)
+    tc.code.extend(_se0_only_walk(test_data, f"{csr}0"))
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks
+
+
+@add_priv_test_generator(
+    "Smstateen",
+    required_extensions=["Smstateen", "Sm", "S"],
+    march_extensions=["Smstateen"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_smstateen_s(test_data: TestData) -> list[TestChunk]:
+    """Generate Smstateen tests of sstateen, which exists only with S-mode."""
+    return _se_csr_tests(test_data, "sstateen")
+
+
+@add_priv_test_generator(
+    "Smstateen",
+    required_extensions=["Smstateen", "Sm", "H"],
+    march_extensions=["Smstateen"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_smstateen_h(test_data: TestData) -> list[TestChunk]:
+    """Generate Smstateen tests of hstateen, which exists only with H."""
+    return _se_csr_tests(test_data, "hstateen")

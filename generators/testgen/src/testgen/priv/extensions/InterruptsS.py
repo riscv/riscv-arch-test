@@ -47,7 +47,7 @@ SUITE = InterruptSuite(
     ie="sie",
     status={"csr": "sstatus", "mask": 0x22, "field": "SIE"},
     # cp_wfi: wake on the Sstc supervisor timer, enabled by sie.STIE, pending in sip.STIP
-    wfi={"guard": "SSTC_SUPPORTED", "timer": "SSTC", "ie": ("STIE", 0x20), "ip": ("sip", "STIP", 0x20), "stce": True},
+    wfi={"timer": "SSTC", "ie": ("STIE", 0x20), "ip": ("sip", "STIP", 0x20), "stce": True},
     deleg=[],
     hie=True,
 )
@@ -131,31 +131,64 @@ _COMMON_GENERATORS = [
 ]
 
 
+# One generator per test mode and section, each requiring the extensions its section needs, so no test file is
+# compiled away entirely on a target without them.  cp_wfi waits for the Sstc timer, and cp_trigger_vsti_sstc
+# needs H and Sstc.
 @add_priv_test_generator(SUITE.name, required_extensions=["S"], extra_defines=["#define BOOT_TO_SMODE"])
 def make_interruptss_s(test_data: TestData) -> list[TestChunk]:
     """InterruptsS tests that run in S-mode."""
-    generators = _COMMON_GENERATORS + [generate_cp_wfi, generate_cp_wfi_timeout, generate_cp_trigger_vsti_sstc]
+    generators = _COMMON_GENERATORS + [generate_cp_wfi_timeout]
     return emit_interrupts(test_data, SUITE, "S", generators)
+
+
+@add_priv_test_generator(SUITE.name, required_extensions=["S", "Sstc"], extra_defines=["#define BOOT_TO_SMODE"])
+def make_interruptss_s_wfi(test_data: TestData) -> list[TestChunk]:
+    """InterruptsS WFI test that runs in S-mode."""
+    return emit_interrupts(test_data, SUITE, "S", [generate_cp_wfi])
+
+
+@add_priv_test_generator(SUITE.name, required_extensions=["S", "H", "Sstc"], extra_defines=["#define BOOT_TO_SMODE"])
+def make_interruptss_s_vsti_sstc(test_data: TestData) -> list[TestChunk]:
+    """InterruptsS vstimecmp test that runs in S-mode."""
+    return emit_interrupts(test_data, SUITE, "S", [generate_cp_trigger_vsti_sstc])
 
 
 @add_priv_test_generator(SUITE.name, required_extensions=["S"], extra_defines=["#define BOOT_TO_SMODE"])
 def make_interruptss_u(test_data: TestData) -> list[TestChunk]:
     """InterruptsS tests that run in U-mode."""
     # U-mode WFI traps after a bounded time when S-mode is implemented, so only test the timeout.
-    generators = _COMMON_GENERATORS + [generate_cp_wfi_timeout, generate_cp_trigger_vsti_sstc]
+    generators = _COMMON_GENERATORS + [generate_cp_wfi_timeout]
     return emit_interrupts(test_data, SUITE, "U", generators)
+
+
+@add_priv_test_generator(SUITE.name, required_extensions=["S", "H", "Sstc"], extra_defines=["#define BOOT_TO_SMODE"])
+def make_interruptss_u_vsti_sstc(test_data: TestData) -> list[TestChunk]:
+    """InterruptsS vstimecmp test that runs in U-mode."""
+    return emit_interrupts(test_data, SUITE, "U", [generate_cp_trigger_vsti_sstc])
 
 
 @add_priv_test_generator(SUITE.name, required_extensions=["H"], extra_defines=["#define BOOT_TO_SMODE"])
 def make_interruptss_vs(test_data: TestData) -> list[TestChunk]:
     """InterruptsS tests that run in VS-mode."""
-    generators = _COMMON_GENERATORS + [generate_cp_wfi, generate_cp_wfi_timeout, generate_cp_trigger_vsti_sstc]
+    generators = _COMMON_GENERATORS + [generate_cp_wfi_timeout]
     return emit_interrupts(test_data, SUITE, "VS", generators)
+
+
+@add_priv_test_generator(SUITE.name, required_extensions=["H", "Sstc"], extra_defines=["#define BOOT_TO_SMODE"])
+def make_interruptss_vs_sstc(test_data: TestData) -> list[TestChunk]:
+    """InterruptsS WFI and vstimecmp tests that run in VS-mode."""
+    return emit_interrupts(test_data, SUITE, "VS", [generate_cp_wfi, generate_cp_trigger_vsti_sstc])
 
 
 @add_priv_test_generator(SUITE.name, required_extensions=["H"], extra_defines=["#define BOOT_TO_SMODE"])
 def make_interruptss_vu(test_data: TestData) -> list[TestChunk]:
     """InterruptsS tests that run in VU-mode."""
     # VU-mode WFI never waits: it raises virtual instruction with TW = 0, so only test the timeout.
-    generators = _COMMON_GENERATORS + [generate_cp_wfi_timeout, generate_cp_trigger_vsti_sstc]
+    generators = _COMMON_GENERATORS + [generate_cp_wfi_timeout]
     return emit_interrupts(test_data, SUITE, "VU", generators)
+
+
+@add_priv_test_generator(SUITE.name, required_extensions=["H", "Sstc"], extra_defines=["#define BOOT_TO_SMODE"])
+def make_interruptss_vu_vsti_sstc(test_data: TestData) -> list[TestChunk]:
+    """InterruptsS vstimecmp test that runs in VU-mode."""
+    return emit_interrupts(test_data, SUITE, "VU", [generate_cp_trigger_vsti_sstc])

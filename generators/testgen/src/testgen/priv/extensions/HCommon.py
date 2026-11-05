@@ -32,6 +32,9 @@ class HCsr:
     vaddr: the CSR holds a virtual address, which it may legalize when invalid, so the walk test writes only valid
         addresses (addr_csr_tests)
     gate: preprocessor condition under which the CSR exists
+    extension: an extension the CSR needs that the suite does not require.  hcsr_tests leaves the CSR out of its
+        walk, and a generator that requires the extension walks it with hcsr_walk_tests, so that no file walks only
+        CSRs the target lacks
     warl_fields: WARL fields with reserved encodings, as for csr_walk_test
     setup, restore: lines before and after the test that make the CSR accessible or its value visible
     asm: the operand instructions use when the assembler does not know the name (an encoding.h constant)
@@ -43,6 +46,7 @@ class HCsr:
     zero: bool = False
     vaddr: bool = False
     gate: str | None = None
+    extension: str | None = None
     warl_fields: tuple[tuple, ...] = ()
     setup: tuple[str, ...] = ()
     restore: tuple[str, ...] = ()
@@ -154,8 +158,14 @@ H_VS_CSRS = [
     HCsr("vsscratch"),
     HCsr("vsepc", vaddr=True),
     HCsr("vsatp", zero=True),
-    HCsr("vstimecmp", gate="defined(SSTC_SUPPORTED)", setup=STCE_ON, restore=STCE_OFF),
-    HCsr("vstimecmph", gate="__riscv_xlen == 32 && defined(SSTC_SUPPORTED)", setup=STCE_ON, restore=STCE_OFF),
+    HCsr("vstimecmp", gate="defined(SSTC_SUPPORTED)", extension="Sstc", setup=STCE_ON, restore=STCE_OFF),
+    HCsr(
+        "vstimecmph",
+        gate="__riscv_xlen == 32 && defined(SSTC_SUPPORTED)",
+        extension="Sstc",
+        setup=STCE_ON,
+        restore=STCE_OFF,
+    ),
 ]
 
 # Configs where Sv39/Sv39x4 (RV64) or Sv32/Sv32x4 (RV32) can be selected
@@ -229,7 +239,27 @@ def hcsr_tests(
             test_data.int_regs.return_registers([save_reg, ones_reg, check_reg, mask_reg])
             tc.code.extend(gated(lines, gate))
 
-    tc = test_data.new_test_chunk(test_chunks, f"{prefix}hcsr_walk")
+    hcsr_walk_tests(
+        test_data, test_chunks, [csr for csr in csrs if csr.extension is None], covergroup, f"{prefix}hcsr_walk"
+    )
+    addr_csr_tests(
+        test_data, test_chunks, {csr.name: (0, {}) for csr in csrs if csr.vaddr}, covergroup, f"{prefix}hcsr_addr"
+    )
+
+    tc = test_data.new_test_chunk(test_chunks)
+    tc.section_header = comment_banner(
+        "cp_atpwalk1, cp_atpwalk0", "Walk a 1 and a 0 through the non-MODE bits of hgatp and vsatp"
+    )
+    for csr in ("hgatp", "vsatp"):
+        tc = test_data.new_test_chunk(test_chunks)
+        tc.code.extend(_atp_walk_test(test_data, csr, covergroup))
+
+
+def hcsr_walk_tests(
+    test_data: TestData, test_chunks: list[TestChunk], csrs: list[HCsr], covergroup: str, split: str
+) -> None:
+    """Set and clear each bit of each H CSR in csrs that holds more than zero and is not an address."""
+    tc = test_data.new_test_chunk(test_chunks, split)
     tc.section_header = comment_banner(
         "cp_hcsrwalk", "Set and clear each bit of each H CSR that holds more than zero and is not an address"
     )
@@ -246,17 +276,6 @@ def hcsr_tests(
                 maskedwrites=csr.masked,
             )
             tc.code.extend(gated([*csr.setup, *lines, *csr.restore], csr.gate))
-    addr_csr_tests(
-        test_data, test_chunks, {csr.name: (0, {}) for csr in csrs if csr.vaddr}, covergroup, f"{prefix}hcsr_addr"
-    )
-
-    tc = test_data.new_test_chunk(test_chunks)
-    tc.section_header = comment_banner(
-        "cp_atpwalk1, cp_atpwalk0", "Walk a 1 and a 0 through the non-MODE bits of hgatp and vsatp"
-    )
-    for csr in ("hgatp", "vsatp"):
-        tc = test_data.new_test_chunk(test_chunks)
-        tc.code.extend(_atp_walk_test(test_data, csr, covergroup))
 
 
 def _atp_walk_test(test_data: TestData, csr: str, covergroup: str) -> list[str]:

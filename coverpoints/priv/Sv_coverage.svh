@@ -938,10 +938,7 @@ covergroup Sv_Sm_satp_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
-    tvm_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tvm")[0]{
-        bins zero = {0};
-        bins set  = {1};
-    }
+    tvm_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tvm")[0]{}
 
     // satp is always accessible from M-mode, so an access here never raises an exception.
     Mcause: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "code") {
@@ -1086,13 +1083,9 @@ covergroup Sv_Sm_mstatus_mprv_cg with function sample(ins_t ins);
     }
     `ifdef UDB_MXLEN_64
         sbe_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "sbe")[0] { //ms.5
-            bins set = {1};
-            bins not_set = {0};
         }
     `else
         sbe_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatush", "sbe")[0] { //ms.5
-            bins set = {1};
-            bins not_set = {0};
         }
     `endif
 
@@ -1281,7 +1274,7 @@ covergroup Sv_Zicbo_cg with function sample(ins_t ins);
     // Only reachable when the DUT has an address that faults: its sole bin is the
     // store/AMO access fault cause, and its only consumers are the guarded
     // cp_*_to_nonexistent_pa_cbo_* crosses below.
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
         store_acc_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause") iff (ins.trap == 1) {
             bins store_amo_access_fault = {STORE_AMO_ACCESS_FAULT};
         }
@@ -1394,13 +1387,13 @@ covergroup Sv_Zicbo_cg with function sample(ins_t ins);
     }
 
     // access fault coverpoints
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
         `ifdef UDB_MXLEN_64
-            d_phys_address_nonexistent: coverpoint ({8'b0, ins.current.phys_adr_d[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+            d_phys_address_nonexistent: coverpoint ({8'b0, ins.current.phys_adr_d[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS_STORE) {
                 bins non_existent_pa = {1};
             }
         `else
-            d_phys_address_nonexistent: coverpoint ({30'b0, ins.current.phys_adr_d[33:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+            d_phys_address_nonexistent: coverpoint ({30'b0, ins.current.phys_adr_d[33:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS_STORE) {
                 bins non_existent_pa = {1};
             }
         `endif
@@ -1415,20 +1408,23 @@ covergroup Sv_Zicbo_cg with function sample(ins_t ins);
         // Non leaf PTE points to a non existatant phys addr instead of next page table. Store access fault required during walk
         // Example: Setup a giga page in sv48, lvl 3 pte (tera) should point to lvl2 page table, but it points to non existent PA
         // The walk faults before any data physical address exists, so check where the pointer PTE points instead
-        `ifdef UDB_MXLEN_64
-            nonleaf_ppn_nonexistent: coverpoint (ins.current.pte_d[53:10] == 44'(`RVMODEL_ACCESS_FAULT_ADDRESS >> 12)) {
-                bins non_existent_pa = {1};
-            }
-        `else
-            nonleaf_ppn_nonexistent: coverpoint (ins.current.pte_d[31:10] == 22'(`RVMODEL_ACCESS_FAULT_ADDRESS >> 12)) {
-                bins non_existent_pa = {1};
+        // The page-table read is an implicit load, so the table is in the load access-fault region
+        `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
+            `ifdef UDB_MXLEN_64
+                nonleaf_ppn_nonexistent: coverpoint (ins.current.pte_d[53:10] == 44'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD >> 12)) {
+                    bins non_existent_pa = {1};
+                }
+            `else
+                nonleaf_ppn_nonexistent: coverpoint (ins.current.pte_d[31:10] == 22'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD >> 12)) {
+                    bins non_existent_pa = {1};
+                }
+            `endif
+            cp_nonleaf_PTE_to_nonexistent_pa_cbo: cross pointer_PTE_d, nonleaf_ppn_nonexistent, PageType_d, store_acc_fault, cbo_ins, priv_mode_s_u {
+                `ifdef SV48_SUPPORTED ignore_bins ig1 = binsof(PageType_d.sv48_tera); `endif     // Here PageType_d will be the page being pointed towards
+                `ifdef SV39_SUPPORTED ignore_bins ig2 = binsof(PageType_d.sv39_giga); `endif
+                `ifdef UDB_MXLEN_32   ignore_bins ig3 = binsof(PageType_d.sv32_mega); `endif
             }
         `endif
-        cp_nonleaf_PTE_to_nonexistent_pa_cbo: cross pointer_PTE_d, nonleaf_ppn_nonexistent, PageType_d, store_acc_fault, cbo_ins, priv_mode_s_u {
-            `ifdef SV48_SUPPORTED ignore_bins ig1 = binsof(PageType_d.sv48_tera); `endif     // Here PageType_d will be the page being pointed towards
-            `ifdef SV39_SUPPORTED ignore_bins ig2 = binsof(PageType_d.sv39_giga); `endif
-            `ifdef UDB_MXLEN_32   ignore_bins ig3 = binsof(PageType_d.sv32_mega); `endif
-        }
     `endif
 
 endgroup
@@ -1511,34 +1507,59 @@ covergroup Sv_Exceptions_cg with function sample(ins_t ins);
     cp_store_page_fault_u:           cross priv_mode_u, store_page_fault;
 
     // Access fault coverpoints
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
         // Accesses land at an offset into the faulting region, which is at least 128 bytes
-        i_phys_address_nonexistent: coverpoint ((64'(ins.current.phys_adr_i) - 64'(`RVMODEL_ACCESS_FAULT_ADDRESS)) < 64'd128) {
+        d_phys_address_nonexistent_load: coverpoint ((64'(ins.current.phys_adr_d) - 64'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)) < 64'd128) {
             // auto fill 1/0 for the physical address being valid
         }
-        d_phys_address_nonexistent: coverpoint ((64'(ins.current.phys_adr_d) - 64'(`RVMODEL_ACCESS_FAULT_ADDRESS)) < 64'd128) {
-            // auto fill 1/0 for the physical address being valid
-        }
-        cp_misaligned_priority_s:        cross priv_mode_s, memops, d_virt_adr_misaligned, d_page_table_entry_invalid, d_phys_address_nonexistent {
+        cp_misaligned_priority_load_s:   cross priv_mode_s, lw, d_virt_adr_misaligned, d_page_table_entry_invalid, d_phys_address_nonexistent_load {
             `ifdef UDB_MISALIGNED_LDST_EXCEPTION_PRIORITY_HIGH
                 `ifndef UDB_MISALIGNED_LDST
                     // The misaligned exception is raised before translation, so there is no PTE or physical address
                     ignore_bins misaligned_before_translation = binsof(d_virt_adr_misaligned.misaligned);
                 `endif
             `endif
+        }
+        cp_misaligned_priority_load_u:   cross priv_mode_u, lw, d_virt_adr_misaligned, d_page_table_entry_invalid, d_phys_address_nonexistent_load {
+            `ifdef UDB_MISALIGNED_LDST_EXCEPTION_PRIORITY_HIGH
+                `ifndef UDB_MISALIGNED_LDST
+                    // The misaligned exception is raised before translation, so there is no PTE or physical address
+                    ignore_bins misaligned_before_translation = binsof(d_virt_adr_misaligned.misaligned);
+                `endif
+            `endif
+        }
+    `endif
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
+        // Accesses land at an offset into the faulting region, which is at least 128 bytes
+        d_phys_address_nonexistent_store: coverpoint ((64'(ins.current.phys_adr_d) - 64'(`RVMODEL_ACCESS_FAULT_ADDRESS_STORE)) < 64'd128) {
+            // auto fill 1/0 for the physical address being valid
+        }
+        cp_misaligned_priority_store_s:  cross priv_mode_s, sw, d_virt_adr_misaligned, d_page_table_entry_invalid, d_phys_address_nonexistent_store {
+            `ifdef UDB_MISALIGNED_LDST_EXCEPTION_PRIORITY_HIGH
+                `ifndef UDB_MISALIGNED_LDST
+                    // The misaligned exception is raised before translation, so there is no PTE or physical address
+                    ignore_bins misaligned_before_translation = binsof(d_virt_adr_misaligned.misaligned);
+                `endif
+            `endif
+        }
+        cp_misaligned_priority_store_u:  cross priv_mode_u, sw, d_virt_adr_misaligned, d_page_table_entry_invalid, d_phys_address_nonexistent_store {
+            `ifdef UDB_MISALIGNED_LDST_EXCEPTION_PRIORITY_HIGH
+                `ifndef UDB_MISALIGNED_LDST
+                    // The misaligned exception is raised before translation, so there is no PTE or physical address
+                    ignore_bins misaligned_before_translation = binsof(d_virt_adr_misaligned.misaligned);
+                `endif
+            `endif
+        }
+    `endif
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_FETCH
+        // Fetches land at an offset into the faulting region, which is at least 128 bytes
+        i_phys_address_nonexistent: coverpoint ((64'(ins.current.phys_adr_i) - 64'(`RVMODEL_ACCESS_FAULT_ADDRESS_FETCH)) < 64'd128) {
+            // auto fill 1/0 for the physical address being valid
         }
         cp_misaligned_priority_fetch_s:  cross priv_mode_s, jalr,   i_virt_adr_misaligned, i_page_table_entry_invalid, i_phys_address_nonexistent {
             `ifndef ZCA_SUPPORTED
                 // Without Zca, a jalr to a misaligned target raises instruction-address-misaligned on the jalr
                 ignore_bins misaligned_target = binsof(i_virt_adr_misaligned.misaligned);
-            `endif
-        }
-        cp_misaligned_priority_u:        cross priv_mode_u, memops, d_virt_adr_misaligned, d_page_table_entry_invalid, d_phys_address_nonexistent {
-            `ifdef UDB_MISALIGNED_LDST_EXCEPTION_PRIORITY_HIGH
-                `ifndef UDB_MISALIGNED_LDST
-                    // The misaligned exception is raised before translation, so there is no PTE or physical address
-                    ignore_bins misaligned_before_translation = binsof(d_virt_adr_misaligned.misaligned);
-                `endif
             `endif
         }
         cp_misaligned_priority_fetch_u:  cross priv_mode_u, jalr,   i_virt_adr_misaligned, i_page_table_entry_invalid, i_phys_address_nonexistent {
@@ -1605,9 +1626,13 @@ covergroup Sv_ExceptionsSm_cg with function sample(ins_t ins);
         // bit 14 reserved
         bins storepagefault_enabled   = {16'b1000_0000_0000_0000};
         wildcard bins ones            = {16'b1011_0001_?1?1_11??}; // access faults might not be possible to delegate if they don't exist
-        `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_FETCH
             bins instraccessfault_enabled = {16'b0000_0000_0000_0010};
+        `endif
+        `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
             bins loadaccessfault_enabled  = {16'b0000_0000_0010_0000};
+        `endif
+        `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
             bins storeaccessfault_enabled = {16'b0000_0000_1000_0000};
         `endif
     }
@@ -1628,12 +1653,32 @@ covergroup Sv_ExceptionsSm_cg with function sample(ins_t ins);
     cp_medeleg_fetch_u:    cross priv_mode_u, jalr,   i_page_table_entry_invalid, medeleg_walk;
 
     // Access fault coverpoints
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
+        lw: coverpoint ins.current.insn {
+            wildcard bins lw = {LW};
+        }
         // Accesses land at an offset into the faulting region, which is at least 128 bytes
-        d_phys_address_nonexistent: coverpoint ((64'(ins.current.phys_adr_d) - 64'(`RVMODEL_ACCESS_FAULT_ADDRESS)) < 64'd128) {
+        d_phys_address_nonexistent_load: coverpoint ((64'(ins.current.phys_adr_d) - 64'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)) < 64'd128) {
             // auto fill 1/0 for the physical address being valid
         }
-        cp_misaligned_priority_m:       cross priv_mode_m, memops, d_virt_adr_misaligned, d_phys_address_nonexistent, d_page_table_entry_invalid {
+        cp_misaligned_priority_load_m:   cross priv_mode_m, lw, d_virt_adr_misaligned, d_phys_address_nonexistent_load, d_page_table_entry_invalid {
+            `ifdef UDB_MISALIGNED_LDST_EXCEPTION_PRIORITY_HIGH
+                `ifndef UDB_MISALIGNED_LDST
+                    // The misaligned exception is raised before translation, so there is no PTE or physical address
+                    ignore_bins misaligned_before_translation = binsof(d_virt_adr_misaligned.misaligned);
+                `endif
+            `endif
+        }
+    `endif
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
+        sw: coverpoint ins.current.insn {
+            wildcard bins sw = {SW};
+        }
+        // Accesses land at an offset into the faulting region, which is at least 128 bytes
+        d_phys_address_nonexistent_store: coverpoint ((64'(ins.current.phys_adr_d) - 64'(`RVMODEL_ACCESS_FAULT_ADDRESS_STORE)) < 64'd128) {
+            // auto fill 1/0 for the physical address being valid
+        }
+        cp_misaligned_priority_store_m:  cross priv_mode_m, sw, d_virt_adr_misaligned, d_phys_address_nonexistent_store, d_page_table_entry_invalid {
             `ifdef UDB_MISALIGNED_LDST_EXCEPTION_PRIORITY_HIGH
                 `ifndef UDB_MISALIGNED_LDST
                     // The misaligned exception is raised before translation, so there is no PTE or physical address
@@ -1664,13 +1709,13 @@ covergroup Sv_ExceptionsZaamo_cg with function sample(ins_t ins);
     }
     // main coverpoints
     // Access fault coverpoints
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_AMO
         `ifdef UDB_MXLEN_64 // Number of physical address bits is different by XLEN, either 34 or 56
-            d_phys_address_nonexistent: coverpoint ({8'b0, ins.current.phys_adr_d[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+            d_phys_address_nonexistent: coverpoint ({8'b0, ins.current.phys_adr_d[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS_AMO) {
                 // auto fill 1/0 for the physical address being valid
             }
         `else
-            d_phys_address_nonexistent: coverpoint ({30'b0, ins.current.phys_adr_d[33:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+            d_phys_address_nonexistent: coverpoint ({30'b0, ins.current.phys_adr_d[33:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS_AMO) {
                 // auto fill 1/0 for the physical address being valid
             }
         `endif
@@ -1741,13 +1786,13 @@ covergroup Sv_ExceptionsZaamoSm_cg with function sample(ins_t ins);
     cp_medeleg_u: cross priv_mode_u, amoops, d_page_table_entry_invalid, medeleg_walk;
 
     // Access fault coverpoints
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_AMO
         `ifdef UDB_MXLEN_64 // Number of physical address bits is different by XLEN, either 34 or 56
-            d_phys_address_nonexistent: coverpoint ({8'b0, ins.current.phys_adr_d[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+            d_phys_address_nonexistent: coverpoint ({8'b0, ins.current.phys_adr_d[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS_AMO) {
                 // auto fill 1/0 for the physical address being valid
             }
         `else
-            d_phys_address_nonexistent: coverpoint ({30'b0, ins.current.phys_adr_d[33:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+            d_phys_address_nonexistent: coverpoint ({30'b0, ins.current.phys_adr_d[33:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS_AMO) {
                 // auto fill 1/0 for the physical address being valid
             }
         `endif
@@ -1785,13 +1830,13 @@ covergroup Sv_ExceptionsZalrsc_cg with function sample(ins_t ins);
     // main coverpoints
 
     // access fault coverpoints
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LRSC
         `ifdef UDB_MXLEN_64 // Number of physical address bits is different by XLEN, either 34 or 56
-            d_phys_address_nonexistent: coverpoint ({8'b0, ins.current.phys_adr_d[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+            d_phys_address_nonexistent: coverpoint ({8'b0, ins.current.phys_adr_d[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS_LRSC) {
                 // auto fill 1/0 for the physical address being valid
             }
         `else
-            d_phys_address_nonexistent: coverpoint ({30'b0, ins.current.phys_adr_d[33:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+            d_phys_address_nonexistent: coverpoint ({30'b0, ins.current.phys_adr_d[33:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS_LRSC) {
                 // auto fill 1/0 for the physical address being valid
             }
         `endif
@@ -1862,13 +1907,13 @@ covergroup Sv_ExceptionsZalrscSm_cg with function sample(ins_t ins);
     cp_medeleg_u: cross priv_mode_u, lrscops, d_page_table_entry_invalid, medeleg_walk;
 
     // access fault coverpoints
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LRSC
         `ifdef UDB_MXLEN_64 // Number of physical address bits is different by XLEN, either 34 or 56
-            d_phys_address_nonexistent: coverpoint ({8'b0, ins.current.phys_adr_d[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+            d_phys_address_nonexistent: coverpoint ({8'b0, ins.current.phys_adr_d[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS_LRSC) {
                 // auto fill 1/0 for the physical address being valid
             }
         `else
-            d_phys_address_nonexistent: coverpoint ({30'b0, ins.current.phys_adr_d[33:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+            d_phys_address_nonexistent: coverpoint ({30'b0, ins.current.phys_adr_d[33:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS_LRSC) {
                 // auto fill 1/0 for the physical address being valid
             }
         `endif
@@ -1936,14 +1981,8 @@ covergroup Sv_H_vsstage_cg with function sample(ins_t ins);
         wildcard bins none = {6'b0?????};
         bins page_fault    = {6'b101100, 6'b101101, 6'b101111};
     }
-    vsstatus_sum : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "sum") {
-        bins off = {0};
-        bins on  = {1};
-    }
-    vsstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "mxr") {
-        bins off = {0};
-        bins on  = {1};
-    }
+    vsstatus_sum : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "sum")[0] {}
+    vsstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "mxr")[0] {}
     `ifdef UDB_MXLEN_64
         menvcfg_adue : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "adue") {
             bins off = {0};
@@ -2003,14 +2042,8 @@ covergroup Sv_H_gstage_cg with function sample(ins_t ins);
         bins guest_page_fault  = {6'b110100, 6'b110101, 6'b110111};
     }
     // HS-level MXR: mret into the guest logs mstatus
-    mstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mxr") {
-        bins off = {0};
-        bins on  = {1};
-    }
-    vsstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "mxr") {
-        bins off = {0};
-        bins on  = {1};
-    }
+    mstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mxr")[0] {}
+    vsstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "mxr")[0] {}
     `ifdef UDB_MXLEN_64
         menvcfg_adue : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "adue") {
             bins off = {0};
@@ -2109,14 +2142,8 @@ covergroup Sv_H_twostage_cg with function sample(ins_t ins);
     hedeleg_page_faults : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hedeleg", "deleg")[15:12] {
         bins delegated = {4'b1011};
     }
-    mstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mxr") {
-        bins off = {0};
-        bins on  = {1};
-    }
-    vsstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "mxr") {
-        bins off = {0};
-        bins on  = {1};
-    }
+    mstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mxr")[0] {}
+    vsstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "mxr")[0] {}
     htinst_read : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htinst", "htinst") iff (ins.current.csr_wb[CSR_HTINST]) {
         `ifdef UDB_MXLEN_64
             bins read = {'h3000};
@@ -2202,9 +2229,18 @@ covergroup Sv_H_twostage_cg with function sample(ins_t ins);
     cp_implicit_gpf    : cross priv_mode_vs, access, stage_modes, htinst_read;
     // MXR does not make an execute-only G-stage leaf of a VS-stage page table readable to an implicit read
     cp_implicit_mxr    : cross priv_mode_vs, lw, stage_modes, vsstatus_mxr, mstatus_mxr, htinst_read;
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-        // An access fault on the final address or on a VS-stage or G-stage page-table read reports the original access
-        cp_twostage_access_fault : cross priv_mode_vs, access, stage_modes, access_fault;
+    // An access fault on the final address or on a VS-stage or G-stage page-table read reports the original access
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
+        cp_twostage_access_fault_load  : cross priv_mode_vs, lw, stage_modes, access_fault;
+    `endif
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
+        sw : coverpoint ins.current.insn {
+            wildcard bins sw = {SW};
+        }
+        cp_twostage_access_fault_store : cross priv_mode_vs, sw, stage_modes, access_fault;
+    `endif
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_FETCH
+        cp_twostage_access_fault_fetch : cross priv_mode_vs, jalr, stage_modes, access_fault;
     `endif
     // Page faults go to VS-mode when hedeleg delegates them; guest-page faults cannot be delegated
     cp_hedeleg_page_fault       : cross priv_mode_vs_vu, access, vsatp_paged, hgatp_paged, hedeleg_page_faults, vs_page_fault;
@@ -2280,26 +2316,11 @@ covergroup Sv_H_hlv_cg with function sample(ins_t ins);
         bins page_fault       = {6'b101101};
         bins guest_page_fault = {6'b110101};
     }
-    hstatus_spvp : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "spvp") {
-        bins vu = {0};
-        bins vs = {1};
-    }
-    vsstatus_sum : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "sum") {
-        bins off = {0};
-        bins on  = {1};
-    }
-    sstatus_sum : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "sum") {
-        bins off = {0};
-        bins on  = {1};
-    }
-    vsstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "mxr") {
-        bins off = {0};
-        bins on  = {1};
-    }
-    sstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "mxr") {
-        bins off = {0};
-        bins on  = {1};
-    }
+    hstatus_spvp : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "spvp")[0] {}
+    vsstatus_sum : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "sum")[0] {}
+    sstatus_sum : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "sum")[0] {}
+    vsstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "mxr")[0] {}
+    sstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "mxr")[0] {}
     htinst_read : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htinst", "htinst") iff (ins.current.csr_wb[CSR_HTINST]) {
         `ifdef UDB_MXLEN_64
             bins read = {'h3000};
@@ -2454,10 +2475,7 @@ covergroup Sv_HSm_mprv_cg with function sample(ins_t ins);
         wildcard bins hlv_w = {HLV_W};
         wildcard bins hsv_w = {HSV_W};
     }
-    mprv : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv") {
-        bins off = {0};
-        bins on  = {1};
-    }
+    mprv : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv")[0] {}
     mprv_on : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv") {
         bins on = {1};
     }
@@ -2503,22 +2521,10 @@ covergroup Sv_HSm_mprv_cg with function sample(ins_t ins);
         wildcard bins none = {6'b0?????};
         bins page_fault    = {6'b101101, 6'b101111};
     }
-    vsstatus_sum : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "sum") {
-        bins off = {0};
-        bins on  = {1};
-    }
-    mstatus_sum : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sum") {
-        bins off = {0};
-        bins on  = {1};
-    }
-    vsstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "mxr") {
-        bins off = {0};
-        bins on  = {1};
-    }
-    mstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mxr") {
-        bins off = {0};
-        bins on  = {1};
-    }
+    vsstatus_sum : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "sum")[0] {}
+    mstatus_sum : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sum")[0] {}
+    vsstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "mxr")[0] {}
+    mstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mxr")[0] {}
 
     // MPRV = 1 and MPV = 1 translate M-mode loads and stores through the VS-stage
     cp_vsatp_mprv_effects : cross priv_mode_m, load_store, mprv_on, mpp_mpv_guest, vsatp_paged, hgatp_bare, trap;
@@ -2692,8 +2698,11 @@ covergroup Sv_HZicbo_cg with function sample(ins_t ins);
   }
   gpa_outcome: coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[4:0]} {
     bins store_guest_page_fault = {6'b110111};
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-      bins store_access_fault   = {6'b100111};
+    // Only a VS-stage table in the load access-fault region raises this fault
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
+      `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
+        bins store_access_fault = {6'b100111};
+      `endif
     `endif
   }
   no_fault: coverpoint ins.current.csr_wb[CSR_SCAUSE] {
@@ -2716,7 +2725,7 @@ covergroup Sv_HZicbo_cg with function sample(ins_t ins);
   cp_vs_gpa:          cross priv_mode_vs_vu, cbo, vs_stage, gpa_outcome;
   cp_vs_gpa_implicit: cross priv_mode_vs_vu, cbo, vs_stage, pseudoinstruction;
   cp_g_pte:           cross priv_mode_vs_vu, cbo, g_stage, g_pte_outcome, vsatp_paged, hgatp_paged;
-  `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+  `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
     cp_g_pa:          cross priv_mode_vs_vu, cbo, g_stage, store_access_fault;
   `endif
 
@@ -2729,7 +2738,7 @@ covergroup Sv_HZicbo_cg with function sample(ins_t ins);
     wildcard bins no_fault       = {6'b0?????};
     bins store_page_fault        = {6'b101111};
     bins store_guest_page_fault  = {6'b110111};
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
       bins store_access_fault    = {6'b100111};
     `endif
   }
@@ -2740,7 +2749,7 @@ covergroup Sv_HZicbo_cg with function sample(ins_t ins);
   cbo_fault: coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[4:0]} {
     bins store_page_fault        = {6'b101111};
     bins store_guest_page_fault  = {6'b110111};
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
       bins store_access_fault    = {6'b100111};
     `endif
   }
@@ -2786,30 +2795,12 @@ covergroup Sv_HZicbo_cg with function sample(ins_t ins);
     bins flush = {2'b01};
     bins inval = {2'b11};
   }
-  menvcfg_cbcfe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "cbcfe") {
-    bins off = {0};
-    bins on  = {1};
-  }
-  henvcfg_cbcfe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "cbcfe") {
-    bins off = {0};
-    bins on  = {1};
-  }
-  senvcfg_cbcfe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "cbcfe") {
-    bins off = {0};
-    bins on  = {1};
-  }
-  menvcfg_cbze: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "cbze") {
-    bins off = {0};
-    bins on  = {1};
-  }
-  henvcfg_cbze: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "cbze") {
-    bins off = {0};
-    bins on  = {1};
-  }
-  senvcfg_cbze: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "cbze") {
-    bins off = {0};
-    bins on  = {1};
-  }
+  menvcfg_cbcfe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "cbcfe")[0] {}
+  henvcfg_cbcfe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "cbcfe")[0] {}
+  senvcfg_cbcfe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "cbcfe")[0] {}
+  menvcfg_cbze: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "cbze")[0] {}
+  henvcfg_cbze: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "cbze")[0] {}
+  senvcfg_cbze: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "cbze")[0] {}
   vsatp_bare: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
     bins bare = {0};
   }

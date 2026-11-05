@@ -11,7 +11,7 @@
 from dataclasses import replace
 from typing import NamedTuple
 
-from testgen.asm.helpers import write_sigupd
+from testgen.asm.helpers import gated, write_sigupd
 from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -33,6 +33,10 @@ from testgen.priv.registry import add_priv_test_generator
 
 # The cache-block management and zero instructions of each family
 CBOS = {"zicbom": ("cbo.clean", "cbo.flush", "cbo.inval"), "zicboz": ("cbo.zero",)}
+
+# A page-table read is an implicit load, so a table in the access-fault region uses the LOAD region
+_TABLE_FAULT = "RVMODEL_ACCESS_FAULT_ADDRESS_LOAD"
+_TABLE_GATE = f"defined(RVMODEL_ACCESS_FAULT_ADDRESS_STORE) && defined({_TABLE_FAULT})"
 
 
 class CboLeaf(NamedTuple):
@@ -155,6 +159,7 @@ def _add_exception_cases(
         before: tuple[str, ...] = (),
         after: tuple[str, ...] = (),
         ifdef: str | None = None,
+        gate: str | None = None,
     ) -> None:
         nonlocal number
         number += 1
@@ -182,7 +187,7 @@ def _add_exception_cases(
         ]
         if ifdef:
             lines = [f"#ifdef {ifdef}", *lines, "#endif"]
-        chunk.code.extend([*lines, ""])
+        chunk.code.extend([*gated(lines, gate), ""])
 
     def add_standard(
         level: int,
@@ -266,11 +271,11 @@ def _add_exception_cases(
                     *create_page_walk(
                         sv,
                         leaf_level=level,
-                        table_addresses={level + 1: "RVMODEL_ACCESS_FAULT_ADDRESS"},
+                        table_addresses={level + 1: _TABLE_FAULT},
                     ),
                     leaf(walk_fault_permissions, level),
                 ],
-                ifdef="RVMODEL_ACCESS_FAULT_ADDRESS",
+                gate=_TABLE_GATE,
             )
         if level == 0:
             add(
@@ -282,21 +287,21 @@ def _add_exception_cases(
                     *create_page_walk(
                         sv,
                         leaf_level=level,
-                        table_addresses={1: "RVMODEL_ACCESS_FAULT_ADDRESS"},
+                        table_addresses={1: _TABLE_FAULT},
                     ),
                     leaf(leaf_permissions, level),
                 ],
-                physical_address="RVMODEL_ACCESS_FAULT_ADDRESS",
-                ifdef="RVMODEL_ACCESS_FAULT_ADDRESS",
+                physical_address=_TABLE_FAULT,
+                gate=_TABLE_GATE,
             )
         add(
             level,
             "Leaf PTE points to the access-fault region",
             "Store access fault",
             f"cp_leaf_PTE_to_nonexistent_pa_cbo_{m}",
-            [*walk, leaf(leaf_permissions, level, physical_address="RVMODEL_ACCESS_FAULT_ADDRESS")],
-            physical_address="RVMODEL_ACCESS_FAULT_ADDRESS",
-            ifdef="RVMODEL_ACCESS_FAULT_ADDRESS",
+            [*walk, leaf(leaf_permissions, level, physical_address="RVMODEL_ACCESS_FAULT_ADDRESS_STORE")],
+            physical_address="RVMODEL_ACCESS_FAULT_ADDRESS_STORE",
+            ifdef="RVMODEL_ACCESS_FAULT_ADDRESS_STORE",
         )
 
         if not top:

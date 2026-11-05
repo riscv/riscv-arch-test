@@ -91,17 +91,17 @@ class SvMode:
         index = f"((({virtual_address}) >> {self.page_offset_bits(level)}) & {mask:#x})"
         return f"{self.page_table_label(level)} + {index} * {self.pte_bytes}"
 
-    def access_fault_pte_address(self) -> str:
-        """The first PTE-aligned address at or above RVMODEL_ACCESS_FAULT_ADDRESS, inside the faulting region, which the
-        ACT contract guarantees for only 128 bytes from that address."""
-        return f"((RVMODEL_ACCESS_FAULT_ADDRESS + {self.pte_bytes - 1}) & ~{self.pte_bytes - 1})"
+    def access_fault_pte_address(self, fault_address: str) -> str:
+        """The first PTE-aligned address at or above ``fault_address`` (an RVMODEL_ACCESS_FAULT_ADDRESS_* macro), inside
+        the faulting region, which the ACT contract guarantees for only 128 bytes from that address."""
+        return f"(({fault_address} + {self.pte_bytes - 1}) & ~{self.pte_bytes - 1})"
 
-    def access_fault_walk_va(self, virtual_address: str, level: int) -> str:
+    def access_fault_walk_va(self, virtual_address: str, level: int, fault_address: str) -> str:
         """``virtual_address`` with its index at ``level`` replaced, so that a walk whose table at ``level`` is the page
-        of access_fault_pte_address reads the PTE at that address."""
+        of access_fault_pte_address(fault_address) reads the PTE at that address."""
         shift = self.page_offset_bits(level)
         mask = ((1 << self.index_bits(level)) - 1) << shift
-        index = f"(({self.access_fault_pte_address()} & 0xFFF) / {self.pte_bytes})"
+        index = f"(({self.access_fault_pte_address(fault_address)} & 0xFFF) / {self.pte_bytes})"
         return f"((({virtual_address}) & ~{mask:#x}) | ({index} << {shift}))"
 
     def page_table_label(self, level: int) -> str:

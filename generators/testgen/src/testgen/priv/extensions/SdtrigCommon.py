@@ -260,6 +260,11 @@ _SCONTEXT_MATCH_GATE = "#if defined(UDB_SDTRIG_TEXTRA_SSELECT_SCONTEXT_MATCH) &&
 ### HELPERS
 
 
+def _if_s(mode: str, lines: list[str]) -> list[str]:
+    """``lines`` guarded by S_SUPPORTED, unless the suite is SdtrigS, whose files require S."""
+    return lines if mode == "S" else ["#ifdef S_SUPPORTED", *lines, "#endif"]
+
+
 def _priv_fields(privbits: int) -> tuple[int, int, int, int, int]:
     """Split a MODE_PRIVBIT-style mask into its (m, s, u, vs, vu) bits."""
     return (privbits >> 4) & 1, (privbits >> 3) & 1, (privbits >> 2) & 1, (privbits >> 1) & 1, privbits & 1
@@ -1834,7 +1839,7 @@ def _generate_address_matches_tests(test_data: TestData, mode: str) -> list[Test
         "#endif",
     ]
     blocks: list[tuple[str, list[str], list[str], list[tuple[str, list[str]]]]] = [
-        ("bare", [], ["#ifdef S_SUPPORTED", "csrw satp, x0 # Bare", "#endif"], [("max_pa", max_pa)])
+        ("bare", [], _if_s(mode, ["csrw satp, x0 # Bare"]), [("max_pa", max_pa)])
     ]
     for name, xlen, va_bits, satp_setup, _, _, _, _ in _XLATE_MODES:
         half = 1 << (va_bits - 1)
@@ -1882,7 +1887,7 @@ def _generate_address_matches_tests(test_data: TestData, mode: str) -> list[Test
     )
     lines.extend(
         [
-            "#ifdef S_SUPPORTED",
+            *([] if mode == "S" else ["#ifdef S_SUPPORTED"]),
             "#ifdef UDB_SDTRIG_S_WRITABLE",
             "#ifdef UDB_SDTRIG_MCONTROL6_EXECUTE_WRITABLE",
             ".pushsection .data",
@@ -1944,9 +1949,9 @@ def _generate_address_matches_tests(test_data: TestData, mode: str) -> list[Test
         )
     if mode == "S":
         lines.extend(_global_ie(mode, False))
-    lines.extend(
-        ["#endif // UDB_SDTRIG_MCONTROL6_EXECUTE_WRITABLE", "#endif // UDB_SDTRIG_S_WRITABLE", "#endif // S_SUPPORTED"]
-    )
+    lines.extend(["#endif // UDB_SDTRIG_MCONTROL6_EXECUTE_WRITABLE", "#endif // UDB_SDTRIG_S_WRITABLE"])
+    if mode != "S":
+        lines.append("#endif // S_SUPPORTED")
 
     test_data.int_regs.return_registers([cfg_reg, va_reg, pa_reg, temp_reg])
     chunks.append(test_data.end_test_chunk())

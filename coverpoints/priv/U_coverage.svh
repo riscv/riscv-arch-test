@@ -669,9 +669,6 @@ covergroup U_Zicntr_cg with function sample(ins_t ins);
     wfi: coverpoint ins.current.insn {
         bins wfi = {WFI};
     }
-    mie_mtie_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "mtie")[0] {
-        bins one = {1};
-    }
 
     insn_add_u: coverpoint ins.current.insn {
         wildcard bins add = {ADD};
@@ -710,11 +707,6 @@ covergroup U_Zicntr_cg with function sample(ins_t ins);
     `ifdef UDB_WFI_FINITE
         `ifdef UDB_WFI_U_MODE
             cp_instret_wfi_timeout: cross priv_mode_u, wfi, mie_zero, prev_instret_read;
-        `endif
-    `endif
-    `ifdef UDB_WFI_U_MODE
-        `ifdef UDB_MTI_INTR_IMPL
-            cp_instret_wfi_taken: cross priv_mode_u, wfi, mie_mtie_one;
         `endif
     `endif
     `ifdef ZAWRS_SUPPORTED

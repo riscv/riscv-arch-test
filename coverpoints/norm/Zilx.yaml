@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# ISA-manual norm tag to coverpoint mappings for Zilx version 0.1.
+# ISA-manual norm tag to coverpoint mappings for Zilx version 0.8.
 
 normative_rule_definitions:
   - name: Zilx_no_new_state
@@ -66,7 +66,7 @@ normative_rule_definitions:
   - name: Zilx_funct3_rsv
     coverpoint: ["Not tested - reserved encodings"]
 
-  - name: Zilx_no_unscaled_byte
+  - name: Zilx_unscaled_byte_rsv
     coverpoint: ["Not tested - reserved encodings"]
 
   - name: Zilx_rv32_rsv

@@ -120,7 +120,7 @@ include::{testplansdir}/Zicond.adoc[]
 
 include::norm/Zicond_norm_rules.adoc[]
 
-==== Zilx Indexed Integer Loads
+==== Zilx Indexed Integer Loads, Version 0.8
 
 Zilx loads use `rs2` as the base register and `rs1` as the index register.
 The test suite covers unscaled, scaled, and RV64-only scaled unsigned-word-index addressing modes.

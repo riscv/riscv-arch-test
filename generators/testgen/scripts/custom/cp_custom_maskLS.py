@@ -55,7 +55,7 @@ def make(test: str, sew: int) -> None:
                 )
             except ValueError:
                 continue
-            writeLine("#ifdef RVMODEL_ACCESS_FAULT_ADDRESS")
+            writeLine(f"#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_{'LOAD' if test.startswith('vl') else 'STORE'}")
             writeTest(description, test, data, sew=test_sew, lmul=lmul, vl="vlmax")
             writeLine("#endif")
             incrementBasetestCount()

@@ -5,7 +5,7 @@ Template cross: std_vec × ffLS_vtype_lmul_2 × ffLS_vl_max × ffLS_mask_enabled
                 × ffLS_v0_eq_2 × ffLS_rs1_at_fault_addr
 
 Requires: LMUL=2, vl=VLMAX, masking enabled (vm=0), v0=2,
-rs1 = RVMODEL_ACCESS_FAULT_ADDRESS (0x0).
+rs1 = RVMODEL_ACCESS_FAULT_ADDRESS_LOAD (0x0).
 
 Fault-only-first load with rs1 pointing to a known faulting address.
 Element 0 is masked OFF (v0 bit 0 = 0), element 1 is active (v0 bit 1 = 1).
@@ -27,7 +27,7 @@ from vector_testgen_common import (
     writeTest,
 )
 
-FAULT_ADDRESS = 0  # matches RVMODEL_ACCESS_FAULT_ADDRESS in config
+FAULT_ADDRESS = 0  # matches RVMODEL_ACCESS_FAULT_ADDRESS_LOAD in config
 
 
 def _get_eew(instruction: str) -> int | None:

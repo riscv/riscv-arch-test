@@ -58,13 +58,9 @@ sbytemask_all: coverpoint sdtrig_textra_sbytemask(ins.current.csr[CSR_TDATA3]) {
 }
 mcontext_match: coverpoint sdtrig_textra_mcontext_match(ins.current.csr[CSR_TDATA3], ins.current.csr[CSR_MCONTEXT]) {
     type_option.weight = 0;
-    bins mismatch = {1'b0};
-    bins match    = {1'b1};
 }
 scontext_match: coverpoint sdtrig_textra_scontext_match(ins.current.csr[CSR_TDATA3], ins.current.csr[CSR_SCONTEXT]) {
     type_option.weight = 0;
-    bins mismatch = {1'b0};
-    bins match    = {1'b1};
 }
 
 sselect_asid: coverpoint sdtrig_textra_sselect(ins.current.csr[CSR_TDATA3]) {
@@ -73,8 +69,6 @@ sselect_asid: coverpoint sdtrig_textra_sselect(ins.current.csr[CSR_TDATA3]) {
 }
 asid_match: coverpoint sdtrig_textra_asid_match(ins.current.csr[CSR_TDATA3], ins.current.csr[CSR_SATP]) {
     type_option.weight = 0;
-    bins mismatch = {1'b0};
-    bins match    = {1'b1};
 }
 
 // cp_textra_mhselect_no_h: a tdata3 write of an mhselect value that needs H, on a trigger armed as icount or mcontrol6

@@ -161,8 +161,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |InterruptsH|Hypervisor Interrupts|<<t-InterruptsH-coverpoints>>|||o|o|x
 |EndianH|Hypervisor Endian|<<t-EndianH-coverpoints>>|||||
 |PMPH|Hypervisor PMP|<<t-PMPH-coverpoints>>|||o|o|x
-|SvH|Hypervisor Virtual Memory|<<t-SvH-coverpoints>>|||o|o|x
-|SvHZicbo|Hypervisor Virtual Memory + CBO|<<t-SvHZicbo-coverpoints>>|||o|o|x
 |Shcounterenw|Counter Enables|<<t-Shcounterenw-coverpoints>>|||o|o|x
 |Shvsatpa|VM Modes Supported|<<t-Shvsatpa-coverpoints>>|||o|o|x
 |Shgatpa|VM x4 Modes Supported|<<t-Shgatpa-coverpoints>>|||o|o|x
@@ -171,9 +169,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Shtvala|htval Addresses|<<t-Shtvala-coverpoints>>|||o|o|x
 |Shlcofideleg|Counter Overflow Delegation|<<t-Shlcofideleg-coverpoints>>|||o|o|x
 |ZkrH|Hypervisor Entropy|<<t-ZkrH-coverpoints>>|||o|o|x
-|SstcH|Hypervisor Supervisor Timer|<<t-SstcH-coverpoints>>|||o|o|x
-|SvaduH|Hypervisor TLB Update|<<t-SvaduH-coverpoints>>|||o|o|o
-|ZicfilpH|Hypervisor Landing Pad|<<t-ZicfilpH-coverpoints>>|||o|o|o
 8+^|Miscellaneous RV{A/B}23 Extensions
 |Ss1p13|Supervisor 1p13|<<t-Ss1p13-coverpoints>>||||x|x
 |Ssnpm|Pointer Masking|<<t-Ssnpm-coverpoints>>||||x|x

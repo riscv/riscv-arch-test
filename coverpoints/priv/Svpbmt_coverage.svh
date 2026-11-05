@@ -146,6 +146,88 @@ covergroup Svpbmt_cg with function sample(ins_t ins);
 
 endgroup
 
+`ifdef H_SUPPORTED
+// Svpbmt in the VS-stage and G-stage: henvcfg.PBMTE enables PBMT in the VS-stage, and menvcfg.PBMTE in the G-stage
+covergroup Svpbmt_H_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    access : coverpoint ins.current.insn {
+        wildcard bins lw   = {LW};
+        wildcard bins sw   = {SW};
+        wildcard bins jalr = {JALR};
+    }
+    csrrs : coverpoint ins.current.insn {
+        wildcard bins csrrs = {CSRRS};
+    }
+    henvcfg : coverpoint ins.current.insn[31:20] {
+        bins henvcfg = {CSR_HENVCFG};
+    }
+    // Each supported VS-stage mode
+    vsatp_mode : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
+        `ifdef UDB_SV39_VSMODE_TRANSLATION
+            bins sv39 = {8};
+        `endif
+        `ifdef UDB_SV48_VSMODE_TRANSLATION
+            bins sv48 = {9};
+        `endif
+        `ifdef UDB_SV57_VSMODE_TRANSLATION
+            bins sv57 = {10};
+        `endif
+    }
+    // Each supported G-stage mode
+    hgatp_mode : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode") {
+        `ifdef UDB_SV39X4_TRANSLATION
+            bins sv39x4 = {8};
+        `endif
+        `ifdef UDB_SV48X4_TRANSLATION
+            bins sv48x4 = {9};
+        `endif
+        `ifdef UDB_SV57X4_TRANSLATION
+            bins sv57x4 = {10};
+        `endif
+    }
+    vsatp_bare : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
+        bins bare = {0};
+    }
+    hgatp_bare : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode") {
+        bins bare = {0};
+    }
+    menvcfg_pbmte : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "pbmte") {
+        bins off = {0};
+        bins on  = {1};
+    }
+    henvcfg_pbmte : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "pbmte") {
+        bins off = {0};
+        bins on  = {1};
+    }
+    // The trap into HS-mode that the access takes, if any.  Only a trap writes scause on these instructions.
+    vs_trap : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[4:0]} {
+        wildcard bins none = {6'b0?????};
+        bins page_fault    = {6'b101100, 6'b101101, 6'b101111};
+    }
+    g_trap : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[4:0]} {
+        wildcard bins none    = {6'b0?????};
+        bins guest_page_fault = {6'b110100, 6'b110101, 6'b110111};
+    }
+
+    // PBMT in a VS-stage leaf is reserved unless henvcfg.PBMTE = 1, and PBMT = 3 always.
+    // The leaves have PBMT = 1-3, so every access with PBMTE = 0 faults.
+    cp_vsatp_pbmt : cross priv_mode_vs, access, vsatp_mode, hgatp_bare, henvcfg_pbmte, vs_trap {
+        ignore_bins reserved = binsof(henvcfg_pbmte.off) && binsof(vs_trap.none);
+    }
+    // PBMT in a G-stage leaf is reserved unless menvcfg.PBMTE = 1, and PBMT = 3 always
+    cp_hgatp_pbmt : cross priv_mode_vs, access, vsatp_bare, hgatp_mode, menvcfg_pbmte, g_trap {
+        ignore_bins reserved = binsof(menvcfg_pbmte.off) && binsof(g_trap.none);
+    }
+    // henvcfg.PBMTE is read-only zero while menvcfg.PBMTE = 0
+    cp_henvcfg_menvcfg : cross priv_mode_hs, csrrs, henvcfg, menvcfg_pbmte;
+endgroup
+`endif // H_SUPPORTED
+
 function void svpbmt_sample(int hart, int issue, ins_t ins);
     Svpbmt_cg.sample(ins);
+    `ifdef H_SUPPORTED
+        Svpbmt_H_cg.sample(ins);
+    `endif
 endfunction

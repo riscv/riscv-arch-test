@@ -263,15 +263,30 @@
     }
 
     // Misaligned address (e.g. scratch+1); upper 7 bits = 0x01 or 0x00
-    misaligned_addr: coverpoint ((ins.current.rs1_val + ins.current.imm) & 64'b11) {
+    misaligned_addr: coverpoint ((ins.current.rs1_val + ins.current.imm) & `UDB_MXLEN'(3)) {
         type_option.weight = 0;
         bins misaligned = {[2'b01:2'b11]};
     }
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-        // Exception should write xtval with masked version of pointer.
-        illegal_addr: coverpoint ((ins.current.rs1_val + ins.current.imm) & 64'h0000_FFFF_FFFF_FFFF) {
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
+        lw_insn: coverpoint ins.current.insn {
             type_option.weight = 0;
-            bins is_illegal_base = {`RVMODEL_ACCESS_FAULT_ADDRESS & 64'h0000_FFFF_FFFF_FFFF};
+            wildcard bins lw = {LW};
+        }
+        // Exception should write xtval with masked version of pointer.
+        illegal_addr_load: coverpoint ((ins.current.rs1_val + ins.current.imm) & `UDB_MXLEN'(64'h0000_FFFF_FFFF_FFFF)) {
+            type_option.weight = 0;
+            bins is_illegal_base = {`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD & 64'h0000_FFFF_FFFF_FFFF};
+        }
+    `endif
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
+        sw_insn: coverpoint ins.current.insn {
+            type_option.weight = 0;
+            wildcard bins sw = {SW};
+        }
+        // Exception should write xtval with masked version of pointer.
+        illegal_addr_store: coverpoint ((ins.current.rs1_val + ins.current.imm) & `UDB_MXLEN'(64'h0000_FFFF_FFFF_FFFF)) {
+            type_option.weight = 0;
+            bins is_illegal_base = {`RVMODEL_ACCESS_FAULT_ADDRESS_STORE & 64'h0000_FFFF_FFFF_FFFF};
         }
     `endif

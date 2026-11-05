@@ -295,8 +295,9 @@ endgroup
 // ---------------------
 `endif
 function void zalrsc_sample(int hart, int issue, ins_t ins);
+    string inst_name = traceDataQ[hart][issue][0].inst_name;
 
-    case (traceDataQ[hart][issue][0].inst_name)
+    case (inst_name)
         "lr.w"     : begin
             Zalrsc_lr_w_cg.sample(ins);
         end

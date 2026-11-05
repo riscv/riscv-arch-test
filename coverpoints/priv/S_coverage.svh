@@ -114,7 +114,7 @@ covergroup S_scause_cg with function sample(ins_t ins);
             bins b_8_reserved = {8};
             bins b_14_reserved = {14};
             bins b_15_reserved = {15};
-            bins b_31_16_custom[] = {[31:16]}; // designated for platform use
+            bins b_31_16_custom[] = {[16:31]}; // designated for platform use
         `endif
         `ifdef SCAUSE_HOLDS_COUNTER_OVERFLOW
             bins b_13_counter_overflow = {13}; // Sscofpmf, or any code 0-31 in Ss1p12 or higher
@@ -1351,6 +1351,98 @@ covergroup S_Zicntr_cg with function sample(ins_t ins);
     cp_scounteren_access_u: cross csraccess, counters_scounteren, mcounteren_ones, priv_mode_u;
     cp_mscounteren_access_u: cross csraccess, counters_mcounteren, priv_mode_u iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "mcounteren") == get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scounteren", "scounteren"));
     cp_mcounter_inc_inaccessible: cross mcounteren_zeros, priv_mode_s;
+
+    // ---- instret delta coverpoints ----
+
+    ecall: coverpoint ins.current.insn {
+        bins ecall = {ECALL};
+    }
+    ebreak: coverpoint ins.current.insn {
+        bins ebreak = {EBREAK};
+    }
+    insn_lw: coverpoint ins.current.insn {
+        wildcard bins lw = {LW};
+    }
+    adr_misaligned_1: coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] {
+        bins one = {3'b001};  // scratch + 1
+    }
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
+        illegal_address: coverpoint ins.current.imm + ins.current.rs1_val {
+            bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD};
+        }
+    `endif
+    wfi: coverpoint ins.current.insn {
+        bins wfi = {WFI};
+    }
+    insn_add: coverpoint ins.current.insn {
+        wildcard bins add = {ADD};
+    }
+    insn_sret: coverpoint ins.current.insn {
+        wildcard bins sret = {SRET};
+    }
+    `ifdef ZAWRS_SUPPORTED
+        wrs_nto: coverpoint ins.current.insn {
+            bins wrs_nto = {WRS_NTO};
+        }
+        wrs_sto: coverpoint ins.current.insn {
+            bins wrs_sto = {WRS_STO};
+        }
+    `endif
+    prev_instret_read: coverpoint ins.prev.insn {
+        wildcard bins csrr_instret = {32'b110000000010_00000_010_?????_1110011};  // csrr rd, instret (0xC02)
+    }
+    prev_ecall_li: coverpoint ins.prev.insn {
+        bins li_a0 = {32'h07300513};  // addi a0, x0, 0x73 (RVTEST_TSBI_ECALL_TEST)
+    }
+    mie_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "mie")[31:0] {
+        bins zero = {0};
+    }
+    mstatus_sie_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")[0] {
+        bins zero = {0};
+    }
+    `ifdef UDB_SSI_INTR_IMPL
+        mip_ssip_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mip", "ssip")[0] {
+            bins one = {1};
+        }
+        mie_ssie_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "ssie")[0] {
+            bins one = {1};
+        }
+    `endif
+    `ifdef SSTC_SUPPORTED
+        mip_stip_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mip", "stip")[0] {
+            bins zero = {0};
+        }
+        mie_stie_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "stie")[0] {
+            bins one = {1};
+        }
+    `endif
+
+    // retiring instructions
+    cp_instret_add:  cross priv_mode_s, insn_add, prev_instret_read;
+    cp_instret_sret: cross priv_mode_s, insn_sret, prev_instret_read;
+
+    // instructions that trap before retiring
+    cp_instret_ecall:  cross priv_mode_s, ecall, prev_ecall_li;
+    cp_instret_ebreak: cross priv_mode_s, ebreak, prev_instret_read;
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
+        cp_instret_load_access_fault: cross priv_mode_s, insn_lw, illegal_address, prev_instret_read;
+    `endif
+    cp_instret_load_misaligned: cross priv_mode_s, insn_lw, adr_misaligned_1, prev_instret_read;
+
+    // wfi and wrs; the wfi cases wake on delegated supervisor interrupts that sstatus.SIE = 0 keeps from being taken
+    `ifdef UDB_WFI_FINITE
+        cp_instret_wfi_timeout: cross priv_mode_s, wfi, mie_zero, prev_instret_read;
+    `endif
+    `ifdef UDB_SSI_INTR_IMPL
+        cp_instret_wfi_pending: cross priv_mode_s, wfi, mip_ssip_one, mie_ssie_one, mstatus_sie_zero, prev_instret_read;
+    `endif
+    `ifdef SSTC_SUPPORTED
+        cp_instret_wfi_wake: cross priv_mode_s, wfi, mip_stip_zero, mie_stie_one, mstatus_sie_zero;
+    `endif
+    `ifdef ZAWRS_SUPPORTED
+        cp_instret_wrs_nto: cross priv_mode_s, wrs_nto, prev_instret_read;
+        cp_instret_wrs_sto: cross priv_mode_s, wrs_sto, prev_instret_read;
+    `endif
 endgroup
 `endif
 

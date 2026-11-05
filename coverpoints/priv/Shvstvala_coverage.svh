@@ -90,26 +90,30 @@ covergroup Shvstvala_cg with function sample(ins_t ins);
         type_option.weight = 0;
         bins match = {1};
     }
-    vstval_insn : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vstval", "vstval") == ins.current.insn {
+    vstval_insn : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vstval", "vstval") == `UDB_MXLEN'(ins.current.insn) {
         bins match = {1};
     }
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_FETCH
         instr_access_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vscause", "code")
             iff (ins.current.csr_wb[CSR_VSCAUSE]) {
             bins vscause = {1};
         }
+        cp_instr_access_fault: cross priv_mode_vs_vu, jalr,     instr_access_fault, vstval_target;
+    `endif
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
         load_access_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vscause", "code")
             iff (ins.current.csr_wb[CSR_VSCAUSE]) {
             bins vscause = {5};
         }
+        cp_load_access_fault:  cross priv_mode_vs_vu, loadops,  load_access_fault,  vstval_address;
+    `endif
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
         store_access_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vscause", "code")
             iff (ins.current.csr_wb[CSR_VSCAUSE]) {
             bins vscause = {7};
         }
-        cp_load_access_fault:  cross priv_mode_vs_vu, loadops,  load_access_fault,  vstval_address;
         cp_store_access_fault: cross priv_mode_vs_vu, storeops, store_access_fault, vstval_address;
-        cp_instr_access_fault: cross priv_mode_vs_vu, jalr,     instr_access_fault, vstval_target;
     `endif
 
     // Misaligned loads and stores trap only when the implementation does not perform them

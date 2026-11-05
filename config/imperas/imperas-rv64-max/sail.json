@@ -989,7 +989,7 @@
         "ENVCFG": "CSRBit_Writable",
         "CONTEXT": "CSRBit_Writable",
         "P1P13": "CSRBit_ReadOnlyZero",
-        "SRMCFG": "CSRBit_ReadOnlyZero",
+        "SRMCFG": "CSRBit_Writable",
         "FCSR": "CSRBit_ReadOnlyZero",
         "C": "CSRBit_ReadOnlyZero"
       },
@@ -1017,7 +1017,7 @@
       }
     },
     "Ssqosid": {
-      "supported": false,
+      "supported": true,
       // These lengths should be between 1 and 12, inclusive.
       // If Ssqosid is not supported, this should be left as 1
       // (or any other legal value).

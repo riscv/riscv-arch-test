@@ -37,9 +37,10 @@ CSR_GUARDS = {
     **{f"{level}stateen{n}h": "__riscv_xlen == 32" for level in "mh" for n in range(4)},
 }
 
-# TODO: Remove the unchecked bits once Sail models Smaia/Ssaia, Smctr and Zcmt
-# Bits are only unchecked when the DUT implements the extension.
-STATEEN0_UNCHECKED_BITS = [
+# TODO: Walk and check these bits everywhere once Sail models Smaia/Ssaia, Smctr, Sscsrind and Zcmt.
+# Where the DUT implements the extension, the walks skip the bit, so its coverage reports missing, and
+# hstateen0 readbacks do not check it. Without the extension, the bit is walked and checked as read-only zero.
+STATEEN0_SAIL_GAP_BITS = [
     (1 << 2, "ZCMT_SUPPORTED"),  # JVT
     (1 << 54, "SSCTR_SUPPORTED"),  # CTR
     (0b11 << 58, "SSAIA_SUPPORTED"),  # IMSIC, AIA
@@ -174,10 +175,10 @@ def _mode_block(mode: str, base: str, body: list[str]) -> list[str]:
 
 
 def _clear_unchecked(csr: str, reg: int, tmp: int) -> list[str]:
-    """Clear the STATEEN0_UNCHECKED_BITS of a value read from hstateen0 or hstateen0h."""
+    """Clear the STATEEN0_SAIL_GAP_BITS of a value read from hstateen0 or hstateen0h."""
     shift = 32 if csr.endswith("h") else 0
     lines: list[str] = []
-    for bits, define in STATEEN0_UNCHECKED_BITS:
+    for bits, define in STATEEN0_SAIL_GAP_BITS:
         if bits >> shift:
             mask = ~(bits >> shift) & ((1 << 64) - 1)
             lines += [f"#ifdef {define}", f"LI(x{tmp}, {mask:#x})", f"and x{reg}, x{reg}, x{tmp}", "#endif"]
@@ -308,16 +309,16 @@ def walk_tests(
     modes: list[str],
     base: str,
     guard: str | None = None,
-    unchecked_bits: list[tuple[int, str]] | None = None,
+    unwalked_bits: list[tuple[int, str]] | None = None,
 ) -> list[str]:
     """Walk a one and a zero through every bit of a CSR from each mode.
 
-    Each (bits, define) in `unchecked_bits` is walked but not checked when `define` is defined.
+    Each (bits, define) in `unwalked_bits` is neither walked nor checked when `define` is defined.
     """
     lines = [comment_banner(cp, f"Walking ones and zeros on {csr} from {', '.join(modes)} mode")]
     for mode in modes:
         prefix = f"{mode.lower()}_" if len(modes) > 1 else ""
-        walk = csr_walk_test(test_data, (csr, None), cg, cp, bin_prefix=prefix, unchecked_bits=unchecked_bits)
+        walk = csr_walk_test(test_data, (csr, None), cg, cp, bin_prefix=prefix, unwalked_bits=unwalked_bits)
         lines += _mode_block(mode, base, walk)
     return gated(lines, guard)
 
@@ -335,10 +336,8 @@ def stateen_walk_tests(
     """Walk each mstateen or hstateen CSR from `base` mode, and its upper half on RV32, each in a new test chunk."""
     guard_h = f"{guard} && __riscv_xlen == 32" if guard else "__riscv_xlen == 32"
     for csr in csrs:
-        unchecked = STATEEN0_UNCHECKED_BITS if csr.endswith("stateen0") else None
-        unchecked_h = [(bits >> 32, define) for bits, define in unchecked or [] if bits >> 32] or None
-        for name, cond, bits in ((csr, guard, unchecked), (f"{csr}h", guard_h, unchecked_h)):
+        gap = STATEEN0_SAIL_GAP_BITS if csr.endswith("stateen0") else None
+        gap_h = [(bits >> 32, define) for bits, define in gap or [] if bits >> 32] or None
+        for name, cond, bits in ((csr, guard, gap), (f"{csr}h", guard_h, gap_h)):
             tc = test_data.new_test_chunk(test_chunks)
-            tc.code.extend(
-                walk_tests(test_data, cg, cp, name, modes=[base], base=base, guard=cond, unchecked_bits=bits)
-            )
+            tc.code.extend(walk_tests(test_data, cg, cp, name, modes=[base], base=base, guard=cond, unwalked_bits=bits))

@@ -135,6 +135,11 @@ coverpoints:
     bins: 1023 CSRs
     rules:
       - Zicsr_illegal_mode
+  - name: cp_csr_ro
+    goal: Read-only CSRs cannot be written from VS-mode
+    description: In VS-mode, attempt to write all 1s to each CSR number from 0xC00 to 0xEFF, as S_scsr_cg/cp_csr_ro in S-mode
+    expectation: Illegal instruction fault, and rd is unchanged
+    bins: 768 CSRs
   - name: cp_hcsr_virtualinstructionfault
     goal: HS and VS registers cause virtual instruction fault from VS-mode
     description: csrrw, csrrc, csrrs, csrr each {HS/VS} H-Extension CSR
@@ -224,7 +229,7 @@ coverpoints:
     bins: 1 mode
   - name: cp_hfence
     goal: Hypervisor fences execute only in HS-mode (and M-mode)
-    description: With mstatus.TVM = 0 and hstatus.VTVM = 0, execute hfence.vvma and hfence.gvma (rs1 = rs2 = x0) in {HS, VS, VU, U} modes, as S_sprivinst_cg executes sfence.vma.  Sm_H_tvm_cg/cp_hfence crosses them with M-mode, mstatus.TVM and hstatus.VTVM, and SvH checks that they remove stale VS-stage and G-stage translations.
+    description: With mstatus.TVM = 0 and hstatus.VTVM = 0, execute hfence.vvma and hfence.gvma (rs1 = rs2 = x0) in {HS, VS, VU, U} modes, as S_sprivinst_cg executes sfence.vma.  Sm_H_tvm_cg/cp_hfence crosses them with M-mode, mstatus.TVM and hstatus.VTVM, and Sv_H_fence_cg checks that they remove stale VS-stage and G-stage translations.
     expectation: Executes in HS-mode; virtual instruction in VS-mode and VU-mode; illegal instruction in U-mode
     bins: 4 modes * 2 instr
   - name: |-
@@ -419,47 +424,25 @@ coverpoints:
     notes: |-
       test written: yes
       spec: If the vtype value is not supported by the implementation, then the vill bit is set in vtype, the remaining bits in vtype are set to zero, and the vl register is also set to zero.
-  - name: cp_vsetvl_rd_nx0_rs1_x0
-    goal: Confirm that when running a vsetvl instruction with rd != x0 and rs1 = x0 that vl is set to vlmax
+  - name: cp_vsetvl_i_rd_nx0_rs1_x0
+    goal: Confirm that when running a vsetvl or vsetvli instruction with rd != x0 and rs1 = x0 that vl is set to vlmax
     description: |-
-      with vl != vlmax, conduct vsetvl with rd != x0 and rs1 = x0. Cross with sew = {8/16/32/64} and respective supported lmul {supported(f8,f4,f2,)1,2,4,8}
+      with vl != vlmax, conduct vsetvl and vsetvli with rd != x0 and rs1 = x0. Cross with sew = {8/16/32/64} and respective supported lmul {supported(f8,f4,f2,)1,2,4,8}
 
       we want vl != vlmax since similar syntax leaves vl unmodified.
     expectation: vl csr is set to vlmax
-    bins: 4 sew bins * 7 lmul bins
+    bins: 2 instructions * 4 sew bins * 7 lmul bins
     notes: |-
       test written: yes
       spec: When rs1=x0 but rd≠x0, the maximum unsigned integer value (~0) is used as the AVL, and the resulting VLMAX is written to vl and also to the x register specified by rd.
-  - name: cp_vsetvli_rd_nx0_rs1_x0
-    goal: Confirm that when running a vsetvli instruction with rd != x0 and rs1 = x0 that vl is set to vlmax
+  - name: cp_vsetvl_i_rd_x0_rs1_x0
+    goal: Confirm that when running a vsetvl or vsetvli instruction with rd = x0 and rs1 = x0 that vl is unchanged
     description: |-
-      with vl != vlmax, conduct vsetvli with rd != x0 and rs1 = x0. Cross with sew = {8/16/32/64} and respective supported lmul {supported(f8,f4,f2,)1,2,4,8}
-
-      we want vl != vlmax since similar syntax leaves vl unmodified.
-    expectation: vl csr is set to vlmax
-    bins: 4 sew bins * 7 lmul bins
-    notes: |-
-      test written: yes
-      spec: When rs1=x0 but rd≠x0, the maximum unsigned integer value (~0) is used as the AVL, and the resulting VLMAX is written to vl and also to the x register specified by rd.
-  - name: cp_vsetvl_rd_x0_rs1_x0
-    goal: Confirm that when running a vsetvl instruction with rd = x0 and rs1 = x0 that vl is unchanged
-    description: |-
-      with vl != 0, conduct vsetvl with rd = x0 and rs1 = x0. sew and lmul must be such that vlmax does not change
+      with vl != 0, conduct vsetvl and vsetvli with rd = x0 and rs1 = x0. sew and lmul must be such that vlmax does not change
 
       vlmax must not change for the instruction to not be reserved.
     expectation: vl is unchanged
-    bins: "1"
-    notes: |-
-      test written: yes
-      spec: When rs1=x0 and rd=x0, the instruction operates as if the current vector length in vl is used as the AVL, and the resulting value is written to vl, but not to a destination register. This form can only be used when VLMAX and hence vl is not actually changed by the new SEW/LMUL ratio.
-  - name: cp_vsetvli_rd_x0_rs1_x0
-    goal: Confirm that when running a vsetvli instruction with rd = x0 and rs1 = x0 that vl is unchanged
-    description: |-
-      with vl != 0, conduct vsetvli with rd = x0 and rs1 = x0. sew and lmul must be such that vlmax does not change
-
-      vlmax must not change for the instruction to not be reserved.
-    expectation: vl is unchanged
-    bins: "1"
+    bins: "2"
     notes: |-
       test written: yes
       spec: When rs1=x0 and rd=x0, the instruction operates as if the current vector length in vl is used as the AVL, and the resulting value is written to vl, but not to a destination register. This form can only be used when VLMAX and hence vl is not actually changed by the new SEW/LMUL ratio.
@@ -514,7 +497,7 @@ coverpoints:
       spec: The vset{i}vl{i} instructions first set VLMAX according to their vtype argument, then set vl obeying the following constraints:
 
       vl = VLMAX if AVL ≥ (2 * VLMAX)
-  - name: cp_vsetivli_avl_corners
+  - name: cp_vsetivli_avl_edges
     goal: Confirm that vsetivli abides by the avl corners
     description: Run vsetivli with all values of imm = {[0:31]} with sew = {all_supported} and lmul = 1
     expectation: Abides by avl rules depending on

@@ -105,7 +105,7 @@ coverpoints:
       mie = all 0s
       mstatus.TW = 1
       hstatus.VTW = 0
-      mip = {SSIP + SEIP + STIP + MSIP + MEIP + MTIP}, as implemented
+      mip = {SSIP + SEIP + STIP + MSIP + MEIP + MTIP (without Sstc)}, as implemented
       hvip = {VSSIP + VSTIP + VSEIP}
       execute {WRS.NTO/WRS.STO} in {VS/VU} mode
     expectation: WRS does not stop when interrupt pending, WRS.NTO causes illegal instruction

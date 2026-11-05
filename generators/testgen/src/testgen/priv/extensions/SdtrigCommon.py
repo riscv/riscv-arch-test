@@ -4217,7 +4217,6 @@ def etrigger_cross_priv_delegate_test(test_data: TestData, target_mode: str) -> 
         )
         lines.extend(
             [
-                "#ifdef S_SUPPORTED",
                 "#ifdef UDB_SDTRIG_S_WRITABLE",
                 "#ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_5",
                 "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD",
@@ -4257,7 +4256,6 @@ def etrigger_cross_priv_delegate_test(test_data: TestData, target_mode: str) -> 
                 "#endif // RVMODEL_ACCESS_FAULT_ADDRESS_LOAD",
                 "#endif // UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_5",
                 "#endif // UDB_SDTRIG_S_WRITABLE",
-                "#endif // S_SUPPORTED",
             ]
         )
 

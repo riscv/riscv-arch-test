@@ -34,6 +34,7 @@ class HCsr:
     gate: preprocessor condition under which the CSR exists
     warl_fields: WARL fields with reserved encodings, as for csr_walk_test
     setup, restore: lines before and after the test that make the CSR accessible or its value visible
+    nonzero: semantics-test initialization is guaranteed to read back a nonzero value
     asm: the operand instructions use when the assembler does not know the name (an encoding.h constant)
     """
 
@@ -47,6 +48,7 @@ class HCsr:
     setup: tuple[str, ...] = ()
     restore: tuple[str, ...] = ()
     asm: str = ""
+    nonzero: bool = False
 
     @property
     def operand(self) -> str:
@@ -118,19 +120,19 @@ P1P13_OFF = ("#ifdef SMSTATEEN_SUPPORTED", "RVTEST_TSBI_CSR_CLEAR(CSR_MSTATEEN0H
 H_M_CSRS = [HCsr("mtval2", zero=True), HCsr("mtinst", zero=True)]
 
 H_HS_CSRS = [
-    HCsr("hstatus", HSTATUS_MASK, masked=True),
-    HCsr("hedeleg", HEDELEG_MASK),
-    HCsr("hideleg", HIDELEG_MASK),
-    HCsr("hie", VS_INTERRUPTS),
+    HCsr("hstatus", HSTATUS_MASK, masked=True, nonzero=True),
+    HCsr("hedeleg", HEDELEG_MASK, nonzero=True),
+    HCsr("hideleg", HIDELEG_MASK, nonzero=True),
+    HCsr("hie", VS_INTERRUPTS, nonzero=True),
     HCsr("hcounteren"),
     HCsr("hgeie"),
     HCsr("henvcfg", HENVCFG_MASK, masked=True, warl_fields=HENVCFG_WARL),
     HCsr("htval", zero=True),
-    HCsr("hip", HIP_MASK),
-    HCsr("hvip", VS_INTERRUPTS),
+    HCsr("hip", HIP_MASK, nonzero=True),
+    HCsr("hvip", VS_INTERRUPTS, nonzero=True),
     HCsr("htinst", zero=True),
     HCsr("hgatp", zero=True),
-    HCsr("htimedelta", gate="defined(ZICNTR_SUPPORTED)"),
+    HCsr("htimedelta", gate="defined(ZICNTR_SUPPORTED)", nonzero=True),
     # RV32-only high halves
     HCsr(
         "hedelegh",
@@ -140,22 +142,28 @@ H_HS_CSRS = [
         setup=P1P13_ON,
         restore=P1P13_OFF,
     ),
-    HCsr("htimedeltah", gate="__riscv_xlen == 32 && defined(ZICNTR_SUPPORTED)"),
+    HCsr("htimedeltah", gate="__riscv_xlen == 32 && defined(ZICNTR_SUPPORTED)", nonzero=True),
     HCsr("henvcfgh", HENVCFG_MASK >> 32, masked=True, gate="__riscv_xlen == 32"),
 ]
 
 # vscause is WLRL, so it is written only with legal values (cp_vscause_write_*)
 H_VS_CSRS = [
-    HCsr("vsstatus", S_SSTATUS_MASK),
-    HCsr("vsie", 0xFFFF, setup=HIDELEG_ON, restore=HIDELEG_OFF),
+    HCsr("vsstatus", S_SSTATUS_MASK, nonzero=True),
+    HCsr("vsie", 0xFFFF, setup=HIDELEG_ON, restore=HIDELEG_OFF, nonzero=True),
     HCsr("vstval", vaddr=True),
-    HCsr("vsip", 0xFFFF, setup=HIDELEG_ON, restore=HIDELEG_OFF),
+    HCsr("vsip", 0xFFFF, setup=HIDELEG_ON, restore=HIDELEG_OFF, nonzero=True),
     HCsr("vstvec", 0b10),  # as stvec: legal BASE values are implementation-defined
-    HCsr("vsscratch"),
-    HCsr("vsepc", vaddr=True),
+    HCsr("vsscratch", nonzero=True),
+    HCsr("vsepc", vaddr=True, nonzero=True),
     HCsr("vsatp", zero=True),
-    HCsr("vstimecmp", gate="defined(SSTC_SUPPORTED)", setup=STCE_ON, restore=STCE_OFF),
-    HCsr("vstimecmph", gate="__riscv_xlen == 32 && defined(SSTC_SUPPORTED)", setup=STCE_ON, restore=STCE_OFF),
+    HCsr("vstimecmp", gate="defined(SSTC_SUPPORTED)", setup=STCE_ON, restore=STCE_OFF, nonzero=True),
+    HCsr(
+        "vstimecmph",
+        gate="__riscv_xlen == 32 && defined(SSTC_SUPPORTED)",
+        setup=STCE_ON,
+        restore=STCE_OFF,
+        nonzero=True,
+    ),
 ]
 
 # Configs where Sv39/Sv39x4 (RV64) or Sv32/Sv32x4 (RV32) can be selected
@@ -257,6 +265,182 @@ def hcsr_tests(
     for csr in ("hgatp", "vsatp"):
         tc = test_data.new_test_chunk(test_chunks)
         tc.code.extend(_atp_walk_test(test_data, csr, covergroup))
+
+
+def _hcsr_load_mask(reg: int, mask: int | None) -> list[str]:
+    """Prepare an XLEN-sized readback mask without RV32 truncation errors."""
+    if mask is None:
+        return []
+    if mask > 0xFFFFFFFF:
+        return [
+            "#if __riscv_xlen == 32",
+            f"LI(x{reg}, {mask & 0xFFFFFFFF:#x})",
+            "#else",
+            f"LI(x{reg}, {mask:#x})",
+            "#endif",
+        ]
+    return [f"LI(x{reg}, {mask:#x})"]
+
+
+def hcsr_semantics_tests(
+    test_data: TestData,
+    test_chunks: list[TestChunk],
+    csrs: list[HCsr],
+    covergroup: str,
+    prefix: str = "",
+    *,
+    include_immediate: bool = True,
+    reserved_oldvalue_zero: bool = False,
+) -> None:
+    """Check H/VS CSR old-value and operand-zero semantics in HS/M.
+
+    Immediate forms run in HS only; Sm_H reuses the register-form checks
+    without duplicating the Zicsr immediate-form test matrix in M-mode.
+    reserved_oldvalue_zero follows Sm_H's zero selector for reserved CSRs; HS keeps them in hcsrname.
+    """
+    if include_immediate:
+        first = True
+        for csr in csrs:
+            tc = test_data.new_test_chunk(test_chunks, f"{prefix}hcsr_imm" if first else None)
+            if first:
+                tc.section_header = comment_banner(
+                    "cp_hcsr_imm, cp_hcsr_imm_zero, cp_hcsr_imm_masked",
+                    "CSR immediate instructions with uimm=0 and 5; rd returns the pre-write CSR value",
+                )
+                first = False
+            orig, old, rd, check, mask = test_data.int_regs.get_registers(5)
+            cp = "cp_hcsr_imm_zero" if csr.zero else "cp_hcsr_imm_masked" if csr.masked else "cp_hcsr_imm"
+            lines = [f"csrr x{orig}, {csr.operand}", *_hcsr_load_mask(mask, csr.mask)]
+            for op in ("csrrsi", "csrrci", "csrrwi"):
+                for imm in (0, 5):
+                    writes = op == "csrrwi" or imm != 0
+                    testcase = test_data.add_testcase(f"{csr.name}_{op}{imm}", cp, covergroup)
+                    if op == "csrrwi" and imm == 0:
+                        # Match the register old-value tests, then observe the legalized value.
+                        if csr.zero or csr.mask == 0:
+                            lines.append(f"LI(x{check}, 0)")
+                        elif csr.vaddr:
+                            lines.append(f"auipc x{check}, 0    # canonical code address")
+                        elif csr.mask is not None:
+                            lines.append(f"mv x{check}, x{mask}")
+                        else:
+                            lines.append(f"LI(x{check}, -1)")
+                        lines.extend([f"csrw {csr.operand}, x{check}", f"csrr x{old}, {csr.operand}"])
+                        if csr.nonzero:
+                            if csr.mask is not None:
+                                lines.extend([f"and x{check}, x{old}, x{mask}", f"seqz x{check}, x{check}"])
+                            else:
+                                lines.append(f"seqz x{check}, x{old}")
+                            lines.append(write_sigupd(check, test_data))
+                    lines.extend(
+                        [
+                            f"csrr x{old}, {csr.operand}",
+                            testcase,
+                            f"{op} x{rd}, {csr.operand}, {imm}",
+                            f"xor x{rd}, x{rd}, x{old}",
+                            write_sigupd(rd, test_data),
+                        ]
+                    )
+                    # Keep the state check within the instruction's testcase: the coverage sample
+                    # must refer to the CSR immediate instruction, not to the subsequent read.
+                    # A zero immediate on CSRRSI/CSRRCI suppresses the write and must preserve state.
+                    # WARL address/zero-only CSRs have no portable readback for nonzero writes.
+                    check_state = not writes or imm == 0 or not (csr.zero or csr.vaddr)
+                    if check_state:
+                        lines.append(
+                            gen_csr_read_sigupd(
+                                check, (csr.operand, csr.mask), test_data, mask if csr.mask is not None else None
+                            )
+                        )
+            lines.append(f"csrw {csr.operand}, x{orig}")
+            tc.code.extend(gated([*csr.setup, *lines, *csr.restore], csr.gate))
+            test_data.int_regs.return_registers([orig, old, rd, check, mask])
+
+    # hgeip: always test rs1=x0 versus a nonzero register holding zero.
+    # Immediate-form tests for hgeip belong only to HS, not Sm_H.
+    tc = test_data.new_test_chunk(test_chunks, f"{prefix}hcsr_imm_ro" if include_immediate else f"{prefix}hcsr_ro_reg0")
+    tc.section_header = comment_banner(
+        "cp_hcsr_imm_ro, cp_hcsr_ro_reg0" if include_immediate else "cp_hcsr_ro_reg0",
+        "Read-only hgeip write-suppression boundary",
+    )
+    rd, src = test_data.int_regs.get_registers(2)
+    if include_immediate:
+        for op in ("csrrsi", "csrrci", "csrrwi"):
+            for imm in (0, 5):
+                traps = op == "csrrwi" or imm != 0
+                lines = [test_data.add_testcase(f"hgeip_{op}{imm}", "cp_hcsr_imm_ro", covergroup)]
+                if traps:
+                    lines.append(f"LI(x{rd}, 42)    # rd must survive a denied write")
+                lines.extend([f"{op} x{rd}, hgeip, {imm}", write_sigupd(rd, test_data)])
+                tc.code.extend(lines)
+    for op in ("csrrs", "csrrc"):
+        for reg_zero in (True, False):
+            suffix = "x0" if reg_zero else "reg0"
+            tc.code.append(test_data.add_testcase(f"hgeip_{op}_{suffix}", "cp_hcsr_ro_reg0", covergroup))
+            if not reg_zero:
+                tc.code.extend([f"LI(x{src}, 0)", f"LI(x{rd}, 42)"])
+            tc.code.extend([f"{op} x{rd}, hgeip, {'x0' if reg_zero else f'x{src}'}", write_sigupd(rd, test_data)])
+    test_data.int_regs.return_registers([rd, src])
+
+    first = True
+    for csr in csrs:
+        tc = test_data.new_test_chunk(test_chunks, f"{prefix}hcsr_oldvalue" if first else None)
+        if first:
+            tc.section_header = comment_banner(
+                "cp_hcsr_oldvalue, cp_hcsr_oldvalue_zero, cp_hcsr_oldvalue_masked",
+                "RMW returns old CSR; CSRRS/CSRRC rs1=x0 suppress writes, CSRRW rs1=x0 writes zero",
+            )
+            first = False
+        orig, expected, rd, zero, check, mask = test_data.int_regs.get_registers(6)
+        zero_only = csr.zero or csr.mask == 0
+        zero_coverpoint = csr.zero or (reserved_oldvalue_zero and csr.mask == 0)
+        cp = (
+            "cp_hcsr_oldvalue_zero"
+            if zero_coverpoint
+            else "cp_hcsr_oldvalue_masked"
+            if csr.masked
+            else "cp_hcsr_oldvalue"
+        )
+        value = "0" if zero_only else None
+        lines = [f"csrr x{orig}, {csr.operand}", *_hcsr_load_mask(mask, csr.mask), f"LI(x{zero}, 0)"]
+        if value is not None:
+            lines.append(f"LI(x{expected}, {value})")
+        elif csr.vaddr:
+            lines.append(f"auipc x{expected}, 0    # canonical code address")
+        elif csr.mask is not None:
+            lines.append(f"mv x{expected}, x{mask}")
+        else:
+            lines.append(f"LI(x{expected}, -1)")
+        lines.extend([f"csrw {csr.operand}, x{expected}", f"csrr x{expected}, {csr.operand}"])
+        for name, insn in (
+            ("csrrw", f"csrrw x{rd}, {csr.operand}, x{orig}"),
+            ("csrrs_reg0", f"csrrs x{rd}, {csr.operand}, x{zero}"),
+            ("csrrc_reg0", f"csrrc x{rd}, {csr.operand}, x{zero}"),
+            ("csrrs_x0", f"csrrs x{rd}, {csr.operand}, x0"),
+            ("csrrc_x0", f"csrrc x{rd}, {csr.operand}, x0"),
+            ("csrrw_x0", f"csrrw x{rd}, {csr.operand}, x0"),
+        ):
+            lines.extend(
+                [
+                    f"csrw {csr.operand}, x{expected}",
+                    test_data.add_testcase(f"{csr.name}_{name}", cp, covergroup),
+                    insn,
+                    f"xor x{rd}, x{rd}, x{expected}",
+                    write_sigupd(rd, test_data),
+                ]
+            )
+            # Validate the zero-source boundary in the SAME testcase as the RMW opcode.
+            # CSRRW with rs1=x0 writes zero; CSRRS/CSRRC with x0 suppress writes, while
+            # a non-x0 register holding zero issues a write request with zero bit mask.
+            if name in ("csrrs_reg0", "csrrc_reg0", "csrrs_x0", "csrrc_x0", "csrrw_x0"):
+                lines.append(
+                    gen_csr_read_sigupd(
+                        check, (csr.operand, csr.mask), test_data, mask if csr.mask is not None else None
+                    )
+                )
+        lines.append(f"csrw {csr.operand}, x{orig}")
+        tc.code.extend(gated([*csr.setup, *lines, *csr.restore], csr.gate))
+        test_data.int_regs.return_registers([orig, expected, rd, zero, check, mask])
 
 
 def _atp_walk_test(test_data: TestData, csr: str, covergroup: str) -> list[str]:

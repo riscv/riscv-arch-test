@@ -484,6 +484,19 @@ coverpoints:
       - vsatp_sz_acc_op
       - Zicsr_higher_priv
       - Zicsr_rw
+  - name: cp_hcsr_ro_reg0
+    goal: Read-only hgeip distinguishes rs1=x0 from a nonzero rs1 containing zero
+    description: In M-mode, run CSRRS/CSRRC with rs1=x0 and with a nonzero register containing zero.
+    expectation: x0 forms read; nonzero-register forms attempt a write and raise illegal instruction, leaving rd unchanged.
+    bins: 4 forms
+  - name: |-
+      cp_hcsr_oldvalue
+      cp_hcsr_oldvalue_zero
+      cp_hcsr_oldvalue_masked
+    goal: Register-form read-modify-write instructions return the old CSR value
+    description: In M-mode, check the returned old value from CSRRW, CSRRS and CSRRC with nonzero rs1, CSRRS/CSRRC with rs1=x0, and CSRRW with rs1=x0, after initializing each Machine/HS/VS H CSR to a legal value. Check readback within the corresponding testcase for the zero-source boundary forms.
+    expectation: rd returns the value before the operation. CSRRS/CSRRC with rs1=x0 do not write; CSRRW with rs1=x0 writes zero (it does not suppress writes).
+    bins: 6 register forms per eligible H CSR
   - name: |-
       cp_hcsrwalk
       cp_hcsrwalk_masked

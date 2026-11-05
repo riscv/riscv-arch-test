@@ -1,0 +1,157 @@
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0
+# CI configuration for the Shakti E-class and C-class cores
+
+ci_enabled: true
+
+# Both configurations share this list (ci.yaml has no per-configuration exclusions), so an entry for
+# one core also skips that group on the other. Paths are under
+#   E-class: https://gitlab.com/shaktiproject/cores/e-class/-/blob/e8a0dfd2d1c4907c74fb58432e379016871fdd3a/src/core/
+#   C-class: https://gitlab.com/shaktiproject/cores/c-class/-/blob/f52775317b0e6c16272f5c42d3dd7d52282f0e65/src/
+exclude_extensions:
+  # E-class: mtval on an illegal instruction is rs1 + immediate, on ecall the PC, on ebreak PC + 1,
+  # and on an interrupt a stale address: every trap writes stage 2's effective address
+  # (E-class stage2.bsv#L272, csrfile.bsv#L1199).
+  # C-class also fails U_Zicntr (see S_Zicntr), InterruptsSm_trigger_M and _U (see Sm_shadow),
+  # InterruptsSm_wfi_timeout_U (see InterruptsS_wfi_timeout_U) and Sm_csr_insufficient_priv:
+  # dcsr is readable in M-mode outside Debug mode, which the privileged spec only says "should"
+  # raise illegal-instruction, so that check may be too strict.
+  - U-
+  - U_Zicntr
+  - U_ucsr
+  - Exceptions_U
+  - Exceptions_Sm-
+  - Exceptions_Zc
+  - Sm_csr_ro
+  - Sm_csr_insufficient_priv
+  - Sm_inst
+  - Sm_Zicntr
+  - PMP_U_csr_access
+  - InterruptsSm_enable_M
+  - InterruptsSm_enable_U
+  - InterruptsSm_priority_mie_M
+  - InterruptsSm_priority_mie_U
+  - InterruptsSm_priority_mip_M
+  - InterruptsSm_priority_mip_U
+  - InterruptsSm_trigger_M
+  - InterruptsSm_trigger_U
+  - InterruptsSm_wfi_timeout_U
+  - InterruptsSm_wfi_U
+  # E-class: the instruction after a wfi executes with the wfi's PC (E-class stage1.bsv#L426-L428).
+  - InterruptsSm_wfi_M
+  # E-class: minstret never increments, because the rule that increments it conflicts with the
+  # commit rule (E-class stage3.bsv#L287, csrfile.bsv#L204).
+  - Zicntr
+  - Zicsr-csrrc
+  - Zicsr-csrrci
+  - Zicsr-csrrs
+  - Zicsr-csrrsi
+  # E-class: mstatus.FS is writable without F or S (E-class csrfile.bsv#L273-L276).
+  # C-class: mie and mip bits 2, 6 and 10 (the hypervisor VS interrupts) are writable without H:
+  # riscv-config gives them the S-mode default
+  # (https://gitlab.com/shaktiproject/cores/riscv-config/-/issues/5).
+  - Sm_mcsr_access
+  - Sm_mcsr_walk
+  - Sm_mstatus_sd
+  # E-class: mepc[1] is not masked on reads when misa.C is 0 (E-class csrfile.bsv#L610).
+  # C-class: misa.I can be cleared, leaving I = E = 0
+  # (https://gitlab.com/shaktiproject/cores/c-class/-/issues/326).
+  - Sm_misa
+  # E-class: mhpmcounter16..31 raise illegal instruction (E-class decode.bsv#L101).
+  # C-class: a store to the CLINT's mtime faults; test_soc's mtime is read-only (a SoC choice, not
+  # a core bug).
+  - Sm_mcsr_cntr
+  # Sail clears mstatus.MPRV on an mret to a lower mode, a privileged 1.12 rule, also when it
+  # models privileged 1.11. E-class implements 1.10.
+  - Sm_xret
+  # E-class and C-class: an LR at a misaligned address raises store-address-misaligned, and on
+  # C-class an LR denied by PMP raises a store access fault (E-class alu.bsv#L215;
+  # https://gitlab.com/shaktiproject/cores/c-class/-/issues/323; the page-fault case was
+  # https://gitlab.com/shaktiproject/cores/c-class/-/issues/227).
+  - Exceptions_Zalrsc
+  - PMP_Zalrsc_cfg_wr
+  - Sv_ExceptionsZalrsc
+  - Sv_ExceptionsZalrscSm_sv39_exceptions_Zalrsc_mprv
+  # E-class: pmpcfg2 reads entries 12..15 and pmpcfg3 reads 0 (E-class csrfile.bsv#L404).
+  # Waived for C-class: a pmpcfg write with a reserved bit set leaves the entry unchanged, which
+  # the WARL rules allow and Sail cannot model (the riscv-config "wr_illegal: Unchanged" that
+  # csrbox generates, sample_config/c64/rv64i_isa.yaml).
+  - PMP_Sm_pmpcfg_walk_02
+  - PMP_Sm_pmpcfg_walk_03
+  - PMP_Sm_pmpcfg_walk_04
+  - PMP_Sm_pmpcfg_walk_05
+  - PMP_Sm_pmpcfg_walk_06
+  - PMP_Sm_pmpcfg_walk_07
+  - PMP_Sm_pmpcfg_walk_08
+  - PMP_Sm_pmpcfg_walk_09
+  # E-class: an NA4 entry never matches a fetch or a halfword or word access, and a NAPOT entry
+  # does not match a fetch of its last word, because fetches pass a size of 4 bytes and data
+  # accesses the size code (E-class eclass.bsv#L155, #L217, pmp_func.bsv#L80-L84).
+  - PMP_Sm_cfg_na4_all
+  - PMP_Sm_na4_legal_lxwr
+  - PMP_U_na4_legal_lxwr
+  - PMP_Zca_misaligned_na4
+  - PMP_Sm_napot_legal_lxwr-01-
+  - PMP_U_napot_legal_lxwr-01-
+  - PMP_Sm_priority-
+  # E-class: the PMP check of a load or store ignores mstatus.MPRV (E-class eclass.bsv#L219).
+  - PMP_U_mprv_check-01-
+  # E-class: an sc.w without a reservation skips its PMP check (E-class stage2.bsv#L245-L248).
+  # PMP_Zalrsc_cfg_wr is listed with the LR causes above.
+  # E-class: a fetch access fault on the second half of an instruction that crosses into a denied
+  # region writes neither address to mtval. (C-class fails PMP_Zca_misaligned_tor on TOR, below.)
+  - PMP_Zca_misaligned_napot
+  - PMP_Zca_misaligned_tor
+  # C-class: TOR and NAPOT entries match one granule too many: both compare the request with the
+  # top pmpaddr using <= (caches_mmu src/pmp/pmp_func.bsv#L100-L106 at 14.6.2;
+  # https://gitlab.com/shaktiproject/uncore/caches_mmu/-/issues/55; open caches_mmu MR !87 fixes
+  # TOR only).
+  - PMP_S_napot_legal_lxwr-01-
+  - PMP_S_napot_legal_lxwr-02-
+  - PMP_Sm_napot_legal_lxwr-02-
+  - PMP_U_napot_legal_lxwr-02-
+  - PMP_S_tor_legal_lxwr-02-
+  - PMP_Sm_tor_legal_lxwr-02-
+  - PMP_U_tor_legal_lxwr-02-
+  - PMP_Sm_cfg_A_tor_bot
+  - PMP_Sm_cfg_napot_all
+  - PMP_Sm_cfg_tor_all
+  - PMP_Sm_cfg_tor_check-01-
+  - PMP_Sv_sv39_pmp_on_pa_Smode
+  - PMP_Sv_sv39_pmp_on_pa_Umode
+  # C-class: with a grain of 8 bytes, pmpaddr[0] is read-only zero in NAPOT mode too, so no NAPOT
+  # region larger than 8 bytes can be encoded (sample_config/c64/rv64i_isa.yaml, pmpaddr bitmask
+  # 0x3FFFFFFE). pmpaddr is WARL, so this is a sample-configuration choice rather than a clear
+  # bug; open c-class MR !225 changes the sample to G = 0.
+  - PMP_Sm_grain-
+  # C-class: FENCE and FENCE.I write 0 to a nonzero rd (C-class decoder.bsv#L300-L307;
+  # https://gitlab.com/shaktiproject/cores/c-class/-/issues/322; the FENCE.I case was closed #48).
+  - I-fence
+  - Zifencei-fence.i
+  # C-class: an SC pairs with an older LR after a newer LR to an address 256 bytes away. Legal: the
+  # reservation compares only address bits 2:0, and the spec allows an arbitrarily large
+  # reservation set. Asked whether the mask is meant to be inverted in
+  # https://gitlab.com/shaktiproject/uncore/caches_mmu/-/issues/56.
+  - Zalrsc-sc.d
+  - Zalrsc-sc.w
+  # C-class: wfi in U-mode waits forever instead of raising illegal instruction
+  # (https://gitlab.com/shaktiproject/cores/c-class/-/issues/324).
+  - InterruptsS_wfi_timeout_U
+  # C-class: sip and sie show bits that mideleg does not delegate (priv 1.11 machine.tex#L1212-L1219;
+  # https://gitlab.com/shaktiproject/cores/csrbox/-/issues/8). Writing sip.SSIP with mideleg = 0 sets
+  # mip.SSIP, which is also why InterruptsSm_trigger_M/S/U take an M-mode software interrupt.
+  - Sm_scsr_from_m
+  - Sm_shadow
+  # C-class: mcounteren is never checked: S-mode and U-mode can read cycle, instret and every
+  # hpmcounter whatever its mcounteren bit (https://gitlab.com/shaktiproject/cores/c-class/-/issues/325).
+  - S_Zicntr
+  # C-class: a pending interrupt delegated to S-mode is taken before a pending M-mode interrupt
+  # (https://gitlab.com/shaktiproject/cores/c-class/-/issues/327). InterruptsSm_trigger_S is the sip.SSIP
+  # case under Sm_shadow above.
+  - InterruptsSm_priority_mideleg_S
+  - InterruptsSm_priority_mideleg_U
+  - InterruptsSm_trigger_S
+
+apt_packages: "autoconf flex bison help2man libfl-dev ccache libgmp10 python3-venv"
+install_script: ".github/scripts/install-shakti.sh"
+setup_script: ".github/scripts/setup-shakti.sh"

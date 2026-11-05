@@ -1,1 +1,1 @@
-../link.ld
+../cv32a60x/link.ld

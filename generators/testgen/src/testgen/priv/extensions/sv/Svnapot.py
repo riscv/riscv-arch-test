@@ -27,7 +27,14 @@ from testgen.priv.registry import add_priv_test_generator
 _NAPOT_VA = {"sv39": "0x140200000", "sv48": "0x0280C0410000", "sv57": "0x400280C0410000"}
 
 
-def _permissions(umode: bool, ppn_bits: str | None = "(1 << 13)") -> PteFlags:
+# N with PPN[3:0] = 1000 encodes a 64 KiB NAPOT page
+NAPOT_64K_PPN = "(1 << 13)"
+
+# The reserved PPN[3:0] values of a leaf with N set
+NAPOT_RESERVED_PPNS = (1, 2, 4, 0)
+
+
+def _permissions(umode: bool, ppn_bits: str | None = NAPOT_64K_PPN) -> PteFlags:
     extra_bits = ("PTE_N", ppn_bits) if ppn_bits else ("PTE_N",)
     return PteFlags(user=umode, extra=extra_bits)
 
@@ -133,7 +140,7 @@ def _make_reserved(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                 "",
             ]
         )
-    for encoding in ("(1 << 10)", "(2 << 10)", "(4 << 10)", None):
+    for encoding in (f"({ppn} << 10)" if ppn else None for ppn in NAPOT_RESERVED_PPNS):
         number += 1
         chunk.code.extend(
             [

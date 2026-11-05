@@ -108,22 +108,26 @@ covergroup Sstvala_cg with function sample(ins_t ins);
         bins match = {1};
     }
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_FETCH
         instr_access_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
             iff (ins.current.csr_wb[CSR_SCAUSE]) {
             bins scause = {1};
         }
+        cp_instr_access_fault: cross priv_mode_s_u, jalr_fetch, instr_access_fault, stval_fetch_target;
+    `endif
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
         load_access_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
             iff (ins.current.csr_wb[CSR_SCAUSE]) {
             bins scause = {5};
         }
+        cp_load_access_fault:  cross priv_mode_s_u, loadops,  load_access_fault,  stval_address;
+    `endif
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
         store_access_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
             iff (ins.current.csr_wb[CSR_SCAUSE]) {
             bins scause = {7};
         }
-        cp_load_access_fault:  cross priv_mode_s_u, loadops,  load_access_fault,  stval_address;
         cp_store_access_fault: cross priv_mode_s_u, storeops, store_access_fault, stval_address;
-        cp_instr_access_fault: cross priv_mode_s_u, jalr_fetch, instr_access_fault, stval_fetch_target;
     `endif
 
     // Misaligned loads and stores trap only when the implementation does not perform them

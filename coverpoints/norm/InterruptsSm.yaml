@@ -395,9 +395,14 @@ normative_rule_definitions:
   # MTIE) (i.e., implementations should avoid resuming the hart if the interrupt is
   # pending but not locally enabled).
   - name: wfi_unaffected_conditions
-    # Covers mstatus.MIE = 0/1 with mideleg = 0; WFI with a delegated interrupt is not tested,
-    # and the "should" on local enables cannot be checked because WFI may resume for any reason
-    coverpoint: ["InterruptsSm_cg/{cp_wfi_m, cp_wfi}"]
+    # Covers mstatus.MIE = 0/1 with mideleg = 0, and S-mode WFI with sstatus.SIE = 0 woken by a
+    # delegated supervisor interrupt. The "should" on local enables cannot be checked because WFI
+    # may resume for any reason
+    coverpoint:
+      [
+        "InterruptsSm_cg/{cp_wfi_m, cp_wfi}",
+        "S_Zicntr_cg/{cp_instret_wfi_pending, cp_instret_wfi_wake}",
+      ]
 
   # WFI is also required to resume execution for locally enabled interrupts pending at
   # any privilege level, regardless of the global interrupt enable at each privilege
@@ -409,5 +414,10 @@ normative_rule_definitions:
   # If the event that causes the hart to resume execution does not cause an interrupt
   # to be taken, execution will resume at pc + 4
   - name: wfi_no_intr_pc
-    # M-mode WFI with mstatus.MIE = 0 wakes on the pending timer without taking it
-    coverpoint: ["InterruptsSm_cg/cp_wfi_m"]
+    # M-mode WFI with mstatus.MIE = 0 wakes on the pending timer without taking it; S-mode WFI with
+    # sstatus.SIE = 0 wakes on a delegated supervisor interrupt without taking it
+    coverpoint:
+      [
+        "InterruptsSm_cg/cp_wfi_m",
+        "S_Zicntr_cg/{cp_instret_wfi_pending, cp_instret_wfi_wake}",
+      ]

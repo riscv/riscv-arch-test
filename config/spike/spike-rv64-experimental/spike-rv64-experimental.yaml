@@ -13,6 +13,11 @@ implemented_extensions:
   - { name: Sv39, version: "= 1.0.0" }
   - { name: Svbare, version: "= 1.0.0" }
   - { name: Zibi, version: "= 0.7" }
+  - { name: Zvabd, version: "= 0.9" }
+  - { name: Zve32x, version: "= 1.0" }
+  - { name: Zve64x, version: "= 1.0" }
+  - { name: Zvl32b, version: "= 1.0" }
+  - { name: Zvl64b, version: "= 1.0" }
   - { name: Zicsr, version: "= 2.0" }
 params:
   # Trap delegation: the writable medeleg and mideleg bits (sail.json base.medeleg and
@@ -220,7 +225,7 @@ params:
   STVEC_BASE_ALIGNMENT_VECTORED: 4
   SATP_MODE_BARE: true
   TRAP_ON_ECALL_FROM_S: true
-  MSTATUS_VS_LEGAL_VALUES: [0] # spike has no V here, so mstatus.VS is read-only zero
+  MSTATUS_VS_LEGAL_VALUES: [0, 1, 2, 3]
   MSTATUS_FS_LEGAL_VALUES: [0, 1, 2, 3]
   # Sm params
   MEI_INTR_IMPL: true
@@ -376,3 +381,34 @@ params:
       false,
       false,
     ]
+
+  # V params (Zvabd needs Zve32x/Zve64x); values match spike-rv64-max except VLEN, which is 64
+  # because spike defaults to that for zve32x_zve64x without v, as Zvl32b/Zvl64b also allow.
+  # The VFREDUSUM and VSSTATUS params describe float vector and H behavior this config lacks,
+  # but UDB requires every vector param to be present.
+  ELEN: 64
+  FOLLOW_VTYPE_RESET_RECOMMENDATION: true
+  HW_MSTATUS_VS_DIRTY_UPDATE: precise
+  IMPRECISE_VECTOR_TRAP_SETTABLE: false
+  LEGAL_VSTART: "1_stride"
+  RESERVED_VSET_X0X0_VILL_SET: "always"
+  RESERVED_VSET_X0X0_VLMAX_CHANGE: "always"
+  RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX: VLMAX
+  SEW_MIN: 8
+  SUPPORT_FRACTIONAL_LMUL_BEYOND_REQUIRED: "no_unrequired_supported"
+  VECTOR_FF_NO_EXCEPTION_TRIM: false
+  VECTOR_FF_SEG_EXCEPTION_PARTIAL_LOAD: custom
+  VECTOR_FF_UPDATE_PAST_TRIM: "update_none"
+  VECTOR_LOAD_PAST_TRAP: false
+  VECTOR_LOAD_SEG_FF_OVERWRITE_ELEMENTS_AFTER_FAULT: "no_overwrite"
+  VECTOR_LS_INDEX_MAX_EEW: "XLEN"
+  VECTOR_LS_MISALIGNED_LEGAL: true
+  VECTOR_LS_SEG_PARTIAL_ACCESS: true
+  VECTOR_LS_WHOLEREG_MISALIGNED_LEGAL: true
+  VFREDUSUM_FINAL_NODE_ELEMENT_BEHAVIOR: "additive_identity"
+  VFREDUSUM_INACTIVE_NODE_ELEMENT_BEHAVIOR: "additive_identity"
+  VFREDUSUM_NAN: custom
+  VFREDUSUM_NODE_ROUNDING_BEHAVIOR: "SEW_precision"
+  VILL_SET_ON_RESERVED_VTYPE: true
+  VLEN: 64
+  VSSTATUS_VS_EXISTS: true

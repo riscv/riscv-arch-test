@@ -6,7 +6,7 @@
 # RC = chipsalliance/rocket-chip@55bcad0f with PR #3820 (d1d2c5e7), the TLB superpage-refill fix
 # and htimedelta, SAT = ucb-bar/saturn-vectors@8ef05c9c with the acc_done fix. Of the 3441 tests
 # that `make tests` generates for this config, the CI selection (3124 tests) all pass; every
-# entry below names a test group that fails.
+# entry below names a test group that fails, except H_F, which passes but exceeds the CI time limit.
 
 ci_enabled: true
 
@@ -286,6 +286,10 @@ exclude_extensions:
   - S_VF
   - U_VF
   - H_VF
+  # H_F_vs, H_F_vu: pass, but are too slow for CI. They make about 2500 and 4900 T-SBI calls (each a
+  # trap to M-mode and back) from VS and VU. On a GitHub runner H_F_vs takes about 300 s and H_F_vu
+  # about 650 s, against run_tests.py's 300 s per-test limit.
+  - H_F
   # mcause bit 4 is not writable, so exception code 20 reads back as 4. mcause is WLRL, but with H
   # the guest-page-fault codes 20-23 are supported values, so they must read back.
   - Sm_mcause

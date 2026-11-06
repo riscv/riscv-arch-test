@@ -229,6 +229,11 @@ def _warl_reserved_check(
     return lines
 
 
+def upper_half(unwalked_bits: list[tuple[int, str]]) -> list[tuple[int, str]] | None:
+    """The unwalked_bits from bit 32 up, shifted down, for the RV32 upper-half CSR."""
+    return [(bits >> 32, define) for bits, define in unwalked_bits if bits >> 32] or None
+
+
 def csr_walk_test(
     test_data: TestData,
     csr: tuple,
@@ -267,8 +272,8 @@ def csr_walk_test(
             other iterations check the field exactly as usual (see _warl_reserved_check).
         maskedwrites: If True, the CSR is written with a mask applied to the value being written.
         bin_prefix: Prefix for testcase bin names, to walk the same CSR more than once under one coverpoint.
-        unwalked_bits: Optional (bits, cond) pairs for state the reference model cannot model. `cond` is a
-            define name, or an #if expression. Where it holds, the bits are neither written nor checked,
+        unwalked_bits: Optional (bits, define) pairs for state the reference model cannot model. Where the
+            define is defined, the bits are neither written nor checked,
             so their coverage reports missing; elsewhere they are walked and checked (read-only). Implies
             maskedwrites, with the bits added to the csr mask, or all ones if None.
     """
@@ -365,12 +370,12 @@ def csr_walk_test(
     ]
     if mask is not None:
         lines.append(f"LI(x{mask_reg}, {mask})    # Load mask ({mask:#x})")
-        for bits, cond in unwalked_bits or []:
+        for bits, define in unwalked_bits or []:
             lines += [
-                f"#ifdef {cond}" if cond.isidentifier() else f"#if {cond}",
+                f"#ifdef {define}",
                 f"LI(x{check_reg}, {~bits & ((1 << 64) - 1)})    # Do not walk bits {bits:#x}",
                 f"and x{mask_reg}, x{mask_reg}, x{check_reg}",
-                f"#endif // {cond}",
+                f"#endif // {define}",
             ]
     if walk_zeros:
         lines.append(f"LI(x{temp_reg}, -1)             # x{temp_reg} = all 1s")

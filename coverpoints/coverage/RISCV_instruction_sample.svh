@@ -31,151 +31,181 @@
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amoadd.h"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amoadd.w"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amoand.b"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amoand.h"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amoand.w"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amocas.b"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amocas.h"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amocas.w"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amomax.b"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amomax.h"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amomax.w"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amomaxu.b"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amomaxu.h"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amomaxu.w"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amomin.b"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amomin.h"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amomin.w"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amominu.b"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amominu.h"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amominu.w"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amoor.b"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amoor.h"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amoor.w"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amoswap.b"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amoswap.h"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amoswap.w"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amoxor.b"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amoxor.h"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amoxor.w"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "and"     : begin
             ins.add_rd(0);
@@ -323,28 +353,28 @@
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.fldsp"     : begin
             ins.add_fd(0);
             ins.add_mem_offset(1);
             ins.add_rs1_sp();
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.fsd"     : begin
             ins.add_fs2(0);
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_STORE;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.fsdsp"     : begin
             ins.add_fs2(0);
             ins.add_mem_offset(1);
             ins.add_rs1_sp();
             ins.current.inst_category = INST_CAT_STORE;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.j"     : begin
             ins.add_imm_addr(0);
@@ -352,30 +382,32 @@
         "c.jalr"     : begin
             ins.add_rd_ra();
             ins.add_rs1(0);
+            ins.add_eff_addr();
         end
         "c.jr"     : begin
             ins.add_rs1(0);
+            ins.add_eff_addr();
         end
         "c.lbu"     : begin
             ins.add_rd(0);
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.lh"     : begin
             ins.add_rd(0);
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.lhu"     : begin
             ins.add_rd(0);
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.li"     : begin
             ins.add_rd(0);
@@ -392,14 +424,14 @@
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.lwsp"     : begin
             ins.add_rd(0);
             ins.add_mem_offset(1);
             ins.add_rs1_sp();
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.mop.1"     : begin
             ins.add_imm(0);
@@ -472,7 +504,7 @@
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_STORE;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.sext.b"     : begin
             ins.add_rd(0);
@@ -487,7 +519,7 @@
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_STORE;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.slli"     : begin
             ins.add_rd(0);
@@ -520,14 +552,14 @@
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_STORE;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.swsp"     : begin
             ins.add_rs2(0);
             ins.add_mem_offset(1);
             ins.add_rs1_sp();
             ins.current.inst_category = INST_CAT_STORE;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.xor"     : begin
             ins.add_rd(0);
@@ -544,15 +576,19 @@
         end
         "cbo.clean"     : begin
             ins.add_rs1(0);
+            ins.add_eff_addr();
         end
         "cbo.flush"     : begin
             ins.add_rs1(0);
+            ins.add_eff_addr();
         end
         "cbo.inval"     : begin
             ins.add_rs1(0);
+            ins.add_eff_addr();
         end
         "cbo.zero"     : begin
             ins.add_rs1(0);
+            ins.add_eff_addr();
         end
         "clmul"     : begin
             ins.add_rd(0);
@@ -788,7 +824,7 @@
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "fle.d"     : begin
             ins.add_rd(0);
@@ -825,7 +861,7 @@
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "fli.d"     : begin
             ins.add_fd(0);
@@ -871,7 +907,7 @@
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "fmadd.d"     : begin
             ins.add_fd(0);
@@ -1065,7 +1101,7 @@
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_STORE;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "fsgnj.d"     : begin
             ins.add_fd(0);
@@ -1117,7 +1153,7 @@
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_STORE;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "fsqrt.d"     : begin
             ins.add_fd(0);
@@ -1151,7 +1187,7 @@
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_STORE;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "hfence.gvma"     : begin
             ins.add_rs1(0);
@@ -1172,45 +1208,55 @@
         "hlv.b"     : begin
             ins.add_rd(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "hlv.bu"     : begin
             ins.add_rd(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "hlv.h"     : begin
             ins.add_rd(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "hlv.hu"     : begin
             ins.add_rd(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "hlv.w"     : begin
             ins.add_rd(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "hlvx.hu"     : begin
             ins.add_rd(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "hlvx.wu"     : begin
             ins.add_rd(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "hsv.b"     : begin
             ins.add_rs2(0);
             ins.add_rs1(1);
             ins.current.inst_category = INST_CAT_STORE;
+            ins.add_eff_addr();
         end
         "hsv.h"     : begin
             ins.add_rs2(0);
             ins.add_rs1(1);
             ins.current.inst_category = INST_CAT_STORE;
+            ins.add_eff_addr();
         end
         "hsv.w"     : begin
             ins.add_rs2(0);
             ins.add_rs1(1);
             ins.current.inst_category = INST_CAT_STORE;
+            ins.add_eff_addr();
         end
         "jal"     : begin
             ins.add_rd(0);
@@ -1220,34 +1266,35 @@
             ins.add_rd(0);
             ins.add_imm_addr(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "lb"     : begin
             ins.add_rd(0);
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "lbu"     : begin
             ins.add_rd(0);
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "lh"     : begin
             ins.add_rd(0);
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "lhu"     : begin
             ins.add_rd(0);
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "lpad"     : begin
             ins.add_imm(0);
@@ -1255,6 +1302,7 @@
         "lr.w"     : begin
             ins.add_rd(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "lui"     : begin
             ins.add_rd(0);
@@ -1265,7 +1313,7 @@
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "max"     : begin
             ins.add_rd(0);
@@ -1539,14 +1587,17 @@
         "prefetch.i"     : begin
             ins.add_imm(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "prefetch.r"     : begin
             ins.add_imm(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "prefetch.w"     : begin
             ins.add_imm(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "rem"     : begin
             ins.add_rd(0);
@@ -1582,13 +1633,14 @@
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_STORE;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "sc.w"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_STORE;
+            ins.add_eff_addr();
         end
         "sext.b"     : begin
             ins.add_rd(0);
@@ -1611,7 +1663,7 @@
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_STORE;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "sh1add"     : begin
             ins.add_rd(0);
@@ -1722,6 +1774,7 @@
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "sspopchk"     : begin
             ins.add_rs1(0);
@@ -1742,7 +1795,7 @@
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_STORE;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "vaadd.vv"     : begin
             ins.add_vd(0);
@@ -6159,34 +6212,35 @@
             ins.add_rd_pair(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "c.flw"     : begin
             ins.add_fd(0);
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.flwsp"     : begin
             ins.add_fd(0);
             ins.add_mem_offset(1);
             ins.add_rs1_sp();
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.fsw"     : begin
             ins.add_fs2(0);
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_STORE;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.fswsp"     : begin
             ins.add_fs2(0);
             ins.add_mem_offset(1);
             ins.add_rs1_sp();
             ins.current.inst_category = INST_CAT_STORE;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.jal"     : begin
             ins.add_rd_ra();
@@ -6293,56 +6347,67 @@
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amoand.d"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amocas.d"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amocas.q"     : begin
             ins.add_rd_pair(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amomax.d"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amomaxu.d"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amomin.d"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amominu.d"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amoor.d"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amoswap.d"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amoxor.d"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "c.addiw"     : begin
             ins.add_rd(0);
@@ -6359,28 +6424,28 @@
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.ldsp"     : begin
             ins.add_rd(0);
             ins.add_mem_offset(1);
             ins.add_rs1_sp();
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.sd"     : begin
             ins.add_rs2(0);
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_STORE;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.sdsp"     : begin
             ins.add_rs2(0);
             ins.add_mem_offset(1);
             ins.add_rs1_sp();
             ins.current.inst_category = INST_CAT_STORE;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.subw"     : begin
             ins.add_rd(0);
@@ -6472,33 +6537,37 @@
         "hlv.d"     : begin
             ins.add_rd(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "hlv.wu"     : begin
             ins.add_rd(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "hsv.d"     : begin
             ins.add_rs2(0);
             ins.add_rs1(1);
             ins.current.inst_category = INST_CAT_STORE;
+            ins.add_eff_addr();
         end
         "ld"     : begin
             ins.add_rd(0);
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "lr.d"     : begin
             ins.add_rd(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "lwu"     : begin
             ins.add_rd(0);
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "mulw"     : begin
             ins.add_rd(0);
@@ -6540,13 +6609,14 @@
             ins.add_rs2(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_STORE;
+            ins.add_eff_addr();
         end
         "sd"     : begin
             ins.add_rs2(0);
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_STORE;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "sh1add.uw"     : begin
             ins.add_rd(0);
@@ -6618,6 +6688,7 @@
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "subw"     : begin
             ins.add_rd(0);

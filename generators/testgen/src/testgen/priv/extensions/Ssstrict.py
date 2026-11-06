@@ -29,11 +29,12 @@ from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from random import randint, seed
 
-from testgen.asm.helpers import comment_banner, reproducible_hash
+from testgen.asm.helpers import comment_banner, gated, reproducible_hash
 from testgen.constants import INDENT
 from testgen.data.registers import IntegerRegisterFile
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
+from testgen.priv.extensions.PrivCommon import unless_sail_gap
 from testgen.priv.registry import add_priv_test_generator
 
 # Number of CSR addresses per CSR-sweep chunk. Each CSR contributes 5 testcases
@@ -79,8 +80,33 @@ PRIVILEGED_000_EXCLUSIONS: tuple[str, ...] = (
     "00X10000001000000000000001110011",  # mret/sret
     "00000000000000000000000001110011",  # ecall
     "00010000010100000000000001110011",  # wfi
-    "01110000001000000000000001110011",  # MNRET (Smrnmi)
 )
+
+# Encodings of ratified extensions that Sail does not implement yet, each with the preprocessor condition under
+# which the hart has the extension.  Sail treats them as illegal, so where the hart has the extension it cannot
+# predict them.  The sweeps assemble such an encoding only where its condition is false (the encoding is then
+# illegal on the hart too), so its coverage reports missing elsewhere.  These are the CSR sweeps' SAIL_GAP_CSRS
+# for instructions.
+# TODO: remove each entry once Sail implements its extension.
+SAIL_GAP_ENCODINGS: tuple[tuple[str, str], ...] = (
+    # Zilsd: ld and sd on RV32
+    ("XXXXXXXXXXXXXXXXX011XXXXX0000011", "defined(ZILSD_SUPPORTED) && __riscv_xlen == 32"),
+    ("XXXXXXXXXXXXXXXXX011XXXXX0100011", "defined(ZILSD_SUPPORTED) && __riscv_xlen == 32"),
+    # Zalasr: l{b,h,w,d}.aq (funct5 00110) and s{b,h,w,d}.rl (funct5 00111)
+    ("0011XXXXXXXXXXXXX0XXXXXXX0101111", "defined(ZALASR_SUPPORTED)"),
+    # Smctr/Ssctr: sctrclr
+    ("00010000010000000000000001110011", "defined(SMCTR_SUPPORTED) || defined(SSCTR_SUPPORTED)"),
+    # Smrnmi: mnret
+    ("01110000001000000000000001110011", "defined(SMRNMI_SUPPORTED)"),
+)
+
+
+def _sail_gap_condition(encoding: str) -> str | None:
+    """Condition under which the hart has an extension that Sail lacks and that defines encoding, or None."""
+    for pattern, cond in SAIL_GAP_ENCODINGS:
+        if len(pattern) == len(encoding) and _excluded(encoding, (pattern,)):
+            return cond
+    return None
 
 
 # ── Encoding helpers ──────────────────────────────────────────────────────
@@ -230,7 +256,8 @@ def _emit_raw_words(
         part = f" part {grp_start // MAX_WORDS_PER_CHUNK}" if total > MAX_WORDS_PER_CHUNK else ""
         lines.append(f"# {comment}{part}  ({len(group)} of {total} encodings) template {template}")
         for enc in group:
-            lines.append(f"\t{directive} 0b{enc}")
+            cond = _sail_gap_condition(enc)
+            lines += gated([f"\t{directive} 0b{enc}"], None if cond is None else f"!({cond})")
         if length == 16:
             # Without Zca (IALIGN=32) the hart can reach only 4-byte-aligned code after an odd count of halfwords
             lines.append("\t.balign 4")
@@ -306,22 +333,25 @@ def _generate_csr_sweep_body(
 
             ih = hex(csr_addr)
             lines.extend(
-                [
-                    f"# CSR {ih}",
-                    f"\t{test_data.add_testcase(f'csrr_{ih}', 'cp_csrr', covergroup)}",
-                    f"\tcsrr x{r1}, {ih}",  # save CSR value
-                    f"\tli x{r2}, -1",  # all-ones value
-                    f"\t{test_data.add_testcase(f'csrw_ones_{ih}', 'cp_csrw_edges', covergroup)}",
-                    f"\tcsrrw x{r3}, {ih}, x{r2}",  # write all-ones
-                    f"\t{test_data.add_testcase(f'csrw_zeros_{ih}', 'cp_csrw_edges', covergroup)}",
-                    f"\tcsrrw x{r3}, {ih}, x0",  # write all-zeros
-                    f"\t{test_data.add_testcase(f'csrrs_{ih}', 'cp_csrcs', covergroup)}",
-                    f"\tcsrrs x{r3}, {ih}, x{r2}",  # set all bits
-                    f"\t{test_data.add_testcase(f'csrrc_{ih}', 'cp_csrcs', covergroup)}",
-                    f"\tcsrrc x{r3}, {ih}, x{r2}",  # clear all bits
-                    f"\tcsrrw x{r3}, {ih}, x{r1}",  # restore
-                    "",
-                ]
+                unless_sail_gap(
+                    csr_addr,
+                    [
+                        f"# CSR {ih}",
+                        f"\t{test_data.add_testcase(f'csrr_{ih}', 'cp_csrr', covergroup)}",
+                        f"\tcsrr x{r1}, {ih}",  # save CSR value
+                        f"\tli x{r2}, -1",  # all-ones value
+                        f"\t{test_data.add_testcase(f'csrw_ones_{ih}', 'cp_csrw_edges', covergroup)}",
+                        f"\tcsrrw x{r3}, {ih}, x{r2}",  # write all-ones
+                        f"\t{test_data.add_testcase(f'csrw_zeros_{ih}', 'cp_csrw_edges', covergroup)}",
+                        f"\tcsrrw x{r3}, {ih}, x0",  # write all-zeros
+                        f"\t{test_data.add_testcase(f'csrrs_{ih}', 'cp_csrcs', covergroup)}",
+                        f"\tcsrrs x{r3}, {ih}, x{r2}",  # set all bits
+                        f"\t{test_data.add_testcase(f'csrrc_{ih}', 'cp_csrcs', covergroup)}",
+                        f"\tcsrrc x{r3}, {ih}, x{r2}",  # clear all bits
+                        f"\tcsrrw x{r3}, {ih}, x{r1}",  # restore
+                        "",
+                    ],
+                )
             )
             test_data.int_regs.return_registers([r1, r2, r3])
         _finalize_chunk(test_data, lines, test_chunks)

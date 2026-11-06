@@ -11,7 +11,7 @@
 
 """Sm privileged extension test generator."""
 
-from testgen.asm.csr import cntr_access_test, csr_access_test, csr_walk_test, gen_csr_read_sigupd
+from testgen.asm.csr import cntr_access_test, csr_access_test, csr_walk_test, gen_csr_read_sigupd, upper_half
 from testgen.asm.helpers import comment_banner, gated, write_sigupd
 from testgen.constants import INDENT
 from testgen.data.state import TestData
@@ -54,6 +54,8 @@ from testgen.priv.extensions.ZicntrCommon import (
     instret_retire_tests,
 )
 from testgen.priv.registry import add_priv_test_generator
+
+MENVCFG_CDE = 1 << 60  # Smcdeleg counter delegation enable
 
 # Address CSRs that must hold every valid virtual address: {csr: (held-low mask, {bit: gate define})}
 SM_VADDR_CSRS = {
@@ -534,7 +536,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         | (1 << 7)  # CBZE: Cache Block Zero Enable
         | (3 << 32)  # PMM: Pointer Masking
         | (1 << 59)  # DTE: Double Trap Enable
-        | (0 << 60)  # Counter Delegation Smcdeleg not supported by Sail; TODO change to 1 when Smcdeleg implemented
+        | (0 << 60)  # CDE: Sail does not implement Smcdeleg; only the walks cover it (MENVCFG_CDE)
         | (1 << 61)  # ADUE: A/D
         | (1 << 62)  # PBMTE: Page-Based Memory Type Enable
         | (1 << 63)  # STCE: Supervisor Timer Compare Enable
@@ -588,6 +590,10 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     # TODO: remove mcountinhibit mask when Sail gets parameters for writable bits
     csr_mcountinhibit = ("mcountinhibit", 0b111)
     csr_menvcfg = ("menvcfg", menvcfg_mask)
+    # TODO: Walk menvcfg.CDE everywhere (and add it to menvcfg_mask) once Sail implements Smcdeleg.
+    # The walks skip it where Smcdeleg is implemented, so its coverage reports missing, and check it
+    # as read-only zero elsewhere.
+    cde_unwalked = [(MENVCFG_CDE, "SMCDELEG_SUPPORTED")]
     csr_mseccfg = ("mseccfg", mseccfg_mask)
     # RV32-only high CSRs
     csr_mstatush = ("mstatush", (mstatus_mask >> 32) & 0x7FFFFFFF)  # SD not in bit 31 of mstatush
@@ -742,7 +748,14 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
     warl_fields = [("cbie", 4, 2, 0b10), ("pmm", 32, 2, 0b01)]
     tc.code.extend(
-        csr_walk_test(test_data, csr_menvcfg, covergroup, coverpoint_masked, warl_fields=warl_fields, maskedwrites=True)
+        csr_walk_test(
+            test_data,
+            csr_menvcfg,
+            covergroup,
+            coverpoint_masked,
+            warl_fields=warl_fields,
+            unwalked_bits=cde_unwalked,
+        )
     )
     tc.code.append("#endif")
 
@@ -763,7 +776,15 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
 
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
     tc.code.extend(csr_walk_test(test_data, csr_mstatush, covergroup, coverpoint_masked, maskedwrites=True))
-    tc.code.extend(csr_walk_test(test_data, csr_menvcfgh, covergroup, coverpoint_masked, maskedwrites=True))
+    tc.code.extend(
+        csr_walk_test(
+            test_data,
+            csr_menvcfgh,
+            covergroup,
+            coverpoint_masked,
+            unwalked_bits=upper_half(cde_unwalked),
+        )
+    )
     tc.code.append("#endif // SM1P12P0_OR_LATER_SUPPORTED")
     tc.code.append("\n#ifdef MSECCFG_SUPPORTED")
     tc.code.extend(csr_walk_test(test_data, csr_mseccfgh, covergroup, coverpoint_masked, maskedwrites=True))

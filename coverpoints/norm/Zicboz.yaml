@@ -19,7 +19,11 @@ normative_rule_definitions:
   # A cbo.zero instruction performs stores of zeros to the full set of bytes
   # corresponding to the cache block that contains the address specified in rs1.
   - name: cbo-zero_op
-    coverpoint: ["Zicboz_cbo_zero_cg/cp_custom_cbo"]
+    coverpoint:
+      [
+        "Zicboz_cbo_zero_cg/cp_custom_cbo",
+        "Svpbmt_Zicboz_cg/{cp_cbo_zero_pbmt_s, cp_cbo_zero_pbmt_u}",
+      ]
 
   # It is not required that rs1 is aligned to the size of a cache block.
   - name: cbo-zero_unaligned

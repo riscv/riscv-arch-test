@@ -1332,7 +1332,8 @@ normative_rule_definitions:
     coverpoint:
       [
         "Zicntr_csrrs_cg/cp_cntr/csr_time",
-        "Sm_mcsr_cg/{cp_mtime_write, cp_mtime_wraparound, cp_csr_ro}",
+        "Sm_mcsr_cg/{cp_mtime_wraparound, cp_csr_ro}",
+        "Sm_Zicntr_cg/cp_mtime_write",
       ]
 
   # when XLEN=32, the csr:cycleh[], csr:instreth[] and hpmcounternh CSRs are read-only
@@ -1353,7 +1354,8 @@ normative_rule_definitions:
     coverpoint:
       [
         "Zicntr_csrrs_cg/cp_cntr/csr_timeh",
-        "Sm_mcsr_cg/{cp_mtimeh_write, cp_csr_ro}",
+        "Sm_mcsr_cg/cp_csr_ro",
+        "Sm_Zicntr_cg/cp_mtimeh_write",
       ]
 
   - name: mcountinhibit_enc_img
@@ -1634,7 +1636,8 @@ normative_rule_definitions:
   # Platforms provide a real-time counter, exposed as a memory-mapped machine-mode read-write
   # register, mtime.
   - name: mtime_acc
-    coverpoint: ["Sm_mcsr_cg/{cp_mtime_write, cp_mtime_wraparound}"]
+    coverpoint:
+      ["Sm_mcsr_cg/cp_mtime_wraparound", "Sm_Zicntr_cg/cp_mtime_write"]
 
   # mtime must increment at constant frequency
   - name: mtime_op
@@ -1656,7 +1659,8 @@ normative_rule_definitions:
   - name: mtime_sz
     coverpoint:
       [
-        "Sm_mcsr_cg/{cp_mtimeh_write, cp_mtimeh_wraparound}",
+        "Sm_mcsr_cg/cp_mtime_wraparound",
+        "Sm_Zicntr_cg/cp_mtimeh_write",
         "TODO: on RV64, check that mtime bits 63:32 are writable",
       ]
 
@@ -1665,7 +1669,8 @@ normative_rule_definitions:
     coverpoint: ["TODO: write and read back all 64 bits of mtimecmp"]
 
   - name: mtime_enc_img
-    coverpoint: ["Sm_mcsr_cg/{cp_mtime_write, cp_mtime_wraparound}"]
+    coverpoint:
+      ["Sm_mcsr_cg/cp_mtime_wraparound", "Sm_Zicntr_cg/cp_mtime_write"]
 
   - name: mtimecmp_enc_img
     coverpoint: ["TODO: write and read back all 64 bits of mtimecmp"]
@@ -1688,7 +1693,7 @@ normative_rule_definitions:
   # When mtime changes, it is guaranteed to be reflected in time and timeh eventually, but not
   # necessarily immediately.
   - name: time_timeh_visibility_mtime
-    coverpoint: ["Sm_mcsr_cg/{cp_mtime_write, cp_mtimeh_write}"]
+    coverpoint: ["Sm_Zicntr_cg/{cp_mtime_write, cp_mtimeh_write}"]
 
   # ECALL and EBREAK cause the receiving privilege mode’s epc register to be set to the address of
   # the ECALL or EBREAK instruction itself, not the address of the following instruction.

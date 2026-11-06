@@ -38,6 +38,11 @@
 #define AI_SKIP(_N)                                         \
     addi AI_TP, AI_TP, (_N)*REGWIDTH
 
+// Skip _N table entries when _N*REGWIDTH does not fit an addi immediate. Clobbers x4.
+#define AI_SKIP_BIG(_N)                                     \
+    LI(x4, (_N)*REGWIDTH)                                  ;\
+    add  AI_TP, AI_TP, x4
+
 // Compare _R with the next table entry. _LBL labels the instruction under test and
 // _STR the description string; both are reported on a mismatch.
 #define AI_CHECK(_R, _LBL, _STR)                            \

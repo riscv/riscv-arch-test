@@ -24,7 +24,7 @@
       // to as it is read-only zero.
       "writable_bits": { "len": 32, "value": "0xFFFF_FFFD" }
     },
-    "writable_fiom": true,
+    "writable_fiom": false, // menvcfg is read-only zero
     "writable_hpm_counters": {
       "len": 32,
       // NUM_MHPMCOUNTERS=0; no HPM counters implemented
@@ -123,7 +123,7 @@
       "fetch_access_fault": false,
       "fetch_page_fault": false,
       "software_check": false,
-      "hardware_error": true,
+      "hardware_error": false,
       "reserved_exceptions": false
     },
     "reserved_behavior": {
@@ -299,13 +299,14 @@
     },
     "clock_frequency": 1000000000,
     "instructions_per_tick": 2,
-    "wfi_is_nop": true,
+    // WFI sleeps until an interrupt; in U-mode with mstatus.TW = 1 it raises illegal instruction
+    "wfi_is_nop": false,
     // WFI is optionally available to User mode.  Note that even if
     // `wfi_is_nop` is set to `true` above, it will still not be
     // available to User mode unless `wfi_available_to_user_mode` is
     // also `true`.
     "wfi_available_to_user_mode": true,
-    "max_time_to_wait": 0,
+    "max_time_to_wait": 1000,
     // The model can generate the following events that can be tracked
     // using the HPM counters:
     // - EV_FENCE

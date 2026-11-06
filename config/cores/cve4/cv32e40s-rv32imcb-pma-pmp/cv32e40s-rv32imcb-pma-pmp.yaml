@@ -29,6 +29,7 @@ implemented_extensions: # VERIFIED against User Manual (Introduction)
   - { name: Zbs, version: "= 1.0.0" } # VERIFIED — enabled with B_EXT=ZBA_ZBB_ZBC_ZBS (User Manual, Introduction)
   - { name: Zbkc, version: "= 1.0.0" } # VERIFIED — shares clmul hardware with Zbc; enabled with B_EXT=ZBA_ZBB_ZBC_ZBS (User Manual, Introduction)
   - { name: Sm, version: "= 1.12.0" }
+  - { name: U, version: "= 1.0.0" } # always implemented: CV32E40S has Machine and User modes
 
 params:
   NON_STANDARD_EXTENSION_IMPLEMENTED: false
@@ -81,6 +82,12 @@ params:
   MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom # VERIFIED — MODE bit[1] hardwired 0, bit[0] writable; writes always valid (User Manual, Control and Status Registers)
   MTVEC_BASE_ALIGNMENT_VECTORED: 128 # VERIFIED — CSR_BASIC_MTVEC_MASK=0xFFFFFF81; BASE[31:7] writable, bits[6:2] hardwired 0 -> 2^7 = 128-byte alignment
   MTVEC_BASE_ALIGNMENT_DIRECT: 128 # VERIFIED — same mask applies in direct mode
+
+  # U params
+  MUTABLE_MISA_U: false # misa is read-only
+  U_MODE_ENDIANNESS: little
+  UXLEN: [32]
+  TRAP_ON_ECALL_FROM_U: true
 
   # Sm params
   WFI_U_MODE: true

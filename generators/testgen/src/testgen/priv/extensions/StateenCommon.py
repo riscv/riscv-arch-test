@@ -184,6 +184,29 @@ def _clear_unchecked(csr: str, reg: int, tmp: int) -> list[str]:
     return lines
 
 
+def _unchecked_access_test(test_data: TestData, cg: str, cp: str, csr: str, bin_prefix: str) -> list[str]:
+    """csr_access_test for hstateen0 or hstateen0h, with the STATEEN0_UNCHECKED_BITS cleared from each readback."""
+    save, ones, check, tmp = test_data.int_regs.get_registers(4)
+    lines = ["", f"# CSR Access Tests for {csr}", f"csrr x{save}, {csr}    # Save CSR", f"LI(x{ones}, -1)"]
+    for name, op in (
+        ("csrrw1", f"csrw {csr}, x{ones}"),
+        ("csrrw0", f"csrw {csr}, zero"),
+        ("csrs_all", f"csrs {csr}, x{ones}"),
+        ("csrrc_all", f"csrc {csr}, x{ones}"),
+    ):
+        lines += [
+            "",
+            test_data.add_testcase(f"{bin_prefix}{csr}_{name}", cp, cg),
+            op,
+            f"csrr x{check}, {csr}",
+            *_clear_unchecked(csr, check, tmp),
+            write_sigupd(check, test_data),
+        ]
+    lines.append(f"csrw {csr}, x{save}    # Restore CSR")
+    test_data.int_regs.return_registers([save, ones, check, tmp])
+    return lines
+
+
 def _csr_lines(test_data: TestData, cg: str, cp: str, csrs: tuple[str, ...], tag: str, *, readable: bool) -> list[str]:
     """Access each CSR with csrrw, csrrs and csrrc.
 
@@ -193,7 +216,11 @@ def _csr_lines(test_data: TestData, cg: str, cp: str, csrs: tuple[str, ...], tag
     lines: list[str] = []
     if readable:
         for csr in csrs:
-            lines += gated(csr_access_test(test_data, (csr, None), cg, cp, bin_prefix=f"{tag}_"), CSR_GUARDS.get(csr))
+            if csr in ("hstateen0", "hstateen0h"):  # TODO: Remove once Sail models every hstateen0 bit
+                access = _unchecked_access_test(test_data, cg, cp, csr, f"{tag}_")
+            else:
+                access = csr_access_test(test_data, (csr, None), cg, cp, bin_prefix=f"{tag}_")
+            lines += gated(access, CSR_GUARDS.get(csr))
         return lines
     rd, rs = test_data.int_regs.get_registers(2)
     lines.append(f"LI(x{rs}, -1)")

@@ -11,6 +11,7 @@ exclude_extensions:
   #     minstret one too high after wraparound (still fails with QEMU #4087 closed)
   #     mcycleh write dropped (#4219)
   #     mstatus.MPELP not writable (#4220)
+  #     M-mode writes of mip.VSTIP and mip.VSEIP are accepted (https://gitlab.com/qemu-project/qemu/-/work_items/4809)
   - Sm_mcsr_access
   - Sm_mcsr_cntr
   - Sm_mcsr_walk
@@ -33,38 +34,47 @@ exclude_extensions:
   # amocas with rd=x0 corrupts subsequent branch on x0 (https://gitlab.com/qemu-project/qemu/-/work_items/3526)
   - Zacas
   # Interrupt tests never enter VS/VU (https://gitlab.com/qemu-project/qemu/-/issues/4620). The WFI tests record
-  # SPV/MPV = 0, and InterruptsS_wfi_VS then waits in HS-mode for a timer interrupt that SIE = 0 masks.
-  # InterruptsS_trigger_vsti_sstc_U also fails on RV32 because a write to mstateen0 clears mstateen0h.ENVCFG, so
+  # SPV/MPV = 0, and Interrupts_wfi_VS then waits in HS-mode for a timer interrupt that SIE = 0 masks.
+  # Interrupts_trigger_vsti_sstc_U also fails on RV32 because a write to mstateen0 clears mstateen0h.ENVCFG, so
   # henvcfgh accesses raise an illegal instruction (https://gitlab.com/qemu-project/qemu/-/issues/4611).
-  - InterruptsSm_enable_VS
-  - InterruptsSm_enable_VU
-  - InterruptsSm_priority_mideleg_VS
-  - InterruptsSm_priority_mideleg_VU
-  - InterruptsSm_priority_mie_VS
-  - InterruptsSm_priority_mie_VU
-  - InterruptsSm_priority_mip_VS
-  - InterruptsSm_priority_mip_VU
-  - InterruptsSm_trigger_VS
-  - InterruptsSm_trigger_VU
-  - InterruptsSm_trigger_vsti_sstc
-  - InterruptsS_enable_VS
-  - InterruptsS_enable_VU
-  - InterruptsS_priority_sie_VS
-  - InterruptsS_priority_sie_VU
-  - InterruptsS_priority_sip_VS
-  - InterruptsS_priority_sip_VU
-  - InterruptsS_trigger_VS
-  - InterruptsS_trigger_VU
-  - InterruptsS_trigger_vsti_sstc
-  - InterruptsSm_wfi_VS
-  - InterruptsSm_wfi_timeout_VS
-  - InterruptsSm_wfi_timeout_VU
-  - InterruptsS_wfi_VS
-  - InterruptsS_wfi_timeout_VS
-  - InterruptsS_wfi_timeout_VU
+  - Interrupts_Sm_enable_VS
+  - Interrupts_Sm_enable_VU
+  - Interrupts_Sm_priority_mideleg_VS
+  - Interrupts_Sm_priority_mideleg_VU
+  - Interrupts_Sm_priority_mie_VS
+  - Interrupts_Sm_priority_mie_VU
+  - Interrupts_Sm_priority_mip_VS
+  - Interrupts_Sm_priority_mip_VU
+  - Interrupts_Sm_trigger_VS
+  - Interrupts_Sm_trigger_VU
+  - Interrupts_Sm_trigger_vsti_sstc
+  - Interrupts_enable_VS
+  - Interrupts_enable_VU
+  - Interrupts_priority_sie_VS
+  - Interrupts_priority_sie_VU
+  - Interrupts_priority_sip_VS
+  - Interrupts_priority_sip_VU
+  - Interrupts_trigger_VS
+  - Interrupts_trigger_VU
+  - Interrupts_trigger_vsti_sstc
+  - Interrupts_Sm_wfi_VS
+  - Interrupts_Sm_wfi_timeout_VS
+  - Interrupts_Sm_wfi_timeout_VU
+  - Interrupts_wfi_VS
+  - Interrupts_wfi_timeout_VS
+  - Interrupts_wfi_timeout_VU
   # qemu-rv32-m: mstatus.SIE and mstatus.SPIE are writable without S-mode (not filed separately; the reproducer
   # output in https://gitlab.com/qemu-project/qemu/-/work_items/4456 shows it).
-  - InterruptsSm_trigger_M
+  - Interrupts_Sm_trigger_M
+  # QEMU never enters VS-mode either in the hypervisor interrupt-CSR and guest external interrupt groups: it takes none
+  # of the interrupts in VS-mode and reports every guest ecall as cause 9 (https://gitlab.com/qemu-project/qemu/-/issues/4620)
+  - Interrupts_h_vs
+  - Interrupts_Sm_h_priority_levels
+  - Interrupts_Sgei_trigger
+  - Interrupts_SgeiSm
+  # M-mode writes of mip.VSTIP and mip.VSEIP are accepted and also write hvip
+  # (https://gitlab.com/qemu-project/qemu/-/work_items/4809)
+  - Interrupts_Sm_h_mcsr
   # sc.w to no-permission region returns failure instead of raising
   # store/AMO access fault (https://gitlab.com/qemu-project/qemu/-/work_items/4100, still failing in v11.1.1)
   - Exceptions_Zalrsc

@@ -55,7 +55,9 @@ normative_rule_definitions:
     coverpoint:
       [
         "{Zfh_fcvt_w_h_cg, Zfh_fcvt_l_h_cg}/cr_fs1_edges_frm_H",
-        "{Zfh_fcvt_h_w_cg, Zfh_fcvt_h_l_cg}/cp_frm_2",
+        "{Zfh_fcvt_w_h_cg, Zfh_fcvt_l_h_cg}/cr_fs1_cvt_edges_frm_H_I",
+        "Zfh_fcvt_h_w_cg/cr_rs1_cvt_edges_frm_W_H",
+        "Zfh_fcvt_h_l_cg/cr_rs1_cvt_edges_frm_L_H",
       ]
   # All floating-point conversion instructions set the Inexact exception flag if the
   # rounded result differs from the operand value and the Invalid exception flag is not
@@ -184,7 +186,7 @@ normative_rule_definitions:
   - name: fcvt-s-h_fcvt-h-s_op
     coverpoint:
       [
-        "Zfh_fcvt_h_s_cg/{cp_fd, cr_fs1_edges_frm}",
+        "Zfh_fcvt_h_s_cg/{cp_fd, cr_fs1_edges_frm, cr_fs1_cvt_edges_frm_S_H}",
         "Zfh_fcvt_s_h_cg/{cp_fd, cp_fs1_edges_H}",
         "ZfhD_fcvt_h_s_cg/cp_NaNBox_D_H",
         "ZfhD_fcvt_s_h_cg/{cp_NaNBox_D_S, cp_fs1_badNB_D_H}",
@@ -196,7 +198,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "ZfhD_fcvt_d_h_cg/{cp_fd, cp_fs1_edges_H}",
-        "ZfhD_fcvt_h_d_cg/{cp_fd, cr_fs1_edges_frm_D}",
+        "ZfhD_fcvt_h_d_cg/{cp_fd, cr_fs1_edges_frm_D, cr_fs1_cvt_edges_frm_D_H}",
       ]
   # Floating-point to floating-point sign-injection instructions, insn:fsgnj.h[],
   # insn:fsgnjn.h[], and insn:fsgnjx.h[] are defined analogously to the single-precision
@@ -219,7 +221,7 @@ normative_rule_definitions:
   - name: fmv-h-x_op
     coverpoint:
       [
-        "Zfh_fmv_h_x_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_NaNBox_S_H}",
+        "Zfh_fmv_h_x_cg/{cp_rs1_edges, cp_fd, cp_NaNBox_S_H, cp_rs1_fp_edges_H}",
         "ZfhD_fmv_h_x_cg/cp_NaNBox_D_H",
       ]
   # The half-precision floating-point compare instructions are defined analogously to

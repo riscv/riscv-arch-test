@@ -20,6 +20,15 @@ The basic coverpoints are defined in <<t-unprivileged-coverpoints>>. Modified co
 |cr_fs1_fs2_edges_frm|26 * 26 * 6|Cross product of fs1 and fs2 edges and rounding modes
 |cr_fs1_fs2_edges_frm4|26 * 26 * 6|Cross product of fs1 and fs2 edges and rounding modes for fma
 |cr_fs1_fs3_edges_frm4|26 * 26 * 6|Cross product of fs1 and fs3 edges and rounding modes for fma
+|cr_fs1_cvt_edges_frm_{S, D, H}_I|(2 or 5) * 5|Float-to-integer conversions: fs1 = 1.75, -0.5, and for double the ties 2^31^-0.5, -2^31^-0.5 and 2^32^-0.5, crossed with the five static rounding modes
+|cp_fs1_cvt_edges_D_I|5|fcvtmod.w.d (which always rounds toward zero): the fs1 values of cr_fs1_cvt_edges_frm_D_I without the rounding-mode cross
+|cp_fs1_cvt_exact_{S, D}_I|12 or 9|Float-to-integer conversions: fs1 integers at and beyond the saturation boundaries of signed and unsigned 32- and 64-bit results
+|cr_fs1_cvt_edges_frm_{S, D, H}_R|5 * 5|fround and froundnx: fs1 = ±2.5, 1.75, -0.5 and the largest non-integer, crossed with the five static rounding modes
+|cr_fs1_cvt_edges_frm_{D_S, S_H, D_H, S_BF16}|8 * 5|Narrowing conversions: fs1 = ±(destination max + ½ ulp), a value that is tiny before rounding but not after, ±½ destination min subnormal, ±(1 + ½ ulp) and 1 + 3/2 ulp, crossed with the five static rounding modes
+|cp_fs1_cvt_exact_{D_S, S_H, D_H, S_BF16}|3|Narrowing conversions: fs1 = destination max, min normal and min subnormal
+|cr_rs1_cvt_edges_frm_{W_S, L_S, L_D, W_H, L_H}|9 * 5|Integer-to-float conversions: rs1 integers that are ties, just below a tie, above a tie only through the sticky bit, round up into the next power of 2 or overflow, and the minimum integer, crossed with the five static rounding modes
+|cp_rs1_cvt_edges_W_D|2|fcvt.d.w and fcvt.d.wu: rs1 = INT32_MIN and INT32_MAX
+|cp_rs1_fp_edges{, _D, _H}|26|fmv.w.x, fmv.d.x and fmv.h.x: the floating-point edge bit patterns of <<t-fp-edge-definitions>> in rs1
 |===
 
 These coverpoints do not yet certify that floating-point operations conform to the IEEE 754 standard.  More robust coverpoints based on the IBM suite are under development.

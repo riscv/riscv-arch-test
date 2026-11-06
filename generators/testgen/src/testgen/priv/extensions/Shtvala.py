@@ -179,13 +179,21 @@ def _hlsv_tests(test_data: TestData) -> list[str]:
 # Misaligned accesses that straddle into an unmapped guest page
 #####################################################################
 
-# Bytes of a word access at the end of a page that fall in the next page
+# Bytes of a 32-bit instruction at the end of a page that fall in the next page
 _STRADDLE_OFFSET = 2
+# A halfword load or store one byte below the end of a page has one byte in each page, so the part that faults, and
+# with it stval and htinst's Addr. Offset, does not depend on how the hart splits the access
+_LDST_STRADDLE_OFFSET = 1
 
 
 def _straddle_va(vs: SvMode) -> int:
-    """A word two bytes below vs.data_va, so the access continues into the page at vs.data_va."""
+    """A 32-bit instruction two bytes below vs.data_va, so the fetch continues into the page at vs.data_va."""
     return int(vs.data_va, 16) - _STRADDLE_OFFSET
+
+
+def _ldst_straddle_va(vs: SvMode) -> int:
+    """A halfword one byte below vs.data_va, so the access continues into the page at vs.data_va."""
+    return int(vs.data_va, 16) - _LDST_STRADDLE_OFFSET
 
 
 def _straddle_leaves(
@@ -216,10 +224,10 @@ def _straddle_leaves(
 
 
 def _hlsv_straddle_tests(test_data: TestData) -> list[str]:
-    """hlv.w and hsv.w from HS-mode with hstatus.SPVP = 0 and from U-mode, with hstatus.HU = 1, across the end of the
+    """hlv.h and hsv.h from HS-mode with hstatus.SPVP = 0 and from U-mode, with hstatus.HU = 1, across the end of the
     mapped guest page.
 
-    A faulting hlv.w leaves rd unchanged.  After each guest-page fault in HS-mode, record htinst's Addr. Offset, the
+    A faulting hlv.h leaves rd unchanged.  After each guest-page fault in HS-mode, record htinst's Addr. Offset, the
     difference between the faulting virtual address in stval and the original virtual address (hypervisor.adoc
     H_tinst_addr_offset), on harts that perform misaligned accesses.  htinst may instead be zero, which records the
     expected offset.  U-mode cannot read htinst, and the trap record holds it.
@@ -235,7 +243,7 @@ def _hlsv_straddle_tests(test_data: TestData) -> list[str]:
     addr, rd, tinst, zero = test_data.int_regs.get_registers(4)
     lines.extend(
         [
-            *per_xlen(lambda _, vs: [f"LI(x{addr}, {_straddle_va(vs):#x})"]),
+            *per_xlen(lambda _, vs: [f"LI(x{addr}, {_ldst_straddle_va(vs):#x})"]),
             f"LI(x{rd}, HSTATUS_SPVP)",
             f"csrc hstatus, x{rd}",
             f"LI(x{rd}, HSTATUS_HU)",
@@ -244,8 +252,8 @@ def _hlsv_straddle_tests(test_data: TestData) -> list[str]:
         ]
     )
     for instr, coverpoint, load in (
-        ("hlv.w", "cp_hlv_straddle_guest_page_fault", True),
-        ("hsv.w", "cp_hsv_straddle_guest_page_fault", False),
+        ("hlv.h", "cp_hlv_straddle_guest_page_fault", True),
+        ("hsv.h", "cp_hsv_straddle_guest_page_fault", False),
     ):
         lines.extend(
             [
@@ -260,7 +268,7 @@ def _hlsv_straddle_tests(test_data: TestData) -> list[str]:
                 f"csrr x{tinst}, htinst",
                 f"seqz x{zero}, x{tinst}",
                 f"neg x{zero}, x{zero}",
-                f"andi x{zero}, x{zero}, {_STRADDLE_OFFSET}",
+                f"andi x{zero}, x{zero}, {_LDST_STRADDLE_OFFSET}",
                 f"srli x{tinst}, x{tinst}, 15",
                 f"andi x{tinst}, x{tinst}, 0x1F",
                 f"or x{tinst}, x{tinst}, x{zero}",
@@ -270,8 +278,8 @@ def _hlsv_straddle_tests(test_data: TestData) -> list[str]:
         )
     lines.extend([f"LI(x{rd}, 42)", "RVTEST_TSBI_GOTO_UMODE"])
     for instr, coverpoint in (
-        ("hlv.w", "cp_hlv_straddle_guest_page_fault"),
-        ("hsv.w", "cp_hsv_straddle_guest_page_fault"),
+        ("hlv.h", "cp_hlv_straddle_guest_page_fault"),
+        ("hsv.h", "cp_hsv_straddle_guest_page_fault"),
     ):
         lines.extend(
             [
@@ -324,19 +332,20 @@ def _fetch_straddle_tests(test_data: TestData, tc: TestChunk) -> list[str]:
 def _straddle_tests(test_data: TestData, tc: TestChunk) -> list[str]:
     """Misaligned loads and stores whose second part has an unmapped guest physical address.
 
-    A hart that performs misaligned accesses faults on the part in the next page, so stval holds the page-boundary
-    address and htval its guest physical address, whichever way the hart splits the access.  A hart that does not
+    Each access is a halfword one byte below the end of the page, so one byte is in each page.  A hart that performs
+    misaligned accesses faults on the byte in the next page, so stval holds the page-boundary address and htval its
+    guest physical address, whichever way the hart splits the access.  A hart that does not
     perform them raises an address-misaligned exception instead, which the reference model also predicts.
     """
     faults = [
-        ("straddle", "cp_load_straddle_guest_page_fault", "lw", _straddle_va),
-        ("straddle", "cp_store_straddle_guest_page_fault", "sw", _straddle_va),
+        ("straddle", "cp_load_straddle_guest_page_fault", "lh", _ldst_straddle_va),
+        ("straddle", "cp_store_straddle_guest_page_fault", "sh", _ldst_straddle_va),
     ]
     tc.raw_data.extend([*guest_table_data(), ".p2align 12", "shtvala_straddle_page:", ".zero 4096"])
     return [
         comment_banner(
             "cp_{load,store,hlv,hsv}_straddle_guest_page_fault",
-            "lw and sw in VS-mode and VU-mode, and hlv.w and hsv.w in HS-mode and U-mode, two bytes below the end of a\n"
+            "lh and sh in VS-mode and VU-mode, and hlv.h and hsv.h in HS-mode and U-mode, one byte below the end of a\n"
             "mapped guest page whose successor has an unmapped guest physical address.  stval holds the page-boundary\n"
             "address, htval its guest physical address, and htinst's Addr. Offset their distance from the\n"
             "original address (hypervisor.adoc H_straddle)",

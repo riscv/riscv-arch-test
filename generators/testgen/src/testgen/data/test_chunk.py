@@ -37,6 +37,8 @@ class TestChunk:
         split_name: Optional named-split marker. A non-None value starts a new
                     named file group (unless the current group already has the
                     same name); subsequent None chunks stay in that group.
+        output_split_name: Optional filename label, when distinct from the
+                           grouping label in split_name.
         start_sig_reg: Signature pointer register expected at the start of this chunk
         start_data_reg: Data pointer register expected at the start of this chunk
         end_sig_reg: Signature pointer register in use at the end of this chunk
@@ -53,6 +55,7 @@ class TestChunk:
     trap_sigupd_count: int = 0
     num_testcases: int = 0
     split_name: str | None = None
+    output_split_name: str | None = None
     start_sig_reg: int = 2
     start_data_reg: int = 3
     end_sig_reg: int = 2

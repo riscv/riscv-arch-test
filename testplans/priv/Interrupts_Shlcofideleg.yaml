@@ -1,0 +1,17 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Interrupts_Shlcofideleg
+source: https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=820648507#gid=820648507
+description: |
+  Shlcofideleg makes hideleg[13] writable, so LCOFI can be delegated to VS-mode.  Tests run if H, Sscofpmf and Shlcofideleg are implemented.
+  Boot to SMODE, where mideleg delegates LCOFI.
+coverpoints:
+  - name: cp_trigger_lcofi_vs
+    goal: LCOFI delegated to VS-mode
+    description: With hideleg[13] = 1, sie.LCOFIE = 1 and vsstatus.SIE = {0/1}, raise LCOFI in {HS, U, VS, VU} mode
+    expectation: HS-mode and U-mode never take LCOFI.  VS-mode takes it (cause 13) when vsstatus.SIE = 1, and VU-mode always does.
+    bins: 4 priv * 2 SIE
+  - name: cp_vsip_vsie_lcofi
+    goal: vsip.LCOFIP and vsie.LCOFIE alias sip.LCOFIP and sie.LCOFIE when delegated
+    description: With hideleg[13] = {0/1} and sip.LCOFIP = sie.LCOFIE = 1, read vsie and vsip, write vsie = 0 and read sie, and write vsip = 0 and read sip
+    expectation: With hideleg[13] = 1, vsie and vsip read LCOFIE and LCOFIP and the writes clear them.  With hideleg[13] = 0, they read zero and the writes leave sie and sip alone.
+    bins: 2 hideleg * 4 accesses

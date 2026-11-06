@@ -165,19 +165,25 @@
 
 
 ##### Supervisor Interrupts #####
-#undef RVMODEL_SET_SEXT_INT
-#undef RVMODEL_SET_SEXT_INT_M
-#define RVMODEL_SET_SEXT_INT(_R1, _R2)        \
-  li _R1, (1 << 31) | (1 << 9);               \
-  li _R2, SAIL_SIG_ADDRESS;    \
-  sw _R1, 0(_R2)            ; /* Set SEXT interrupt */ \
+// Replaced only when the DUT defines them. A DUT without a supervisor external interrupt
+// controller raises SEI through mip.SEIP, and the reference build must do the same: software
+// SEIP and an external SEI differ in what csrrs and csrrc of mip write back.
+#if defined(RVMODEL_SET_SEXT_INT) || defined(RVMODEL_SET_SEXT_INT_M)
+  #undef RVMODEL_SET_SEXT_INT
+  #undef RVMODEL_SET_SEXT_INT_M
+  #define RVMODEL_SET_SEXT_INT(_R1, _R2)        \
+    li _R1, (1 << 31) | (1 << 9);               \
+    li _R2, SAIL_SIG_ADDRESS;    \
+    sw _R1, 0(_R2)            ; /* Set SEXT interrupt */ \
 
-#undef RVMODEL_CLR_SEXT_INT
-#undef RVMODEL_CLR_SEXT_INT_M
-#define RVMODEL_CLR_SEXT_INT(_R1, _R2)        \
-  li _R1, (1 << 9);               \
-  li _R2, SAIL_SIG_ADDRESS;    \
-  sw _R1, 0(_R2)            ; /* Clear SEXT interrupt */ \
+  #undef RVMODEL_CLR_SEXT_INT
+  #undef RVMODEL_CLR_SEXT_INT_M
+  #define RVMODEL_CLR_SEXT_INT(_R1, _R2)        \
+    li _R1, (1 << 9);               \
+    li _R2, SAIL_SIG_ADDRESS;    \
+    sw _R1, 0(_R2)            ; /* Clear SEXT interrupt */ \
+
+#endif
 
 #undef RVMODEL_SET_SSW_INT
 #undef RVMODEL_SET_SSW_INT_M

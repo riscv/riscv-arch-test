@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=testplan.schema.json
-suite: InterruptsSm
+suite: Interrupts_Sm
 source: https://docs.google.com/spreadsheets/d/1gBymMadMSRy4SW_nYUmglFAe1-LtjaqOA6aXcrxCAsk/edit?gid=0#gid=0
 description: |
   Tests if Sm exists (not run for RVA23 certification)
@@ -28,7 +28,7 @@ setup:
       U: Same as Sm
       VS: |-
         Same as Sm
-        mideleg.VS*I are read-only 1 and hideleg boots with 0s, so VS-level interrupts trap to HS
+        mideleg.VS*I are read-only 1.  hideleg = 0, so VS-level interrupts trap to HS, or for a VS-level interrupt also 1 in that interrupt with vstvec.MODE and vsstatus.SIE written as mtvec.MODE and mstatus.SIE
       VU: Same as VS
     - step: trigger_interrupts <type>
       Sm: |-
@@ -49,17 +49,21 @@ setup:
       S: <type> pending if UDB_<TYPE>_SUPPORTED, trap if SIE = 1
       U: pending and trap if UDB_<TYPE>_SUPPORTED
 coverpoints:
-  - name: cp_trigger
+  - name: |-
+      cp_trigger
+      cp_trigger_tsbi
     goal: Assert each interrupt
     description: |-
       For <type> = {LCOFI, MTI, MSI, MEI, STI, SSI, SEI, VSTI, VSEI, VSSI}
       setup_interrupts_sm
       trigger_interrupts_<type>
+      With H, each VS-level interrupt is also raised with hideleg delegating it to VS-mode, which the cross records with vsstatus.SIE in place of mstatus.SIE.
     expectation: |-
       supported interrupts will fire if
       - not delegted to a lower priv mode than the current mode
       - enabled by MIE if running in M mode and not delegated
-    bins: 10 int * 5 priv * 2 MIE * 2 SIE * 2 vecMODE * 2 mideleg
+      VS-level interrupts are never taken in M-mode.  Delegated to VS-mode, they are taken only in VS-mode (when vsstatus.SIE = 1) and VU-mode.
+    bins: (10 int + 3 delegated) * 5 priv * 2 MIE * 2 SIE * 2 vecMODE * 2 mideleg
     rules:
       - mstatus_mie_op
       - mstatus_sie_op
@@ -224,3 +228,29 @@ coverpoints:
       Clear STIP through stimecmp
     expectation: mip.STIP is controlled by stimecmp, ignores writes.
     bins: 2 stimecmp x 2 STIP
+  - name: cp_mip_seip
+    goal: mip.SEIP reads the platform's SEI, and csrrs and csrrc write back only the software bit
+    description: |-
+      If the platform has a supervisor external interrupt controller (RVMODEL_SET/CLR_SEXT_INT):
+      mideleg = 0, mie = 0, software mip.SEIP = 0
+      the platform asserts SEI
+      {csrrs, csrrc} mip with rs1 = {a register holding 0, SSIP}
+      the platform drops SEI; read mip
+    expectation: Each csrrs and csrrc returns SEIP = 1.  Once the platform drops SEI, mip.SEIP reads 0.
+    bins: 2 op * 2 rs1
+  - heading: Hypervisor interrupt CSRs (H implemented), done in M-mode
+  - name: cp_trigger_mtinst
+    goal: mtinst = 0 on an interrupt
+    description: The cp_trigger cases in M-mode with mstatus.MIE = 1 and mideleg = 0 preload mtinst with a nonzero value; the trap record checks mtinst
+    expectation: mtinst = 0 after each interrupt taken into M-mode
+    bins: 10 int
+  - name: cp_mie_mip
+    goal: mie.VS*IE and mie.SGEIE are aliases of hie, and mip.VS*IP reflect hvip
+    description: With {hie = 0x444, hie = 0x1444 if GEILEN > 0, hvip = 0x444}, read mie and mip (and hip after the hvip write)
+    expectation: mie = hie; mip.VS*IP = hip = hvip
+    bins: 3 setups (2 if GEILEN = 0) * 2 CSRs
+  - name: cp_priority_levels
+    goal: M-level, then HS-level, then VS-level interrupts are taken from VS-mode and VU-mode
+    description: "Boots to M-mode: with mstatus.MIE = 0, mideleg.SSI = 1, hideleg.VSSI = 1, mie.MSIE = mie.SSIE = mie.VSSIE = 1 and vsstatus.SIE = 1, raise {MSI+SSI, MSI+VSSI, SSI+VSSI, MSI+SSI+VSSI} and change to {VS, VU} mode"
+    expectation: M-mode takes MSI, then HS-mode takes SSI, then VS-mode takes VSSI
+    bins: 4 combinations * 2 modes (combinations with MSI or SSI only where that interrupt is implemented)

@@ -93,11 +93,11 @@ normative_rule_definitions:
   # At reset, the Extensions field shall contain the maximal set of supported extensions,
   # and csr::[i] shall be selected over csr::[e] if both are available.
   - name: misa_extensions_reset_maximal
-    coverpoint: ["Sm_mcsr_cg/cp_misa_mxl"]
+    coverpoint: ["Sm_reset_cg/cp_misa_reset"]
   # The misa register is reset to enable the maximal set of supported extensions, as
   # described in &lt;&lt;misa&gt;&gt;.
   - name: misa_extensions_reset_ref
-    coverpoint: ["Sm_mcsr_cg/cp_misa_mxl"]
+    coverpoint: ["Sm_reset_cg/cp_misa_reset"]
 
   # When a standard extension is disabled by clearing its bit in misa, the
   # instructions and CSRs defined or modified by the extension revert to their
@@ -1718,13 +1718,11 @@ normative_rule_definitions:
 
   # The mstatus fields MIE and MPRV are reset to 0.
   - name: mstatus_mie_mprv_rst
-    coverpoint:
-      ["TODO: record mstatus.MIE and MPRV before the boot code writes mstatus"]
+    coverpoint: ["Sm_reset_cg/cp_mstatus_reset"]
 
   # If little-endian memory accesses are supported, the mstatus/mstatush field MBE is reset to 0.
   - name: mstatus_mstatush_mbe_rst
-    coverpoint:
-      ["TODO: record mstatus/mstatush.MBE before the boot code writes it"]
+    coverpoint: ["Sm_reset_cg/{cp_mstatus_reset, cp_mstatush_reset}"]
 
   # For implementations with the Zalrsc standard extension, there is no valid load reservation.
   - name: ld_rsv_rst
@@ -1749,8 +1747,7 @@ normative_rule_definitions:
 
   # If the hypervisor extension is implemented, the hgatp.MODE and vsatp.MODE fields are reset to 0.
   - name: hgatp_vsatp_mode_rst
-    coverpoint:
-      ["TODO: record hgatp.MODE and vsatp.MODE after reset, before any write"]
+    coverpoint: ["Sm_reset_cg/{cp_hgatp_reset, cp_vsatp_reset}"]
 
   # No WARL field contains an illegal value.
   - name: warl_rst

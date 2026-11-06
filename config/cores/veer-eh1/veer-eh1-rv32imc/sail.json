@@ -18,7 +18,7 @@
     "hpmevent_width_bits": 32,
     "mcountinhibit": {
       // Whether the `mcountinhibit` CSR is implemented.
-      "supported": true,
+      "supported": false,
       // This bits in this value control whether the corresponding
       // bits of the CSR are writable.  Note that bit 1 cannot be written
       // to as it is read-only zero.

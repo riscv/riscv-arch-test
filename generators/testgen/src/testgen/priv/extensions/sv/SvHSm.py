@@ -12,7 +12,7 @@ The group boots to M-mode and delegates nothing, so the M-mode handler takes eve
 mtval2, mtinst and mstatus.GVA/MPV.
 """
 
-from testgen.asm.helpers import write_sigupd
+from testgen.asm.helpers import load_constant, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.sv.generate import set_atp
@@ -89,7 +89,10 @@ def mprv_access(
             *set_csr_bits("mstatus", "MSTATUS_MPRV | MSTATUS_MPP", bits or "0", reg),
         ]
     )
-    lines = [f"{'LA' if va_is_label else 'LI'}(x{va_reg}, {va})", f"LI(x{data}, {0x100 + test_data.test_count:#x})"]
+    lines = [
+        f"LA(x{va_reg}, {va})" if va_is_label else load_constant(f"x{va_reg}", va),
+        f"LI(x{data}, {0x100 + test_data.test_count:#x})",
+    ]
     for op in ops:
         label = test_data.add_testcase(f"{name}_{op}", coverpoint, MPRV_CG)
         lines.extend(

@@ -168,11 +168,11 @@
       // reserved rounding mode statically encoded in the instruction.
       // "Fcsr_RM_Fatal"  – raise a Sail exception, stopping execution.
       // "Fcsr_RM_Illegal" – treat it as an illegal instruction.
-      "fcsr_rm": "Fcsr_RM_Fatal",
+      "fcsr_rm": "Fcsr_RM_Illegal",
       // The configuration option determines how to handle the reserved behavior `pmpcfg_with_R0W1`.
       // "PMP_Fatal"  – raise a Sail exception, stopping execution.
       // "PMP_ClearPermissions" – convert a PMP entry with R=0, W=1 to R=0, W=0, X=0.
-      "pmpcfg_write_only": "PMP_Fatal",
+      "pmpcfg_write_only": "PMP_ClearPermissions",
       // The configuration option determines how to handle the reserved behavior `xenvcfg.CBIE` with 0b10.
       // "Xenvcfg_Fatal"  – raise a Sail exception, stopping execution.
       // "Xenvcfg_ClearPermissions" – convert CBIE with 0b10 to 0b00.
@@ -214,7 +214,7 @@
     // This is required to be 13 or higher to avoid representing empty
     // bitvectors in the model and since it is unlikely real implementations
     // will have lower values.
-    "physaddr_bits": 57,
+    "physaddr_bits": 56,
     // Whether physical addresses reported in `xtval` are truncated to
     // `physaddr_bits` can be specified.  When valid physical
     // addresses result from truncating invalid physical addresses to
@@ -438,7 +438,7 @@
   },
   "platform": {
     "vendorid": 0,
-    "archid": 1,
+    "archid": 5,
     "impid": 0,
     "hartid": 0,
     // Cache block size, specified as a power of 2.
@@ -452,7 +452,7 @@
       // address as the matching Load-Reserve in order to succeed, regardless of the
       // configured reservation set size.  This controls whether such an exact address
       // match is required for a Store-Conditional to succeed.
-      "require_exact_reservation_addr": false,
+      "require_exact_reservation_addr": true,
       // Some implementations (e.g. SiFive U74) also invalidate the
       // reservation on stores from the same hart.  If this is set to `true`, the
       // model invalidates the reservation if a store from the same hart lies within
@@ -530,15 +530,15 @@
   },
   "extensions": {
     "M": {
-      "mutable_misa": false,
+      "mutable_misa": true,
       "supported": true
     },
     "A": {
-      "mutable_misa": false,
+      "mutable_misa": true,
       "supported": true
     },
     "F": {
-      "mutable_misa": false,
+      "mutable_misa": true,
       "supported": true,
       // When to set mstatus[FS] and mstatus[SD] to 1, as a result of fflags
       // being set. There are three options:
@@ -549,14 +549,14 @@
       //                      if that flag is already set.
       // - Fflags_Dirty_Instruction: Set FS/SD when we execute an instruction that
       //                             might set a flag, even if it actually doesn't.
-      "fflags_dirty_policy": "Fflags_Dirty_Precise"
+      "fflags_dirty_policy": "Fflags_Dirty_Flag"
     },
     "D": {
-      "mutable_misa": false,
+      "mutable_misa": true,
       "supported": true
     },
     "C": {
-      "mutable_misa": false
+      "mutable_misa": true
     },
     "V": {
       "mutable_misa": false,

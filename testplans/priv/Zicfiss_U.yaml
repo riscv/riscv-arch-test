@@ -160,7 +160,7 @@ coverpoints:
       Precondition for leg (d): menvcfg/senvcfg CBIE, CBCFE and CBZE must be enabled, otherwise the cache-block op traps on its own gating instead of on the SS page.
       Instruction fetch from the SS page is cp_ss_page_fetch. An implicit page-table walk through an SS page is not tested.
       Additional accessor classes:
-      (f) LR/SC to the SS page (requires Zalrsc).
+      (f) LR and SC to the SS page, as separate accessors (requires Zalrsc).
       (g) AMOCAS to the SS page (requires Zacas).
       (h) if V is implemented, vector loads and stores to the SS page, including strided and indexed accesses that BEGIN on a different page and run into the SS page.
       Leg (e), the ordinary-load leg, is additionally crossed with mstatus.MXR = 0 and 1: the SS page is R=0, so MXR is what decides whether a plain load may read it.
@@ -168,10 +168,11 @@ coverpoints:
       (a) succeeds -- these are the only instructions permitted to write an SS page.
       (b),(c),(d) store/AMO access-fault (cause=7), NOT a page-fault.
       (e) succeeds -- the shadow stack is readable by any instruction that only loads.
-      (f),(g) store/AMO access-fault -- LR/SC and AMOCAS are not in the set permitted to write an SS page.
+      (f) LR succeeds -- it only loads, so the SS page is readable to it. SC store/AMO access-faults -- it is not in the set permitted to write an SS page.
+      (g) store/AMO access-fault -- AMOCAS is not in the set permitted to write an SS page.
       (h) vector stores fault; vector loads follow the ordinary-load rule. An access that starts on an adjacent page must still fault on the element that lands in the SS page.
       (e) the ordinary load succeeds for BOTH MXR values -- the shadow stack is readable by any instruction that only loads, so this must not depend on MXR.
-    bins: accessor {ss_store, ordinary_store, ordinary_amo, lr_sc, amocas, cbo, ordinary_load, vector_load, vector_store} x MXR {0,1} x result {ok, af}
+    bins: accessor {ss_store, ordinary_store, ordinary_amo, lr, sc, amocas, cbo, ordinary_load, vector_load, vector_store} x MXR {0,1} x result {ok, af}
   - name: cp_ss_page_fetch
     goal: Verify an instruction fetch from an SS page raises an instruction access fault
     description: "From U-mode with Zicfiss active, jump (jalr) to the shadow stack page (xwr=010, U=1)."

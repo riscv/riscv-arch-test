@@ -13,3 +13,6 @@
 `endif
     Zawrs_S_cg = new();      Zawrs_S_cg.set_inst_name("obj_Zawrs_S");
     Zawrs_U_cg = new();      Zawrs_U_cg.set_inst_name("obj_Zawrs_U");
+`ifdef H_SUPPORTED
+    Zawrs_H_cg = new();      Zawrs_H_cg.set_inst_name("obj_Zawrs_H");
+`endif

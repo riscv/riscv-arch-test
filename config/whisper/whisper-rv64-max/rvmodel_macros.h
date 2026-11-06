@@ -122,18 +122,8 @@
   csrw miselect, t0; csrw mireg, t1; \
   csrw siselect, t0; csrw sireg, t1;
 
-/* On RV32, Whisper keeps using the old hstatus.VGEIN after an hstatus write while mstatush is nonzero, as it is
- * at reset (MDT = 1), so the vsireg accesses below would trap (https://github.com/tenstorrent/whisper/issues/108).
- * The test setup clears mstatush after boot anyway. */
-#if __riscv_xlen == 32
-  #define IMSIC_CLEAR_MSTATUSH csrw mstatush, zero;
-#else
-  #define IMSIC_CLEAR_MSTATUSH
-#endif
-
 /* hstatus.VGEIN selects the guest file that vsiselect and vsireg reach; walk it over 1..IMSIC_GEILEN */
 #define IMSIC_ENABLE_GUEST_FILES \
-  IMSIC_CLEAR_MSTATUSH \
   csrr t2, hstatus; \
   li t3, 1; \
   1: slli t0, t3, 12; csrw hstatus, t0; \

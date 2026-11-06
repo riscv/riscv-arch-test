@@ -70,7 +70,7 @@ def format_vsr_type(
         VectorLoad(reg="vs3", vl=vd_vl, no_fractional_load=True, segments=segments, lmul=emul),
         VectorLoad(reg="vd", segments=segments, lmul=emul, no_fractional_load=True, only_setup_tail=True),
     ]
-    load_code, random_vl_reg = load_vec_regs(to_load, params, test_data)
+    load_code, random_vl_reg = load_vec_regs(to_load, params, test_data, base_tail_fill=True)
     setup.extend(load_code)
     setup.append(f"LA (x{params.rs1}, {params.rs1val_pointer})")
     setup.append(load_test_vtype(params, random_vl_reg))

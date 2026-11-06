@@ -287,8 +287,9 @@ exclude_extensions:
   - U_VF
   - H_VF
   # H_F_vs, H_F_vu: pass, but are too slow for CI. They make about 2500 and 4900 T-SBI calls (each a
-  # trap to M-mode and back) from VS and VU. On a GitHub runner H_F_vs takes about 300 s and H_F_vu
-  # about 650 s, against run_tests.py's 300 s per-test limit.
+  # trap to M-mode and back) from VS and VU and simulate 1.4 ms and 2.2 ms. GitHub runners simulate
+  # this model at 4.0-6.3 us/s, so they take 220-350 s and 350-550 s, against run_tests.py's 300 s
+  # per-test limit.
   - H_F
   # mcause bit 4 is not writable, so exception code 20 reads back as 4. mcause is WLRL, but with H
   # the guest-page-fault codes 20-23 are supported values, so they must read back.

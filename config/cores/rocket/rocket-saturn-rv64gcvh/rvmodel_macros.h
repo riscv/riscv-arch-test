@@ -107,8 +107,10 @@
 
 # 8 ticks (8000 cycles) covers the four T-SBI round trips that arm the timer from U-mode.
 #define RVMODEL_TIMER_INT_SOON_DELAY 8
-# An interrupt raised through the CLINT or the PLIC reaches mip within a few tens of cycles.
-#define RVMODEL_INTERRUPT_LATENCY 1000
+# An interrupt raised through the CLINT or the PLIC reaches mip within a few tens of cycles; every
+# interrupt test still passes with 10. Each RVTEST_IDLE_FOR_INTERRUPT spins the full count, so
+# 1000 made InterruptsSm_trigger_* spend most of their time idling and run past CI's 300 s limit.
+#define RVMODEL_INTERRUPT_LATENCY 100
 
 ##### External Interrupts #####
 

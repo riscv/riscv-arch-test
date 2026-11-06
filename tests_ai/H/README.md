@@ -134,7 +134,9 @@ tables, memory-fault checks).
   - [#227](https://github.com/tenstorrent/whisper/issues/227): with TVM=1, a VS/VU write of hgatp/satp raises
     illegal- instead of virtual-instruction.
   - [#228](https://github.com/tenstorrent/whisper/issues/228): SRET does not clear vsstatus.SDT.
-  - [#229](https://github.com/tenstorrent/whisper/issues/229): HFENCE does not ignore the reserved rs2 bits.
+  - [#229](https://github.com/tenstorrent/whisper/issues/229): HFENCE uses all of rs2 as the VMID/ASID.
+    Ignoring bits above VMIDMAX/ASIDMAX is only recommended ("should"), so the tests accept either outcome there;
+    the mandatory part (bits MAX-1:LEN) runs only on harts with LEN < MAX.
 - **Spike:** [riscv-isa-sim#2531](https://github.com/riscv-software-src/riscv-isa-sim/issues/2531): hip.VSEIP stays
   set after VGEIN changes to 0.
 - **QEMU, new:**

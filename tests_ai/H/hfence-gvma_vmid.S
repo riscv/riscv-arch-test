@@ -11,15 +11,20 @@
 //     shall ignore bits VMIDMAX-1:VMIDLEN of the value held in rs2.
 //
 // Context:
-//   VMIDMAX is 14 (RV64) or 7 (RV32). hgatp.VMID is written as 1 and read back. HFENCE.GVMA's rs1,
-//     when not x0, is a guest physical address shifted right by 2.
+//   VMIDMAX is 14 on RV64 and 7 on RV32. Ignoring the bits above VMIDMAX is only recommended
+//     (should), so a fence with them set may leave the old translation; ignoring the unimplemented
+//     bits VMIDMAX-1:VMIDLEN is required. VMIDLEN is probed by writing all ones to hgatp.VMID in a
+//     paged mode. HLV.W in HS-mode (SPVP=1) observes the translation; the current VMID is 1 (or 0
+//     when VMIDLEN=0).
 //
 // Test plan:
-//   1. Change GPA_A's G-stage PTE; HFENCE.GVMA x0, rs2 = VMID | bit XLEN-1 | bit 30 (RV64) or 20
-//     (RV32): HLV.W reads the new page.
-//   2. Change it again; HFENCE.GVMA rs1 = GPA_A >> 2, x0: HLV.W reads the new page.
+//   1. Change the G-stage PTE; HFENCE.GVMA x0, rs2 = the current VMID: HLV.W reads the new page.
+//   2. Change it again; fence with rs2 = VMID | bit XLEN-1 | a bit just above VMIDMAX: HLV.W reads
+//     the old or the new page; after a fence with rs1 = rs2 = x0 it reads the new page.
+//   3. If VMIDLEN < VMIDMAX: change it again; fence with rs2 = VMID | bits VMIDMAX-1:VMIDLEN: HLV.W
+//     reads the new page (those bits must be ignored).
 //
-// Approximate dynamic instruction count: 616
+// Approximate dynamic instruction count: 768
 //
 
 ##### START_TEST_CONFIG #####
@@ -127,42 +132,6 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs64: 0x40001000 -> 0x140001000 perms 0xcf
-  li x6, 0x50000400
-  li x7, 0xcf
-  or x6, x6, x7
-  LA(x8, ai_pt_vs64_t2)
-  li x7, 8
-  add x8, x8, x7
-  SREG x6, 0(x8)
-  // g64: 0x140001000 -> ai_pg_B perms 0xdf
-  LA(x6, ai_pg_B)
-  srli x6, x6, 12
-  slli x6, x6, 10
-  li x7, 0xdf
-  or x6, x6, x7
-  LA(x8, ai_pt_g64_t2)
-  li x7, 8
-  add x8, x8, x7
-  SREG x6, 0(x8)
-  // vs64: 0x40002000 -> 0x140002000 perms 0xcf
-  li x6, 0x50000800
-  li x7, 0xcf
-  or x6, x6, x7
-  LA(x8, ai_pt_vs64_t2)
-  li x7, 16
-  add x8, x8, x7
-  SREG x6, 0(x8)
-  // g64: 0x140002000 -> ai_pg_C perms 0xdf
-  LA(x6, ai_pg_C)
-  srli x6, x6, 12
-  slli x6, x6, 10
-  li x7, 0xdf
-  or x6, x6, x7
-  LA(x8, ai_pt_g64_t2)
-  li x7, 16
-  add x8, x8, x7
-  SREG x6, 0(x8)
   LA(x6, ai_pt_g64_root)
   srli x6, x6, 12
   li x7, 0x8000000000000000
@@ -175,18 +144,26 @@ RVTEST_BEGIN
   or x6, x6, x7
   csrw 0x280, x6  // vsatp
   .word 0x22000073  // hfence.vvma x0, x0
+  // x1 = implemented VMID mask; x9 = the ID used (1 & mask)
   LA(x6, ai_pt_g64_root)
   srli x6, x6, 12
-  li x7, 0x8000100000000000
+  li x7, 0x83fff00000000000
   or x6, x6, x7
-  csrw 0x680, x6  // VMID 1
+  csrw 0x680, x6
+  csrr x1, 0x680
+  srli x1, x1, 44
+  slli x1, x1, 50
+  srli x1, x1, 50
+  andi x9, x1, 1
+  LA(x6, ai_pt_g64_root)
+  srli x6, x6, 12
+  li x7, 0x8000000000000000
+  or x6, x6, x7
+  slli x7, x9, 44
+  or x6, x6, x7
+  csrw 0x680, x6
   .word 0x62000073  // hfence.gvma x0, x0
-  csrr x9, 0x680
-  srli x9, x9, 44
-  slli x9, x9, 50
-  srli x9, x9, 50
-  AI_LOAD(x8)  // reserved rs2 bits
-  or x9, x9, x8
+  .word 0x22000073  // hfence.vvma x0, x0
   li x7, 0x100
   csrs 0x600, x7  // hstatus.SPVP |= 0x100
   li x6, 0x40000000
@@ -226,8 +203,9 @@ hfence_gvma_vmid_in_S_2:
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  li x1, 0x50000000
-  .word 0x62008073  // hfence.gvma x1, x0
+  AI_LOAD(x8)  // bit XLEN-1 and bit 16
+  or x8, x8, x9
+  .word 0x62800073  // hfence.gvma x0, x8
   li x6, 0x40000000
   AI_ALLOW(1)
 hfence_gvma_vmid_in_S_3:
@@ -235,7 +213,50 @@ hfence_gvma_vmid_in_S_3:
   AI_OUTCOME
   AI_CHECK(x13, hfence_gvma_vmid_in_S_3, hfence_gvma_vmid_in_S_3_s6)
   AI_CHECK(x14, hfence_gvma_vmid_in_S_3, hfence_gvma_vmid_in_S_3_s7)
-  AI_CHECK(x7, hfence_gvma_vmid_in_S_3, hfence_gvma_vmid_in_S_3_s8)
+  AI_CHECK2(x7, hfence_gvma_vmid_in_S_3, hfence_gvma_vmid_in_S_3_s8)
+  .word 0x62000073  // hfence.gvma x0, x0
+  li x6, 0x40000000
+  AI_ALLOW(1)
+hfence_gvma_vmid_in_S_4:
+  .word 0x680343f3  // hlv.w x7, (x6)
+  AI_OUTCOME
+  AI_CHECK(x13, hfence_gvma_vmid_in_S_4, hfence_gvma_vmid_in_S_4_s9)
+  AI_CHECK(x14, hfence_gvma_vmid_in_S_4, hfence_gvma_vmid_in_S_4_s10)
+  AI_CHECK(x7, hfence_gvma_vmid_in_S_4, hfence_gvma_vmid_in_S_4_s11)
+  // x8 = bits MAX-1:LEN (nonzero only if LEN < MAX)
+  not x8, x1
+  slli x8, x8, 50
+  srli x8, x8, 50
+  beqz x8, hfence_gvma_vmid_clear_5
+  or x9, x9, x8
+  // g64: 0x140000000 -> ai_pg_D perms 0xdf
+  LA(x6, ai_pg_D)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  li x7, 0xdf
+  or x6, x6, x7
+  LA(x8, ai_pt_g64_t2)
+  li x7, 0
+  add x8, x8, x7
+  SREG x6, 0(x8)
+  .word 0x62900073  // hfence.gvma x0, x9
+  li x6, 0x40000000
+  AI_ALLOW(1)
+hfence_gvma_vmid_in_S_7:
+  .word 0x680343f3  // hlv.w x7, (x6)
+  AI_OUTCOME
+  AI_CHECK(x13, hfence_gvma_vmid_in_S_7, hfence_gvma_vmid_in_S_7_s12)
+  AI_CHECK(x14, hfence_gvma_vmid_in_S_7, hfence_gvma_vmid_in_S_7_s13)
+  AI_CHECK(x7, hfence_gvma_vmid_in_S_7, hfence_gvma_vmid_in_S_7_s14)
+  AI_SKIP(0)
+  j hfence_gvma_vmid_done_6
+hfence_gvma_vmid_clear_5:
+#if __riscv_xlen == 64
+  AI_SKIP(3)
+#else
+  AI_SKIP(0)
+#endif
+hfence_gvma_vmid_done_6:
   li x7, 0x100
   csrc 0x600, x7  // hstatus.SPVP &= ~ 0x100
   // hgatp = vsatp = Bare
@@ -303,42 +324,6 @@ hfence_gvma_vmid_in_S_3:
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32: 0x20001000 -> 0x40001000 perms 0xcf
-  li x6, 0x10000400
-  li x7, 0xcf
-  or x6, x6, x7
-  LA(x8, ai_pt_vs32_t1)
-  li x7, 4
-  add x8, x8, x7
-  SREG x6, 0(x8)
-  // g32: 0x40001000 -> ai_pg_B perms 0xdf
-  LA(x6, ai_pg_B)
-  srli x6, x6, 12
-  slli x6, x6, 10
-  li x7, 0xdf
-  or x6, x6, x7
-  LA(x8, ai_pt_g32_t1)
-  li x7, 4
-  add x8, x8, x7
-  SREG x6, 0(x8)
-  // vs32: 0x20002000 -> 0x40002000 perms 0xcf
-  li x6, 0x10000800
-  li x7, 0xcf
-  or x6, x6, x7
-  LA(x8, ai_pt_vs32_t1)
-  li x7, 8
-  add x8, x8, x7
-  SREG x6, 0(x8)
-  // g32: 0x40002000 -> ai_pg_C perms 0xdf
-  LA(x6, ai_pg_C)
-  srli x6, x6, 12
-  slli x6, x6, 10
-  li x7, 0xdf
-  or x6, x6, x7
-  LA(x8, ai_pt_g32_t1)
-  li x7, 8
-  add x8, x8, x7
-  SREG x6, 0(x8)
   LA(x6, ai_pt_g32_root)
   srli x6, x6, 12
   li x7, 0x80000000
@@ -351,28 +336,36 @@ hfence_gvma_vmid_in_S_3:
   or x6, x6, x7
   csrw 0x280, x6  // vsatp
   .word 0x22000073  // hfence.vvma x0, x0
+  // x1 = implemented VMID mask; x9 = the ID used (1 & mask)
   LA(x6, ai_pt_g32_root)
   srli x6, x6, 12
-  li x7, 0x80400000
+  li x7, 0x9fc00000
   or x6, x6, x7
-  csrw 0x680, x6  // VMID 1
+  csrw 0x680, x6
+  csrr x1, 0x680
+  srli x1, x1, 22
+  slli x1, x1, 25
+  srli x1, x1, 25
+  andi x9, x1, 1
+  LA(x6, ai_pt_g32_root)
+  srli x6, x6, 12
+  li x7, 0x80000000
+  or x6, x6, x7
+  slli x7, x9, 22
+  or x6, x6, x7
+  csrw 0x680, x6
   .word 0x62000073  // hfence.gvma x0, x0
-  csrr x9, 0x680
-  srli x9, x9, 22
-  slli x9, x9, 25
-  srli x9, x9, 25
-  AI_LOAD(x8)  // reserved rs2 bits
-  or x9, x9, x8
+  .word 0x22000073  // hfence.vvma x0, x0
   li x7, 0x100
   csrs 0x600, x7  // hstatus.SPVP |= 0x100
   li x6, 0x20000000
   AI_ALLOW(1)
-hfence_gvma_vmid_in_S_4:
+hfence_gvma_vmid_in_S_8:
   .word 0x680343f3  // hlv.w x7, (x6)
   AI_OUTCOME
-  AI_CHECK(x13, hfence_gvma_vmid_in_S_4, hfence_gvma_vmid_in_S_4_s9)
-  AI_CHECK(x14, hfence_gvma_vmid_in_S_4, hfence_gvma_vmid_in_S_4_s10)
-  AI_CHECK(x7, hfence_gvma_vmid_in_S_4, hfence_gvma_vmid_in_S_4_s11)
+  AI_CHECK(x13, hfence_gvma_vmid_in_S_8, hfence_gvma_vmid_in_S_8_s15)
+  AI_CHECK(x14, hfence_gvma_vmid_in_S_8, hfence_gvma_vmid_in_S_8_s16)
+  AI_CHECK(x7, hfence_gvma_vmid_in_S_8, hfence_gvma_vmid_in_S_8_s17)
   // g32: 0x40000000 -> ai_pg_B perms 0xdf
   LA(x6, ai_pg_B)
   srli x6, x6, 12
@@ -386,12 +379,12 @@ hfence_gvma_vmid_in_S_4:
   .word 0x62900073  // hfence.gvma x0, x9
   li x6, 0x20000000
   AI_ALLOW(1)
-hfence_gvma_vmid_in_S_5:
+hfence_gvma_vmid_in_S_9:
   .word 0x680343f3  // hlv.w x7, (x6)
   AI_OUTCOME
-  AI_CHECK(x13, hfence_gvma_vmid_in_S_5, hfence_gvma_vmid_in_S_5_s12)
-  AI_CHECK(x14, hfence_gvma_vmid_in_S_5, hfence_gvma_vmid_in_S_5_s13)
-  AI_CHECK(x7, hfence_gvma_vmid_in_S_5, hfence_gvma_vmid_in_S_5_s14)
+  AI_CHECK(x13, hfence_gvma_vmid_in_S_9, hfence_gvma_vmid_in_S_9_s18)
+  AI_CHECK(x14, hfence_gvma_vmid_in_S_9, hfence_gvma_vmid_in_S_9_s19)
+  AI_CHECK(x7, hfence_gvma_vmid_in_S_9, hfence_gvma_vmid_in_S_9_s20)
   // g32: 0x40000000 -> ai_pg_C perms 0xdf
   LA(x6, ai_pg_C)
   srli x6, x6, 12
@@ -402,16 +395,60 @@ hfence_gvma_vmid_in_S_5:
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  li x1, 0x10000000
-  .word 0x62008073  // hfence.gvma x1, x0
+  AI_LOAD(x8)  // bit XLEN-1 and bit 9
+  or x8, x8, x9
+  .word 0x62800073  // hfence.gvma x0, x8
   li x6, 0x20000000
   AI_ALLOW(1)
-hfence_gvma_vmid_in_S_6:
+hfence_gvma_vmid_in_S_10:
   .word 0x680343f3  // hlv.w x7, (x6)
   AI_OUTCOME
-  AI_CHECK(x13, hfence_gvma_vmid_in_S_6, hfence_gvma_vmid_in_S_6_s15)
-  AI_CHECK(x14, hfence_gvma_vmid_in_S_6, hfence_gvma_vmid_in_S_6_s16)
-  AI_CHECK(x7, hfence_gvma_vmid_in_S_6, hfence_gvma_vmid_in_S_6_s17)
+  AI_CHECK(x13, hfence_gvma_vmid_in_S_10, hfence_gvma_vmid_in_S_10_s21)
+  AI_CHECK(x14, hfence_gvma_vmid_in_S_10, hfence_gvma_vmid_in_S_10_s22)
+  AI_CHECK2(x7, hfence_gvma_vmid_in_S_10, hfence_gvma_vmid_in_S_10_s23)
+  .word 0x62000073  // hfence.gvma x0, x0
+  li x6, 0x20000000
+  AI_ALLOW(1)
+hfence_gvma_vmid_in_S_11:
+  .word 0x680343f3  // hlv.w x7, (x6)
+  AI_OUTCOME
+  AI_CHECK(x13, hfence_gvma_vmid_in_S_11, hfence_gvma_vmid_in_S_11_s24)
+  AI_CHECK(x14, hfence_gvma_vmid_in_S_11, hfence_gvma_vmid_in_S_11_s25)
+  AI_CHECK(x7, hfence_gvma_vmid_in_S_11, hfence_gvma_vmid_in_S_11_s26)
+  // x8 = bits MAX-1:LEN (nonzero only if LEN < MAX)
+  not x8, x1
+  slli x8, x8, 25
+  srli x8, x8, 25
+  beqz x8, hfence_gvma_vmid_clear_12
+  or x9, x9, x8
+  // g32: 0x40000000 -> ai_pg_D perms 0xdf
+  LA(x6, ai_pg_D)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  li x7, 0xdf
+  or x6, x6, x7
+  LA(x8, ai_pt_g32_t1)
+  li x7, 0
+  add x8, x8, x7
+  SREG x6, 0(x8)
+  .word 0x62900073  // hfence.gvma x0, x9
+  li x6, 0x20000000
+  AI_ALLOW(1)
+hfence_gvma_vmid_in_S_14:
+  .word 0x680343f3  // hlv.w x7, (x6)
+  AI_OUTCOME
+  AI_CHECK(x13, hfence_gvma_vmid_in_S_14, hfence_gvma_vmid_in_S_14_s27)
+  AI_CHECK(x14, hfence_gvma_vmid_in_S_14, hfence_gvma_vmid_in_S_14_s28)
+  AI_CHECK(x7, hfence_gvma_vmid_in_S_14, hfence_gvma_vmid_in_S_14_s29)
+  AI_SKIP(0)
+  j hfence_gvma_vmid_done_13
+hfence_gvma_vmid_clear_12:
+#if __riscv_xlen == 64
+  AI_SKIP(0)
+#else
+  AI_SKIP(3)
+#endif
+hfence_gvma_vmid_done_13:
   li x7, 0x100
   csrc 0x600, x7  // hstatus.SPVP &= ~ 0x100
   // hgatp = vsatp = Bare
@@ -427,31 +464,47 @@ RVTEST_DATA_BEGIN
   .p2align 3
 ai_table:
 #if __riscv_xlen == 64
-  .dword 0x8000000040000000, 0x0000000000000000, 0xffffffffffffffff, 0x000000005a5a0111
-  .dword 0x0000000000000000, 0xffffffffffffffff, 0x000000005a5a0222, 0x0000000000000000
-  .dword 0xffffffffffffffff, 0x000000005a5a0333
+  .dword 0x0000000000000000, 0xffffffffffffffff, 0x000000005a5a0111, 0x0000000000000000
+  .dword 0xffffffffffffffff, 0x000000005a5a0222, 0x8000000000010000, 0x0000000000000000
+  .dword 0xffffffffffffffff, 0x000000005a5a0222, 0x000000005a5a0333, 0x0000000000000000
+  .dword 0xffffffffffffffff, 0x000000005a5a0333, 0x0000000000000000, 0xffffffffffffffff
+  .dword 0x000000005a5a0444
 hfence_gvma_vmid_in_S_1_s0: .string "hfence-gvma_vmid: hlv.w (initially) in S-mode: number of traps; expect 0x0000000000000000"
 hfence_gvma_vmid_in_S_1_s1: .string "hfence-gvma_vmid: hlv.w (initially) in S-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
 hfence_gvma_vmid_in_S_1_s2: .string "hfence-gvma_vmid: initially: reads A; expect 0x000000005a5a0111"
-hfence_gvma_vmid_in_S_2_s3: .string "hfence-gvma_vmid: hlv.w (after HFENCE.GVMA x0, VMID with reserved bits) in S-mode: number of traps; expect 0x0000000000000000"
-hfence_gvma_vmid_in_S_2_s4: .string "hfence-gvma_vmid: hlv.w (after HFENCE.GVMA x0, VMID with reserved bits) in S-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
-hfence_gvma_vmid_in_S_2_s5: .string "hfence-gvma_vmid: after HFENCE.GVMA x0, VMID with reserved bits: reads B; expect 0x000000005a5a0222"
-hfence_gvma_vmid_in_S_3_s6: .string "hfence-gvma_vmid: hlv.w (after HFENCE.GVMA GPA>>2, x0) in S-mode: number of traps; expect 0x0000000000000000"
-hfence_gvma_vmid_in_S_3_s7: .string "hfence-gvma_vmid: hlv.w (after HFENCE.GVMA GPA>>2, x0) in S-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
-hfence_gvma_vmid_in_S_3_s8: .string "hfence-gvma_vmid: after HFENCE.GVMA GPA>>2, x0: reads C; expect 0x000000005a5a0333"
+hfence_gvma_vmid_in_S_2_s3: .string "hfence-gvma_vmid: hlv.w (after the fence with rs2 = the exact VMID) in S-mode: number of traps; expect 0x0000000000000000"
+hfence_gvma_vmid_in_S_2_s4: .string "hfence-gvma_vmid: hlv.w (after the fence with rs2 = the exact VMID) in S-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
+hfence_gvma_vmid_in_S_2_s5: .string "hfence-gvma_vmid: after the fence with rs2 = the exact VMID: reads B; expect 0x000000005a5a0222"
+hfence_gvma_vmid_in_S_3_s6: .string "hfence-gvma_vmid: hlv.w (after the fence with reserved bits above MAX set) in S-mode: number of traps; expect 0x0000000000000000"
+hfence_gvma_vmid_in_S_3_s7: .string "hfence-gvma_vmid: hlv.w (after the fence with reserved bits above MAX set) in S-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
+hfence_gvma_vmid_in_S_3_s8: .string "hfence-gvma_vmid: after the fence with reserved bits above MAX set: reads B or C; expect 0x000000005a5a0222 or 0x000000005a5a0333"
+hfence_gvma_vmid_in_S_4_s9: .string "hfence-gvma_vmid: hlv.w (after a full fence) in S-mode: number of traps; expect 0x0000000000000000"
+hfence_gvma_vmid_in_S_4_s10: .string "hfence-gvma_vmid: hlv.w (after a full fence) in S-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
+hfence_gvma_vmid_in_S_4_s11: .string "hfence-gvma_vmid: after a full fence: reads C; expect 0x000000005a5a0333"
+hfence_gvma_vmid_in_S_7_s12: .string "hfence-gvma_vmid: hlv.w (after the fence with unimplemented ID bits MAX-1:LEN set) in S-mode: number of traps; expect 0x0000000000000000"
+hfence_gvma_vmid_in_S_7_s13: .string "hfence-gvma_vmid: hlv.w (after the fence with unimplemented ID bits MAX-1:LEN set) in S-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
+hfence_gvma_vmid_in_S_7_s14: .string "hfence-gvma_vmid: after the fence with unimplemented ID bits MAX-1:LEN set: reads D; expect 0x000000005a5a0444"
 #else
-  .word 0x80100000, 0x00000000, 0xffffffff, 0x5a5a0111
-  .word 0x00000000, 0xffffffff, 0x5a5a0222, 0x00000000
-  .word 0xffffffff, 0x5a5a0333
-hfence_gvma_vmid_in_S_4_s9: .string "hfence-gvma_vmid: hlv.w (initially) in S-mode: number of traps; expect 0x00000000"
-hfence_gvma_vmid_in_S_4_s10: .string "hfence-gvma_vmid: hlv.w (initially) in S-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
-hfence_gvma_vmid_in_S_4_s11: .string "hfence-gvma_vmid: initially: reads A; expect 0x5a5a0111"
-hfence_gvma_vmid_in_S_5_s12: .string "hfence-gvma_vmid: hlv.w (after HFENCE.GVMA x0, VMID with reserved bits) in S-mode: number of traps; expect 0x00000000"
-hfence_gvma_vmid_in_S_5_s13: .string "hfence-gvma_vmid: hlv.w (after HFENCE.GVMA x0, VMID with reserved bits) in S-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
-hfence_gvma_vmid_in_S_5_s14: .string "hfence-gvma_vmid: after HFENCE.GVMA x0, VMID with reserved bits: reads B; expect 0x5a5a0222"
-hfence_gvma_vmid_in_S_6_s15: .string "hfence-gvma_vmid: hlv.w (after HFENCE.GVMA GPA>>2, x0) in S-mode: number of traps; expect 0x00000000"
-hfence_gvma_vmid_in_S_6_s16: .string "hfence-gvma_vmid: hlv.w (after HFENCE.GVMA GPA>>2, x0) in S-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
-hfence_gvma_vmid_in_S_6_s17: .string "hfence-gvma_vmid: after HFENCE.GVMA GPA>>2, x0: reads C; expect 0x5a5a0333"
+  .word 0x00000000, 0xffffffff, 0x5a5a0111, 0x00000000
+  .word 0xffffffff, 0x5a5a0222, 0x80000200, 0x00000000
+  .word 0xffffffff, 0x5a5a0222, 0x5a5a0333, 0x00000000
+  .word 0xffffffff, 0x5a5a0333, 0x00000000, 0xffffffff
+  .word 0x5a5a0444
+hfence_gvma_vmid_in_S_8_s15: .string "hfence-gvma_vmid: hlv.w (initially) in S-mode: number of traps; expect 0x00000000"
+hfence_gvma_vmid_in_S_8_s16: .string "hfence-gvma_vmid: hlv.w (initially) in S-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
+hfence_gvma_vmid_in_S_8_s17: .string "hfence-gvma_vmid: initially: reads A; expect 0x5a5a0111"
+hfence_gvma_vmid_in_S_9_s18: .string "hfence-gvma_vmid: hlv.w (after the fence with rs2 = the exact VMID) in S-mode: number of traps; expect 0x00000000"
+hfence_gvma_vmid_in_S_9_s19: .string "hfence-gvma_vmid: hlv.w (after the fence with rs2 = the exact VMID) in S-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
+hfence_gvma_vmid_in_S_9_s20: .string "hfence-gvma_vmid: after the fence with rs2 = the exact VMID: reads B; expect 0x5a5a0222"
+hfence_gvma_vmid_in_S_10_s21: .string "hfence-gvma_vmid: hlv.w (after the fence with reserved bits above MAX set) in S-mode: number of traps; expect 0x00000000"
+hfence_gvma_vmid_in_S_10_s22: .string "hfence-gvma_vmid: hlv.w (after the fence with reserved bits above MAX set) in S-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
+hfence_gvma_vmid_in_S_10_s23: .string "hfence-gvma_vmid: after the fence with reserved bits above MAX set: reads B or C; expect 0x5a5a0222 or 0x5a5a0333"
+hfence_gvma_vmid_in_S_11_s24: .string "hfence-gvma_vmid: hlv.w (after a full fence) in S-mode: number of traps; expect 0x00000000"
+hfence_gvma_vmid_in_S_11_s25: .string "hfence-gvma_vmid: hlv.w (after a full fence) in S-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
+hfence_gvma_vmid_in_S_11_s26: .string "hfence-gvma_vmid: after a full fence: reads C; expect 0x5a5a0333"
+hfence_gvma_vmid_in_S_14_s27: .string "hfence-gvma_vmid: hlv.w (after the fence with unimplemented ID bits MAX-1:LEN set) in S-mode: number of traps; expect 0x00000000"
+hfence_gvma_vmid_in_S_14_s28: .string "hfence-gvma_vmid: hlv.w (after the fence with unimplemented ID bits MAX-1:LEN set) in S-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
+hfence_gvma_vmid_in_S_14_s29: .string "hfence-gvma_vmid: after the fence with unimplemented ID bits MAX-1:LEN set: reads D; expect 0x5a5a0444"
 #endif
 
   // page tables and data pages (hmem.py)
@@ -502,6 +555,13 @@ ai_pg_B:
   .p2align 12
 ai_pg_C:
   .byte 0x33, 0x03, 0x5a, 0x5a, 0x03, 0x00, 0xde, 0xc0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+  .byte 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+  .byte 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+  .byte 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+  .fill 4032, 1, 0
+  .p2align 12
+ai_pg_D:
+  .byte 0x44, 0x04, 0x5a, 0x5a, 0x04, 0x00, 0xde, 0xc0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
   .byte 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
   .byte 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
   .byte 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00

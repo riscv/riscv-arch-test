@@ -83,6 +83,8 @@ MUTANTS = {
     "ppn_low_kept": "hgatp.PPN[1:0] read back as written in an x4 mode",
     "vmid_msb_first": "hgatp.VMID implements the most-significant bits first",
     "gpa_g_bit_global": "a G-stage PTE with G=1 faults (G not ignored)",
+    "vmid_fence_noflush": "HFENCE.GVMA with rs2 = the current VMID does not remove the stale translation",
+    "asid_fence_noflush": "HFENCE.VVMA with rs2 = the current ASID does not remove the stale translation",
 }
 
 ISS = ISSUE
@@ -1948,87 +1950,104 @@ def gen_fences() -> list[MemTest]:
     both(t, b2)
     tests.append(t)
 
-    t = new("hfence-vvma_asid")
-    t.describe(
-        source=HYP,
-        rule_text="When rs2≠x0, bits XLEN-1:ASIDMAX of the value held in rs2 are reserved for future standard use. "
-        "Until their use is defined by a standard extension, they should be zeroed by software and ignored by "
-        "current implementations. Furthermore, if ASIDLEN < ASIDMAX, the implementation shall ignore bits "
-        "ASIDMAX-1:ASIDLEN of the value held in rs2.",
-        context="ASIDMAX is 16 (RV64) or 9 (RV32). The current ASID is read from vsatp after writing 1.",
-        plan="1. Change VA0's VS PTE; HFENCE.VVMA x0, rs2 = ASID | bit XLEN-1 | bit 20: the reserved bits are "
-        "ignored, so VA0 reads the new page.",
-    )
-    init(t)
-    pages(t)
+    for rule in ("hfence-vvma_asid", "hfence-gvma_vmid"):
+        gv = rule == "hfence-gvma_vmid"
+        t = new(rule)
+        idn, mx = ("VMID", "VMIDMAX") if gv else ("ASID", "ASIDMAX")
+        t.describe(
+            source=HYP,
+            rule_text=(
+                "When rs2≠x0, bits XLEN-1:VMIDMAX of the value held in rs2 are reserved for future standard use. "
+                "Until their use is defined by a standard extension, they should be zeroed by software and ignored "
+                "by current implementations. Furthermore, if VMIDLEN < VMIDMAX, the implementation shall ignore bits "
+                "VMIDMAX-1:VMIDLEN of the value held in rs2."
+                if gv
+                else "When rs2≠x0, bits XLEN-1:ASIDMAX of the value held in rs2 are reserved for future standard use. "
+                "Until their use is defined by a standard extension, they should be zeroed by software and ignored "
+                "by current implementations. Furthermore, if ASIDLEN < ASIDMAX, the implementation shall ignore bits "
+                "ASIDMAX-1:ASIDLEN of the value held in rs2."
+            ),
+            context=f"{mx} is {'14' if gv else '16'} on RV64 and {'7' if gv else '9'} on RV32. Ignoring the bits above "
+            f"{mx} is only recommended (should), so a fence with them set may leave the old translation; ignoring the "
+            f"unimplemented bits {mx}-1:{idn}LEN is required. {idn}LEN is probed by writing all ones to "
+            f"{'hgatp.VMID' if gv else 'vsatp.ASID'} in a paged mode. HLV.W in HS-mode (SPVP=1) observes the "
+            f"translation; the current {idn} is 1 (or 0 when {idn}LEN=0).",
+            plan=f"1. Change the {'G-stage' if gv else 'VS-stage'} PTE; {'HFENCE.GVMA' if gv else 'HFENCE.VVMA'} x0, "
+            f"rs2 = the current {idn}: HLV.W reads the new page.\n"
+            f"2. Change it again; fence with rs2 = {idn} | bit XLEN-1 | a bit just above {mx}: HLV.W reads the old or "
+            "the new page; after a fence with rs1 = rs2 = x0 it reads the new page.\n"
+            f"3. If {idn}LEN < {mx}: change it again; fence with rs2 = {idn} | bits {mx}-1:{idn}LEN: HLV.W reads the "
+            "new page (those bits must be ignored).",
+        )
+        init(t)
+        for n in "ABCD":
+            t.page(n)
 
-    def b3(xlen: int) -> None:
-        _g, v = setup(t, xlen)
-        va = VA_BASE[xlen]
-        v.atp("x6", 1)
-        t.emit("csrw 0x280, x6")
-        t.emit(HFENCE_VVMA)
-        t.emit("csrr x9, 0x280")
-        sh, am = (44, 16) if xlen == 64 else (22, 9)
-        t.emit(f"srli x9, x9, {sh}")
-        t.emit(f"slli x9, x9, {xlen - am}")
-        t.emit(f"srli x9, x9, {xlen - am}")
-        t.load("x8", (1 << (xlen - 1)) | (1 << 20), "reserved rs2 bits")
-        t.emit("or x9, x9, x8")
-        spvp(t, True)
-        rd(t, va, ["A"], "VA0 initially")
-        v.leaf(va, gb[xlen] + 0x1000, LEAF)
-        t.emit(word_hfv(0, 9))
-        rd(t, va, ["B"], "after HFENCE.VVMA with reserved rs2 bits set")
-        spvp(t, False)
-        atp_off(t)
+        def body(xlen: int, t: MemTest = t, gv: bool = gv) -> None:
+            gb = GPA_BASE[xlen]
+            va = VA_BASE[xlen]
+            if gv:
+                g, v = two(t, xlen, [(0, LEAF, gb, "A", ULEAF)])
+                sh, mx = (44, 14) if xlen == 64 else (22, 7)
+                csr, pt = HGATP, g
+            else:
+                g, v = two(t, xlen, [(k, LEAF, gb + k * 0x1000, "ABCD"[k], ULEAF) for k in range(4)])
+                v.leaf(va + 0x1000, gb, LEAF)  # VA1 is the VA under test: initially -> GPA0 -> A
+                sh, mx = (44, 16) if xlen == 64 else (22, 9)
+                csr, pt = 0x280, v
+            fence = word_hfg if gv else word_hfv
+            a = va if gv else va + 0x1000
+            t.comment(f"x1 = implemented {'VMID' if gv else 'ASID'} mask; x9 = the ID used (1 & mask)")
+            pt.atp("x6", (1 << mx) - 1)
+            t.emit(f"csrw {hex(csr)}, x6")
+            t.emit(f"csrr x1, {hex(csr)}")
+            t.emit(f"srli x1, x1, {sh}")
+            t.emit(f"slli x1, x1, {xlen - mx}")
+            t.emit(f"srli x1, x1, {xlen - mx}")
+            t.emit("andi x9, x1, 1")
+            pt.atp("x6")
+            t.emit(f"slli x7, x9, {sh}")
+            t.emit("or x6, x6, x7")
+            t.emit(f"csrw {hex(csr)}, x6")
+            t.emit(HFENCE_GVMA)
+            t.emit(HFENCE_VVMA)
+            spvp(t, True)
 
-    both(t, b3)
-    tests.append(t)
+            def move(k: int) -> None:
+                if gv:
+                    g.leaf(gb, t.page("ABCD"[k]), ULEAF)
+                else:
+                    v.leaf(a, gb + k * 0x1000, LEAF)
 
-    t = new("hfence-gvma_vmid")
-    t.describe(
-        source=HYP,
-        rule_text="When rs2≠x0, bits XLEN-1:VMIDMAX of the value held in rs2 are reserved for future standard use. "
-        "Until their use is defined by a standard extension, they should be zeroed by software and ignored by "
-        "current implementations. Furthermore, if VMIDLEN < VMIDMAX, the implementation shall ignore bits "
-        "VMIDMAX-1:VMIDLEN of the value held in rs2.",
-        context="VMIDMAX is 14 (RV64) or 7 (RV32). hgatp.VMID is written as 1 and read back. HFENCE.GVMA's rs1, "
-        "when not x0, is a guest physical address shifted right by 2.",
-        plan="1. Change GPA_A's G-stage PTE; HFENCE.GVMA x0, rs2 = VMID | bit XLEN-1 | bit 30 (RV64) or 20 "
-        "(RV32): HLV.W reads the new page.\n"
-        "2. Change it again; HFENCE.GVMA rs1 = GPA_A >> 2, x0: HLV.W reads the new page.",
-    )
-    init(t)
-    pages(t)
+            rd(t, a, ["A"], "initially")
+            move(1)
+            t.emit(fence(0, 9))
+            noflush = ("vmid_fence_noflush" if gv else "asid_fence_noflush") == MUT
+            rd(t, a, ["A"] if noflush else ["B"], f"after the fence with rs2 = the exact {'VMID' if gv else 'ASID'}")
+            move(2)
+            t.load("x8", (1 << (xlen - 1)) | (1 << (mx + 2)), f"bit XLEN-1 and bit {mx + 2}")
+            t.emit("or x8, x8, x9")
+            t.emit(fence(0, 8))
+            rd(t, a, ["B", "C"], "after the fence with reserved bits above MAX set")
+            t.emit(fence(0, 0))
+            rd(t, a, ["C"], "after a full fence")
+            t.comment("x8 = bits MAX-1:LEN (nonzero only if LEN < MAX)")
+            t.emit("not x8, x1")
+            t.emit(f"slli x8, x8, {xlen - mx}")
+            t.emit(f"srli x8, x8, {xlen - mx}")
 
-    def b4(xlen: int) -> None:
-        g, _v = setup(t, xlen)
-        va = VA_BASE[xlen]
-        g.atp("x6", 1)
-        t.emit(f"csrw {hex(HGATP)}, x6  // VMID 1")
-        t.emit(HFENCE_GVMA)
-        t.emit(f"csrr x9, {hex(HGATP)}")
-        sh, vm = (44, 14) if xlen == 64 else (22, 7)
-        t.emit(f"srli x9, x9, {sh}")
-        t.emit(f"slli x9, x9, {xlen - vm}")
-        t.emit(f"srli x9, x9, {xlen - vm}")
-        t.load("x8", (1 << (xlen - 1)) | (1 << (30 if xlen == 64 else 20)), "reserved rs2 bits")
-        t.emit("or x9, x9, x8")
-        spvp(t, True)
-        rd(t, va, ["A"], "initially")
-        g.leaf(gb[xlen], t.page("B"), ULEAF)
-        t.emit(word_hfg(0, 9))
-        rd(t, va, ["B"], "after HFENCE.GVMA x0, VMID with reserved bits")
-        g.leaf(gb[xlen], t.page("C"), ULEAF)
-        t.emit(f"li x1, {hex(gb[xlen] >> 2)}")
-        t.emit(word_hfg(1, 0))
-        rd(t, va, ["C"], "after HFENCE.GVMA GPA>>2, x0")
-        spvp(t, False)
-        atp_off(t)
+            def strict() -> None:
+                t.emit("or x9, x9, x8")
+                move(3)
+                t.emit(fence(0, 9))
+                rd(t, a, ["D"], "after the fence with unimplemented ID bits MAX-1:LEN set")
 
-    both(t, b4)
-    tests.append(t)
+            t.either("x8", strict, lambda: None)
+            spvp(t, False)
+            atp_off(t)
+
+        both(t, body)
+        tests.append(t)
 
     for rule in ("hfence-gvma_mode", "hgatp_op_hfence_gvma"):
         t = new(rule)

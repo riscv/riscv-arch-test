@@ -5,7 +5,8 @@
 # Disabled: too slow for a GitHub runner. Run locally with `make c910-openc910`.
 ci_enabled: false
 
-# Each suite below fails at T-head-Semi/openc910 b91c909. RTL paths are relative to
+# Each suite below fails at T-head-Semi/openc910 b91c909 (rechecked on 2026-11-02: every entry still
+# has a failing test). RTL paths are relative to
 # https://github.com/T-head-Semi/openc910/blob/b91c909/C910_RTL_FACTORY/gen_rtl/
 exclude_extensions:
   # D, F (fmin, fmax and fused multiply-add groups): fmin/fmax return the canonical NaN for one sNaN operand
@@ -29,18 +30,6 @@ exclude_extensions:
   - Sv_ExceptionsZalrsc
   - Sv_ExceptionsZalrscSm
   - PMP_Zalrsc
-  # Enable and priority groups for S and U: ACT raises MSI from S- and U-mode, but the CLINT accepts MSIP writes
-  # only from M-mode (clint/rtl/ct_clint_func.v#L216).
-  - InterruptsSm_enable_S
-  - InterruptsSm_enable_U
-  - InterruptsSm_priority_mideleg_S
-  - InterruptsSm_priority_mideleg_U
-  - InterruptsSm_priority_mie_S
-  - InterruptsSm_priority_mie_U
-  - InterruptsSm_priority_mip_S
-  - InterruptsSm_priority_mip_U
-  - InterruptsSm_trigger_S
-  - InterruptsSm_trigger_U
   # pmpaddr reads bits 8:0 as 0 in NAPOT mode and keeps bit 9 in OFF mode, against G = 10
   # (pmp/rtl/ct_pmp_regs.v#L520-L522).
   - PMP_Sm_grain
@@ -49,7 +38,8 @@ exclude_extensions:
   - Sm_mcsr_cntr
   - Sm_mcsr_walk
   - Sm_xret
-  # xtval keeps VA bits 39:0 (rtu/rtl/ct_rtu_retire.v#L1236-L1239); S-mode fetches from U pages when SUM=1
+  # xtval keeps VA bits 39:0 (rtu/rtl/ct_rtu_retire.v#L1236-L1239,
+  # https://github.com/XUANTIE-RV/openc910/issues/90); S-mode fetches from U pages when SUM=1
   # (mmu/rtl/ct_mmu_iutlb.v#L599). Sail also cannot run Sv_sv39_VA_all_zeros_Smode, which maps VA 0 over the
   # test image.
   - Sv_sv39_VA_all_zeros
@@ -59,6 +49,7 @@ exclude_extensions:
   # (mmu/rtl/ct_mmu_ptw.v#L648-L651).
   - PMP_Sv_sv39_pmp_on_pte
   # minstret counts ECALL, which does not retire (rtu/rtl/ct_rtu_retire.v#L1768-L1769).
+  - Sm_Zicntr
   - S_Zicntr
   - U_Zicntr
 

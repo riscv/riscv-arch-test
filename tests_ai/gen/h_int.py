@@ -14,9 +14,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from hlib import HYP, ISSUE, MUT, X, delay, hs_bits, hs_read, icause, m_read, new
+from hlib import HYP, MUT, X, delay, icause, m_read, new
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from aigen import TestFile
 
 MUTANTS = {
@@ -138,8 +140,13 @@ def taken(t: TestFile, lab: str, mode: str, desc: str, seq: list[tuple[int, int]
         return
     if len(seq) == 1:
         code, hm = seq[0]
-        t.outcome(icause(code), lab, f"{desc}: {NAME.get(code, code)} taken in {'VS' if hm == 2 else 'HS'}-mode",
-                  epc=False, origin=mode)
+        t.outcome(
+            icause(code),
+            lab,
+            f"{desc}: {NAME.get(code, code)} taken in {'VS' if hm == 2 else 'HS'}-mode",
+            epc=False,
+            origin=mode,
+        )
         t.emit("AI_LOG(x15, TRAPLOG_VECT)", 10)
         t.emit("andi x15, x15, 3")
         t.check("x15", hm, lab, f"{desc}: taken by the {'VS' if hm == 2 else 'HS'}-mode handler (2 VS, 1 HS)")
@@ -150,7 +157,12 @@ def taken(t: TestFile, lab: str, mode: str, desc: str, seq: list[tuple[int, int]
     for k, (code, hm) in enumerate(seq):
         back = len(seq) - 1 - k
         log_word(t, "x15", back, "TRAPLOG_CAUSE")
-        t.check("x15", icause(code), lab, f"{desc}: interrupt {k + 1} of {len(seq)} (order {names}) is {NAME.get(code, code)}")
+        t.check(
+            "x15",
+            icause(code),
+            lab,
+            f"{desc}: interrupt {k + 1} of {len(seq)} (order {names}) is {NAME.get(code, code)}",
+        )
         log_word(t, "x15", back, "TRAPLOG_VECT")
         t.emit("andi x15, x15, 3")
         t.check("x15", hm, lab, f"{desc}: interrupt {k + 1} taken by the {'VS' if hm == 2 else 'HS'}-mode handler")
@@ -303,8 +315,11 @@ def gen_regs() -> list[TestFile]:
     lab = here(t, "hie")
     w(t, HIE, "hie", -1)
     rd(t, "x8", HIE, "hie")
-    t.either("x9", lambda: t.check_masked("x8", STD, 0x1444, lab, "hie after all ones, GEILEN > 0"),
-             lambda: t.check_masked("x8", STD, [0x444, 0x1444], lab, "hie after all ones, GEILEN = 0"))
+    t.either(
+        "x9",
+        lambda: t.check_masked("x8", STD, 0x1444, lab, "hie after all ones, GEILEN > 0"),
+        lambda: t.check_masked("x8", STD, [0x444, 0x1444], lab, "hie after all ones, GEILEN = 0"),
+    )
     t.li("x6", 0x40)
     t.emit(f"csrrw x8, {hex(HIE)}, x6  // hie: swap")
     t.check_masked("x8", 0xEFF, 0x444, lab, "csrrw of hie returns the old value")
@@ -369,10 +384,16 @@ def gen_regs() -> list[TestFile]:
         t.li("x7", 0x222)
         t.emit(f"csrs {hex(SIE_CSR)}, x7  // sie.SSIE/STIE/SEIE = 1")
         lab = int_window(t, "VU", nm)
-        taken(t, lab, "VU", f"{nm} pending, hie.{nm}E=0, sie all set", [(i, 1)] if MUT == "hie_sie_shared" and i == 2 else [])
+        taken(
+            t,
+            lab,
+            "VU",
+            f"{nm} pending, hie.{nm}E=0, sie all set",
+            [(i, 1)] if MUT == "hie_sie_shared" and i == 2 else [],
+        )
         t.li("x7", 0x222)
         t.emit(f"csrc {hex(SIE_CSR)}, x7  // sie = 0")
-        other = [j for _, j in VS_INTS if j != i][0]
+        other = next(j for _, j in VS_INTS if j != i)
         w(t, HIE, "hie", 1 << other)
         lab = int_window(t, "VU", nm)
         taken(t, lab, "VU", f"{nm} pending, only hie bit {other} set", [])
@@ -403,8 +424,11 @@ def gen_regs() -> list[TestFile]:
         w(t, HIE, "hie", 1 << b)
         if b == 12:
             rd(t, "x8", HIE, "hie")
-            t.either("x9", lambda: t.check_masked("x8", STD, 0x1000, lab, "hie after writing bit 12, GEILEN > 0"),
-                     lambda: t.check_masked("x8", STD, [0, 0x1000], lab, "hie after writing bit 12, GEILEN = 0"))
+            t.either(
+                "x9",
+                lambda lab=lab: t.check_masked("x8", STD, 0x1000, lab, "hie after writing bit 12, GEILEN > 0"),
+                lambda lab=lab: t.check_masked("x8", STD, [0, 0x1000], lab, "hie after writing bit 12, GEILEN = 0"),
+            )
         else:
             expect_bits(t, HIE, "hie", STD, (1 << b) if b in (2, 6, 10) else 0, lab, f"hie after writing bit {b} alone")
     w(t, HIE, "hie", 0)
@@ -483,8 +507,12 @@ def gen_regs() -> list[TestFile]:
         t.emit(f"csrw {hex(num)}, x0  // {nm} = 0")
     lab = here(t, "mutex")
     t.check_masked("x6", 0x222, 0x222, lab, "sie bits 1, 5, 9 are writable")
-    for a, b, d in (("x6", "x8", "W(sie) & W(hie)"), ("x6", "x9", "W(sie) & W(hip)"), ("x1", "x9", "W(sip) & W(hip)"),
-                    ("x1", "x8", "W(sip) & W(hie)")):
+    for a, b, d in (
+        ("x6", "x8", "W(sie) & W(hie)"),
+        ("x6", "x9", "W(sie) & W(hip)"),
+        ("x1", "x9", "W(sip) & W(hip)"),
+        ("x1", "x8", "W(sip) & W(hie)"),
+    ):
         t.emit(f"and x5, {a}, {b}")
         t.check("x5", 0, lab, f"{d} is zero")
     reset(t)
@@ -494,8 +522,7 @@ def gen_regs() -> list[TestFile]:
     t = new("hideleg_sz_acc")
     t.describe(
         source=HYP,
-        rule_text="Register hideleg is an HSXLEN-bit read/write register, formatted as shown in "
-        "<<norm:hideleg_img>>.",
+        rule_text="Register hideleg is an HSXLEN-bit read/write register, formatted as shown in <<norm:hideleg_img>>.",
         context="Bits 2, 6, 10 are writable; 1, 5, 9, 12 are read-only zero (hideleg_acc); bits 0, 3, 4, 7, 8, 11 "
         "are zero because mideleg has them zero or they are reserved (mideleg_hroz). Bit 13 depends on "
         "Shlcofideleg (vsip_vsie_lcofi) and bits 14 and up on the AIA, so only bits 12:0 are checked.",
@@ -685,10 +712,12 @@ def gen_routing() -> list[TestFile]:
     )
     reset(t)
     for nm, i in VS_INTS:
-        def setup(en: int = 1, deleg: int = 0) -> None:
+
+        def setup(en: int = 1, deleg: int = 0, i: int = i) -> None:
             w(t, HIDELEG, "hideleg", deleg << i)
             w(t, HIE, "hie", en << i)
             w(t, HVIP, "hvip", 1 << i)
+
         t.comment(f"---- {nm} ----")
         for sie_v in (0, 1):
             setup()
@@ -741,10 +770,8 @@ def gen_routing() -> list[TestFile]:
             w(t, HVIP, "hvip", 1 << i)
             cs(t, VSSTATUS, "vsstatus.SIE", SIE, bool(vsie))
             lab = int_window(t, mode, nm)
-            if mode == "VS":
-                exp = [(i - 1, 2)] if vsie else []
-            else:
-                exp = [] if MUT == "vu_needs_sie" else [(i - 1, 2)]
+            vu_taken = MUT != "vu_needs_sie"  # VU-mode ignores vsstatus.SIE
+            exp = [(i - 1, 2)] if (vsie if mode == "VS" else vu_taken) else []
             if exp and MUT == "deleg_routes_to_hs_from_vs":
                 exp = [(i, 1)]
             if exp and MUT == "no_cause_translation":
@@ -786,7 +813,7 @@ def gen_routing() -> list[TestFile]:
         w(t, HIE, "hie", 1 << i)
         w(t, HVIP, "hvip", 1 << i)
         lab = t.window("VS", [f"csrr x8, {hex(SIP)}  // sip (V=1: vsip)"], "ok", f"read sip with {nm} pending")
-        vb, hb = vs_alias_bits(i)
+        vb, _ = vs_alias_bits(i)
         t.check_masked("x8", STD, 1 << vb, lab, f"VS-mode sip with {nm} pending and delegated")
         cs(t, VSSTATUS, "vsstatus.SIE", SIE, True)
         lab = int_window(t, "VS", nm)
@@ -812,6 +839,7 @@ def gen_routing() -> list[TestFile]:
             def field(xlen: int, v: int) -> int:
                 off = 4 * xlen + 12 * (v + 1)
                 return ((off * 3) >> 5) & 0x1F
+
             if i == 10:
                 continue  # RV64 cannot represent vector 9 in five bits; RV32 case below
             t.emit(f"csrr x6, {hex(VSTVEC)}")
@@ -826,12 +854,17 @@ def gen_routing() -> list[TestFile]:
             t.emit("AI_LOG(x15, TRAPLOG_VECT)", 10)
             t.emit("srli x15, x15, 6")
             t.emit("andi x15, x15, 0x1F")
-            t.check("x15", X(field(32, vec), field(64, vec)), lab,
-                    f"{nm} delegated, vstvec Vectored: entered through vector {i - 1} (trampoline index field)")
+            t.check(
+                "x15",
+                X(field(32, vec), field(64, vec)),
+                lab,
+                f"{nm} delegated, vstvec Vectored: entered through vector {i - 1} (trampoline index field)",
+            )
             t.emit(f"csrr x6, {hex(VSTVEC)}")
             t.emit("andi x6, x6, -4")
             t.emit(f"csrw {hex(VSTVEC)}, x6  // vstvec Direct")
             reset(t)
+
     t.either("x1", vectored, lambda: None)
     tests.append(t)
     return tests
@@ -839,9 +872,12 @@ def gen_routing() -> list[TestFile]:
 
 def gen_alias() -> list[TestFile]:
     tests = []
-    for nm, i, rule, sname in (("VSSI", 2, "vsip_vsie_ssi", "SSIP"), ("VSTI", 6, "vsip_vsie_sti", "STIP"),
-                               ("VSEI", 10, "vsip_vsie_sei", "SEIP")):
-        vb, hb = vs_alias_bits(i)
+    for nm, i, rule, sname in (
+        ("VSSI", 2, "vsip_vsie_ssi", "SSIP"),
+        ("VSTI", 6, "vsip_vsie_sti", "STIP"),
+        ("VSEI", 10, "vsip_vsie_sei", "SEIP"),
+    ):
+        vb, _ = vs_alias_bits(i)
         t = new(rule)
         sie_name = sname[:-1] + "E"
         t.describe(
@@ -849,16 +885,22 @@ def gen_alias() -> list[TestFile]:
             rule_text=f"When bit {i} of hideleg is zero, vsip.{sname} and vsie.{sie_name} are read-only zeros. Else, "
             f"vsip.{sname} and vsie.{sie_name} are aliases of hip.{nm}P and hie.{nm}E.",
             context=f"vsip.{sname} and vsie.{sie_name} are bit {i - 1}; hip.{nm}P and hie.{nm}E are bit {i}. "
-            + ("hip.VSSIP is writable, so vsip.SSIP is writable when aliased. " if i == 2 else
-               f"hip.{nm}P is read-only, so vsip.{sname} is read-only. ")
+            + (
+                "hip.VSSIP is writable, so vsip.SSIP is writable when aliased. "
+                if i == 2
+                else f"hip.{nm}P is read-only, so vsip.{sname} is read-only. "
+            )
             + "Accessed as vsip/vsie from HS-mode and as sip/sie from VS-mode.",
             plan=f"1. hideleg bit {i} = 0: with hvip.{nm}P = 1 and hie.{nm}E = 1, vsip and vsie read 0 in bits 12:0; "
             f"setting vsie.{sie_name} (and vsip.{sname}) leaves hie (and hvip) unchanged and the bits still read 0.\n"
             f"2. hideleg bit {i} = 1: vsip bits 12:0 read exactly bit {i - 1} when hvip.{nm}P = 1 and 0 when it is 0; "
             f"vsie follows hie.{nm}E the same way.\n"
             f"3. hideleg bit {i} = 1: csrs/csrc of vsie.{sie_name} set and clear hie.{nm}E; "
-            + ("csrs/csrc of vsip.SSIP set and clear hvip.VSSIP.\n" if i == 2 else
-               f"csrs of vsip.{sname} with hvip.{nm}P = 0 leaves it 0.\n")
+            + (
+                "csrs/csrc of vsip.SSIP set and clear hvip.VSSIP.\n"
+                if i == 2
+                else f"csrs of vsip.{sname} with hvip.{nm}P = 0 leaves it 0.\n"
+            )
             + f"4. hideleg = bit {i} only: csrw vsie = all ones sets exactly hie bit {i}, and csrw vsip = all ones sets "
             + ("exactly hvip.VSSIP " if i == 2 else "no hvip bit ")
             + "(writes to vsip/vsie bits 2, 6, 10 must not reach hip/hie: "
@@ -875,13 +917,27 @@ def gen_alias() -> list[TestFile]:
         expect_bits(t, VSIE, "vsie", STD, (1 << vb) if ig else 0, lab, f"vsie with hideleg[{i}]=0, hie.{nm}E=1")
         w(t, HIE, "hie", 0)
         cs(t, VSIE, "vsie", 1 << (i - 1), True)
-        expect_bits(t, HIE, "hie", STD, (1 << i) if ig and MUT != "vsip_no_shift" else 0, lab,
-                    f"hie after setting vsie bit {i - 1} with hideleg[{i}]=0")
+        expect_bits(
+            t,
+            HIE,
+            "hie",
+            STD,
+            (1 << i) if ig and MUT != "vsip_no_shift" else 0,
+            lab,
+            f"hie after setting vsie bit {i - 1} with hideleg[{i}]=0",
+        )
         if i == 2:
             w(t, HVIP, "hvip", 0)
             cs(t, VSIP, "vsip", 2, True)
-            expect_bits(t, HVIP, "hvip", STD, 4 if ig and MUT != "vsip_no_shift" else 0, lab,
-                        "hvip after setting vsip.SSIP with hideleg[2]=0")
+            expect_bits(
+                t,
+                HVIP,
+                "hvip",
+                STD,
+                4 if ig and MUT != "vsip_no_shift" else 0,
+                lab,
+                "hvip after setting vsip.SSIP with hideleg[2]=0",
+            )
         reset(t)
         w(t, HIDELEG, "hideleg", 1 << i)
         for p in (1, 0):
@@ -907,22 +963,40 @@ def gen_alias() -> list[TestFile]:
         expect_bits(t, HIE, "hie", STD, 1 << i, lab, f"hie after csrw vsie = all ones with hideleg = bit {i} only")
         w(t, VSIE, "vsie", 0)
         w(t, VSIP, "vsip", -1)
-        expect_bits(t, HVIP, "hvip", STD, (1 << i) if i == 2 else 0, lab,
-                    f"hvip after csrw vsip = all ones with hideleg = bit {i} only")
+        expect_bits(
+            t,
+            HVIP,
+            "hvip",
+            STD,
+            (1 << i) if i == 2 else 0,
+            lab,
+            f"hvip after csrw vsip = all ones with hideleg = bit {i} only",
+        )
         w(t, VSIP, "vsip", 0)
         # VS-mode view
         w(t, HVIP, "hvip", 1 << i)
         w(t, HIE, "hie", 1 << i)
-        lab = t.window("VS", [f"csrr x8, {hex(SIP)}  // sip (vsip)", f"csrr x9, {hex(SIE_CSR)}  // sie (vsie)"], "ok",
-                       "VS-mode reads of sip and sie")
+        lab = t.window(
+            "VS",
+            [f"csrr x8, {hex(SIP)}  // sip (vsip)", f"csrr x9, {hex(SIE_CSR)}  // sie (vsie)"],
+            "ok",
+            "VS-mode reads of sip and sie",
+        )
         t.check_masked("x8", STD, 1 << vb, lab, f"VS-mode sip with hideleg[{i}]=1, hvip.{nm}P=1")
         t.check_masked("x9", STD, 1 << vb, lab, f"VS-mode sie with hideleg[{i}]=1, hie.{nm}E=1")
         w(t, HVIP, "hvip", 0)
         w(t, HIE, "hie", 0)
         t.li("x6", 1 << (i - 1))
         lab = t.window("VS", [f"csrs {hex(SIE_CSR)}, x6  // sie (vsie) bit {i - 1}"], "ok", "VS-mode write of sie")
-        expect_bits(t, HIE, "hie", STD, (1 << i) if MUT != "vsip_no_shift" else 0, lab,
-                    f"hie after a VS-mode csrs of sie bit {i - 1}")
+        expect_bits(
+            t,
+            HIE,
+            "hie",
+            STD,
+            (1 << i) if MUT != "vsip_no_shift" else 0,
+            lab,
+            f"hie after a VS-mode csrs of sie bit {i - 1}",
+        )
         reset(t)
         tests.append(t)
 
@@ -1014,6 +1088,7 @@ def gen_alias() -> list[TestFile]:
         expect_bits(t, SIP, "sip", 0x2000, 0, lab, "sip.LCOFIP after csrc vsip bit 13")
         cs(t, VSIE, "vsie", 0x2000, False)
         expect_bits(t, SIE_CSR, "sie", 0x2000, 0, lab, "sie.LCOFIE after csrc vsie bit 13")
+
     t.either("x1", deleg, lambda: None)
     cs(t, SIP, "sip", 0x2000, False)
     cs(t, SIE_CSR, "sie", 0x2000, False)
@@ -1149,15 +1224,22 @@ def gen_m() -> list[TestFile]:
     t.check_masked("x8", 0x444, 0x444, lab, "mideleg bits 2, 6, 10")
     t.either("x9", lambda: t.check_masked("x8", 0x1000, 0x1000, lab, "mideleg bit 12 with GEILEN > 0"), lambda: None)
     ro = 0 if MUT == "mideleg_vs_writable" else 0x444
-    for asm, d in (("csrc mideleg, x6", "csrc 0x1444"), ("csrw mideleg, x0", "csrw 0"),
-                   ("csrrc x0, mideleg, x6", "csrrc 0x1444"), ("csrrci x0, mideleg, 4", "csrrci 4")):
+    for asm, d in (
+        ("csrc mideleg, x6", "csrc 0x1444"),
+        ("csrw mideleg, x0", "csrw 0"),
+        ("csrrc x0, mideleg, x6", "csrrc 0x1444"),
+        ("csrrci x0, mideleg, 4", "csrrci 4"),
+    ):
         lab = here(t, "w")
         t.li("x6", 0x1444)
         t.emit(asm)
         t.emit("csrr x8, mideleg")
         t.check_masked("x8", 0x444, ro, lab, f"mideleg bits 2, 6, 10 after {d}")
-        t.either("x9", lambda lab=lab, d=d: t.check_masked("x8", 0x1000, 0x1000, lab, f"mideleg bit 12 after {d}, GEILEN > 0"),
-                 lambda: None)
+        t.either(
+            "x9",
+            lambda lab=lab, d=d: t.check_masked("x8", 0x1000, 0x1000, lab, f"mideleg bit 12 after {d}, GEILEN > 0"),
+            lambda: None,
+        )
         t.emit("csrw mideleg, x1  // restore")
     tests.append(t)
 
@@ -1408,12 +1490,16 @@ def gen_gei() -> list[TestFile]:
     tests.append(t)
 
     # ---- guest interrupts through the platform ----
-    def gei_test(rule: str, text: str, ctx: str, plan: str, body) -> TestFile:  # noqa: ANN001
+    def gei_test(rule: str, text: str, ctx: str, plan: str, body: Callable[[TestFile], object]) -> TestFile:
         t = new(rule)
-        t.describe(source=HYP, rule_text=text, context=ctx + " Guest external interrupts are raised through the "
-                   "platform (RVTEST_SET_GUEST_EXT_INT_S), which the framework provides when the DUT implements guest "
-                   "interrupt files (RVTEST_SGEI_INTR_IMPL); without it the test only checks that hgeip is 0.",
-                   plan=plan)
+        t.describe(
+            source=HYP,
+            rule_text=text,
+            context=ctx + " Guest external interrupts are raised through the "
+            "platform (RVTEST_SET_GUEST_EXT_INT_S), which the framework provides when the DUT implements guest "
+            "interrupt files (RVTEST_SGEI_INTR_IMPL); without it the test only checks that hgeip is 0.",
+            plan=plan,
+        )
         reset(t)
         with t.only_if(SGEI):
             geilen_probe(t, "x9")
@@ -1452,27 +1538,31 @@ def gen_gei() -> list[TestFile]:
         raise_gei(t, 1, False)
         t.emit(f"csrw {hex(HGEIE)}, x0")
 
-    tests.append(gei_test(
-        "hgeip_hgeie_fields",
-        "Guest external interrupt number i corresponds with bit i in both hgeip and hgeie.",
-        "Interrupt number 1 exists whenever GEILEN > 0.",
-        "1. Raising guest external interrupt 1 sets exactly hgeip bit 1; clearing it clears hgeip.\n"
-        "2. hgeie bit 1 (with hie.SGEIE) makes it an SGEI: hip.SGEIP = 1 with hgeie = 2, 0 with hgeie = 4 or 0.",
-        lambda t: (b_fields(t), b_sgeip(t, False)),
-    ))
+    tests.append(
+        gei_test(
+            "hgeip_hgeie_fields",
+            "Guest external interrupt number i corresponds with bit i in both hgeip and hgeie.",
+            "Interrupt number 1 exists whenever GEILEN > 0.",
+            "1. Raising guest external interrupt 1 sets exactly hgeip bit 1; clearing it clears hgeip.\n"
+            "2. hgeie bit 1 (with hie.SGEIE) makes it an SGEI: hip.SGEIP = 1 with hgeie = 2, 0 with hgeie = 4 or 0.",
+            lambda t: (b_fields(t), b_sgeip(t, False)),
+        )
+    )
 
-    tests.append(gei_test(
-        "hip_sgeip_sgeie_acc_op",
-        "Bits hip.SGEIP and hie.SGEIE are the interrupt-pending and interrupt-enable bits for guest external "
-        "interrupts at supervisor level (HS-level). SGEIP is read-only in hip, and is 1 if and only if the bitwise "
-        "logical-AND of CSRs hgeip and hgeie is nonzero in any bit.",
-        "Guest interrupt 1 is raised; hgeie bits beyond GEILEN read 0, so hgeie = 4 enables nothing when GEILEN = 1.",
-        "1. hip.SGEIP = 1 iff hgeip & hgeie != 0: hgeie = 0, 2, 4, 6 give 0, 1, 0 (bit 2 not pending), 1.\n"
-        "2. csrc of hip.SGEIP leaves it 1 (read-only).\n"
-        "3. With hie.SGEIE = 1 the SGEI is taken in HS-mode from VS-mode (cause 12; hideleg bit 12 is read-only "
-        "zero).",
-        lambda t: b_sgeip(t, True),
-    ))
+    tests.append(
+        gei_test(
+            "hip_sgeip_sgeie_acc_op",
+            "Bits hip.SGEIP and hie.SGEIE are the interrupt-pending and interrupt-enable bits for guest external "
+            "interrupts at supervisor level (HS-level). SGEIP is read-only in hip, and is 1 if and only if the bitwise "
+            "logical-AND of CSRs hgeip and hgeie is nonzero in any bit.",
+            "Guest interrupt 1 is raised; hgeie bits beyond GEILEN read 0, so hgeie = 4 enables nothing when GEILEN = 1.",
+            "1. hip.SGEIP = 1 iff hgeip & hgeie != 0: hgeie = 0, 2, 4, 6 give 0, 1, 0 (bit 2 not pending), 1.\n"
+            "2. csrc of hip.SGEIP leaves it 1 (read-only).\n"
+            "3. With hie.SGEIE = 1 the SGEI is taken in HS-mode from VS-mode (cause 12; hideleg bit 12 is read-only "
+            "zero).",
+            lambda t: b_sgeip(t, True),
+        )
+    )
 
     def b_vseip(t: TestFile) -> None:
         raise_gei(t, 1, True)
@@ -1496,24 +1586,28 @@ def gen_gei() -> list[TestFile]:
         raise_gei(t, 1, False)
         vgein(t, 0)
 
-    tests.append(gei_test(
-        "hgeie_op",
-        "Register hgeie selects the subset of guest external interrupts that cause a supervisor-level (HS-level) "
-        "guest external interrupt. The enable bits in hgeie do not affect the VS-level external interrupt signal "
-        "selected from hgeip by hstatus.VGEIN.",
-        "Guest interrupt 1 is raised.",
-        "1. hip.VSEIP with hgeip = 2: VGEIN = 0 gives 0, VGEIN = 1 gives 1 with hgeie = 0 and with hgeie = 2.\n"
-        "2. hip.SGEIP follows hgeie (hip_sgeip_sgeie_acc_op).\n"
-        "3. With VGEIN = 1, hgeie = 0, hideleg[10] = 1 and vsstatus.SIE = 1, VS-mode takes a supervisor external "
-        "interrupt (cause 9).",
-        b_vseip,
-    ))
+    tests.append(
+        gei_test(
+            "hgeie_op",
+            "Register hgeie selects the subset of guest external interrupts that cause a supervisor-level (HS-level) "
+            "guest external interrupt. The enable bits in hgeie do not affect the VS-level external interrupt signal "
+            "selected from hgeip by hstatus.VGEIN.",
+            "Guest interrupt 1 is raised.",
+            "1. hip.VSEIP with hgeip = 2: VGEIN = 0 gives 0, VGEIN = 1 gives 1 with hgeie = 0 and with hgeie = 2.\n"
+            "2. hip.SGEIP follows hgeie (hip_sgeip_sgeie_acc_op).\n"
+            "3. With VGEIN = 1, hgeie = 0, hideleg[10] = 1 and vsstatus.SIE = 1, VS-mode takes a supervisor external "
+            "interrupt (cause 9).",
+            b_vseip,
+        )
+    )
 
     def b_vgein_op(t: TestFile) -> None:
         raise_gei(t, 1, True)
         lab = here(t, "vg1")
         vgein(t, 1)
-        expect_bits(t, HIP, "hip", 0x400, 0x400 if MUT != "vgein_ignored" else 0, lab, "hip.VSEIP with VGEIN = 1, hgeip = 2")
+        expect_bits(
+            t, HIP, "hip", 0x400, 0x400 if MUT != "vgein_ignored" else 0, lab, "hip.VSEIP with VGEIN = 1, hgeip = 2"
+        )
         t.emit(f"csrr x8, {hex(HSTATUS)}")
         t.emit("srli x8, x8, 12")
         t.emit("andi x8, x8, 0x3F")
@@ -1528,22 +1622,25 @@ def gen_gei() -> list[TestFile]:
             lab = here(t, "vg2")
             vgein(t, 2)
             expect_bits(t, HIP, "hip", 0x400, 0, lab, "hip.VSEIP with VGEIN = 2 and only hgeip bit 1")
+
         t.either("x6", two, lambda: None)
         raise_gei(t, 1, False)
         lab = here(t, "cl")
         vgein(t, 1)
         expect_bits(t, HIP, "hip", 0x400, 0, lab, "hip.VSEIP with VGEIN = 1 after clearing guest interrupt 1")
 
-    tests.append(gei_test(
-        "hstatus_vgein_op",
-        "The VGEIN (Virtual Guest External Interrupt Number) field selects a guest external interrupt source for "
-        "VS-level external interrupts.",
-        "Guest interrupt 1 is raised; hvip.VSEIP is 0.",
-        "1. VGEIN = 1 with hgeip bit 1: hip.VSEIP = 1, and VGEIN reads back 1.\n"
-        "2. With GEILEN >= 2, VGEIN = 2: hip.VSEIP = 0.\n"
-        "3. After clearing guest interrupt 1, VGEIN = 1: hip.VSEIP = 0.",
-        b_vgein_op,
-    ))
+    tests.append(
+        gei_test(
+            "hstatus_vgein_op",
+            "The VGEIN (Virtual Guest External Interrupt Number) field selects a guest external interrupt source for "
+            "VS-level external interrupts.",
+            "Guest interrupt 1 is raised; hvip.VSEIP is 0.",
+            "1. VGEIN = 1 with hgeip bit 1: hip.VSEIP = 1, and VGEIN reads back 1.\n"
+            "2. With GEILEN >= 2, VGEIN = 2: hip.VSEIP = 0.\n"
+            "3. After clearing guest interrupt 1, VGEIN = 1: hip.VSEIP = 0.",
+            b_vgein_op,
+        )
+    )
 
     def b_zero(t: TestFile) -> None:
         raise_gei(t, 1, True)
@@ -1558,14 +1655,15 @@ def gen_gei() -> list[TestFile]:
         taken(t, lab, "VS", "VGEIN = 0, guest interrupt 1 pending, hie.VSEIE = 1 (hie.SGEIE = 0)", [])
         raise_gei(t, 1, False)
 
-    tests.append(gei_test(
-        "hstatus_vgein_zero",
-        "When VGEIN=0, no guest external interrupt source is selected for VS-level external interrupts.",
-        "Guest interrupt 1 is raised and enabled in hgeie (so it is pending as SGEI, but hie.SGEIE = 0).",
-        "1. VGEIN = 0: hip.VSEIP = 0.\n"
-        "2. With hie.VSEIE = 1, VS-mode takes no interrupt.",
-        b_zero,
-    ))
+    tests.append(
+        gei_test(
+            "hstatus_vgein_zero",
+            "When VGEIN=0, no guest external interrupt source is selected for VS-level external interrupts.",
+            "Guest interrupt 1 is raised and enabled in hgeie (so it is pending as SGEI, but hie.SGEIE = 0).",
+            "1. VGEIN = 0: hip.VSEIP = 0.\n2. With hie.VSEIE = 1, VS-mode takes no interrupt.",
+            b_zero,
+        )
+    )
 
     # ---- hstatus_vgein_wlrl (no platform needed) ----
     t = new("hstatus_vgein_wlrl")
@@ -1593,13 +1691,14 @@ def gen_gei() -> list[TestFile]:
                     t.emit(f"srli x6, x9, {jj}")
                     t.emit("andi x6, x6, 1")
 
-                    def chk(jj: int = jj, lab: str = lab) -> None:
+                    def chk_rv64(jj: int = jj, lab: str = lab) -> None:
                         vgein(t, jj)
                         t.emit(f"csrr x8, {hex(HSTATUS)}")
                         t.emit("srli x8, x8, 12")
                         t.emit("andi x8, x8, 0x3F")
                         t.check("x8", jj, lab, f"hstatus.VGEIN = {jj} (<= GEILEN) reads back")
-                    t.either("x6", chk, lambda: None)
+
+                    t.either("x6", chk_rv64, lambda: None)
             continue
         lab = here(t, f"j{j}")
         t.emit(f"srli x6, x9, {j}")
@@ -1611,6 +1710,7 @@ def gen_gei() -> list[TestFile]:
             t.emit("srli x8, x8, 12")
             t.emit("andi x8, x8, 0x3F")
             t.check("x8", j, lab, f"hstatus.VGEIN = {j} (<= GEILEN) reads back")
+
         t.either("x6", chk, lambda: None)
     vgein(t, 0)
     tests.append(t)
@@ -1657,10 +1757,18 @@ def gen_gei() -> list[TestFile]:
             for v in (0, 1, 0):
                 lab = here(t, f"or{v}")
                 w(t, HVIP, "hvip", v << 10)
-                expect_bits(t, HIP, "hip", 0x400, 0x400 if MUT != "vgein_ignored" or v else 0, lab,
-                            f"hip.VSEIP with hgeip[VGEIN=1] = 1, hvip.VSEIP = {v}")
+                expect_bits(
+                    t,
+                    HIP,
+                    "hip",
+                    0x400,
+                    0x400 if MUT != "vgein_ignored" or v else 0,
+                    lab,
+                    f"hip.VSEIP with hgeip[VGEIN=1] = 1, hvip.VSEIP = {v}",
+                )
             raise_gei(t, 1, False)
             vgein(t, 0)
+
         t.either("x9", orsrc, lambda: None)
     reset(t)
     tests.append(t)

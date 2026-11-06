@@ -53,7 +53,9 @@ from hmem import (
 )
 
 if TYPE_CHECKING:
-    from aigen import Expect
+    from collections.abc import Callable
+
+    from aigen import Expect, Value
 
 MUTANTS = {
     "hlv_b_zext": "HLV.B zero-extends its result",
@@ -88,18 +90,18 @@ def page_bytes(t: MemTest, name: str) -> bytearray:
     return data
 
 
-def ld_val(data: bytes, off: int, size: int, signed: bool, xlen: int) -> int:
+def ld_val(data: bytes | bytearray, off: int, size: int, signed: bool, xlen: int) -> int:
     v = int.from_bytes(data[off : off + size], "little")
     if signed and v >> (8 * size - 1):
         v -= 1 << (8 * size)
     return v & ((1 << xlen) - 1)
 
 
-def pf(cause: int, tval, e: int, gpa: int | None = None, implicit=False) -> dict:  # noqa: ANN001
+def pf(cause: Value, tval: Value, e: int, gpa: int | None = None, implicit: bool | X = False) -> dict:
     """Checks for a fault taken in HS-mode on an HLV/HLVX/HSV: xtval is 0 or the guest VA, GVA=1 when xtval is nonzero, htval is 0 (or
     GPA>>2 for a guest-page fault) and htinst is 0 or the transformed instruction (or, for a guest-page fault on
     an implicit VS-stage access, the pseudoinstruction: hmem.pseudo_required checks when it is mandatory)."""
-    tinst = [0, tf(e)]
+    tinst: list[Value] = [0, tf(e)]
     if implicit:
         tinst.append(implicit if isinstance(implicit, X) else X(0x2000, 0x3000))
     ex = {"tval": tval, "gva": 0 if MUT == "gva_zero" else 1, "tinst": tinst}
@@ -196,7 +198,7 @@ def two_stage(t: MemTest, xlen: int, maps: list[tuple[int, int, int, str, int]])
     return g, v
 
 
-def both(t: MemTest, body) -> None:  # noqa: ANN001
+def both(t: MemTest, body: Callable[[int], object]) -> None:
     with t.rv64_only():
         body(64)
     with t.rv32_only():
@@ -513,8 +515,8 @@ def gen_priv() -> list[MemTest]:
 
         def body(xlen: int, rule: str = rule, t: MemTest = t) -> None:
             vs_only(t, xlen, [(0, "sp", LEAF), (1, "up", LEAF | U)])
-            vas, vau = VA_BASE[xlen], VA_BASE[xlen] + 0x1000
-            sgs = {vas: sig(t.page_id("sp")), vau: sig(t.page_id("up"))}
+            va_s, va_u = VA_BASE[xlen], VA_BASE[xlen] + 0x1000
+            sgs = {va_s: sig(t.page_id("sp")), va_u: sig(t.page_id("up"))}
 
             def okp(sp: int, user: bool, sumb: int) -> bool:
                 eff = 1 if MUT == "spvp_ignored" else sp
@@ -536,7 +538,7 @@ def gen_priv() -> list[MemTest]:
                             vs_sum(t, bool(sumb))
                             s_sum(t, bool(1 - sumb))  # the HS-level SUM is the opposite, and ignored
                             eff_sum = (1 - sumb) if MUT == "hs_sum_used" else sumb
-                            for va, user in ((vas, False), (vau, True)):
+                            for va, user in ((va_s, False), (va_u, True)):
                                 okk = okp(sp, user, eff_sum)
                                 d = f"SPVP={sp}, vsstatus.SUM={sumb}, {'user' if user else 'supervisor'} page"
                                 hl(t, "hlv.w", va, d, "ok" if okk else LOAD_PF, lv(sgs[va]) if okk else None, mode=mode)
@@ -570,7 +572,7 @@ def gen_priv() -> list[MemTest]:
                 ] + (["hlv.wu", "hlv.d", "hsv.d"] if xlen == 64 else [])
                 for sp in (0, 1, 0):
                     spvp(t, bool(sp))
-                    for va, user in ((vas, False), (vau, True)):
+                    for va, user in ((va_s, False), (va_u, True)):
                         okk = okp(sp, user, 0)
                         for insn in ins:
                             st = insn.startswith("hsv")

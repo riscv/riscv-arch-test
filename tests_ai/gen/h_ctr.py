@@ -8,10 +8,14 @@ from typing import TYPE_CHECKING
 import hlib
 from aigen import X
 from h_virt import new
-from hlib import HYP, ILLEGAL, ISSUE, READS, VIRTUAL, enc_csr, hs_read, m_bits
+from hlib import HYP, ILLEGAL, READS, enc_csr, hs_read, m_bits
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from aigen import TestFile
+
+    Ctr = tuple[str, int, int, str]  # (name, CSR number, counteren bit, condition)
 
 MUT = hlib.MUT
 ZICNTR = "defined(ZICNTR_SUPPORTED)"
@@ -72,7 +76,9 @@ def expect(mode: str, m: int, h: int, s: int) -> str:
     return "illegal" if MUT == "hctr_illegal" else "virtual"
 
 
-def ctr_read(t: TestFile, mode: str, c: tuple[str, int, int, str], i: int, exp: str, desc: str, is_high: bool = False) -> str:
+def ctr_read(
+    t: TestFile, mode: str, c: tuple[str, int, int, str], i: int, exp: str, desc: str, is_high: bool = False
+) -> str:
     name, num, _, _ = c
     form = READS[i % 2]
     asm, f3, rd, rs1, kind, _ = form
@@ -105,8 +111,13 @@ def probe(t: TestFile, reg: str, b: int, dst: str) -> None:
 PROBE_REG = {"m": "x1", "h": "x8", "s": "x9"}
 
 
-def case(t: TestFile, c: tuple[str, int, int, str], want: dict[str, int], body,  # noqa: ANN001
-         collapse: bool = False) -> None:
+def case(
+    t: TestFile,
+    c: tuple[str, int, int, str],
+    want: dict[str, int],
+    body: Callable[[dict[str, int]], object],
+    collapse: bool = False,
+) -> None:
     """Set the counter-enable bits to `want` (keys m, h, s), probe the ones requested as 1 (they may be
     read-only zero), and call body(actual) on each run-time branch with the values actually held. With
     collapse, only the branch where every requested bit is held runs body; otherwise the case is skipped."""
@@ -127,8 +138,7 @@ def case(t: TestFile, c: tuple[str, int, int, str], want: dict[str, int], body, 
             body(actual)
             return
         k = rest[0]
-        t.either(PROBE_REG[k], lambda: branch(rest[1:], {**actual, k: 1}),
-                 lambda: branch(rest[1:], {**actual, k: 0}))
+        t.either(PROBE_REG[k], lambda: branch(rest[1:], {**actual, k: 1}), lambda: branch(rest[1:], {**actual, k: 0}))
 
     branch(probes, dict(want))
 
@@ -141,7 +151,7 @@ def restore(t: TestFile) -> None:
     t.emit(f"csrw {hex(hlib.csr_num('scounteren'))}, x7")
 
 
-def guarded(t: TestFile, c: tuple[str, int, int, str], fn) -> None:  # noqa: ANN001
+def guarded(t: TestFile, c: Ctr, fn: Callable[[], object]) -> None:
     with t.only_if(c[3]):
         fn()
 
@@ -180,15 +190,29 @@ def gen() -> list[TestFile]:
         "hcounteren=0 raises illegal-instruction.",
     )
     for i, c in enumerate(ctrs()):
-        def fn(c=c, i=i) -> None:
-            case(t, c, {"m": 1, "h": 0, "s": 1}, lambda a: ctr_read(t, "VS", c, i, expect("VS", a["m"], 0, a["s"]),
-                                                                   desc(a)))
+
+        def vs_fn(c: Ctr = c, i: int = i) -> None:
+            case(
+                t,
+                c,
+                {"m": 1, "h": 0, "s": 1},
+                lambda a: ctr_read(t, "VS", c, i, expect("VS", a["m"], 0, a["s"]), desc(a)),
+            )
             if c[0] in SUBSET:
-                case(t, c, {"m": 1, "h": 1, "s": 1},
-                     lambda a: ctr_read(t, "VS", c, i + 1, expect("VS", a["m"], a["h"], a["s"]), desc(a)))
-                case(t, c, {"m": 0, "h": 0, "s": 1},
-                     lambda a: ctr_read(t, "VS", c, i, expect("VS", 0, 0, a["s"]), desc(a)))
-        guarded(t, c, fn)
+                case(
+                    t,
+                    c,
+                    {"m": 1, "h": 1, "s": 1},
+                    lambda a: ctr_read(t, "VS", c, i + 1, expect("VS", a["m"], a["h"], a["s"]), desc(a)),
+                )
+                case(
+                    t,
+                    c,
+                    {"m": 0, "h": 0, "s": 1},
+                    lambda a: ctr_read(t, "VS", c, i, expect("VS", 0, 0, a["s"]), desc(a)),
+                )
+
+        guarded(t, c, vs_fn)
     restore(t)
     tests.append(t)
 
@@ -213,15 +237,28 @@ def gen() -> list[TestFile]:
         for i, c in enumerate(ctrs()):
             hc = high(c)
 
-            def fn(c=c, hc=hc, i=i) -> None:
-                case(t, c, {"m": 1, "h": 0, "s": 1},
-                     lambda a: ctr_read(t, "VS", hc, i, expect("VS", a["m"], 0, 1), desc(a), True))
+            def vs32_fn(c: Ctr = c, hc: Ctr = hc, i: int = i) -> None:
+                case(
+                    t,
+                    c,
+                    {"m": 1, "h": 0, "s": 1},
+                    lambda a: ctr_read(t, "VS", hc, i, expect("VS", a["m"], 0, 1), desc(a), True),
+                )
                 if c[0] in SUBSET:
-                    case(t, c, {"m": 1, "h": 1, "s": 1},
-                         lambda a: ctr_read(t, "VS", hc, i, expect("VS", a["m"], a["h"], 1), desc(a), True))
-                    case(t, c, {"m": 0, "h": 1, "s": 1},
-                         lambda a: ctr_read(t, "VS", hc, i, expect("VS", 0, a["h"], 1), desc(a), True))
-            guarded(t, c, fn)
+                    case(
+                        t,
+                        c,
+                        {"m": 1, "h": 1, "s": 1},
+                        lambda a: ctr_read(t, "VS", hc, i, expect("VS", a["m"], a["h"], 1), desc(a), True),
+                    )
+                    case(
+                        t,
+                        c,
+                        {"m": 0, "h": 1, "s": 1},
+                        lambda a: ctr_read(t, "VS", hc, i, expect("VS", 0, a["h"], 1), desc(a), True),
+                    )
+
+            guarded(t, c, vs32_fn)
     with t.rv64_only():
         for nm in ("cycle", "time", "hpmcounter3"):
             c = ctr_by(nm)
@@ -247,19 +284,29 @@ def gen() -> list[TestFile]:
             "2. mcounteren=0 with hcounteren=scounteren=1 raises illegal-instruction.",
         )
 
-        def body() -> None:
+        def body(t: TestFile = t, is_high: bool = is_high) -> None:
             for i, nm in enumerate(SUBSET):
                 c = ctr_by(nm)
                 rc = high(c) if is_high else c
 
-                def fn(c=c, rc=rc, i=i) -> None:
+                def vu_fn(c: Ctr = c, rc: Ctr = rc, i: int = i) -> None:
                     for h, s in ((0, 1), (1, 0), (0, 0), (1, 1)):
-                        case(t, c, {"m": 1, "h": h, "s": s},
-                             lambda a: ctr_read(t, "VU", rc, i + h, expect("VU", a["m"], a["h"], a["s"]), desc(a),
-                                                is_high))
-                    case(t, c, {"m": 0, "h": 1, "s": 1},
-                         lambda a: ctr_read(t, "VU", rc, i, expect("VU", 0, a["h"], a["s"]), desc(a), is_high))
-                guarded(t, c, fn)
+                        case(
+                            t,
+                            c,
+                            {"m": 1, "h": h, "s": s},
+                            lambda a, h=h: ctr_read(
+                                t, "VU", rc, i + h, expect("VU", a["m"], a["h"], a["s"]), desc(a), is_high
+                            ),
+                        )
+                    case(
+                        t,
+                        c,
+                        {"m": 0, "h": 1, "s": 1},
+                        lambda a: ctr_read(t, "VU", rc, i, expect("VU", 0, a["h"], a["s"]), desc(a), is_high),
+                    )
+
+                guarded(t, c, vu_fn)
             restore(t)
 
         if is_high:
@@ -287,15 +334,21 @@ def gen() -> list[TestFile]:
     for i, nm in enumerate(SUBSET):
         c = ctr_by(nm)
 
-        def fn(c=c, i=i) -> None:
+        def op_fn(c: Ctr = c, i: int = i) -> None:
             def b1(a: dict[str, int]) -> None:
                 for mode in ("VS", "VU", "S", "U"):
                     ctr_read(t, mode, c, i, expect(mode, a["m"], 0, a["s"]), desc(a))
+
             case(t, c, {"m": 1, "h": 0, "s": 1}, b1)
             for h in (0, 1):
-                case(t, c, {"m": 0, "h": h, "s": 1}, lambda a: ctr_read(t, "VS", c, i, expect("VS", 0, a["h"], 1),
-                                                                       desc(a)))
-        guarded(t, c, fn)
+                case(
+                    t,
+                    c,
+                    {"m": 0, "h": h, "s": 1},
+                    lambda a: ctr_read(t, "VS", c, i, expect("VS", 0, a["h"], 1), desc(a)),
+                )
+
+        guarded(t, c, op_fn)
     restore(t)
     tests.append(t)
 
@@ -306,8 +359,7 @@ def gen() -> list[TestFile]:
         rule_text="When one of these bits is set, access to the corresponding register is permitted when V=1, "
         "unless prevented for some other reason.",
         context="Other reasons: mcounteren=0 (illegal-instruction), scounteren=0 in VU-mode "
-        "(virtual-instruction), and writes, since the counters are read-only (illegal-instruction). "
-        + ISSUE_WARL,
+        "(virtual-instruction), and writes, since the counters are read-only (illegal-instruction). " + ISSUE_WARL,
         issues=ISSUE_HSQ,
         plan="1. For every counter with mcounteren, hcounteren and scounteren set: VS-mode and VU-mode reads "
         "succeed.\n"
@@ -316,20 +368,41 @@ def gen() -> list[TestFile]:
         "(csrrw) raises illegal-instruction.",
     )
     for i, c in enumerate(ctrs()):
-        def fn(c=c, i=i) -> None:
-            case(t, c, {"m": 1, "h": 1, "s": 1}, lambda a: [ctr_read(t, mode, c, i, expect(mode, a["m"], a["h"],
-                                                                                         a["s"]), desc(a))
-                                                           for mode in ("VS", "VU")], collapse=True)
+
+        def set_fn(c: Ctr = c, i: int = i) -> None:
+            case(
+                t,
+                c,
+                {"m": 1, "h": 1, "s": 1},
+                lambda a: [
+                    ctr_read(t, mode, c, i, expect(mode, a["m"], a["h"], a["s"]), desc(a)) for mode in ("VS", "VU")
+                ],
+                collapse=True,
+            )
             if c[0] in SUBSET[:4]:
-                case(t, c, {"m": 1, "h": 1, "s": 0},
-                     lambda a: ctr_read(t, "VU", c, i, expect("VU", a["m"], a["h"], 0), desc(a)))
-                case(t, c, {"m": 0, "h": 1, "s": 1},
-                     lambda a: ctr_read(t, "VS", c, i, expect("VS", 0, a["h"], 1), desc(a)))
+                case(
+                    t,
+                    c,
+                    {"m": 1, "h": 1, "s": 0},
+                    lambda a: ctr_read(t, "VU", c, i, expect("VU", a["m"], a["h"], 0), desc(a)),
+                )
+                case(
+                    t,
+                    c,
+                    {"m": 0, "h": 1, "s": 1},
+                    lambda a: ctr_read(t, "VS", c, i, expect("VS", 0, a["h"], 1), desc(a)),
+                )
                 set_bit(t, "m", c[2], True)
                 t.emit("li x6, 0")
-                t.window("VS", [f"csrrw x7, {hex(c[1])}, x6  // {c[0]}"], ILLEGAL,
-                         f"write of read-only {c[0]} (hcounteren=1)", [0, enc_csr(c[1], 1, 7, 6)])
-        guarded(t, c, fn)
+                t.window(
+                    "VS",
+                    [f"csrrw x7, {hex(c[1])}, x6  // {c[0]}"],
+                    ILLEGAL,
+                    f"write of read-only {c[0]} (hcounteren=1)",
+                    [0, enc_csr(c[1], 1, 7, 6)],
+                )
+
+        guarded(t, c, set_fn)
     restore(t)
     tests.append(t)
 
@@ -350,16 +423,19 @@ def gen() -> list[TestFile]:
     for i, nm in enumerate(SUBSET):
         c = ctr_by(nm)
 
-        def fn(c=c, i=i) -> None:
+        def vu_op_fn(c: Ctr = c, i: int = i) -> None:
             for h, s in ((0, 0), (0, 1), (1, 0), (1, 1)):
+
                 def b(a: dict[str, int], h: int = h, s: int = s) -> None:
                     ctr_read(t, "VU", c, i, expect("VU", a["m"], a["h"], a["s"]), desc(a))
                     if (h, s) == (1, 0):
                         ctr_read(t, "VS", c, i + 1, expect("VS", a["m"], a["h"], 0), desc(a))
                     if (h, s) == (0, 1):
                         ctr_read(t, "U", c, i + 1, expect("U", a["m"], 0, a["s"]), desc(a))
+
                 case(t, c, {"m": 1, "h": h, "s": s}, b)
-        guarded(t, c, fn)
+
+        guarded(t, c, vu_op_fn)
     restore(t)
     tests.append(t)
 
@@ -381,8 +457,13 @@ def gen() -> list[TestFile]:
     t.emit(f"csrw {num}, x7")
     t.emit(f"csrr x7, {num}")
     with t.rv64_only():
-        t.check_masked("x7", X(0, 0xFFFFFFFF00000000), X(0, 0xFFFFFFFF00000000 if MUT == "hcounteren_64bit" else 0),
-                       lab, "hcounteren bits 63:32 read 0 after writing all ones")
+        t.check_masked(
+            "x7",
+            X(0, 0xFFFFFFFF00000000),
+            X(0, 0xFFFFFFFF00000000 if MUT == "hcounteren_64bit" else 0),
+            lab,
+            "hcounteren bits 63:32 read 0 after writing all ones",
+        )
     t.emit(f"csrw {num}, x0")
     t.emit(f"csrr x7, {num}")
     t.check("x7", 0, lab, "hcounteren reads 0 after writing 0")
@@ -429,18 +510,29 @@ def gen() -> list[TestFile]:
     for i, nm in enumerate(SUBSET):
         c = ctr_by(nm)
 
-        def fn(c=c, i=i) -> None:
+        def warl_fn(c: Ctr = c, i: int = i) -> None:
             set_bit(t, "m", c[2], True)
             probe(t, "m", c[2], "x1")
             set_bit(t, "h", c[2], True)
             probe(t, "h", c[2], "x8")
 
             def m_on() -> None:
-                t.either("x8", lambda: ctr_read(t, "VS", c, i, "ok", "hcounteren bit writable and set"),
-                         lambda: ctr_read(t, "VS", c, i, "ok" if MUT == "hcounteren_ro0_enables" else
-                                          expect("VS", 1, 0, 1), "hcounteren bit read-only zero"))
+                t.either(
+                    "x8",
+                    lambda: ctr_read(t, "VS", c, i, "ok", "hcounteren bit writable and set"),
+                    lambda: ctr_read(
+                        t,
+                        "VS",
+                        c,
+                        i,
+                        "ok" if MUT == "hcounteren_ro0_enables" else expect("VS", 1, 0, 1),
+                        "hcounteren bit read-only zero",
+                    ),
+                )
+
             t.either("x1", m_on, lambda: t.comment("mcounteren bit read-only zero"))
-        guarded(t, c, fn)
+
+        guarded(t, c, warl_fn)
     restore(t)
     tests.append(t)
 
@@ -467,25 +559,41 @@ def gen() -> list[TestFile]:
         hlib.CSRS.setdefault("mstatush", (0x310, "M", None))
         for nm in ("htimedeltah", "hedelegh"):
             for mode in ("VS", "VU"):
-                hlib.csr_window(t, mode, nm, hlib.FORMS[0], "illegal" if MUT == "high_illegal" else "virtual",
-                                "RV32 high half")
+                hlib.csr_window(
+                    t, mode, nm, hlib.FORMS[0], "illegal" if MUT == "high_illegal" else "virtual", "RV32 high half"
+                )
                 hs_read(t, "x6", nm)
-                hlib.csr_window(t, mode, nm, hlib.FORMS[1], "illegal" if MUT == "high_illegal" else "virtual",
-                                "RV32 high half")
+                hlib.csr_window(
+                    t, mode, nm, hlib.FORMS[1], "illegal" if MUT == "high_illegal" else "virtual", "RV32 high half"
+                )
         for i, nm in enumerate(("cycle", "instret")):
             c = ctr_by(nm)
             hc = high(c)
 
-            def fn(c=c, hc=hc, i=i) -> None:
-                case(t, c, {"m": 1, "h": 0, "s": 1},
-                     lambda a: ctr_read(t, "VS", hc, i, expect("VS", a["m"], 0, 1), desc(a), True))
-                case(t, c, {"m": 0, "h": 1, "s": 1},
-                     lambda a: ctr_read(t, "VS", hc, i, expect("VS", 0, a["h"], 1), desc(a), True))
+            def high_fn(c: Ctr = c, hc: Ctr = hc, i: int = i) -> None:
+                case(
+                    t,
+                    c,
+                    {"m": 1, "h": 0, "s": 1},
+                    lambda a: ctr_read(t, "VS", hc, i, expect("VS", a["m"], 0, 1), desc(a), True),
+                )
+                case(
+                    t,
+                    c,
+                    {"m": 0, "h": 1, "s": 1},
+                    lambda a: ctr_read(t, "VS", hc, i, expect("VS", 0, a["h"], 1), desc(a), True),
+                )
                 case(t, c, {"m": 1, "h": 1, "s": 1}, lambda a: None)
                 t.emit("li x6, 0")
-                t.window("VS", [f"csrrw x7, {hex(hc[1])}, x6  // {hc[0]}"], ILLEGAL,
-                         f"write of read-only {hc[0]}", [0, enc_csr(hc[1], 1, 7, 6)])
-            guarded(t, c, fn)
+                t.window(
+                    "VS",
+                    [f"csrrw x7, {hex(hc[1])}, x6  // {hc[0]}"],
+                    ILLEGAL,
+                    f"write of read-only {hc[0]}",
+                    [0, enc_csr(hc[1], 1, 7, 6)],
+                )
+
+            guarded(t, c, high_fn)
         hlib.csr_window(t, "VS", "mstatush", hlib.FORMS[0], "illegal", "M-level high half")
     restore(t)
     tests.append(t)
@@ -509,10 +617,14 @@ def wr_htd(t: TestFile, v: int) -> None:
         t.emit(f"csrw {hex(HTD)}, x7  // htimedelta")
 
 
-def time_enabled(t: TestFile, body) -> None:  # noqa: ANN001
+def time_enabled(t: TestFile, body: Callable[[], object]) -> None:
     """Run body when mcounteren.TM, hcounteren.TM and scounteren.TM all read 1 (else nothing to test)."""
-    case(t, ("time", 0xC01, 1, ZICNTR), {"m": 1, "h": 1, "s": 1},
-         lambda a: body() if a["m"] and a["h"] and a["s"] else t.comment("time not readable below M-mode"))
+    case(
+        t,
+        ("time", 0xC01, 1, ZICNTR),
+        {"m": 1, "h": 1, "s": 1},
+        lambda a: body() if a["m"] and a["h"] and a["s"] else t.comment("time not readable below M-mode"),
+    )
 
 
 def gen_htimedelta() -> list[TestFile]:
@@ -540,10 +652,7 @@ def gen_htimedelta() -> list[TestFile]:
     with t.only_if(ZICNTR):
         vals = [0, m64, 1 << 63, (1 << 40) + 5, t.rand(64), t.rand(64)]
         for v in vals:
-            if MUT == "htimedelta_partial":
-                exp = v & 0xFFFFFFFF
-            else:
-                exp = v
+            exp = v & 0xFFFFFFFF if MUT == "htimedelta_partial" else v
             wr_htd(t, v)
             lab = t.label("rt")
             t.emit(f"{lab}:", 0)
@@ -576,9 +685,14 @@ def gen_htimedelta() -> list[TestFile]:
                     t.emit("sub x9, x9, x8")  # t1 - t0
                     t.emit("sltu x7, x9, x7")
                     t.emit("xori x7, x7, 1")
-                    t.check_bool("x7", lab, f"time read in {mode}-mode = time + {'htimedelta' if mode[0] == 'V' else '0'}"
-                                 f" (htimedelta={nm}), between bracketing HS-mode reads")
+                    t.check_bool(
+                        "x7",
+                        lab,
+                        f"time read in {mode}-mode = time + {'htimedelta' if mode[0] == 'V' else '0'}"
+                        f" (htimedelta={nm}), between bracketing HS-mode reads",
+                    )
             wr_htd(t, 0)
+
         time_enabled(t, offsets)
         wr_htd(t, 0)
         restore(t)
@@ -622,7 +736,7 @@ def gen_htimedelta() -> list[TestFile]:
             t.emit(f"csrw {hex(HTDH)}, x7")
             t.load("x6", src, "source")
             lab = hlib.csr_window(t, "S", "htimedeltah", form, "ok", "HS-mode")
-            rdv, newv = hlib.form_value(form, old, src, 32)
+            _, newv = hlib.form_value(form, old, src, 32)
             if form[2]:
                 t.check("x7", old, lab, f"{form[4]} of htimedeltah returns the old value")
             hs_read(t, "x7", "htimedeltah")
@@ -642,8 +756,12 @@ def gen_htimedelta() -> list[TestFile]:
                     else:
                         t.li("x7", 0x10)
                     t.emit(f"csrw {hex(HTD)}, x7")
-                    lab = t.window(mode, ["csrr x7, timeh", "csrr x6, time"], "ok",
-                                   f"timeh read, {'carry' if carry else 'no carry'} from the low halves")
+                    lab = t.window(
+                        mode,
+                        ["csrr x7, timeh", "csrr x6, time"],
+                        "ok",
+                        f"timeh read, {'carry' if carry else 'no carry'} from the low halves",
+                    )
                     t.emit("csrr x9, timeh  // h1")
                     inc = carry and MUT != "htimedelta_carry_lost"
                     t.emit(f"addi x7, x7, -{dh + (1 if inc else 0)}")
@@ -651,14 +769,23 @@ def gen_htimedelta() -> list[TestFile]:
                     t.emit("sub x9, x9, x8  // h1 - h0")
                     t.emit("sltu x7, x9, x7")
                     t.emit("xori x7, x7, 1")
-                    t.check_bool("x7", lab, f"timeh in {mode}-mode = time_hi + htimedeltah"
-                                 f"{' + 1 (carry from the low half)' if carry else ''}")
+                    t.check_bool(
+                        "x7",
+                        lab,
+                        f"timeh in {mode}-mode = time_hi + htimedeltah"
+                        f"{' + 1 (carry from the low half)' if carry else ''}",
+                    )
                     if carry:
                         t.li("x7", 0x01000000)
                         t.emit("sltu x6, x6, x7")
-                        t.check_bool("x6", lab, f"time (low) in {mode}-mode = time_lo + htimedelta_lo "
-                                     "(the ticks elapsed since t0, below 2^24)")
+                        t.check_bool(
+                            "x6",
+                            lab,
+                            f"time (low) in {mode}-mode = time_lo + htimedelta_lo "
+                            "(the ticks elapsed since t0, below 2^24)",
+                        )
             wr_htd(t, 0)
+
         with t.only_if(ZICNTR):
             time_enabled(t, carry_cases)
         wr_htd(t, 0)
@@ -670,9 +797,8 @@ def gen_htimedelta() -> list[TestFile]:
     t = new("time_htimedelta_req")
     t.describe(
         source=HYP,
-        rule_text="If the time CSR is implemented, htimedelta (and htimedeltah for XLEN=32) must be "
-        "implemented.",
-        context="Zicntr implements time. \"Implemented\" means the CSR exists in HS-mode and is a full "
+        rule_text="If the time CSR is implemented, htimedelta (and htimedeltah for XLEN=32) must be implemented.",
+        context='Zicntr implements time. "Implemented" means the CSR exists in HS-mode and is a full '
         "read/write register (htimedelta_sz_acc_op): every bit holds what is written.",
         plan="1. Zicntr: all eight CSR instruction forms on htimedelta in HS-mode, with random old and source "
         "values, return the old value and leave the exact new value.\n"
@@ -686,8 +812,8 @@ def gen_htimedelta() -> list[TestFile]:
             t.emit(f"csrw {hex(HTD)}, x7")
             t.load("x6", src, "source")
             lab = hlib.csr_window(t, "S", "htimedelta", form, "ok", "HS-mode")
-            n32 = hlib.form_value(form, old.v32, src.v32, 32)[1]
-            n64 = hlib.form_value(form, old.v64, src.v64, 64)[1]
+            n32 = hlib.form_value(form, old.num(32), src.num(32), 32)[1]
+            n64 = hlib.form_value(form, old.num(64), src.num(64), 64)[1]
             if MUT == "htimedelta_partial":
                 n64 &= 0xFFFFFFFF
             if form[2]:

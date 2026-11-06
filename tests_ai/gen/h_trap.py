@@ -24,7 +24,9 @@ from hlib import (
 )
 
 if TYPE_CHECKING:
-    from aigen import TestFile
+    from collections.abc import Callable, Sequence
+
+    from aigen import Expect, TestFile, Value
 
 MUTANTS = {
     "hedeleg_ignored": "a VS/VU exception with its hedeleg bit set is taken in HS-mode",
@@ -73,8 +75,8 @@ CBO_ZERO = (4 << 20) | (6 << 15) | (2 << 12) | 0x0F  # cbo.zero (x6)
 T_CBO_ZERO = (4 << 20) | (2 << 12) | 0x0F
 ISSUE_GVA = (
     f"{ISSUE}672 and {ISSUE}673: breakpoint and address-misaligned traps that write a guest virtual address also "
-    f"set GVA. {ISSUE}2695 (aswaterman): \"Since HLV etc. always have effective privilege VU or VS, their virtual "
-    "addresses are always guest virtual addresses, and so GVA is set to 1.\" Whether writing stval=0 sets GVA is "
+    f'set GVA. {ISSUE}2695 (aswaterman): "Since HLV etc. always have effective privilege VU or VS, their virtual '
+    'addresses are always guest virtual addresses, and so GVA is set to 1." Whether writing stval=0 sets GVA is '
     "not settled, so GVA is checked only when xtval is nonzero."
 )
 ISSUE_3347 = (
@@ -89,8 +91,20 @@ class Kind:
     (first line) and anything after it; cause(mode); tval: legal xtval values; tinst: legal values (None: a
     runtime predicate); va: xtval may hold a (guest) virtual address; cond: preprocessor guard."""
 
-    def __init__(self, name, pre, lines, cause, tval, tinst, va, cond=None, modes=("S", "U", "VS", "VU"), epc=True,
-                 lead=()):
+    def __init__(
+        self,
+        name: str,
+        pre: list[str],
+        lines: list[str],
+        cause: Callable[[str], int],
+        tval: Expect | None,
+        tinst: list[int],
+        va: bool,
+        cond: str | None = None,
+        modes: tuple[str, ...] = ("S", "U", "VS", "VU"),
+        epc: bool = True,
+        lead: Sequence[str] = (),
+    ) -> None:
         self.name, self.pre, self.lines, self.cause, self.tval = name, pre, lines, cause, tval
         self.lead = list(lead)  # emitted in the target mode, just before the labeled instruction
         self.tinst, self.va, self.cond, self.modes, self.epc = tinst, va, cond, modes, epc
@@ -106,26 +120,105 @@ def ecall_cause(mode: str) -> int:
 
 def kinds() -> dict[str, Kind]:
     k = {}
-    k["ebreak"] = Kind("ebreak", [], [f".word {hex(EBREAK)}  // ebreak"], lambda m: 3, "LAB", [EBREAK] if
-                       MUT == "tinst_ebreak_insn" else [0], True, modes=("S", "U", "VS", "VU", "M"))
-    k["illegal"] = Kind("illegal (mret)", [], [f".word {hex(MRET)}  // mret"], lambda m: 2, [0, MRET], [0], False,
-                        modes=("S", "U", "VS", "VU"))
-    k["virtual"] = Kind("virtual (hstatus read)", [], ["csrr x7, 0x600  // hstatus"], lambda m: 22,
-                        [0, (0x600 << 20) | (2 << 12) | (7 << 7) | 0x73], [0], False, modes=("VS", "VU"))
-    k["ecall"] = Kind("ecall (T-SBI ECALL_TEST)", [], ["ecall"], ecall_cause, [0], [0], False,
-                      modes=("S", "U", "VS", "VU", "M"), lead=["li a0, 0x73  // TSBI_ECALL_TEST"])
+    k["ebreak"] = Kind(
+        "ebreak",
+        [],
+        [f".word {hex(EBREAK)}  // ebreak"],
+        lambda m: 3,
+        "LAB",
+        [EBREAK] if MUT == "tinst_ebreak_insn" else [0],
+        True,
+        modes=("S", "U", "VS", "VU", "M"),
+    )
+    k["illegal"] = Kind(
+        "illegal (mret)",
+        [],
+        [f".word {hex(MRET)}  // mret"],
+        lambda m: 2,
+        [0, MRET],
+        [0],
+        False,
+        modes=("S", "U", "VS", "VU"),
+    )
+    k["virtual"] = Kind(
+        "virtual (hstatus read)",
+        [],
+        ["csrr x7, 0x600  // hstatus"],
+        lambda m: 22,
+        [0, (0x600 << 20) | (2 << 12) | (7 << 7) | 0x73],
+        [0],
+        False,
+        modes=("VS", "VU"),
+    )
+    k["ecall"] = Kind(
+        "ecall (T-SBI ECALL_TEST)",
+        [],
+        ["ecall"],
+        ecall_cause,
+        [0],
+        [0],
+        False,
+        modes=("S", "U", "VS", "VU", "M"),
+        lead=["li a0, 0x73  // TSBI_ECALL_TEST"],
+    )
     imm = [T_LW | (8 << 20)] if MUT == "tinst_imm_kept" else [0, T_LW]
-    k["load"] = Kind("load access fault (lw)", [f"LI(x6, {FA}-8)"], ["lw x7, 8(x6)"], lambda m: 5, [0, FA], imm,
-                     True, HAS_FA, modes=("S", "U", "VS", "VU", "M"))
+    k["load"] = Kind(
+        "load access fault (lw)",
+        [f"LI(x6, {FA}-8)"],
+        ["lw x7, 8(x6)"],
+        lambda m: 5,
+        [0, FA],
+        imm,
+        True,
+        HAS_FA,
+        modes=("S", "U", "VS", "VU", "M"),
+    )
     simm = [T_SW | (8 << 7)] if MUT == "tinst_imm_kept" else [0, T_SW]
-    k["store"] = Kind("store access fault (sw)", [f"LI(x6, {FA}-8)", "li x7, 0"], ["sw x7, 8(x6)"], lambda m: 7,
-                      [0, FA], simm, True, HAS_FA, modes=("S", "U", "VS", "VU", "M"))
-    k["fetch"] = Kind("fetch access fault (jalr)", [f"LI(x6, {FA})"], ["jalr ra, 0(x6)"], lambda m: 1, [0, FA],
-                      [0], True, HAS_FA, modes=("S", "U", "VS", "VU", "M"), epc=False)
-    k["hlv"] = Kind("HLV.W access fault", [f"LI(x6, {FA})"], [HLVW], lambda m: 5, [0, FA], [0, T_HLVW], True,
-                    HAS_FA, modes=("S", "M"))
-    k["hsv"] = Kind("HSV.W access fault", [f"LI(x6, {FA})", "li x7, 0"], [HSVW], lambda m: 7, [0, FA],
-                    [0, T_HSVW], True, HAS_FA, modes=("S", "M"))
+    k["store"] = Kind(
+        "store access fault (sw)",
+        [f"LI(x6, {FA}-8)", "li x7, 0"],
+        ["sw x7, 8(x6)"],
+        lambda m: 7,
+        [0, FA],
+        simm,
+        True,
+        HAS_FA,
+        modes=("S", "U", "VS", "VU", "M"),
+    )
+    k["fetch"] = Kind(
+        "fetch access fault (jalr)",
+        [f"LI(x6, {FA})"],
+        ["jalr ra, 0(x6)"],
+        lambda m: 1,
+        [0, FA],
+        [0],
+        True,
+        HAS_FA,
+        modes=("S", "U", "VS", "VU", "M"),
+        epc=False,
+    )
+    k["hlv"] = Kind(
+        "HLV.W access fault",
+        [f"LI(x6, {FA})"],
+        [HLVW],
+        lambda m: 5,
+        [0, FA],
+        [0, T_HLVW],
+        True,
+        HAS_FA,
+        modes=("S", "M"),
+    )
+    k["hsv"] = Kind(
+        "HSV.W access fault",
+        [f"LI(x6, {FA})", "li x7, 0"],
+        [HSVW],
+        lambda m: 7,
+        [0, FA],
+        [0, T_HSVW],
+        True,
+        HAS_FA,
+        modes=("S", "M"),
+    )
     return k
 
 
@@ -145,25 +238,23 @@ def logw(t: TestFile, reg: str, word: str, back: int = 0) -> None:
     t.emit(f"LREG {reg}, ({word})*REGWIDTH(x4)")
 
 
-def logchk(t: TestFile, word: str, mask, exp, lab: str, desc: str, back: int = 0) -> None:  # noqa: ANN001
+def logchk(t: TestFile, word: str, mask: Value, exp: Expect, lab: str, desc: str, back: int = 0) -> None:
     """Check (log word & mask) against exp (one value or a list of alternatives)."""
     logw(t, "x15", word, back)
     t.check_masked("x15", mask, exp, lab, desc, tmp="x5")
 
 
 def handler_is(t: TestFile, where: str, lab: str, desc: str, back: int = 0) -> None:
-    logchk(t, "TRAPLOG_VECT", 3, HANDLER[where], lab, f"{desc}: taken in {where}-mode (handler 3 M, 1 HS, 2 VS)",
-           back)
+    logchk(t, "TRAPLOG_VECT", 3, HANDLER[where], lab, f"{desc}: taken in {where}-mode (handler 3 M, 1 HS, 2 VS)", back)
 
 
-def mpv_gva(t: TestFile, which: str, value, lab: str, desc: str) -> None:  # noqa: ANN001
+def mpv_gva(t: TestFile, which: str, value: int, lab: str, desc: str) -> None:
     """Check mstatus.MPV or GVA (which) of the last M-mode log entry."""
     bit64, bit32 = {"MPV": (39, 7), "GVA": (38, 6)}[which]
     with t.rv64_only():
         logchk(t, "TRAPLOG_STATUS", 1 << bit64, (1 << bit64) if value else 0, lab, f"{desc}: mstatus.{which}={value}")
     with t.rv32_only():
-        logchk(t, "TRAPLOG_STATUS2", 1 << bit32, (1 << bit32) if value else 0, lab,
-               f"{desc}: mstatush.{which}={value}")
+        logchk(t, "TRAPLOG_STATUS2", 1 << bit32, (1 << bit32) if value else 0, lab, f"{desc}: mstatush.{which}={value}")
 
 
 def gva_ok(t: TestFile, handler: str, lab: str, desc: str) -> None:
@@ -209,7 +300,7 @@ def leave(t: TestFile, mode: str) -> None:
         t.leave()
 
 
-def twin(t: TestFile, mode: str, kind: Kind, desc: str, cause=None, n: int = 1) -> str:  # noqa: ANN001
+def twin(t: TestFile, mode: str, kind: Kind, desc: str, cause: Expect | None = None, n: int = 1) -> str:
     """Run `kind` in `mode` in a trap window and check cause, xepc, xtval and origin. Returns the label."""
     lab = t.label(f"{kind.name.split()[0]}_{mode}")
     for p in kind.pre:
@@ -230,7 +321,7 @@ def twin(t: TestFile, mode: str, kind: Kind, desc: str, cause=None, n: int = 1) 
     return lab
 
 
-def guard(t: TestFile, cond: str | None, body) -> None:  # noqa: ANN001
+def guard(t: TestFile, cond: str | None, body: Callable[[], object]) -> None:
     if cond:
         with t.only_if(cond):
             body()
@@ -311,10 +402,15 @@ def gen_hedeleg_csr() -> list[TestFile]:
     lab = t.label("ones")
     t.emit(f"{lab}:", 0)
     hedeleg_probe(t)
-    t.check_masked("x8", req_mask, req_mask, lab, "hedeleg: required-writable bits read 1 after writing ones",
-                   tmp="x5")
-    t.check_masked("x8", ro_mask, (1 << 10) if MUT == "hedeleg_ro_writable" else 0, lab,
-                   "hedeleg: required read-only-0 bits read 0 after writing ones", tmp="x5")
+    t.check_masked("x8", req_mask, req_mask, lab, "hedeleg: required-writable bits read 1 after writing ones", tmp="x5")
+    t.check_masked(
+        "x8",
+        ro_mask,
+        (1 << 10) if MUT == "hedeleg_ro_writable" else 0,
+        lab,
+        "hedeleg: required read-only-0 bits read 0 after writing ones",
+        tmp="x5",
+    )
     t.emit("csrw 0x602, x0")
     t.emit("csrr x8, 0x602")
     t.check("x8", 0, lab, "hedeleg reads 0 after writing 0")
@@ -409,8 +505,14 @@ def gen_hedeleg_csr() -> list[TestFile]:
         t.emit("csrr x8, 0x612")
         t.check("x8", 0, lab, "writing hedeleg leaves hedelegh = 0")
     t.emit("csrw 0x602, x0")
-    forms = [("csrrw x0, 0x602, x7", 8, 8), ("csrrc x0, 0x602, x7", 8, 0), ("csrrs x0, 0x602, x7", 8, 8),
-             ("csrrci x0, 0x602, 8", None, 0), ("csrrsi x0, 0x602, 8", None, 8), ("csrrwi x0, 0x602, 0", None, 0)]
+    forms = [
+        ("csrrw x0, 0x602, x7", 8, 8),
+        ("csrrc x0, 0x602, x7", 8, 0),
+        ("csrrs x0, 0x602, x7", 8, 8),
+        ("csrrci x0, 0x602, 8", None, 0),
+        ("csrrsi x0, 0x602, 8", None, 8),
+        ("csrrwi x0, 0x602, 0", None, 0),
+    ]
     for asm, src, exp in forms:
         if src is not None:
             t.li("x7", src)
@@ -487,9 +589,17 @@ def gen_hedeleg_csr() -> list[TestFile]:
         for deleg in (1, 0):
             t.li("x7", deleg)
             t.emit("csrw 0x602, x7")
-            tgt = t.label("mis")
-            k = Kind("jalr to misaligned target", [f"LA(x6, {tgt})", "addi x6, x6, 2"], ["jalr ra, 0(x6)", f"{tgt}:",
-                     "nop", "nop"], lambda m: 0, None, [0], True, modes=("VS",))
+            tgt = t.label("misal")
+            k = Kind(
+                "jalr to misaligned target",
+                [f"LA(x6, {tgt})", "addi x6, x6, 2"],
+                ["jalr ra, 0(x6)", f"{tgt}:", "nop", "nop"],
+                lambda m: 0,
+                None,
+                [0],
+                True,
+                modes=("VS",),
+            )
             lab2 = t.label("misVS")
             for p in k.pre:
                 t.emit(p, 2)
@@ -500,8 +610,14 @@ def gen_hedeleg_csr() -> list[TestFile]:
                 t.emit(ln)
             t.leave()
             t.emit(f"LA(x6, {tgt})", 2)
-            t.outcome(0, lab2, f"VS-mode jalr to a misaligned target, hedeleg[0]={deleg}", [0, f"{tgt}+2"],
-                      epc=True, origin="VS")
+            t.outcome(
+                0,
+                lab2,
+                f"VS-mode jalr to a misaligned target, hedeleg[0]={deleg}",
+                [0, f"{tgt}+2"],
+                epc=True,
+                origin="VS",
+            )
             handler_is(t, "VS" if deleg and MUT != "hedeleg_ignored" else "S", lab2, f"hedeleg[0]={deleg}")
     t.emit("csrw 0x602, x0")
     t.emit("csrr x8, 0x602")
@@ -538,7 +654,11 @@ def gen_deleg() -> list[TestFile]:
         c = k.cause("VS")
 
         def body(k: Kind = k, c: int = c) -> None:
-            for hd, note in ((1 << c, "only its bit"), (0, "0"), (0xFFFFFFFF & ~(1 << c) & ~(1 << 8), "every other bit")):
+            for hd, note in (
+                (1 << c, "only its bit"),
+                (0, "0"),
+                (0xFFFFFFFF & ~(1 << c) & ~(1 << 8), "every other bit"),
+            ):
                 t.li("x7", hd) if hd < 0x800 else t.load("x7", hd, "hedeleg value")
                 t.emit("csrw 0x602, x7  // hedeleg")
                 for mode in ("VS", "VU"):
@@ -548,6 +668,7 @@ def gen_deleg() -> list[TestFile]:
                     for mode in ("S", "U"):
                         lab = twin(t, mode, k, f"V=0, hedeleg = {note}")
                         handler_is(t, where(mode, c, hd), lab, f"V=0, hedeleg = {note}")
+
         guard(t, k.cond, body)
     t.emit("csrw 0x602, x0")
     tests.append(t)
@@ -577,7 +698,7 @@ def gen_deleg() -> list[TestFile]:
         for name in ("ebreak", "illegal", "virtual", "ecall", "load", "fetch"):
             k = K[name]
 
-            def body(k: Kind = k, hd: int = hd) -> None:
+            def hd_body(k: Kind = k, hd: int = hd) -> None:
                 for mode in k.modes:
                     if mode == "M":
                         continue
@@ -585,7 +706,8 @@ def gen_deleg() -> list[TestFile]:
                         continue
                     lab = twin(t, mode, k, f"hedeleg = {hex(hd)}")
                     handler_is(t, where(mode, k.cause(mode), hd), lab, f"hedeleg = {hex(hd)}")
-            guard(t, k.cond, body)
+
+            guard(t, k.cond, hd_body)
     t.emit("csrw 0x602, x0")
     tests.append(t)
 
@@ -625,6 +747,7 @@ def gen_deleg() -> list[TestFile]:
             t.li("x7", 1 << c)
             t.emit("csrc medeleg, x7")
             t.emit("csrc 0x602, x7")
+
         guard(t, k.cond, body)
     tests.append(t)
 
@@ -660,11 +783,23 @@ def gen_deleg() -> list[TestFile]:
 
 
 # ---------------------------------------------------------------- traps into HS: hstatus/sstatus writes
-def hs_trap_case(t: TestFile, mode: str, k: Kind, *, spvp: int, gva_pre: int, s: int, vs: int, spv_pre: int,
-                 checks: set[str], desc: str) -> str:
+def hs_trap_case(
+    t: TestFile,
+    mode: str,
+    k: Kind,
+    *,
+    spvp: int,
+    gva_pre: int,
+    s: int,
+    vs: int,
+    spv_pre: int,
+    checks: set[str],
+    desc: str,
+) -> str:
     """Trap from `mode` into HS-mode with known prior state; check the fields in `checks`."""
-    t.comment(f"{desc}: preset SPVP={spvp}, GVA={gva_pre}, SPV={spv_pre}; HS SIE before the trap {s}, "
-              f"vsstatus.SIE={vs}")
+    t.comment(
+        f"{desc}: preset SPVP={spvp}, GVA={gva_pre}, SPV={spv_pre}; HS SIE before the trap {s}, vsstatus.SIE={vs}"
+    )
     for bit, on in ((SPVP, spvp), (GVA, gva_pre), (SPV, spv_pre)):
         hs_bits(t, "hstatus", bit, bool(on), f"hstatus bit {hex(bit)} = {on}")
     hs_bits(t, "vsstatus", SIE, bool(vs), f"vsstatus.SIE = {vs}")
@@ -683,8 +818,14 @@ def hs_trap_case(t: TestFile, mode: str, k: Kind, *, spvp: int, gva_pre: int, s:
         logchk(t, "TRAPLOG_STATUS", SPP, SPP * spp, lab, f"{desc}: sstatus.SPP = {spp}")
     if "spvp" in checks:
         exp = spp if v or MUT == "spvp_written_v0" else spvp
-        logchk(t, "TRAPLOG_STATUS2", SPVP, SPVP * exp, lab,
-               f"{desc}: hstatus.SPVP = {exp} ({'= SPP, V was 1' if v else 'unchanged, V was 0'})")
+        logchk(
+            t,
+            "TRAPLOG_STATUS2",
+            SPVP,
+            SPVP * exp,
+            lab,
+            f"{desc}: hstatus.SPVP = {exp} ({'= SPP, V was 1' if v else 'unchanged, V was 0'})",
+        )
     if "sie" in checks:
         sp = vs if (MUT == "spie_from_vsstatus" and v) else s
         logchk(t, "TRAPLOG_STATUS", SPIE | SIE, SPIE * sp, lab, f"{desc}: sstatus.SPIE = old SIE = {s}, SIE = 0")
@@ -730,7 +871,7 @@ def gen_hs_writes() -> list[TestFile]:
     for name in ("ebreak", "illegal", "virtual", "load", "fetch"):
         k = K[name]
 
-        def body(k: Kind = k) -> None:
+        def csrw_body(k: Kind = k) -> None:
             nonlocal i
             for mode in k.modes:
                 if mode == "M":
@@ -739,20 +880,37 @@ def gen_hs_writes() -> list[TestFile]:
                 spp = 1 if mode in ("S", "VS") else 0
                 s, vs = i % 2, 1 - i % 2
                 i += 1
-                lab = hs_trap_case(t, mode, k, spvp=(1 - spp) if v else i % 2, gva_pre=0 if k.va and v else 1,
-                                   s=s, vs=vs, spv_pre=0 if v else 1,
-                                   checks={"spv", "spp", "spvp", "sie", "gva"}, desc=f"{k.name} from {mode}")
+                lab = hs_trap_case(
+                    t,
+                    mode,
+                    k,
+                    spvp=(1 - spp) if v else i % 2,
+                    gva_pre=0 if k.va and v else 1,
+                    s=s,
+                    vs=vs,
+                    spv_pre=0 if v else 1,
+                    checks={"spv", "spp", "spvp", "sie", "gva"},
+                    desc=f"{k.name} from {mode}",
+                )
                 logchk(t, "TRAPLOG_TVAL2", X((1 << 32) - 1, (1 << 64) - 1), 0, lab, f"{k.name} from {mode}: htval=0")
-                logchk(t, "TRAPLOG_TINST", X((1 << 32) - 1, (1 << 64) - 1), k.tinst, lab,
-                       f"{k.name} from {mode}: htinst is one of its legal values")
+                logchk(
+                    t,
+                    "TRAPLOG_TINST",
+                    X((1 << 32) - 1, (1 << 64) - 1),
+                    k.tinst,
+                    lab,
+                    f"{k.name} from {mode}: htinst is one of its legal values",
+                )
                 t.emit("csrr x8, 0x200  // vsstatus")
                 exp = SPIE | (0 if MUT == "vsstatus_written_on_hs_trap" and mode == "U" else SPP)
-                t.check_masked("x8", SPP | SPIE, exp, lab, f"{k.name} from {mode}: vsstatus.SPP/SPIE unchanged",
-                               tmp="x5")
+                t.check_masked(
+                    "x8", SPP | SPIE, exp, lab, f"{k.name} from {mode}: vsstatus.SPP/SPIE unchanged", tmp="x5"
+                )
                 for num, val, nm in ((0x241, 0x40, "vsepc"), (0x242, 13, "vscause"), (0x243, 0x123, "vstval")):
                     t.emit(f"csrr x8, {hex(num)}  // {nm}")
                     t.check("x8", val, lab, f"{k.name} from {mode}: {nm} unchanged by a trap into HS-mode")
-        guard(t, k.cond, body)
+
+        guard(t, k.cond, csrw_body)
     hs_bits(t, "hstatus", SPVP | GVA | SPV, False, "hstatus.SPVP = GVA = SPV = 0")
     tests.append(t)
 
@@ -773,12 +931,23 @@ def gen_hs_writes() -> list[TestFile]:
     for name in ("ebreak", "ecall", "load"):
         k = K[name]
 
-        def body(k: Kind = k) -> None:
+        def body(k: Kind = k, name: str = name) -> None:
             for mode in modes:
                 if name == "ecall" and mode == "S":
                     continue
-                hs_trap_case(t, mode, k, spvp=0, gva_pre=0, s=0, vs=0, spv_pre=0 if mode in ("VS", "VU") else 1,
-                             checks={"spv", "spp"}, desc=f"{k.name} from {mode}")
+                hs_trap_case(
+                    t,
+                    mode,
+                    k,
+                    spvp=0,
+                    gva_pre=0,
+                    s=0,
+                    vs=0,
+                    spv_pre=0 if mode in ("VS", "VU") else 1,
+                    checks={"spv", "spp"},
+                    desc=f"{k.name} from {mode}",
+                )
+
         guard(t, k.cond, body)
     hs_bits(t, "hstatus", SPV, False, "hstatus.SPV = 0")
     tests.append(t)
@@ -799,15 +968,26 @@ def gen_hs_writes() -> list[TestFile]:
     for name in ("ebreak", "illegal", "load", "hlv"):
         k = K[name]
 
-        def body(k: Kind = k) -> None:
+        def spvp_body(k: Kind = k) -> None:
             for mode in k.modes:
                 if mode == "M":
                     continue
                 presets = (0,) if mode == "VS" else (1,) if mode == "VU" else (0, 1)
                 for p in presets:
-                    hs_trap_case(t, mode, k, spvp=p, gva_pre=0, s=0, vs=0, spv_pre=0, checks={"spvp", "spp"},
-                                 desc=f"{k.name} from {mode}, SPVP preset {p}")
-        guard(t, k.cond, body)
+                    hs_trap_case(
+                        t,
+                        mode,
+                        k,
+                        spvp=p,
+                        gva_pre=0,
+                        s=0,
+                        vs=0,
+                        spv_pre=0,
+                        checks={"spvp", "spp"},
+                        desc=f"{k.name} from {mode}, SPVP preset {p}",
+                    )
+
+        guard(t, k.cond, spvp_body)
     hs_bits(t, "hstatus", SPVP, False, "hstatus.SPVP = 0")
     tests.append(t)
 
@@ -834,7 +1014,7 @@ def gen_hs_writes() -> list[TestFile]:
     for name in ("ebreak", "load", "store", "fetch", "hlv", "hsv", "illegal", "ecall", "virtual"):
         k = K[name]
 
-        def body(k: Kind = k) -> None:
+        def body(k: Kind = k, name: str = name) -> None:
             ms = [m for m in k.modes if m != "M"]
             if k.name.startswith(("HLV", "HSV")):
                 ms = ["S", "U"]
@@ -843,8 +1023,19 @@ def gen_hs_writes() -> list[TestFile]:
                     continue
                 v = mode in ("VS", "VU")
                 guest = k.va and (v or k.name.startswith(("HLV", "HSV")))
-                hs_trap_case(t, mode, k, spvp=0, gva_pre=0 if guest else 1, s=0, vs=0, spv_pre=0,
-                             checks={"gva"}, desc=f"{k.name} from {mode}")
+                hs_trap_case(
+                    t,
+                    mode,
+                    k,
+                    spvp=0,
+                    gva_pre=0 if guest else 1,
+                    s=0,
+                    vs=0,
+                    spv_pre=0,
+                    checks={"gva"},
+                    desc=f"{k.name} from {mode}",
+                )
+
         guard(t, k.cond, body)
     hs_bits(t, "hstatus", 0x200 | GVA, False, "hstatus.HU = GVA = 0")
     tests.append(t)
@@ -912,13 +1103,21 @@ def gen_vs_writes() -> list[TestFile]:
                         t.emit("xor x15, x15, x14")
                         t.check("x15", 0, lab, f"{d}: vsepc is the trapping instruction")
                     vexp = (SPP * spp) | (SPIE * vsie)
-                    logchk(t, "TRAPLOG_STATUS", SPP | SPIE | SIE, vexp, lab,
-                           f"{d}: vsstatus.SPP={spp}, SPIE=old SIE={vsie}, SIE=0", back=1)
+                    logchk(
+                        t,
+                        "TRAPLOG_STATUS",
+                        SPP | SPIE | SIE,
+                        vexp,
+                        lab,
+                        f"{d}: vsstatus.SPP={spp}, SPIE=old SIE={vsie}, SIE=0",
+                        back=1,
+                    )
                     handler_is(t, "S", lab2, f"{d}, then hstatus read")
                     logchk(t, "TRAPLOG_STATUS2", SPV, SPV, lab2, f"{d}: the hstatus read came from V=1")
                     logchk(t, "TRAPLOG_STATUS", SPP, SPP * spp, lab2, f"{d}: and from nominal mode {mode}")
                     t.emit("csrr x8, 0x242  // vscause")
                     t.check("x8", c, lab, f"{d}: HS-mode reads vscause = {c}")
+
         guard(t, k.cond, body)
     t.emit("csrw 0x602, x0")
     tests.append(t)
@@ -958,11 +1157,23 @@ def gen_vs_writes() -> list[TestFile]:
         lab = twin(t, mode, K["ebreak"], "medeleg[3]=hedeleg[3]=1, guest entered from M-mode")
         handler_is(t, "S" if MUT == "hedeleg_ignored" else "VS", lab, f"ebreak from {mode}")
         t.emit("csrr x8, 0x600")
-        t.check_masked("x8", SPV | SPVP | GVA, GVA, lab, f"ebreak from {mode} into VS-mode leaves hstatus "
-                       "SPV=0, SPVP=0, GVA=1", tmp="x5")
+        t.check_masked(
+            "x8",
+            SPV | SPVP | GVA,
+            GVA,
+            lab,
+            f"ebreak from {mode} into VS-mode leaves hstatus SPV=0, SPVP=0, GVA=1",
+            tmp="x5",
+        )
         t.emit("csrr x8, sstatus")
-        t.check_masked("x8", SPP | SPIE | SIE, SPP | SPIE, lab, f"ebreak from {mode} into VS-mode leaves sstatus "
-                       "SPP=1, SPIE=1, SIE=0", tmp="x5")
+        t.check_masked(
+            "x8",
+            SPP | SPIE | SIE,
+            SPP | SPIE,
+            lab,
+            f"ebreak from {mode} into VS-mode leaves sstatus SPP=1, SPIE=1, SIE=0",
+            tmp="x5",
+        )
         for num, val, nm in ((0x141, 0x2C0, "sepc"), (0x142, 12, "scause"), (0x143, 0x777, "stval")):
             t.emit(f"csrr x8, {hex(num)}  // {nm}")
             bad = MUT == "vs_trap_writes_sepc" and nm == "sepc"
@@ -975,8 +1186,9 @@ def gen_vs_writes() -> list[TestFile]:
 
 
 # ---------------------------------------------------------------- traps into M
-def m_trap_case(t: TestFile, mode: str, k: Kind, *, mpv_pre: int, gva_pre: int, desc: str, checks: set[str],
-                mie: int = 0) -> str:
+def m_trap_case(
+    t: TestFile, mode: str, k: Kind, *, mpv_pre: int, gva_pre: int, desc: str, checks: set[str], mie: int = 0
+) -> str:
     t.comment(f"{desc}: preset MPV={mpv_pre}, GVA={gva_pre}")
     with t.rv64_only():
         for bit, on in ((39, mpv_pre), (38, gva_pre)):
@@ -1022,13 +1234,19 @@ def gen_m_writes() -> list[TestFile]:
     REQ_M = ["I", "S", "H", "Sm"]
     names = ("ebreak", "illegal", "virtual", "ecall", "load", "store", "fetch", "hlv", "hsv")
 
-    def sweep(t: TestFile, checks: set[str], kinds_: tuple[str, ...], mpv_flip: bool = True, gva_flip: bool = True,
-              ms: tuple[str, ...] = ("M", "S", "U", "VS", "VU")) -> None:
+    def sweep(
+        t: TestFile,
+        checks: set[str],
+        kinds_: tuple[str, ...],
+        mpv_flip: bool = True,
+        gva_flip: bool = True,
+        ms: tuple[str, ...] = ("M", "S", "U", "VS", "VU"),
+    ) -> None:
         i = 0
         for name in kinds_:
             k = K[name]
 
-            def body(k: Kind = k) -> None:
+            def body(k: Kind = k, name: str = name) -> None:
                 nonlocal i
                 for mode in ms:
                     if mode not in k.modes and not (k.name.startswith(("HLV", "HSV")) and mode == "M"):
@@ -1038,9 +1256,17 @@ def gen_m_writes() -> list[TestFile]:
                     v = mode in ("VS", "VU")
                     guest = k.va and (v or k.name.startswith(("HLV", "HSV")))
                     i += 1
-                    m_trap_case(t, mode, k, mpv_pre=(1 - int(v)) if mpv_flip else 0,
-                                gva_pre=(0 if guest else 1) if gva_flip else 0, desc=f"{k.name} from {mode}",
-                                checks=checks, mie=i % 2)
+                    m_trap_case(
+                        t,
+                        mode,
+                        k,
+                        mpv_pre=(1 - int(v)) if mpv_flip else 0,
+                        gva_pre=(0 if guest else 1) if gva_flip else 0,
+                        desc=f"{k.name} from {mode}",
+                        checks=checks,
+                        mie=i % 2,
+                    )
+
             guard(t, k.cond, body)
 
     # ---- H_trap_m_csrwrites_Sm ----
@@ -1140,8 +1366,13 @@ def gen_m_writes() -> list[TestFile]:
         t.emit(f"{lab}:", 0)
         t.emit("csrr x7, 0x600  // hstatus")
         t.leave()
-        t.outcome(22, lab, "after T-SBI GOTO_VSMODE (MRET with MPV=1): hstatus read", [0, (0x600 << 20) |
-                  (2 << 12) | (7 << 7) | 0x73], origin="VS")
+        t.outcome(
+            22,
+            lab,
+            "after T-SBI GOTO_VSMODE (MRET with MPV=1): hstatus read",
+            [0, (0x600 << 20) | (2 << 12) | (7 << 7) | 0x73],
+            origin="VS",
+        )
         lab = twin(t, "S", K["ecall"], "after a VS-mode excursion")
         mpv_gva(t, "MPV", 0, lab, "ecall from HS-mode")
     tests.append(t)
@@ -1201,7 +1432,7 @@ def gen_m_writes() -> list[TestFile]:
     for name in names:
         k = K[name]
 
-        def body(k: Kind = k) -> None:
+        def body(k: Kind = k, name: str = name) -> None:
             nonlocal i
             for mode in ("M", "S", "U", "VS", "VU"):
                 if mode not in k.modes and not (k.name.startswith(("HLV", "HSV")) and mode == "M"):
@@ -1218,8 +1449,10 @@ def gen_m_writes() -> list[TestFile]:
                     t.emit("xor x15, x15, x14")
                     t.check("x15", 0, lab, f"{k.name} from {mode}: mtval2 = mtval >> 2")
                 else:
-                    logchk(t, "TRAPLOG_TVAL2", X((1 << 32) - 1, (1 << 64) - 1), 0, lab,
-                           f"{k.name} from {mode}: mtval2 = 0")
+                    logchk(
+                        t, "TRAPLOG_TVAL2", X((1 << 32) - 1, (1 << 64) - 1), 0, lab, f"{k.name} from {mode}: mtval2 = 0"
+                    )
+
         guard(t, k.cond, body)
     tests.append(t)
     return tests
@@ -1254,17 +1487,28 @@ def mret_m_case(t: TestFile) -> None:
         t.emit("srli x8, x8, 7")
     t.emit("andi x8, x8, 1")
     t.emit("RVTEST_TSBI_GOTO_MMODE", 120)
-    t.outcome("ok" if exp == "M" else 2, lab, "MRET with MPP=3, MPV=1: an mscratch read (M-mode only)",
-              [0, (0x340 << 20) | (2 << 12) | (7 << 7) | 0x73], origin=exp)
+    t.outcome(
+        "ok" if exp == "M" else 2,
+        lab,
+        "MRET with MPP=3, MPV=1: an mscratch read (M-mode only)",
+        [0, (0x340 << 20) | (2 << 12) | (7 << 7) | 0x73],
+        origin=exp,
+    )
     t.check("x8", 0, lab, "MRET leaves MPV = 0")
 
 
 # ---------------------------------------------------------------- SRET and MRET
 REVEAL = {  # instruction that shows the mode: (line, encoding, {mode: outcome})
-    "hstatus": ("csrr x7, 0x600  // hstatus", (0x600 << 20) | (2 << 12) | (7 << 7) | 0x73,
-                {"M": "ok", "S": "ok", "VS": 22, "VU": 22, "U": 2}),
-    "mscratch": ("csrr x7, mscratch", (0x340 << 20) | (2 << 12) | (7 << 7) | 0x73,
-                 {"M": "ok", "S": 2, "VS": 2, "VU": 2, "U": 2}),
+    "hstatus": (
+        "csrr x7, 0x600  // hstatus",
+        (0x600 << 20) | (2 << 12) | (7 << 7) | 0x73,
+        {"M": "ok", "S": "ok", "VS": 22, "VU": 22, "U": 2},
+    ),
+    "mscratch": (
+        "csrr x7, mscratch",
+        (0x340 << 20) | (2 << 12) | (7 << 7) | 0x73,
+        {"M": "ok", "S": 2, "VS": 2, "VU": 2, "U": 2},
+    ),
 }
 
 
@@ -1273,8 +1517,13 @@ def landing(t: TestFile, mode: str, reveal: str, lab: str, desc: str) -> None:
     outcome for `mode`, with origin `mode`."""
     line, enc, outs = REVEAL[reveal]
     o = outs[mode]
-    t.outcome(o, lab, f"{desc}: {line.split('//')[0].strip()} shows the mode", None if o == "ok" else [0, enc],
-              origin=None if o == "ok" else mode)
+    t.outcome(
+        o,
+        lab,
+        f"{desc}: {line.split('//')[0].strip()} shows the mode",
+        None if o == "ok" else [0, enc],
+        origin=None if o == "ok" else mode,
+    )
 
 
 def gen_xret() -> list[TestFile]:
@@ -1336,8 +1585,14 @@ def gen_xret() -> list[TestFile]:
     )
     for spie in (0, 1):
         lab = sret_from_hs(t, 0, 1, spie, f"SPIE={spie}")
-        t.check_masked("x8", SPP | SIE | SPIE, SPIE | (SIE * spie), lab,
-                       f"SRET to HS-mode with SPIE={spie}: SPP=0, SIE={spie}, SPIE=1", tmp="x5")
+        t.check_masked(
+            "x8",
+            SPP | SIE | SPIE,
+            SPIE | (SIE * spie),
+            lab,
+            f"SRET to HS-mode with SPIE={spie}: SPP=0, SIE={spie}, SPIE=1",
+            tmp="x5",
+        )
         t.check_masked("x9", SPV, 0, lab, "SRET leaves hstatus.SPV = 0", tmp="x5")
     for spv, spp in ((1, 1), (1, 0), (0, 0)):
         sret_from_hs(t, spv, spp, 1, "landing")
@@ -1375,11 +1630,18 @@ def gen_xret() -> list[TestFile]:
         t.emit("RVTEST_TSBI_GOTO_MMODE", 120)
         landing(t, mode, "hstatus", lab, f"SRET from HS-mode, SPV={spv}, SPP={spp}")
         t.emit("csrr x8, 0x600")
-        t.check_masked("x8", SPV, SPV if MUT == "sret_keeps_spv" and spv else 0, lab, "SRET leaves hstatus.SPV = 0",
-                       tmp="x5")
+        t.check_masked(
+            "x8", SPV, SPV if MUT == "sret_keeps_spv" and spv else 0, lab, "SRET leaves hstatus.SPV = 0", tmp="x5"
+        )
         t.emit("csrr x8, sstatus")
-        t.check_masked("x8", SPP | SIE | SPIE, SPIE | (SIE * spie), lab,
-                       f"SRET with SPIE={spie}: SPP=0, SIE={spie}, SPIE=1", tmp="x5")
+        t.check_masked(
+            "x8",
+            SPP | SIE | SPIE,
+            SPIE | (SIE * spie),
+            lab,
+            f"SRET with SPIE={spie}: SPP=0, SIE={spie}, SPIE=1",
+            tmp="x5",
+        )
     # SRET in M-mode
     lab = t.label("msret")
     t.allow(1)
@@ -1438,8 +1700,14 @@ def gen_xret() -> list[TestFile]:
         landing(t, mode, "hstatus", lab, f"SRET in VS-mode with vsstatus.SPP={spp}")
         t.check("x9", 1, lab, "the VS entry point ran once (SRET went to vsepc, not sepc)")
         t.emit("csrr x8, 0x200  // vsstatus")
-        t.check_masked("x8", SPP | SIE | SPIE, SPIE | (SIE * spie), lab,
-                       f"SRET in VS-mode with SPIE={spie}: vsstatus SPP=0, SIE={spie}, SPIE=1", tmp="x5")
+        t.check_masked(
+            "x8",
+            SPP | SIE | SPIE,
+            SPIE | (SIE * spie),
+            lab,
+            f"SRET in VS-mode with SPIE={spie}: vsstatus SPP=0, SIE={spie}, SPIE=1",
+            tmp="x5",
+        )
     tests.append(t)
 
     # ---- sret_H ----
@@ -1472,8 +1740,12 @@ def gen_xret() -> list[TestFile]:
         t.check("x13", 2, lab, f"ebreak then hstatus read in {mode}-mode: two traps")
         handler_is(t, "VS" if hd else "S", lab, f"ebreak in {mode}-mode", back=1)
         t.emit("AI_ORIGIN", 25)
-        t.check("x15", 5 if mode == "VS" else 4, lab2, f"after the {'VS' if hd else 'HS'} handler's SRET, the "
-                f"hstatus read comes from {mode}-mode")
+        t.check(
+            "x15",
+            5 if mode == "VS" else 4,
+            lab2,
+            f"after the {'VS' if hd else 'HS'} handler's SRET, the hstatus read comes from {mode}-mode",
+        )
     t.emit("csrw 0x602, x0")
     tests.append(t)
 
@@ -1496,7 +1768,7 @@ def gen_xret() -> list[TestFile]:
         mode = {(1, 1): "VS", (1, 0): "VU", (0, 1): "S", (0, 0): "U"}.get((mpv, mpp), "M")
         if MUT == "mret_mpp3_honors_mpv" and (mpv, mpp) == (1, 3):
             mode = "VS"
-        for mpie in ((0, 1) if mpp == 3 else (1,)):
+        for mpie in (0, 1) if mpp == 3 else (1,):
             lab = t.label(f"mret_{mode}")
             t.allow(1)
             t.emit(f"LA(x7, {lab})", 2)
@@ -1530,8 +1802,14 @@ def gen_xret() -> list[TestFile]:
                 t.emit("RVTEST_TSBI_GOTO_MMODE", 120)
             landing(t, mode, reveal, lab, f"MRET with MPV={mpv}, MPP={mpp}")
             if mode == "M" and mpp == 3:
-                t.check_masked("x8", MPP | MIE | MPIE, MPIE | (MIE * mpie), lab,
-                               f"MRET with MPIE={mpie}: MPP=0, MIE={mpie}, MPIE=1", tmp="x5")
+                t.check_masked(
+                    "x8",
+                    MPP | MIE | MPIE,
+                    MPIE | (MIE * mpie),
+                    lab,
+                    f"MRET with MPIE={mpie}: MPP=0, MIE={mpie}, MPIE=1",
+                    tmp="x5",
+                )
                 t.check_masked("x9", X(0x80, 1 << 39), 0, lab, "MRET leaves MPV = 0", tmp="x5")
     t.li("x7", MIE)
     t.emit("csrc mstatus, x7")
@@ -1562,7 +1840,7 @@ def gen_tval2_tinst() -> list[TestFile]:
     names = ("ebreak", "illegal", "virtual", "ecall", "load", "store", "fetch", "hlv", "hsv")
     full = X((1 << 32) - 1, (1 << 64) - 1)
 
-    def sweep(t: TestFile, fn) -> None:  # noqa: ANN001
+    def sweep(t: TestFile, fn: Callable[[Kind, str, str, str], object]) -> None:
         for name in names:
             k = K[name]
 
@@ -1573,6 +1851,7 @@ def gen_tval2_tinst() -> list[TestFile]:
                     w = where(mode, k.cause(mode), 0)
                     lab = twin(t, mode, k, f"to {w}")
                     fn(k, mode, w, lab)
+
             guard(t, k.cond, body)
 
     # ---- htval_trapval ----
@@ -1643,8 +1922,17 @@ def gen_tval2_tinst() -> list[TestFile]:
         "ecall from HS-mode, is one of the values the table allows.",
     )
     bare(t)
-    sweep(t, lambda k, mode, w, lab: logchk(t, "TRAPLOG_TINST", full, k.tinst, lab,
-                                            f"{k.name} from {mode}: xtinst is one of {[hex(v) for v in k.tinst]}"))
+    sweep(
+        t,
+        lambda k, mode, w, lab: logchk(
+            t,
+            "TRAPLOG_TINST",
+            full,
+            k.tinst,
+            lab,
+            f"{k.name} from {mode}: xtinst is one of {[hex(v) for v in k.tinst]}",
+        ),
+    )
     tests.append(t)
 
     # ---- H_trap_xtinst ----
@@ -1767,8 +2055,15 @@ def gen_tval2_tinst() -> list[TestFile]:
                 t.outcome(causes, lab, f"{nm} misaligned in {mode}-mode", [0, f"{data}+1"], origin=mode)
                 t0 = enc & ~(0x1F << 15)
                 legal = [t0 | (1 << 15)] if MUT == "lr_offset_nonzero" else [0, t0]
-                logchk(t, "TRAPLOG_TINST", full, legal, lab, f"{nm} misaligned in {mode}-mode: xtinst is 0 or the "
-                       "transformed instruction with Addr. Offset 0 (a single access faults at its own address)")
+                logchk(
+                    t,
+                    "TRAPLOG_TINST",
+                    full,
+                    legal,
+                    lab,
+                    f"{nm} misaligned in {mode}-mode: xtinst is 0 or the "
+                    "transformed instruction with Addr. Offset 0 (a single access faults at its own address)",
+                )
     tests.append(t)
 
     # ---- H_trans_cache ----
@@ -1788,12 +2083,26 @@ def gen_tval2_tinst() -> list[TestFile]:
     )
     bare(t)
     with t.only_if(f"defined(ZICBOZ_SUPPORTED) && {HAS_FA}"):
-        k = Kind("CBO.ZERO access fault", [f"LI(x6, {FA})"], [f".word {hex(CBO_ZERO)}  // cbo.zero (x6)"],
-                 lambda m: 7, [0, FA], [0, T_CBO_ZERO], True, modes=("S", "VS"))
+        k = Kind(
+            "CBO.ZERO access fault",
+            [f"LI(x6, {FA})"],
+            [f".word {hex(CBO_ZERO)}  // cbo.zero (x6)"],
+            lambda m: 7,
+            [0, FA],
+            [0, T_CBO_ZERO],
+            True,
+            modes=("S", "VS"),
+        )
         for mode in ("S", "VS"):
             lab = twin(t, mode, k, "CBO.ZERO at the access-fault address")
-            logchk(t, "TRAPLOG_TINST", full, [0, T_CBO_ZERO | (6 << 15)] if MUT == "tinst_imm_kept" else k.tinst,
-                   lab, f"CBO.ZERO from {mode}: htinst is 0 or the transformed CBO.ZERO")
+            logchk(
+                t,
+                "TRAPLOG_TINST",
+                full,
+                [0, T_CBO_ZERO | (6 << 15)] if MUT == "tinst_imm_kept" else k.tinst,
+                lab,
+                f"CBO.ZERO from {mode}: htinst is 0 or the transformed CBO.ZERO",
+            )
     tests.append(t)
 
     # ---- H_trap_xtinst_interrupt ----
@@ -1936,8 +2245,15 @@ def gen_misc() -> list[TestFile]:
     t.emit(".dword 0, 0", 0)
     t.emit(f"{skip}:", 0)
     for mode in ("VS", "VU", "U"):
-        kk = Kind("HLV.W misaligned", [f"LA(x6, {data}+1)"], [HLVW], lambda m: 2 if m == "U" else 22,
-                  [0, hlsv("hlv.w", "x7", "x6")[1]], [0], False)
+        kk = Kind(
+            "HLV.W misaligned",
+            [f"LA(x6, {data}+1)"],
+            [HLVW],
+            lambda m: 2 if m == "U" else 22,
+            [0, hlsv("hlv.w", "x7", "x6")[1]],
+            [0],
+            False,
+        )
         twin(t, mode, kk, "instruction exception over misaligned")
     tests.append(t)
 
@@ -1983,8 +2299,14 @@ def gen_misc() -> list[TestFile]:
     t.check_masked("x8", SDT, SDT, lab, "vsstatus.SDT is writable with menvcfg.DTE = henvcfg.DTE = 1", tmp="x5")
     t.window("VU", ["nop"], "ok", "SRET from HS-mode into VU-mode")
     t.emit("csrr x8, 0x200")
-    t.check_masked("x8", SDT, SDT if MUT == "sret_dt_not_cleared" else 0, lab,
-                   "SRET from HS-mode into VU-mode clears vsstatus.SDT", tmp="x5")
+    t.check_masked(
+        "x8",
+        SDT,
+        SDT if MUT == "sret_dt_not_cleared" else 0,
+        lab,
+        "SRET from HS-mode into VU-mode clears vsstatus.SDT",
+        tmp="x5",
+    )
     t.load("x7", SDT, "vsstatus.SDT")
     t.emit("csrs 0x200, x7  // vsstatus.SDT = 1")
     l2, l3 = t.label("vssret"), t.label("vsback")
@@ -2002,11 +2324,13 @@ def gen_misc() -> list[TestFile]:
     t.leave()
     t.outcome("ok", l2, "SRET within VS-mode")
     t.check_masked("x8", SDT, SDT, l2, "SRET from HS-mode into VS-mode leaves vsstatus.SDT = 1", tmp="x5")
-    t.check_masked("x9", SDT, SDT if MUT == "sret_dt_not_cleared" else 0, l3, "SRET in VS-mode clears vsstatus.SDT",
-                   tmp="x5")
+    t.check_masked(
+        "x9", SDT, SDT if MUT == "sret_dt_not_cleared" else 0, l3, "SRET in VS-mode clears vsstatus.SDT", tmp="x5"
+    )
     t.emit("csrr x8, 0x200")
-    t.check_masked("x8", SDT, SDT if MUT == "sret_dt_not_cleared" else 0, l3, "HS-mode reads vsstatus.SDT = 0",
-                   tmp="x5")
+    t.check_masked(
+        "x8", SDT, SDT if MUT == "sret_dt_not_cleared" else 0, l3, "HS-mode reads vsstatus.SDT = 0", tmp="x5"
+    )
     t.comment("restore: vsstatus.SDT = 0, then henvcfg(h) and menvcfg(h) as they were")
     t.load("x7", SDT, "vsstatus.SDT")
     t.emit("csrc 0x200, x7")

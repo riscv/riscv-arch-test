@@ -14,11 +14,9 @@ from hlib import (
     HSTATUS,
     HYP,
     ILLEGAL,
-    ISSUE,
     MSTATUS_TSR,
     MSTATUS_TVM,
     MSTATUS_TW,
-    READS,
     SRET,
     VIRTUAL,
     WFI,
@@ -39,7 +37,14 @@ from hlib import (
 )
 
 if TYPE_CHECKING:
-    from aigen import Expect
+    from collections.abc import Callable, Sequence
+
+    from aigen import Expect, TestFileOptions
+    from typing_extensions import Unpack
+
+    class VTestOptions(TestFileOptions, total=False):
+        scratch: bool
+
 
 MUT = hlib.MUT
 SVINVAL = "defined(SVINVAL_SUPPORTED)"
@@ -100,8 +105,10 @@ MUTANTS = {
 class VTest(TestFile):
     """TestFile with a 4 KiB-aligned scratch page and labels valid for rule names that contain '-'."""
 
-    def __init__(self, *a: object, scratch: bool = False, **kw: object) -> None:
-        super().__init__(*a, **kw)
+    def __init__(
+        self, suite: str, rule: str, *, required: list, scratch: bool = False, **kw: Unpack[TestFileOptions]
+    ) -> None:
+        super().__init__(suite, rule, required=required, **kw)
         self.scratch = scratch
         self.sym = self.rule.replace("-", "_")
 
@@ -117,21 +124,30 @@ class VTest(TestFile):
         return s
 
 
-def new(rule: str, required: list[str] | None = None, **kw: object) -> VTest:
+def new(rule: str, required: list[str] | None = None, **kw: Unpack[VTestOptions]) -> VTest:
     kw.setdefault("boot", "S")
     kw.setdefault("pool", POOL_TRAP)
     kw.setdefault("march", hlib.MARCH)
     return VTest(hlib.SUITE, rule, required=required or hlib.REQ, **kw)
 
 
-def new_sm(rule: str, required: list[str] | None = None, **kw: object) -> VTest:
+def new_sm(rule: str, required: list[str] | None = None, **kw: Unpack[VTestOptions]) -> VTest:
     kw["boot"] = "M"
     kw["suffix"] = "_Sm"
     return new(rule, required or [*hlib.REQ, "Sm"], **kw)
 
 
-def iw(t: TestFile, mode: str, e: int, note: str, expect: Expect, desc: str, more: list[str] = (),
-       pre: list[str] = (), tval: Expect | None = None) -> str:
+def iw(
+    t: TestFile,
+    mode: str,
+    e: int,
+    note: str,
+    expect: Expect,
+    desc: str,
+    more: Sequence[str] = (),
+    pre: Sequence[str] = (),
+    tval: Expect | None = None,
+) -> str:
     """One instruction (encoding e) in `mode` inside a trap window; illegal and virtual traps must leave xtval
     0 or the instruction bits (or `tval`). `pre` lines run in the mode before it (not part of the window's
     first line)."""
@@ -276,8 +292,9 @@ def gen_vtsr() -> list[TestFile]:
     t.emit(f"{lab}:", 0)
     t.emit(word(SRET, "sret"))
     t.emit(f"{after}:", 0)
-    t.outcome(VIRTUAL if MUT == "vtsr_traps_hs" else "ok", lab, "sret in HS-mode (hstatus.VTSR=1)",
-              [0, SRET], origin="S")
+    t.outcome(
+        VIRTUAL if MUT == "vtsr_traps_hs" else "ok", lab, "sret in HS-mode (hstatus.VTSR=1)", [0, SRET], origin="S"
+    )
     hst(t, "VTSR", False)
     vs_sret_window(t, "ok", "hstatus.VTSR=0 again", 1)
     tests.append(t)
@@ -312,8 +329,13 @@ def gen_vtsr() -> list[TestFile]:
                 t.emit(word(SRET, "sret"))
                 t.emit(f"{after}:", 0)
                 t.leave()
-                t.outcome(ILLEGAL if MUT == "vtsr_illegal" else VIRTUAL, lab, f"sret ({desc}) in VS-mode",
-                          [0, SRET], origin="VS")
+                t.outcome(
+                    ILLEGAL if MUT == "vtsr_illegal" else VIRTUAL,
+                    lab,
+                    f"sret ({desc}) in VS-mode",
+                    [0, SRET],
+                    origin="VS",
+                )
                 hs_read(t, "x7", "vsstatus")
                 t.check_masked("x7", 0x122, bits, lab, f"{desc}: the trapping sret leaves vsstatus.SPP/SPIE/SIE")
                 hs_read(t, "x7", "vsepc")
@@ -414,7 +436,7 @@ def gen_wfi() -> list[TestFile]:
     for vtw, tw in ((1, 0), (0, 1), (1, 1), (0, 0)):
         hst(t, "VTW", bool(vtw))
         mst(t, MSTATUS_TW, bool(tw), "TW")
-        exp: Expect = (["ok", tw_trap] if tw else (["ok", vtw_trap] if vtw else "ok"))
+        exp: Expect = ["ok", tw_trap] if tw else (["ok", vtw_trap] if vtw else "ok")
         if vtw or tw:
             wfi(t, "VS", exp, f"hstatus.VTW={vtw}, mstatus.TW={tw}, nothing pending")
         vs_wake(t, True)
@@ -458,7 +480,7 @@ def gen_vu_sret() -> list[TestFile]:
     t.describe(
         source=HYP,
         rule_text="or to execute a supervisor instruction (SRET or SFENCE);",
-        context="Continues \"in VU-mode, attempts to execute WFI when mstatus.TW=0\": in VU-mode, SRET and the "
+        context='Continues "in VU-mode, attempts to execute WFI when mstatus.TW=0": in VU-mode, SRET and the '
         "SFENCE instructions raise virtual-instruction, since they are HS-qualified. Svinval adds SINVAL.VMA, "
         "SFENCE.W.INVAL and SFENCE.INVAL.IR, which raise virtual-instruction in VU-mode too "
         "(Svinval_virtual_instruction_vu_vs, Svinval_sfence_w_inval_inval_vu_mode). In U-mode (V=0) they "
@@ -489,14 +511,20 @@ def gen_vu_sret() -> list[TestFile]:
             iw(t, "VU", sfence_vma(rs1, rs2), f"sfence.vma x{rs1}, x{rs2}", trap, f"hstatus.VTVM={vtvm}")
     hst(t, "VTVM", False)
     with t.only_if(SVINVAL):
-        for e, note in ((sinval_vma(6, 8), "sinval.vma x6, x8"), (0x18000073, "sfence.w.inval"),
-                        (0x18100073, "sfence.inval.ir")):
+        for e, note in (
+            (sinval_vma(6, 8), "sinval.vma x6, x8"),
+            (0x18000073, "sfence.w.inval"),
+            (0x18100073, "sfence.inval.ir"),
+        ):
             iw(t, "VU", e, note, trap, "Svinval")
     for e, note in ((SRET, "sret"), (sfence_vma(6, 8), "sfence.vma x6, x8")):
         iw(t, "U", e, note, ILLEGAL, "V=0")
     with t.only_if(SVINVAL):
-        for e, note in ((sinval_vma(6, 8), "sinval.vma x6, x8"), (0x18000073, "sfence.w.inval"),
-                        (0x18100073, "sfence.inval.ir")):
+        for e, note in (
+            (sinval_vma(6, 8), "sinval.vma x6, x8"),
+            (0x18000073, "sfence.w.inval"),
+            (0x18100073, "sfence.inval.ir"),
+        ):
             iw(t, "U", e, note, ILLEGAL, "V=0, Svinval")
     return [t]
 
@@ -548,8 +576,7 @@ def gen_vtvm() -> list[TestFile]:
         with t.only_if(SVINVAL):
             iw(t, "VS", sinval_vma(6, 8), "sinval.vma x6, x8", expc, f"hstatus.VTVM={vtvm}")
     hst(t, "VTVM", True)
-    satp_forms(t, "S", "virtual" if MUT == "vtvm_traps_hs" else "ok", "hstatus.VTVM=1 in HS-mode",
-               [FORMS[0], FORMS[1]])
+    satp_forms(t, "S", "virtual" if MUT == "vtvm_traps_hs" else "ok", "hstatus.VTVM=1 in HS-mode", [FORMS[0], FORMS[1]])
     t.li("x6", 0x1000)
     iw(t, "S", sfence_vma(6, 8), "sfence.vma x6, x8", "ok", "hstatus.VTVM=1 in HS-mode")
     with t.only_if(SVINVAL):
@@ -650,8 +677,13 @@ def gen_mstatus_modes() -> list[TestFile]:
     t.emit(word(SRET, "sret"))
     t.emit(f"{after}:", 0)
     t.leave()
-    t.outcome(ILLEGAL if MUT == "tsr_affects_vs" else "ok", lab, "sret in VS-mode (mstatus.TSR=1, VTSR=0)",
-              [0, SRET], origin="VS")
+    t.outcome(
+        ILLEGAL if MUT == "tsr_affects_vs" else "ok",
+        lab,
+        "sret in VS-mode (mstatus.TSR=1, VTSR=0)",
+        [0, SRET],
+        origin="VS",
+    )
     # HS-mode SRET with TSR=1: enter S with mret, sret there traps to M
     after = t.label("hsafter")
     la(t, "x7", after)
@@ -730,15 +762,22 @@ def gen_tvm_hfence() -> list[TestFile]:
     mst(t, MSTATUS_TVM, True, "TVM")
     for form in FORMS:
         t.emit("li x6, -1" if form[1] == 3 else "li x6, 0")
-        csr_window(t, "S", "hgatp", form, "ok" if MUT == "tvm_hgatp_ok" and form[1] not in (5, 7) else "illegal",
-                   "mstatus.TVM=1 in HS-mode")
+        csr_window(
+            t,
+            "S",
+            "hgatp",
+            form,
+            "ok" if MUT == "tvm_hgatp_ok" and form[1] not in (5, 7) else "illegal",
+            "mstatus.TVM=1 in HS-mode",
+        )
     lab = t.label("m")
     t.emit(f"{lab}:", 0)
     t.tsbi_csr("READ", "HGATP")
     t.check("a0", 0, lab, "M-mode read of hgatp with mstatus.TVM=1 returns Bare")
     for mode in ("VS", "VU"):
-        csr_window(t, mode, "hgatp", FORMS[0], "illegal" if MUT == "tvm_vs_hgatp_illegal" else "virtual",
-                   "mstatus.TVM=1")
+        csr_window(
+            t, mode, "hgatp", FORMS[0], "illegal" if MUT == "tvm_vs_hgatp_illegal" else "virtual", "mstatus.TVM=1"
+        )
     mst(t, MSTATUS_TVM, False, "TVM")
     for form in (FORMS[0], FORMS[6], FORMS[1]):
         t.emit("li x6, 0")
@@ -861,8 +900,14 @@ def gen_tvm_hfence() -> list[TestFile]:
     for tvm in (0, 1):
         mst(t, MSTATUS_TVM, bool(tvm), "TVM")
         if tvm:
-            iw(t, "S", hfence_gvma(6, 8), "hfence.gvma x6, x8", "ok" if MUT == "tvm_hgatp_ok" else ILLEGAL,
-               "HS-mode, mstatus.TVM=1")
+            iw(
+                t,
+                "S",
+                hfence_gvma(6, 8),
+                "hfence.gvma x6, x8",
+                "ok" if MUT == "tvm_hgatp_ok" else ILLEGAL,
+                "HS-mode, mstatus.TVM=1",
+            )
         for mode in ("VS", "VU"):
             iw(t, mode, hfence_gvma(6, 8), "hfence.gvma x6, x8", vtrap, f"mstatus.TVM={tvm}")
     mst(t, MSTATUS_TVM, False, "TVM")
@@ -923,6 +968,7 @@ def scratch_check(t: TestFile, lab: str, desc: str, written: int = 0) -> None:
     t.emit("lw x7, 0(x6)")
     exp = {0: SCR_VAL, 1: 0x5A5A5A78, 2: 0x5A5A5678, 4: 0x12345678, 8: 0x12345678}[written]
     from aigen import X
+
     t.check("x7", X(exp, exp | (0xFFFFFFFF << 32 if exp >> 31 else 0)), lab, desc)
 
 
@@ -936,14 +982,13 @@ def hls_window(t: TestFile, mode: str, name: str, expect: Expect, desc: str, sto
     alts = expect if isinstance(expect, list) else [expect]
     tval = [0, e] if any(a in (ILLEGAL, VIRTUAL) for a in alts) else None
     lab = t.window(mode, [line], expect, f"{name} ({desc})", tval)
-    if store_check:
-        if expect != "ok":
-            w = hlib.HLSV[name][2] if (MUT == "hsv_vs_writes" and mode in ("VS", "VU")) else 0
-            scratch_check(t, lab, f"a trapping {name} in {mode}-mode does not write memory", w)
+    if store_check and expect != "ok":
+        w = hlib.HLSV[name][2] if (MUT == "hsv_vs_writes" and mode in ("VS", "VU")) else 0
+        scratch_check(t, lab, f"a trapping {name} in {mode}-mode does not write memory", w)
     return lab
 
 
-def each_hls(t: TestFile, fn) -> None:  # noqa: ANN001
+def each_hls(t: TestFile, fn: Callable[[str], object]) -> None:
     for name in LOADS + STORES:
         if name in RV64ONLY:
             with t.rv64_only():
@@ -1038,7 +1083,7 @@ def gen_hlsv() -> list[TestFile]:
         "HLV, HLVX, and HSV, can be used also in U-mode. When HU=1, these instructions can be executed in U-mode "
         "the same as in HS-mode. When HU=0, all hypervisor instructions cause an illegal-instruction exception "
         "in U-mode.",
-        context="\"The same as in HS-mode\" includes the data: with vsatp and hgatp Bare, a U-mode HLV returns "
+        context='"The same as in HS-mode" includes the data: with vsatp and hgatp Bare, a U-mode HLV returns '
         "what an HS-mode HLV returns, and a U-mode HSV writes memory. HU never enables HFENCE or HINVAL in "
         "U-mode (hfence-vvma_hfence-gvma_exceptions).",
         plan="1. HU=1: U-mode HSV.W writes a value that HS-mode reads back; HLV.W, HLV.HU and HLV.B in U-mode "
@@ -1062,8 +1107,13 @@ def gen_hlsv() -> list[TestFile]:
         line, _ = hlsv(n, "x7", "x6")
         lab = t.window("U", [line], ILLEGAL if MUT == "hu_ignored" else "ok", f"{n} (hstatus.HU=1)")
         from aigen import X
-        t.check("x7", X(v32 & 0xFFFFFFFF, v64 & (2**64 - 1)), lab, f"a U-mode {n} with HU=1 returns the memory "
-                "value, extended as in HS-mode")
+
+        t.check(
+            "x7",
+            X(v32 & 0xFFFFFFFF, v64 & (2**64 - 1)),
+            lab,
+            f"a U-mode {n} with HU=1 returns the memory value, extended as in HS-mode",
+        )
         la(t, "x6", "ai_scratch")
     t.li("x6", 0x400)
     t.li("x8", 1)
@@ -1085,8 +1135,7 @@ def gen_hlsv() -> list[TestFile]:
     t = new("H_virtinst_vu_vs_hinst", scratch=True)
     t.describe(
         source=HYP,
-        rule_text="in VS-mode or VU-mode, attempts to execute a hypervisor instruction (HLV, HLVX, HSV, or "
-        "HFENCE);",
+        rule_text="in VS-mode or VU-mode, attempts to execute a hypervisor instruction (HLV, HLVX, HSV, or HFENCE);",
         context="One of the cases that raise a virtual-instruction exception. With Svinval, HINVAL.VVMA and "
         "HINVAL.GVMA also raise virtual-instruction in VS and VU (Svinval_virtual_instruction_vu_vs). "
         "hlsv_virtinst covers every load and store form.",
@@ -1247,9 +1296,16 @@ def gen_fs() -> list[TestFile]:
         t = new(rule)
         is_f = kind == "fs"
         fld, mask, sh = ("FS", FS_MASK, 13) if is_f else ("VS", VS_MASK, 9)
-        modify = [(FMV_W_X, "fmv.w.x f1, x0"), (FFLAGS_W, "csrw fflags, x0"), (FRM_W, "csrw frm, x0"),
-                  (FCSR_W, "csrw fcsr, x0")] if is_f else \
-            [(VSETVLI, "vsetvli x7, x0, e8, m1"), (VXRM_W, "csrw vxrm, x0"), (VCSR_W, "csrw vcsr, x0")]
+        modify = (
+            [
+                (FMV_W_X, "fmv.w.x f1, x0"),
+                (FFLAGS_W, "csrw fflags, x0"),
+                (FRM_W, "csrw frm, x0"),
+                (FCSR_W, "csrw fcsr, x0"),
+            ]
+            if is_f
+            else [(VSETVLI, "vsetvli x7, x0, e8, m1"), (VXRM_W, "csrw vxrm, x0"), (VCSR_W, "csrw vcsr, x0")]
+        )
         readi = (FMV_X_W, "fmv.x.w x7, f0") if is_f else (VSTART_R, "csrr x7, vstart")
         what = "floating-point" if is_f else "vector"
         t.describe(
@@ -1258,8 +1314,8 @@ def gen_fs() -> list[TestFile]:
                 "When V=1, both vsstatus.FS and the HS-level sstatus.FS are in effect. Attempts to execute a "
                 "floating-point instruction when either field is 0 (Off) raise an illegal-instruction exception. "
                 "Modifying the floating-point state when V=1 causes both fields to be set to 3 (Dirty)."
-                if is_f else
-                "Similarly, when V=1, both vsstatus.VS and the HS-level sstatus.VS are in effect. Attempts to "
+                if is_f
+                else "Similarly, when V=1, both vsstatus.VS and the HS-level sstatus.VS are in effect. Attempts to "
                 "execute a vector instruction when either field is 0 (Off) raise an illegal-instruction "
                 "exception. Modifying the vector state when V=1 causes both fields to be set to 3 (Dirty)."
             ),
@@ -1270,7 +1326,8 @@ def gen_fs() -> list[TestFile]:
             plan=f"1. Every (sstatus.{fld}, vsstatus.{fld}) pair in 0..3: a {what} instruction in VS-mode "
             "succeeds when both are nonzero and raises illegal-instruction otherwise.\n"
             f"2. For (1,1), (1,2), (2,1) and (2,2): each {what}-state-modifying instruction ("
-            + ", ".join(n for _, n in modify) + f") in VS-mode, and in VU-mode for (1,2), leaves both fields "
+            + ", ".join(n for _, n in modify)
+            + f") in VS-mode, and in VU-mode for (1,2), leaves both fields "
             "Dirty (3).\n"
             f"3. V=0: with sstatus.{fld}=1 and vsstatus.{fld}=1, the same modification in HS-mode sets "
             f"sstatus.{fld}=3 and leaves vsstatus.{fld}=1.",
@@ -1289,8 +1346,13 @@ def gen_fs() -> list[TestFile]:
                     set_field(t, "vsstatus", mask, b << sh, f"vsstatus.{fld} = {b}")
                     lab = iw(t, mode, e, note, "ok", f"sstatus.{fld}={a}, vsstatus.{fld}={b}")
                     hs_read(t, "x7", "sstatus")
-                    t.check_masked("x7", mask, (a << sh) if MUT == "fs_dirty_vs_only" else mask, lab,
-                                   f"{note} in {mode}-mode sets sstatus.{fld} to Dirty")
+                    t.check_masked(
+                        "x7",
+                        mask,
+                        (a << sh) if MUT == "fs_dirty_vs_only" else mask,
+                        lab,
+                        f"{note} in {mode}-mode sets sstatus.{fld} to Dirty",
+                    )
                     hs_read(t, "x7", "vsstatus")
                     t.check_masked("x7", mask, mask, lab, f"{note} in {mode}-mode sets vsstatus.{fld} to Dirty")
             for e, note in modify:
@@ -1300,14 +1362,20 @@ def gen_fs() -> list[TestFile]:
                 hs_read(t, "x7", "sstatus")
                 t.check_masked("x7", mask, mask, lab, f"{note} in HS-mode sets sstatus.{fld} to Dirty")
                 hs_read(t, "x7", "vsstatus")
-                t.check_masked("x7", mask, mask if MUT == "fs_dirty_v0" else (1 << sh), lab,
-                               f"{note} in HS-mode leaves vsstatus.{fld} (V=0)")
+                t.check_masked(
+                    "x7",
+                    mask,
+                    mask if MUT == "fs_dirty_v0" else (1 << sh),
+                    lab,
+                    f"{note} in HS-mode leaves vsstatus.{fld} (V=0)",
+                )
             set_field(t, "sstatus", mask, mask, f"sstatus.{fld} = 3")
             set_field(t, "vsstatus", mask, mask, f"vsstatus.{fld} = 3")
         tests.append(t)
 
     t = new("vsstatus_sd_xs_op")
     from aigen import X
+
     sd = X(1 << 31, 1 << 63)
     t.describe(
         source=HYP,
@@ -1329,8 +1397,9 @@ def gen_fs() -> list[TestFile]:
         hs_read(t, "x7", "vsstatus")
         t.check_masked("x7", sd, sd if want else 0, lab, f"vsstatus.SD ({desc})")
         if in_vs:
-            lab = t.window("VS", [f"csrr x7, {hex(csr_num('sstatus'))}  // sstatus (V=1: vsstatus)"], "ok",
-                           "read sstatus")
+            lab = t.window(
+                "VS", [f"csrr x7, {hex(csr_num('sstatus'))}  // sstatus (V=1: vsstatus)"], "ok", "read sstatus"
+            )
             t.check_masked("x7", sd, sd if want else 0, lab, f"sstatus.SD read in VS-mode ({desc})")
 
     def setfs(h: int, v: int) -> None:
@@ -1405,8 +1474,9 @@ def cbo_win(t: TestFile, mode: str, e: int, note: str, expect: Expect, desc: str
     if zero_check:
         la(t, "x6", "ai_scratch")
         t.emit("lw x7, 0(x6)")
-        t.check("x7", 0 if expect == "ok" else 0x5A5A, lab, f"{note} {'zeroes' if expect == 'ok' else 'leaves'} "
-                "the block")
+        t.check(
+            "x7", 0 if expect == "ok" else 0x5A5A, lab, f"{note} {'zeroes' if expect == 'ok' else 'leaves'} the block"
+        )
     return lab
 
 
@@ -1443,8 +1513,15 @@ def gen_cbo() -> list[TestFile]:
                 cbo_win(t, mode, CBO_ZERO, "cbo.zero", exp, f"menvcfg.CBZE=1, henvcfg.CBZE={h}, senvcfg.CBZE=1", True)
         env(t, "henvcfg", CBZE, CBZE)
         env(t, "senvcfg", CBZE, 0)
-        cbo_win(t, "VU", CBO_ZERO, "cbo.zero", "ok" if MUT == "cbze_vu_ignores_senvcfg" else VIRTUAL,
-                "henvcfg.CBZE=1, senvcfg.CBZE=0", True)
+        cbo_win(
+            t,
+            "VU",
+            CBO_ZERO,
+            "cbo.zero",
+            "ok" if MUT == "cbze_vu_ignores_senvcfg" else VIRTUAL,
+            "henvcfg.CBZE=1, senvcfg.CBZE=0",
+            True,
+        )
         cbo_win(t, "VS", CBO_ZERO, "cbo.zero", "ok", "henvcfg.CBZE=1, senvcfg.CBZE=0", True)
         env(t, "senvcfg", CBZE, CBZE)
         env(t, "menvcfg", CBZE, 0)
@@ -1456,8 +1533,7 @@ def gen_cbo() -> list[TestFile]:
         cbo_win(t, "S", CBO_ZERO, "cbo.zero", ILLEGAL, "HS-mode, menvcfg.CBZE=0", True)
         env(t, "menvcfg", CBZE, CBZE)
         env(t, "henvcfg", CBZE, 0)
-        cbo_win(t, "S", CBO_ZERO, "cbo.zero", vt if MUT == "cbze_affects_hs" else "ok", "HS-mode, henvcfg.CBZE=0",
-                True)
+        cbo_win(t, "S", CBO_ZERO, "cbo.zero", vt if MUT == "cbze_affects_hs" else "ok", "HS-mode, henvcfg.CBZE=0", True)
         env(t, "henvcfg", CBZE, CBZE)
     with t.only_if("!defined(ZICBOZ_SUPPORTED) && defined(S1P12P0_OR_LATER_SUPPORTED)"):
         hs_bits(t, "henvcfg", CBZE, True, "henvcfg.CBZE = 1")
@@ -1489,8 +1565,14 @@ def gen_cbo() -> list[TestFile]:
             env(t, "henvcfg", CBCFE, CBCFE * h)
             for mode in ("VS", "VU"):
                 for e, n in ((CBO_CLEAN, "cbo.clean"), (CBO_FLUSH, "cbo.flush")):
-                    cbo_win(t, mode, e, n, "ok" if (h or MUT == "cbcfe_ignored") else VIRTUAL,
-                            f"menvcfg.CBCFE=1, henvcfg.CBCFE={h}")
+                    cbo_win(
+                        t,
+                        mode,
+                        e,
+                        n,
+                        "ok" if (h or MUT == "cbcfe_ignored") else VIRTUAL,
+                        f"menvcfg.CBCFE=1, henvcfg.CBCFE={h}",
+                    )
         env(t, "henvcfg", CBCFE, CBCFE)
         env(t, "senvcfg", CBCFE, 0)
         cbo_win(t, "VU", CBO_FLUSH, "cbo.flush", VIRTUAL, "henvcfg.CBCFE=1, senvcfg.CBCFE=0")
@@ -1552,10 +1634,14 @@ def gen_cbo() -> list[TestFile]:
             probe_cbie("x1")
             t.either(
                 "x1",
-                lambda w=w: [cbo_win(t, m, CBO_INVAL, "cbo.inval", "ok", f"henvcfg.CBIE written {w >> 4:02b}, enabled")
-                             for m in ("VS", "VU")],
-                lambda w=w: [cbo_win(t, m, CBO_INVAL, "cbo.inval", VIRTUAL, f"henvcfg.CBIE written {w >> 4:02b}, "
-                                     "reads 00") for m in ("VS", "VU")],
+                lambda w=w: [
+                    cbo_win(t, m, CBO_INVAL, "cbo.inval", "ok", f"henvcfg.CBIE written {w >> 4:02b}, enabled")
+                    for m in ("VS", "VU")
+                ],
+                lambda w=w: [
+                    cbo_win(t, m, CBO_INVAL, "cbo.inval", VIRTUAL, f"henvcfg.CBIE written {w >> 4:02b}, reads 00")
+                    for m in ("VS", "VU")
+                ],
             )
         env(t, "henvcfg", CBIE, CBIE)
     with t.only_if("!defined(ZICBOM_SUPPORTED) && defined(S1P12P0_OR_LATER_SUPPORTED)"):
@@ -1596,16 +1682,24 @@ def gen_cbo() -> list[TestFile]:
                 def m_on(desc: str = desc) -> None:
                     t.either(
                         "x8",
-                        lambda: [cbo_win(t, m, CBO_INVAL, "cbo.inval", "ok", desc + " (both enabled)")
-                                 for m in ("VS", "VU")],
-                        lambda: [cbo_win(t, m, CBO_INVAL, "cbo.inval", VIRTUAL, desc + " (henvcfg.CBIE reads 00)")
-                                 for m in ("VS", "VU")],
+                        lambda: [
+                            cbo_win(t, m, CBO_INVAL, "cbo.inval", "ok", desc + " (both enabled)") for m in ("VS", "VU")
+                        ],
+                        lambda: [
+                            cbo_win(t, m, CBO_INVAL, "cbo.inval", VIRTUAL, desc + " (henvcfg.CBIE reads 00)")
+                            for m in ("VS", "VU")
+                        ],
                     )
 
                 mexp = VIRTUAL if MUT == "cbie_menvcfg_virtual" else ILLEGAL
-                t.either("x1", m_on, lambda desc=desc: [cbo_win(t, m, CBO_INVAL, "cbo.inval", mexp,
-                                                                 desc + " (menvcfg.CBIE reads 00)")
-                                                         for m in ("VS", "VU")])
+                t.either(
+                    "x1",
+                    m_on,
+                    lambda desc=desc, mexp=mexp: [
+                        cbo_win(t, m, CBO_INVAL, "cbo.inval", mexp, desc + " (menvcfg.CBIE reads 00)")
+                        for m in ("VS", "VU")
+                    ],
+                )
         env(t, "menvcfg", CBIE, CBIE)
         env(t, "henvcfg", CBIE, CBIE)
         env(t, "senvcfg", CBIE, 0)
@@ -1657,6 +1751,7 @@ def gen_cbo() -> list[TestFile]:
                     t.leave()
                     t.outcome("ok", lab, f"cbo.inval in {mode}-mode (menvcfg.CBIE=01, henvcfg.CBIE={hv >> 4:02b})")
                     t.check("x7", val, lab, f"cbo.inval in {mode}-mode flushes: the stored value survives")
+
         t.either("x1", flush_cases, lambda: t.comment("menvcfg.CBIE cannot hold 01"))
         env(t, "menvcfg", CBIE, CBIE)
         env(t, "henvcfg", CBIE, CBIE)
@@ -1717,8 +1812,14 @@ def gen_nomatch() -> list[TestFile]:
             t.li("x6", 1)
             t.window("VS", [f"csrc {sc}, x6  // clear scounteren.CY"], "ok", "clear scounteren.CY")
             cw = enc_csr(0xC00, 2, 7, 0)
-            iw(t, "VU", cw, "csrr x7, cycle", "ok" if MUT == "scounteren_shadowed" else VIRTUAL,
-               "scounteren.CY cleared by VS-mode")
+            iw(
+                t,
+                "VU",
+                cw,
+                "csrr x7, cycle",
+                "ok" if MUT == "scounteren_shadowed" else VIRTUAL,
+                "scounteren.CY cleared by VS-mode",
+            )
             t.li("x6", 1)
             t.window("VS", [f"csrs {sc}, x6  // set scounteren.CY"], "ok", "set scounteren.CY")
             iw(t, "VU", cw, "csrr x7, cycle", "ok", "scounteren.CY set by VS-mode")
@@ -1730,8 +1831,13 @@ def gen_nomatch() -> list[TestFile]:
         t.li("x6", CBZE)
         lab = t.window("VS", [f"csrc {se}, x6  // senvcfg.CBZE = 0"], "ok", "clear senvcfg.CBZE")
         hs_read(t, "x7", "senvcfg")
-        t.check_masked("x7", CBZE, CBZE if MUT == "scounteren_shadowed" else 0, lab,
-                       "a VS-mode write of senvcfg reaches HS-mode's senvcfg")
+        t.check_masked(
+            "x7",
+            CBZE,
+            CBZE if MUT == "scounteren_shadowed" else 0,
+            lab,
+            "a VS-mode write of senvcfg reaches HS-mode's senvcfg",
+        )
         cbo_win(t, "VU", CBO_ZERO, "cbo.zero", VIRTUAL, "senvcfg.CBZE cleared by VS-mode")
         t.li("x6", CBZE)
         t.window("VS", [f"csrs {se}, x6  // senvcfg.CBZE = 1"], "ok", "set senvcfg.CBZE")
@@ -1774,15 +1880,25 @@ def gen_sret_v1() -> list[TestFile]:
                 t.emit(f"{lab}:", 0)
                 t.emit(f"csrr x7, {hex(csr_num('sstatus'))}  // VS: vsstatus; VU: virtual-instruction")
                 t.leave()
-                t.outcome("ok" if spp else VIRTUAL, lab, f"sret ({desc}): read of sstatus at vsepc",
-                          [0, enc_csr(0x100, 2, 7, 0)], origin="VS" if spp else "VU")
+                t.outcome(
+                    "ok" if spp else VIRTUAL,
+                    lab,
+                    f"sret ({desc}): read of sstatus at vsepc",
+                    [0, enc_csr(0x100, 2, 7, 0)],
+                    origin="VS" if spp else "VU",
+                )
                 t.check("x9", 0, lab, f"sret ({desc}) jumps to vsepc")
                 hs_read(t, "x7", "vsstatus")
                 nspp = spp if MUT == "sret_v1_spp" else 0
                 nspie = spie if MUT == "sret_v1_spie" else 1
                 nsie = sie if MUT == "sret_v1_sie" else spie
-                t.check_masked("x7", 0x122, (nspp << 8) | (nspie << 5) | (nsie << 1), lab,
-                               f"sret ({desc}) sets vsstatus.SPP=0, SIE=SPIE, SPIE=1")
+                t.check_masked(
+                    "x7",
+                    0x122,
+                    (nspp << 8) | (nspie << 5) | (nsie << 1),
+                    lab,
+                    f"sret ({desc}) sets vsstatus.SPP=0, SIE=SPIE, SPIE=1",
+                )
                 hs_read(t, "x7", "vsepc")
                 la(t, "x8", tgt)
                 eq(t, "x7", "x8", lab, f"sret ({desc}) leaves vsepc")
@@ -1791,5 +1907,17 @@ def gen_sret_v1() -> list[TestFile]:
 
 
 def gen() -> list[TestFile]:
-    return (gen_vtsr() + gen_wfi() + gen_vu_sret() + gen_vtvm() + gen_mstatus_modes() + gen_tvm_hfence()
-            + gen_hlsv() + gen_xtval() + gen_fs() + gen_cbo() + gen_nomatch() + gen_sret_v1())
+    return (
+        gen_vtsr()
+        + gen_wfi()
+        + gen_vu_sret()
+        + gen_vtvm()
+        + gen_mstatus_modes()
+        + gen_tvm_hfence()
+        + gen_hlsv()
+        + gen_xtval()
+        + gen_fs()
+        + gen_cbo()
+        + gen_nomatch()
+        + gen_sret_v1()
+    )

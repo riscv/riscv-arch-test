@@ -113,7 +113,7 @@ def suite_mutants() -> dict[str, str]:
             continue
         try:
             mod = importlib.import_module(p.stem)
-        except Exception:  # a generator under construction must not break the others
+        except Exception:  # noqa: BLE001, S112  # a generator under construction must not break the others
             continue
         for k, v in getattr(mod, "MUTANTS", {}).items():
             out[f"{p.stem[4:]}:{k}"] = v
@@ -164,7 +164,7 @@ def run(name: str) -> None:
         sname, mut = name.split(":", 1)
         os.environ["AI_MUTANT"] = mut
         mod = importlib.reload(importlib.import_module(f"gen_{sname}"))
-        mod.SUITE = suite
+        vars(mod)["SUITE"] = suite  # a module found by name: its globals are set through its namespace
         tests = mod.gen()
     else:
         raise SystemExit(f"unknown mutant {name}")

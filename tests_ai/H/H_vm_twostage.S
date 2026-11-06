@@ -122,7 +122,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs64: 0x40000000 -> 0x140001000 perms 0xcf 
+  // vs64: 0x40000000 -> 0x140001000 perms 0xcf
   li x6, 0x50000400
   li x7, 0xcf
   or x6, x6, x7
@@ -146,7 +146,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140001000 -> ai_pg_B perms 0xdf 
+  // g64: 0x140001000 -> ai_pg_B perms 0xdf
   LA(x6, ai_pg_B)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -156,7 +156,7 @@ RVTEST_BEGIN
   li x7, 8
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs64: 0x40001000 -> 0x140000000 perms 0xcf 
+  // vs64: 0x40001000 -> 0x140000000 perms 0xcf
   li x6, 0x50000000
   li x7, 0xcf
   or x6, x6, x7
@@ -164,7 +164,7 @@ RVTEST_BEGIN
   li x7, 8
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140000000 -> ai_pg_A perms 0xdf 
+  // g64: 0x140000000 -> ai_pg_A perms 0xdf
   LA(x6, ai_pg_A)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -174,7 +174,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs64: 0x40003000 -> 0x140003000 perms 0xcf 
+  // vs64: 0x40003000 -> 0x140003000 perms 0xcf
   li x6, 0x50000c00
   li x7, 0xcf
   or x6, x6, x7
@@ -367,7 +367,7 @@ H_vm_twostage_in_VS_12:
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vu64: 0x40000000 -> 0x140001000 perms 0xdf 
+  // vu64: 0x40000000 -> 0x140001000 perms 0xdf
   li x6, 0x50000400
   li x7, 0xdf
   or x6, x6, x7
@@ -415,7 +415,7 @@ H_vm_twostage_in_VS_12:
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64b: 0x140001000 -> ai_pg_B perms 0xdf 
+  // g64b: 0x140001000 -> ai_pg_B perms 0xdf
   LA(x6, ai_pg_B)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -519,7 +519,7 @@ H_vm_twostage_in_VU_17:
   li x7, 512
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32: 0x20000000 -> 0x40001000 perms 0xcf 
+  // vs32: 0x20000000 -> 0x40001000 perms 0xcf
   li x6, 0x10000400
   li x7, 0xcf
   or x6, x6, x7
@@ -535,7 +535,7 @@ H_vm_twostage_in_VU_17:
   li x7, 1024
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32: 0x40001000 -> ai_pg_B perms 0xdf 
+  // g32: 0x40001000 -> ai_pg_B perms 0xdf
   LA(x6, ai_pg_B)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -545,7 +545,7 @@ H_vm_twostage_in_VU_17:
   li x7, 4
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32: 0x20001000 -> 0x40000000 perms 0xcf 
+  // vs32: 0x20001000 -> 0x40000000 perms 0xcf
   li x6, 0x10000000
   li x7, 0xcf
   or x6, x6, x7
@@ -553,7 +553,7 @@ H_vm_twostage_in_VU_17:
   li x7, 4
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32: 0x40000000 -> ai_pg_A perms 0xdf 
+  // g32: 0x40000000 -> ai_pg_A perms 0xdf
   LA(x6, ai_pg_A)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -563,7 +563,7 @@ H_vm_twostage_in_VU_17:
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32: 0x20003000 -> 0x40003000 perms 0xcf 
+  // vs32: 0x20003000 -> 0x40003000 perms 0xcf
   li x6, 0x10000c00
   li x7, 0xcf
   or x6, x6, x7
@@ -748,7 +748,7 @@ H_vm_twostage_in_VS_30:
   li x7, 512
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vu32: 0x20000000 -> 0x40001000 perms 0xdf 
+  // vu32: 0x20000000 -> 0x40001000 perms 0xdf
   li x6, 0x10000400
   li x7, 0xdf
   or x6, x6, x7
@@ -788,7 +788,7 @@ H_vm_twostage_in_VS_30:
   li x7, 1024
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32b: 0x40001000 -> ai_pg_B perms 0xdf 
+  // g32b: 0x40001000 -> ai_pg_B perms 0xdf
   LA(x6, ai_pg_B)
   srli x6, x6, 12
   slli x6, x6, 10

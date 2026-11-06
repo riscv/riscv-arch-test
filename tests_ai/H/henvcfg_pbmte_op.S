@@ -77,7 +77,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs64: 0x40000000 -> ai_pg_A perms 0x20000000000000cf 
+  // vs64: 0x40000000 -> ai_pg_A perms 0x20000000000000cf
   LA(x6, ai_pg_A)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -107,7 +107,7 @@ henvcfg_pbmte_op_in_S_1:
   AI_CHECK(x13, henvcfg_pbmte_op_in_S_1, henvcfg_pbmte_op_in_S_1_s0)
   AI_CHECK(x14, henvcfg_pbmte_op_in_S_1, henvcfg_pbmte_op_in_S_1_s1)
   AI_CHECK(x7, henvcfg_pbmte_op_in_S_1, henvcfg_pbmte_op_in_S_1_s2)
-  // vs64: 0x40000000 -> ai_pg_A perms 0x60000000000000cf 
+  // vs64: 0x40000000 -> ai_pg_A perms 0x60000000000000cf
   LA(x6, ai_pg_A)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -142,7 +142,7 @@ henvcfg_pbmte_op_in_S_2:
   AI_CHECK(x15, henvcfg_pbmte_op_in_S_2, henvcfg_pbmte_op_in_S_2_s9)
   AI_ORIGIN
   AI_CHECK(x15, henvcfg_pbmte_op_in_S_2, henvcfg_pbmte_op_in_S_2_s10)
-  // vs64: 0x40000000 -> ai_pg_A perms 0x20000000000000cf 
+  // vs64: 0x40000000 -> ai_pg_A perms 0x20000000000000cf
   LA(x6, ai_pg_A)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -215,7 +215,7 @@ henvcfg_pbmte_op_ro_10:
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs64: 0x40000000 -> ai_pg_A perms 0x20000000000000cf 
+  // vs64: 0x40000000 -> ai_pg_A perms 0x20000000000000cf
   LA(x6, ai_pg_A)
   srli x6, x6, 12
   slli x6, x6, 10

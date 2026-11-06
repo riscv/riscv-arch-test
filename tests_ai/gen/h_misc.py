@@ -13,7 +13,6 @@ from hlib import (
     HYP,
     MUT,
     csr_num,
-    hs_bits,
     hs_read,
     new,
 )
@@ -337,8 +336,13 @@ def henvcfg_tests() -> list[TestFile]:
     lab = t.label("ones")
     t.emit(f"{lab}:", 0)
     henvcfg_write(t, (1 << 64) - 1, "all ones")
-    henvcfg_check(t, WPRI, (1 << 8) if MUT == "henvcfg_wpri_writable" else 0, lab,
-                  "WPRI bits of henvcfg read 0 after a write of all ones")
+    henvcfg_check(
+        t,
+        WPRI,
+        (1 << 8) if MUT == "henvcfg_wpri_writable" else 0,
+        lab,
+        "WPRI bits of henvcfg read 0 after a write of all ones",
+    )
     henvcfg_check(t, 1, 1, lab, "henvcfg.FIOM reads 1 after a write of all ones")
     for name, (m, cond) in HENVCFG_FIELDS.items():
         if cond is None:
@@ -464,15 +468,25 @@ def henvcfg_tests() -> list[TestFile]:
     t.emit(f"{lab}:", 0)
     t.emit(f"csrs {hex(csr_num('vsstatus'))}, x7  // try vsstatus.SDT = 1")
     hs_read(t, "x8", "vsstatus")
-    t.check_masked("x8", sdt, sdt if MUT == "dte0_sdt_writable" else 0, lab,
-                   "vsstatus.SDT is read-only zero with henvcfg.DTE=0 (csrs)")
+    t.check_masked(
+        "x8",
+        sdt,
+        sdt if MUT == "dte0_sdt_writable" else 0,
+        lab,
+        "vsstatus.SDT is read-only zero with henvcfg.DTE=0 (csrs)",
+    )
     hs_read(t, "x8", "vsstatus")
     t.li("x7", sdt)
     t.emit("or x8, x8, x7")
     t.emit(f"csrw {hex(csr_num('vsstatus'))}, x8  // try vsstatus.SDT = 1")
     hs_read(t, "x8", "vsstatus")
-    t.check_masked("x8", sdt, sdt if MUT == "dte0_sdt_writable" else 0, lab,
-                   "vsstatus.SDT is read-only zero with henvcfg.DTE=0 (csrw)")
+    t.check_masked(
+        "x8",
+        sdt,
+        sdt if MUT == "dte0_sdt_writable" else 0,
+        lab,
+        "vsstatus.SDT is read-only zero with henvcfg.DTE=0 (csrw)",
+    )
     t.li("x7", sdt)
     t.emit(f"csrc {hex(csr_num('vsstatus'))}, x7")
     with t.rv64_only():
@@ -489,46 +503,105 @@ def henvcfg_tests() -> list[TestFile]:
 def tval_csrs() -> list[TestFile]:
     tests = []
     specs = [
-        ("htval_sz_acc_op", "htval", "HS", "The htval register is an HSXLEN-bit read/write register formatted as "
-         "shown in <<htvalreg>>. When a trap is taken into HS-mode, htval is written with additional "
-         "exception-specific information, alongside stval, to assist software in handling the trap."),
-        ("htval_val", "htval", "HS", "htval is a WARL register that must be able to hold zero and may be capable "
-         "of holding only an arbitrary subset of other 2-bit-shifted guest physical addresses, if any."),
-        ("htinst_sz_acc_op", "htinst", "HS", "The htinst register is an HSXLEN-bit read/write register formatted "
-         "as shown in <<htinstreg>>. When a trap is taken into HS-mode, htinst is written with a value that, if "
-         "nonzero, provides information about the instruction that trapped, to assist software in handling the "
-         "trap. The values that may be written to htinst on a trap are documented in <<tinst-vals>>."),
-        ("htinst_val", "htinst", "HS", "htinst is a WARL register that need only be able to hold the values that "
-         "the implementation may automatically write to it on a trap."),
-        ("mtval2_sz_acc_op", "mtval2", "M", "The mtval2 register is an MXLEN-bit read/write register formatted as "
-         "shown in <<mtval2reg>>. When a trap is taken into M-mode, mtval2 is written with additional "
-         "exception-specific information, alongside mtval, to assist software in handling the trap."),
-        ("mtval2_val", "mtval2", "M", "mtval2 is a WARL register that must be able to hold zero and may be "
-         "capable of holding only an arbitrary subset of other 2-bit-shifted guest physical addresses, if any."),
-        ("mtinst_sz_acc_op", "mtinst", "M", "The mtinst register is an MXLEN-bit read/write register formatted as "
-         "shown in <<mtinstreg>>. When a trap is taken into M-mode, mtinst is written with a value that, if "
-         "nonzero, provides information about the instruction that trapped, to assist software in handling the "
-         "trap. The values that may be written to mtinst on a trap are documented in <<tinst-vals>>."),
-        ("mtinst_val", "mtinst", "M", "mtinst is a WARL register that need only be able to hold the values that "
-         "the implementation may automatically write to it on a trap."),
-        ("mtval2_Ssdbltrp", "mtval2", "M", "The Ssdbltrp extension (See <<ssdbltrp>>) requires the implementation "
-         "of the mtval2 CSR."),
+        (
+            "htval_sz_acc_op",
+            "htval",
+            "HS",
+            (
+                "The htval register is an HSXLEN-bit read/write register formatted as "
+                "shown in <<htvalreg>>. When a trap is taken into HS-mode, htval is written with additional "
+                "exception-specific information, alongside stval, to assist software in handling the trap."
+            ),
+        ),
+        (
+            "htval_val",
+            "htval",
+            "HS",
+            (
+                "htval is a WARL register that must be able to hold zero and may be capable "
+                "of holding only an arbitrary subset of other 2-bit-shifted guest physical addresses, if any."
+            ),
+        ),
+        (
+            "htinst_sz_acc_op",
+            "htinst",
+            "HS",
+            (
+                "The htinst register is an HSXLEN-bit read/write register formatted "
+                "as shown in <<htinstreg>>. When a trap is taken into HS-mode, htinst is written with a value that, if "
+                "nonzero, provides information about the instruction that trapped, to assist software in handling the "
+                "trap. The values that may be written to htinst on a trap are documented in <<tinst-vals>>."
+            ),
+        ),
+        (
+            "htinst_val",
+            "htinst",
+            "HS",
+            (
+                "htinst is a WARL register that need only be able to hold the values that "
+                "the implementation may automatically write to it on a trap."
+            ),
+        ),
+        (
+            "mtval2_sz_acc_op",
+            "mtval2",
+            "M",
+            (
+                "The mtval2 register is an MXLEN-bit read/write register formatted as "
+                "shown in <<mtval2reg>>. When a trap is taken into M-mode, mtval2 is written with additional "
+                "exception-specific information, alongside mtval, to assist software in handling the trap."
+            ),
+        ),
+        (
+            "mtval2_val",
+            "mtval2",
+            "M",
+            (
+                "mtval2 is a WARL register that must be able to hold zero and may be "
+                "capable of holding only an arbitrary subset of other 2-bit-shifted guest physical addresses, if any."
+            ),
+        ),
+        (
+            "mtinst_sz_acc_op",
+            "mtinst",
+            "M",
+            (
+                "The mtinst register is an MXLEN-bit read/write register formatted as "
+                "shown in <<mtinstreg>>. When a trap is taken into M-mode, mtinst is written with a value that, if "
+                "nonzero, provides information about the instruction that trapped, to assist software in handling the "
+                "trap. The values that may be written to mtinst on a trap are documented in <<tinst-vals>>."
+            ),
+        ),
+        (
+            "mtinst_val",
+            "mtinst",
+            "M",
+            (
+                "mtinst is a WARL register that need only be able to hold the values that "
+                "the implementation may automatically write to it on a trap."
+            ),
+        ),
+        (
+            "mtval2_Ssdbltrp",
+            "mtval2",
+            "M",
+            "The Ssdbltrp extension (See <<ssdbltrp>>) requires the implementation of the mtval2 CSR.",
+        ),
     ]
     for rule, csr, lvl, text in specs:
         req = ["I", "S", "H"] + (["Ssdbltrp"] if rule == "mtval2_Ssdbltrp" else [])
-        if lvl == "M":
-            t = new(rule, required=req + ["Sm"], boot="M", suffix="_Sm")
-        else:
-            t = new(rule, required=req)
-        is_val = rule.endswith("_val")
+        t = new(rule, required=req + ["Sm"], boot="M", suffix="_Sm") if lvl == "M" else new(rule, required=req)
         tinst = "tinst" in csr
         t.describe(
             source=HYP,
             rule_text=text,
             context=(f"{csr} is an M-level CSR, so the file boots to M-mode and requires Sm. " if lvl == "M" else "")
-            + ("Every implementation may write zero on any trap (H_trap_xtinst_zero_ok), so zero is a value the "
-               "register must hold; other values are implementation-specific. " if tinst else
-               "Zero is the one value every implementation must hold; other values are implementation-specific. ")
+            + (
+                "Every implementation may write zero on any trap (H_trap_xtinst_zero_ok), so zero is a value the "
+                "register must hold; other values are implementation-specific. "
+                if tinst
+                else "Zero is the one value every implementation must hold; other values are implementation-specific. "
+            )
             + "The trap behavior is tested with the traps (h_trap, h_gstage).",
             plan=f"1. Read {csr} without a trap.\n"
             f"2. Write all ones to {csr} without a trap (any value may be written to a WARL register), then a "
@@ -557,17 +630,50 @@ def vs_value_sets() -> list[TestFile]:
     tests = []
     MAXV = X(0xFFFFFFFF, (1 << 64) - 1)
     sets = {
-        "vsepc_warl": ("vsepc", "sepc", "vsepc is a WARL register that must be able to hold the same set of "
-                       "values that sepc can hold, with VSXLEN substituting for SXLEN.",
-                       [0, 1, 2, 3, 0x7FFFFFFE, MAXV, X(0x80000002, 0xFFFFFFFF80000002), X(0x55555555, 0x5555555555555554)]),
-        "vscause_wlrl": ("vscause", "scause", "vscause is a WLRL register that must be able to hold the same set of "
-                         "values that scause can hold, with VSXLEN substituting for SXLEN.",
-                         [0, 2, 3, 5, 7, 8, 12, 13, 15, 20, 21, 22, 23, X((1 << 31) | 1, (1 << 63) | 1),
-                          X((1 << 31) | 5, (1 << 63) | 5), X((1 << 31) | 9, (1 << 63) | 9)]),
-        "vstval_warl": ("vstval", "stval", "vstval is a WARL register that must be able to hold the same set of "
-                        "values that stval can hold, with VSXLEN substituting for SXLEN.",
-                        [0, 0x1000, 0x7FFFF000, X(0xFFFFF000, 0xFFFFFFFFFFFFF000), X(0x12345678, 0x3FFFFFF000),
-                         MAXV]),
+        "vsepc_warl": (
+            "vsepc",
+            "sepc",
+            (
+                "vsepc is a WARL register that must be able to hold the same set of "
+                "values that sepc can hold, with VSXLEN substituting for SXLEN."
+            ),
+            [0, 1, 2, 3, 0x7FFFFFFE, MAXV, X(0x80000002, 0xFFFFFFFF80000002), X(0x55555555, 0x5555555555555554)],
+        ),
+        "vscause_wlrl": (
+            "vscause",
+            "scause",
+            (
+                "vscause is a WLRL register that must be able to hold the same set of "
+                "values that scause can hold, with VSXLEN substituting for SXLEN."
+            ),
+            [
+                0,
+                2,
+                3,
+                5,
+                7,
+                8,
+                12,
+                13,
+                15,
+                20,
+                21,
+                22,
+                23,
+                X((1 << 31) | 1, (1 << 63) | 1),
+                X((1 << 31) | 5, (1 << 63) | 5),
+                X((1 << 31) | 9, (1 << 63) | 9),
+            ],
+        ),
+        "vstval_warl": (
+            "vstval",
+            "stval",
+            (
+                "vstval is a WARL register that must be able to hold the same set of "
+                "values that stval can hold, with VSXLEN substituting for SXLEN."
+            ),
+            [0, 0x1000, 0x7FFFF000, X(0xFFFFF000, 0xFFFFFFFFFFFFF000), X(0x12345678, 0x3FFFFFF000), MAXV],
+        ),
     }
     for rule, (vcsr, scsr, text, vals) in sets.items():
         t = new(rule)
@@ -581,8 +687,11 @@ def vs_value_sets() -> list[TestFile]:
             "trap can write to scause with H."
             + (" For vsepc, bit 0 always reads 0, and bit 1 reads 0 when IALIGN=32." if vcsr == "vsepc" else ""),
             plan=f"1. For each value: the {scsr} read-back equals the {vcsr} read-back.\n"
-            + (f"2. Each legal value reads back exactly from {vcsr}." if vcsr == "vscause" else
-               f"2. Values {scsr} must hold (small addresses, 0) read back exactly from {vcsr}."),
+            + (
+                f"2. Each legal value reads back exactly from {vcsr}."
+                if vcsr == "vscause"
+                else f"2. Values {scsr} must hold (small addresses, 0) read back exactly from {vcsr}."
+            ),
         )
         for v in vals:
             lab = t.label("val")
@@ -630,8 +739,7 @@ def h_vscsrs_v0() -> TestFile:
         reg = {"vstvec": "x1", "vsscratch": "x9"}.get(name)
         if reg:
             hs_read(t, reg, name)
-    for name, v in (("vstvec", 0x400), ("vsscratch", 0x800), ("vsepc", 0x1230), ("vscause", 13),
-                    ("vstval", 0x4560)):
+    for name, v in (("vstvec", 0x400), ("vsscratch", 0x800), ("vsepc", 0x1230), ("vscause", 13), ("vstval", 0x4560)):
         t.load("x7", v, f"{name} value")
         t.emit(f"csrw {hex(csr_num(name))}, x7  // {name}")
     with t.rv64_only():
@@ -648,8 +756,12 @@ def h_vscsrs_v0() -> TestFile:
     t.outcome(BREAKPOINT, lab, "EBREAK in HS-mode with VS CSRs set", tval=[0, lab], origin="S")
     t.emit("AI_LOG(x15, TRAPLOG_VECT)", 10)
     t.emit("andi x15, x15, 3")
-    t.check("x15", 2 if MUT == "vstvec_used_v0" else 1, lab, "the EBREAK is handled by the HS-mode handler "
-            "(handler mode 1 HS, 2 VS)")
+    t.check(
+        "x15",
+        2 if MUT == "vstvec_used_v0" else 1,
+        lab,
+        "the EBREAK is handled by the HS-mode handler (handler mode 1 HS, 2 VS)",
+    )
     lab = t.label("mem")
     t.la("x6", "h_vscsrs_v0_word")
     t.load("x7", 0x5A5A1234, "data value")
@@ -698,15 +810,20 @@ def h_vscsrs_v1() -> TestFile:
     t.li("x7", 2)
     t.emit(f"csrc {hex(csr_num('sip'))}, x7  // sip.SSIP = 0")
     t.emit(f"csrs {hex(csr_num('sie'))}, x7  // sie.SSIE = 1")
-    lab = t.window("VS", [
-        "li x7, 0x40000",
-        f"csrc {hex(csr_num('sstatus'))}, x7  // VS: sstatus.SUM = 0 (vsstatus)",
-        f"csrw {hex(csr_num('sie'))}, x0  // VS: sie = 0 (vsie)",
-        f"csrr x6, {hex(csr_num('stvec'))}",
-        f"csrw {hex(csr_num('stvec'))}, x6  // VS: stvec (vstvec)",
-        f"csrr x6, {hex(csr_num('sscratch'))}",
-        f"csrw {hex(csr_num('sscratch'))}, x6  // VS: sscratch (vsscratch)",
-    ], "ok", "VS-mode writes of its supervisor CSRs")
+    lab = t.window(
+        "VS",
+        [
+            "li x7, 0x40000",
+            f"csrc {hex(csr_num('sstatus'))}, x7  // VS: sstatus.SUM = 0 (vsstatus)",
+            f"csrw {hex(csr_num('sie'))}, x0  // VS: sie = 0 (vsie)",
+            f"csrr x6, {hex(csr_num('stvec'))}",
+            f"csrw {hex(csr_num('stvec'))}, x6  // VS: stvec (vstvec)",
+            f"csrr x6, {hex(csr_num('sscratch'))}",
+            f"csrw {hex(csr_num('sscratch'))}, x6  // VS: sscratch (vsscratch)",
+        ],
+        "ok",
+        "VS-mode writes of its supervisor CSRs",
+    )
     hs_read(t, "x8", "sstatus")
     t.check_masked("x8", 0x40000, 0x40000, lab, "HS-level sstatus.SUM keeps 1 across VS-mode execution")
     hs_read(t, "x8", "sie")

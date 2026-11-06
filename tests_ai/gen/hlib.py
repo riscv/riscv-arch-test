@@ -19,7 +19,10 @@ sys.path.insert(0, str(Path(__file__).parent))
 from aigen import POOL_TRAP, TestFile, X
 
 if TYPE_CHECKING:
-    from aigen import Expect, Value
+    from collections.abc import Sequence
+
+    from aigen import Expect, TestFileOptions, Value
+    from typing_extensions import Unpack
 
 SUITE = "H"
 ISSUE = "https://github.com/riscv/riscv-isa-manual/issues/"
@@ -101,8 +104,17 @@ CSRS: dict[str, tuple[int, str, str | None]] = {
     "instret": (0xC02, "U", None),
 }
 READ_ONLY = {"hgeip", "mhartid"}  # writes are illegal in every mode (read-only CSR address or rule)
-VS_OF = {"sstatus": "vsstatus", "sie": "vsie", "stvec": "vstvec", "sscratch": "vsscratch", "sepc": "vsepc",
-         "scause": "vscause", "stval": "vstval", "sip": "vsip", "satp": "vsatp"}
+VS_OF = {
+    "sstatus": "vsstatus",
+    "sie": "vsie",
+    "stvec": "vstvec",
+    "sscratch": "vsscratch",
+    "sepc": "vsepc",
+    "scause": "vscause",
+    "stval": "vstval",
+    "sip": "vsip",
+    "satp": "vsatp",
+}
 
 
 def csr_num(name: str) -> int:
@@ -229,7 +241,7 @@ def word(e: int, note: str) -> str:
     return f".word {hex(e)}  // {note}"
 
 
-def insn_window(t: TestFile, mode: str, e: int, note: str, expect: Expect, desc: str, more: list[str] = ()) -> str:
+def insn_window(t: TestFile, mode: str, e: int, note: str, expect: Expect, desc: str, more: Sequence[str] = ()) -> str:
     """Execute one instruction (encoding e) in `mode` in a trap window. Illegal and virtual traps must leave
     xtval = 0 or the instruction bits."""
     alts = expect if isinstance(expect, list) else [expect]
@@ -238,7 +250,7 @@ def insn_window(t: TestFile, mode: str, e: int, note: str, expect: Expect, desc:
 
 
 # ---------------------------------------------------------------- state helpers
-def new(rule: str, required: list[str] = REQ, **kw: object) -> TestFile:
+def new(rule: str, required: list[str] = REQ, **kw: Unpack[TestFileOptions]) -> TestFile:
     kw.setdefault("boot", "S")
     kw.setdefault("pool", POOL_TRAP)
     kw.setdefault("march", MARCH)
@@ -273,8 +285,16 @@ def m_read(t: TestFile, name: str) -> None:
 
 
 MSTATUS_TVM, MSTATUS_TW, MSTATUS_TSR = 1 << 20, 1 << 21, 1 << 22
-HSTATUS = {"VSBE": 1 << 5, "GVA": 1 << 6, "SPV": 1 << 7, "SPVP": 1 << 8, "HU": 1 << 9, "VTVM": 1 << 20,
-           "VTW": 1 << 21, "VTSR": 1 << 22}
+HSTATUS = {
+    "VSBE": 1 << 5,
+    "GVA": 1 << 6,
+    "SPV": 1 << 7,
+    "SPVP": 1 << 8,
+    "HU": 1 << 9,
+    "VTVM": 1 << 20,
+    "VTW": 1 << 21,
+    "VTSR": 1 << 22,
+}
 
 
 def enter_tsbi(t: TestFile, mode: str) -> None:

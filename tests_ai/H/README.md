@@ -31,6 +31,7 @@ tables, memory-fault checks).
   - the mode the trap came from, and the handler mode.
 
   Before each trap, the fields the trap must write are preset to the opposite of their expected value.
+
 - **HS-qualified versus virtual instruction.** Every H and VS CSR, and the supervisor and M-level CSRs, are accessed
   from HS, VS, VU and U over all eight CSR instruction forms; rs1=x0 and uimm=0 are reads. Instructions that HS-mode
   could not execute raise illegal-instruction from VS/VU, for example writes to read-only CSRs, MRET, and RV64

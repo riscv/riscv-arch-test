@@ -95,7 +95,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs64: 0x40000000 -> 0x140000000 perms 0xcf 
+  // vs64: 0x40000000 -> 0x140000000 perms 0xcf
   li x6, 0x50000000
   li x7, 0xcf
   or x6, x6, x7
@@ -119,7 +119,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140000000 -> ai_pg_A perms 0xdf 
+  // g64: 0x140000000 -> ai_pg_A perms 0xdf
   LA(x6, ai_pg_A)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -129,7 +129,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs64: 0x40001000 -> 0x140001000 perms 0xdf 
+  // vs64: 0x40001000 -> 0x140001000 perms 0xdf
   li x6, 0x50000400
   li x7, 0xdf
   or x6, x6, x7
@@ -137,7 +137,7 @@ RVTEST_BEGIN
   li x7, 8
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140001000 -> ai_pg_B perms 0xdf 
+  // g64: 0x140001000 -> ai_pg_B perms 0xdf
   LA(x6, ai_pg_B)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -147,7 +147,7 @@ RVTEST_BEGIN
   li x7, 8
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs64: 0x40002000 -> 0x140002000 perms 0x49 
+  // vs64: 0x40002000 -> 0x140002000 perms 0x49
   li x6, 0x50000800
   li x7, 0x49
   or x6, x6, x7
@@ -155,7 +155,7 @@ RVTEST_BEGIN
   li x7, 16
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140002000 -> ai_pg_X perms 0xdf 
+  // g64: 0x140002000 -> ai_pg_X perms 0xdf
   LA(x6, ai_pg_X)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -165,7 +165,7 @@ RVTEST_BEGIN
   li x7, 16
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs64: 0x40003000 -> 0x140003000 perms 0xcf 
+  // vs64: 0x40003000 -> 0x140003000 perms 0xcf
   li x6, 0x50000c00
   li x7, 0xcf
   or x6, x6, x7
@@ -173,7 +173,7 @@ RVTEST_BEGIN
   li x7, 24
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140003000 -> ai_pg_G perms 0x59 
+  // g64: 0x140003000 -> ai_pg_G perms 0x59
   LA(x6, ai_pg_G)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -183,7 +183,7 @@ RVTEST_BEGIN
   li x7, 24
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs64: 0x40004000 -> 0x140004000 perms 0xcf 
+  // vs64: 0x40004000 -> 0x140004000 perms 0xcf
   li x6, 0x50001000
   li x7, 0xcf
   or x6, x6, x7
@@ -922,7 +922,7 @@ mstatus_mprv_hypervisor_mprv_33:
   li x7, 512
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32: 0x20000000 -> 0x40000000 perms 0xcf 
+  // vs32: 0x20000000 -> 0x40000000 perms 0xcf
   li x6, 0x10000000
   li x7, 0xcf
   or x6, x6, x7
@@ -938,7 +938,7 @@ mstatus_mprv_hypervisor_mprv_33:
   li x7, 1024
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32: 0x40000000 -> ai_pg_A perms 0xdf 
+  // g32: 0x40000000 -> ai_pg_A perms 0xdf
   LA(x6, ai_pg_A)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -948,7 +948,7 @@ mstatus_mprv_hypervisor_mprv_33:
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32: 0x20001000 -> 0x40001000 perms 0xdf 
+  // vs32: 0x20001000 -> 0x40001000 perms 0xdf
   li x6, 0x10000400
   li x7, 0xdf
   or x6, x6, x7
@@ -956,7 +956,7 @@ mstatus_mprv_hypervisor_mprv_33:
   li x7, 4
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32: 0x40001000 -> ai_pg_B perms 0xdf 
+  // g32: 0x40001000 -> ai_pg_B perms 0xdf
   LA(x6, ai_pg_B)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -966,7 +966,7 @@ mstatus_mprv_hypervisor_mprv_33:
   li x7, 4
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32: 0x20002000 -> 0x40002000 perms 0x49 
+  // vs32: 0x20002000 -> 0x40002000 perms 0x49
   li x6, 0x10000800
   li x7, 0x49
   or x6, x6, x7
@@ -974,7 +974,7 @@ mstatus_mprv_hypervisor_mprv_33:
   li x7, 8
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32: 0x40002000 -> ai_pg_X perms 0xdf 
+  // g32: 0x40002000 -> ai_pg_X perms 0xdf
   LA(x6, ai_pg_X)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -984,7 +984,7 @@ mstatus_mprv_hypervisor_mprv_33:
   li x7, 8
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32: 0x20003000 -> 0x40003000 perms 0xcf 
+  // vs32: 0x20003000 -> 0x40003000 perms 0xcf
   li x6, 0x10000c00
   li x7, 0xcf
   or x6, x6, x7
@@ -992,7 +992,7 @@ mstatus_mprv_hypervisor_mprv_33:
   li x7, 12
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32: 0x40003000 -> ai_pg_G perms 0x59 
+  // g32: 0x40003000 -> ai_pg_G perms 0x59
   LA(x6, ai_pg_G)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -1002,7 +1002,7 @@ mstatus_mprv_hypervisor_mprv_33:
   li x7, 12
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32: 0x20004000 -> 0x40004000 perms 0xcf 
+  // vs32: 0x20004000 -> 0x40004000 perms 0xcf
   li x6, 0x10001000
   li x7, 0xcf
   or x6, x6, x7

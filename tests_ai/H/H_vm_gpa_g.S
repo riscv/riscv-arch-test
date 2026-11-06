@@ -92,7 +92,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140000000 -> ai_pg_A perms 0xff 
+  // g64: 0x140000000 -> ai_pg_A perms 0xff
   LA(x6, ai_pg_A)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -136,7 +136,7 @@ H_vm_gpa_g_in_S_2:
   AI_OUTCOME
   AI_CHECK(x13, H_vm_gpa_g_in_S_2, H_vm_gpa_g_in_S_2_s3)
   AI_CHECK(x14, H_vm_gpa_g_in_S_2, H_vm_gpa_g_in_S_2_s4)
-  // g64: 0x140000000 -> ai_pg_B perms 0xff 
+  // g64: 0x140000000 -> ai_pg_B perms 0xff
   LA(x6, ai_pg_B)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -198,7 +198,7 @@ H_vm_gpa_g_in_S_3:
   li x7, 1024
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32: 0x40000000 -> ai_pg_A perms 0xff 
+  // g32: 0x40000000 -> ai_pg_A perms 0xff
   LA(x6, ai_pg_A)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -236,7 +236,7 @@ H_vm_gpa_g_in_S_5:
   AI_OUTCOME
   AI_CHECK(x13, H_vm_gpa_g_in_S_5, H_vm_gpa_g_in_S_5_s11)
   AI_CHECK(x14, H_vm_gpa_g_in_S_5, H_vm_gpa_g_in_S_5_s12)
-  // g32: 0x40000000 -> ai_pg_B perms 0xff 
+  // g32: 0x40000000 -> ai_pg_B perms 0xff
   LA(x6, ai_pg_B)
   srli x6, x6, 12
   slli x6, x6, 10

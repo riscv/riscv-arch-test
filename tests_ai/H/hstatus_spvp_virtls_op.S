@@ -68,7 +68,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs64: 0x40000000 -> ai_pg_sp perms 0xcf 
+  // vs64: 0x40000000 -> ai_pg_sp perms 0xcf
   LA(x6, ai_pg_sp)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -78,7 +78,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs64: 0x40001000 -> ai_pg_up perms 0xdf 
+  // vs64: 0x40001000 -> ai_pg_up perms 0xdf
   LA(x6, ai_pg_up)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -1363,7 +1363,7 @@ hstatus_spvp_virtls_op_spvp_198:
   li x7, 512
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32: 0x20000000 -> ai_pg_sp perms 0xcf 
+  // vs32: 0x20000000 -> ai_pg_sp perms 0xcf
   LA(x6, ai_pg_sp)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -1373,7 +1373,7 @@ hstatus_spvp_virtls_op_spvp_198:
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32: 0x20001000 -> ai_pg_up perms 0xdf 
+  // vs32: 0x20001000 -> ai_pg_up perms 0xdf
   LA(x6, ai_pg_up)
   srli x6, x6, 12
   slli x6, x6, 10

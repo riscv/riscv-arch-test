@@ -50,7 +50,7 @@ hedeleg_bit0_ialign32_b0_1:
   .word 0x62000073  // hfence.gvma
   LI(x7, 1)
   csrw 0x602, x7
-  LA(x6, hedeleg_bit0_ialign32_mis_2)
+  LA(x6, hedeleg_bit0_ialign32_misal_2)
   addi x6, x6, 2
   AI_ALLOW(1)
   LA(x14, hedeleg_bit0_ialign32_inVS_4)
@@ -65,11 +65,11 @@ hedeleg_bit0_ialign32_b0_1:
 hedeleg_bit0_ialign32_inVS_4:
 hedeleg_bit0_ialign32_misVS_3:
   jalr ra, 0(x6)
-hedeleg_bit0_ialign32_mis_2:
+hedeleg_bit0_ialign32_misal_2:
   nop
   nop
   RVTEST_TSBI_GOTO_SMODE
-  LA(x6, hedeleg_bit0_ialign32_mis_2)
+  LA(x6, hedeleg_bit0_ialign32_misal_2)
   AI_OUTCOME
   AI_CHECK(x13, hedeleg_bit0_ialign32_misVS_3, hedeleg_bit0_ialign32_misVS_3_s1)
   AI_CHECK(x14, hedeleg_bit0_ialign32_misVS_3, hedeleg_bit0_ialign32_misVS_3_s2)
@@ -85,7 +85,7 @@ hedeleg_bit0_ialign32_mis_2:
   AI_CHECK_X5(hedeleg_bit0_ialign32_misVS_3, hedeleg_bit0_ialign32_misVS_3_s6)
   LI(x7, 0)
   csrw 0x602, x7
-  LA(x6, hedeleg_bit0_ialign32_mis_7)
+  LA(x6, hedeleg_bit0_ialign32_misal_7)
   addi x6, x6, 2
   AI_ALLOW(1)
   LA(x14, hedeleg_bit0_ialign32_inVS_9)
@@ -100,11 +100,11 @@ hedeleg_bit0_ialign32_mis_2:
 hedeleg_bit0_ialign32_inVS_9:
 hedeleg_bit0_ialign32_misVS_8:
   jalr ra, 0(x6)
-hedeleg_bit0_ialign32_mis_7:
+hedeleg_bit0_ialign32_misal_7:
   nop
   nop
   RVTEST_TSBI_GOTO_SMODE
-  LA(x6, hedeleg_bit0_ialign32_mis_7)
+  LA(x6, hedeleg_bit0_ialign32_misal_7)
   AI_OUTCOME
   AI_CHECK(x13, hedeleg_bit0_ialign32_misVS_8, hedeleg_bit0_ialign32_misVS_8_s7)
   AI_CHECK(x14, hedeleg_bit0_ialign32_misVS_8, hedeleg_bit0_ialign32_misVS_8_s8)
@@ -131,9 +131,9 @@ ai_table:
 #if __riscv_xlen == 64
 #if (!defined(ZCA_SUPPORTED) && !defined(C_SUPPORTED))
   .dword 0x0000000000000001, 0x0000000000000001, 0x0000000000000000, hedeleg_bit0_ialign32_misVS_3
-  .dword 0x0000000000000000, hedeleg_bit0_ialign32_mis_2+2, 0x0000000000000005, 0x0000000000000003
+  .dword 0x0000000000000000, hedeleg_bit0_ialign32_misal_2+2, 0x0000000000000005, 0x0000000000000003
   .dword 0x0000000000000002, 0x0000000000000001, 0x0000000000000000, hedeleg_bit0_ialign32_misVS_8
-  .dword 0x0000000000000000, hedeleg_bit0_ialign32_mis_7+2, 0x0000000000000005, 0x0000000000000003
+  .dword 0x0000000000000000, hedeleg_bit0_ialign32_misal_7+2, 0x0000000000000005, 0x0000000000000003
   .dword 0x0000000000000001
 #endif
   .dword 0x0000000000000000
@@ -142,13 +142,13 @@ hedeleg_bit0_ialign32_b0_1_s0: .string "hedeleg_bit0_ialign32: hedeleg[0] is wri
 hedeleg_bit0_ialign32_misVS_3_s1: .string "hedeleg_bit0_ialign32: VS-mode jalr to a misaligned target, hedeleg[0]=1: number of traps; expect 0x0000000000000001"
 hedeleg_bit0_ialign32_misVS_3_s2: .string "hedeleg_bit0_ialign32: VS-mode jalr to a misaligned target, hedeleg[0]=1: outcome (xcause, or all ones for no trap); expect 0x0000000000000000"
 hedeleg_bit0_ialign32_misVS_3_s3: .string "hedeleg_bit0_ialign32: VS-mode jalr to a misaligned target, hedeleg[0]=1: xepc is the trapping instruction; expect hedeleg_bit0_ialign32_misVS_3"
-hedeleg_bit0_ialign32_misVS_3_s4: .string "hedeleg_bit0_ialign32: VS-mode jalr to a misaligned target, hedeleg[0]=1: xtval is one of its legal values; expect 0x0000000000000000 or hedeleg_bit0_ialign32_mis_2+2"
+hedeleg_bit0_ialign32_misVS_3_s4: .string "hedeleg_bit0_ialign32: VS-mode jalr to a misaligned target, hedeleg[0]=1: xtval is one of its legal values; expect 0x0000000000000000 or hedeleg_bit0_ialign32_misal_2+2"
 hedeleg_bit0_ialign32_misVS_3_s5: .string "hedeleg_bit0_ialign32: VS-mode jalr to a misaligned target, hedeleg[0]=1: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x0000000000000005"
 hedeleg_bit0_ialign32_misVS_3_s6: .string "hedeleg_bit0_ialign32: hedeleg[0]=1: taken in VS-mode (handler 3 M, 1 HS, 2 VS); expect 0x0000000000000002"
 hedeleg_bit0_ialign32_misVS_8_s7: .string "hedeleg_bit0_ialign32: VS-mode jalr to a misaligned target, hedeleg[0]=0: number of traps; expect 0x0000000000000001"
 hedeleg_bit0_ialign32_misVS_8_s8: .string "hedeleg_bit0_ialign32: VS-mode jalr to a misaligned target, hedeleg[0]=0: outcome (xcause, or all ones for no trap); expect 0x0000000000000000"
 hedeleg_bit0_ialign32_misVS_8_s9: .string "hedeleg_bit0_ialign32: VS-mode jalr to a misaligned target, hedeleg[0]=0: xepc is the trapping instruction; expect hedeleg_bit0_ialign32_misVS_8"
-hedeleg_bit0_ialign32_misVS_8_s10: .string "hedeleg_bit0_ialign32: VS-mode jalr to a misaligned target, hedeleg[0]=0: xtval is one of its legal values; expect 0x0000000000000000 or hedeleg_bit0_ialign32_mis_7+2"
+hedeleg_bit0_ialign32_misVS_8_s10: .string "hedeleg_bit0_ialign32: VS-mode jalr to a misaligned target, hedeleg[0]=0: xtval is one of its legal values; expect 0x0000000000000000 or hedeleg_bit0_ialign32_misal_7+2"
 hedeleg_bit0_ialign32_misVS_8_s11: .string "hedeleg_bit0_ialign32: VS-mode jalr to a misaligned target, hedeleg[0]=0: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x0000000000000005"
 hedeleg_bit0_ialign32_misVS_8_s12: .string "hedeleg_bit0_ialign32: hedeleg[0]=0: taken in S-mode (handler 3 M, 1 HS, 2 VS); expect 0x0000000000000001"
 #endif
@@ -156,9 +156,9 @@ hedeleg_bit0_ialign32_b0_1_s13: .string "hedeleg_bit0_ialign32: hedeleg reads 0 
 #else
 #if (!defined(ZCA_SUPPORTED) && !defined(C_SUPPORTED))
   .word 0x00000001, 0x00000001, 0x00000000, hedeleg_bit0_ialign32_misVS_3
-  .word 0x00000000, hedeleg_bit0_ialign32_mis_2+2, 0x00000005, 0x00000003
+  .word 0x00000000, hedeleg_bit0_ialign32_misal_2+2, 0x00000005, 0x00000003
   .word 0x00000002, 0x00000001, 0x00000000, hedeleg_bit0_ialign32_misVS_8
-  .word 0x00000000, hedeleg_bit0_ialign32_mis_7+2, 0x00000005, 0x00000003
+  .word 0x00000000, hedeleg_bit0_ialign32_misal_7+2, 0x00000005, 0x00000003
   .word 0x00000001
 #endif
   .word 0x00000000
@@ -167,13 +167,13 @@ hedeleg_bit0_ialign32_b0_1_s0: .string "hedeleg_bit0_ialign32: hedeleg[0] is wri
 hedeleg_bit0_ialign32_misVS_3_s1: .string "hedeleg_bit0_ialign32: VS-mode jalr to a misaligned target, hedeleg[0]=1: number of traps; expect 0x00000001"
 hedeleg_bit0_ialign32_misVS_3_s2: .string "hedeleg_bit0_ialign32: VS-mode jalr to a misaligned target, hedeleg[0]=1: outcome (xcause, or all ones for no trap); expect 0x00000000"
 hedeleg_bit0_ialign32_misVS_3_s3: .string "hedeleg_bit0_ialign32: VS-mode jalr to a misaligned target, hedeleg[0]=1: xepc is the trapping instruction; expect hedeleg_bit0_ialign32_misVS_3"
-hedeleg_bit0_ialign32_misVS_3_s4: .string "hedeleg_bit0_ialign32: VS-mode jalr to a misaligned target, hedeleg[0]=1: xtval is one of its legal values; expect 0x00000000 or hedeleg_bit0_ialign32_mis_2+2"
+hedeleg_bit0_ialign32_misVS_3_s4: .string "hedeleg_bit0_ialign32: VS-mode jalr to a misaligned target, hedeleg[0]=1: xtval is one of its legal values; expect 0x00000000 or hedeleg_bit0_ialign32_misal_2+2"
 hedeleg_bit0_ialign32_misVS_3_s5: .string "hedeleg_bit0_ialign32: VS-mode jalr to a misaligned target, hedeleg[0]=1: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x00000005"
 hedeleg_bit0_ialign32_misVS_3_s6: .string "hedeleg_bit0_ialign32: hedeleg[0]=1: taken in VS-mode (handler 3 M, 1 HS, 2 VS); expect 0x00000002"
 hedeleg_bit0_ialign32_misVS_8_s7: .string "hedeleg_bit0_ialign32: VS-mode jalr to a misaligned target, hedeleg[0]=0: number of traps; expect 0x00000001"
 hedeleg_bit0_ialign32_misVS_8_s8: .string "hedeleg_bit0_ialign32: VS-mode jalr to a misaligned target, hedeleg[0]=0: outcome (xcause, or all ones for no trap); expect 0x00000000"
 hedeleg_bit0_ialign32_misVS_8_s9: .string "hedeleg_bit0_ialign32: VS-mode jalr to a misaligned target, hedeleg[0]=0: xepc is the trapping instruction; expect hedeleg_bit0_ialign32_misVS_8"
-hedeleg_bit0_ialign32_misVS_8_s10: .string "hedeleg_bit0_ialign32: VS-mode jalr to a misaligned target, hedeleg[0]=0: xtval is one of its legal values; expect 0x00000000 or hedeleg_bit0_ialign32_mis_7+2"
+hedeleg_bit0_ialign32_misVS_8_s10: .string "hedeleg_bit0_ialign32: VS-mode jalr to a misaligned target, hedeleg[0]=0: xtval is one of its legal values; expect 0x00000000 or hedeleg_bit0_ialign32_misal_7+2"
 hedeleg_bit0_ialign32_misVS_8_s11: .string "hedeleg_bit0_ialign32: VS-mode jalr to a misaligned target, hedeleg[0]=0: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x00000005"
 hedeleg_bit0_ialign32_misVS_8_s12: .string "hedeleg_bit0_ialign32: hedeleg[0]=0: taken in S-mode (handler 3 M, 1 HS, 2 VS); expect 0x00000001"
 #endif

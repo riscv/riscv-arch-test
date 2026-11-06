@@ -18,7 +18,7 @@ from collections.abc import Callable, Iterator
 from contextlib import AbstractContextManager, contextmanager
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, TypeVar
+from typing import TYPE_CHECKING, TypedDict, TypeVar
 
 ROOT = Path(__file__).resolve().parents[1]  # tests_ai/
 
@@ -49,7 +49,22 @@ class X:
 
 if TYPE_CHECKING:  # annotations only, so the generators also run on Python 3.9
     Value = int | str | X  # one value, or a per-XLEN pair
-    Expect = Value | list[Value]  # one expected value, or up to three legal alternatives
+    # one expected value, or up to three legal alternatives (list is invariant, so homogeneous lists are listed too)
+    Expect = Value | list[Value] | list[int] | list[str] | list[X]
+
+
+class TestFileOptions(TypedDict, total=False):
+    """TestFile's optional keyword arguments, for wrappers that pass them through (**kw: Unpack[...])."""
+
+    march: str
+    boot: str | None
+    params: dict | None
+    forbidden: list | None
+    pool: list[str] | None
+    rv64: bool
+    suffix: str
+
+
 Conds = tuple[str, ...]  # preprocessor conditions of a table entry
 T = TypeVar("T")
 
@@ -184,7 +199,6 @@ class TestFile:
     def label(self, stem: str) -> str:
         self._lab += 1
         return f"{self.rule.replace('-', '_')}_{stem}_{self._lab}"  # rule names may contain '-'
-
 
     def comment(self, text: str) -> None:
         self.code.append(f"  // {text}")

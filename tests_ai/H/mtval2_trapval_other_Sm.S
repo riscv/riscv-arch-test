@@ -90,7 +90,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140007000 -> ai_pg_S1 perms 0xdf 
+  // g64: 0x140007000 -> ai_pg_S1 perms 0xdf
   LA(x6, ai_pg_S1)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -100,7 +100,7 @@ RVTEST_BEGIN
   li x7, 56
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x14000b000 -> ai_pg_code perms 0xdf 
+  // g64: 0x14000b000 -> ai_pg_code perms 0xdf
   LA(x6, ai_pg_code)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -397,7 +397,7 @@ mtval2_trapval_other_in_VS_17:
   li x7, 1024
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32: 0x40007000 -> ai_pg_S1 perms 0xdf 
+  // g32: 0x40007000 -> ai_pg_S1 perms 0xdf
   LA(x6, ai_pg_S1)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -407,7 +407,7 @@ mtval2_trapval_other_in_VS_17:
   li x7, 28
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32: 0x4000b000 -> ai_pg_code perms 0xdf 
+  // g32: 0x4000b000 -> ai_pg_code perms 0xdf
   LA(x6, ai_pg_code)
   srli x6, x6, 12
   slli x6, x6, 10

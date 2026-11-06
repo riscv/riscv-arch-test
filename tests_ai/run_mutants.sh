@@ -22,4 +22,7 @@ for m in $(python3 "$root/tests_ai/gen/mutate.py" --list | grep "^$prefix"); do
   fi
 done
 rm -rf "${root:?}/tests_ai/$suite"
-[ ${#survivors[@]} -eq 0 ] || { echo "survivors: ${survivors[*]}"; exit 1; }
+[ ${#survivors[@]} -eq 0 ] || {
+  echo "survivors: ${survivors[*]}"
+  exit 1
+}

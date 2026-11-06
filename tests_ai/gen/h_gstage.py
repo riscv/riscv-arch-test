@@ -10,6 +10,8 @@ probed at run time; Sv39x4 (RV64) and Sv32x4 (RV32) are expected but not assumed
 # ruff: noqa: B023  (closures run immediately inside the loop that defines them)
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from aigen import X
 from h_hlsv import both, hl, init, tf
 from hlib import HYP, ISSUE, MUT, hfence_gvma, hfence_vvma, hlsv
@@ -56,6 +58,11 @@ from hmem import (
     vs_mxr,
     vsatp_on,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from aigen import Expect, Value
 
 MUTANTS = {
     "x4_ignored": "G-stage drops the two extra GPA bits (root table indexed like a 4 KiB table)",
@@ -118,18 +125,20 @@ def lw_sig(t: MemTest, name: str) -> int:
     return sig(t.page_id(name)) & 0xFFFFFFFF
 
 
-def guarded(t: MemTest, pt: PT, body, note: str) -> None:  # noqa: ANN001
+def guarded(t: MemTest, pt: PT, body: Callable[[], object], note: str) -> None:
     """Run body only if pt's G-stage MODE is supported (probe)."""
     t.comment(f"probe: {note}")
     probe(t, pt)
     t.either("x1", body, lambda: None)
 
 
-def vs_run(t: MemTest, mode: str, lines: list[str], expect, desc: str, extras=None, epc: bool = True) -> str:  # noqa: ANN001
+def vs_run(
+    t: MemTest, mode: str, lines: list[str], expect: Expect, desc: str, extras: dict | None = None, epc: bool = True
+) -> str:
     return memwin(t, mode, lines, expect, desc, extras, epc=epc)
 
 
-def gpf_extras(c: int, tval, gpa: int | None, e: int | None = None, gva: int = 1) -> dict:  # noqa: ANN001
+def gpf_extras(c: int, tval: Value, gpa: int | None, e: int | None = None, gva: int = 1) -> dict:
     ex = {"tval": tval, "gva": gva}
     if gpa is not None:
         ex["tval2"] = [0, (gpa if MUT != "htval_va" else tval) >> 2] if isinstance(tval, int) else [0, gpa >> 2]
@@ -162,7 +171,7 @@ def gen_csr() -> list[MemTest]:
     init(t)
     t.page("A")
 
-    def body(xlen: int) -> None:
+    def hgatp_body(xlen: int) -> None:
         lab = t.label("zero")
         t.emit(f"{lab}:", 0)
         t.emit(f"csrw {hex(HGATP)}, x0")
@@ -193,7 +202,7 @@ def gen_csr() -> list[MemTest]:
         probe(t, g)
         t.either("x1", sup, lambda: None)
 
-    both(t, body)
+    both(t, hgatp_body)
     tests.append(t)
 
     t = new("hgatp_mode_Sv")
@@ -631,7 +640,7 @@ def gen_x4() -> list[MemTest]:
                 top = (1 << 40) | 0x4000_0000
                 g.leaf(top, t.page("T"), ULEAF)
 
-                def sup() -> None:
+                def sup39() -> None:
                     hgatp_on(t, g)
                     hl(t, "hlv.w", top, "GPA bit 40 set", "ok", lw_sig(t, "T"), gpa=top)
                     for b in (41, 42, 50, 62, 63, None):
@@ -660,7 +669,7 @@ def gen_x4() -> list[MemTest]:
                     atp_off(t)
 
                 probe(t, g)
-                t.either("x1", sup, lambda: None)
+                t.either("x1", sup39, lambda: None)
         else:
             with t.rv32_only():
                 _sv32x4_hi(t, rule, k_list=(0, 1, 2, 3), top=True)
@@ -673,7 +682,7 @@ def gen_x4() -> list[MemTest]:
                     v.leaf(VA_BASE[32] + 0x10000 + j * 0x1000 % 0x40000, base + j * 0x1000, LEAF)
                     g.leaf(base + j * 0x1000, t.page(f"Q{j}"), ULEAF)
 
-                def sup() -> None:
+                def sup32() -> None:
                     hgatp_on(t, g)
                     vsatp_on(t, v)
                     spvp(t, True)
@@ -690,7 +699,7 @@ def gen_x4() -> list[MemTest]:
                     atp_off(t)
 
                 probe(t, g)
-                t.either("x1", sup, lambda: None)
+                t.either("x1", sup32, lambda: None)
         tests.append(t)
 
     # Sv48x4 / Sv57x4 upper bits
@@ -1045,7 +1054,7 @@ def gen_twostage() -> list[MemTest]:
 
 
 # ---------------------------------------------------------------- helpers for cause-conditional checks
-def if_cause(t: MemTest, cause: int, body) -> None:  # noqa: ANN001
+def if_cause(t: MemTest, cause: int, body: Callable[[], object]) -> None:
     """After a window whose trap is certain: run body's checks only if the logged cause is `cause`."""
     t.emit("AI_LOG(x14, TRAPLOG_CAUSE)", 10)
     t.load("x5", cause, f"cause {cause}")
@@ -1156,6 +1165,7 @@ def gen_faults() -> list[MemTest]:
         t.emit(HFENCE_GVMA)
         t.emit(HFENCE_VVMA)
         orig = MUT != "implicit_as_original"
+        assert v.gpa_base is not None  # set by vs_gpa= above
         rp = v.gpa_base + v._idx(va + 0x3000, 0) * (xlen // 8)
         for insn, c in (("hlv.w", g_l), ("hsv.w", g_s), ("hlvx.wu", "ok" if not orig else g_l)):
             if insn == "hsv.w":

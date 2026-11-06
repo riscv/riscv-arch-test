@@ -66,7 +66,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs64: 0x40000000 -> ai_pg_A perms 0xcf 
+  // vs64: 0x40000000 -> ai_pg_A perms 0xcf
   LA(x6, ai_pg_A)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -113,7 +113,7 @@ H_vm_supported_in_S_2:
   li x7, 512
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32: 0x20000000 -> ai_pg_A perms 0xcf 
+  // vs32: 0x20000000 -> ai_pg_A perms 0xcf
   LA(x6, ai_pg_A)
   srli x6, x6, 12
   slli x6, x6, 10

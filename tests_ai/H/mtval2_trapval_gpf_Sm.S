@@ -113,7 +113,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs64: 0x40000000 -> 0x140005000 perms 0xcf 
+  // vs64: 0x40000000 -> 0x140005000 perms 0xcf
   li x6, 0x50001400
   li x7, 0xcf
   or x6, x6, x7
@@ -379,7 +379,7 @@ mtval2_trapval_in_M_21:
   li x7, 512
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32: 0x20000000 -> 0x40005000 perms 0xcf 
+  // vs32: 0x20000000 -> 0x40005000 perms 0xcf
   li x6, 0x10001400
   li x7, 0xcf
   or x6, x6, x7

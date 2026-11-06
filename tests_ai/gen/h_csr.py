@@ -7,32 +7,34 @@ from typing import TYPE_CHECKING
 
 from hlib import (
     CSRS,
-    HSTATUS,
-    hs_bits,
     FORMS,
+    HSTATUS,
     HYP,
-    ISSUE,
+    ILLEGAL,
+    MRET,
     MSTATUS_TVM,
     MUT,
     READS,
+    SRET,
+    VIRTUAL,
     VS_OF,
     WRITES,
     access_expect,
     csr_num,
     csr_window,
     form_value,
+    hs_bits,
     hs_read,
     insn_window,
     m_bits,
     new,
-    ILLEGAL,
-    VIRTUAL,
-    MRET,
-    SRET,
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from aigen import TestFile
+    from hlib import Form
 
 # Expectation switches for mutate.py: each models a plausible design bug (AI_MUTANT=<key>).
 MUTANTS = {
@@ -58,7 +60,7 @@ ISSUE_HSQ = (
 )
 
 
-def guarded(t: TestFile, name: str, body) -> None:  # noqa: ANN001
+def guarded(t: TestFile, name: str, body: Callable[[], object]) -> None:
     cond = CSRS[name][2]
     if cond:
         with t.only_if(cond):
@@ -67,7 +69,7 @@ def guarded(t: TestFile, name: str, body) -> None:  # noqa: ANN001
         body()
 
 
-def set_x6_for(t: TestFile, form, name: str) -> None:  # noqa: ANN001
+def set_x6_for(t: TestFile, form: Form, name: str) -> None:
     """x6 for a write form: the CSR's current value (read in HS-mode) for csrrw, 0 for csrrs/csrrc, so a
     write that wrongly succeeds leaves the CSR unchanged."""
     if form[1] == 1 and name not in ("satp", "hgatp", "vsatp"):  # HS reads of satp/hgatp trap when TVM=1
@@ -76,7 +78,7 @@ def set_x6_for(t: TestFile, form, name: str) -> None:  # noqa: ANN001
         t.emit("li x6, 0")
 
 
-def access(t: TestFile, mode: str, name: str, form, desc: str, expect: str | None = None) -> str:  # noqa: ANN001
+def access(t: TestFile, mode: str, name: str, form: Form, desc: str, expect: str | None = None) -> str:
     if expect is None:
         expect = access_expect(name, mode, form[5])
         if MUT == "hgeip_write_virtual" and name == "hgeip" and mode in ("VS", "VU") and form[5]:
@@ -115,7 +117,8 @@ def gen() -> list[TestFile]:
         "3. VS-mode reads of every H CSR raise virtual-instruction (they are not provided to VS-mode).",
     )
     for name in H_CSRS:
-        def body(name: str = name) -> None:
+
+        def hs_body(name: str = name) -> None:
             csr_window(t, "S", name, FORMS[0], "ok", "HS-mode read")
             if name == "hgeip":
                 access(t, "S", name, FORMS[1], "HS-mode write of a read-only CSR", "illegal")
@@ -123,7 +126,8 @@ def gen() -> list[TestFile]:
                 hs_read(t, "x6", name)
                 csr_window(t, "S", name, FORMS[1], "ok", "HS-mode write of its own value")
             access(t, "VS", name, FORMS[0], "not provided to VS-mode")
-        guarded(t, name, body)
+
+        guarded(t, name, hs_body)
     tests.append(t)
 
     # ---- H_virtinst_vu_vs_nonhigh_allowedhs_tvm0 ----
@@ -148,13 +152,14 @@ def gen() -> list[TestFile]:
         if name in HIGH:
             continue
 
-        def body(name: str = name) -> None:
+        def virt_body(name: str = name) -> None:
             nonlocal i
             for mode in ("VS", "VU"):
                 access(t, mode, name, READS[i % len(READS)], "all enables set")
                 access(t, mode, name, WRITES[i % len(WRITES)], "all enables set")
                 i += 1
-        guarded(t, name, body)
+
+        guarded(t, name, virt_body)
     for form in FORMS:
         access(t, "VS", "hgeip", form, "read-only CSR")
     m_bits(t, "mstatus", MSTATUS_TVM, True, "M-mode: mstatus.TVM = 1")
@@ -184,7 +189,8 @@ def gen() -> list[TestFile]:
     with t.rv32_only():
         k = 0
         for name in sorted(HIGH):
-            def body(name: str = name) -> None:
+
+            def high_body(name: str = name) -> None:
                 nonlocal k
                 csr_window(t, "S", name, FORMS[0], "ok", "HS-mode read")
                 for mode in ("VS", "VU"):
@@ -192,7 +198,8 @@ def gen() -> list[TestFile]:
                         access(t, mode, name, FORMS[k % 8], "RV32 high half")
                         k += 1
                 access(t, "U", name, FORMS[k % 8], "RV32 high half")
-            guarded(t, name, body)
+
+            guarded(t, name, high_body)
     with t.rv64_only():
         for name in sorted(HIGH):
             for mode in ("S", "VS"):
@@ -261,11 +268,13 @@ def gen() -> list[TestFile]:
         "4. mstatus.TVM=1: VU-mode reads and writes of satp still raise virtual-instruction.",
     )
     for j, name in enumerate(sup + ["sstateen0"]):
+
         def body(name: str = name, j: int = j) -> None:
             access(t, "VU", name, READS[j % 2], "all enables set")
             access(t, "VU", name, WRITES[j % len(WRITES)], "all enables set")
             access(t, "U", name, READS[(j + 1) % 2], "V=0")
             access(t, "VS", name, READS[j % 2], "VS-mode, all enables set")
+
         guarded(t, name, body)
     m_bits(t, "mstatus", MSTATUS_TVM, True, "M-mode: mstatus.TVM = 1")
     access(t, "VU", "satp", FORMS[0], "mstatus.TVM=1")
@@ -319,32 +328,62 @@ def gen() -> list[TestFile]:
 
 # ---------------------------------------------------------------- VS CSR substitution
 SUB_RULES = {
-    "vsscratch": ("vsscratch_sz_acc_op", "The vsscratch register is a VSXLEN-bit read/write register that is "
-                  "VS-mode's version of supervisor register sscratch, formatted as shown in <<vsscratchreg>>. "
-                  "When V=1, vsscratch substitutes for the usual sscratch, so instructions that normally read or "
-                  "modify sscratch actually access vsscratch instead. The contents of vsscratch never directly "
-                  "affect the behavior of the machine."),
-    "vsepc": ("vsepc_sz_acc_op", "The vsepc register is a VSXLEN-bit read/write register that is VS-mode's "
-              "version of supervisor register sepc, formatted as shown in <<vsepcreg>>. When V=1, vsepc "
-              "substitutes for the usual sepc, so instructions that normally read or modify sepc actually access "
-              "vsepc instead. When V=0, vsepc does not directly affect the behavior of the machine."),
-    "vscause": ("vscause_sz_acc_op", "The vscause register is a VSXLEN-bit read/write register that is VS-mode's "
-                "version of supervisor register scause, formatted as shown in <<vscausereg>>. When V=1, vscause "
-                "substitutes for the usual scause, so instructions that normally read or modify scause actually "
-                "access vscause instead. When V=0, vscause does not directly affect the behavior of the machine."),
-    "vstval": ("vstval_sz_acc_op", "The vstval register is a VSXLEN-bit read/write register that is VS-mode's "
-               "version of supervisor register stval, formatted as shown in <<vstvalreg>>. When V=1, vstval "
-               "substitutes for the usual stval, so instructions that normally read or modify stval actually "
-               "access vstval instead. When V=0, vstval does not directly affect the behavior of the machine."),
-    "vstvec": ("vstvec_sz_acc_op", "The vstvec register is a VSXLEN-bit read/write register that is VS-mode's "
-               "version of supervisor register stvec, formatted as shown in <<norm:vstvec_img>>. When V=1, vstvec "
-               "substitutes for the usual stvec, so instructions that normally read or modify stvec actually "
-               "access vstvec instead. When V=0, vstvec does not directly affect the behavior of the machine."),
-    "vsstatus": ("vsstatus_sz_acc_op", "The vsstatus register is a VSXLEN-bit read/write register that is "
-                 "VS-mode's version of supervisor register sstatus, formatted as shown in <<vsstatusreg-rv32>> "
-                 "when VSXLEN=32 and <<vsstatusreg>> when VSXLEN=64. When V=1, vsstatus substitutes for the usual "
-                 "sstatus, so instructions that normally read or modify sstatus actually access vsstatus "
-                 "instead."),
+    "vsscratch": (
+        "vsscratch_sz_acc_op",
+        (
+            "The vsscratch register is a VSXLEN-bit read/write register that is "
+            "VS-mode's version of supervisor register sscratch, formatted as shown in <<vsscratchreg>>. "
+            "When V=1, vsscratch substitutes for the usual sscratch, so instructions that normally read or "
+            "modify sscratch actually access vsscratch instead. The contents of vsscratch never directly "
+            "affect the behavior of the machine."
+        ),
+    ),
+    "vsepc": (
+        "vsepc_sz_acc_op",
+        (
+            "The vsepc register is a VSXLEN-bit read/write register that is VS-mode's "
+            "version of supervisor register sepc, formatted as shown in <<vsepcreg>>. When V=1, vsepc "
+            "substitutes for the usual sepc, so instructions that normally read or modify sepc actually access "
+            "vsepc instead. When V=0, vsepc does not directly affect the behavior of the machine."
+        ),
+    ),
+    "vscause": (
+        "vscause_sz_acc_op",
+        (
+            "The vscause register is a VSXLEN-bit read/write register that is VS-mode's "
+            "version of supervisor register scause, formatted as shown in <<vscausereg>>. When V=1, vscause "
+            "substitutes for the usual scause, so instructions that normally read or modify scause actually "
+            "access vscause instead. When V=0, vscause does not directly affect the behavior of the machine."
+        ),
+    ),
+    "vstval": (
+        "vstval_sz_acc_op",
+        (
+            "The vstval register is a VSXLEN-bit read/write register that is VS-mode's "
+            "version of supervisor register stval, formatted as shown in <<vstvalreg>>. When V=1, vstval "
+            "substitutes for the usual stval, so instructions that normally read or modify stval actually "
+            "access vstval instead. When V=0, vstval does not directly affect the behavior of the machine."
+        ),
+    ),
+    "vstvec": (
+        "vstvec_sz_acc_op",
+        (
+            "The vstvec register is a VSXLEN-bit read/write register that is VS-mode's "
+            "version of supervisor register stvec, formatted as shown in <<norm:vstvec_img>>. When V=1, vstvec "
+            "substitutes for the usual stvec, so instructions that normally read or modify stvec actually "
+            "access vstvec instead. When V=0, vstvec does not directly affect the behavior of the machine."
+        ),
+    ),
+    "vsstatus": (
+        "vsstatus_sz_acc_op",
+        (
+            "The vsstatus register is a VSXLEN-bit read/write register that is "
+            "VS-mode's version of supervisor register sstatus, formatted as shown in <<vsstatusreg-rv32>> "
+            "when VSXLEN=32 and <<vsstatusreg>> when VSXLEN=64. When V=1, vsstatus substitutes for the usual "
+            "sstatus, so instructions that normally read or modify sstatus actually access vsstatus "
+            "instead."
+        ),
+    ),
 }
 
 
@@ -391,8 +430,11 @@ def gen_sub() -> list[TestFile]:
             plan=f"1. HS-mode writes {vcsr} = A. In VS-mode, every CSR instruction form on {scsr} returns A "
             f"(rs1=x0 and uimm=0 forms do not write), and HS-mode then reads the new value from {vcsr}.\n"
             f"2. A VS-mode write of {scsr} does not change HS-mode's {scsr}"
-            + (" (checked across the window)." if scsr in ("sscratch", "stvec", "sstatus") else
-               " (not checkable: the trap that ends the window rewrites it); the value reaches " + vcsr + ".")
+            + (
+                " (checked across the window)."
+                if scsr in ("sscratch", "stvec", "sstatus")
+                else " (not checkable: the trap that ends the window rewrites it); the value reaches " + vcsr + "."
+            )
             + f"\n3. VU-mode access to {scsr} raises virtual-instruction (VU-mode never reaches {vcsr}).",
         )
         num_v, num_s = csr_num(vcsr), csr_num(scsr)
@@ -403,21 +445,51 @@ def gen_sub() -> list[TestFile]:
         if sens:
             plans = [(f, None) for f in FORMS]
         elif vcsr == "vsepc":
-            plans = [(FORMS[i], v) for i, v in enumerate(
-                [(0x1000, 0), (0x1000, 0x2340), (0x2340, 0x4448), (0x4448, 0x10), (0x4458, 0x4400),
-                 (0x58, None), (0x14, None), (0x14, None)])]
+            plans = [
+                (FORMS[i], v)
+                for i, v in enumerate(
+                    [
+                        (0x1000, 0),
+                        (0x1000, 0x2340),
+                        (0x2340, 0x4448),
+                        (0x4448, 0x10),
+                        (0x4458, 0x4400),
+                        (0x58, None),
+                        (0x14, None),
+                        (0x14, None),
+                    ]
+                )
+            ]
         elif vcsr == "vscause":
-            plans = [(FORMS[i], v) for i, v in enumerate(
-                [(2, 0), (2, 5), (5, 13), (13, 2), (15, 8), (1, None), (0x15, None), (0x15, None)])]
+            plans = [
+                (FORMS[i], v)
+                for i, v in enumerate(
+                    [(2, 0), (2, 5), (5, 13), (13, 2), (15, 8), (1, None), (0x15, None), (0x15, None)]
+                )
+            ]
         elif vcsr == "vstval":
-            plans = [(FORMS[i], v) for i, v in enumerate(
-                [(0x1234, 0), (0x1234, 0x5678), (0x5678, 0x7FF0), (0x7FF0, 0x0F), (0x7FFF, 0xF0),
-                 (0x7F0F, None), (0x15, None), (0x1F, None)])]
+            plans = [
+                (FORMS[i], v)
+                for i, v in enumerate(
+                    [
+                        (0x1234, 0),
+                        (0x1234, 0x5678),
+                        (0x5678, 0x7FF0),
+                        (0x7FF0, 0x0F),
+                        (0x7FFF, 0xF0),
+                        (0x7F0F, None),
+                        (0x15, None),
+                        (0x1F, None),
+                    ]
+                )
+            ]
         else:  # vsstatus: SUM/MXR in x6
-            plans = [(FORMS[i], v) for i, v in enumerate(
-                [(None, 0), (None, 0x40000), (None, 0xC0000), (None, 0x80000), (None, 0x40000)])]
+            plans = [
+                (FORMS[i], v)
+                for i, v in enumerate([(None, 0), (None, 0x40000), (None, 0xC0000), (None, 0x80000), (None, 0x40000)])
+            ]
         for form, vals in plans:
-            asm, f3, rd, rs1, kind, writes = form
+            asm, f3, rd, rs1, kind, _ = form
             line = asm.format(c=hex(num_s)) + f"  // {scsr} (V=1: {vcsr})"
             t.comment(f"{kind} of {scsr} in VS-mode")
             if sens and f3 in (5, 7):
@@ -459,6 +531,7 @@ def gen_sub() -> list[TestFile]:
                 hs_read(t, "x7", scsr)
                 eq(t, "x7", "x8", lab, f"{kind} of {scsr} in VS-mode leaves HS-mode's {scsr}")
             elif vcsr == "vsstatus":
+                assert vals is not None  # only the sensitive CSRs (sscratch, stvec) have no plan values
                 old, src = vals
                 bits = 0xC0000
                 t.li("x7", bits)
@@ -483,7 +556,9 @@ def gen_sub() -> list[TestFile]:
                 hs_read(t, "x7", scsr)
                 t.check_masked("x7", bits, 0, lab, f"{kind} of sstatus in VS-mode leaves HS sstatus.SUM/MXR = 0")
             else:
+                assert vals is not None
                 old, src = vals
+                assert old is not None  # only vsstatus plans have no old value
                 t.load("x7", old, f"A, the old {vcsr}")
                 t.emit(f"csrw {hex(num_v)}, x7  // {vcsr} = A")
                 if src is not None:
@@ -491,7 +566,7 @@ def gen_sub() -> list[TestFile]:
                 lab = t.window("VS", [line], "ok", f"{kind} of {scsr}")
                 if rd:
                     t.check("x7", old, lab, f"{kind} of {scsr} in VS-mode returns the old {vcsr}")
-                _, new_v = form_value(form, old if MUT != "sub_no_write" else old, src or 0, 32)
+                _, new_v = form_value(form, old, src or 0, 32)
                 if MUT == "sub_no_write":
                     new_v = old
                 if vcsr == "vsepc":
@@ -534,6 +609,7 @@ def gen_sub() -> list[TestFile]:
         elif scsr == "sstatus":
             t.check_masked("x7", 0x40000, 0x40000, lab, "a VS-mode read of sstatus returns vsstatus (SUM=1)")
         else:
+            assert val is not None  # only sscratch and sstatus have no fixed value
             t.check("x7", val, lab, f"a VS-mode read of {scsr} returns {VS_OF[scsr]}")
     t.li("x7", 0x40000)
     t.emit(f"csrc {hex(csr_num('vsstatus'))}, x7  // vsstatus.SUM = 0")
@@ -558,13 +634,13 @@ def gen_acc_m_hs() -> TestFile:
     t.emit(f"csrr x1, {hex(num)}  // save vsscratch")
     old = t.rand(32) | 0x15
     for form in FORMS:
-        asm, f3, rd, rs1, kind, _ = form
+        asm, _, rd, _, kind, _ = form
         src = t.rand(32)
         t.load("x7", old, "old vsscratch")
         t.emit(f"csrw {hex(num)}, x7")
         t.load("x6", src, "source")
         lab = t.window("S", [asm.format(c=hex(num)) + "  // vsscratch"], "ok", f"{kind} of vsscratch in HS-mode")
-        rdv, newv = form_value(form, old, src, 32)
+        _, newv = form_value(form, old, src, 32)
         if rd:
             t.check("x7", old, lab, f"{kind} of vsscratch in HS-mode returns the old value")
         hs_read(t, "x7", "vsscratch")

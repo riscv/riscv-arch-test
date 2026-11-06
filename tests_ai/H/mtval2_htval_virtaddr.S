@@ -119,7 +119,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs64: 0x40000000 -> 0x140403000 perms 0xcf 
+  // vs64: 0x40000000 -> 0x140403000 perms 0xcf
   li x6, 0x50100c00
   li x7, 0xcf
   or x6, x6, x7
@@ -127,7 +127,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs64: 0x40001000 -> 0x140406000 perms 0xcf 
+  // vs64: 0x40001000 -> 0x140406000 perms 0xcf
   li x6, 0x50101800
   li x7, 0xcf
   or x6, x6, x7
@@ -135,7 +135,7 @@ RVTEST_BEGIN
   li x7, 8
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs64: 0x40002000 -> 0x140409000 perms 0xcf 
+  // vs64: 0x40002000 -> 0x140409000 perms 0xcf
   li x6, 0x50102400
   li x7, 0xcf
   or x6, x6, x7
@@ -143,7 +143,7 @@ RVTEST_BEGIN
   li x7, 16
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs64: 0x40003000 -> 0x14040c000 perms 0xcf 
+  // vs64: 0x40003000 -> 0x14040c000 perms 0xcf
   li x6, 0x50103000
   li x7, 0xcf
   or x6, x6, x7
@@ -452,7 +452,7 @@ mtval2_htval_virtaddr_in_VS_31:
   li x7, 512
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32: 0x20000000 -> 0x40403000 perms 0xcf 
+  // vs32: 0x20000000 -> 0x40403000 perms 0xcf
   li x6, 0x10100c00
   li x7, 0xcf
   or x6, x6, x7
@@ -460,7 +460,7 @@ mtval2_htval_virtaddr_in_VS_31:
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32: 0x20001000 -> 0x40406000 perms 0xcf 
+  // vs32: 0x20001000 -> 0x40406000 perms 0xcf
   li x6, 0x10101800
   li x7, 0xcf
   or x6, x6, x7
@@ -468,7 +468,7 @@ mtval2_htval_virtaddr_in_VS_31:
   li x7, 4
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32: 0x20002000 -> 0x40409000 perms 0xcf 
+  // vs32: 0x20002000 -> 0x40409000 perms 0xcf
   li x6, 0x10102400
   li x7, 0xcf
   or x6, x6, x7
@@ -476,7 +476,7 @@ mtval2_htval_virtaddr_in_VS_31:
   li x7, 8
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32: 0x20003000 -> 0x4040c000 perms 0xcf 
+  // vs32: 0x20003000 -> 0x4040c000 perms 0xcf
   li x6, 0x10103000
   li x7, 0xcf
   or x6, x6, x7

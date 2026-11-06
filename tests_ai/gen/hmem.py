@@ -24,7 +24,10 @@ from aigen import NO_TRAP, ORIGIN, POOL_TRAP, TestFile, X, xv
 from hlib import MARCH, REQ
 
 if TYPE_CHECKING:
-    from aigen import Expect, Value
+    from collections.abc import Callable
+
+    from aigen import Expect, TestFileOptions, Value
+    from typing_extensions import Unpack
 
 V, R, W, XP, U, G, A, D = 1, 2, 4, 8, 16, 32, 64, 128
 RWX = R | W | XP
@@ -72,8 +75,8 @@ def sig_x(page_id: int) -> X:
 class MemTest(TestFile):
     """A TestFile with page tables and data pages in its data section."""
 
-    def __init__(self, *a: object, **kw: object) -> None:
-        super().__init__(*a, **kw)
+    def __init__(self, suite: str, rule: str, *, required: list, **kw: Unpack[TestFileOptions]) -> None:
+        super().__init__(suite, rule, required=required, **kw)
         self.tables: dict[str, int] = {}  # label -> size
         self.pages: dict[str, tuple[int, dict[int, tuple[int, int]]]] = {}  # label -> (id, {off: (size, v)})
 
@@ -227,7 +230,7 @@ class MemTest(TestFile):
         self.check_bool("x15", lab, f"{desc}: cause {c}: {reg}.GVA = 1, or xtval = 0")
 
 
-def new(rule: str, required: list[str] = REQ, **kw: object) -> MemTest:
+def new(rule: str, required: list[str] = REQ, **kw: Unpack[TestFileOptions]) -> MemTest:
     kw.setdefault("boot", "S")
     kw.setdefault("pool", POOL_TRAP)
     kw.setdefault("march", MARCH)
@@ -371,7 +374,7 @@ class PT:
         shift = self.geo[depth][0]
         t.comment(
             f"{self.name}: {hex(addr)} -> {target if isinstance(target, str) else hex(target)} "
-            f"perms {hex(perms)} {note}"
+            f"perms {hex(perms)} {note}".rstrip()
         )
         if isinstance(target, str):
             t.la("x6", target)
@@ -388,7 +391,7 @@ class PT:
         t = self.t
         depth = len(self.geo) - 1 if level is None else len(self.geo) - 1 - level
         tab = self.pointer(addr, depth)
-        t.comment(f"{self.name}: raw PTE {hex(value)} for {hex(addr)} {note}")
+        t.comment(f"{self.name}: raw PTE {hex(value)} for {hex(addr)} {note}".rstrip())
         t.emit(f"li x6, {hex(value)}")
         self._store(tab, self._idx(addr, depth))
 
@@ -419,11 +422,11 @@ class PT:
                 t.emit("slli x6, x6, 10")
                 t.emit(f"li x7, {hex(perms)}")
                 t.emit("or x6, x6, x7")
+                child = tab  # the leaf level has no child table; the loop ends here
             t.la("x8", tab)
             t.emit("add x8, x8, x9")
             t.emit("SREG x6, 0(x8)")
-            if depth < n - 1:
-                tab = child
+            tab = child
 
     def pte_addr(self, addr: int, depth: int) -> str:
         """x8 = address of the PTE for addr in the table at `depth` (which must already exist)."""
@@ -522,7 +525,7 @@ def vs_mxr(t: MemTest, on: bool) -> None:
     bits(t, 0x200, "vsstatus.MXR", MXR, on)
 
 
-def both(t: MemTest, body) -> None:  # noqa: ANN001
+def both(t: MemTest, body: Callable[[int], object]) -> None:
     """Emit body(xlen) once under rv64_only and once under rv32_only."""
     with t.rv64_only():
         body(64)
@@ -530,7 +533,7 @@ def both(t: MemTest, body) -> None:  # noqa: ANN001
         body(32)
 
 
-def xpair(f) -> X:  # noqa: ANN001
+def xpair(f: Callable[[int], int | str]) -> X:
     """X(f(32), f(64))."""
     return X(f(32), f(64))
 

@@ -116,7 +116,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs64: 0x40000000 -> 0x140000000 perms 0x49 
+  // vs64: 0x40000000 -> 0x140000000 perms 0x49
   li x6, 0x50000000
   li x7, 0x49
   or x6, x6, x7
@@ -140,7 +140,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140000000 -> ai_pg_vx perms 0xdf 
+  // g64: 0x140000000 -> ai_pg_vx perms 0xdf
   LA(x6, ai_pg_vx)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -150,7 +150,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs64: 0x40001000 -> 0x140001000 perms 0xcf 
+  // vs64: 0x40001000 -> 0x140001000 perms 0xcf
   li x6, 0x50000400
   li x7, 0xcf
   or x6, x6, x7
@@ -158,7 +158,7 @@ RVTEST_BEGIN
   li x7, 8
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140001000 -> ai_pg_gx perms 0x59 
+  // g64: 0x140001000 -> ai_pg_gx perms 0x59
   LA(x6, ai_pg_gx)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -457,7 +457,7 @@ vsstatus_mxr_vm_in_VS_24:
   li x7, 512
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32: 0x20000000 -> 0x40000000 perms 0x49 
+  // vs32: 0x20000000 -> 0x40000000 perms 0x49
   li x6, 0x10000000
   li x7, 0x49
   or x6, x6, x7
@@ -473,7 +473,7 @@ vsstatus_mxr_vm_in_VS_24:
   li x7, 1024
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32: 0x40000000 -> ai_pg_vx perms 0xdf 
+  // g32: 0x40000000 -> ai_pg_vx perms 0xdf
   LA(x6, ai_pg_vx)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -483,7 +483,7 @@ vsstatus_mxr_vm_in_VS_24:
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32: 0x20001000 -> 0x40001000 perms 0xcf 
+  // vs32: 0x20001000 -> 0x40001000 perms 0xcf
   li x6, 0x10000400
   li x7, 0xcf
   or x6, x6, x7
@@ -491,7 +491,7 @@ vsstatus_mxr_vm_in_VS_24:
   li x7, 4
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32: 0x40001000 -> ai_pg_gx perms 0x59 
+  // g32: 0x40001000 -> ai_pg_gx perms 0x59
   LA(x6, ai_pg_gx)
   srli x6, x6, 12
   slli x6, x6, 10

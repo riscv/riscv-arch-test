@@ -91,7 +91,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs64: 0x40000000 -> 0x140000000 perms 0xcf 
+  // vs64: 0x40000000 -> 0x140000000 perms 0xcf
   li x6, 0x50000000
   li x7, 0xcf
   or x6, x6, x7
@@ -115,7 +115,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140000000 -> ai_pg_A perms 0xdf 
+  // g64: 0x140000000 -> ai_pg_A perms 0xdf
   LA(x6, ai_pg_A)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -125,7 +125,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs64: 0x40001000 -> 0x140001000 perms 0xcf 
+  // vs64: 0x40001000 -> 0x140001000 perms 0xcf
   li x6, 0x50000400
   li x7, 0xcf
   or x6, x6, x7
@@ -133,7 +133,7 @@ RVTEST_BEGIN
   li x7, 8
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140001000 -> ai_pg_B perms 0xdf 
+  // g64: 0x140001000 -> ai_pg_B perms 0xdf
   LA(x6, ai_pg_B)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -143,7 +143,7 @@ RVTEST_BEGIN
   li x7, 8
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs64: 0x40002000 -> 0x140002000 perms 0xcf 
+  // vs64: 0x40002000 -> 0x140002000 perms 0xcf
   li x6, 0x50000800
   li x7, 0xcf
   or x6, x6, x7
@@ -151,7 +151,7 @@ RVTEST_BEGIN
   li x7, 16
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140002000 -> ai_pg_C perms 0xdf 
+  // g64: 0x140002000 -> ai_pg_C perms 0xdf
   LA(x6, ai_pg_C)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -201,7 +201,7 @@ hfence_vvma_limits_in_S_2:
   AI_CHECK(x13, hfence_vvma_limits_in_S_2, hfence_vvma_limits_in_S_2_s3)
   AI_CHECK(x14, hfence_vvma_limits_in_S_2, hfence_vvma_limits_in_S_2_s4)
   AI_CHECK(x7, hfence_vvma_limits_in_S_2, hfence_vvma_limits_in_S_2_s5)
-  // vs64: 0x40000000 -> 0x140002000 perms 0xcf 
+  // vs64: 0x40000000 -> 0x140002000 perms 0xcf
   li x6, 0x50000800
   li x7, 0xcf
   or x6, x6, x7
@@ -219,7 +219,7 @@ hfence_vvma_limits_in_S_3:
   AI_CHECK(x13, hfence_vvma_limits_in_S_3, hfence_vvma_limits_in_S_3_s6)
   AI_CHECK(x14, hfence_vvma_limits_in_S_3, hfence_vvma_limits_in_S_3_s7)
   AI_CHECK(x7, hfence_vvma_limits_in_S_3, hfence_vvma_limits_in_S_3_s8)
-  // vs64: 0x40001000 -> 0x140000000 perms 0xcf 
+  // vs64: 0x40001000 -> 0x140000000 perms 0xcf
   li x6, 0x50000000
   li x7, 0xcf
   or x6, x6, x7
@@ -236,7 +236,7 @@ hfence_vvma_limits_in_S_4:
   AI_CHECK(x13, hfence_vvma_limits_in_S_4, hfence_vvma_limits_in_S_4_s9)
   AI_CHECK(x14, hfence_vvma_limits_in_S_4, hfence_vvma_limits_in_S_4_s10)
   AI_CHECK2(x7, hfence_vvma_limits_in_S_4, hfence_vvma_limits_in_S_4_s11)
-  // vs64: 0x40000000 -> 0x140000000 perms 0xcf 
+  // vs64: 0x40000000 -> 0x140000000 perms 0xcf
   li x6, 0x50000000
   li x7, 0xcf
   or x6, x6, x7
@@ -294,7 +294,7 @@ hfence_vvma_limits_in_S_5:
   li x7, 512
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32: 0x20000000 -> 0x40000000 perms 0xcf 
+  // vs32: 0x20000000 -> 0x40000000 perms 0xcf
   li x6, 0x10000000
   li x7, 0xcf
   or x6, x6, x7
@@ -310,7 +310,7 @@ hfence_vvma_limits_in_S_5:
   li x7, 1024
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32: 0x40000000 -> ai_pg_A perms 0xdf 
+  // g32: 0x40000000 -> ai_pg_A perms 0xdf
   LA(x6, ai_pg_A)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -320,7 +320,7 @@ hfence_vvma_limits_in_S_5:
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32: 0x20001000 -> 0x40001000 perms 0xcf 
+  // vs32: 0x20001000 -> 0x40001000 perms 0xcf
   li x6, 0x10000400
   li x7, 0xcf
   or x6, x6, x7
@@ -328,7 +328,7 @@ hfence_vvma_limits_in_S_5:
   li x7, 4
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32: 0x40001000 -> ai_pg_B perms 0xdf 
+  // g32: 0x40001000 -> ai_pg_B perms 0xdf
   LA(x6, ai_pg_B)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -338,7 +338,7 @@ hfence_vvma_limits_in_S_5:
   li x7, 4
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32: 0x20002000 -> 0x40002000 perms 0xcf 
+  // vs32: 0x20002000 -> 0x40002000 perms 0xcf
   li x6, 0x10000800
   li x7, 0xcf
   or x6, x6, x7
@@ -346,7 +346,7 @@ hfence_vvma_limits_in_S_5:
   li x7, 8
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32: 0x40002000 -> ai_pg_C perms 0xdf 
+  // g32: 0x40002000 -> ai_pg_C perms 0xdf
   LA(x6, ai_pg_C)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -396,7 +396,7 @@ hfence_vvma_limits_in_S_7:
   AI_CHECK(x13, hfence_vvma_limits_in_S_7, hfence_vvma_limits_in_S_7_s18)
   AI_CHECK(x14, hfence_vvma_limits_in_S_7, hfence_vvma_limits_in_S_7_s19)
   AI_CHECK(x7, hfence_vvma_limits_in_S_7, hfence_vvma_limits_in_S_7_s20)
-  // vs32: 0x20000000 -> 0x40002000 perms 0xcf 
+  // vs32: 0x20000000 -> 0x40002000 perms 0xcf
   li x6, 0x10000800
   li x7, 0xcf
   or x6, x6, x7
@@ -414,7 +414,7 @@ hfence_vvma_limits_in_S_8:
   AI_CHECK(x13, hfence_vvma_limits_in_S_8, hfence_vvma_limits_in_S_8_s21)
   AI_CHECK(x14, hfence_vvma_limits_in_S_8, hfence_vvma_limits_in_S_8_s22)
   AI_CHECK(x7, hfence_vvma_limits_in_S_8, hfence_vvma_limits_in_S_8_s23)
-  // vs32: 0x20001000 -> 0x40000000 perms 0xcf 
+  // vs32: 0x20001000 -> 0x40000000 perms 0xcf
   li x6, 0x10000000
   li x7, 0xcf
   or x6, x6, x7
@@ -431,7 +431,7 @@ hfence_vvma_limits_in_S_9:
   AI_CHECK(x13, hfence_vvma_limits_in_S_9, hfence_vvma_limits_in_S_9_s24)
   AI_CHECK(x14, hfence_vvma_limits_in_S_9, hfence_vvma_limits_in_S_9_s25)
   AI_CHECK2(x7, hfence_vvma_limits_in_S_9, hfence_vvma_limits_in_S_9_s26)
-  // vs32: 0x20000000 -> 0x40000000 perms 0xcf 
+  // vs32: 0x20000000 -> 0x40000000 perms 0xcf
   li x6, 0x10000000
   li x7, 0xcf
   or x6, x6, x7

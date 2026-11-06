@@ -97,7 +97,7 @@ RVTEST_BEGIN
   li x7, 1360
   add x8, x8, x7
   SREG x6, 0(x8)
-  // gmsv39x4: 0x1554cd000 -> ai_pg_msv39x4 perms 0xdf 
+  // gmsv39x4: 0x1554cd000 -> ai_pg_msv39x4 perms 0xdf
   LA(x6, ai_pg_msv39x4)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -198,7 +198,7 @@ hgatp_mode_Sv_done_3:
   li x7, 1360
   add x8, x8, x7
   SREG x6, 0(x8)
-  // gmsv48x4: 0x2ccd54cd000 -> ai_pg_msv48x4 perms 0xdf 
+  // gmsv48x4: 0x2ccd54cd000 -> ai_pg_msv48x4 perms 0xdf
   LA(x6, ai_pg_msv48x4)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -307,7 +307,7 @@ hgatp_mode_Sv_done_7:
   li x7, 1360
   add x8, x8, x7
   SREG x6, 0(x8)
-  // gmsv57x4: 0x578ccd54cd000 -> ai_pg_msv57x4 perms 0xdf 
+  // gmsv57x4: 0x578ccd54cd000 -> ai_pg_msv57x4 perms 0xdf
   LA(x6, ai_pg_msv57x4)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -394,7 +394,7 @@ hgatp_mode_Sv_done_11:
   li x7, 512
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32x4: 0x20000000 -> 0x40000000 perms 0xcf 
+  // vs32x4: 0x20000000 -> 0x40000000 perms 0xcf
   li x6, 0x10000000
   li x7, 0xcf
   or x6, x6, x7
@@ -410,7 +410,7 @@ hgatp_mode_Sv_done_11:
   li x7, 1024
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32x4: 0x40000000 -> ai_pg_P0 perms 0xdf 
+  // g32x4: 0x40000000 -> ai_pg_P0 perms 0xdf
   LA(x6, ai_pg_P0)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -420,7 +420,7 @@ hgatp_mode_Sv_done_11:
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32x4: 0x20001000 -> 0x140001000 perms 0xcf 
+  // vs32x4: 0x20001000 -> 0x140001000 perms 0xcf
   li x6, 0x50000400
   li x7, 0xcf
   or x6, x6, x7
@@ -436,7 +436,7 @@ hgatp_mode_Sv_done_11:
   li x7, 5120
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32x4: 0x140001000 -> ai_pg_P1 perms 0xdf 
+  // g32x4: 0x140001000 -> ai_pg_P1 perms 0xdf
   LA(x6, ai_pg_P1)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -446,7 +446,7 @@ hgatp_mode_Sv_done_11:
   li x7, 4
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32x4: 0x20002000 -> 0x240002000 perms 0xcf 
+  // vs32x4: 0x20002000 -> 0x240002000 perms 0xcf
   li x6, 0x90000800
   li x7, 0xcf
   or x6, x6, x7
@@ -462,7 +462,7 @@ hgatp_mode_Sv_done_11:
   li x7, 9216
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32x4: 0x240002000 -> ai_pg_P2 perms 0xdf 
+  // g32x4: 0x240002000 -> ai_pg_P2 perms 0xdf
   LA(x6, ai_pg_P2)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -472,7 +472,7 @@ hgatp_mode_Sv_done_11:
   li x7, 8
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32x4: 0x20003000 -> 0x340003000 perms 0xcf 
+  // vs32x4: 0x20003000 -> 0x340003000 perms 0xcf
   li x6, 0xd0000c00
   li x7, 0xcf
   or x6, x6, x7
@@ -488,7 +488,7 @@ hgatp_mode_Sv_done_11:
   li x7, 13312
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32x4: 0x340003000 -> ai_pg_P3 perms 0xdf 
+  // g32x4: 0x340003000 -> ai_pg_P3 perms 0xdf
   LA(x6, ai_pg_P3)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -498,7 +498,7 @@ hgatp_mode_Sv_done_11:
   li x7, 12
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32x4: 0x20008000 -> 0x3ffc05000 perms 0xcf 
+  // vs32x4: 0x20008000 -> 0x3ffc05000 perms 0xcf
   li x6, 0xfff01400
   li x7, 0xcf
   or x6, x6, x7
@@ -514,7 +514,7 @@ hgatp_mode_Sv_done_11:
   li x7, 16380
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32x4: 0x3ffc05000 -> ai_pg_Ptop perms 0xdf 
+  // g32x4: 0x3ffc05000 -> ai_pg_Ptop perms 0xdf
   LA(x6, ai_pg_Ptop)
   srli x6, x6, 12
   slli x6, x6, 10

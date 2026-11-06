@@ -100,7 +100,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // gsv48x4: 0x400040000000 -> ai_pg_P0 perms 0xdf 
+  // gsv48x4: 0x400040000000 -> ai_pg_P0 perms 0xdf
   LA(x6, ai_pg_P0)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -134,7 +134,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // gsv48x4: 0x1400040001000 -> ai_pg_P1 perms 0xdf 
+  // gsv48x4: 0x1400040001000 -> ai_pg_P1 perms 0xdf
   LA(x6, ai_pg_P1)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -168,7 +168,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // gsv48x4: 0x2400040002000 -> ai_pg_P2 perms 0xdf 
+  // gsv48x4: 0x2400040002000 -> ai_pg_P2 perms 0xdf
   LA(x6, ai_pg_P2)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -202,7 +202,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // gsv48x4: 0x3400040003000 -> ai_pg_P3 perms 0xdf 
+  // gsv48x4: 0x3400040003000 -> ai_pg_P3 perms 0xdf
   LA(x6, ai_pg_P3)
   srli x6, x6, 12
   slli x6, x6, 10

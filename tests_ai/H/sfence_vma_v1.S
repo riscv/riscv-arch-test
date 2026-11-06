@@ -121,7 +121,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs64: 0x40000000 -> 0x140000000 perms 0xcf 
+  // vs64: 0x40000000 -> 0x140000000 perms 0xcf
   li x6, 0x50000000
   li x7, 0xcf
   or x6, x6, x7
@@ -145,7 +145,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140000000 -> ai_pg_A perms 0xdf 
+  // g64: 0x140000000 -> ai_pg_A perms 0xdf
   LA(x6, ai_pg_A)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -155,7 +155,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs64: 0x40001000 -> 0x140001000 perms 0xcf 
+  // vs64: 0x40001000 -> 0x140001000 perms 0xcf
   li x6, 0x50000400
   li x7, 0xcf
   or x6, x6, x7
@@ -163,7 +163,7 @@ RVTEST_BEGIN
   li x7, 8
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140001000 -> ai_pg_B perms 0xdf 
+  // g64: 0x140001000 -> ai_pg_B perms 0xdf
   LA(x6, ai_pg_B)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -173,7 +173,7 @@ RVTEST_BEGIN
   li x7, 8
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs64: 0x40002000 -> 0x140002000 perms 0xcf 
+  // vs64: 0x40002000 -> 0x140002000 perms 0xcf
   li x6, 0x50000800
   li x7, 0xcf
   or x6, x6, x7
@@ -181,7 +181,7 @@ RVTEST_BEGIN
   li x7, 16
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140002000 -> ai_pg_C perms 0xdf 
+  // g64: 0x140002000 -> ai_pg_C perms 0xdf
   LA(x6, ai_pg_C)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -222,7 +222,7 @@ sfence_vma_v1_in_VS_1:
   AI_CHECK(x13, sfence_vma_v1_in_VS_1, sfence_vma_v1_in_VS_1_s0)
   AI_CHECK(x14, sfence_vma_v1_in_VS_1, sfence_vma_v1_in_VS_1_s1)
   AI_CHECK(x7, sfence_vma_v1_in_VS_1, sfence_vma_v1_in_VS_1_s2)
-  // vs64: 0x40000000 -> 0x140001000 perms 0xcf 
+  // vs64: 0x40000000 -> 0x140001000 perms 0xcf
   li x6, 0x50000400
   li x7, 0xcf
   or x6, x6, x7
@@ -254,7 +254,7 @@ sfence_vma_v1_in_VS_3:
   AI_CHECK(x13, sfence_vma_v1_in_VS_3, sfence_vma_v1_in_VS_3_s3)
   AI_CHECK(x14, sfence_vma_v1_in_VS_3, sfence_vma_v1_in_VS_3_s4)
   AI_CHECK(x7, sfence_vma_v1_in_VS_3, sfence_vma_v1_in_VS_3_s5)
-  // vs64: 0x40000000 -> 0x140000000 perms 0xcf 
+  // vs64: 0x40000000 -> 0x140000000 perms 0xcf
   li x6, 0x50000000
   li x7, 0xcf
   or x6, x6, x7
@@ -286,7 +286,7 @@ sfence_vma_v1_in_VS_5:
   AI_CHECK(x13, sfence_vma_v1_in_VS_5, sfence_vma_v1_in_VS_5_s6)
   AI_CHECK(x14, sfence_vma_v1_in_VS_5, sfence_vma_v1_in_VS_5_s7)
   AI_CHECK(x7, sfence_vma_v1_in_VS_5, sfence_vma_v1_in_VS_5_s8)
-  // vs64: 0x40000000 -> 0x140002000 perms 0xcf 
+  // vs64: 0x40000000 -> 0x140002000 perms 0xcf
   li x6, 0x50000800
   li x7, 0xcf
   or x6, x6, x7
@@ -381,7 +381,7 @@ sfence_vma_v1_in_VS_7:
   li x7, 512
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32: 0x20000000 -> 0x40000000 perms 0xcf 
+  // vs32: 0x20000000 -> 0x40000000 perms 0xcf
   li x6, 0x10000000
   li x7, 0xcf
   or x6, x6, x7
@@ -397,7 +397,7 @@ sfence_vma_v1_in_VS_7:
   li x7, 1024
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32: 0x40000000 -> ai_pg_A perms 0xdf 
+  // g32: 0x40000000 -> ai_pg_A perms 0xdf
   LA(x6, ai_pg_A)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -407,7 +407,7 @@ sfence_vma_v1_in_VS_7:
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32: 0x20001000 -> 0x40001000 perms 0xcf 
+  // vs32: 0x20001000 -> 0x40001000 perms 0xcf
   li x6, 0x10000400
   li x7, 0xcf
   or x6, x6, x7
@@ -415,7 +415,7 @@ sfence_vma_v1_in_VS_7:
   li x7, 4
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32: 0x40001000 -> ai_pg_B perms 0xdf 
+  // g32: 0x40001000 -> ai_pg_B perms 0xdf
   LA(x6, ai_pg_B)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -425,7 +425,7 @@ sfence_vma_v1_in_VS_7:
   li x7, 4
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32: 0x20002000 -> 0x40002000 perms 0xcf 
+  // vs32: 0x20002000 -> 0x40002000 perms 0xcf
   li x6, 0x10000800
   li x7, 0xcf
   or x6, x6, x7
@@ -433,7 +433,7 @@ sfence_vma_v1_in_VS_7:
   li x7, 8
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32: 0x40002000 -> ai_pg_C perms 0xdf 
+  // g32: 0x40002000 -> ai_pg_C perms 0xdf
   LA(x6, ai_pg_C)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -474,7 +474,7 @@ sfence_vma_v1_in_VS_9:
   AI_CHECK(x13, sfence_vma_v1_in_VS_9, sfence_vma_v1_in_VS_9_s12)
   AI_CHECK(x14, sfence_vma_v1_in_VS_9, sfence_vma_v1_in_VS_9_s13)
   AI_CHECK(x7, sfence_vma_v1_in_VS_9, sfence_vma_v1_in_VS_9_s14)
-  // vs32: 0x20000000 -> 0x40001000 perms 0xcf 
+  // vs32: 0x20000000 -> 0x40001000 perms 0xcf
   li x6, 0x10000400
   li x7, 0xcf
   or x6, x6, x7
@@ -506,7 +506,7 @@ sfence_vma_v1_in_VS_11:
   AI_CHECK(x13, sfence_vma_v1_in_VS_11, sfence_vma_v1_in_VS_11_s15)
   AI_CHECK(x14, sfence_vma_v1_in_VS_11, sfence_vma_v1_in_VS_11_s16)
   AI_CHECK(x7, sfence_vma_v1_in_VS_11, sfence_vma_v1_in_VS_11_s17)
-  // vs32: 0x20000000 -> 0x40000000 perms 0xcf 
+  // vs32: 0x20000000 -> 0x40000000 perms 0xcf
   li x6, 0x10000000
   li x7, 0xcf
   or x6, x6, x7
@@ -538,7 +538,7 @@ sfence_vma_v1_in_VS_13:
   AI_CHECK(x13, sfence_vma_v1_in_VS_13, sfence_vma_v1_in_VS_13_s18)
   AI_CHECK(x14, sfence_vma_v1_in_VS_13, sfence_vma_v1_in_VS_13_s19)
   AI_CHECK(x7, sfence_vma_v1_in_VS_13, sfence_vma_v1_in_VS_13_s20)
-  // vs32: 0x20000000 -> 0x40002000 perms 0xcf 
+  // vs32: 0x20000000 -> 0x40002000 perms 0xcf
   li x6, 0x10000800
   li x7, 0xcf
   or x6, x6, x7

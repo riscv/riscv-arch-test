@@ -106,7 +106,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs64: 0x40000000 -> 0x140000000 perms 0xcf 
+  // vs64: 0x40000000 -> 0x140000000 perms 0xcf
   li x6, 0x50000000
   li x7, 0xcf
   or x6, x6, x7
@@ -130,7 +130,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140000000 -> ai_pg_R perms 0x53 
+  // g64: 0x140000000 -> ai_pg_R perms 0x53
   LA(x6, ai_pg_R)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -140,7 +140,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs64: 0x40001000 -> 0x140001000 perms 0xcf 
+  // vs64: 0x40001000 -> 0x140001000 perms 0xcf
   li x6, 0x50000400
   li x7, 0xcf
   or x6, x6, x7
@@ -148,7 +148,7 @@ RVTEST_BEGIN
   li x7, 8
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140001000 -> ai_pg_X perms 0x59 
+  // g64: 0x140001000 -> ai_pg_X perms 0x59
   LA(x6, ai_pg_X)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -158,7 +158,7 @@ RVTEST_BEGIN
   li x7, 8
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs64: 0x40002000 -> 0x140002000 perms 0xcf 
+  // vs64: 0x40002000 -> 0x140002000 perms 0xcf
   li x6, 0x50000800
   li x7, 0xcf
   or x6, x6, x7
@@ -166,7 +166,7 @@ RVTEST_BEGIN
   li x7, 16
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140002000 -> ai_pg_W perms 0xd5 
+  // g64: 0x140002000 -> ai_pg_W perms 0xd5
   LA(x6, ai_pg_W)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -176,7 +176,7 @@ RVTEST_BEGIN
   li x7, 16
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs64: 0x40003000 -> 0x140003000 perms 0xcf 
+  // vs64: 0x40003000 -> 0x140003000 perms 0xcf
   li x6, 0x50000c00
   li x7, 0xcf
   or x6, x6, x7
@@ -184,7 +184,7 @@ RVTEST_BEGIN
   li x7, 24
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140003000 -> ai_pg_T perms 0xdf 
+  // g64: 0x140003000 -> ai_pg_T perms 0xdf
   LA(x6, ai_pg_T)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -194,7 +194,7 @@ RVTEST_BEGIN
   li x7, 24
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs64: 0x40004000 -> 0x140004000 perms 0xcf 
+  // vs64: 0x40004000 -> 0x140004000 perms 0xcf
   li x6, 0x50001000
   li x7, 0xcf
   or x6, x6, x7
@@ -202,7 +202,7 @@ RVTEST_BEGIN
   li x7, 32
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140004000 -> ai_pg_Ad perms 0x9f 
+  // g64: 0x140004000 -> ai_pg_Ad perms 0x9f
   LA(x6, ai_pg_Ad)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -212,7 +212,7 @@ RVTEST_BEGIN
   li x7, 32
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140100000 -> ai_pt_vs64_root perms 0xdf 
+  // g64: 0x140100000 -> ai_pt_vs64_root perms 0xdf
   LA(x6, ai_pt_vs64_root)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -222,7 +222,7 @@ RVTEST_BEGIN
   li x7, 2048
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140101000 -> ai_pt_vs64_t1 perms 0xdf 
+  // g64: 0x140101000 -> ai_pt_vs64_t1 perms 0xdf
   LA(x6, ai_pt_vs64_t1)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -232,7 +232,7 @@ RVTEST_BEGIN
   li x7, 2056
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140102000 -> ai_pt_vs64_t2 perms 0xdf 
+  // g64: 0x140102000 -> ai_pt_vs64_t2 perms 0xdf
   LA(x6, ai_pt_vs64_t2)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -392,7 +392,7 @@ H_vm_gpapriv_in_S_19:
   AI_CHECK(x15, H_vm_gpapriv_in_S_19, H_vm_gpapriv_in_S_19_s44)
   AI_ORIGIN
   AI_CHECK(x15, H_vm_gpapriv_in_S_19, H_vm_gpapriv_in_S_19_s45)
-  // g64: 0x140100000 -> ai_pt_vs64_root perms 0x59 
+  // g64: 0x140100000 -> ai_pt_vs64_root perms 0x59
   LA(x6, ai_pt_vs64_root)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -402,7 +402,7 @@ H_vm_gpapriv_in_S_19:
   li x7, 2048
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140101000 -> ai_pt_vs64_t1 perms 0x59 
+  // g64: 0x140101000 -> ai_pt_vs64_t1 perms 0x59
   LA(x6, ai_pt_vs64_t1)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -412,7 +412,7 @@ H_vm_gpapriv_in_S_19:
   li x7, 2056
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140102000 -> ai_pt_vs64_t2 perms 0x59 
+  // g64: 0x140102000 -> ai_pt_vs64_t2 perms 0x59
   LA(x6, ai_pt_vs64_t2)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -521,7 +521,7 @@ H_vm_gpapriv_in_S_31:
   seqz x13, x13  // tval2 == 0
   or x15, x13, x14
   AI_CHECK(x15, H_vm_gpapriv_in_S_31, H_vm_gpapriv_in_S_31_s72)
-  // g64: 0x140100000 -> ai_pt_vs64_root perms 0x53 
+  // g64: 0x140100000 -> ai_pt_vs64_root perms 0x53
   LA(x6, ai_pt_vs64_root)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -531,7 +531,7 @@ H_vm_gpapriv_in_S_31:
   li x7, 2048
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140101000 -> ai_pt_vs64_t1 perms 0x53 
+  // g64: 0x140101000 -> ai_pt_vs64_t1 perms 0x53
   LA(x6, ai_pt_vs64_t1)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -541,7 +541,7 @@ H_vm_gpapriv_in_S_31:
   li x7, 2056
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140102000 -> ai_pt_vs64_t2 perms 0x53 
+  // g64: 0x140102000 -> ai_pt_vs64_t2 perms 0x53
   LA(x6, ai_pt_vs64_t2)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -564,7 +564,7 @@ H_vm_gpapriv_in_S_35:
   LA(x6, ai_pg_T+16)
   lw x7, 0(x6)
   AI_CHECK(x7, H_vm_gpapriv_in_S_35, H_vm_gpapriv_in_S_35_s75)
-  // g64: 0x140100000 -> ai_pt_vs64_root perms 0xdf 
+  // g64: 0x140100000 -> ai_pt_vs64_root perms 0xdf
   LA(x6, ai_pt_vs64_root)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -574,7 +574,7 @@ H_vm_gpapriv_in_S_35:
   li x7, 2048
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140101000 -> ai_pt_vs64_t1 perms 0xdf 
+  // g64: 0x140101000 -> ai_pt_vs64_t1 perms 0xdf
   LA(x6, ai_pt_vs64_t1)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -584,7 +584,7 @@ H_vm_gpapriv_in_S_35:
   li x7, 2056
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140102000 -> ai_pt_vs64_t2 perms 0xdf 
+  // g64: 0x140102000 -> ai_pt_vs64_t2 perms 0xdf
   LA(x6, ai_pt_vs64_t2)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -615,7 +615,7 @@ H_vm_gpapriv_gA_37:
   LREG x7, 0(x8)
   andi x7, x7, 0x40
   AI_CHECK(x7, H_vm_gpapriv_gA_37, H_vm_gpapriv_gA_37_s79)
-  // g64: 0x140004000 -> ai_pg_Ad perms 0x9f 
+  // g64: 0x140004000 -> ai_pg_Ad perms 0x9f
   LA(x6, ai_pg_Ad)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -724,7 +724,7 @@ H_vm_gpapriv_in_S_42:
   li x7, 512
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32: 0x20000000 -> 0x40000000 perms 0xcf 
+  // vs32: 0x20000000 -> 0x40000000 perms 0xcf
   li x6, 0x10000000
   li x7, 0xcf
   or x6, x6, x7
@@ -740,7 +740,7 @@ H_vm_gpapriv_in_S_42:
   li x7, 1024
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32: 0x40000000 -> ai_pg_R perms 0x53 
+  // g32: 0x40000000 -> ai_pg_R perms 0x53
   LA(x6, ai_pg_R)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -750,7 +750,7 @@ H_vm_gpapriv_in_S_42:
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32: 0x20001000 -> 0x40001000 perms 0xcf 
+  // vs32: 0x20001000 -> 0x40001000 perms 0xcf
   li x6, 0x10000400
   li x7, 0xcf
   or x6, x6, x7
@@ -758,7 +758,7 @@ H_vm_gpapriv_in_S_42:
   li x7, 4
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32: 0x40001000 -> ai_pg_X perms 0x59 
+  // g32: 0x40001000 -> ai_pg_X perms 0x59
   LA(x6, ai_pg_X)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -768,7 +768,7 @@ H_vm_gpapriv_in_S_42:
   li x7, 4
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32: 0x20002000 -> 0x40002000 perms 0xcf 
+  // vs32: 0x20002000 -> 0x40002000 perms 0xcf
   li x6, 0x10000800
   li x7, 0xcf
   or x6, x6, x7
@@ -776,7 +776,7 @@ H_vm_gpapriv_in_S_42:
   li x7, 8
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32: 0x40002000 -> ai_pg_W perms 0xd5 
+  // g32: 0x40002000 -> ai_pg_W perms 0xd5
   LA(x6, ai_pg_W)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -786,7 +786,7 @@ H_vm_gpapriv_in_S_42:
   li x7, 8
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32: 0x20003000 -> 0x40003000 perms 0xcf 
+  // vs32: 0x20003000 -> 0x40003000 perms 0xcf
   li x6, 0x10000c00
   li x7, 0xcf
   or x6, x6, x7
@@ -794,7 +794,7 @@ H_vm_gpapriv_in_S_42:
   li x7, 12
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32: 0x40003000 -> ai_pg_T perms 0xdf 
+  // g32: 0x40003000 -> ai_pg_T perms 0xdf
   LA(x6, ai_pg_T)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -804,7 +804,7 @@ H_vm_gpapriv_in_S_42:
   li x7, 12
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32: 0x20004000 -> 0x40004000 perms 0xcf 
+  // vs32: 0x20004000 -> 0x40004000 perms 0xcf
   li x6, 0x10001000
   li x7, 0xcf
   or x6, x6, x7
@@ -812,7 +812,7 @@ H_vm_gpapriv_in_S_42:
   li x7, 16
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32: 0x40004000 -> ai_pg_Ad perms 0x9f 
+  // g32: 0x40004000 -> ai_pg_Ad perms 0x9f
   LA(x6, ai_pg_Ad)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -822,7 +822,7 @@ H_vm_gpapriv_in_S_42:
   li x7, 16
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32: 0x40100000 -> ai_pt_vs32_root perms 0xdf 
+  // g32: 0x40100000 -> ai_pt_vs32_root perms 0xdf
   LA(x6, ai_pt_vs32_root)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -832,7 +832,7 @@ H_vm_gpapriv_in_S_42:
   li x7, 1024
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32: 0x40101000 -> ai_pt_vs32_t1 perms 0xdf 
+  // g32: 0x40101000 -> ai_pt_vs32_t1 perms 0xdf
   LA(x6, ai_pt_vs32_t1)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -992,7 +992,7 @@ H_vm_gpapriv_in_S_64:
   AI_CHECK(x15, H_vm_gpapriv_in_S_64, H_vm_gpapriv_in_S_64_s140)
   AI_ORIGIN
   AI_CHECK(x15, H_vm_gpapriv_in_S_64, H_vm_gpapriv_in_S_64_s141)
-  // g32: 0x40100000 -> ai_pt_vs32_root perms 0x59 
+  // g32: 0x40100000 -> ai_pt_vs32_root perms 0x59
   LA(x6, ai_pt_vs32_root)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -1002,7 +1002,7 @@ H_vm_gpapriv_in_S_64:
   li x7, 1024
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32: 0x40101000 -> ai_pt_vs32_t1 perms 0x59 
+  // g32: 0x40101000 -> ai_pt_vs32_t1 perms 0x59
   LA(x6, ai_pt_vs32_t1)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -1111,7 +1111,7 @@ H_vm_gpapriv_in_S_76:
   seqz x13, x13  // tval2 == 0
   or x15, x13, x14
   AI_CHECK(x15, H_vm_gpapriv_in_S_76, H_vm_gpapriv_in_S_76_s168)
-  // g32: 0x40100000 -> ai_pt_vs32_root perms 0x53 
+  // g32: 0x40100000 -> ai_pt_vs32_root perms 0x53
   LA(x6, ai_pt_vs32_root)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -1121,7 +1121,7 @@ H_vm_gpapriv_in_S_76:
   li x7, 1024
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32: 0x40101000 -> ai_pt_vs32_t1 perms 0x53 
+  // g32: 0x40101000 -> ai_pt_vs32_t1 perms 0x53
   LA(x6, ai_pt_vs32_t1)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -1144,7 +1144,7 @@ H_vm_gpapriv_in_S_80:
   LA(x6, ai_pg_T+16)
   lw x7, 0(x6)
   AI_CHECK(x7, H_vm_gpapriv_in_S_80, H_vm_gpapriv_in_S_80_s171)
-  // g32: 0x40100000 -> ai_pt_vs32_root perms 0xdf 
+  // g32: 0x40100000 -> ai_pt_vs32_root perms 0xdf
   LA(x6, ai_pt_vs32_root)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -1154,7 +1154,7 @@ H_vm_gpapriv_in_S_80:
   li x7, 1024
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32: 0x40101000 -> ai_pt_vs32_t1 perms 0xdf 
+  // g32: 0x40101000 -> ai_pt_vs32_t1 perms 0xdf
   LA(x6, ai_pt_vs32_t1)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -1184,7 +1184,7 @@ H_vm_gpapriv_gA_82:
   LREG x7, 0(x8)
   andi x7, x7, 0x40
   AI_CHECK(x7, H_vm_gpapriv_gA_82, H_vm_gpapriv_gA_82_s175)
-  // g32: 0x40004000 -> ai_pg_Ad perms 0x9f 
+  // g32: 0x40004000 -> ai_pg_Ad perms 0x9f
   LA(x6, ai_pg_Ad)
   srli x6, x6, 12
   slli x6, x6, 10

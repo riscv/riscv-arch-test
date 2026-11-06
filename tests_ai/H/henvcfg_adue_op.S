@@ -106,7 +106,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs64: 0x40000000 -> 0x140000000 perms 0xf 
+  // vs64: 0x40000000 -> 0x140000000 perms 0xf
   li x6, 0x50000000
   li x7, 0xf
   or x6, x6, x7
@@ -130,7 +130,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140000000 -> ai_pg_A perms 0xdf 
+  // g64: 0x140000000 -> ai_pg_A perms 0xdf
   LA(x6, ai_pg_A)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -187,7 +187,7 @@ henvcfg_adue_op_ad_4:
   LREG x7, 0(x8)
   andi x7, x7, 128
   AI_CHECK(x7, henvcfg_adue_op_ad_4, henvcfg_adue_op_ad_4_s6)
-  // vs64: 0x40000000 -> 0x140000000 perms 0xf 
+  // vs64: 0x40000000 -> 0x140000000 perms 0xf
   li x6, 0x50000000
   li x7, 0xf
   or x6, x6, x7
@@ -248,7 +248,7 @@ henvcfg_adue_op_in_S_9:
   AI_CHECK(x15, henvcfg_adue_op_in_S_9, henvcfg_adue_op_in_S_9_s21)
   AI_ORIGIN
   AI_CHECK(x15, henvcfg_adue_op_in_S_9, henvcfg_adue_op_in_S_9_s22)
-  // vs64: 0x40000000 -> 0x140000000 perms 0xcf 
+  // vs64: 0x40000000 -> 0x140000000 perms 0xcf
   li x6, 0x50000000
   li x7, 0xcf
   or x6, x6, x7
@@ -256,7 +256,7 @@ henvcfg_adue_op_in_S_9:
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140000000 -> ai_pg_A perms 0x9f 
+  // g64: 0x140000000 -> ai_pg_A perms 0x9f
   LA(x6, ai_pg_A)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -357,7 +357,7 @@ henvcfg_adue_op_ro_16:
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs64: 0x40000000 -> 0x140000000 perms 0xf 
+  // vs64: 0x40000000 -> 0x140000000 perms 0xf
   li x6, 0x50000000
   li x7, 0xf
   or x6, x6, x7
@@ -381,7 +381,7 @@ henvcfg_adue_op_ro_16:
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140000000 -> ai_pg_A perms 0xdf 
+  // g64: 0x140000000 -> ai_pg_A perms 0xdf
   LA(x6, ai_pg_A)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -477,7 +477,7 @@ henvcfg_adue_op_in_S_17:
   li x7, 512
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32: 0x20000000 -> 0x40000000 perms 0xf 
+  // vs32: 0x20000000 -> 0x40000000 perms 0xf
   li x6, 0x10000000
   li x7, 0xf
   or x6, x6, x7
@@ -493,7 +493,7 @@ henvcfg_adue_op_in_S_17:
   li x7, 1024
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32: 0x40000000 -> ai_pg_A perms 0xdf 
+  // g32: 0x40000000 -> ai_pg_A perms 0xdf
   LA(x6, ai_pg_A)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -549,7 +549,7 @@ henvcfg_adue_op_ad_24:
   LREG x7, 0(x8)
   andi x7, x7, 128
   AI_CHECK(x7, henvcfg_adue_op_ad_24, henvcfg_adue_op_ad_24_s43)
-  // vs32: 0x20000000 -> 0x40000000 perms 0xf 
+  // vs32: 0x20000000 -> 0x40000000 perms 0xf
   li x6, 0x10000000
   li x7, 0xf
   or x6, x6, x7
@@ -609,7 +609,7 @@ henvcfg_adue_op_in_S_29:
   AI_CHECK(x15, henvcfg_adue_op_in_S_29, henvcfg_adue_op_in_S_29_s58)
   AI_ORIGIN
   AI_CHECK(x15, henvcfg_adue_op_in_S_29, henvcfg_adue_op_in_S_29_s59)
-  // vs32: 0x20000000 -> 0x40000000 perms 0xcf 
+  // vs32: 0x20000000 -> 0x40000000 perms 0xcf
   li x6, 0x10000000
   li x7, 0xcf
   or x6, x6, x7
@@ -617,7 +617,7 @@ henvcfg_adue_op_in_S_29:
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32: 0x40000000 -> ai_pg_A perms 0x9f 
+  // g32: 0x40000000 -> ai_pg_A perms 0x9f
   LA(x6, ai_pg_A)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -706,7 +706,7 @@ henvcfg_adue_op_ro_36:
   li x7, 512
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32: 0x20000000 -> 0x40000000 perms 0xf 
+  // vs32: 0x20000000 -> 0x40000000 perms 0xf
   li x6, 0x10000000
   li x7, 0xf
   or x6, x6, x7
@@ -722,7 +722,7 @@ henvcfg_adue_op_ro_36:
   li x7, 1024
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32: 0x40000000 -> ai_pg_A perms 0xdf 
+  // g32: 0x40000000 -> ai_pg_A perms 0xdf
   LA(x6, ai_pg_A)
   srli x6, x6, 12
   slli x6, x6, 10

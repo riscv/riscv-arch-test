@@ -79,7 +79,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs64: 0x40000000 -> ai_pg_hx_x perms 0x49 
+  // vs64: 0x40000000 -> ai_pg_hx_x perms 0x49
   LA(x6, ai_pg_hx_x)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -89,7 +89,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs64: 0x40001000 -> ai_pg_hx_r perms 0x43 
+  // vs64: 0x40001000 -> ai_pg_hx_r perms 0x43
   LA(x6, ai_pg_hx_r)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -99,7 +99,7 @@ RVTEST_BEGIN
   li x7, 8
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs64: 0x40002000 -> ai_pg_hx_rx perms 0x4b 
+  // vs64: 0x40002000 -> ai_pg_hx_rx perms 0x4b
   LA(x6, ai_pg_hx_rx)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -314,7 +314,7 @@ hlsv_u_op_in_S_19:
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140000000 -> ai_pg_hx_x perms 0x59 
+  // g64: 0x140000000 -> ai_pg_hx_x perms 0x59
   LA(x6, ai_pg_hx_x)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -324,7 +324,7 @@ hlsv_u_op_in_S_19:
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140001000 -> ai_pg_hx_r perms 0x53 
+  // g64: 0x140001000 -> ai_pg_hx_r perms 0x53
   LA(x6, ai_pg_hx_r)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -334,7 +334,7 @@ hlsv_u_op_in_S_19:
   li x7, 8
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140002000 -> ai_pg_hx_rx perms 0x5b 
+  // g64: 0x140002000 -> ai_pg_hx_rx perms 0x5b
   LA(x6, ai_pg_hx_rx)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -445,7 +445,7 @@ hlsv_u_op_in_S_34:
   li x7, 512
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32: 0x20000000 -> ai_pg_hx_x perms 0x49 
+  // vs32: 0x20000000 -> ai_pg_hx_x perms 0x49
   LA(x6, ai_pg_hx_x)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -455,7 +455,7 @@ hlsv_u_op_in_S_34:
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32: 0x20001000 -> ai_pg_hx_r perms 0x43 
+  // vs32: 0x20001000 -> ai_pg_hx_r perms 0x43
   LA(x6, ai_pg_hx_r)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -465,7 +465,7 @@ hlsv_u_op_in_S_34:
   li x7, 4
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32: 0x20002000 -> ai_pg_hx_rx perms 0x4b 
+  // vs32: 0x20002000 -> ai_pg_hx_rx perms 0x4b
   LA(x6, ai_pg_hx_rx)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -672,7 +672,7 @@ hlsv_u_op_in_S_53:
   li x7, 1024
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32: 0x40000000 -> ai_pg_hx_x perms 0x59 
+  // g32: 0x40000000 -> ai_pg_hx_x perms 0x59
   LA(x6, ai_pg_hx_x)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -682,7 +682,7 @@ hlsv_u_op_in_S_53:
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32: 0x40001000 -> ai_pg_hx_r perms 0x53 
+  // g32: 0x40001000 -> ai_pg_hx_r perms 0x53
   LA(x6, ai_pg_hx_r)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -692,7 +692,7 @@ hlsv_u_op_in_S_53:
   li x7, 4
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32: 0x40002000 -> ai_pg_hx_rx perms 0x5b 
+  // g32: 0x40002000 -> ai_pg_hx_rx perms 0x5b
   LA(x6, ai_pg_hx_rx)
   srli x6, x6, 12
   slli x6, x6, 10

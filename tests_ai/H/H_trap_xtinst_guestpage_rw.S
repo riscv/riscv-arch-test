@@ -124,7 +124,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs64: 0x40000000 -> 0x140000000 perms 0xf 
+  // vs64: 0x40000000 -> 0x140000000 perms 0xf
   li x6, 0x50000000
   li x7, 0xf
   or x6, x6, x7
@@ -148,7 +148,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140000000 -> ai_pg_A perms 0xdf 
+  // g64: 0x140000000 -> ai_pg_A perms 0xdf
   LA(x6, ai_pg_A)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -158,7 +158,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140100000 -> ai_pt_vs64_root perms 0x53 
+  // g64: 0x140100000 -> ai_pt_vs64_root perms 0x53
   LA(x6, ai_pt_vs64_root)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -168,7 +168,7 @@ RVTEST_BEGIN
   li x7, 2048
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140101000 -> ai_pt_vs64_t1 perms 0x53 
+  // g64: 0x140101000 -> ai_pt_vs64_t1 perms 0x53
   LA(x6, ai_pt_vs64_t1)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -178,7 +178,7 @@ RVTEST_BEGIN
   li x7, 2056
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140102000 -> ai_pt_vs64_t2 perms 0x53 
+  // g64: 0x140102000 -> ai_pt_vs64_t2 perms 0x53
   LA(x6, ai_pt_vs64_t2)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -348,7 +348,7 @@ H_trap_xtinst_guestpage_rw_in_S_5:
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs64: 0x40000000 -> 0x140000000 perms 0xf 
+  // vs64: 0x40000000 -> 0x140000000 perms 0xf
   li x6, 0x50000000
   li x7, 0xf
   or x6, x6, x7
@@ -372,7 +372,7 @@ H_trap_xtinst_guestpage_rw_in_S_5:
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140000000 -> ai_pg_A perms 0xdf 
+  // g64: 0x140000000 -> ai_pg_A perms 0xdf
   LA(x6, ai_pg_A)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -382,7 +382,7 @@ H_trap_xtinst_guestpage_rw_in_S_5:
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140100000 -> ai_pt_vs64_root perms 0x53 
+  // g64: 0x140100000 -> ai_pt_vs64_root perms 0x53
   LA(x6, ai_pt_vs64_root)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -392,7 +392,7 @@ H_trap_xtinst_guestpage_rw_in_S_5:
   li x7, 2048
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140101000 -> ai_pt_vs64_t1 perms 0x53 
+  // g64: 0x140101000 -> ai_pt_vs64_t1 perms 0x53
   LA(x6, ai_pt_vs64_t1)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -402,7 +402,7 @@ H_trap_xtinst_guestpage_rw_in_S_5:
   li x7, 2056
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x140102000 -> ai_pt_vs64_t2 perms 0x53 
+  // g64: 0x140102000 -> ai_pt_vs64_t2 perms 0x53
   LA(x6, ai_pt_vs64_t2)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -541,7 +541,7 @@ H_trap_xtinst_guestpage_rw_in_S_13:
   li x7, 512
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32: 0x20000000 -> 0x40000000 perms 0xf 
+  // vs32: 0x20000000 -> 0x40000000 perms 0xf
   li x6, 0x10000000
   li x7, 0xf
   or x6, x6, x7
@@ -557,7 +557,7 @@ H_trap_xtinst_guestpage_rw_in_S_13:
   li x7, 1024
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32: 0x40000000 -> ai_pg_A perms 0xdf 
+  // g32: 0x40000000 -> ai_pg_A perms 0xdf
   LA(x6, ai_pg_A)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -567,7 +567,7 @@ H_trap_xtinst_guestpage_rw_in_S_13:
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32: 0x40100000 -> ai_pt_vs32_root perms 0x53 
+  // g32: 0x40100000 -> ai_pt_vs32_root perms 0x53
   LA(x6, ai_pt_vs32_root)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -577,7 +577,7 @@ H_trap_xtinst_guestpage_rw_in_S_13:
   li x7, 1024
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32: 0x40101000 -> ai_pt_vs32_t1 perms 0x53 
+  // g32: 0x40101000 -> ai_pt_vs32_t1 perms 0x53
   LA(x6, ai_pt_vs32_t1)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -736,7 +736,7 @@ H_trap_xtinst_guestpage_rw_in_S_21:
   li x7, 512
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32: 0x20000000 -> 0x40000000 perms 0xf 
+  // vs32: 0x20000000 -> 0x40000000 perms 0xf
   li x6, 0x10000000
   li x7, 0xf
   or x6, x6, x7
@@ -752,7 +752,7 @@ H_trap_xtinst_guestpage_rw_in_S_21:
   li x7, 1024
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32: 0x40000000 -> ai_pg_A perms 0xdf 
+  // g32: 0x40000000 -> ai_pg_A perms 0xdf
   LA(x6, ai_pg_A)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -762,7 +762,7 @@ H_trap_xtinst_guestpage_rw_in_S_21:
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32: 0x40100000 -> ai_pt_vs32_root perms 0x53 
+  // g32: 0x40100000 -> ai_pt_vs32_root perms 0x53
   LA(x6, ai_pt_vs32_root)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -772,7 +772,7 @@ H_trap_xtinst_guestpage_rw_in_S_21:
   li x7, 1024
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32: 0x40101000 -> ai_pt_vs32_t1 perms 0x53 
+  // g32: 0x40101000 -> ai_pt_vs32_t1 perms 0x53
   LA(x6, ai_pt_vs32_t1)
   srli x6, x6, 12
   slli x6, x6, 10

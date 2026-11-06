@@ -91,7 +91,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x8000005000 -> ai_pg_P512 perms 0xdf 
+  // g64: 0x8000005000 -> ai_pg_P512 perms 0xdf
   LA(x6, ai_pg_P512)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -117,7 +117,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x10000005000 -> ai_pg_P1024 perms 0xdf 
+  // g64: 0x10000005000 -> ai_pg_P1024 perms 0xdf
   LA(x6, ai_pg_P1024)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -143,7 +143,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x18000005000 -> ai_pg_P1536 perms 0xdf 
+  // g64: 0x18000005000 -> ai_pg_P1536 perms 0xdf
   LA(x6, ai_pg_P1536)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -169,7 +169,7 @@ RVTEST_BEGIN
   li x7, 0
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g64: 0x1ffc0005000 -> ai_pg_P2047 perms 0xdf 
+  // g64: 0x1ffc0005000 -> ai_pg_P2047 perms 0xdf
   LA(x6, ai_pg_P2047)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -277,7 +277,7 @@ hgatp_root_pt_sz_align_done_2:
   li x7, 512
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32r: 0x20000000 -> 0x100006000 perms 0xcf 
+  // vs32r: 0x20000000 -> 0x100006000 perms 0xcf
   li x6, 0x40001800
   li x7, 0xcf
   or x6, x6, x7
@@ -293,7 +293,7 @@ hgatp_root_pt_sz_align_done_2:
   li x7, 4096
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32r: 0x100006000 -> ai_pg_P1024 perms 0xdf 
+  // g32r: 0x100006000 -> ai_pg_P1024 perms 0xdf
   LA(x6, ai_pg_P1024)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -303,7 +303,7 @@ hgatp_root_pt_sz_align_done_2:
   li x7, 24
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32r: 0x20001000 -> 0x200006000 perms 0xcf 
+  // vs32r: 0x20001000 -> 0x200006000 perms 0xcf
   li x6, 0x80001800
   li x7, 0xcf
   or x6, x6, x7
@@ -319,7 +319,7 @@ hgatp_root_pt_sz_align_done_2:
   li x7, 8192
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32r: 0x200006000 -> ai_pg_P2048 perms 0xdf 
+  // g32r: 0x200006000 -> ai_pg_P2048 perms 0xdf
   LA(x6, ai_pg_P2048)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -329,7 +329,7 @@ hgatp_root_pt_sz_align_done_2:
   li x7, 24
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32r: 0x20002000 -> 0x300006000 perms 0xcf 
+  // vs32r: 0x20002000 -> 0x300006000 perms 0xcf
   li x6, 0xc0001800
   li x7, 0xcf
   or x6, x6, x7
@@ -345,7 +345,7 @@ hgatp_root_pt_sz_align_done_2:
   li x7, 12288
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32r: 0x300006000 -> ai_pg_P3072 perms 0xdf 
+  // g32r: 0x300006000 -> ai_pg_P3072 perms 0xdf
   LA(x6, ai_pg_P3072)
   srli x6, x6, 12
   slli x6, x6, 10
@@ -355,7 +355,7 @@ hgatp_root_pt_sz_align_done_2:
   li x7, 24
   add x8, x8, x7
   SREG x6, 0(x8)
-  // vs32r: 0x20003000 -> 0x3ffc06000 perms 0xcf 
+  // vs32r: 0x20003000 -> 0x3ffc06000 perms 0xcf
   li x6, 0xfff01800
   li x7, 0xcf
   or x6, x6, x7
@@ -371,7 +371,7 @@ hgatp_root_pt_sz_align_done_2:
   li x7, 16380
   add x8, x8, x7
   SREG x6, 0(x8)
-  // g32r: 0x3ffc06000 -> ai_pg_P4095 perms 0xdf 
+  // g32r: 0x3ffc06000 -> ai_pg_P4095 perms 0xdf
   LA(x6, ai_pg_P4095)
   srli x6, x6, 12
   slli x6, x6, 10

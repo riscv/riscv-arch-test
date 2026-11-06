@@ -44,22 +44,22 @@ coverpoints:
     rules:
       - "[norm:satp_sz] [norm:satp_acc] [norm:satp_op] [norm:satp_mode]"
   - name: cp_VA_i_mode
-    goal: Verify instruction fetch at the lowest and highest virtual addresses of the translation mode
-    description: "S-mode: map a 4 KiB execute-only page at VA 0 and at the highest aligned VA of the current mode (all ones); jump (jalr) to each and return."
+    goal: Verify instruction fetch at the highest virtual address of the translation mode
+    description: "S-mode: map a 4 KiB execute-only page at the highest aligned VA of the current mode (all ones); jump (jalr) to it and return. VA 0 is in Sv_Sm."
     expectation: No fault; execution runs at the extreme VA and returns.
     bins: |-
       mode_supported x VA_i
-      = 6 bins on RV64, 2 on RV32
+      = 3 bins on RV64, 1 on RV32
     id: satp_mode_sxlen32 satp_mode_sxlen64 satp_mode_sz satp_mode_acc satp_mode_op
     rules:
       - "[norm:satp_mode_sxlen32] [norm:satp_mode_sxlen64] [norm:satp_mode_sz] [norm:satp_mode_acc] [norm:satp_mode_op]"
   - name: cp_VA_d_mode
-    goal: Verify loads and stores at the lowest and highest virtual addresses of the translation mode
-    description: "S-mode: map a 4 KiB read/write page at VA 0 and at the all-ones VA of the current mode; store and load a byte at each (a word at VA 0 for Sv32 and Sv39)."
+    goal: Verify loads and stores at the highest virtual address of the translation mode
+    description: "S-mode: map a 4 KiB read/write page at the all-ones VA of the current mode; store and load a byte there. VA 0 is in Sv_Sm."
     expectation: No fault; each load returns the value stored.
     bins: |-
       mode_supported x VA_d
-      = 6 bins on RV64, 2 on RV32
+      = 3 bins on RV64, 1 on RV32
     id: satp_mode_sxlen32 satp_mode_sxlen64 satp_mode_sz satp_mode_acc satp_mode_op
     rules:
       - "[norm:satp_mode_sxlen32] [norm:satp_mode_sxlen64] [norm:satp_mode_sz] [norm:satp_mode_acc] [norm:satp_mode_op]"

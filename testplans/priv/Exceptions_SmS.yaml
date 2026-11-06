@@ -1,0 +1,19 @@
+# yaml-language-server: $schema=testplan.schema.json
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: Apache-2.0
+suite: Exceptions_SmS
+description: |
+  Machine-mode exception tests that need supervisor mode.  The tests boot to M-mode and set medeleg, then raise exceptions in M-, S- and U-mode.
+coverpoints:
+  - name: cp_xstatus_ie
+    goal: Interrupt Enables
+    description: |-
+      ecall cross {mode = user/supervisor, medeleg[8] = {0/1}, mstatus.mie = {0/1}, mstatus.sie = {0/1}}
+    expectation: xpie gets xie, xie gets 0
+    bins: 2 modes * 2 medeleg * 2 mie * 2 sie
+  - name: cp_medeleg_msu
+    goal: Delegation to supervisor mode
+    description: |-
+      Attempt instruction/load/store access fault, instruction/load/store misaligned fault, illegal instruction, ebreak, ecall, crossed with privilege mode S/U/M crossed with medeleg = [ {1011_0001_1111_1111}, {0}, and 12 different walking 1s]
+    expectation: Should delegate from user/supervisor but not machine when a 1 is in the appropriate column.   Note medeleg[11] is hardwired to 0 because ecall from M cannot be delegated, and medeleg[9] is 0 because delegating an ecall from supervisor mode makes it impossible to get back to machine mode.
+    bins: 9 ops * 3 modes * 14 medeleg

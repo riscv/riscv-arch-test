@@ -16,6 +16,9 @@
 `endif // S_SUPPORTED
 `ifndef EXCLUDE_SM
     Exceptions_Sm_cg = new();   Exceptions_Sm_cg.set_inst_name("obj_Exceptions_Sm");
+    `ifdef S_SUPPORTED
+        Exceptions_SmS_cg = new();   Exceptions_SmS_cg.set_inst_name("obj_Exceptions_SmS");
+    `endif // S_SUPPORTED
 `endif // EXCLUDE_SM
 `ifdef U_SUPPORTED
     Exceptions_U_cg = new();   Exceptions_U_cg.set_inst_name("obj_Exceptions_U");

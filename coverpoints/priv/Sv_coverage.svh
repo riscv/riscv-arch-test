@@ -2012,6 +2012,25 @@ covergroup Sv_H_gstage_cg with function sample(ins_t ins);
         gpa_bit : coverpoint ($clog2(ins.current.rs1_val + 1) - 1) {
             bins b[] = {[37:63]};
         }
+        // The two guest physical address bits an x4 mode adds above its Sv mode's virtual address width (40:39 for
+        // Sv39x4, 49:48 for Sv48x4, 58:57 for Sv57x4), with the bits above them zero (vsatp = Bare)
+        gpa_x4_bits : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode") {
+            `ifdef UDB_SV39X4_TRANSLATION
+                bins sv39x4_01 = {8} iff (ins.current.rs1_val[63:39] == 1);
+                bins sv39x4_10 = {8} iff (ins.current.rs1_val[63:39] == 2);
+                bins sv39x4_11 = {8} iff (ins.current.rs1_val[63:39] == 3);
+            `endif
+            `ifdef UDB_SV48X4_TRANSLATION
+                bins sv48x4_01 = {9} iff (ins.current.rs1_val[63:48] == 1);
+                bins sv48x4_10 = {9} iff (ins.current.rs1_val[63:48] == 2);
+                bins sv48x4_11 = {9} iff (ins.current.rs1_val[63:48] == 3);
+            `endif
+            `ifdef UDB_SV57X4_TRANSLATION
+                bins sv57x4_01 = {10} iff (ins.current.rs1_val[63:57] == 1);
+                bins sv57x4_10 = {10} iff (ins.current.rs1_val[63:57] == 2);
+                bins sv57x4_11 = {10} iff (ins.current.rs1_val[63:57] == 3);
+            `endif
+        }
     `else
         menvcfg_adue : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfgh", "adue") {
             bins off = {0};
@@ -2027,6 +2046,9 @@ covergroup Sv_H_gstage_cg with function sample(ins_t ins);
     `ifdef UDB_MXLEN_64
         // Guest physical address bits above the mode's width raise guest-page faults
         cp_hgatp_gpa_width : cross priv_mode_vs, lw, vsatp_bare, hgatp_mode, gpa_bit;
+        // Store, load and fetch at guest physical addresses that set the x4 mode's top two bits, through valid and
+        // invalid G-stage leaves
+        cp_hgatp_x4_gpa : cross priv_mode_vs, access, vsatp_bare, gpa_x4_bits, trap;
     `endif
 endgroup
 
@@ -2169,14 +2191,30 @@ covergroup Sv_H_twostage_cg with function sample(ins_t ins);
         henvcfg_adue : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfgh", "adue") {
             bins off = {0};
         }
-        `ifdef UDB_REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT
-            // Guest physical address bits 33:32, which htval reports as bits 31:30 after a guest-page fault
-            htval_gpa_high : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htval", "htval")[31:30] iff (ins.current.csr_wb[CSR_HTVAL]) {
-                bins bit32 = {1};
-                bins bit33 = {2};
-                bins both  = {3};
-            }
-        `endif
+    `endif
+    `ifdef UDB_REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT
+        // The two guest physical address bits an x4 mode adds above its Sv mode's virtual address width (33:32 for
+        // Sv32x4, 40:39 for Sv39x4, 49:48 for Sv48x4), with the bits above them zero, which htval reports shifted right
+        // by 2 after a guest-page fault.  A VS-stage PPN cannot reach Sv57x4's bits 58:57.
+        htval_x4_bits : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode")
+                        iff (ins.current.csr_wb[CSR_HTVAL]) {
+            `ifdef UDB_MXLEN_64
+                `ifdef UDB_SV39X4_TRANSLATION
+                    bins sv39x4_01 = {8} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htval", "htval")[63:37] == 1);
+                    bins sv39x4_10 = {8} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htval", "htval")[63:37] == 2);
+                    bins sv39x4_11 = {8} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htval", "htval")[63:37] == 3);
+                `endif
+                `ifdef UDB_SV48X4_TRANSLATION
+                    bins sv48x4_01 = {9} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htval", "htval")[63:46] == 1);
+                    bins sv48x4_10 = {9} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htval", "htval")[63:46] == 2);
+                    bins sv48x4_11 = {9} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htval", "htval")[63:46] == 3);
+                `endif
+            `else
+                bins sv32x4_01 = {1} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htval", "htval")[31:30] == 1);
+                bins sv32x4_10 = {1} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htval", "htval")[31:30] == 2);
+                bins sv32x4_11 = {1} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htval", "htval")[31:30] == 3);
+            `endif
+        }
     `endif
 
     // VS-stage and G-stage permissions combined: a VS-stage denial is a page fault, a G-stage one a guest-page fault
@@ -2223,11 +2261,10 @@ covergroup Sv_H_twostage_cg with function sample(ins_t ins);
             // A guest physical address from a VS-stage leaf or non-leaf PPN that is wider than the G-stage mode allows
             cp_twostage_gpa_width : cross priv_mode_vs, access, vsatp_paged, htval_gpa_wide, guest_page_fault;
         `endif
-    `else
-        `ifdef UDB_REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT
-            // Sv32x4 translates 34-bit guest physical addresses
-            cp_hgatp_sv32x4_gpa : cross priv_mode_vs, lw, vsatp_paged, hgatp_paged, htval_gpa_high;
-        `endif
+    `endif
+    `ifdef UDB_REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT
+        // A guest-page fault on a guest physical address from a VS-stage leaf that sets the x4 mode's top two bits
+        cp_twostage_x4_gpa : cross priv_mode_vs, access, vsatp_paged, htval_x4_bits, guest_page_fault;
     `endif
 endgroup
 

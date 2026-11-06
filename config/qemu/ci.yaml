@@ -17,7 +17,7 @@ exclude_extensions:
   - Sm_shadow
   - Sm_xret
   # On RV32, mstatush.MDT resets to 0 with Smdbltrp; it must reset to 1. QEMU sets MDT at reset only when
-  # MXL > 32 (riscv_cpu_reset_hold in target/riscv/cpu.c). RV64 passes.
+  # MXL > 32 (https://gitlab.com/qemu-project/qemu/-/issues/4810). RV64 passes.
   - Sm_reset
   # QEMU accepts UXL=1, which Sail cannot model yet (https://github.com/riscv/sail-riscv/issues/1150)
   - S-

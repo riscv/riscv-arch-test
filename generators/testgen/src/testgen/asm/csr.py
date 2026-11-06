@@ -94,8 +94,37 @@ def gen_csr_write_sigupd(check_reg: int, csr_name: str, test_data: TestData) -> 
     )
 
 
+def _mask_with_unwalked_bits(csr: tuple, unwalked_bits: list[tuple[int, str]]) -> tuple:
+    """Return csr with the unwalked_bits added to its mask (all ones if None)."""
+    csr_name, mask = csr
+    if mask is None:
+        mask = (1 << 64) - 1
+    for bits, _cond in unwalked_bits:
+        mask |= bits
+    return (csr_name, mask)
+
+
+def clear_unwalked_bits(reg: int, tmp_reg: int, unwalked_bits: list[tuple[int, str]] | None) -> list[str]:
+    """Clear from x{reg} each of the unwalked_bits whose condition holds, using x{tmp_reg} as scratch."""
+    lines: list[str] = []
+    for bits, cond in unwalked_bits or []:
+        lines += [
+            f"#ifdef {cond}" if cond.isidentifier() else f"#if {cond}",
+            f"LI(x{tmp_reg}, {~bits & ((1 << 64) - 1)})    # Neither write nor check bits {bits:#x}",
+            f"and x{reg}, x{reg}, x{tmp_reg}",
+            f"#endif // {cond}",
+        ]
+    return lines
+
+
 def csr_access_test(
-    test_data: TestData, csr: tuple, covergroup: str, coverpoint: str, maskedwrites: bool = False, bin_prefix: str = ""
+    test_data: TestData,
+    csr: tuple,
+    covergroup: str,
+    coverpoint: str,
+    maskedwrites: bool = False,
+    bin_prefix: str = "",
+    unwalked_bits: list[tuple[int, str]] | None = None,
 ) -> list[str]:
     """
     Generate a CSR access test: write all 1s, write all 0s, set all, clear all.
@@ -108,10 +137,15 @@ def csr_access_test(
         coverpoint: Coverpoint name for testcase strings
         maskedwrites: If True, the CSR is written with a mask applied to the value being written.
         bin_prefix: Prefix for the testcase bin names, to keep them unique when a CSR is tested more than once.
+        unwalked_bits: As for csr_walk_test: where a pair's condition holds, its bits are neither written
+            nor checked.
 
     Returns:
         List of assembly lines for the access test
     """
+    if unwalked_bits:
+        maskedwrites = True
+        csr = _mask_with_unwalked_bits(csr, unwalked_bits)
     csr_name, mask = csr
     if maskedwrites:
         assert mask is not None, f"maskedwrites requires a csr mask (got None for {csr_name})"
@@ -140,6 +174,8 @@ def csr_access_test(
             )
         else:
             lines.append(f"LI(x{mask_reg}, {mask})    # Load mask ({mask:#x})")
+    if mask_reg is not None:
+        lines += clear_unwalked_bits(mask_reg, check_reg, unwalked_bits)
     if maskedwrites:
         valstr = "mask"
         lines.append(f"mv x{temp_reg}, x{mask_reg}    # Apply {valstr} to value being written")
@@ -273,14 +309,10 @@ def csr_walk_test(
             maskedwrites, with the bits added to the csr mask, or all ones if None.
     """
     assert 0 <= start_bit < 32, f"start_bit must be in 0..31, got {start_bit}"
-    csr_name, mask = csr
     if unwalked_bits:
         maskedwrites = True
-        if mask is None:
-            mask = (1 << 64) - 1
-        for bits, _cond in unwalked_bits:
-            mask |= bits
-        csr = (csr_name, mask)
+        csr = _mask_with_unwalked_bits(csr, unwalked_bits)
+    csr_name, mask = csr
     if maskedwrites:
         assert mask is not None, f"maskedwrites requires a csr mask (got None for {csr_name})"
     if mask is not None:
@@ -363,15 +395,9 @@ def csr_walk_test(
         f"csrr x{save_reg}, {csr_name}      # Save CSR",
         f"LI(x{walk_reg}, {1 << start_bit})              # 1 in bit {start_bit}",
     ]
-    if mask is not None:
+    if mask_reg is not None:
         lines.append(f"LI(x{mask_reg}, {mask})    # Load mask ({mask:#x})")
-        for bits, cond in unwalked_bits or []:
-            lines += [
-                f"#ifdef {cond}" if cond.isidentifier() else f"#if {cond}",
-                f"LI(x{check_reg}, {~bits & ((1 << 64) - 1)})    # Do not walk bits {bits:#x}",
-                f"and x{mask_reg}, x{mask_reg}, x{check_reg}",
-                f"#endif // {cond}",
-            ]
+        lines += clear_unwalked_bits(mask_reg, check_reg, unwalked_bits)
     if walk_zeros:
         lines.append(f"LI(x{temp_reg}, -1)             # x{temp_reg} = all 1s")
 

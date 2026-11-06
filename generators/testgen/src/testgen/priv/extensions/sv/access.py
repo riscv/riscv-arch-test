@@ -154,9 +154,15 @@ def add_rwx_test(
             ]
         )
     if "exec" in labels:
+        if physical_fetch:
+            # MPRV does not apply to instruction fetch. Clear X in the root PTE that would map rvtest_data_1 if it
+            # did, so a hart that translated the fetch with the MPP privilege would take an instruction page fault.
+            # The PTE is written with MPRV clear, because an M-mode store with MPRV set is translated.
+            lines.extend(
+                ["", *cleanup, *_identity_pte_x(sv, regs, executable=False), *setup, f"LA({addr}, rvtest_data_1)"]
+            )
         lines.extend(
             [
-                *((f"LA({addr}, rvtest_data_1)",) if physical_fetch else ()),
                 "",
                 "// Execute",
                 f"{labels['exec']}:",
@@ -166,6 +172,8 @@ def add_rwx_test(
         )
     if cleanup:
         lines.extend(["", *cleanup])
+    if physical_fetch and "exec" in labels:
+        lines.extend(_identity_pte_x(sv, regs, executable=True))
     if leave:
         lines.extend(["", *leave])
     lines.append("")
@@ -176,3 +184,22 @@ def add_rwx_test(
     if "exec" in labels:
         lines.append(write_sigupd(regs.result, test_data, label=labels["exec"]))
     return lines
+
+
+def _identity_pte_x(sv: SvMode, regs: SvRegs, *, executable: bool) -> list[str]:
+    """Clear or set X in the root-level identity PTE that maps rvtest_data_1, using regs.scratch and regs.addr."""
+    pte, temp = f"x{regs.scratch}", f"x{regs.addr}"
+    top = sv.levels - 1
+    return [
+        f"// {'Restore' if executable else 'Clear'} X in the root PTE that maps rvtest_data_1",
+        f"LA({pte}, rvtest_data_1)",
+        f"srli {pte}, {pte}, {sv.page_offset_bits(top)}",
+        f"andi {pte}, {pte}, {(1 << sv.index_bits(top)) - 1:#x}",
+        f"slli {pte}, {pte}, {sv.pte_bytes.bit_length() - 1}",
+        f"LA({temp}, {sv.page_table_label(top)})",
+        f"add {pte}, {pte}, {temp}",
+        f"LREG {temp}, 0({pte})",
+        f"ori {temp}, {temp}, PTE_X" if executable else f"andi {temp}, {temp}, ~PTE_X",
+        f"SREG {temp}, 0({pte})",
+        "sfence.vma",
+    ]

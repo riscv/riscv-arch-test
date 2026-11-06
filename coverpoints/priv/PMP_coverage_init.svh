@@ -27,14 +27,15 @@
 `ifdef ZCA_SUPPORTED
     PMP_Zca_cg = new();    PMP_Zca_cg.set_inst_name("obj_PMP_Zca");
 `endif
-`ifdef PMP_HAS_ZICBO
     PMP_Zicbo_cg = new();    PMP_Zicbo_cg.set_inst_name("obj_PMP_Zicbo");
-`endif
 `ifdef PMP_HAS_SV
     PMP_Sv_cg = new();    PMP_Sv_cg.set_inst_name("obj_PMP_Sv");
 `endif
 `ifdef PMP_COVER_SVZICBO
     PMP_SvZicbo_cg = new();    PMP_SvZicbo_cg.set_inst_name("obj_PMP_SvZicbo");
+`endif
+`ifdef PMP_COVER_HSVZICBO
+    PMP_HSvZicbo_cg = new();    PMP_HSvZicbo_cg.set_inst_name("obj_PMP_HSvZicbo");
 `endif
 `ifdef SVADU_SUPPORTED
     PMP_Svadu_cg = new();    PMP_Svadu_cg.set_inst_name("obj_PMP_Svadu");

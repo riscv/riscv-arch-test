@@ -168,7 +168,8 @@
     call    rvmodel_io_write_str
     LA(a0, failstr)
     call    rvmodel_io_write_str
-    call    rvmodel_halt_fail
+    LA(T1, rvtest_fail_epilogs_mmode)
+    jr      T1
 
   #ifdef H_SUPPORTED
   invisible_Mvirtual_instruction:

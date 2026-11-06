@@ -3,7 +3,7 @@ suite: Sstvala
 source: https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=691634508#gid=691634508
 notes: |-
   Sstvala boots to S-mode, and the boot code delegates the exceptions to S-mode.  Each exception is raised in S-mode and in U-mode after stval is set to a random value through T-SBI, so a hart that does not write stval fails, and the S-mode trap handler records stval.  The page-fault tests run in S-mode under Sv39 (RV64) or Sv32 (RV32).  Shvstvala tests vstval the same way in VS-mode and VU-mode.
-  The access-fault tests need RVMODEL_ACCESS_FAULT_ADDRESS.  The misaligned load and store tests are compiled only without MISALIGNED_LDST, and the misaligned fetch test only without Zca.
+  Each access-fault test needs RVMODEL_ACCESS_FAULT_ADDRESS_{FETCH/LOAD/STORE} for its access type.  The misaligned load and store tests are compiled only without MISALIGNED_LDST, and the misaligned fetch test only without Zca.
 coverpoints:
   - name: cp_load_page_fault
     goal: Fault writes VA to stval
@@ -26,21 +26,21 @@ coverpoints:
       - Sstvala_stval_faulting_vaddr
   - name: cp_load_access_fault
     goal: Fault writes VA to stval
-    description: In S-mode and U-mode, each load (lb, lbu, lh, lhu, lw, and lwu, ld on RV64) from RVMODEL_ACCESS_FAULT_ADDRESS
+    description: In S-mode and U-mode, each load (lb, lbu, lh, lhu, lw, and lwu, ld on RV64) from RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
     expectation: stval written with VA
     bins: "{S, U} x each load x load access fault x stval = address"
     rules:
       - Sstvala_stval_faulting_vaddr
   - name: cp_store_access_fault
     goal: Fault writes VA to stval
-    description: In S-mode and U-mode, each store (sb, sh, sw, and sd on RV64) to RVMODEL_ACCESS_FAULT_ADDRESS
+    description: In S-mode and U-mode, each store (sb, sh, sw, and sd on RV64) to RVMODEL_ACCESS_FAULT_ADDRESS_STORE
     expectation: stval written with VA
     bins: "{S, U} x each store x store/AMO access fault x stval = address"
     rules:
       - Sstvala_stval_faulting_vaddr
   - name: cp_instr_access_fault
     goal: Fault writes VA to stval
-    description: In S-mode and U-mode, jalr to RVMODEL_ACCESS_FAULT_ADDRESS
+    description: In S-mode and U-mode, jalr to RVMODEL_ACCESS_FAULT_ADDRESS_FETCH
     expectation: stval written with VA
     bins: "{S, U} x jalr x instruction access fault x stval = target"
     rules:

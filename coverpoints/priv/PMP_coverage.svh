@@ -18,27 +18,46 @@
   `endif
 `endif
 
-// PMP_HAS_CBO: Zicbom or Zicboz. PMP_HAS_ZICBO: Zicbom and Zicboz, or Zicbop.
-`ifdef ZICBOM_SUPPORTED
-  `define PMP_HAS_CBO
-`elsif ZICBOZ_SUPPORTED
-  `define PMP_HAS_CBO
-`endif
-
-`ifdef ZICBOM_SUPPORTED
-  `ifdef ZICBOZ_SUPPORTED
-    `define PMP_HAS_ZICBO
-  `endif
-`endif
-`ifdef ZICBOP_SUPPORTED
-  `ifndef PMP_HAS_ZICBO
-    `define PMP_HAS_ZICBO
-  `endif
-`endif
-
 `ifdef PMP_HAS_SV
-  `ifdef PMP_HAS_CBO
+  `ifdef CBO_SUPPORTED
     `define PMP_COVER_SVZICBO
+  `endif
+`endif
+
+// PMP_HSvZicbo needs a NAPOT entry the size of the 4 KiB test page (a grain of at most 4 KiB) below the background
+// entry
+`ifdef H_SUPPORTED
+  `ifdef CBO_SUPPORTED
+    `ifdef UDB_PMP_NAPOT_SUPPORTED
+      `ifdef UDB_PMP_GRANULARITY_2
+        `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_3
+        `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_4
+        `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_5
+        `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_6
+        `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_7
+        `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_8
+        `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_9
+        `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_10
+        `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_11
+        `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_12
+        `define PMP_COVER_HSVZICBO
+      `endif
+      `ifdef UDB_NUM_PMP_ENTRIES_0
+        `undef PMP_COVER_HSVZICBO
+      `elsif UDB_NUM_PMP_ENTRIES_1
+        `undef PMP_COVER_HSVZICBO
+      `endif
+    `endif
   `endif
 `endif
 
@@ -55,15 +74,23 @@ covergroup PMP_F_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],log
   }
 
   read_fp_instr: coverpoint ins.current.insn {
+  `ifdef ZFHMIN_SUPPORTED
     wildcard bins flh = {FLH};
+  `endif
     wildcard bins flw = {FLW};
+  `ifdef D_SUPPORTED
     wildcard bins fld = {FLD};
+  `endif
   }
 
   write_fp_instr: coverpoint ins.current.insn {
+  `ifdef ZFHMIN_SUPPORTED
     wildcard bins fsh = {FSH};
+  `endif
     wildcard bins fsw = {FSW};
+  `ifdef D_SUPPORTED
     wildcard bins fsd = {FSD};
+  `endif
   }
 
   legal_lxwr: coverpoint {pmpcfg[0],pmpcfg[1],pmpcfg[2],pmpcfg[3],pmpcfg[4],pmpcfg[5],pmp_hit[5:0]} {
@@ -316,10 +343,7 @@ covergroup PMP_S_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
     wildcard bins csrrw  = {CSRRW};
   }
 
-  mprv_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv")[0]{
-    bins set   = {1};
-    bins unset = {0};
-  }
+  mprv_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv")[0]{}
 
   mpp_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0] {
     bins S_mode = {2'b01};
@@ -1112,10 +1136,7 @@ covergroup PMP_Sm_cg with function sample(
   }
 
   // L = {0/1} pmp_region_1 and check the writes on pmp_region_1 and pmp_region_0
-  lock_checking: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "pmpcfg0", "pmp1cfg_l")[0] {
-    bins locked_region = {1};
-    bins unlocked_region = {0};
-  }
+  lock_checking: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "pmpcfg0", "pmp1cfg_l")[0] {}
 
   // Attempt to write values in given PMP CSRs when A = {OFF/TOR/NAPOT} and L = {0/1}
   // rs1 should be x0 while writing to pmpaddr1 & pmp1cfg0 in order to write all 0s.
@@ -2432,10 +2453,7 @@ covergroup PMP_U_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
     wildcard bins csrrw  = {CSRRW};
   }
 
-  mprv_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv")[0]{
-    bins set   = {1};
-    bins unset = {0};
-  }
+  mprv_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv")[0]{}
 
   mpp_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0] {
     bins U_mode = {2'b00};
@@ -3058,7 +3076,6 @@ function void pmp_Zca_sample(int hart, int issue, ins_t ins);
 endfunction
 `endif
 
-`ifdef PMP_HAS_ZICBO
 `define PMPZICBO_REGION_SHIFT ((`UDB_PMP_GRANULARITY > 12) ? `UDB_PMP_GRANULARITY : 12)
 `define PMPZICBO_PMPADDR_MASK ((2 ** (`PMPZICBO_REGION_SHIFT - 3)) - 1)
 `define PMPZICBO_STANDARD_REGION ((`PMP_SPECIAL_REGION_START >> 2) | `PMPZICBO_PMPADDR_MASK)
@@ -3072,10 +3089,6 @@ covergroup PMP_Zicbo_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    cfg_for_menvcfg: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "menvcfg", "menvcfg")[7:4] {
-        bins configuration = {4'b1111}; //menvcfg.CBIE, CBCFE, CBZE = 1
-    }
-
     // Compare above the grain: the test writes pmpaddr0 while the entry is OFF, so the trace
     // records it with bits G-1:0 read as zero, and does not record it again once the entry is NAPOT.
     pmpaddr_region: coverpoint ((pmpaddr[0] & `PMP_PMPADDR_LOWMASK & `READ_ZERO_MASK) ==
@@ -3087,6 +3100,10 @@ covergroup PMP_Zicbo_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0
         bins address = {`PMP_SPECIAL_REGION_START & `PMP_ADDR_LOWMASK};
     }
 
+    // cbo.clean/flush/inval need Zicbom and cbo.zero needs Zicboz. prefetch.i/r/w are HINTs
+    // (ORI with rd = x0), so they run on every hart.
+
+  `ifdef ZICBOM_SUPPORTED
     cbo_clean_instr: coverpoint ins.current.insn {
         wildcard bins cbo_clean = {CBO_CLEAN};
     }
@@ -3098,10 +3115,13 @@ covergroup PMP_Zicbo_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0
     cbo_inval_instr: coverpoint ins.current.insn {
         wildcard bins cbo_inval = {CBO_INVAL};
     }
+  `endif
 
+  `ifdef ZICBOZ_SUPPORTED
     cbo_zero_instr: coverpoint ins.current.insn {
         wildcard bins cbo_zero = {CBO_ZERO};
     }
+  `endif
 
     prefetch_i_instr: coverpoint ins.current.insn {
         wildcard bins prefetch_i_instr = {PREFETCH_I};
@@ -3125,46 +3145,54 @@ covergroup PMP_Zicbo_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0
         wildcard bins cfg_l111 = {54'b10011111????????????????????????????????????????_?????1};
     }
 
+    cp_prefetch_w: cross priv_mode_m, legal_lxwr, prefetch_w_instr, addr_in_region;
+    cp_prefetch_r: cross priv_mode_m, legal_lxwr, prefetch_r_instr, addr_in_region;
+    cp_prefetch_i: cross priv_mode_m, legal_lxwr, prefetch_i_instr, addr_in_region;
+
+    // Weight 0: used only by the cp_cbo_* crosses, which a hart without Zicbom or Zicboz does not have
     wr_combinations: coverpoint pmpcfg[0] {
+        type_option.weight = 0;
         bins cfg_l000 = {8'b10011000};
         bins cfg_l001 = {8'b10011001};
         bins cfg_l011 = {8'b10011011};
     }
 
-    // Entry 0 over the region, L=0, A=NAPOT
+    // Weight 0 like wr_combinations: unlocked_xwr, none_cfg and mprv_off are used only by cp_cfg_L_access_cbo_*
+    // and cp_none_cbo_*. Entry 0 over the region, L=0, A=NAPOT
     unlocked_xwr: coverpoint pmpcfg[0] {
+        type_option.weight = 0;
         bins cfg_000 = {8'b00011000};
         bins cfg_001 = {8'b00011001};
     }
 
     // No entry matches the region; pmp_none = {active, off} from pmp_Zicbo_sample
     none_cfg: coverpoint pmp_none {
+        type_option.weight = 0;
         bins off    = {2'b01};
         bins active = {2'b10};
     }
 
     mprv_off: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv")[0] {
+        type_option.weight = 0;
         bins mprv_0 = {0};
     }
 
-    cp_prefetch_w: cross priv_mode_m, legal_lxwr, cfg_for_menvcfg, prefetch_w_instr, addr_in_region;
-    cp_prefetch_r: cross priv_mode_m, legal_lxwr, cfg_for_menvcfg, prefetch_r_instr, addr_in_region;
-    cp_prefetch_i: cross priv_mode_m, legal_lxwr, cfg_for_menvcfg, prefetch_i_instr, addr_in_region;
-
-    cp_cbo_zero:  cross priv_mode_m, wr_combinations, pmpaddr_region, cfg_for_menvcfg, cbo_zero_instr;
-    cp_cbo_inval: cross priv_mode_m, wr_combinations, pmpaddr_region, cfg_for_menvcfg, cbo_inval_instr;
-    cp_cbo_flush: cross priv_mode_m, wr_combinations, pmpaddr_region, cfg_for_menvcfg, cbo_flush_instr;
-    cp_cbo_clean: cross priv_mode_m, wr_combinations, pmpaddr_region, cfg_for_menvcfg, cbo_clean_instr;
-
-    cp_cfg_L_access_cbo_zero:  cross priv_mode_m, unlocked_xwr, pmpaddr_region, addr_in_region, cfg_for_menvcfg, mprv_off, cbo_zero_instr;
-    cp_cfg_L_access_cbo_clean: cross priv_mode_m, unlocked_xwr, pmpaddr_region, addr_in_region, cfg_for_menvcfg, mprv_off, cbo_clean_instr;
-    cp_cfg_L_access_cbo_flush: cross priv_mode_m, unlocked_xwr, pmpaddr_region, addr_in_region, cfg_for_menvcfg, mprv_off, cbo_flush_instr;
-    cp_cfg_L_access_cbo_inval: cross priv_mode_m, unlocked_xwr, pmpaddr_region, addr_in_region, cfg_for_menvcfg, mprv_off, cbo_inval_instr;
-
-    cp_none_cbo_zero:  cross priv_mode_m, none_cfg, addr_in_region, cfg_for_menvcfg, mprv_off, cbo_zero_instr;
-    cp_none_cbo_clean: cross priv_mode_m, none_cfg, addr_in_region, cfg_for_menvcfg, mprv_off, cbo_clean_instr;
-    cp_none_cbo_flush: cross priv_mode_m, none_cfg, addr_in_region, cfg_for_menvcfg, mprv_off, cbo_flush_instr;
-    cp_none_cbo_inval: cross priv_mode_m, none_cfg, addr_in_region, cfg_for_menvcfg, mprv_off, cbo_inval_instr;
+  `ifdef ZICBOZ_SUPPORTED
+    cp_cbo_zero:  cross priv_mode_m, wr_combinations, pmpaddr_region, cbo_zero_instr;
+    cp_cfg_L_access_cbo_zero:  cross priv_mode_m, unlocked_xwr, pmpaddr_region, addr_in_region, mprv_off, cbo_zero_instr;
+    cp_none_cbo_zero:  cross priv_mode_m, none_cfg, addr_in_region, mprv_off, cbo_zero_instr;
+  `endif
+  `ifdef ZICBOM_SUPPORTED
+    cp_cbo_inval: cross priv_mode_m, wr_combinations, pmpaddr_region, cbo_inval_instr;
+    cp_cbo_flush: cross priv_mode_m, wr_combinations, pmpaddr_region, cbo_flush_instr;
+    cp_cbo_clean: cross priv_mode_m, wr_combinations, pmpaddr_region, cbo_clean_instr;
+    cp_cfg_L_access_cbo_clean: cross priv_mode_m, unlocked_xwr, pmpaddr_region, addr_in_region, mprv_off, cbo_clean_instr;
+    cp_cfg_L_access_cbo_flush: cross priv_mode_m, unlocked_xwr, pmpaddr_region, addr_in_region, mprv_off, cbo_flush_instr;
+    cp_cfg_L_access_cbo_inval: cross priv_mode_m, unlocked_xwr, pmpaddr_region, addr_in_region, mprv_off, cbo_inval_instr;
+    cp_none_cbo_clean: cross priv_mode_m, none_cfg, addr_in_region, mprv_off, cbo_clean_instr;
+    cp_none_cbo_flush: cross priv_mode_m, none_cfg, addr_in_region, mprv_off, cbo_flush_instr;
+    cp_none_cbo_inval: cross priv_mode_m, none_cfg, addr_in_region, mprv_off, cbo_inval_instr;
+  `endif
 
 endgroup
 
@@ -3225,7 +3253,6 @@ function void pmp_Zicbo_sample(int hart, int issue, ins_t ins);
 
   PMP_Zicbo_cg.sample(ins, pmpcfg, pmp_hit, pmpaddr, pmp_none);
 endfunction
-`endif
 
 `ifdef PMP_HAS_SV
 covergroup PMP_Sv_cg with function sample(ins_t ins);
@@ -3454,6 +3481,50 @@ function void pmp_SvZicbo_sample(int hart, int issue, ins_t ins);
 endfunction
 `endif
 
+`ifdef PMP_COVER_HSVZICBO
+// PMP on the final supervisor physical address of a CBO from VS-mode and VU-mode, through a VS-stage or a G-stage
+// kilopage
+covergroup PMP_HSvZicbo_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    cbo: coverpoint ins.current.insn {
+        `ifdef ZICBOM_SUPPORTED
+            wildcard bins clean = {CBO_CLEAN};
+            wildcard bins flush = {CBO_FLUSH};
+            wildcard bins inval = {CBO_INVAL};
+        `endif
+        `ifdef ZICBOZ_SUPPORTED
+            wildcard bins zero = {CBO_ZERO};
+        `endif
+    }
+    // The superpage of the guest virtual address: VS-stage cases use VS_SV39/VS_SV32 data_va, and G-stage cases
+    // SV39X4/SV32X4 data_va through a VS-stage identity superpage
+    `ifdef UDB_MXLEN_64
+        stage: coverpoint ins.current.rs1_val[63:30] {
+            bins vs = {5};
+            bins g  = {11};
+        }
+    `else
+        stage: coverpoint ins.current.rs1_val[31:22] {
+            bins vs = {'h241};
+            bins g  = {'h341};
+        }
+    `endif
+    // PMP entry 0 covers the test page with no permissions, or with read permission only
+    pmp_xwr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmpcfg0")[7:0] {
+        bins none = {8'b00011000};
+        bins r    = {8'b00011001};
+    }
+
+    cp_pmp: cross priv_mode_vs_vu, cbo, stage, pmp_xwr;
+endgroup
+
+function void pmp_HSvZicbo_sample(int hart, int issue, ins_t ins);
+    PMP_HSvZicbo_cg.sample(ins);
+endfunction
+`endif
+
 `ifdef SVADU_SUPPORTED
 covergroup PMP_Svadu_cg with function sample(ins_t ins);
     option.per_instance = 0;
@@ -3586,14 +3657,15 @@ function void pmp_sample(int hart, int issue, ins_t ins);
   `ifdef ZCA_SUPPORTED
     pmp_Zca_sample(hart, issue, ins);
   `endif
-  `ifdef PMP_HAS_ZICBO
-    pmp_Zicbo_sample(hart, issue, ins);
-  `endif
+  pmp_Zicbo_sample(hart, issue, ins);
   `ifdef PMP_HAS_SV
     pmp_Sv_sample(hart, issue, ins);
   `endif
   `ifdef PMP_COVER_SVZICBO
     pmp_SvZicbo_sample(hart, issue, ins);
+  `endif
+  `ifdef PMP_COVER_HSVZICBO
+    pmp_HSvZicbo_sample(hart, issue, ins);
   `endif
   `ifdef SVADU_SUPPORTED
     pmp_Svadu_sample(hart, issue, ins);

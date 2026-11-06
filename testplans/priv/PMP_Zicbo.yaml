@@ -4,7 +4,7 @@ source: https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iN
 coverpoints:
   - heading: |-
       General Test Environment (PMP_Zicbo):
-      - Runs when Sm and NUM_PMP_ENTRIES > 0, with Zicbom and Zicboz for the cbo rows and Zicbop for the prefetch rows. M-mode only.
+      - Runs when Sm and NUM_PMP_ENTRIES > 0, with Zicbom for the cbo.clean, cbo.flush and cbo.inval rows, and Zicboz for the cbo.zero rows. The prefetch rows run on every hart: prefetch.i/r/w are HINTs (ORI with rd = x0). M-mode only.
       - menvcfg.CBIE = 11, CBCFE = 1, CBZE = 1.
       - The region under test is a 4 KiB-aligned NAPOT region much larger than a cache block, so every byte of the block has the same permissions. Misaligned or partially covered cache blocks are not tested: their behavior is unspecified (pmp_same).
       - Background entry as in PMP_Sm (the highest usable entry: L=1, XWR=111 over all memory). cp_none_* run without it. mstatus.MPRV = 0 throughout.
@@ -37,7 +37,7 @@ coverpoints:
       cp_cfg_L_access_cbo_flush
       cp_cfg_L_access_cbo_inval
     goal: Verify that an unlocked (L=0) entry never restricts an M-mode cache-block instruction.
-    description: "Entry 0 over the region: L=0, A=NAPOT, XWR = 000, then 001. For each, store a nonzero word at the start of the region, then cbo.zero, cbo.clean, cbo.flush and cbo.inval there. Load the word back right after cbo.zero."
+    description: "Entry 0 over the region: L=0, A=NAPOT, XWR = 000, then 001. For each, with Zicboz, store a nonzero word at the start of the region, run cbo.zero there and load the word back; with Zicbom, run cbo.clean, cbo.flush and cbo.inval there."
     expectation: No exception. The word reads as zero after cbo.zero.
     bins: 2 XWR each
     rules:

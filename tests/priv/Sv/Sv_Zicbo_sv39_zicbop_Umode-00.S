@@ -9,7 +9,7 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I', 'Sv39', 'Zicbop']
+# REQUIRED_EXTENSIONS: ['I', 'Sv39']
 # # # no param constraints
 # MARCH: rv${XLEN}i_zicbop_zicsr_zifencei
 ##### END_TEST_CONFIG #####

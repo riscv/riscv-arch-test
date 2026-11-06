@@ -568,11 +568,11 @@ def gen_cbo(
     coverpoint: Cross,
     region: str = "TEST_FOR_EXECUTION",
     *,
+    instructions: tuple[str, ...] = ("cbo.zero", "cbo.clean", "cbo.flush", "cbo.inval"),
     readback: bool = False,
 ) -> list[str]:
-    """cbo.zero, cbo.clean, cbo.flush and cbo.inval at ``region``. With ``readback``, store a nonzero
-    word there first and load it back right after cbo.zero."""
-    instructions = ("cbo.zero", "cbo.clean", "cbo.flush", "cbo.inval")
+    """The cache-block instructions at ``region``. With ``readback``, store a nonzero word there first and
+    load it back right after cbo.zero."""
     lines = ["", f"LA(a4, {region})"]
     if readback:
         lines.extend(["LI(a5, -1)", "sw a5, 0(a4)"])

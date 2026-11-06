@@ -144,6 +144,11 @@ exclude_extensions:
   # core:datapath/rtl/id_stage/rtl/decoder.sv#L3606, #L3630 (https://github.com/bsc-loca/sargantana/issues/128)
   - Exceptions_H
   - Exceptions_HSm
+  # A wrong-path jal into the IO region (0x4000_0000-0x7fff_ffff) deadlocks the core: the non-cacheable fetch is never
+  # answered (https://github.com/bsc-loca/sargantana/issues/145). Here the jal is the failure-report data word after
+  # the taken branch in canary_check, so which tests hang depends on code layout.
+  - Sv_sv39_spage_mstatus_sum_set_Smode
+  - Sv_sv39_upage_mstatus_sum_set_Smode
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache device-tree-compiler libboost-dev libboost-regex-dev libboost-system-dev"
 install_script: ".github/scripts/install-sargantana.sh"

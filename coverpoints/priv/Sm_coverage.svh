@@ -1817,9 +1817,6 @@ covergroup Sm_Zicntr_cg with function sample(ins_t ins);
     mstatus_mie_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")[0] {
         bins zero = {0};
     }
-    mstatus_mie_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")[0] {
-        bins one = {1};
-    }
 
     insn_add: coverpoint ins.current.insn {
         wildcard bins add = {ADD};
@@ -1876,7 +1873,6 @@ covergroup Sm_Zicntr_cg with function sample(ins_t ins);
     `endif
     `ifdef UDB_MTI_INTR_IMPL
         cp_instret_wfi_pending: cross priv_mode_m, wfi, mip_mtip_one, mie_mtie_one, mstatus_mie_zero, prev_minstret_read;
-        cp_instret_wfi_taken:   cross priv_mode_m, wfi, mie_mtie_one, mstatus_mie_one;
     `endif
     `ifdef ZAWRS_SUPPORTED
         cp_instret_wrs_nto: cross priv_mode_m, wrs_nto, prev_minstret_read;

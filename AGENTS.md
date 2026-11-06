@@ -36,7 +36,7 @@
 - `CONFIG_FILES=config/cores/<vendor>/<config>/test_config.yaml make`: build tests for one DUT configuration.
 - `make <config-target>`: build and run one or more configurations discovered from `run_cmd.txt`.
 - `EXTENSIONS=I,M make tests` or `EXTENSIONS=I make <config-target>`: restrict work to selected suites. `EXCLUDE_EXTENSIONS=Sm` applies a negative filter.
-- `FAST=True make`: omit objdump output. `DEBUG=True make EXTENSIONS=<suite>`: emit signature objdumps, reference-model traces, and trap reports. `VERBOSE=True` also serializes the build.
+- `DEBUG=True make EXTENSIONS=<suite>`: emit ELF and signature objdumps, reference-model traces, and trap reports. Objdumps are not generated without `DEBUG`. `VERBOSE=True` also serializes the build.
 - Let the project select parallelism for normal work. Use `JOBS=1` only to debug a hang or another parallel execution problem.
 - `make coverage EXTENSIONS=<suite>`: run focused coverage. Full `make coverage` is expensive.
 - Build CTP or CRD documentation from its directory. The builds use the `docs/docs-resources` submodule and Docker unless `SKIP_DOCKER=true`.
@@ -88,7 +88,7 @@
 
 - Run summaries are in `work/<config>/summary.log`. Simulator logs are in `work/<config>/logs/`.
 - Passing tests print `RVCP-SUMMARY: TEST PASSED - Test File "<test_name>"`. Failures print `TEST FAILED`. `SIGRUN` means the ELF is not self-checking.
-- `DEBUG=True` adds `.sig.elf.objdump`, `.sig.log`, and `.sig.trap_report` files under `work/<config>/build/`.
+- `DEBUG=True` adds `.elf.objdump` files under `work/<config>/elfs/` and `.sig.elf.objdump`, `.sig.log`, and `.sig.trap_report` files under `work/<config>/build/`.
 - Triage failures in this order: UDB and DUT configuration, reference-model configuration, generated objdump and trace, then DUT behavior.
 - By default, ACT stops after the first failed build task and cancels active tasks. The `succeeded` value counts DAG tasks, not tests. Use `-k` to continue independent tasks.
 - To test one suite across simulators, use `EXTENSIONS=<suite> DEBUG=True make -k sail spike whisper qemu imperas cvw`. Each failing simulator log names the first divergent testcase on its `bin:` line.

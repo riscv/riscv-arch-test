@@ -105,14 +105,14 @@
     // Check the regular signature offset to make sure the correct number of
     // signature updates occurred.
     check_regular_sig_offset:
-      LA(     T1, signature_base)
-      sub     T1, DEFAULT_SIG_REG, T1
+      LA(     T4, signature_base)       // T4, not T1: rvmodel_io_write_str clobbers T1-T3
+      sub     T4, DEFAULT_SIG_REG, T4
       LA(     T3, final_sig_offset)
     #ifdef RVTEST_SELFCHECK
       LREG    DEFAULT_TEMP_REG, 0(T3)
-      beq     DEFAULT_TEMP_REG, T1, check_regular_sig_offset_done
+      beq     DEFAULT_TEMP_REG, T4, check_regular_sig_offset_done
     #else
-      SREG    T1, 0(T3)
+      SREG    T4, 0(T3)
       beq     x0, x0, check_regular_sig_offset_done
     #endif
 
@@ -125,7 +125,7 @@
       call rvmodel_io_write_str
       LA(a0, regular_sig_offset_actual_str)
       call rvmodel_io_write_str
-      mv      a0, T1
+      mv      a0, T4
       li      a1, UDB_MXLEN
       jal     ra, failedtest_hex_to_str
       LA(a0, ascii_buffer)
@@ -749,7 +749,9 @@
 
   // Flavors to run from supervisor mode
 
-  #ifdef STANDARD_SM_SUPPORTED
+  // These reach machine interrupt sources only through T-SBI, so they need a T-SEE but not
+  // a standard M-mode; they are emitted whenever a lower privilege mode can call them.
+  #ifdef U_SUPPORTED
 
     rvtest_set_mtime_int_soon_su:
       #if defined(RVMODEL_MTIME_ADDRESS) && defined(RVMODEL_MTIMECMP_ADDRESS) && defined(RVMODEL_TIMER_INT_SOON_DELAY)
@@ -838,7 +840,7 @@
         RVMODEL_CLR_MEXT_INT(a0, a1) // platform-specific interrupt controller
       #endif
       ret
-  #endif
+  #endif // U_SUPPORTED
 
   #ifdef S_SUPPORTED
     #ifdef SSTC_SUPPORTED
@@ -1426,7 +1428,7 @@
         sw t1, 4(t0)
       #elif !defined(RVTEST_SELFCHECK)
         // Sail always has a CLINT, and its mtimecmp resets to 0, so park it even if the DUT has no timer.
-        LI(t0, SAIL_MTIMECMP_ADDRESS)
+        LI_FIXED_LEN(t0, SAIL_MTIMECMP_ADDRESS)
         addi t1, zero, -1
         sw t1, 0(t0)
         sw t1, 4(t0)

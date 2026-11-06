@@ -851,6 +851,8 @@ normative_rule_definitions:
         "Sv_H_gstage_cg/cp_hgatp_x4_gpa",
         "Sv_H_twostage_cg/cp_twostage_x4_gpa",
         "Sv_H_twostage_cg/cp_twostage_gpa_width",
+        "Sv_H_hlv_cg/{cp_hlv_x4_gpa, cp_hlv_x4_gpa_bare}",
+        "Sv_H_fence_cg/cp_hfence_gvma_x4",
       ]
 
   # Each G-stage mode walks its tables with the Sv algorithm for permissions, every leaf level and A/D bits, and

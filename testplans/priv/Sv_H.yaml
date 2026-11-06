@@ -63,7 +63,7 @@ coverpoints:
     bins: VS x lw x vsatp Bare x hgatp_mode x set GPA bit {37-63}
   - name: cp_hgatp_x4_gpa
     goal: G-stage translation of guest physical addresses that use the x4 mode's two extra bits
-    description: RV64 only.  In VS-mode with vsatp = Bare, for each supported hgatp mode, store, load and fetch at guest physical addresses whose top two bits (40:39 for Sv39x4, 49:48 for Sv48x4, 58:57 for Sv57x4, above the Sv mode's virtual address width and, for Sv57x4, above the 56-bit physical address width) are 01, 10 and 11.  The bits between them and the page offset are random.  Each address is mapped to the test page through a G-stage leaf at every level, valid and invalid.  After each valid case, HS-mode loads the word the guest stored from the test page.
+    description: RV64 only.  In VS-mode with vsatp = Bare, for each supported hgatp mode, store, load and fetch at guest physical addresses whose top two bits (40:39 for Sv39x4, 49:48 for Sv48x4, 58:57 for Sv57x4, above the Sv mode's virtual address width and, for Sv57x4, above the 56-bit physical address width) are 01, 10 and 11.  The bits between them and the page offset are random.  Each address is mapped to the test page through a G-stage leaf at every level, valid and invalid.  After each valid case, HS-mode loads the word the guest stored from the test page.  cp_hlv_x4_gpa_bare then runs HLV, HLVX and HSV on the same mapping.
     expectation: Through a valid leaf the accesses reach the test page, and HS-mode reads back the stored word.  Through an invalid leaf each access raises a store/AMO, load or instruction guest-page fault with htval = the guest physical address shifted right by 2 (or zero).
     bins: VS x {sw, lw, jalr} x vsatp Bare x {hgatp_mode with GPA top bits 01, 10, 11} x {no trap, guest-page fault}
     notes: The coverage records the guest physical address of the access but not the leaf level; the signature checks each level.
@@ -144,10 +144,10 @@ coverpoints:
     bins: VS x {lw, sw, jalr} x vsatp paged x {Sv39x4, Sv48x4 with htval bits above the G-stage width nonzero} x guest-page fault
   - name: cp_twostage_x4_gpa
     goal: Two-stage translation to guest physical addresses that use the x4 mode's two extra bits
-    description: For Sv32/Sv32x4, Sv39/Sv39x4 and Sv48/Sv48x4, in VS-mode, store, load and fetch through a VS-stage kilopage leaf whose guest physical address has its top two bits (33:32, 40:39 or 49:48) = 01, 10 and 11 and random bits between them and the page offset.  A G-stage leaf at every level maps that address to the test page, valid and invalid.  After each valid case, HS-mode loads the word the guest stored from the test page.  A VS-stage PPN cannot set Sv57x4's bits 58:57; cp_hgatp_x4_gpa covers them.
+    description: For Sv32/Sv32x4, Sv39/Sv39x4 and Sv48/Sv48x4, in VS-mode, store, load and fetch through a VS-stage leaf at each level whose guest physical address has its top two bits (33:32, 40:39 or 49:48) = 01, 10 and 11 and random bits between them and the page offset.  A G-stage leaf at every level maps that address to the test page, valid and invalid, so every VS-stage and G-stage page size is combined.  After the guest accesses, HS-mode loads the word the guest stored from the test page.  cp_hlv_x4_gpa then runs HLV, HLVX and HSV on the same mapping.  A VS-stage PPN cannot set Sv57x4's bits 58:57; cp_hgatp_x4_gpa covers them.
     expectation: Through a valid G-stage leaf the accesses reach the test page, and HS-mode reads back the stored word.  Through an invalid one each access raises a store/AMO, load or instruction guest-page fault with htval = the guest physical address shifted right by 2 (or zero).
     bins: VS x {sw, lw, jalr} x vsatp paged x {hgatp_mode with htval bits for GPA top bits 01, 10, 11} x guest-page fault
-    notes: The trace does not record guest physical addresses, so only the faults are coverpoints; the signature checks the successful accesses at each level.
+    notes: The trace does not record guest physical addresses or leaf levels, so only the faults are coverpoints; the signature checks the successful accesses for each pair of page sizes.
   - heading: HLV, HLVX and HSV in HS-mode (Sv_H_hlv_cg)
   - name: cp_hlv_priv
     goal: hstatus.SPVP and vsstatus.SUM set the privilege of HLV, HLVX and HSV
@@ -176,6 +176,17 @@ coverpoints:
     expectation: Each raises a load or store guest-page fault with htval = the guest physical address of the root PTE >> 2 and htinst = the read pseudoinstruction.
     bins: HS x {hlv.w, hlvx.wu, hsv.w} x stage_modes x htinst read pseudoinstruction x htval in the root table
     notes: Needs htval to report the guest physical address.
+  - name: cp_hlv_x4_gpa
+    goal: HLV, HLVX and HSV to guest physical addresses that use the x4 mode's two extra bits
+    description: After each cp_twostage_x4_gpa case, in HS-mode with hstatus.SPVP = 1, execute hsv.w, hlv.w and hlvx.wu at offset 8 of the same guest virtual address, then load the stored word from the test page.
+    expectation: Through a valid G-stage leaf, hlv.w and hlvx.wu read the word hsv.w stored, and so does the HS-mode load.  Through an invalid one each raises a load or store/AMO guest-page fault with htval = the guest physical address shifted right by 2 (or zero).
+    bins: HS x {hlv.w, hlvx.wu, hsv.w} x vsatp paged x {hgatp_mode with htval bits for GPA top bits 01, 10, 11} x guest-page fault
+    notes: As for cp_twostage_x4_gpa, only the faults are coverpoints.
+  - name: cp_hlv_x4_gpa_bare
+    goal: HLV, HLVX and HSV with vsatp = Bare at guest physical addresses that use the x4 mode's two extra bits
+    description: RV64 only.  After each cp_hgatp_x4_gpa case, in HS-mode with hstatus.SPVP = 1, execute hsv.w, hlv.w and hlvx.wu at offset 8 of the same guest physical address, then load the stored word from the test page.
+    expectation: Through a valid G-stage leaf, hlv.w and hlvx.wu read the word hsv.w stored, and so does the HS-mode load.  Through an invalid one each raises a load or store/AMO guest-page fault.
+    bins: HS x {hlv.w, hlvx.wu, hsv.w} x vsatp Bare x {hgatp_mode with GPA top bits 01, 10, 11} x {no trap, guest-page fault}
   - heading: vsatp, satp and hgatp MODE (Sv_H_csr_cg)
   - name: cp_vsatp_mode_field
     goal: supported/unsupported MODE encodings
@@ -219,6 +230,11 @@ coverpoints:
       cp_hfence_gvma_vmid: HS x hfence.gvma x vsatp paged x hgatp paged x rs2 {current VMID, all VMIDMAX bits set}
       cp_sfence_vma_vs_asid: VS x sfence.vma x vsatp paged x hgatp paged x rs2 {current ASID, all ASIDMAX bits set}
     notes: A fence is required only to make new translations visible.  That a fence leaves the translations of another ASID or VMID cached, or that SFENCE.VMA in VS-mode leaves HS-level and G-stage translations cached, is not observable.
+  - name: cp_hfence_gvma_x4
+    goal: hfence.gvma removes a stale translation of a guest physical address that uses the x4 mode's two extra bits
+    description: Sv32/Sv32x4 and Sv39/Sv39x4.  As cp_hfence_gvma, with guest physical page A at an address whose top two bits (33:32 or 40:39) are 01, 10 and 11, with random bits between them and bit 13.  HS-mode points the G-stage leaf of page A at physical page B and runs hfence.gvma with page A >> 2 in rs1 and x0 or the current VMID in rs2.
+    expectation: The VS-mode load after the fence reads page B.  A hart that drops the top bits of rs1 does not remove the stale translation and reads page A.
+    bins: HS x hfence.gvma x vsatp paged x hgatp paged x {rs1 with GPA top bits 01, 10, 11} x rs2 {x0, register}
   - heading: Not tested
   - goal: hstatus.VSBE sets the endianness of VS-mode explicit accesses and VS-stage page-table accesses
     description: Load and store in VS-mode, and walk VS-stage page tables, with hstatus.VSBE = 0 and 1.

@@ -52,6 +52,7 @@ from testgen.priv.extensions.sv.SvHFenceCommon import (
     ISOLATION_CASES,
     SFENCE_VMA_VS,
     fence_chunk,
+    x4_fence_chunk,
 )
 from testgen.priv.registry import add_priv_test_generator
 
@@ -223,17 +224,21 @@ def guest_access(
     level: int = 0,
     va_is_label: bool = False,
     driver: str = "S",
+    offset: int = 0,
 ) -> list[str]:
     """Run ``setup``, then the ``ops`` at address ``va`` in ``mode`` (VS or VU), or in the driver mode for None.
 
-    With ``sv``, the address is the ``level`` superpage of ``va`` holding svh_page.  Each load's destination is
-    checked back in the driver mode, because VU-mode cannot write the signature.
+    With ``sv``, the address is the ``level`` superpage of ``va`` holding svh_page.  ``offset`` is added to the
+    address after it is built.  Each load's destination is checked back in the driver mode, because VU-mode cannot
+    write the signature.
     """
     va_reg, data = test_data.int_regs.get_registers(2)
     if sv is not None:
         address = virtual_address(sv, va, level, destination=va_reg, physical_address="svh_page", scratch=data)
     else:
         address = [f"LA(x{va_reg}, {va})" if va_is_label else load_constant(f"x{va_reg}", va)]
+    if offset:
+        address.append(f"addi x{va_reg}, x{va_reg}, {offset}")
     lines = [*setup, *address, f"LI(x{data}, {0x100 + test_data.test_count:#x})"]
     if mode is not None:
         lines.append(f"RVTEST_TSBI_GOTO_{mode}MODE")
@@ -618,32 +623,69 @@ def x4_readback(test_data: TestData, covergroup: str, coverpoint: str, name: str
     )
 
 
-def map_vs_leaf_to_gpa(test_data: TestData, g: SvMode, vs: SvMode, level: int, gpa: int) -> list[str]:
-    """Map vs.data_va with a VS-stage kilopage leaf to guest physical address ``gpa`` plus the offset of svh_page in a
-    G-stage leaf at ``level``.  The offset comes from svh_page at run time, so it is ORed into the PPN after write_pte
-    stores the leaf, which leaves the PTE and its address in its registers."""
+# HS-mode accesses to the same address, with hstatus.SPVP = 1: the store first, so the loads read its word
+HLV_OPS = ("hsv", "hlv", "hlvx")
+
+
+def x4_accesses(
+    test_data: TestData,
+    covergroup: str,
+    coverpoint: str,
+    name: str,
+    va: str,
+    *,
+    setup: Sequence[str],
+    sv: SvMode,
+    level: int,
+    valid: bool,
+    hlv_coverpoint: str,
+) -> list[str]:
+    """Store, load and fetch at ``va`` in VS-mode, then hsv.w, hlv.w and hlvx.wu at its offset 8 in HS-mode, which
+    are testcases of ``hlv_coverpoint``.  After each, when the G-stage leaf is valid, HS-mode reads back the stored
+    word."""
+    readback = valid
+    lines = guest_access(test_data, covergroup, coverpoint, name, "VS", va, setup=setup, sv=sv, level=level)
+    if readback:
+        lines.extend(x4_readback(test_data, covergroup, coverpoint, name))
+    lines.extend(
+        guest_access(test_data, HLV_CG, hlv_coverpoint, name, None, va, ops=HLV_OPS, sv=sv, level=level, offset=8)
+    )
+    if readback:
+        lines.extend(x4_readback(test_data, HLV_CG, hlv_coverpoint, f"{name}_hsv"))
+    return lines
+
+
+def map_vs_leaf_to_gpa(
+    test_data: TestData, g: SvMode, vs: SvMode, vs_level: int, vs_base: int, g_level: int, gpa: int
+) -> list[str]:
+    """Map the guest virtual page at ``vs_base`` with a VS-stage leaf at ``vs_level`` to guest physical address
+    ``gpa`` plus the offset of svh_page in a G-stage leaf at ``g_level``.  The bits of that offset above the VS-stage
+    page offset come from svh_page at run time, so they are ORed into the PPN after write_pte stores the leaf, which
+    leaves the PTE and its address in its registers."""
     pte, addr, tmp = test_data.int_regs.get_registers(3)
     regs = (pte, addr, tmp)
-    shift = g.page_offset_bits(level)
+    vs_shift = vs.page_offset_bits(vs_level)
+    g_shift = g.page_offset_bits(g_level)
     lines = [
-        *create_page_walk(vs, leaf_level=0, virtual_address=vs.data_va, regs=regs),
+        *create_page_walk(vs, leaf_level=vs_level, virtual_address=hex(vs_base), regs=regs),
         *write_pte(
             vs,
-            level=0,
+            level=vs_level,
             flags=PteFlags(),
-            virtual_address=vs.data_va,
+            virtual_address=hex(vs_base),
             physical_address=hex(gpa),
             regs=regs,
             pa_is_label=False,
+            superpage=vs_level > 0,
         ),
     ]
-    if shift > 12:
+    if g_shift > vs_shift:
         lines.extend(
             [
                 f"LA(x{tmp}, svh_page)",
-                f"slli x{tmp}, x{tmp}, {vs.xlen - shift}",
-                f"srli x{tmp}, x{tmp}, {vs.xlen - shift + 12}",
-                f"slli x{tmp}, x{tmp}, 10",
+                f"slli x{tmp}, x{tmp}, {vs.xlen - g_shift}",
+                f"srli x{tmp}, x{tmp}, {vs.xlen - g_shift + vs_shift}",
+                f"slli x{tmp}, x{tmp}, {vs_shift - 2}",
                 f"or x{pte}, x{pte}, x{tmp}",
                 f"SREG x{pte}, 0(x{addr})",
             ]
@@ -652,37 +694,67 @@ def map_vs_leaf_to_gpa(test_data: TestData, g: SvMode, vs: SvMode, level: int, g
     return lines
 
 
-def _t_gpa_x4(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs: SvMode) -> None:
-    """Two-stage translation to guest physical addresses that set the two bits an x4 mode adds, which index the upper
-    three quarters of its 16 KiB root table."""
+def _t_gpa_x4(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs: SvMode, vs_level: int) -> None:
+    """Two-stage translation through a VS-stage leaf at ``vs_level`` to guest physical addresses that set the two bits
+    an x4 mode adds, which index the upper three quarters of its 16 KiB root table."""
     top = g.va_bits - 2
+    page = vs.page_names[vs_level]
+    split_name = f"H_{g.name}_gpa_x4" if vs_level == 0 else f"H_{g.name}_gpa_x4_vs{page}"
     chunk = begin_chunk(
         test_data,
-        f"H_{g.name}_gpa_x4",
-        "cp_twostage_x4_gpa",
-        f"In VS-mode with vsatp = {vs.extension} and hgatp = {g.extension}, store, load and fetch through a VS-stage\n"
-        f"kilopage leaf whose guest physical address has bits {top + 1}:{top} = 01, 10 or 11 and random bits below them,\n"
-        "through a valid or invalid G-stage leaf at each level.  After each valid case, HS-mode reads the stored word",
+        split_name,
+        "cp_twostage_x4_gpa, cp_hlv_x4_gpa",
+        f"In VS-mode with vsatp = {vs.extension} and hgatp = {g.extension}, store, load and fetch through a {page}\n"
+        f"VS-stage leaf whose guest physical address has bits {top + 1}:{top} = 01, 10 or 11 and random bits below\n"
+        "them, through a valid or invalid G-stage leaf at each level, then hsv.w, hlv.w and hlvx.wu in HS-mode with\n"
+        "hstatus.SPVP = 1.  After the guest accesses and after hsv.w, HS-mode reads the stored word",
         stages=(g, vs),
     )
-    rng = Random(f"H_{g.name}_gpa_x4")
-    code = guest_chunk_setup(test_data, g, vs, "VS")
-    for level, bits, valid, gpa in x4_cases(g, rng):
+    rng = Random(split_name)
+    vs_shift = vs.page_offset_bits(vs_level)
+    vs_base = (int(vs.data_va, 16) >> vs_shift) << vs_shift
+    reg = test_data.int_regs.get_register()
+    code = [
+        *guest_chunk_setup(test_data, g, vs, "VS"),
+        *set_csr_bits("hstatus", "HSTATUS_SPVP", "HSTATUS_SPVP", reg),
+    ]
+    for g_level, bits, valid, gpa in x4_cases(g, rng):
         pte, addr, tmp = test_data.int_regs.get_registers(3)
         g_leaf = create_page_mapping(
             g,
-            leaf_level=level,
+            leaf_level=g_level,
             leaf_flags=PteFlags(user=True, valid=valid),
             virtual_address=hex(gpa),
             physical_address="svh_page",
             regs=(pte, addr, tmp),
         )
         test_data.int_regs.return_registers([pte, addr, tmp])
-        setup = [*map_vs_leaf_to_gpa(test_data, g, vs, level, gpa), *g_leaf, "hfence.vvma", "hfence.gvma"]
-        name = x4_case_name(g, level, bits, valid)
-        code.extend(guest_access(test_data, TWO_CG, "cp_twostage_x4_gpa", name, "VS", vs.data_va, setup=setup))
-        if valid:
-            code.extend(x4_readback(test_data, TWO_CG, "cp_twostage_x4_gpa", name))
+        setup = [
+            *map_vs_leaf_to_gpa(test_data, g, vs, vs_level, vs_base, g_level, gpa),
+            *g_leaf,
+            "hfence.vvma",
+            "hfence.gvma",
+        ]
+        # The guest address keeps the guest physical address bits that the VS-stage leaf passes through
+        va = hex(vs_base | (gpa & ((1 << vs_shift) - 1)))
+        name = x4_case_name(g, g_level, bits, valid)
+        level = min(vs_level, g_level)
+        code.extend(
+            x4_accesses(
+                test_data,
+                TWO_CG,
+                "cp_twostage_x4_gpa",
+                name,
+                va,
+                setup=setup,
+                sv=vs,
+                level=level,
+                valid=valid,
+                hlv_coverpoint="cp_hlv_x4_gpa",
+            )
+        )
+    code.extend(set_csr_bits("hstatus", "HSTATUS_SPVP", "0", reg))
+    test_data.int_regs.return_register(reg)
     chunk.code.extend([*code, *guest_chunk_teardown(test_data, g.xlen)])
     test_chunks.append(test_data.end_test_chunk())
 
@@ -693,14 +765,19 @@ def _t_gpa_x4_bare(test_data: TestData, test_chunks: list[TestChunk], g: SvMode)
     chunk = begin_chunk(
         test_data,
         f"H_{g.name}_gpa_x4_bare",
-        "cp_hgatp_x4_gpa",
+        "cp_hgatp_x4_gpa, cp_hlv_x4_gpa_bare",
         f"In VS-mode with vsatp = Bare and hgatp = {g.extension}, store, load and fetch at guest physical addresses\n"
         f"with bits {top + 1}:{top} = 01, 10 or 11 and random bits below them, through a valid or invalid G-stage leaf\n"
-        "at each level.  After each valid case, HS-mode reads the stored word",
+        "at each level, then hsv.w, hlv.w and hlvx.wu in HS-mode with hstatus.SPVP = 1.  After the guest accesses and\n"
+        "after hsv.w, HS-mode reads the stored word",
         (g,),
     )
     rng = Random(f"H_{g.name}_gpa_x4_bare")
-    code = guest_chunk_setup(test_data, g, None, "VS")
+    reg = test_data.int_regs.get_register()
+    code = [
+        *guest_chunk_setup(test_data, g, None, "VS"),
+        *set_csr_bits("hstatus", "HSTATUS_SPVP", "HSTATUS_SPVP", reg),
+    ]
     for level, bits, valid, gpa in x4_cases(g, rng):
         pte, addr, tmp = test_data.int_regs.get_registers(3)
         setup = [
@@ -717,10 +794,21 @@ def _t_gpa_x4_bare(test_data: TestData, test_chunks: list[TestChunk], g: SvMode)
         test_data.int_regs.return_registers([pte, addr, tmp])
         name = x4_case_name(g, level, bits, valid)
         code.extend(
-            guest_access(test_data, G_CG, "cp_hgatp_x4_gpa", name, "VS", hex(gpa), setup=setup, sv=g, level=level)
+            x4_accesses(
+                test_data,
+                G_CG,
+                "cp_hgatp_x4_gpa",
+                name,
+                hex(gpa),
+                setup=setup,
+                sv=g,
+                level=level,
+                valid=valid,
+                hlv_coverpoint="cp_hlv_x4_gpa_bare",
+            )
         )
-        if valid:
-            code.extend(x4_readback(test_data, G_CG, "cp_hgatp_x4_gpa", name))
+    code.extend(set_csr_bits("hstatus", "HSTATUS_SPVP", "0", reg))
+    test_data.int_regs.return_register(reg)
     chunk.code.extend([*code, *guest_chunk_teardown(test_data, g.xlen)])
     test_chunks.append(test_data.end_test_chunk())
 
@@ -1602,8 +1690,13 @@ def _x4_tests(test_data: TestData, g: SvMode, vs: SvMode | None, *, bare: bool =
         _t_gpa_x4_bare(test_data, test_chunks, g)
     # A VS-stage PPN reaches guest physical address bit 33 on RV32 and bit 55 on RV64, so not Sv57x4's bits 58:57
     if vs is not None and g.va_bits <= (34 if g.xlen == 32 else 56):
-        _t_gpa_x4(test_data, test_chunks, g, vs)
+        for vs_level in range(vs.levels):
+            _t_gpa_x4(test_data, test_chunks, g, vs, vs_level)
     return test_chunks
+
+
+def _x4_fence_chunk(test_data: TestData, g: SvMode, vs: SvMode) -> TestChunk:
+    return x4_fence_chunk(test_data, g, vs, f"H_{g.name}_fence_x4", (HFENCE_GVMA,), "Sv_H_fence_cg")
 
 
 def _fence_chunk(test_data: TestData, g: SvMode, vs: SvMode) -> TestChunk:
@@ -1651,6 +1744,7 @@ def make_svh_sv32(test_data: TestData) -> list[TestChunk]:
         *_make_svh(test_data, SV32X4, VS_SV32),
         _fence_chunk(test_data, SV32X4, VS_SV32),
         *_x4_tests(test_data, SV32X4, VS_SV32),
+        _x4_fence_chunk(test_data, SV32X4, VS_SV32),
     ]
 
 
@@ -1660,6 +1754,7 @@ def make_svh_sv39(test_data: TestData) -> list[TestChunk]:
         *_make_svh(test_data, SV39X4, VS_SV39),
         _fence_chunk(test_data, SV39X4, VS_SV39),
         *_x4_tests(test_data, SV39X4, VS_SV39),
+        _x4_fence_chunk(test_data, SV39X4, VS_SV39),
     ]
 
 

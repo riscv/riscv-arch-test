@@ -11,7 +11,7 @@
 
 from collections.abc import Callable
 from dataclasses import dataclass
-from itertools import combinations
+from itertools import combinations, product
 
 from testgen.asm.csr import write_stce
 from testgen.asm.helpers import comment_banner, write_sigupd
@@ -686,3 +686,70 @@ def emit_interrupts(
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks
+
+
+# Pending and enable CSRs that hold the VS-level interrupt bits, with the bit offset of their view: vsip and vsie
+# hold VSSI, VSTI and VSEI one bit lower, as SSI, STI and SEI
+IP_CSRS = (("mip", 0), ("hvip", 0), ("hip", 0), ("vsip", 1))
+IE_CSRS = (("mie", 0), ("hie", 0), ("vsie", 1))
+# csrw, csrs and csrc: csrrw, csrrs and csrrc with rd = x0
+ALIAS_OPS = ("csrw", "csrs", "csrc")
+# The written bits, in mip positions: each VS-level interrupt alone, and all three
+ALIAS_BITS = (("vssi", 0x4), ("vsti", 0x40), ("vsei", 0x400), ("vs", 0x444))
+# Bits read back, in mip positions; the VS views are shifted right by one
+ALIAS_MASK = 0x1444
+VS_ALIAS_MASK = 0x222
+
+
+def alias_readback(test_data: TestData, csrs: tuple[str, ...], check_reg: int, mask_reg: int, mode: str) -> list[str]:
+    """Read each CSR, keep the VS-level and SGEI bits of its view, and check them."""
+    lines = []
+    for csr in csrs:
+        mask = VS_ALIAS_MASK if csr.startswith("vs") else ALIAS_MASK
+        lines.extend(
+            [
+                tsbi_call_or_direct(f"csrr x{check_reg}, {csr}", mode),
+                f"LI(x{mask_reg}, {mask:#x})",
+                f"and x{check_reg}, x{check_reg}, x{mask_reg}",
+                write_sigupd(check_reg, test_data),
+            ]
+        )
+    return lines
+
+
+def alias_write_tests(
+    test_data: TestData,
+    covergroup: str,
+    coverpoint: str,
+    writers: tuple[tuple[str, int], ...],
+    source: str,
+    readers: tuple[str, ...],
+    mode: str,
+    hideleg_values: tuple[tuple[str, int], ...],
+) -> list[str]:
+    """
+    Write each VS-level interrupt bit, and all three, through each writer CSR with csrw, csrs and csrc, starting
+    with the bits clear and set in source (hvip for the pending bits, hie for the enable bits), and read back
+    every reader.  Clobbers hideleg, hvip and hie.
+    """
+    # a0 and a1 carry T-SBI calls
+    val_reg, check_reg, mask_reg = test_data.int_regs.get_registers(3, exclude_regs=[10, 11])
+    lines = []
+    for hname, hideleg in hideleg_values:
+        lines.extend([f"LI(x{val_reg}, {hideleg:#x})", f"csrw hideleg, x{val_reg}"])
+        for (csr, shift), op, (bname, bits), start in product(writers, ALIAS_OPS, ALIAS_BITS, (0, 1)):
+            name = f"{csr}_{op}_{bname}_{'set' if start else 'clear'}" + (f"_hideleg_{hname}" if hname else "")
+            lines.extend(
+                [
+                    "csrw hvip, zero",
+                    "csrw hie, zero",
+                    *([f"LI(x{val_reg}, {bits:#x})", f"csrw {source}, x{val_reg}"] if start else []),
+                    f"LI(x{val_reg}, {bits >> shift:#x})",
+                    test_data.add_testcase(name, coverpoint, covergroup),
+                    f"{op} {csr}, x{val_reg}",
+                    *alias_readback(test_data, readers, check_reg, mask_reg, mode),
+                ]
+            )
+    lines.extend(["csrw hideleg, zero", "csrw hvip, zero", "csrw hie, zero"])
+    test_data.int_regs.return_registers([val_reg, check_reg, mask_reg])
+    return lines

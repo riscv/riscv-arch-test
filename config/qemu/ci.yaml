@@ -11,6 +11,7 @@ exclude_extensions:
   #     minstret one too high after wraparound (still fails with QEMU #4087 closed)
   #     mcycleh write dropped (#4219)
   #     mstatus.MPELP not writable (#4220)
+  #     M-mode writes of mip.VSTIP and mip.VSEIP are accepted (https://gitlab.com/qemu-project/qemu/-/work_items/4809)
   - Sm_mcsr_access
   - Sm_mcsr_cntr
   - Sm_mcsr_walk
@@ -71,6 +72,9 @@ exclude_extensions:
   - Interrupts_Sm_h_priority_levels
   - Interrupts_Sgei_trigger
   - Interrupts_SgeiSm
+  # M-mode writes of mip.VSTIP and mip.VSEIP are accepted and also write hvip
+  # (https://gitlab.com/qemu-project/qemu/-/work_items/4809)
+  - Interrupts_Sm_h_mcsr
   # sc.w to no-permission region returns failure instead of raising
   # store/AMO access fault (https://gitlab.com/qemu-project/qemu/-/work_items/4100, still failing in v11.1.1)
   - Exceptions_Zalrsc

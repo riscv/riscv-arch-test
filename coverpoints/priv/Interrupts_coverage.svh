@@ -625,17 +625,37 @@ covergroup Interrupts_cg with function sample(ins_t ins);
 
     // Hypervisor interrupt CSRs, sampled in HS-mode, and sip in VS-mode
     `ifdef H_SUPPORTED
-        csrr: coverpoint ins.current.insn {
-            wildcard bins csrr = {CSRR};
+        // csrw, csrs and csrc: csrrw, csrrs and csrrc (reads are csrrs with rs1 = x0, which no alias_bits bin holds)
+        alias_op: coverpoint ins.current.insn[14:12] {
+            bins csrrw = {3'b001};
+            bins csrrs = {3'b010};
+            bins csrrc = {3'b011};
         }
-        csrrw: coverpoint ins.current.insn {
-            wildcard bins csrrw = {CSRRW};
+        alias_csr_ip: coverpoint ins.current.insn[31:20] {
+            bins hvip = {CSR_HVIP};
+            bins hip  = {CSR_HIP};
+            bins vsip = {CSR_VSIP};
         }
-        csr_hip: coverpoint ins.current.insn[31:20] {
-            bins hip = {CSR_HIP};
+        alias_csr_ie: coverpoint ins.current.insn[31:20] {
+            bins hie  = {CSR_HIE};
+            bins vsie = {CSR_VSIE};
         }
-        csr_hie: coverpoint ins.current.insn[31:20] {
-            bins hie = {CSR_HIE};
+        // The VS-level bits a write selects, in mip positions: vsip and vsie hold them one bit lower
+        alias_bits: coverpoint ((ins.current.insn[31:20] == CSR_VSIP || ins.current.insn[31:20] == CSR_VSIE) ?
+                                ins.current.rs1_val << 1 : ins.current.rs1_val) {
+            bins vssi = {'h4};
+            bins vsti = {'h40};
+            bins vsei = {'h400};
+            bins vs   = {'h444};
+        }
+        // The VS-level bits before the write, in hvip for the pending CSRs and in hie for the enable CSRs: clear,
+        // or set (the tests set exactly the bits they write)
+        alias_start: coverpoint (((ins.current.insn[31:20] == CSR_MIE || ins.current.insn[31:20] == CSR_HIE ||
+                                   ins.current.insn[31:20] == CSR_VSIE) ?
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "hie") :
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hvip", "hvip")) & 'h444) != 0 {
+            bins clear = {0};
+            bins set   = {1};
         }
         // csrw (csrrw) and csrr (csrrs with rs1 = x0)
         csr_rw: coverpoint ins.current.insn[14:12] {
@@ -655,16 +675,17 @@ covergroup Interrupts_cg with function sample(ins_t ins);
                                     get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "hideleg")[2]} {
             bins all = {3'b111};
         }
-        hip_write: coverpoint ins.current.rs1_val {
-            bins ones  = {16'hFFFF};
-            bins zeros = {0};
+        hideleg_vs_none_all: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "hideleg")[10],
+                                         get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "hideleg")[6],
+                                         get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "hideleg")[2]} {
+            bins none = {3'b000};
+            bins all  = {3'b111};
         }
-        // mie written 0x444, or 0x1444 when GEILEN > 0 (SGEIE is implementation-defined otherwise)
-        mie_444: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "mie")[12:0] {
-            bins vs = {13'h0444};
-            `ifndef UDB_NUM_EXTERNAL_GUEST_INTERRUPTS_0
-                bins sgei_vs = {13'h1444};
-            `endif
+        // In VS-mode, read sip (csrrs with rs1 = x0), or csrrs or csrrc sip.SSIP: {funct3, rs1 value}
+        vs_sip_op: coverpoint {ins.current.insn[14:12], ins.current.rs1_val[15:0]} {
+            bins read  = {19'h20000};
+            bins set   = {19'h20002};
+            bins clear = {19'h30002};
         }
         // With vsstatus.SIE = 1 a pending VSSI is taken on entry, and the VS handler clears vsip.SSIP before
         // the read; cp_trigger_tsbi covers vsstatus.SIE = 0/1 for the delegated VS-level interrupts
@@ -678,15 +699,16 @@ covergroup Interrupts_cg with function sample(ins_t ins);
             bins one = {1};
         }
 
-        // Only hip.VSSIP is writable, and it is an alias of hvip.VSSIP
-        cp_hip_write:   cross priv_mode_hs, csrrw, csr_hip, hip_write;
-        // hie is a view of mie, including SGEIE when GEILEN > 0
-        cp_hie:         cross priv_mode_hs, csrr, csr_hie, mie_444;
+        // Writes of the VS-level bits through hvip, hip and vsip: hvip is writable, hip and vsip only in their VSSIP
+        // aliases (vsip where hideleg delegates), and every view reads the same bits
+        cp_hip_write:   cross priv_mode_hs, alias_op, alias_csr_ip, alias_bits, alias_start, hideleg_vs_none_all;
+        // Writes of the VS-level enable bits through hie and vsie: hie is writable, vsie where hideleg delegates
+        cp_hie:         cross priv_mode_hs, alias_op, alias_csr_ie, alias_bits, alias_start, hideleg_vs_none_all;
         // vsie and vsip: reads and writes for each combination of hideleg.VS*I
         cp_vsip_vsie:   cross priv_mode_hs, csr_rw, csr_vsie_vsip, hideleg_vs;
-        // In VS-mode, sip is vsip: it shows hvip.VSSIP when delegated and never the HS-level sip.SSIP
+        // In VS-mode, sip is vsip: it reads and writes hvip.VSSIP when delegated and never the HS-level sip.SSIP
         `ifdef UDB_SSI_INTR_IMPL
-            cp_sie_vs:      cross priv_mode_vs, csrr, csr_sip, vsstatus_sie_zero, hvip_vssip, mip_ssip_one, hideleg_vs_all;
+            cp_sie_vs:      cross priv_mode_vs, vs_sip_op, csr_sip, vsstatus_sie_zero, hvip_vssip, mip_ssip_one, hideleg_vs_all;
         `endif
     `endif
 
@@ -1400,25 +1422,57 @@ covergroup Interrupts_Sm_cg with function sample(ins_t ins);
 
     // Hypervisor interrupt CSRs from M-mode, and interrupt levels in VS and VU modes
     `ifdef H_SUPPORTED
-        csrr: coverpoint ins.current.insn {
-            wildcard bins csrr = {CSRR};
+        // csrw, csrs and csrc: csrrw, csrrs and csrrc (reads are csrrs with rs1 = x0, which no alias_bits bin holds)
+        alias_op: coverpoint ins.current.insn[14:12] {
+            bins csrrw = {3'b001};
+            bins csrrs = {3'b010};
+            bins csrrc = {3'b011};
         }
-        csr_mie_mip: coverpoint ins.current.insn[31:20] {
-            bins mie = {CSR_MIE};
-            bins mip = {CSR_MIP};
+        alias_csr: coverpoint ins.current.insn[31:20] {
+            bins mip  = {CSR_MIP};
+            bins hvip = {CSR_HVIP};
+            bins hip  = {CSR_HIP};
+            bins vsip = {CSR_VSIP};
+            bins mie  = {CSR_MIE};
+            bins hie  = {CSR_HIE};
+            bins vsie = {CSR_VSIE};
         }
-        // {hvip.VS*IP == 0x444, hie[12:0]}: hie = 0x444, hie = 0x1444 (SGEIE is writable when GEILEN > 0 and
-        // implementation-defined otherwise), or hvip = 0x444 with hie = 0
-        alias_setup: coverpoint {(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hvip", "hvip")[15:0] & 16'h0444) == 16'h0444,
-                                 get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "hie")[12:0]} {
-            bins hie_444  = {14'h0444};
-            `ifndef UDB_NUM_EXTERNAL_GUEST_INTERRUPTS_0
-                bins hie_1444 = {14'h1444};
-            `endif
-            bins hvip_444 = {14'h2000};
+        // The VS-level bits a write selects, in mip positions: vsip and vsie hold them one bit lower
+        alias_bits: coverpoint ((ins.current.insn[31:20] == CSR_VSIP || ins.current.insn[31:20] == CSR_VSIE) ?
+                                ins.current.rs1_val << 1 : ins.current.rs1_val) {
+            bins vssi = {'h4};
+            bins vsti = {'h40};
+            bins vsei = {'h400};
+            bins vs   = {'h444};
         }
-        // mie.VS*IE and mie.SGEIE are aliases of hie, and mip.VS*IP reflect hvip
-        cp_mie_mip:     cross priv_mode_m, csrr, csr_mie_mip, alias_setup;
+        // The VS-level bits before the write, in hvip for the pending CSRs and in hie for the enable CSRs: clear,
+        // or set (the tests set exactly the bits they write)
+        alias_start: coverpoint (((ins.current.insn[31:20] == CSR_MIE || ins.current.insn[31:20] == CSR_HIE ||
+                                   ins.current.insn[31:20] == CSR_VSIE) ?
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "hie") :
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hvip", "hvip")) & 'h444) != 0 {
+            bins clear = {0};
+            bins set   = {1};
+        }
+        // Writes of the VS-level bits through mip, hvip, hip and vsip, and of the enables through mie, hie and vsie,
+        // with hideleg = 0x444: hvip, hie and mie are writable, the others only in their aliases of hvip.VSSIP and
+        // of hie, and every view reads the same bits
+        cp_mie_mip:     cross priv_mode_m, alias_op, alias_csr, alias_bits, alias_start;
+        // SGEIP is read-only in mip and hip and read-only zero in hvip; SGEIE is writable in mie and hie.  Without
+        // guest external interrupts mideleg[12], and so SGEIE, is implementation-defined
+        `ifndef UDB_NUM_EXTERNAL_GUEST_INTERRUPTS_0
+            alias_csr_sgei: coverpoint ins.current.insn[31:20] {
+                bins mip  = {CSR_MIP};
+                bins hvip = {CSR_HVIP};
+                bins hip  = {CSR_HIP};
+                bins mie  = {CSR_MIE};
+                bins hie  = {CSR_HIE};
+            }
+            alias_sgei: coverpoint ins.current.rs1_val {
+                bins sgei = {'h1000};
+            }
+            cp_mie_mip_sgei: cross priv_mode_m, alias_op, alias_csr_sgei, alias_sgei;
+        `endif
 
         // Enter VS or VU mode with two or three of MSI (M-level), SSI (delegated to HS-mode by mideleg) and VSSI
         // (delegated to VS-mode by hideleg) pending and enabled, sampled at the T-SBI call: an ecall with

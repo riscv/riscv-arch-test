@@ -203,15 +203,15 @@ coverpoints:
     expectation: htinst = 0 after each interrupt taken into HS-mode
     bins: 7 int
   - name: cp_hip_write
-    goal: only hip.vssip is writable, and aliases to hvip
-    description: Write hip=0xFFFF and hip = 0x0000.  Read back hvip and hip.
-    expectation: 0x0004 and 0x0000 in both hip and hvip.
-    bins: "2"
+    goal: hvip.VS*IP are writable; in hip and vsip only the VSSIP aliases are, and vsip only where hideleg delegates.  mip, hip, hvip and vsip read the same bits, and sip never shows them
+    description: With hideleg = {0, 0x444}, for each of {hvip, hip, vsip}, {csrw, csrs, csrc} and {VSSIP, VSTIP, VSEIP, all three} (in the CSR's view; vsip holds them one bit lower), start with the bits {clear, set} in hvip, write them, and read back hvip, hip, vsip, sip and (through T-SBI) mip.
+    expectation: Writes through hvip change hvip, hip and mip, and vsip where delegated.  Through hip and vsip only VSSIP changes (vsip only where delegated).  VSTIP and VSEIP never change through hip or vsip.  sip bits 2, 6, 10 and 12 read zero.
+    bins: 2 hideleg * 3 CSRs * 3 instructions * 4 bit sets * 2 start values = 144
   - name: cp_hie
-    goal: hie.VS*IE and hie.SGEIE are aliases of mie
-    description: With mie = {0x444, 0x1444 if GEILEN > 0}, read hie
-    expectation: hie = mie
-    bins: 2 (1 if GEILEN = 0)
+    goal: hie.VS*IE are writable, and vsie is an alias of hie where hideleg delegates.  mie, hie and vsie read the same bits, and sie never shows them
+    description: With hideleg = {0, 0x444}, for each of {hie, vsie}, {csrw, csrs, csrc} and {VSSIE, VSTIE, VSEIE, all three}, start with the bits {clear, set} in hie, write them, and read back hie, vsie, sie and (through T-SBI) mie.
+    expectation: Writes through hie change hie and mie, and vsie where delegated; writes through vsie change hie only where delegated.  sie bits 2, 6, 10 and 12 read zero.
+    bins: 2 hideleg * 2 CSRs * 3 instructions * 4 bit sets * 2 start values = 96
   - name: cp_vsip_vsie
     goal: vsie and vsip are aliases of hie and hip in the delegated bits
     description: |-
@@ -224,7 +224,7 @@ coverpoints:
     expectation: vsie and vsip read hie and hip shifted right by one in the delegated bits and zero elsewhere, including LCOFI (hideleg[13] = 0).  Writes reach only the delegated bits of hie, and only VSSIP of hvip.
     bins: 8 hideleg * 4 accesses
   - name: cp_sie_vs
-    goal: VS-mode sees vsip in sip, not the HS-level interrupts
-    description: With sie = 0, sip.SSIP = 1, hideleg = hie = 0x444 and hvip.VSSIP = {0/1}, change to VS-mode with vsstatus.SIE = 0 and read sip.  With vsstatus.SIE = 1, VS-mode takes VSSI on entry and its handler clears vsip.SSIP before the read; cp_trigger_tsbi covers that case.
-    expectation: sip.SSIP reads hvip.VSSIP; the pending HS-level SSIP is not visible.
-    bins: 2 VSSIP
+    goal: VS-mode sees vsip in sip, not the HS-level interrupts, and writes of sip.SSIP reach hvip.VSSIP
+    description: With sie = 0, sip.SSIP = 1, hideleg = hie = 0x444 and hvip.VSSIP = {0/1}, change to VS-mode with vsstatus.SIE = 0, then {read sip, csrs sip.SSIP, csrc sip.SSIP} and read sip.  Back in HS-mode, read hvip and sip.SSIP.  With vsstatus.SIE = 1, VS-mode takes VSSI on entry and its handler clears vsip.SSIP before the read; cp_trigger_tsbi covers that case.
+    expectation: sip.SSIP reads and writes hvip.VSSIP; the pending HS-level SSIP is neither visible nor changed.
+    bins: 2 VSSIP * 3 accesses

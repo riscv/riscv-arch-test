@@ -12,53 +12,60 @@ The group boots to M-mode.  mideleg is zero except for the VS-level interrupts (
 which are always delegated to HS-mode.
 """
 
-from testgen.asm.helpers import comment_banner, write_sigupd
+from itertools import product
+
+from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
+from testgen.priv.extensions.InterruptsCommon import ALIAS_OPS, IE_CSRS, IP_CSRS, alias_readback, alias_write_tests
 from testgen.priv.registry import add_priv_test_generator
 
 _CG = "Interrupts_Sm_cg"
 
 
 def _mcsr_tests(test_data: TestData) -> list[str]:
-    """mie and mip bits for the VS-level interrupts and SGEI, seen from M-mode."""
-    tmp_reg, check_reg = test_data.int_regs.get_registers(2)
+    """The VS-level and SGEI bits of mip, hvip, hip, vsip, mie, hie and vsie, written and read from M-mode."""
+    ip_readers = ("mip", "hip", "hvip", "vsip", "sip")
+    ie_readers = ("mie", "hie", "vsie", "sie")
     lines = [
         comment_banner(
             "cp_mie_mip",
-            "With hie = 0x444, hie = 0x1444 (if GEILEN > 0) and hvip = 0x444, read mie and the VS-level and SGEI\n"
-            "bits of mip, and hip after the hvip write.  SGEIE is writable when GEILEN > 0; otherwise mideleg[12]\n"
-            "and so SGEIE are implementation-defined",
+            "With hideleg = 0x444, csrw, csrs and csrc each VS-level interrupt bit, and all three, in each of mip,\n"
+            "hvip, hip and vsip, starting with the bits clear and set in hvip, and read back mip, hip, hvip, vsip\n"
+            "and sip.  Only hvip and the VSSIP aliases are writable, and sip never shows the VS-level bits.\n"
+            "Likewise write mie, hie and vsie, starting from hie, and read back mie, hie, vsie and sie",
         ),
         "csrw mie, zero",
-        "csrw hvip, zero",
+        *alias_write_tests(test_data, _CG, "cp_mie_mip", IP_CSRS, "hvip", ip_readers, "M", (("", 0x444),)),
+        *alias_write_tests(test_data, _CG, "cp_mie_mip", IE_CSRS, "hie", ie_readers, "M", (("", 0x444),)),
     ]
-    for name, csr, value, guard in (
-        ("hie_444", "hie", "MIP_VS_MASK", None),
-        ("hie_1444", "hie", "MIP_HS_MASK", "UDB_NUM_EXTERNAL_GUEST_INTERRUPTS >= 1"),
-        ("hvip_444", "hvip", "MIP_VS_MASK", None),
-    ):
+    # SGEIP is read-only in mip and hip and read-only zero in hvip.  SGEIE is writable in mie and hie when
+    # GEILEN > 0; otherwise mideleg[12] and so SGEIE are implementation-defined
+    val_reg, check_reg, mask_reg = test_data.int_regs.get_registers(3, exclude_regs=[10, 11])
+    lines.extend(
+        [
+            comment_banner(
+                "cp_mie_mip_sgei",
+                "With GEILEN > 0 and hgeie = 0, csrw, csrs and csrc bit 12 in mip, hvip, hip, mie and hie, and read\n"
+                "back mip, hip, hvip, mie and hie.  Only mie.SGEIE and hie.SGEIE are writable",
+            ),
+            "#if UDB_NUM_EXTERNAL_GUEST_INTERRUPTS >= 1",
+            "csrw hgeie, zero",
+        ]
+    )
+    for csr, op in product(("mip", "hvip", "hip", "mie", "hie"), ALIAS_OPS):
         lines.extend(
             [
-                *([f"#if {guard}"] if guard else []),
+                "csrw hvip, zero",
                 "csrw hie, zero",
-                f"LI(x{tmp_reg}, {value})",
-                f"csrw {csr}, x{tmp_reg}",
-                f"LI(x{tmp_reg}, MIP_HS_MASK)",
-                test_data.add_testcase(f"{name}_mie", "cp_mie_mip", _CG),
-                f"csrr x{check_reg}, mie",
-                f"and x{check_reg}, x{check_reg}, x{tmp_reg}",
-                write_sigupd(check_reg, test_data),
-                test_data.add_testcase(f"{name}_mip", "cp_mie_mip", _CG),
-                f"csrr x{check_reg}, mip",
-                f"and x{check_reg}, x{check_reg}, x{tmp_reg}",
-                write_sigupd(check_reg, test_data),
-                *([f"csrr x{check_reg}, hip", write_sigupd(check_reg, test_data)] if csr == "hvip" else []),
-                *(["#endif"] if guard else []),
+                f"LI(x{val_reg}, MIP_SGEIP)",
+                test_data.add_testcase(f"{csr}_{op}_sgei", "cp_mie_mip_sgei", _CG),
+                f"{op} {csr}, x{val_reg}",
+                *alias_readback(test_data, ("mip", "hip", "hvip", "mie", "hie"), check_reg, mask_reg, "M"),
             ]
         )
-    lines.extend(["csrw hie, zero", "csrw hvip, zero"])
-    test_data.int_regs.return_registers([tmp_reg, check_reg])
+    lines.extend(["csrw hie, zero", "#endif"])
+    test_data.int_regs.return_registers([val_reg, check_reg, mask_reg])
     return lines
 
 

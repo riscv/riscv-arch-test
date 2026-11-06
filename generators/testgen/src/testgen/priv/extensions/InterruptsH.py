@@ -13,12 +13,17 @@ Delegation of the VS-level interrupts to VS-mode is covered by the trigger and p
 InterruptsCommon.py).  The tests here check the hip, hie, vsip and vsie aliases and what VS-mode sees in sip.
 """
 
+from itertools import product
+
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
+from testgen.priv.extensions.InterruptsCommon import IE_CSRS, IP_CSRS, alias_write_tests
 from testgen.priv.registry import add_priv_test_generator
 
 _CG = "Interrupts_cg"
+# hideleg with no VS-level interrupt delegated, and all three
+_HIDELEG = (("none", 0), ("vs", 0x444))
 
 
 def _vs(combo: int) -> int:
@@ -31,37 +36,26 @@ def _hcsr_tests(test_data: TestData) -> list[str]:
     tmp_reg = test_data.int_regs.get_register()
     lines = [
         "csrci sstatus, SSTATUS_SIE",
-        comment_banner("cp_hip_write", "Write hip = 0xFFFF and 0, and read hvip and hip: only VSSIP is writable"),
-        "csrw hie, zero",
-        "csrw hvip, zero",
+        comment_banner(
+            "cp_hip_write",
+            "With hideleg = 0 and 0x444, csrw, csrs and csrc each VS-level interrupt bit, and all three, in each of\n"
+            "hvip, hip and vsip, starting with the bits clear and set in hvip, and read back hvip, hip, vsip, sip\n"
+            "and (through T-SBI) mip.  hvip is writable; in hip and vsip only the VSSIP aliases are, and vsip only\n"
+            "where hideleg delegates.  sip never shows the VS-level bits",
+        ),
+        *alias_write_tests(
+            test_data, _CG, "cp_hip_write", IP_CSRS[1:], "hvip", ("hvip", "hip", "vsip", "sip", "mip"), "S", _HIDELEG
+        ),
+        comment_banner(
+            "cp_hie",
+            "With hideleg = 0 and 0x444, csrw, csrs and csrc each VS-level interrupt enable bit, and all three, in\n"
+            "hie and vsie, starting with the bits clear and set in hie, and read back hie, vsie, sie and (through\n"
+            "T-SBI) mie",
+        ),
+        *alias_write_tests(test_data, _CG, "cp_hie", IE_CSRS[1:], "hie", ("hie", "vsie", "sie", "mie"), "S", _HIDELEG),
     ]
-    for name, value in (("ones", 0xFFFF), ("zeros", 0)):
-        lines.extend(
-            [
-                f"LI(x{tmp_reg}, {value:#x})",
-                test_data.add_testcase(name, "cp_hip_write", _CG),
-                f"csrw hip, x{tmp_reg}",
-                f"csrr x{tmp_reg}, hvip",
-                write_sigupd(tmp_reg, test_data),
-                f"csrr x{tmp_reg}, hip",
-                write_sigupd(tmp_reg, test_data),
-            ]
-        )
     lines.extend(
         [
-            comment_banner("cp_hie", "With mie = 0x444 and 0x1444 (if GEILEN > 0), read hie"),
-            "RVTEST_TSBI_CSR_WRITE(CSR_MIE, MIP_VS_MASK)",
-            test_data.add_testcase("mie_444", "cp_hie", _CG),
-            f"csrr x{tmp_reg}, hie",
-            write_sigupd(tmp_reg, test_data),
-            # SGEIE is writable when GEILEN > 0; otherwise mideleg[12] and so SGEIE are implementation-defined
-            "#if UDB_NUM_EXTERNAL_GUEST_INTERRUPTS >= 1",
-            "RVTEST_TSBI_CSR_WRITE(CSR_MIE, MIP_HS_MASK)",
-            test_data.add_testcase("mie_1444", "cp_hie", _CG),
-            f"csrr x{tmp_reg}, hie",
-            write_sigupd(tmp_reg, test_data),
-            "#endif",
-            "RVTEST_TSBI_CSR_WRITE(CSR_MIE, 0)",
             comment_banner(
                 "cp_vsip_vsie",
                 "For each combination of hideleg.VS*I: read vsie with hie = 0x444, read vsip with hvip = 0x444,\n"
@@ -128,7 +122,8 @@ def _sie_vs_tests(test_data: TestData) -> list[str]:
         comment_banner(
             "cp_sie_vs",
             "With sie = 0, sip.SSIP = 1 (pending in HS-mode, not enabled), hideleg = hie = 0x444 and hvip.VSSIP = 0/1,\n"
-            "enter VS-mode with vsstatus.SIE = 0 and read sip.  sip.SSIP reads hvip.VSSIP, never the HS-level SSIP.\n"
+            "enter VS-mode with vsstatus.SIE = 0, then read sip, or csrs or csrc sip.SSIP and read sip.  sip.SSIP\n"
+            "reads and writes hvip.VSSIP, never the HS-level SSIP; back in HS-mode, read hvip and sip.SSIP.\n"
             "With vsstatus.SIE = 1, VS-mode would take VSSI and clear it first (cp_trigger_tsbi)",
         ),
         "#ifdef UDB_SSI_INTR_IMPL",
@@ -140,17 +135,27 @@ def _sie_vs_tests(test_data: TestData) -> list[str]:
         f"LI(x{tmp_reg}, SSTATUS_SIE)",
         f"csrc vsstatus, x{tmp_reg}",
     ]
-    for vssip in (0, 1):
+    for vssip, op in product((0, 1), ("csrr", "csrs", "csrc")):
+        label = test_data.add_testcase(f"vssip{vssip}_{op}", "cp_sie_vs", _CG)
+        access = (
+            [label, f"csrr x{tmp_reg}, sip"]
+            if op == "csrr"
+            else [f"LI(x{tmp_reg}, MIP_SSIP)", label, f"{op} sip, x{tmp_reg}", f"csrr x{tmp_reg}, sip"]
+        )
         lines.extend(
             [
                 f"LI(x{tmp_reg}, {vssip * 4:#x})",
                 f"csrw hvip, x{tmp_reg}",
                 "RVTEST_TSBI_GOTO_VSMODE",
                 f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})",
-                test_data.add_testcase(f"vssip{vssip}", "cp_sie_vs", _CG),
-                f"csrr x{tmp_reg}, sip",
+                *access,
                 write_sigupd(tmp_reg, test_data),
                 "RVTEST_TSBI_GOTO_SMODE",
+                f"csrr x{tmp_reg}, hvip",
+                write_sigupd(tmp_reg, test_data),
+                f"csrr x{tmp_reg}, sip",
+                f"andi x{tmp_reg}, x{tmp_reg}, MIP_SSIP",
+                write_sigupd(tmp_reg, test_data),
                 "csrw hvip, zero",
             ]
         )

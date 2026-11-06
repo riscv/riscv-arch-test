@@ -245,10 +245,15 @@ coverpoints:
     expectation: mtinst = 0 after each interrupt taken into M-mode
     bins: 10 int
   - name: cp_mie_mip
-    goal: mie.VS*IE and mie.SGEIE are aliases of hie, and mip.VS*IP reflect hvip
-    description: With {hie = 0x444, hie = 0x1444 if GEILEN > 0, hvip = 0x444}, read mie and mip (and hip after the hvip write)
-    expectation: mie = hie; mip.VS*IP = hip = hvip
-    bins: 3 setups (2 if GEILEN = 0) * 2 CSRs
+    goal: In M-mode, hvip.VS*IP are writable, and mip.VS*IP are aliases of hip.  Only the VSSIP aliases are writable through mip, hip and vsip; mie.VS*IE, hie.VS*IE and vsie are aliases.  sip and sie never show the VS-level bits
+    description: With hideleg = 0x444, for each of {mip, hvip, hip, vsip}, {csrw, csrs, csrc} and {VSSIP, VSTIP, VSEIP, all three} (in the CSR's view; vsip holds them one bit lower), start with the bits {clear, set} in hvip, write them, and read back mip, hip, hvip, vsip and sip.  Likewise for each of {mie, hie, vsie}, starting from hie, and read back mie, hie, vsie and sie.
+    expectation: Writes through hvip change mip, hip, hvip and vsip.  Through mip, hip and vsip only VSSIP changes; VSTIP and VSEIP are unchanged.  Writes through mie, hie or vsie change all three enable views.  sip and sie bits 2, 6, 10 and 12 read zero.
+    bins: 7 CSRs * 3 instructions * 4 bit sets * 2 start values = 168
+  - name: cp_mie_mip_sgei
+    goal: mip.SGEIP and hip.SGEIP are read-only and hvip bit 12 is read-only zero; mie.SGEIE and hie.SGEIE are writable aliases
+    description: With GEILEN > 0 and hgeie = 0, {csrw, csrs, csrc} bit 12 in each of {mip, hvip, hip, mie, hie}, and read back mip, hip, hvip, mie and hie.
+    expectation: Only mie.SGEIE and hie.SGEIE change.  Without guest external interrupts, mideleg[12] and so SGEIE are implementation-defined, and the coverpoint is omitted.
+    bins: 5 CSRs * 3 instructions (none if GEILEN = 0)
   - name: cp_priority_levels
     goal: M-level, then HS-level, then VS-level interrupts are taken from VS-mode and VU-mode
     description: "Boots to M-mode: with mstatus.MIE = 0, mideleg.SSI = 1, hideleg.VSSI = 1, mie.MSIE = mie.SSIE = mie.VSSIE = 1 and vsstatus.SIE = 1, raise {MSI+SSI, MSI+VSSI, SSI+VSSI, MSI+SSI+VSSI} and change to {VS, VU} mode"

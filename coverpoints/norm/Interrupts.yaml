@@ -315,7 +315,11 @@ normative_rule_definitions:
   # interrupt; setting VSTIP asserts a VS-level timer interrupt; and setting VSSIP asserts
   # a VS-level software interrupt.
   - name: hvip_acc
-    coverpoint: ["Interrupts_cg/{cp_trigger, cp_enable_one, cp_enable_zero}"]
+    coverpoint:
+      [
+        "Interrupts_cg/{cp_trigger, cp_enable_one, cp_enable_zero, cp_hip_write}",
+        "Interrupts_Sm_cg/cp_mie_mip",
+      ]
 
   # The hip register indicates pending VS-level and hypervisor-specific interrupts
   - name: hip_op
@@ -362,7 +366,8 @@ normative_rule_definitions:
   - name: hip_vseip_vseie_op
     coverpoint:
       [
-        "Interrupts_cg/{cp_trigger, cp_enable_zero, cp_hip_write}",
+        "Interrupts_cg/{cp_trigger, cp_enable_zero, cp_hip_write, cp_hie}",
+        "Interrupts_Sm_cg/cp_mie_mip",
         "Interrupts_Sgei_cg/cp_trigger_vsei_hgeip",
       ]
 
@@ -371,7 +376,8 @@ normative_rule_definitions:
   - name: hip_vstip_vstie_acc_op
     coverpoint:
       [
-        "Interrupts_cg/{cp_trigger, cp_enable_zero, cp_hip_write}",
+        "Interrupts_cg/{cp_trigger, cp_enable_zero, cp_hip_write, cp_hie}",
+        "Interrupts_Sm_cg/cp_mie_mip",
         "H_hscsr_cg/cp_hcsrwalk",
       ]
 
@@ -379,13 +385,21 @@ normative_rule_definitions:
   # when the ext:sstc[] extension is implemented, the timer interrupt signal resulting
   # from csr:vstimecmp[].
   - name: hip_vstip_acc
-    coverpoint: ["Interrupts_cg/{cp_trigger, cp_hip_write}"]
+    coverpoint:
+      [
+        "Interrupts_cg/{cp_trigger, cp_hip_write}",
+        "Interrupts_Sm_cg/cp_mie_mip",
+      ]
 
   # Bits hip.VSSIP and hie.VSSIE are the interrupt-pending and interrupt-enable bits for
   # VS-level software interrupts. VSSIP in hip is an alias (writable) of the same bit in
   # hvip.
   - name: hip_vssip_vssie_op
-    coverpoint: ["Interrupts_cg/{cp_trigger, cp_enable_zero, cp_hip_write}"]
+    coverpoint:
+      [
+        "Interrupts_cg/{cp_trigger, cp_enable_zero, cp_hip_write, cp_hie, cp_sie_vs}",
+        "Interrupts_Sm_cg/cp_mie_mip",
+      ]
 
   # If bit i of sie is read-only zero, the same bit in register hip may be writable or may
   # be read-only. When bit i in hip is writable, a pending interrupt i can be cleared by
@@ -413,8 +427,8 @@ normative_rule_definitions:
   - name: mip_mie_alias
     coverpoint:
       [
-        "Interrupts_cg/cp_hie",
-        "Interrupts_Sm_cg/cp_mie_mip",
+        "Interrupts_cg/{cp_hip_write, cp_hie}",
+        "Interrupts_Sm_cg/{cp_mie_mip, cp_mie_mip_sgei}",
         "Interrupts_SgeiSm_cg/cp_trigger_sgei",
       ]
 
@@ -422,7 +436,12 @@ normative_rule_definitions:
   # hip and hie. Hence, the nonzero bits in sie and hie are always mutually exclusive, and
   # likewise for sip and hip.
   - name: sie_hip_hie_mutex
-    coverpoint: ["Interrupts_cg/cp_hip_write", "H_hscsr_cg/cp_hcsrwalk"]
+    coverpoint:
+      [
+        "Interrupts_cg/{cp_hip_write, cp_hie}",
+        "Interrupts_Sm_cg/cp_mie_mip",
+        "H_hscsr_cg/cp_hcsrwalk",
+      ]
 
   # The vsip and vsie registers are VSXLEN-bit read/write registers that are VS-mode’s
   # versions of supervisor CSRs sip and sie, formatted as shown in and respectively. When
@@ -438,17 +457,29 @@ normative_rule_definitions:
   # When bit 10 of hideleg is zero, vsip.SEIP and vsie.SEIE are read-only zeros. Else,
   # vsip.SEIP and vsie.SEIE are aliases of hip.VSEIP and hie.VSEIE.
   - name: vsip_vsie_sei
-    coverpoint: ["Interrupts_cg/cp_vsip_vsie"]
+    coverpoint:
+      [
+        "Interrupts_cg/{cp_vsip_vsie, cp_hip_write, cp_hie}",
+        "Interrupts_Sm_cg/cp_mie_mip",
+      ]
 
   # When bit 6 of hideleg is zero, vsip.STIP and vsie.STIE are read-only zeros. Else,
   # vsip.STIP and vsie.STIE are aliases of hip.VSTIP and hie.VSTIE.
   - name: vsip_vsie_sti
-    coverpoint: ["Interrupts_cg/cp_vsip_vsie"]
+    coverpoint:
+      [
+        "Interrupts_cg/{cp_vsip_vsie, cp_hip_write, cp_hie}",
+        "Interrupts_Sm_cg/cp_mie_mip",
+      ]
 
   # When bit 2 of hideleg is zero, vsip.SSIP and vsie.SSIE are read-only zeros. Else,
   # vsip.SSIP and vsie.SSIE are aliases of hip.VSSIP and hie.VSSIE.
   - name: vsip_vsie_ssi
-    coverpoint: ["Interrupts_cg/cp_{vsip_vsie, sie_vs}"]
+    coverpoint:
+      [
+        "Interrupts_cg/cp_{vsip_vsie, sie_vs, hip_write, hie}",
+        "Interrupts_Sm_cg/cp_mie_mip",
+      ]
 
   # Register hideleg is an HSXLEN-bit read/write register, formatted as shown in
   # &lt;&lt;norm:hideleg_img&gt;&gt;.
@@ -469,7 +500,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Interrupts_cg/cp_hie",
-        "Interrupts_Sm_cg/cp_mie_mip",
+        "Interrupts_Sm_cg/{cp_mie_mip, cp_mie_mip_sgei}",
         "H_hscsr_cg/cp_hcsrwalk",
       ]
 
@@ -538,6 +569,7 @@ normative_rule_definitions:
       [
         "Interrupts_Sgei_cg/cp_{trigger_sgei, trigger_sgei_lower, hgeie}",
         "Interrupts_SgeiSm_cg/cp_trigger_sgei",
+        "Interrupts_Sm_cg/cp_mie_mip_sgei",
       ]
 
   # The hgeip register is an HSXLEN-bit read-only register, formatted as shown in

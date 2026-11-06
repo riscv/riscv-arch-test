@@ -502,8 +502,8 @@ class RISCV_instruction
     current.imm = XLEN'(get_imm(ops[offset].key));
   endfunction
 
-  virtual function void add_mem_address();
-    current.mem_addr = current.rs1_val + current.imm;
+  virtual function void add_eff_addr();
+    current.eff_addr = current.rs1_val + current.imm;
   endfunction
 
   virtual function void add_fd(int offset, bit finx=0);

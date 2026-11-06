@@ -2120,7 +2120,7 @@ covergroup Sv_H_twostage_cg with function sample(ins_t ins);
         wildcard bins sw = {SW};
     }
     // A word two bytes below the end of a page
-    ldst_page_end : coverpoint ((ins.current.rs1_val + ins.current.imm) & 'hFFF) {
+    ldst_page_end : coverpoint (ins.current.eff_addr & 'hFFF) {
         bins page_end = {'hFFE};
     }
     `ifdef UDB_MXLEN_64
@@ -2542,7 +2542,7 @@ covergroup Sv_HSm_trap_cg with function sample(ins_t ins);
         wildcard bins sw = {SW};
     }
     // A fetch at the last halfword of a page, or a word two bytes below the end of a page
-    page_end : coverpoint ((ins.current.rs1_val + ins.current.imm) & 'hFFF) {
+    page_end : coverpoint (ins.current.eff_addr & 'hFFF) {
         bins page_end = {'hFFE};
     }
     guest_page_fault : coverpoint {ins.current.csr_wb[CSR_MCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "mcause")[4:0]} {

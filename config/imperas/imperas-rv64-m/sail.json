@@ -25,7 +25,7 @@
       // This bits in this value control whether the corresponding
       // bits of the CSR are writable.  Note that bit 1 cannot be written
       // to as it is read-only zero.
-      "writable_bits": { "len": 32, "value": "0xFFFF_FFFD" }
+      "writable_bits": { "len": 32, "value": "0x0000_0005" }
     },
     "writable_fiom": false,
     // The top 29 bits in this value control whether the corresponding
@@ -551,7 +551,7 @@
       //                      if that flag is already set.
       // - Fflags_Dirty_Instruction: Set FS/SD when we execute an instruction that
       //                             might set a flag, even if it actually doesn't.
-      "fflags_dirty_policy": "Fflags_Dirty_Precise"
+      "fflags_dirty_policy": "Fflags_Dirty_Flag"
     },
     "D": {
       "mutable_misa": true,
@@ -590,7 +590,7 @@
         // vector spec marks reserved and recommends, but does not require, trapping.
         // "Vstart_Illegal" - raise an illegal instruction exception.
         // "Vstart_Ignore"  - treat as a no-op, the instruction writes nothing.
-        "vstart_out_of_bounds": "Vstart_Illegal"
+        "vstart_out_of_bounds": "Vstart_Ignore"
       },
       "vl_use_ceil": false,
       // The maximum index EEW for indexed vector addressing mode, as

@@ -69,9 +69,13 @@ covergroup Smnpm_S_cg with function sample(ins_t ins);
     cp_pmm_jalr: cross priv_mode_s, pmm, mxr_bit, satp_mode, a_upper_bits, jalr_insn;
     cp_pm_csr_software_access: cross priv_mode_s, pmm, csr_target, csrw_insn;
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-        // Fault crosses confirm lw/sw executed in S-mode at the illegal address.
-        cp_hardware_csr_writes_fault: cross priv_mode_s, satp_mode, pmm, a_upper_bits, sw_lw_insn, illegal_addr;
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
+        // Fault cross confirms lw executed in S-mode at the illegal address.
+        cp_hardware_csr_writes_fault_load: cross priv_mode_s, satp_mode, pmm, a_upper_bits, lw_insn, illegal_addr_load;
+    `endif
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
+        // Fault cross confirms sw executed in S-mode at the illegal address.
+        cp_hardware_csr_writes_fault_store: cross priv_mode_s, satp_mode, pmm, a_upper_bits, sw_insn, illegal_addr_store;
     `endif
 endgroup
 
@@ -145,9 +149,13 @@ covergroup Smnpm_U_cg with function sample(ins_t ins);
     cp_pmlen_misaligned_word: cross priv_mode_u, pmm, a_upper_bits, sw_lw_insn, misaligned_addr;
     cp_pmm_jalr: cross priv_mode_u, pmm, a_upper_bits, jalr_insn;
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-        // Fault crosses confirm lw/sw executed in U-mode at the illegal address.
-        cp_hardware_csr_writes_fault: cross priv_mode_u, pmm, a_upper_bits, sw_lw_insn, illegal_addr;
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
+        // Fault cross confirms lw executed in U-mode at the illegal address.
+        cp_hardware_csr_writes_fault_load: cross priv_mode_u, pmm, a_upper_bits, lw_insn, illegal_addr_load;
+    `endif
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
+        // Fault cross confirms sw executed in U-mode at the illegal address.
+        cp_hardware_csr_writes_fault_store: cross priv_mode_u, pmm, a_upper_bits, sw_insn, illegal_addr_store;
     `endif
 endgroup
 

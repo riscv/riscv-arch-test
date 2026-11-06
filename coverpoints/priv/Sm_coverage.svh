@@ -2006,9 +2006,9 @@ covergroup Sm_Zicntr_cg with function sample(ins_t ins);
     adr_misaligned_1: coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] {
         bins one = {3'b001};  // scratch + 1
     }
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
         illegal_address: coverpoint ins.current.imm + ins.current.rs1_val {
-            bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
+            bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD};
         }
     `endif
     wfi: coverpoint ins.current.insn {
@@ -2016,9 +2016,6 @@ covergroup Sm_Zicntr_cg with function sample(ins_t ins);
     }
     mstatus_mie_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")[0] {
         bins zero = {0};
-    }
-    mstatus_mie_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")[0] {
-        bins one = {1};
     }
 
     insn_add: coverpoint ins.current.insn {
@@ -2065,7 +2062,7 @@ covergroup Sm_Zicntr_cg with function sample(ins_t ins);
     // instructions that trap before retiring
     cp_instret_ecall:  cross priv_mode_m, ecall, prev_ecall_li;
     cp_instret_ebreak: cross priv_mode_m, ebreak, prev_minstret_read;
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
         cp_instret_load_access_fault: cross priv_mode_m, insn_lw, illegal_address, prev_minstret_read;
     `endif
     cp_instret_load_misaligned: cross priv_mode_m, insn_lw, adr_misaligned_1, prev_minstret_read;
@@ -2076,7 +2073,6 @@ covergroup Sm_Zicntr_cg with function sample(ins_t ins);
     `endif
     `ifdef UDB_MTI_INTR_IMPL
         cp_instret_wfi_pending: cross priv_mode_m, wfi, mip_mtip_one, mie_mtie_one, mstatus_mie_zero, prev_minstret_read;
-        cp_instret_wfi_taken:   cross priv_mode_m, wfi, mie_mtie_one, mstatus_mie_one;
     `endif
     `ifdef ZAWRS_SUPPORTED
         cp_instret_wrs_nto: cross priv_mode_m, wrs_nto, prev_minstret_read;

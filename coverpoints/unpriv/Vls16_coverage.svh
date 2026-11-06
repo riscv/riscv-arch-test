@@ -2332,7 +2332,7 @@ covergroup Vls16_vle16ff_v_cg with function sample(ins_t ins);
     // memory. Element 1+ are active and access the fault address region, triggering
     // the vl-trimming behavior without trapping.
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
 
     ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
         get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
@@ -2358,7 +2358,7 @@ covergroup Vls16_vle16ff_v_cg with function sample(ins_t ins);
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -2615,7 +2615,7 @@ covergroup Vls16_vle32ff_v_cg with function sample(ins_t ins);
     // memory. Element 1+ are active and access the fault address region, triggering
     // the vl-trimming behavior without trapping.
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
 
     ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
         get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
@@ -2641,7 +2641,7 @@ covergroup Vls16_vle32ff_v_cg with function sample(ins_t ins);
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -2898,7 +2898,7 @@ covergroup Vls16_vle64ff_v_cg with function sample(ins_t ins);
     // memory. Element 1+ are active and access the fault address region, triggering
     // the vl-trimming behavior without trapping.
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
 
     ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
         get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
@@ -2924,7 +2924,7 @@ covergroup Vls16_vle64ff_v_cg with function sample(ins_t ins);
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -3181,7 +3181,7 @@ covergroup Vls16_vle8ff_v_cg with function sample(ins_t ins);
     // memory. Element 1+ are active and access the fault address region, triggering
     // the vl-trimming behavior without trapping.
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
 
     ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
         get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
@@ -3207,7 +3207,7 @@ covergroup Vls16_vle8ff_v_cg with function sample(ins_t ins);
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -9221,7 +9221,7 @@ covergroup Vls16_vlseg2e16ff_v_cg with function sample(ins_t ins);
     // memory. Element 1+ are active and access the fault address region, triggering
     // the vl-trimming behavior without trapping.
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
 
     ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
         get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
@@ -9247,7 +9247,7 @@ covergroup Vls16_vlseg2e16ff_v_cg with function sample(ins_t ins);
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -9508,7 +9508,7 @@ covergroup Vls16_vlseg2e32ff_v_cg with function sample(ins_t ins);
     // memory. Element 1+ are active and access the fault address region, triggering
     // the vl-trimming behavior without trapping.
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
 
     ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
         get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
@@ -9534,7 +9534,7 @@ covergroup Vls16_vlseg2e32ff_v_cg with function sample(ins_t ins);
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -9795,7 +9795,7 @@ covergroup Vls16_vlseg2e64ff_v_cg with function sample(ins_t ins);
     // memory. Element 1+ are active and access the fault address region, triggering
     // the vl-trimming behavior without trapping.
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
         `ifdef ZVL128B_SUPPORTED
 
             ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
@@ -9817,7 +9817,7 @@ covergroup Vls16_vlseg2e64ff_v_cg with function sample(ins_t ins);
                 bins ge2 = {[2:$]};
             }
 
-            ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
+            ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)) {
                 bins at_fault_addr = {1'b1};
             }
 
@@ -10052,7 +10052,7 @@ covergroup Vls16_vlseg2e8ff_v_cg with function sample(ins_t ins);
     // memory. Element 1+ are active and access the fault address region, triggering
     // the vl-trimming behavior without trapping.
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
 
     ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
         get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
@@ -10078,7 +10078,7 @@ covergroup Vls16_vlseg2e8ff_v_cg with function sample(ins_t ins);
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -10339,7 +10339,7 @@ covergroup Vls16_vlseg3e16ff_v_cg with function sample(ins_t ins);
     // memory. Element 1+ are active and access the fault address region, triggering
     // the vl-trimming behavior without trapping.
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
 
     ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
         get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
@@ -10365,7 +10365,7 @@ covergroup Vls16_vlseg3e16ff_v_cg with function sample(ins_t ins);
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -10608,7 +10608,7 @@ covergroup Vls16_vlseg3e32ff_v_cg with function sample(ins_t ins);
     // memory. Element 1+ are active and access the fault address region, triggering
     // the vl-trimming behavior without trapping.
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
         `ifdef ZVL64B_SUPPORTED
 
             ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
@@ -10630,7 +10630,7 @@ covergroup Vls16_vlseg3e32ff_v_cg with function sample(ins_t ins);
                 bins ge2 = {[2:$]};
             }
 
-            ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
+            ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)) {
                 bins at_fault_addr = {1'b1};
             }
 
@@ -10864,7 +10864,7 @@ covergroup Vls16_vlseg3e64ff_v_cg with function sample(ins_t ins);
     // memory. Element 1+ are active and access the fault address region, triggering
     // the vl-trimming behavior without trapping.
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
         `ifdef ZVL128B_SUPPORTED
 
             ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
@@ -10886,7 +10886,7 @@ covergroup Vls16_vlseg3e64ff_v_cg with function sample(ins_t ins);
                 bins ge2 = {[2:$]};
             }
 
-            ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
+            ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)) {
                 bins at_fault_addr = {1'b1};
             }
 
@@ -11120,7 +11120,7 @@ covergroup Vls16_vlseg3e8ff_v_cg with function sample(ins_t ins);
     // memory. Element 1+ are active and access the fault address region, triggering
     // the vl-trimming behavior without trapping.
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
 
     ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
         get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
@@ -11146,7 +11146,7 @@ covergroup Vls16_vlseg3e8ff_v_cg with function sample(ins_t ins);
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -11408,7 +11408,7 @@ covergroup Vls16_vlseg4e16ff_v_cg with function sample(ins_t ins);
     // memory. Element 1+ are active and access the fault address region, triggering
     // the vl-trimming behavior without trapping.
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
 
     ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
         get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
@@ -11434,7 +11434,7 @@ covergroup Vls16_vlseg4e16ff_v_cg with function sample(ins_t ins);
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -11688,7 +11688,7 @@ covergroup Vls16_vlseg4e32ff_v_cg with function sample(ins_t ins);
     // memory. Element 1+ are active and access the fault address region, triggering
     // the vl-trimming behavior without trapping.
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
         `ifdef ZVL64B_SUPPORTED
 
             ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
@@ -11710,7 +11710,7 @@ covergroup Vls16_vlseg4e32ff_v_cg with function sample(ins_t ins);
                 bins ge2 = {[2:$]};
             }
 
-            ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
+            ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)) {
                 bins at_fault_addr = {1'b1};
             }
 
@@ -11946,7 +11946,7 @@ covergroup Vls16_vlseg4e64ff_v_cg with function sample(ins_t ins);
     // memory. Element 1+ are active and access the fault address region, triggering
     // the vl-trimming behavior without trapping.
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
         `ifdef ZVL128B_SUPPORTED
 
             ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
@@ -11968,7 +11968,7 @@ covergroup Vls16_vlseg4e64ff_v_cg with function sample(ins_t ins);
                 bins ge2 = {[2:$]};
             }
 
-            ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
+            ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)) {
                 bins at_fault_addr = {1'b1};
             }
 
@@ -12204,7 +12204,7 @@ covergroup Vls16_vlseg4e8ff_v_cg with function sample(ins_t ins);
     // memory. Element 1+ are active and access the fault address region, triggering
     // the vl-trimming behavior without trapping.
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
 
     ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
         get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
@@ -12230,7 +12230,7 @@ covergroup Vls16_vlseg4e8ff_v_cg with function sample(ins_t ins);
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -12493,7 +12493,7 @@ covergroup Vls16_vlseg5e16ff_v_cg with function sample(ins_t ins);
     // memory. Element 1+ are active and access the fault address region, triggering
     // the vl-trimming behavior without trapping.
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
         ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
             get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
             get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0
@@ -12513,7 +12513,7 @@ covergroup Vls16_vlseg5e16ff_v_cg with function sample(ins_t ins);
             bins ge2 = {[2:$]};
         }
 
-        ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
+        ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)) {
             bins at_fault_addr = {1'b1};
         }
 
@@ -12749,7 +12749,7 @@ covergroup Vls16_vlseg5e32ff_v_cg with function sample(ins_t ins);
     // memory. Element 1+ are active and access the fault address region, triggering
     // the vl-trimming behavior without trapping.
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
         `ifdef ZVL64B_SUPPORTED
 
             ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
@@ -12771,7 +12771,7 @@ covergroup Vls16_vlseg5e32ff_v_cg with function sample(ins_t ins);
                 bins ge2 = {[2:$]};
             }
 
-            ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
+            ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)) {
                 bins at_fault_addr = {1'b1};
             }
 
@@ -13007,7 +13007,7 @@ covergroup Vls16_vlseg5e64ff_v_cg with function sample(ins_t ins);
     // memory. Element 1+ are active and access the fault address region, triggering
     // the vl-trimming behavior without trapping.
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
         `ifdef ZVL128B_SUPPORTED
 
             ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
@@ -13029,7 +13029,7 @@ covergroup Vls16_vlseg5e64ff_v_cg with function sample(ins_t ins);
                 bins ge2 = {[2:$]};
             }
 
-            ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
+            ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)) {
                 bins at_fault_addr = {1'b1};
             }
 
@@ -13266,7 +13266,7 @@ covergroup Vls16_vlseg5e8ff_v_cg with function sample(ins_t ins);
     // memory. Element 1+ are active and access the fault address region, triggering
     // the vl-trimming behavior without trapping.
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
 
     ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
         get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
@@ -13292,7 +13292,7 @@ covergroup Vls16_vlseg5e8ff_v_cg with function sample(ins_t ins);
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -13558,7 +13558,7 @@ covergroup Vls16_vlseg6e16ff_v_cg with function sample(ins_t ins);
     // memory. Element 1+ are active and access the fault address region, triggering
     // the vl-trimming behavior without trapping.
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
         ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
             get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
             get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0
@@ -13578,7 +13578,7 @@ covergroup Vls16_vlseg6e16ff_v_cg with function sample(ins_t ins);
             bins ge2 = {[2:$]};
         }
 
-        ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
+        ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)) {
             bins at_fault_addr = {1'b1};
         }
 
@@ -13816,7 +13816,7 @@ covergroup Vls16_vlseg6e32ff_v_cg with function sample(ins_t ins);
     // memory. Element 1+ are active and access the fault address region, triggering
     // the vl-trimming behavior without trapping.
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
         `ifdef ZVL64B_SUPPORTED
 
             ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
@@ -13838,7 +13838,7 @@ covergroup Vls16_vlseg6e32ff_v_cg with function sample(ins_t ins);
                 bins ge2 = {[2:$]};
             }
 
-            ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
+            ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)) {
                 bins at_fault_addr = {1'b1};
             }
 
@@ -14076,7 +14076,7 @@ covergroup Vls16_vlseg6e64ff_v_cg with function sample(ins_t ins);
     // memory. Element 1+ are active and access the fault address region, triggering
     // the vl-trimming behavior without trapping.
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
         `ifdef ZVL128B_SUPPORTED
 
             ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
@@ -14098,7 +14098,7 @@ covergroup Vls16_vlseg6e64ff_v_cg with function sample(ins_t ins);
                 bins ge2 = {[2:$]};
             }
 
-            ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
+            ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)) {
                 bins at_fault_addr = {1'b1};
             }
 
@@ -14337,7 +14337,7 @@ covergroup Vls16_vlseg6e8ff_v_cg with function sample(ins_t ins);
     // memory. Element 1+ are active and access the fault address region, triggering
     // the vl-trimming behavior without trapping.
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
 
     ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
         get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
@@ -14363,7 +14363,7 @@ covergroup Vls16_vlseg6e8ff_v_cg with function sample(ins_t ins);
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -14631,7 +14631,7 @@ covergroup Vls16_vlseg7e16ff_v_cg with function sample(ins_t ins);
     // memory. Element 1+ are active and access the fault address region, triggering
     // the vl-trimming behavior without trapping.
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
         ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
             get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
             get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0
@@ -14651,7 +14651,7 @@ covergroup Vls16_vlseg7e16ff_v_cg with function sample(ins_t ins);
             bins ge2 = {[2:$]};
         }
 
-        ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
+        ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)) {
             bins at_fault_addr = {1'b1};
         }
 
@@ -14891,7 +14891,7 @@ covergroup Vls16_vlseg7e32ff_v_cg with function sample(ins_t ins);
     // memory. Element 1+ are active and access the fault address region, triggering
     // the vl-trimming behavior without trapping.
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
         `ifdef ZVL64B_SUPPORTED
 
             ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
@@ -14913,7 +14913,7 @@ covergroup Vls16_vlseg7e32ff_v_cg with function sample(ins_t ins);
                 bins ge2 = {[2:$]};
             }
 
-            ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
+            ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)) {
                 bins at_fault_addr = {1'b1};
             }
 
@@ -15153,7 +15153,7 @@ covergroup Vls16_vlseg7e64ff_v_cg with function sample(ins_t ins);
     // memory. Element 1+ are active and access the fault address region, triggering
     // the vl-trimming behavior without trapping.
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
         `ifdef ZVL128B_SUPPORTED
 
             ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
@@ -15175,7 +15175,7 @@ covergroup Vls16_vlseg7e64ff_v_cg with function sample(ins_t ins);
                 bins ge2 = {[2:$]};
             }
 
-            ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
+            ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)) {
                 bins at_fault_addr = {1'b1};
             }
 
@@ -15416,7 +15416,7 @@ covergroup Vls16_vlseg7e8ff_v_cg with function sample(ins_t ins);
     // memory. Element 1+ are active and access the fault address region, triggering
     // the vl-trimming behavior without trapping.
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
 
     ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
         get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
@@ -15442,7 +15442,7 @@ covergroup Vls16_vlseg7e8ff_v_cg with function sample(ins_t ins);
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -15712,7 +15712,7 @@ covergroup Vls16_vlseg8e16ff_v_cg with function sample(ins_t ins);
     // memory. Element 1+ are active and access the fault address region, triggering
     // the vl-trimming behavior without trapping.
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
         ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
             get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
             get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0
@@ -15732,7 +15732,7 @@ covergroup Vls16_vlseg8e16ff_v_cg with function sample(ins_t ins);
             bins ge2 = {[2:$]};
         }
 
-        ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
+        ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)) {
             bins at_fault_addr = {1'b1};
         }
 
@@ -15974,7 +15974,7 @@ covergroup Vls16_vlseg8e32ff_v_cg with function sample(ins_t ins);
     // memory. Element 1+ are active and access the fault address region, triggering
     // the vl-trimming behavior without trapping.
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
         `ifdef ZVL64B_SUPPORTED
 
             ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
@@ -15996,7 +15996,7 @@ covergroup Vls16_vlseg8e32ff_v_cg with function sample(ins_t ins);
                 bins ge2 = {[2:$]};
             }
 
-            ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
+            ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)) {
                 bins at_fault_addr = {1'b1};
             }
 
@@ -16238,7 +16238,7 @@ covergroup Vls16_vlseg8e64ff_v_cg with function sample(ins_t ins);
     // memory. Element 1+ are active and access the fault address region, triggering
     // the vl-trimming behavior without trapping.
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
         `ifdef ZVL128B_SUPPORTED
 
             ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
@@ -16260,7 +16260,7 @@ covergroup Vls16_vlseg8e64ff_v_cg with function sample(ins_t ins);
                 bins ge2 = {[2:$]};
             }
 
-            ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
+            ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)) {
                 bins at_fault_addr = {1'b1};
             }
 
@@ -16503,7 +16503,7 @@ covergroup Vls16_vlseg8e8ff_v_cg with function sample(ins_t ins);
     // memory. Element 1+ are active and access the fault address region, triggering
     // the vl-trimming behavior without trapping.
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
 
     ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
         get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
@@ -16529,7 +16529,7 @@ covergroup Vls16_vlseg8e8ff_v_cg with function sample(ins_t ins);
         bins target = {1'b1};
     }
 
-    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
+    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)) {
         bins at_fault_addr = {1'b1};
     }
 

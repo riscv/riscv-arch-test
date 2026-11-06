@@ -20,7 +20,7 @@ coverpoints:
     goal: Delegation to HS or VS
     description: |-
       In VS-mode and VU-mode, attempt {jalr to a misaligned target at the access-fault address, jalr to the access-fault address, illegal instruction all 0s and all 1s, ebreak, each load and store at scratch + 0-7, each load and store at the access-fault address, ecall} with medeleg as set by the boot, crossed with hedeleg = {0, each of bits 0-8 alone, all writable bits}.
-      hedeleg bit 0 is a bin only when IALIGN = 32; bits 16 and 20-23 are read-only 0.  The access-fault cases need RVMODEL_ACCESS_FAULT_ADDRESS.
+      hedeleg bit 0 is a bin only when IALIGN = 32; bits 16 and 20-23 are read-only 0.  Each access-fault case needs RVMODEL_ACCESS_FAULT_ADDRESS_{FETCH/LOAD/STORE} for its access type.
     expectation: |-
       An exception goes to VS-mode when its bit is set in both medeleg and hedeleg, and otherwise to HS-mode.  An ecall from VS-mode always goes to HS-mode (hedeleg[10] is read-only 0).  Misaligned fetches, loads and stores trap or complete as the reference model does.
       The trap record holds xcause, xepc, xtval, the status fields written by the trap and, in HS-mode, htval and htinst.
@@ -55,8 +55,10 @@ coverpoints:
       With hedeleg[2,3,5,8] = 1 and vstvec.MODE = Vectored, raise illegal instruction (0x00000000), ebreak and lw access fault in VS-mode and VU-mode, and ecall in VU-mode.
       Runs only when vstvec supports both Direct and Vectored.
     expectation: Each exception goes to vstvec.BASE, not BASE + 4 * cause.  The trap signature records the trap vector entry taken.
-    bins: 2 modes * 3 causes + ecall from VU (2 * 2 + 1 without RVMODEL_ACCESS_FAULT_ADDRESS)
-  - name: cp_priority
+    bins: 2 modes * 3 causes + ecall from VU (2 * 2 + 1 without RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
+  - name: |-
+      cp_priority_hlv
+      cp_priority_hsv
     goal: priority of illegal/virtual instruction, misaligned, access fault
     description: In each of HS, VS, U and VU modes with hstatus.HU = {0/1}, execute {hlv.w / hsv.w} x {scratch / access-fault address} x {addr[1:0] = 00/01}.  vsatp and hgatp are Bare.
     expectation: |-
@@ -114,9 +116,11 @@ coverpoints:
     description: In each privilege mode {HS/VS/U/VU} with hstatus.HU = {0/1}, attempt {HLV.W, HLVX.WU, HSV.W} on scratch memory.  vsatp and hgatp are Bare.
     expectation: Succeeds in HS, and in U with HU = 1; virtual instruction in VS and VU; illegal instruction in U with HU = 0.  The hsv.w result is read back.
     bins: 4 priv * 3 instr * 2 HU
-  - name: cp_hstatus_gva
+  - name: |-
+      cp_hstatus_gva_hlv
+      cp_hstatus_gva_hsv
     goal: An HLV or HSV fault taken into HS-mode sets hstatus.GVA
-    description: In HS-mode, and in U-mode with hstatus.HU = 1, execute hlv.w and hsv.w at the access-fault address (part of the cp_priority test).
+    description: In HS-mode, and in U-mode with hstatus.HU = 1, execute hlv.w and hsv.w at the access-fault address (part of the cp_priority_hlv and cp_priority_hsv tests).
     expectation: Access fault into HS-mode with stval = the guest virtual address and hstatus.GVA = 1.
     bins: 2 modes * 2 instr
   - name: cp_xtinst_instr_misaligned

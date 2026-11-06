@@ -89,8 +89,11 @@ coverpoints:
       With stvec.MODE = Vectored, raise illegal instruction (0x00000000), ebreak and lw access fault in S-mode and U-mode, and ecall in U-mode.
       Each exception is delegated to S-mode.  Runs only when stvec supports both Direct and Vectored.
     expectation: Each exception goes to stvec.BASE, not BASE + 4 * cause.  The trap signature records the trap vector entry taken.
-    bins: 2 modes * 3 causes + ecall from U (2 * 2 + 1 without RVMODEL_ACCESS_FAULT_ADDRESS)
-  - name: cp_misaligned_priority
+    bins: 2 modes * 3 causes + ecall from U (2 * 2 + 1 without RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
+  - name: |-
+      cp_misaligned_priority_load
+      cp_misaligned_priority_store
+      cp_misaligned_priority_fetch
     goal: Priority of exceptions
     description: Attempt lw and sw and fetch from memory location causing  access fault and misaligned
     expectation: System-dependent
@@ -105,4 +108,4 @@ coverpoints:
     expectation: xpie gets xie, xie gets 0
     bins: 3 modes * 2 medleg * 2 mie * 2 sie
   - heading: "Note: instruction/load/store fault pages are being tested in Sv_Exceptions"
-  - heading: "Note: tests that differ from Exceptions_Sm are cp_medeleg_mu and cp_stvec.  Also, cp_misaligned_priority is not split here."
+  - heading: "Note: tests that differ from Exceptions_Sm are cp_medeleg_mu and cp_stvec.  cp_misaligned_priority is split by access type."

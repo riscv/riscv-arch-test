@@ -357,6 +357,10 @@ _RECIP_FLAG_EDGES = {
         (0x0000, "pos_zero", True),
         (0x7E00, "qNaN", False),
         (0x7D00, "sNaN", True),
+        (0x8100, "neg_sub_normres_min", False),
+        (0xF400, "neg_norm_subres_min", False),
+        (0x0100, "pos_sub_normres_min", False),
+        (0x7400, "pos_norm_subres_min", False),
     ],
     32: [
         (0xFF800000, "neg_inf", False),
@@ -373,6 +377,10 @@ _RECIP_FLAG_EDGES = {
         (0x00000000, "pos_zero", True),
         (0x7FC00000, "qNaN", False),
         (0x7FA00000, "sNaN", True),
+        (0x80200000, "neg_sub_normres_min", False),
+        (0xFE800000, "neg_norm_subres_min", False),
+        (0x00200000, "pos_sub_normres_min", False),
+        (0x7E800000, "pos_norm_subres_min", False),
     ],
     64: [
         (0xFFF0000000000000, "neg_inf", False),
@@ -389,9 +397,17 @@ _RECIP_FLAG_EDGES = {
         (0x0000000000000000, "pos_zero", True),
         (0x7FF8000000000000, "qNaN", False),
         (0x7FF0000000000001, "sNaN", True),
+        (0x8004000000000000, "neg_sub_normres_min", False),
+        (0xFFD0000000000000, "neg_norm_subres_min", False),
+        (0x0004000000000000, "pos_sub_normres_min", False),
+        (0x7FD0000000000000, "pos_norm_subres_min", False),
     ],
 }
 _RECIP_FLAG_SPACER = {16: 0xFC00, 32: 0xFF800000, 64: 0xFFF0000000000000}  # -inf
+# A subnormal that overflows gives ±inf or ±greatest finite depending on frm and sign, so the
+# cp_custom_FpRecipEst_flag_edges_frm cross needs these inputs under every rounding mode.
+_RECIP_FRM_EDGES = ["neg_sub_tiny", "pos_sub_tiny"]
+_FRM_NAMES = ["rne", "rtz", "rdn", "rup", "rmm"]  # frm encodings 0-4
 
 
 @add_coverpoint_generator("cp_custom_FpRecipEst_flag_edges")
@@ -408,11 +424,20 @@ def cp_custom_fp_recip_est_flag_edges(
     spacer_label = "cp_custom_FpRecSqrtEst_flag_edges_spacer"
     test_data.register_vector_data(spacer_label, sew, elements=[_RECIP_FLAG_SPACER[sew]])
 
-    test_chunks = []
+    cases = []  # (data label, bin name, sets_flags, frm or None for random)
     for val, bin_name, sets_flags in _RECIP_FLAG_EDGES.get(sew, []):
         label = f"cp_custom_FpRecipEst_flag_edges_{bin_name}"
         test_data.register_vector_data(label, sew, elements=[val])
-        params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, vs2_val_pointer=label)
+        cases.append((label, bin_name, sets_flags, None))
+    for bin_name in _RECIP_FRM_EDGES:
+        for frm, frm_name in enumerate(_FRM_NAMES):
+            cases.append((f"cp_custom_FpRecipEst_flag_edges_{bin_name}", f"{bin_name}_{frm_name}", True, frm))
+
+    test_chunks = []
+    for label, bin_name, sets_flags, frm in cases:
+        params = generate_random_vector_params(
+            test_data, instr_name, instr_type, lmul, vs2_val_pointer=label, csr_frm_val=frm
+        )
         tc = format_single_testcase(
             instr_name,
             instr_type,

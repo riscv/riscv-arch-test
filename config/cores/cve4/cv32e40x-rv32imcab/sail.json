@@ -382,8 +382,9 @@
     },
     "B": {
       "mutable_misa": false,
-      // VERIFIED — B_EXT=ZBA_ZBB_ZBC_ZBS per User Manual, Introduction
-      "supported": true
+      // misa.B is hardwired to 0 (CORE_MISA in rtl/cv32e40x_cs_registers.sv has no B bit),
+      // although B_EXT=ZBA_ZBB_ZBC_ZBS implements Zba, Zbb and Zbs.
+      "supported": false
     },
     "S": {
       "mutable_misa": false,

@@ -3349,10 +3349,7 @@ normative_rule_definitions:
   # The vector extension must have a consistent state at reset. In particular, vtype and vl
   # must have values that can be read and then restored with a single vsetvl instruction.
   - name: vector_reset_state
-    coverpoint:
-      [
-        "Untestable: reset-time CSR state is not observable via a coverpoint in a self-checking test that boots past reset",
-      ]
+    coverpoint: ["Sm_reset_cg/cp_vector_reset"]
 
   # Zve32f supports all vector floating-point permutation instructions for floating-point
   # operands with EEW=32.

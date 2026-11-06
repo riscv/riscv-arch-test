@@ -255,24 +255,22 @@ coverpoints:
     bins: 2 SPP * 2 SPIE * 2 VTSR
   - heading: "H_F tests (H_F-NN.S): the floating-point CSRs and vsstatus.FS from VS-mode and VU-mode, run when F is also supported."
   - name: cp_fcsr_access
-    goal: |-
-      Writing to the CSR field
-      (WARL)
-    description: Write 0s and 1s to fcsr, frm, fflags cross with vsstatus.FS init/clean/dirty
+    goal: When V=1, an fp CSR access is illegal if either vsstatus.FS or sstatus.FS is Off
+    description: Read, write 0s, write 1s, set and clear fcsr, frm and fflags from VS- and VU-mode with (vsstatus.FS, sstatus.FS) = (Dirty, Dirty), (Off, Dirty) and (Dirty, Off)
+    expectation: Illegal-instruction trap when either field is Off; otherwise the access behaves as in S_F and both fields stay Dirty.
+    notes: The fp CSR fields themselves are tested by ZicsrF and S_F; the other FS values are covered by cp_vsstatus_FS_transition.
   - name: cp_vsstatus_FS_transition
-    goal: |-
-      Writing to the CSR field
-      (WARL)
-    description: Each different type of floating-point instruction crossed with four values of FS. Includes integer-result instructions that raise a flag after fflags is cleared (feq.s with a signaling NaN, fcvt.w.s of an inexact value, fcvt.wu.s of an out-of-range value, fcvtmod.w.d of a NaN).
-    rules:
-      - check FS becomes dirty where appropriate
-      - instructions that set fflags must set FS to dirty even if they write no floating-point register
+    goal: When V=1, changing fp state sets both vsstatus.FS and sstatus.FS to Dirty
+    description: |-
+      One instruction of each kind crossed with the four values of vsstatus.FS and of sstatus.FS:
+      flw and fadd.s (write an fp register), feq.s of a signaling NaN (sets only fflags, after fflags is cleared),
+      csrrw fcsr (writes an fp CSR) and add (must not change fp state).
+    expectation: Illegal-instruction trap for the fp instructions when either field is Off; otherwise both fields are Dirty after an fp instruction, and add leaves both unchanged.
+    notes: Which instructions change fp state is tested per instruction by Sm_F, S_F and U_F (cp_mstatus_FS_transition, cp_sstatus_FS_transition); the hypervisor adds only the two fields.
   - name: cp_vsstatus_FS_transition_nondeterministic
-    goal: |-
-      Writing to the CSR field
-      (WARL)
-    description: Floating-point instructions that need not modify floating-point state (fsw, fmv.x.w, fclass.s, csrr of the FP CSRs, fmvh.x.d) crossed with vsstatus.FS = Off and Dirty
-    expectation: Illegal-instruction trap when FS = Off; FS stays Dirty when Dirty. Initial and Clean are omitted because these instructions may dirty FS imprecisely.
+    goal: When V=1, fp instructions that need not change fp state still trap when either field is Off
+    description: fsw and csrr fcsr crossed with vsstatus.FS and sstatus.FS = Off and Dirty
+    expectation: Illegal-instruction trap when either field is Off; both fields stay Dirty when both are Dirty. Initial and Clean are omitted because these instructions may dirty FS imprecisely.
   - heading: "H_V tests (H_V_vcsr-NN.S, H_V_vset-NN.S, H_V_vl_walk-NN.S): the vector CSRs, vset{i}vl{i}, vstart and vsstatus.VS from VS-mode and VU-mode, run when Zve32x is also supported."
   - name: cp_vcsrrswc
     goal: Confirm that all vector CSR properties are properly set with regards to read write, clear, and set privileges with the csr instructions

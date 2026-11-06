@@ -2015,7 +2015,12 @@ normative_rule_definitions:
   # hfence.gvma is valid in HS-mode with mstatus.TVM=0 and in M-mode, and orders prior stores before G-stage
   # implicit reads; a nonzero rs1 selects one guest physical address and a nonzero rs2 one VMID
   - names: [hfence-gvma_op]
-    coverpoint: ["Sm_H_tvm_cg/cp_hfence", "Sv_H_fence_cg/cp_hfence_gvma"]
+    coverpoint:
+      [
+        "Sm_H_tvm_cg/cp_hfence",
+        "Sv_H_fence_cg/cp_hfence_gvma",
+        "Sv_H_fence_cg/cp_hfence_gvma_x4",
+      ]
 
   # hfence.gvma ignores rs2 bits above VMIDMAX and unimplemented VMID bits
   - names: [hfence-gvma_vmid]

@@ -848,8 +848,11 @@ normative_rule_definitions:
     coverpoint:
       [
         "Sv_H_gstage_cg/cp_hgatp_gpa_width",
-        "Sv_H_twostage_cg/cp_hgatp_sv32x4_gpa",
+        "Sv_H_gstage_cg/cp_hgatp_x4_gpa",
+        "Sv_H_twostage_cg/cp_twostage_x4_gpa",
         "Sv_H_twostage_cg/cp_twostage_gpa_width",
+        "Sv_H_hlv_cg/{cp_hlv_x4_gpa, cp_hlv_x4_gpa_bare}",
+        "Sv_H_fence_cg/cp_hfence_gvma_x4",
       ]
 
   # Each G-stage mode walks its tables with the Sv algorithm for permissions, every leaf level and A/D bits, and
@@ -861,11 +864,12 @@ normative_rule_definitions:
         "Sv_H_gstage_cg/cp_hgatp_svade",
         "Sv_H_twostage_cg/cp_twostage_perm",
         "Sv_H_gstage_cg/cp_hgatp_gpa_width",
+        "Sv_H_gstage_cg/cp_hgatp_x4_gpa",
         "Sv_H_twostage_cg/cp_twostage_gpa_width",
       ]
 
   - name: hgatp_mode_sv32x4
-    coverpoint: ["Sv_H_twostage_cg/cp_hgatp_sv32x4_gpa"]
+    coverpoint: ["Sv_H_twostage_cg/cp_twostage_x4_gpa"]
 
   # When V=0, a write to vsatp with an unsupported MODE value is either ignored as it is
   # for satp, or the fields of vsatp are treated as WARL in the normal way.
@@ -898,7 +902,7 @@ normative_rule_definitions:
         "Sv_H_gstage_cg/cp_hgatp_perm",
         "Sv_H_twostage_cg/cp_twostage_perm",
         "Sv_H_twostage_cg/cp_implicit_gpf",
-        "Sv_H_twostage_cg/cp_hgatp_sv32x4_gpa",
+        "Sv_H_twostage_cg/cp_twostage_x4_gpa",
         "Sv_HSm_trap_cg/cp_guest_page_fault_m",
         "Sv_HSm_trap_cg/cp_implicit_gpf_m",
         "Sv_H_hlv_cg/cp_hlv_root_gpf",
@@ -923,7 +927,7 @@ normative_rule_definitions:
         "Sv_HSm_trap_cg/cp_implicit_gpf_m",
       ]
 
-  # Representative coverpoints; also Sv_H_twostage_cg/cp_hgatp_sv32x4_gpa
+  # Representative coverpoints; also Sv_H_twostage_cg/cp_twostage_x4_gpa
   # A fetch or a misaligned load or store that straddles a page boundary reports the address of the faulting page
   - name: H_straddle
     coverpoint:
@@ -1036,7 +1040,8 @@ normative_rule_definitions:
     coverpoint:
       [
         "Sv_H_gstage_cg/cp_hgatp_gpa_width",
-        "Sv_H_twostage_cg/cp_hgatp_sv32x4_gpa",
+        "Sv_H_gstage_cg/cp_hgatp_x4_gpa",
+        "Sv_H_twostage_cg/cp_twostage_x4_gpa",
       ]
 
   # Writing hgatp does not order page-table updates before later G-stage translations

@@ -123,6 +123,21 @@ covergroup Svinval_H_cg with function sample(ins_t ins);
         cp_hinval_vvma   : cross priv_mode_hs, hinval_vvma, vsatp_paged, hgatp_paged, rs1, rs2;
         cp_hinval_gvma   : cross priv_mode_hs, hinval_gvma, vsatp_paged, hgatp_paged, rs1, rs2;
         cp_sinval_vma_vs : cross priv_mode_vs, sinval_vma, vsatp_paged, hgatp_paged, rs1, rs2;
+
+        // A guest physical address >> 2 in rs1 whose top two bits (33:32 for Sv32x4, 40:39 for Sv39x4) are 01, 10
+        // or 11
+        rs1_gpa_x4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode") iff (ins.current.insn[19:15] != 0) {
+            `ifdef UDB_MXLEN_64
+                bins sv39x4_01 = {8} iff (ins.current.rs1_val[63:37] == 1);
+                bins sv39x4_10 = {8} iff (ins.current.rs1_val[63:37] == 2);
+                bins sv39x4_11 = {8} iff (ins.current.rs1_val[63:37] == 3);
+            `else
+                bins sv32x4_01 = {1} iff (ins.current.rs1_val[31:30] == 1);
+                bins sv32x4_10 = {1} iff (ins.current.rs1_val[31:30] == 2);
+                bins sv32x4_11 = {1} iff (ins.current.rs1_val[31:30] == 3);
+            `endif
+        }
+        cp_hinval_gvma_x4 : cross priv_mode_hs, hinval_gvma, vsatp_paged, hgatp_paged, rs1_gpa_x4, rs2;
     `endif
 endgroup
 

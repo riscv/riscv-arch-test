@@ -20,6 +20,12 @@ exclude_extensions:
   # vsiselect, vstopi, vstopei, hvien), where Sail raises illegal instruction because it lacks them.
   - Ssstrict_S_CSR
   - Ssstrict_H_vs_CSR
+  # RV32: hfence.gvma (and hinval.gvma, which reuses it) computes the guest physical address as rs1 << 2 in
+  # XLEN bits, dropping Sv32x4 guest physical address bits 33:32, so it removes the wrong page's translation and
+  # the next load reads the stale page (https://github.com/tenstorrent/whisper/issues/225, fix
+  # https://github.com/tenstorrent/whisper/pull/226).
+  - Sv_H_sv32x4_fence_x4
+  - Svinval_H_sv32x4_inval_x4
 install_script: ".github/scripts/install-whisper.sh"
 apt_packages: "libboost-program-options-dev"
 shards: 2

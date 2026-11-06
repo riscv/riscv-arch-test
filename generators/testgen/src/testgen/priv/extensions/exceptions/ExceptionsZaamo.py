@@ -156,10 +156,10 @@ def _generate_amo_access_fault_tests(test_data: TestData) -> list[str]:
     addr_reg = test_data.int_regs.get_register()
 
     lines = [
-        "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
+        "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_AMO",
         comment_banner(coverpoint, "Test amo instructions on restricted memory and check for access fault"),
         *_init_source_pair(source_reg),
-        f"LI(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+        f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_AMO)",
         *_amo_tests(test_data, coverpoint, (dest_reg, source_reg, addr_reg), lambda name: f"amo_access_fault_{name}"),
         "#endif",
     ]
@@ -179,10 +179,10 @@ def _generate_amo_access_misaligned_priority_tests(test_data: TestData) -> list[
 
     # .b is never misaligned, so it is not tested here
     lines = [
-        "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
+        "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_AMO",
         comment_banner(coverpoint, "Test misaligned amo instructions on restricted memory for exception priority"),
         *_init_source_pair(source_reg),
-        f"LI(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+        f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_AMO)",
         f"addi x{addr_reg}, x{addr_reg}, 1",
         *_amo_tests(
             test_data,

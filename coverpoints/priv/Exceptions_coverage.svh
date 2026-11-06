@@ -213,12 +213,6 @@ covergroup Exceptions_S_cg with function sample(ins_t ins);
             wildcard bins sd = {SD};
         `endif
     }
-    lw: coverpoint ins.current.insn {
-        wildcard bins lw = {LW};
-    }
-    sw: coverpoint ins.current.insn {
-        wildcard bins sw = {SW};
-    }
     illegalops: coverpoint ins.current.insn {
         bins zeros = {'0};
         bins ones  = {'1};
@@ -291,36 +285,45 @@ covergroup Exceptions_S_cg with function sample(ins_t ins);
     cp_xstatus_ie:                           cross priv_mode_s_u, ecall, mstatus_MIE, mstatus_SIE;
 
     // access fault coverpoints
-    // Both misaligned and illegal: +1 for lw/sw; +2 for jalr, which clears bit 0 of the target
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_FETCH
         illegal_address_fetch: coverpoint ins.current.imm + ins.current.rs1_val {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_FETCH};
         }
-        illegal_address_misaligned_fetch: coverpoint ins.current.imm + ins.current.rs1_val {
-            bins illegal_misaligned = {`RVMODEL_ACCESS_FAULT_ADDRESS_FETCH + 2};
+        i_phys_adr_misaligned: coverpoint {ins.current.imm + ins.current.rs1_val}[1:0] {
+            bins aligned    = {2'b00};
+            bins misaligned = {2'b10};
         }
+        `ifdef UDB_MXLEN_64 // RV64 physical addresses have 56 bits; an RV32 address zero-extends into 34
+            i_phys_address_nonexistent: coverpoint ({8'b0, {ins.current.imm + ins.current.rs1_val}[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS_FETCH) {
+                // auto fill 1/0 for the physical address being valid
+            }
+        `else
+            i_phys_address_nonexistent: coverpoint ({32'b0, {ins.current.imm + ins.current.rs1_val}[31:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS_FETCH) {
+                // auto fill 1/0 for the physical address being valid
+            }
+        `endif
         cp_instr_access_fault:                   cross priv_mode_s, jalr, illegal_address_fetch;
-        cp_misaligned_priority_fetch:            cross priv_mode_s, jalr, illegal_address_misaligned_fetch;
+        cp_misaligned_priority_fetch:            cross priv_mode_s, i_phys_adr_misaligned, i_phys_address_nonexistent, jalr;
     `endif
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
         illegal_address_load: coverpoint ins.current.imm + ins.current.rs1_val {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD};
         }
-        illegal_address_misaligned_load: coverpoint ins.current.imm + ins.current.rs1_val {
-            bins illegal_misaligned = {`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 1};
+        illegal_address_priority_load: coverpoint {{ins.current.imm + ins.current.rs1_val}[`UDB_MXLEN-1:3], 3'b000} {
+            bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD};
         }
         cp_load_access_fault:                    cross priv_mode_s, loadops, illegal_address_load;
-        cp_misaligned_priority_load:             cross priv_mode_s, lw, illegal_address_misaligned_load;
+        cp_misaligned_priority_load:             cross priv_mode_s, loadops, adr_LSBs, illegal_address_priority_load;
     `endif
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
         illegal_address_store: coverpoint ins.current.imm + ins.current.rs1_val {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_STORE};
         }
-        illegal_address_misaligned_store: coverpoint ins.current.imm + ins.current.rs1_val {
-            bins illegal_misaligned = {`RVMODEL_ACCESS_FAULT_ADDRESS_STORE + 1};
+        illegal_address_priority_store: coverpoint {{ins.current.imm + ins.current.rs1_val}[`UDB_MXLEN-1:3], 3'b000} {
+            bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_STORE};
         }
         cp_store_access_fault:                   cross priv_mode_s, storeops, illegal_address_store;
-        cp_misaligned_priority_store:            cross priv_mode_s, sw, illegal_address_misaligned_store;
+        cp_misaligned_priority_store:            cross priv_mode_s, storeops, adr_LSBs, illegal_address_priority_store;
     `endif
 
 endgroup
@@ -695,7 +698,21 @@ covergroup Exceptions_U_cg with function sample(ins_t ins);
         illegal_address_fetch: coverpoint ins.current.imm + ins.current.rs1_val {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_FETCH};
         }
+        i_phys_adr_misaligned: coverpoint {ins.current.imm + ins.current.rs1_val}[1:0] {
+            bins aligned    = {2'b00};
+            bins misaligned = {2'b10};
+        }
+        `ifdef UDB_MXLEN_64 // RV64 physical addresses have 56 bits; an RV32 address zero-extends into 34
+            i_phys_address_nonexistent: coverpoint ({8'b0, {ins.current.imm + ins.current.rs1_val}[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS_FETCH) {
+                // auto fill 1/0 for the physical address being valid
+            }
+        `else
+            i_phys_address_nonexistent: coverpoint ({32'b0, {ins.current.imm + ins.current.rs1_val}[31:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS_FETCH) {
+                // auto fill 1/0 for the physical address being valid
+            }
+        `endif
         cp_instr_access_fault:                   cross priv_mode_u, jalr, illegal_address_fetch;
+        cp_misaligned_priority_fetch:            cross priv_mode_u, i_phys_adr_misaligned, i_phys_address_nonexistent, jalr;
     `endif
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
         illegal_address_load: coverpoint ins.current.imm + ins.current.rs1_val {
@@ -714,8 +731,8 @@ covergroup Exceptions_U_cg with function sample(ins_t ins);
         illegal_address_priority_store: coverpoint {{ins.current.imm + ins.current.rs1_val}[`UDB_MXLEN-1:3], 3'b000} {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_STORE};
         }
-        cp_misaligned_priority_store:            cross priv_mode_u, storeops, adr_LSBs, illegal_address_priority_store;
         cp_store_access_fault:                   cross priv_mode_u, storeops, illegal_address_store;
+        cp_misaligned_priority_store:            cross priv_mode_u, storeops, adr_LSBs, illegal_address_priority_store;
     `endif
 
 

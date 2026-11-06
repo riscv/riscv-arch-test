@@ -1,6 +1,6 @@
 # Marin Radic mradic07@gmail.com
 # SPDX-License-Identifier: Apache-2.0
-# CI configuration for the cve4 family: CV32E40P and CV32E40X
+# CI configuration for the cve4 family: CV32E40P, CV32E40S, and CV32E40X
 
 ci_enabled: true
 exclude_extensions:
@@ -11,6 +11,12 @@ exclude_extensions:
   # https://github.com/riscv/riscv-arch-test/pull/1710#issuecomment-5444172186
   - Exceptions_Zalrsc
   - Exceptions_Zaamo
+exclude_configs:
+  # With PMP_NUM_REGIONS = 0, every CV32E40S U-mode access fails the PMP check, because no
+  # region matches it, so the tests, which run in U-mode, cannot run. Sail cannot model PMP
+  # entries that exist but are read-only zero.
+  - cv32e40s-rv32imc
+  - cv32e40s-rv32imc-pma
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"
 install_script: ".github/scripts/install-cve4.sh"
 setup_script: ".github/scripts/setup-cve4.sh"

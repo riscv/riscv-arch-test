@@ -1,0 +1,24 @@
+From d1d2c5e78138ddda9d439be0bb3081f107416ab9 Mon Sep 17 00:00:00 2001
+From: Emilien Garnier <garnieremilien@orange.fr>
+Date: Thu, 16 Jul 2026 06:39:19 +0200
+Subject: [PATCH] FPU: deliver full architectural FP register to the vector
+ coprocessor
+
+Signed-off-by: Emilien Garnier <garnieremilien@orange.fr>
+---
+ src/main/scala/tile/FPU.scala | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/main/scala/tile/FPU.scala b/src/main/scala/tile/FPU.scala
+index 5fdb35c1462..3f6a88b65f3 100644
+--- a/src/main/scala/tile/FPU.scala
++++ b/src/main/scala/tile/FPU.scala
+@@ -760,7 +760,7 @@ class FPU(cfg: FPUParams)(implicit p: Parameters) extends FPUModule()(p) {
+       id_ctrl.swap12 := false.B
+       id_ctrl.toint := true.B
+       id_ctrl.typeTagIn := I
+-      id_ctrl.typeTagOut := Mux(io.v_sew === 3.U, D, S)
++      id_ctrl.typeTagOut := D
+     }
+     when (v_decode.io.write_frd) { id_ctrl.wen := true.B }
+   })}

@@ -106,9 +106,8 @@
 ##### Machine Timer #####
 
 # RVMODEL_MTIME_ADDRESS and RVMODEL_MTIMECMP_ADDRESS are undefined.  The CLINT has no
-# memory-mapped mtime (only the time CSR reads it), and its mtimecmp at 0xB400_4000 is
-# more than 2 GB from the tests, beyond the reach of the LA macro the framework uses
-# to access it.
+# memory-mapped mtime (only the time CSR reads it), and the framework arms machine timer
+# interrupts relative to mtime.
 #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/clint/rtl/ct_clint_func.v#L148-L168
 #define RVMODEL_TIMER_INT_SOON_DELAY 10000
 
@@ -119,18 +118,7 @@
 
 ##### Machine Interrupts #####
 
-# RVMODEL_MSIP_ADDRESS is undefined for the same LA-reach reason; these macros reach
-# the CLINT's MSIP with li instead.
-#define C910_MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)
-
-#define RVMODEL_SET_MSW_INT(_R1, _R2) \
-  li _R1, 1                          ;\
-  li _R2, C910_MSIP_ADDRESS          ;\
-  sw _R1, 0(_R2)                     ;
-
-#define RVMODEL_CLR_MSW_INT(_R1, _R2) \
-  li _R2, C910_MSIP_ADDRESS          ;\
-  sw x0, 0(_R2)                      ;
+#define RVMODEL_MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)
 
 ##### Supervisor Interrupts #####
 

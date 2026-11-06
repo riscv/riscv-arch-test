@@ -30,19 +30,6 @@ exclude_extensions:
   - Sv_ExceptionsZalrsc
   - Sv_ExceptionsZalrscSm
   - PMP_Zalrsc
-  # Enable and priority groups for S and U: an ACT harness problem, not a C910 bug. The harness raises MSI by
-  # writing MSIP from S- and U-mode, but the CLINT accepts MSIP writes only from M-mode
-  # (clint/rtl/ct_clint_func.v#L216), so these tests need a harness fix rather than a DUT fix.
-  - InterruptsSm_enable_S
-  - InterruptsSm_enable_U
-  - InterruptsSm_priority_mideleg_S
-  - InterruptsSm_priority_mideleg_U
-  - InterruptsSm_priority_mie_S
-  - InterruptsSm_priority_mie_U
-  - InterruptsSm_priority_mip_S
-  - InterruptsSm_priority_mip_U
-  - InterruptsSm_trigger_S
-  - InterruptsSm_trigger_U
   # pmpaddr reads bits 8:0 as 0 in NAPOT mode and keeps bit 9 in OFF mode, against G = 10
   # (pmp/rtl/ct_pmp_regs.v#L520-L522).
   - PMP_Sm_grain
@@ -62,6 +49,7 @@ exclude_extensions:
   # (mmu/rtl/ct_mmu_ptw.v#L648-L651).
   - PMP_Sv_sv39_pmp_on_pte
   # minstret counts ECALL, which does not retire (rtu/rtl/ct_rtu_retire.v#L1768-L1769).
+  - Sm_Zicntr
   - S_Zicntr
   - U_Zicntr
 

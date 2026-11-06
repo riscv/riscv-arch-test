@@ -7,6 +7,8 @@
 
 """PMP Zicbo group: cache-block and prefetch instructions checked against PMP."""
 
+from functools import partial
+
 from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -18,8 +20,7 @@ from testgen.priv.extensions.pmp.helpers import (
 )
 from testgen.priv.extensions.pmp.probes import (
     ProbeGenerator,
-    gen_cbom,
-    gen_cboz,
+    gen_cbo,
     gen_prefetch,
 )
 from testgen.priv.registry import add_priv_test_generator
@@ -63,7 +64,11 @@ def _make_cbo_chunks(
 )
 def make_pmpzicbo_cbom(test_data: TestData) -> list[TestChunk]:
     return _make_cbo_chunks(
-        test_data, "cbom", gen_cbom, "cp_cbo_clean, cp_cbo_flush and cp_cbo_inval", "cbo.clean/flush/inval"
+        test_data,
+        "cbom",
+        partial(gen_cbo, instructions=("cbo.clean", "cbo.flush", "cbo.inval")),
+        "cp_cbo_clean, cp_cbo_flush and cp_cbo_inval",
+        "cbo.clean/flush/inval",
     )
 
 
@@ -74,7 +79,7 @@ def make_pmpzicbo_cbom(test_data: TestData) -> list[TestChunk]:
     params=["NUM_PMP_ENTRIES: '>0'"],
 )
 def make_pmpzicbo_cboz(test_data: TestData) -> list[TestChunk]:
-    return _make_cbo_chunks(test_data, "cboz", gen_cboz, "cp_cbo_zero", "cbo.zero")
+    return _make_cbo_chunks(test_data, "cboz", partial(gen_cbo, instructions=("cbo.zero",)), "cp_cbo_zero", "cbo.zero")
 
 
 @add_priv_test_generator(

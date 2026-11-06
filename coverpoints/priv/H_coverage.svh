@@ -99,6 +99,51 @@ covergroup H_hscsr_cg with function sample(ins_t ins);
     cp_hcsr_access_zero:    cross priv_mode_hs, hcsrname_zero, csraccesses;
     cp_hcsr_access_masked:  cross priv_mode_hs, hcsrname_masked, csraccesses_masked;
     cp_hcsr_access_ro:      cross priv_mode_hs, hgeip, csraccesses;
+
+    // CSR immediate forms: CSRRWI always writes, including zimm=0; CSRRSI/CSRRCI
+    // suppress writes only when zimm=0. Test generator checks rd and readback.
+    csrimmops : coverpoint ins.current.insn {
+        wildcard bins csrrwi = {CSRRWI};
+        wildcard bins csrrsi = {CSRRSI};
+        wildcard bins csrrci = {CSRRCI};
+    }
+    hcsr_zimm : coverpoint ins.current.insn[19:15] {
+        bins zero = {5'd0};
+        bins five = {5'd5};
+    }
+    cp_hcsr_imm:        cross priv_mode_hs, hcsrname, csrimmops, hcsr_zimm;
+    cp_hcsr_imm_zero:   cross priv_mode_hs, hcsrname_zero, csrimmops, hcsr_zimm;
+    cp_hcsr_imm_masked: cross priv_mode_hs, hcsrname_masked, csrimmops, hcsr_zimm;
+    cp_hcsr_imm_ro:     cross priv_mode_hs, hgeip, csrimmops, hcsr_zimm;
+
+    // With a non-x0 register containing zero, CSRRS/CSRRC still attempt a write.
+    // With rs1=x0 they read without writing, including on read-only hgeip.
+    hgeip_zero_regop : coverpoint ins.current.insn {
+        wildcard bins csrrs_x0   = {CSRRS} iff (ins.current.insn[19:15] == 5'd0);
+        wildcard bins csrrc_x0   = {CSRRC} iff (ins.current.insn[19:15] == 5'd0);
+        wildcard bins csrrs_reg0 = {CSRRS} iff (ins.current.insn[19:15] != 5'd0 && ins.current.rs1_val == 0);
+        wildcard bins csrrc_reg0 = {CSRRC} iff (ins.current.insn[19:15] != 5'd0 && ins.current.rs1_val == 0);
+    }
+    cp_hcsr_ro_reg0: cross priv_mode_hs, hgeip, hgeip_zero_regop;
+
+    // rd receives the old value. CSRRW with rs1=x0 writes zero;
+    // only CSRRS/CSRRC with rs1=x0 suppress the write.
+    hcsr_regops : coverpoint ins.current.insn {
+        wildcard bins csrrw      = {CSRRW} iff (ins.current.insn[19:15] != 5'd0);
+        wildcard bins csrrs_reg0 = {CSRRS} iff (ins.current.insn[19:15] != 5'd0 && ins.current.rs1_val == 0);
+        wildcard bins csrrc_reg0 = {CSRRC} iff (ins.current.insn[19:15] != 5'd0 && ins.current.rs1_val == 0);
+        wildcard bins csrrs_x0   = {CSRRS} iff (ins.current.insn[19:15] == 5'd0);
+        wildcard bins csrrc_x0   = {CSRRC} iff (ins.current.insn[19:15] == 5'd0);
+        wildcard bins csrrw_x0   = {CSRRW} iff (ins.current.insn[19:15] == 5'd0);
+    }
+    hcsr_nonzero_rd : coverpoint ins.current.insn[11:7] {
+        type_option.weight = 0;
+        bins nonzero = {[1:31]};
+    }
+    cp_hcsr_oldvalue:        cross priv_mode_hs, hcsrname, hcsr_regops, hcsr_nonzero_rd;
+    cp_hcsr_oldvalue_zero:   cross priv_mode_hs, hcsrname_zero, hcsr_regops, hcsr_nonzero_rd;
+    cp_hcsr_oldvalue_masked: cross priv_mode_hs, hcsrname_masked, hcsr_regops, hcsr_nonzero_rd;
+
     cp_hcsrwalk:            cross priv_mode_hs, hcsrname, csrop, walking_ones {
         // vsepc and vstval may legalize invalid addresses, so they are walked with valid addresses instead
         ignore_bins vaddr = binsof(hcsrname.vsepc) || binsof(hcsrname.vstval);
@@ -519,6 +564,43 @@ covergroup H_vucsr_cg with function sample(ins_t ins);
 
     cp_csr_insufficient_priv: cross priv_mode_vu, csrr, csr_nonuser, nonzerord;
     cp_csr_ro:                cross priv_mode_vu, csrw, csr_uro;
+
+    // Separate write-denial cases from the broad numeric read-access sweeps.
+    denied_hcsr_op : coverpoint ins.current.insn {
+        wildcard bins csrrw = {CSRRW};
+    }
+    denied_hcsr_name : coverpoint ins.current.insn[31:20] {
+        bins base[] = {CSR_HSTATUS, CSR_HEDELEG, CSR_HIDELEG, CSR_HIE,
+                       CSR_HCOUNTEREN, CSR_HGEIE, CSR_HENVCFG, CSR_HTVAL,
+                       CSR_HIP, CSR_HVIP, CSR_HTINST, CSR_HGATP, CSR_HGEIP,
+                       CSR_VSSTATUS, CSR_VSIE, CSR_VSTVAL, CSR_VSIP,
+                       CSR_VSTVEC, CSR_VSSCRATCH, CSR_VSEPC, CSR_VSCAUSE, CSR_VSATP};
+        `ifdef ZICNTR_SUPPORTED
+            bins htimedelta = {CSR_HTIMEDELTA};
+        `endif
+        `ifdef SSTC_SUPPORTED
+            bins vstimecmp = {CSR_VSTIMECMP};
+        `endif
+        `ifdef UDB_MXLEN_32
+            `ifdef SM1P13P0_OR_LATER_SUPPORTED
+                bins hedelegh = {CSR_HEDELEGH};
+            `endif
+            `ifdef ZICNTR_SUPPORTED
+                bins htimedeltah = {CSR_HTIMEDELTAH};
+            `endif
+            bins henvcfgh = {CSR_HENVCFGH};
+            `ifdef SSTC_SUPPORTED
+                bins vstimecmph = {CSR_VSTIMECMPH};
+            `endif
+        `endif
+    }
+    cp_csr_write_denied: cross priv_mode_vu, denied_hcsr_op, denied_hcsr_name {
+        // This cross maps the HS-permitted, non-high-half virtual-instruction rule.
+        // Keep testing hgeip writes, but their exception is illegal instruction even in HS.
+        ignore_bins hs_denied = binsof(denied_hcsr_name) intersect {CSR_HGEIP};
+        ignore_bins high_half = binsof(denied_hcsr_name) intersect
+            {CSR_HEDELEGH, CSR_HTIMEDELTAH, CSR_HENVCFGH, CSR_VSTIMECMPH};
+    }
 endgroup
 
 covergroup H_inst_cg with function sample(ins_t ins);
@@ -592,6 +674,37 @@ covergroup H_inst_cg with function sample(ins_t ins);
         wildcard bins hfence_gvma = {HFENCE_GVMA};
     }
     cp_hfence:        cross priv_mode_hs_vs_u_vu, hfence;
+
+    // Separate write-denial cases from the broad numeric read-access sweeps.
+    denied_hcsr_op : coverpoint ins.current.insn {
+        wildcard bins csrrw = {CSRRW};
+    }
+    denied_hcsr_name : coverpoint ins.current.insn[31:20] {
+        bins base[] = {CSR_HSTATUS, CSR_HEDELEG, CSR_HIDELEG, CSR_HIE,
+                       CSR_HCOUNTEREN, CSR_HGEIE, CSR_HENVCFG, CSR_HTVAL,
+                       CSR_HIP, CSR_HVIP, CSR_HTINST, CSR_HGATP, CSR_HGEIP,
+                       CSR_VSSTATUS, CSR_VSIE, CSR_VSTVAL, CSR_VSIP,
+                       CSR_VSTVEC, CSR_VSSCRATCH, CSR_VSEPC, CSR_VSCAUSE, CSR_VSATP};
+        `ifdef ZICNTR_SUPPORTED
+            bins htimedelta = {CSR_HTIMEDELTA};
+        `endif
+        `ifdef SSTC_SUPPORTED
+            bins vstimecmp = {CSR_VSTIMECMP};
+        `endif
+        `ifdef UDB_MXLEN_32
+            `ifdef SM1P13P0_OR_LATER_SUPPORTED
+                bins hedelegh = {CSR_HEDELEGH};
+            `endif
+            `ifdef ZICNTR_SUPPORTED
+                bins htimedeltah = {CSR_HTIMEDELTAH};
+            `endif
+            bins henvcfgh = {CSR_HENVCFGH};
+            `ifdef SSTC_SUPPORTED
+                bins vstimecmph = {CSR_VSTIMECMPH};
+            `endif
+        `endif
+    }
+    cp_csr_write_denied: cross priv_mode_u, denied_hcsr_op, denied_hcsr_name;
 
     // hstatus.VTVM = 1 makes sfence.vma and satp accesses raise virtual instruction in VS-mode, but does not trap
     // hfence.vvma in HS-mode.  mstatus.TVM needs M-mode, so it is in Sm_H.

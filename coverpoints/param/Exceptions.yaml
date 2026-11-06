@@ -1,0 +1,491 @@
+# Parameter mappings
+#
+# Implementation-defined behaviors that affect the Exceptions coverpoints.
+# The trap signature records xcause and xtval for each trap.
+# The U, Zc, F, Zaamo, Zalrsc and ZicboU groups take their traps in S-mode when S is implemented,
+# and in M-mode otherwise. The Sm medeleg coverpoints take their traps in M-mode or in S-mode.
+
+parameter_definitions:
+  # Trap delivery
+  - name: MTVEC_ACCESS
+    coverpoint: ["All coverpoints that take a trap to M-mode"]
+    effect:
+      [
+        "The framework writes `mtvec` to install the M-mode trap handler that records the trap signature. The tests need `rw`.",
+      ]
+  - name: MTVEC_BASE_ALIGNMENT_DIRECT
+    coverpoint: ["All coverpoints that take a trap to M-mode"]
+    effect: ["The framework aligns the M-mode trap handler to this boundary."]
+  - name: MTVAL_WIDTH
+    coverpoint: ["Untested"]
+    effect:
+      [
+        "The tests report only test addresses and instruction encodings of 32 bits or fewer in `mtval`. A legal width holds all of them, so the width does not change the results.",
+      ]
+  - name: STVAL_WIDTH
+    coverpoint: ["Untested"]
+    effect:
+      [
+        "The tests report only test addresses and instruction encodings of 32 bits or fewer in `stval`. A legal width holds all of them, so the width does not change the results.",
+      ]
+
+  # Misaligned loads and stores
+  - name: MISALIGNED_LDST
+    coverpoint:
+      [
+        "Exceptions_Sm_cg/cp_load_address_misaligned",
+        "Exceptions_Sm_cg/cp_store_address_misaligned",
+        "Exceptions_Sm_cg/cp_misaligned_priority_load",
+        "Exceptions_Sm_cg/cp_misaligned_priority_store",
+        "Exceptions_Sm_cg/cp_medeleg_msu_loadmisaligned",
+        "Exceptions_Sm_cg/cp_medeleg_msu_storemisaligned",
+        "Exceptions_S_cg/cp_load_address_misaligned",
+        "Exceptions_S_cg/cp_store_address_misaligned",
+        "Exceptions_S_cg/cp_misaligned_priority",
+        "Exceptions_U_cg/cp_load_address_misaligned",
+        "Exceptions_U_cg/cp_store_address_misaligned",
+        "Exceptions_U_cg/cp_misaligned_priority_load",
+        "Exceptions_U_cg/cp_misaligned_priority_store",
+        "Exceptions_Zc_cg/cp_load_address_misaligned",
+        "Exceptions_Zc_cg/cp_store_address_misaligned",
+        "Exceptions_F_cg/cp_load_address_misaligned",
+        "Exceptions_F_cg/cp_store_address_misaligned",
+      ]
+    effect:
+      [
+        "When true, misaligned loads and stores to main memory complete without a trap. When false, they raise an address-misaligned exception. At the access-fault address, true always gives an access fault.",
+      ]
+  - name: MISALIGNED_SPLIT_STRATEGY
+    coverpoint:
+      [
+        "Exceptions_Sm_cg/cp_load_address_misaligned",
+        "Exceptions_Sm_cg/cp_store_address_misaligned",
+        "Exceptions_Sm_cg/cp_medeleg_msu_loadmisaligned",
+        "Exceptions_Sm_cg/cp_medeleg_msu_storemisaligned",
+        "Exceptions_S_cg/cp_load_address_misaligned",
+        "Exceptions_S_cg/cp_store_address_misaligned",
+        "Exceptions_U_cg/cp_load_address_misaligned",
+        "Exceptions_U_cg/cp_store_address_misaligned",
+        "Exceptions_Zc_cg/cp_load_address_misaligned",
+        "Exceptions_Zc_cg/cp_store_address_misaligned",
+        "Exceptions_F_cg/cp_load_address_misaligned",
+        "Exceptions_F_cg/cp_store_address_misaligned",
+      ]
+    effect:
+      [
+        "Applies only when MISALIGNED_LDST is true. The tests expect a misaligned access to act as a sequence of byte accesses (`sequential_bytes`). With `custom`, the results are unpredictable.",
+      ]
+  - name: MISALIGNED_LDST_EXCEPTION_PRIORITY
+    coverpoint:
+      [
+        "Exceptions_Sm_cg/cp_misaligned_priority_load",
+        "Exceptions_Sm_cg/cp_misaligned_priority_store",
+        "Exceptions_S_cg/cp_misaligned_priority",
+        "Exceptions_U_cg/cp_misaligned_priority_load",
+        "Exceptions_U_cg/cp_misaligned_priority_store",
+        "Exceptions_Zalrsc_cg/cp_load_access_misaligned_priority",
+        "Exceptions_Zalrsc_cg/cp_store_access_misaligned_priority",
+      ]
+    effect:
+      [
+        "Applies to a misaligned access to the access-fault address that raises an address-misaligned exception and an access fault. `low` reports the access fault. `high` reports the address-misaligned exception.",
+      ]
+
+  # Trap values
+  - name: REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED
+    coverpoint:
+      [
+        "Exceptions_Sm_cg/cp_instr_adr_misaligned_branch",
+        "Exceptions_Sm_cg/cp_instr_adr_misaligned_zibi_branch",
+        "Exceptions_Sm_cg/cp_instr_adr_misaligned_jal",
+        "Exceptions_Sm_cg/cp_instr_adr_misaligned_jalr",
+        "Exceptions_Sm_cg/cp_misaligned_priority_fetch",
+        "Exceptions_Sm_cg/cp_medeleg_msu_instrmisaligned",
+        "Exceptions_U_cg/cp_instr_adr_misaligned_branch",
+        "Exceptions_U_cg/cp_instr_adr_misaligned_zibi_branch",
+        "Exceptions_U_cg/cp_instr_adr_misaligned_jal",
+        "Exceptions_U_cg/cp_instr_adr_misaligned_jalr",
+      ]
+    effect:
+      [
+        "When true, `mtval` holds the misaligned target address. When false, `mtval` is 0. Applies to traps taken in M-mode.",
+      ]
+  - name: REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT
+    coverpoint:
+      [
+        "Exceptions_Sm_cg/cp_instr_access_fault",
+        "Exceptions_Sm_cg/cp_misaligned_priority_fetch",
+        "Exceptions_Sm_cg/cp_medeleg_msu_instraccessfault",
+        "Exceptions_Sm_cg/cp_medeleg_msu_instrmisaligned",
+        "Exceptions_U_cg/cp_instr_access_fault",
+      ]
+    effect:
+      [
+        "When true, `mtval` holds the faulting address. When false, `mtval` is 0. Applies to traps taken in M-mode.",
+      ]
+  - name: REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED
+    coverpoint:
+      [
+        "Exceptions_Sm_cg/cp_load_address_misaligned",
+        "Exceptions_Sm_cg/cp_misaligned_priority_load",
+        "Exceptions_Sm_cg/cp_medeleg_msu_loadmisaligned",
+        "Exceptions_U_cg/cp_load_address_misaligned",
+        "Exceptions_U_cg/cp_misaligned_priority_load",
+        "Exceptions_Zc_cg/cp_load_address_misaligned",
+        "Exceptions_F_cg/cp_load_address_misaligned",
+        "Exceptions_Zalrsc_cg/cp_load_address_misaligned",
+        "Exceptions_Zalrsc_cg/cp_load_access_misaligned_priority",
+      ]
+    effect:
+      [
+        "When true, `mtval` holds the misaligned address. When false, `mtval` is 0. Applies to traps taken in M-mode.",
+      ]
+  - name: REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT
+    coverpoint:
+      [
+        "Exceptions_Sm_cg/cp_load_access_fault",
+        "Exceptions_Sm_cg/cp_misaligned_priority_load",
+        "Exceptions_Sm_cg/cp_medeleg_msu_loadaccessfault",
+        "Exceptions_U_cg/cp_load_access_fault",
+        "Exceptions_U_cg/cp_misaligned_priority_load",
+        "Exceptions_Zc_cg/cp_load_access_fault",
+        "Exceptions_F_cg/cp_load_access_fault",
+        "Exceptions_Zalrsc_cg/cp_load_access_fault",
+        "Exceptions_Zalrsc_cg/cp_load_access_misaligned_priority",
+      ]
+    effect:
+      [
+        "When true, `mtval` holds the faulting address. When false, `mtval` is 0. Applies to traps taken in M-mode.",
+      ]
+  - name: REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED
+    coverpoint:
+      [
+        "Exceptions_Sm_cg/cp_store_address_misaligned",
+        "Exceptions_Sm_cg/cp_misaligned_priority_store",
+        "Exceptions_Sm_cg/cp_medeleg_msu_storemisaligned",
+        "Exceptions_U_cg/cp_store_address_misaligned",
+        "Exceptions_U_cg/cp_misaligned_priority_store",
+        "Exceptions_Zc_cg/cp_store_address_misaligned",
+        "Exceptions_F_cg/cp_store_address_misaligned",
+        "Exceptions_Zaamo_cg/cp_amo_address_misaligned",
+        "Exceptions_Zalrsc_cg/cp_store_address_misaligned_illegal_w",
+        "Exceptions_Zalrsc_cg/cp_store_address_misaligned_illegal_d",
+        "Exceptions_Zalrsc_cg/cp_store_access_misaligned_priority",
+      ]
+    effect:
+      [
+        "When true, `mtval` holds the misaligned address. When false, `mtval` is 0. Applies to traps taken in M-mode.",
+      ]
+  - name: REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT
+    coverpoint:
+      [
+        "Exceptions_Sm_cg/cp_store_access_fault",
+        "Exceptions_Sm_cg/cp_misaligned_priority_store",
+        "Exceptions_Sm_cg/cp_medeleg_msu_storeaccessfault",
+        "Exceptions_U_cg/cp_store_access_fault",
+        "Exceptions_U_cg/cp_misaligned_priority_store",
+        "Exceptions_Zc_cg/cp_store_access_fault",
+        "Exceptions_F_cg/cp_store_access_fault",
+        "Exceptions_Zaamo_cg/cp_amo_access_fault",
+        "Exceptions_Zalrsc_cg/cp_store_access_fault",
+        "Exceptions_Zalrsc_cg/cp_store_access_misaligned_priority",
+        "Exceptions_ZicboSm_cg/cp_cbo_access_fault",
+        "Exceptions_ZicboU_cg/cp_cbo_access_fault",
+      ]
+    effect:
+      [
+        "When true, `mtval` holds the faulting address. When false, `mtval` is 0. Applies to traps taken in M-mode.",
+      ]
+  - name: REPORT_VA_IN_MTVAL_ON_BREAKPOINT
+    coverpoint:
+      [
+        "Exceptions_Sm_cg/cp_breakpoint",
+        "Exceptions_Sm_cg/cp_ebreak_straddle64",
+        "Exceptions_Sm_cg/cp_medeleg_msu_ebreak",
+        "Exceptions_U_cg/cp_breakpoint",
+        "Exceptions_U_cg/cp_ebreak_straddle64",
+        "Exceptions_Zc_cg/cp_breakpoint",
+      ]
+    effect:
+      [
+        "When true, `mtval` holds the address of the `ebreak` or `c.ebreak`. When false, `mtval` is 0. Applies to traps taken in M-mode.",
+      ]
+  - name: REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION
+    coverpoint:
+      [
+        "Exceptions_Sm_cg/cp_illegal_instruction",
+        "Exceptions_Sm_cg/cp_medeleg_msu_illegalinstruction",
+        "Exceptions_U_cg/cp_illegal_instruction",
+        "Exceptions_Zc_cg/cp_illegal_instruction",
+        "Exceptions_F_cg/cp_mstatus_fs_illegal_instr",
+        "Exceptions_F_cg/cp_mstatus_fs_csr_access",
+        "Exceptions_ZicboU_cg/cp_cbie",
+        "Exceptions_ZicboU_cg/cp_cbcfe",
+        "Exceptions_ZicboU_cg/cp_cbze",
+      ]
+    effect:
+      [
+        "When true, `mtval` holds the encoding of the illegal instruction. When false, `mtval` is 0. Applies to traps taken in M-mode.",
+      ]
+  - name: REPORT_VA_IN_STVAL_ON_INSTRUCTION_MISALIGNED
+    coverpoint:
+      [
+        "Exceptions_Sm_cg/cp_medeleg_msu_instrmisaligned",
+        "Exceptions_S_cg/cp_instr_adr_misaligned_branch",
+        "Exceptions_S_cg/cp_instr_adr_misaligned_zibi_branch",
+        "Exceptions_S_cg/cp_instr_adr_misaligned_jal",
+        "Exceptions_S_cg/cp_instr_adr_misaligned_jalr",
+        "Exceptions_S_cg/cp_misaligned_priority",
+        "Exceptions_U_cg/cp_instr_adr_misaligned_branch",
+        "Exceptions_U_cg/cp_instr_adr_misaligned_zibi_branch",
+        "Exceptions_U_cg/cp_instr_adr_misaligned_jal",
+        "Exceptions_U_cg/cp_instr_adr_misaligned_jalr",
+      ]
+    effect:
+      [
+        "When true, `stval` holds the misaligned target address. When false, `stval` is 0. Applies to traps taken in S-mode.",
+      ]
+  - name: REPORT_VA_IN_STVAL_ON_INSTRUCTION_ACCESS_FAULT
+    coverpoint:
+      [
+        "Exceptions_Sm_cg/cp_medeleg_msu_instraccessfault",
+        "Exceptions_Sm_cg/cp_medeleg_msu_instrmisaligned",
+        "Exceptions_S_cg/cp_instr_access_fault",
+        "Exceptions_S_cg/cp_misaligned_priority",
+        "Exceptions_U_cg/cp_instr_access_fault",
+      ]
+    effect:
+      [
+        "When true, `stval` holds the faulting address. When false, `stval` is 0. Applies to traps taken in S-mode.",
+      ]
+  - name: REPORT_VA_IN_STVAL_ON_LOAD_MISALIGNED
+    coverpoint:
+      [
+        "Exceptions_Sm_cg/cp_medeleg_msu_loadmisaligned",
+        "Exceptions_S_cg/cp_load_address_misaligned",
+        "Exceptions_S_cg/cp_misaligned_priority",
+        "Exceptions_U_cg/cp_load_address_misaligned",
+        "Exceptions_U_cg/cp_misaligned_priority_load",
+        "Exceptions_Zc_cg/cp_load_address_misaligned",
+        "Exceptions_F_cg/cp_load_address_misaligned",
+        "Exceptions_Zalrsc_cg/cp_load_address_misaligned",
+        "Exceptions_Zalrsc_cg/cp_load_access_misaligned_priority",
+      ]
+    effect:
+      [
+        "When true, `stval` holds the misaligned address. When false, `stval` is 0. Applies to traps taken in S-mode.",
+      ]
+  - name: REPORT_VA_IN_STVAL_ON_LOAD_ACCESS_FAULT
+    coverpoint:
+      [
+        "Exceptions_Sm_cg/cp_medeleg_msu_loadaccessfault",
+        "Exceptions_S_cg/cp_load_access_fault",
+        "Exceptions_S_cg/cp_misaligned_priority",
+        "Exceptions_U_cg/cp_load_access_fault",
+        "Exceptions_U_cg/cp_misaligned_priority_load",
+        "Exceptions_Zc_cg/cp_load_access_fault",
+        "Exceptions_F_cg/cp_load_access_fault",
+        "Exceptions_Zalrsc_cg/cp_load_access_fault",
+        "Exceptions_Zalrsc_cg/cp_load_access_misaligned_priority",
+      ]
+    effect:
+      [
+        "When true, `stval` holds the faulting address. When false, `stval` is 0. Applies to traps taken in S-mode.",
+      ]
+  - name: REPORT_VA_IN_STVAL_ON_STORE_AMO_MISALIGNED
+    coverpoint:
+      [
+        "Exceptions_Sm_cg/cp_medeleg_msu_storemisaligned",
+        "Exceptions_S_cg/cp_store_address_misaligned",
+        "Exceptions_S_cg/cp_misaligned_priority",
+        "Exceptions_U_cg/cp_store_address_misaligned",
+        "Exceptions_U_cg/cp_misaligned_priority_store",
+        "Exceptions_Zc_cg/cp_store_address_misaligned",
+        "Exceptions_F_cg/cp_store_address_misaligned",
+        "Exceptions_Zaamo_cg/cp_amo_address_misaligned",
+        "Exceptions_Zalrsc_cg/cp_store_address_misaligned_illegal_w",
+        "Exceptions_Zalrsc_cg/cp_store_address_misaligned_illegal_d",
+        "Exceptions_Zalrsc_cg/cp_store_access_misaligned_priority",
+      ]
+    effect:
+      [
+        "When true, `stval` holds the misaligned address. When false, `stval` is 0. Applies to traps taken in S-mode.",
+      ]
+  - name: REPORT_VA_IN_STVAL_ON_STORE_AMO_ACCESS_FAULT
+    coverpoint:
+      [
+        "Exceptions_Sm_cg/cp_medeleg_msu_storeaccessfault",
+        "Exceptions_S_cg/cp_store_access_fault",
+        "Exceptions_S_cg/cp_misaligned_priority",
+        "Exceptions_U_cg/cp_store_access_fault",
+        "Exceptions_U_cg/cp_misaligned_priority_store",
+        "Exceptions_Zc_cg/cp_store_access_fault",
+        "Exceptions_F_cg/cp_store_access_fault",
+        "Exceptions_Zaamo_cg/cp_amo_access_fault",
+        "Exceptions_Zalrsc_cg/cp_store_access_fault",
+        "Exceptions_Zalrsc_cg/cp_store_access_misaligned_priority",
+        "Exceptions_ZicboS_cg/cp_cbo_access_fault",
+        "Exceptions_ZicboU_cg/cp_cbo_access_fault",
+      ]
+    effect:
+      [
+        "When true, `stval` holds the faulting address. When false, `stval` is 0. Applies to traps taken in S-mode.",
+      ]
+  - name: REPORT_VA_IN_STVAL_ON_BREAKPOINT
+    coverpoint:
+      [
+        "Exceptions_Sm_cg/cp_medeleg_msu_ebreak",
+        "Exceptions_S_cg/cp_breakpoint",
+        "Exceptions_S_cg/cp_ebreak_straddle64",
+        "Exceptions_U_cg/cp_breakpoint",
+        "Exceptions_U_cg/cp_ebreak_straddle64",
+        "Exceptions_Zc_cg/cp_breakpoint",
+      ]
+    effect:
+      [
+        "When true, `stval` holds the address of the `ebreak` or `c.ebreak`. When false, `stval` is 0. Applies to traps taken in S-mode.",
+      ]
+  - name: REPORT_ENCODING_IN_STVAL_ON_ILLEGAL_INSTRUCTION
+    coverpoint:
+      [
+        "Exceptions_Sm_cg/cp_medeleg_msu_illegalinstruction",
+        "Exceptions_S_cg/cp_illegal_instruction",
+        "Exceptions_S_cg/cp_stvec",
+        "Exceptions_U_cg/cp_illegal_instruction",
+        "Exceptions_Zc_cg/cp_illegal_instruction",
+        "Exceptions_F_cg/cp_mstatus_fs_illegal_instr",
+        "Exceptions_F_cg/cp_mstatus_fs_csr_access",
+        "Exceptions_ZicboS_cg/cp_cbie",
+        "Exceptions_ZicboS_cg/cp_cbcfe",
+        "Exceptions_ZicboS_cg/cp_cbze",
+        "Exceptions_ZicboU_cg/cp_cbie",
+        "Exceptions_ZicboU_cg/cp_cbcfe",
+        "Exceptions_ZicboU_cg/cp_cbze",
+      ]
+    effect:
+      [
+        "When true, `stval` holds the encoding of the illegal instruction. When false, `stval` is 0. Applies to traps taken in S-mode.",
+      ]
+
+  # ebreak and ecall
+  - name: TRAP_ON_EBREAK
+    coverpoint:
+      [
+        "Exceptions_Sm_cg/cp_breakpoint",
+        "Exceptions_Sm_cg/cp_ebreak_straddle64",
+        "Exceptions_Sm_cg/cp_medeleg_msu_ebreak",
+        "Exceptions_S_cg/cp_breakpoint",
+        "Exceptions_S_cg/cp_ebreak_straddle64",
+        "Exceptions_U_cg/cp_breakpoint",
+        "Exceptions_U_cg/cp_ebreak_straddle64",
+        "Exceptions_Zc_cg/cp_breakpoint",
+      ]
+    effect:
+      [
+        "The tests expect `ebreak` and `c.ebreak` to raise a breakpoint exception, so they need true.",
+      ]
+  - name: TRAP_ON_ECALL_FROM_M
+    coverpoint:
+      [
+        "Exceptions_Sm_cg/cp_ecall_m",
+        "Exceptions_Sm_cg/cp_mstatus_ie",
+        "Exceptions_Sm_cg/cp_medeleg_msu_ecall",
+      ]
+    effect:
+      [
+        "The tests expect `ecall` in M-mode to raise an environment-call exception, so they need true.",
+      ]
+  - name: TRAP_ON_ECALL_FROM_S
+    coverpoint:
+      [
+        "Exceptions_Sm_cg/cp_medeleg_msu_ecall",
+        "Exceptions_Sm_cg/cp_xstatus_ie",
+        "Exceptions_S_cg/cp_ecall_s",
+        "Exceptions_S_cg/cp_xstatus_ie",
+      ]
+    effect:
+      [
+        "The tests expect `ecall` in S-mode to raise an environment-call exception, so they need true.",
+      ]
+  - name: TRAP_ON_ECALL_FROM_U
+    coverpoint:
+      [
+        "Exceptions_Sm_cg/cp_medeleg_msu_ecall",
+        "Exceptions_Sm_cg/cp_xstatus_ie",
+        "Exceptions_S_cg/cp_xstatus_ie",
+        "Exceptions_U_cg/cp_ecall_u",
+        "Exceptions_U_cg/cp_mstatus_ie",
+      ]
+    effect:
+      [
+        "The tests expect `ecall` in U-mode to raise an environment-call exception, so they need true.",
+      ]
+
+  # F
+  - name: MSTATUS_FS_LEGAL_VALUES
+    coverpoint: ["Exceptions_F_cg/cp_mstatus_fs_legal"]
+    effect:
+      [
+        "The coverpoint has an Initial (1) or Clean (2) `mstatus.FS` bin only when that value is legal.",
+      ]
+  - name: HW_MSTATUS_FS_DIRTY_UPDATE
+    coverpoint: ["Exceptions_F_cg/cp_mstatus_fs_legal"]
+    effect:
+      [
+        "The tests write F registers and `fcsr` with `mstatus.FS` set to Initial or Clean. They need `precise`. With `imprecise`, the results are unpredictable.",
+      ]
+
+  # Zaamo
+  - name: MISALIGNED_AMO
+    coverpoint: ["Exceptions_Zaamo_cg/cp_amo_address_misaligned"]
+    effect:
+      [
+        "When true, a misaligned AMO in main memory can complete without a trap. When false, every misaligned AMO traps.",
+      ]
+  - name: MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE
+    coverpoint: ["Exceptions_Zaamo_cg/cp_amo_address_misaligned"]
+    effect:
+      [
+        "A misaligned AMO can complete only when it is fully in one aligned region of this size. Other misaligned AMOs trap. 0 means that no misaligned AMO completes. The tests use address offsets 0 to 31.",
+      ]
+
+  # Zalrsc
+  - name: LRSC_MISALIGNED_BEHAVIOR
+    coverpoint:
+      [
+        "Exceptions_Zalrsc_cg/cp_load_address_misaligned",
+        "Exceptions_Zalrsc_cg/cp_store_address_misaligned_illegal_w",
+        "Exceptions_Zalrsc_cg/cp_store_address_misaligned_illegal_d",
+        "Exceptions_Zalrsc_cg/cp_load_access_misaligned_priority",
+        "Exceptions_Zalrsc_cg/cp_store_access_misaligned_priority",
+      ]
+    effect:
+      [
+        "Sets whether a misaligned LR or SC raises an address-misaligned exception or an access fault. The trap signature records the cause.",
+      ]
+
+  # Zicbo
+  - name: FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
+    coverpoint:
+      [
+        "Exceptions_ZicboSm_cg/cp_cbie",
+        "Exceptions_ZicboS_cg/cp_cbie",
+        "Exceptions_ZicboS_cg/cp_cbo_inval_data",
+        "Exceptions_ZicboU_cg/cp_cbie",
+        "Exceptions_ZicboU_cg/cp_cbo_inval_data",
+      ]
+    effect:
+      [
+        "When true, `menvcfg.CBIE` cannot be 11. The bins with `menvcfg.CBIE` = 11 are not reachable, and `cbo.inval` in S-mode and U-mode always flushes.",
+      ]
+  - name: CACHE_BLOCK_SIZE
+    coverpoint:
+      [
+        "Exceptions_ZicboSm_cg/cp_cbo_inval_data",
+        "Exceptions_ZicboS_cg/cp_cbo_inval_data",
+        "Exceptions_ZicboU_cg/cp_cbo_inval_data",
+      ]
+    effect:
+      [
+        "The tests fill and check one cache block of this size and the first word after it, up to 256 bytes. Without this parameter, the tests are not generated.",
+      ]

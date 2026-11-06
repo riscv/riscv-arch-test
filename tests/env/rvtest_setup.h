@@ -41,10 +41,7 @@
   .option norelax
 
   // Disable assembler/linker optimizations for RVTEST_BEGIN
-  // *** not sure this is still needed after recent simplifications.  dh 4/24/26
   .option push
-  .option rvc
-  .p2align UNROLLSZ
   .option norvc
 
   // Include model specific boot code

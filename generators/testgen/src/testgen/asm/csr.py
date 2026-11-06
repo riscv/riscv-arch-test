@@ -234,6 +234,16 @@ def upper_half(conditional_bits: list[tuple[int, str]]) -> list[tuple[int, str]]
     return [(bits >> 32, cond) for bits, cond in conditional_bits if bits >> 32] or None
 
 
+def _mask_with_conditional_bits(csr: tuple, conditional_bits: list[tuple[int, str]]) -> tuple:
+    """csr with the bits of the (bits, cond) pairs added to its mask (all ones if None), to be cleared where cond holds."""
+    csr_name, mask = csr
+    if mask is None:
+        mask = (1 << 64) - 1
+    for bits, _cond in conditional_bits:
+        mask |= bits
+    return (csr_name, mask)
+
+
 def clear_conditional_bits(
     reg: int, tmp_reg: int, conditional_bits: list[tuple[int, str]] | None, why: str
 ) -> list[str]:
@@ -296,14 +306,10 @@ def csr_walk_test(
             maskedwrites, with the bits added to the csr mask, or all ones if None.
     """
     assert 0 <= start_bit < 32, f"start_bit must be in 0..31, got {start_bit}"
-    csr_name, mask = csr
     if unwalked_bits:
         maskedwrites = True
-        if mask is None:
-            mask = (1 << 64) - 1
-        for bits, _cond in unwalked_bits:
-            mask |= bits
-        csr = (csr_name, mask)
+        csr = _mask_with_conditional_bits(csr, unwalked_bits)
+    csr_name, mask = csr
     if maskedwrites:
         assert mask is not None, f"maskedwrites requires a csr mask (got None for {csr_name})"
     if mask is not None:

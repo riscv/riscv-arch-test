@@ -1290,9 +1290,13 @@ common_\__MODE__\()entry:                       // common entry for all traps in
   // Route M-mode illegal instructions to the invisible trap handler. Keep this
   // sequence the same size when emulation is disabled. The Sail signature build
   // disables emulation, and a size change would move later trap-handler labels.
+  // Like the T-SBI dispatch, compare only the interrupt bit and cause[11:0], so the
+  // fields a CLIC-mode hart keeps in mcause above the cause do not hide it.
   .ifc \__MODE__ , M
-      LI(T4, CAUSE_ILLEGAL_INSTRUCTION)
-      bne T5, T4, invisible_Mcontinue
+      LI(T4,(1<<(UDB_MXLEN-1))+((1<<12)-1))        // T4 = mask: MSB + cause[11:0]
+      and T4, T4, T5
+      addi T4, T4, -CAUSE_ILLEGAL_INSTRUCTION
+      bnez T4, invisible_Mcontinue
       // Jump through T2 (x7), which was saved above: a jump through x7 does not set
       // ELP, so neither target needs a Zicfilp landing pad.
       #ifdef RVTEST_INVISIBLE_TRAP_HANDLER

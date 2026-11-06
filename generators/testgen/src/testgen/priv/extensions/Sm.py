@@ -1792,11 +1792,6 @@ def make_sm(test_data: TestData) -> list[TestChunk]:
 
 _RESET_CG = "Sm_reset_cg"
 
-# misa Extensions letters that the privileged spec marks reserved or tentatively reserved
-_MISA_RESERVED = sum(1 << (ord(letter) - ord("A")) for letter in "GJKLNOPRTWYZ")
-_MISA_DEFINED_32 = f"{~_MISA_RESERVED & 0xFFFFFFFF:#x}"
-_MISA_DEFINED_64 = f"{~_MISA_RESERVED & 0xFFFFFFFFFFFFFFFF:#x}"
-
 # CSR fields with architectural reset values, captured by RVTEST_BOOT_TO_MMODE when RESET_TEST is defined:
 # (coverpoint, CSR, (RV32 field mask, RV64 field mask) or None for the whole CSR, gate).
 # A field mask is None for an XLEN on which the gate never runs the check.
@@ -1808,7 +1803,7 @@ _RESET_FIELDS = [
         ("MSTATUSH_MBE", None),
         "__riscv_xlen == 32 && defined(SM1P12P0_OR_LATER_SUPPORTED)",
     ),
-    ("cp_misa_reset", "misa", (_MISA_DEFINED_32, _MISA_DEFINED_64), None),
+    ("cp_misa_reset", "misa", None, None),
     ("cp_hgatp_reset", "hgatp", ("HGATP32_MODE", "HGATP64_MODE"), "defined(H_SUPPORTED)"),
     ("cp_vsatp_reset", "vsatp", ("SATP32_MODE", "SATP64_MODE"), "defined(H_SUPPORTED)"),
     ("cp_mseccfg_reset", "mseccfg", ("MSECCFG_MLPE", "MSECCFG_MLPE"), "defined(ZICFILP_SUPPORTED)"),
@@ -1844,7 +1839,7 @@ def make_sm_reset(test_data: TestData) -> list[TestChunk]:
         comment_banner(
             "cp_mstatus_reset, cp_mstatush_reset, cp_misa_reset, cp_hgatp_reset, cp_vsatp_reset, cp_mseccfg_reset",
             "Boot code saved each CSR before writing any of them.  Check the fields with defined reset values:\n"
-            "mstatus.MIE/MPRV, mstatus/mstatush.MBE, misa except reserved letters, hgatp.MODE, vsatp.MODE and\n"
+            "mstatus.MIE/MPRV, mstatus/mstatush.MBE, the whole misa, hgatp.MODE, vsatp.MODE and\n"
             "mseccfg.MLPE",
         )
     )
@@ -1886,15 +1881,13 @@ _MSTATEEN_RESET = [(f"mstateen{n}", "defined(SMSTATEEN_SUPPORTED)") for n in ran
 
 
 def _mstateen_reset_checks(test_data: TestData) -> list[str]:
-    """Check that the writable bits of each mstateen CSR were zero at reset (smstateen.adoc
-    mstateen_zero_initialization).  Writing all ones and then zero finds the writable bits: those that read 1
-    after the first write and 0 after the second.  The value the boot code wrote is restored afterwards."""
-    r_val, r_ones, r_zeros, r_cur = test_data.int_regs.get_registers(4)
+    """Record each mstateen CSR as saved at reset (smstateen.adoc mstateen_zero_initialization: the writable bits
+    reset to 0).  The reference model has the same writable bits, so the whole value is compared."""
+    r_val = test_data.int_regs.get_register()
     lines = [
         comment_banner(
             "cp_mstateen_reset",
-            "Boot code saved mstateen0-3 (and mstateen0h-3h on RV32) before writing them.  Check that their writable\n"
-            "bits were zero",
+            "Boot code saved mstateen0-3 (and mstateen0h-3h on RV32) before writing them.  Record the saved values",
         )
     ]
     for csr, gate in _MSTATEEN_RESET:
@@ -1902,24 +1895,14 @@ def _mstateen_reset_checks(test_data: TestData) -> list[str]:
             gated(
                 [
                     test_data.add_testcase(csr, "cp_mstateen_reset", _RESET_CG),
-                    f"csrr x{r_cur}, {csr}",
-                    f"LI(x{r_ones}, -1)",
-                    f"csrw {csr}, x{r_ones}",
-                    f"csrr x{r_ones}, {csr}",
-                    f"csrw {csr}, zero",
-                    f"csrr x{r_zeros}, {csr}",
-                    f"csrw {csr}, x{r_cur}",
-                    f"not x{r_zeros}, x{r_zeros}",
-                    f"and x{r_ones}, x{r_ones}, x{r_zeros}",
                     f"LA(x{r_val}, rvtest_reset_csrs)",
                     f"LREG x{r_val}, RESET_{csr.upper()}_OFFSET(x{r_val})",
-                    f"and x{r_val}, x{r_val}, x{r_ones}",
                     write_sigupd(r_val, test_data),
                 ],
                 gate,
             )
         )
-    test_data.int_regs.return_registers([r_val, r_ones, r_zeros, r_cur])
+    test_data.int_regs.return_registers([r_val])
     return lines
 
 

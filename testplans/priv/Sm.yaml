@@ -608,7 +608,7 @@ coverpoints:
     bins: "1"
   - name: cp_misa_reset
     goal: misa resets to the maximal set of supported extensions and the widest MXLEN
-    description: Read misa at reset.  Check MXL, the zero field and the defined Extensions letters; mask off the reserved and tentatively reserved letters.
+    description: Read misa at reset.  Check the whole value.
     expectation: Match reference model.
     bins: "1"
   - name: |-
@@ -625,8 +625,8 @@ coverpoints:
     bins: "1"
   - name: cp_mstateen_reset
     goal: Writable mstateen bits reset to 0
-    description: Only with Smstateen.  Read mstateen0-3 (and mstateen0h-3h on RV32) at reset.  Then find each CSR's writable bits by writing all ones and then zero, and restore the value the boot code wrote.  Check the writable bits of the reset value.
-    expectation: The writable bits read 0.  Read-only bits are not checked.  Match reference model.
+    description: Only with Smstateen.  Read mstateen0-3 (and mstateen0h-3h on RV32) at reset.  Check the whole value.
+    expectation: The writable bits read 0.  Match reference model.
     bins: 4 CSRs (8 on RV32)
   - name: cp_mdt_reset
     goal: mstatus.MDT resets to 1 (mstatush.MDT on RV32)

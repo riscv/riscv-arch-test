@@ -22,12 +22,12 @@
 # Each stage that uses them must redeclare them with a bare ARG (no default) to bring them into scope.
 ARG RISCV_TOOLCHAIN_PREFIX=/opt/riscv
 ARG SAIL_VERSION=0.16
-ARG RISCV_TOOLCHAIN_VERSION=2026.10.21
+ARG RISCV_TOOLCHAIN_VERSION=2026.10.29
 
 # Stage 1: build riscv-gnu-toolchain
 #
 # LDFLAGS=-static ensures no shared-lib dependencies survive into the final image.
-FROM ubuntu:26.04@sha256:c098726dd9b9733f3e885f8de0ef375206a311b0a317eadc40d347b1115fb944 AS toolchain-builder
+FROM ubuntu:26.04@sha256:6a06111c3b0a8600feadb270aec771dc239bf407b25625f93f44ab00e11f4d3c AS toolchain-builder
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RISCV_TOOLCHAIN_PREFIX
@@ -99,7 +99,7 @@ RUN git clone --depth 1 --branch "${RISCV_TOOLCHAIN_VERSION}" https://github.com
 #
 # HOME=/home/shared is used so all caches (mise, uv, udb, etc.) land in a single directory that is copied to the final
 # image.
-FROM ubuntu:26.04@sha256:c098726dd9b9733f3e885f8de0ef375206a311b0a317eadc40d347b1115fb944 AS mise-fetcher
+FROM ubuntu:26.04@sha256:6a06111c3b0a8600feadb270aec771dc239bf407b25625f93f44ab00e11f4d3c AS mise-fetcher
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -145,7 +145,7 @@ RUN cd /act4 \
 RUN chmod -R 777 /act4 /home/shared
 
 # Stage 3: final runtime image
-FROM ubuntu:26.04@sha256:c098726dd9b9733f3e885f8de0ef375206a311b0a317eadc40d347b1115fb944 AS act4-build
+FROM ubuntu:26.04@sha256:6a06111c3b0a8600feadb270aec771dc239bf407b25625f93f44ab00e11f4d3c AS act4-build
 
 LABEL description="RISC-V Architectural Certification Tests (ACT4) build env"
 LABEL org.opencontainers.image.source="https://github.com/riscv/riscv-arch-test"

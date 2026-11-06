@@ -169,7 +169,6 @@ jobs:
           MATRIX_EXCLUDE_EXTENSIONS: ${{ matrix.exclude_extensions }}
           MATRIX_CONFIG_FILE: ${{ matrix.config_file }}
         run: |
-          FAST=True \
           EXTENSIONS="${MATRIX_EXTENSIONS}" \
           EXCLUDE_EXTENSIONS="${MATRIX_EXCLUDE_EXTENSIONS}" \
           CONFIG_FILES="${MATRIX_CONFIG_FILE}" \
@@ -238,7 +237,6 @@ jobs:
 
       - name: Build ELFs
         run: |
-          FAST=True \
           ENABLE_EXPERIMENTAL_EXTENSIONS=True \
           EXTENSIONS=Zibi,Exceptions \
           CONFIG_FILES=config/spike/spike-rv64-experimental/test_config.yaml \
@@ -372,7 +370,6 @@ jobs:
 
       - name: Build ELFs (exercises full act build DAG)
         run: |
-          FAST=True \
           EXTENSIONS=I \
           CONFIG_FILES="config/spike/spike-rv32-max/test_config.yaml config/spike/spike-rv64-max/test_config.yaml" \
           make

@@ -4,7 +4,8 @@
 #
 # Usage: tests_ai/run_ai.sh <Suite[,Suite...]> <config-dir>...
 #   e.g. tests_ai/run_ai.sh M,Sstc config/sail/sail-rv64-max config/spike/spike-rv32-max
-# Environment: DEBUG=1 adds objdumps and simulator traces; AI_WORKDIR overrides the work dir.
+# Environment: DEBUG=1 adds objdumps and simulator traces; AI_WORKDIR overrides the work dir;
+#   AI_ONLY="glob ..." builds only the tests whose file names (without .S) match one of the globs.
 #
 # act discovers tests under <test-dir>/*/<Suite>/*.S and includes <test-dir>/env, so the
 # script builds a staging test dir with symlinks to tests/env and tests_ai.
@@ -17,7 +18,27 @@ work=${AI_WORKDIR:-$root/work/tests_ai}
 stage=$work/testroot
 mkdir -p "$stage"
 ln -sfn "$root/tests/env" "$stage/env"
-ln -sfn "$root/tests_ai" "$stage/ai"
+if [ -n "${AI_ONLY:-}" ]; then
+  rm -rf "$stage/ai"
+  mkdir -p "$stage/ai"
+  ln -sfn "$root/tests_ai/common" "$stage/ai/common"
+  for s in ${suites//,/ }; do
+    mkdir -p "$stage/ai/$s"
+    for f in "$root/tests_ai/$s"/*.S; do
+      b=$(basename "$f" .S)
+      for g in $AI_ONLY; do
+        # shellcheck disable=SC2053
+        if [[ $b == $g ]]; then
+          ln -sfn "$f" "$stage/ai/$s/$b.S"
+          break
+        fi
+      done
+    done
+  done
+else
+  rm -rf "$stage/ai"
+  ln -sfn "$root/tests_ai" "$stage/ai"
+fi
 
 for d in "$@"; do rm -rf "$work/$(basename "${d%/}")/elfs/ai"; done
 

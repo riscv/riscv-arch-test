@@ -141,6 +141,17 @@ Accept every legal outcome; use the trap log's fields to tell them apart. Typica
 
 ## Pitfalls seen so far
 
+- **Checks.** Never check x4: AI_CHECK loads the expected value into x4 first, so the check compares x4 with itself.
+  `check_masked` uses x5 as its temporary.
+- **xtval of memory faults.** Page, guest-page, access and misaligned faults may write xtval = 0 (stval holds the
+  address only "if written with a nonzero value"). For an access or fetch whose second page faults, a nonzero xtval is
+  the page boundary. GVA must be 1 only when xtval is nonzero.
+- **Framework state.** sscratch, vsscratch, mscratch, stvec and vstvec hold the trap handlers' state. Write them only
+  with their own values, or save and restore them with no trap in between.
+- **T-SBI table.** It has no mtval, mtval2, mtinst, mideleg or mstatush entries. Rules that need them are `_Sm` files.
+- **Mutants.** A mutant must expect a wrong value that a correct model fails. A mutant that only loosens a check
+  always survives.
+
 - **CSR instruction forms.** Reference code must treat rs1=x0 and uimm=0 as "no write".
 - **Field modulation.** A write that changes another field's legal values leaves that field UNSPECIFIED. Write it again before checking.
 - **Time.** `time` cannot be stopped, so use margins (time + k·2^32), not equality. On RV32, order the timeh/time reads so a carry between them cannot make a "future" value past (or the reverse). Reading `time` below M-mode needs mcounteren.TM=1 and Zicntr.

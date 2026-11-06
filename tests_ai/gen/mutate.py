@@ -7,6 +7,8 @@ on a correct DUT or reference simulator; every mutant must make at least one tes
 otherwise the suite cannot see that bug.
 
 Usage: mutate.py <mutant> (writes tests_ai/Mut/*.S) ; mutate.py --list
+  AI_MUT_SUITE=<dir> writes to tests_ai/<dir>/ instead (for concurrent runs).
+  H mutants are named <area>:<mutant> (e.g. h_csr:hgeip_write_virtual); each h_*.py has a MUTANTS dict.
 """
 
 from __future__ import annotations
@@ -94,12 +96,47 @@ SSTC_MUTANTS = {
 }
 
 
+GENERIC_SKIP = {"gen_M", "gen_Sstc", "gen_H"}
+
+
+def suite_mutants() -> dict[str, str]:
+    """Mutants of other suites: any gen_<Suite>.py with a MUTANTS dict, named <Suite>:<mutant>. Its gen() must
+    read AI_MUTANT at import time and use the module-level SUITE when it creates tests."""
+    import importlib
+
+    out = {}
+    for p in sorted(Path(__file__).parent.glob("gen_*.py")):
+        if p.stem in GENERIC_SKIP:
+            continue
+        try:
+            mod = importlib.import_module(p.stem)
+        except Exception:  # a generator under construction must not break the others
+            continue
+        for k, v in getattr(mod, "MUTANTS", {}).items():
+            out[f"{p.stem[4:]}:{k}"] = v
+    return out
+
+
+def h_mutants() -> dict[str, str]:
+    import gen_H
+
+    out = {}
+    for area in gen_H.areas():
+        mod = __import__(area)
+        for k, v in getattr(mod, "MUTANTS", {}).items():
+            out[f"{area}:{k}"] = v
+    return out
+
+
 def run(name: str) -> None:
-    out = aigen.ROOT / "Mut"
+    import os
+
+    suite = os.environ.get("AI_MUT_SUITE", "Mut")
+    out = aigen.ROOT / suite
     shutil.rmtree(out, ignore_errors=True)
     if name in M_MUTANTS:
         gen_M.op = m_op(M_MUTANTS[name])
-        gen_M.SUITE = "Mut"
+        gen_M.SUITE = suite
         tests = gen_M.gen()
     elif name in SSTC_MUTANTS:
         import importlib
@@ -107,8 +144,25 @@ def run(name: str) -> None:
 
         os.environ["AI_MUTANT"] = name
         importlib.reload(gen_Sstc)
-        gen_Sstc.SUITE = "Mut"
+        gen_Sstc.SUITE = suite
         tests = gen_Sstc.gen()
+    elif ":" in name and name in h_mutants():
+        import os
+
+        import gen_H
+
+        area, mut = name.split(":")
+        os.environ["AI_MUTANT"] = mut
+        tests = gen_H.gen([area], suite=suite)
+    elif ":" in name and name in suite_mutants():
+        import importlib
+        import os
+
+        sname, mut = name.split(":", 1)
+        os.environ["AI_MUTANT"] = mut
+        mod = importlib.reload(importlib.import_module(f"gen_{sname}"))
+        mod.SUITE = suite
+        tests = mod.gen()
     else:
         raise SystemExit(f"unknown mutant {name}")
     for t in tests:
@@ -118,6 +172,6 @@ def run(name: str) -> None:
 
 if __name__ == "__main__":
     if sys.argv[1:] == ["--list"]:
-        print("\n".join([*M_MUTANTS, *SSTC_MUTANTS]))
+        print("\n".join([*M_MUTANTS, *SSTC_MUTANTS, *h_mutants(), *suite_mutants()]))
     else:
         run(sys.argv[1])

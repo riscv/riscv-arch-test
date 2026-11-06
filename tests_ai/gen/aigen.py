@@ -140,6 +140,7 @@ class TestFile:
         self.cur = boot or "U"  # privilege mode the test body runs in (U: the lowest mode)
         self._conds: list[str] = []
         self.rv64, self.suffix = rv64, suffix
+        self.extra_data: list[str] = []  # assembly lines appended to the data section (e.g. a scratch word)
         if rv64:
             self.code.append("#if __riscv_xlen == 64")
             self._conds.append("__riscv_xlen == 64")
@@ -182,7 +183,8 @@ class TestFile:
     # ---------- code emission ----------
     def label(self, stem: str) -> str:
         self._lab += 1
-        return f"{self.rule}_{stem}_{self._lab}"
+        return f"{self.rule.replace('-', '_')}_{stem}_{self._lab}"  # rule names may contain '-'
+
 
     def comment(self, text: str) -> None:
         self.code.append(f"  // {text}")
@@ -208,9 +210,11 @@ class TestFile:
         self.emit(f"AI_LOAD({reg})" + (f"  // {note}" if note else ""), 2)
 
     def check(self, reg: str, expected: Expect, insn_label: str, desc: str) -> None:
-        """Check reg against one expected value or a list of 2-3 legal values.
+        """Check reg against one expected value or a list of 2-3 legal values. reg must not be x4, which
+        AI_CHECK loads with the expected value.
 
         expected: int | str | X, or a list of those (alternatives)."""
+        assert reg != "x4", "AI_CHECK compares against x4; check another register"
         alts = expected if isinstance(expected, list) else [expected]
         alts = [xv(a) for a in alts]
         assert 1 <= len(alts) <= 3
@@ -220,13 +224,18 @@ class TestFile:
         text = X(*(f"{self.rule}: {d.at(x)}; expect " + " or ".join(fmt(a.at(x), x) for a in alts) for x in (32, 64)))
         self.strings.append(self._entry((slabel, text)))
         macro = {1: "AI_CHECK", 2: "AI_CHECK2", 3: "AI_CHECK3"}[len(alts)]
-        self.emit(f"{macro}({reg}, {insn_label}, {slabel})", 2 + 2 * len(alts))
+        if reg == "x5" and not {"x13", "x14"} & set(self.pool):
+            # AI_CHECK links through x5, so a failure would report the return address instead of x5's value
+            self.emit(f"{macro}_X5({insn_label}, {slabel})", 2 + 2 * len(alts))
+        else:
+            self.emit(f"{macro}({reg}, {insn_label}, {slabel})", 2 + 2 * len(alts))
 
     def check_masked(
-        self, reg: str, mask: Value, expected: Expect, insn_label: str, desc: str, tmp: str = "x4"
+        self, reg: str, mask: Value, expected: Expect, insn_label: str, desc: str, tmp: str = "x5"
     ) -> None:
         """Check only the bits in mask (for fields whose other bits may legally hold any value).
-        tmp is clobbered; x4 is safe because AI_CHECK reloads it."""
+        tmp is clobbered. It must not be x4: AI_CHECK loads the expected value into x4 before comparing. With the
+        default x5, tests whose pool excludes x13/x14 report the real value on a failure (AI_CHECK_X5)."""
         self.load(tmp, mask, "mask of the checked bits")
         self.emit(f"and {tmp}, {tmp}, {reg}")
         self.check(tmp, expected, insn_label, desc)
@@ -470,7 +479,8 @@ class TestFile:
         if self.rv64:
             lines.append("#endif")
         lines += ["", "RVTEST_CODE_END", "", "RVTEST_DATA_BEGIN", "  .p2align 3", "ai_table:"]
-        lines += self._data(64) + self._data(32) + ["#endif", "", "RVTEST_DATA_END", "", "RVTEST_SIG_SETUP", ""]
+        lines += self._data(64) + self._data(32) + ["#endif"] + ([""] + self.extra_data if self.extra_data else [])
+        lines += ["", "RVTEST_DATA_END", "", "RVTEST_SIG_SETUP", ""]
         return "\n".join(lines)
 
     def write(self) -> Path:

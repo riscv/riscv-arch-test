@@ -84,6 +84,52 @@
     addi AI_TP, AI_TP, 3*REGWIDTH                          ;\
     .option pop
 
+// Variants for checking x5 itself (e.g. a computed predicate): AI_CHECK's failure path links through x5, which
+// would overwrite the value before the reporter saves it. These compare against x13 and link through x14
+// (failedtest_x14_x13 saves x4 and x5 first), so they clobber x13 even when the check passes. Use them only
+// where x13 is dead (outside trap windows in tests that keep x13-x15 for windows).
+#define AI_CHECK_X5(_LBL, _STR)                             \
+    .option push                                           ;\
+    .option norvc                                          ;\
+    LREG x13, 0(AI_TP)                                     ;\
+    beq  x13, x5, 1f                                       ;\
+    jal  x14, failedtest_x14_x13                           ;\
+    RVTEST_WORD_PTR _LBL                                   ;\
+    RVTEST_WORD_PTR _STR                                   ;\
+1:                                                         ;\
+    addi AI_TP, AI_TP, REGWIDTH                            ;\
+    .option pop
+
+#define AI_CHECK2_X5(_LBL, _STR)                            \
+    .option push                                           ;\
+    .option norvc                                          ;\
+    LREG x13, 0(AI_TP)                                     ;\
+    beq  x13, x5, 1f                                       ;\
+    LREG x13, REGWIDTH(AI_TP)                              ;\
+    beq  x13, x5, 1f                                       ;\
+    jal  x14, failedtest_x14_x13                           ;\
+    RVTEST_WORD_PTR _LBL                                   ;\
+    RVTEST_WORD_PTR _STR                                   ;\
+1:                                                         ;\
+    addi AI_TP, AI_TP, 2*REGWIDTH                          ;\
+    .option pop
+
+#define AI_CHECK3_X5(_LBL, _STR)                            \
+    .option push                                           ;\
+    .option norvc                                          ;\
+    LREG x13, 0(AI_TP)                                     ;\
+    beq  x13, x5, 1f                                       ;\
+    LREG x13, REGWIDTH(AI_TP)                              ;\
+    beq  x13, x5, 1f                                       ;\
+    LREG x13, 2*REGWIDTH(AI_TP)                            ;\
+    beq  x13, x5, 1f                                       ;\
+    jal  x14, failedtest_x14_x13                           ;\
+    RVTEST_WORD_PTR _LBL                                   ;\
+    RVTEST_WORD_PTR _STR                                   ;\
+1:                                                         ;\
+    addi AI_TP, AI_TP, 3*REGWIDTH                          ;\
+    .option pop
+
 // ---------------------------------------------------------------- trap windows
 // Open a window: permit up to _N traps and save the trap count in x13.
 #define AI_ALLOW(_N)                                        \

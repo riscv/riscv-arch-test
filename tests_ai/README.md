@@ -8,17 +8,22 @@ Layout:
 - `gen/gen_<Suite>.py` is the generator for one suite. `gen/aigen.py` is the shared writer: XLEN-dual tables, checks, registers, T-SBI and trap-window helpers.
 - `gen/norm_rules.py` lists the rules in ISA-manual sources. `gen/mutate.py` regenerates a suite from deliberately wrong semantics to show the tests catch those bugs.
 - `common/ai_macros.h` holds the check and trap-window macros on top of `tests/env`.
-- `run_ai.sh` builds and runs suites on ACT configurations.
+- `run_ai.sh` builds and runs suites on ACT configurations. `run_mutants.sh <prefix> <config>` runs every mutant whose
+  name starts with prefix and requires each to fail a test. Mutants are named `<area>:<mutant>` for H (one `MUTANTS`
+  dict per `gen/h_*.py`) and `<Suite>:<mutant>` for any other `gen/gen_<Suite>.py` with a `MUTANTS` dict.
 
 Running:
 
 ```bash
 mise exec -- tests_ai/run_ai.sh M,Sstc config/sail/sail-rv64-max config/spike/spike-rv32-max
 DEBUG=1 mise exec -- tests_ai/run_ai.sh Sstc config/qemu/qemu-rv32-max   # traces and objdumps
+AI_ONLY="hgatp_* sret_*" mise exec -- tests_ai/run_ai.sh H config/sail/sail-rv64-max   # only matching tests
+mise exec -- tests_ai/run_mutants.sh h_csr: config/sail/sail-rv64-max                    # mutation check
 python3 tests_ai/gen/gen_Sstc.py                                         # regenerate a suite
 ```
 
-Logs are in `work/tests_ai/<config>/logs/ai/<Suite>/`. A failing check prints the rule, the case, the expected value(s) and the actual value.
+Logs are in `work/tests_ai/<config>/logs/ai/<Suite>/`. Concurrent runs need their own `AI_WORKDIR` and
+`XDG_DATA_HOME` (the UDB configuration cache). A failing check prints the rule, the case, the expected value(s) and the actual value.
 
 Mechanics:
 

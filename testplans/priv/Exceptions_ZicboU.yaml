@@ -29,7 +29,7 @@ coverpoints:
     goal: Access fault
     description: |-
       For each supported cbo op {inval, clean, flush, zero, prefetch.{i/w/r}}
-      Execute op to RVMODEL_ACCESS_FAULT_ADDRESS and RVMODEL_ACCESS_FAULT_ADDRESS + 1 with menvcfg enabled
+      Execute op to RVMODEL_ACCESS_FAULT_ADDRESS_STORE and RVMODEL_ACCESS_FAULT_ADDRESS_STORE + 1 with menvcfg enabled
     expectation: |-
       CBO: Store access fault
       Prefetch: no access fault

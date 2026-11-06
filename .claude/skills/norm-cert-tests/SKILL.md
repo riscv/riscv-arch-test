@@ -31,7 +31,7 @@ Before starting, read `tests_ai/README.md` (mechanics), `tests_ai/gen/aigen.py` 
 
 - The only configuration inputs are the `X_SUPPORTED` extension macros, `__riscv_xlen`, and DUT macros from `rvmodel_macros.h` (e.g. `RVMODEL_MTIMECMP_ADDRESS`, under `#ifdef`).
 - Use no UDB parameters, and no `params:` in the test header.
-- Optional behavior is probed at run time: read or write the CSR, or attempt the access inside a trap window, then branch on the outcome.
+- Optional behavior is probed at run time: read or write the CSR, or attempt the access inside a trap window, then branch on the outcome with `t.either(reg, if_set, if_clear)`. Both paths are emitted with their own expectations and each skips the other's table entries. Check WARL control bits the test depends on, such as `hcounteren.TM`, which may be read-only zero.
 - Do not consult existing generators, test plans, coverpoints or `coverpoints/norm`. You may look at one existing test for syntax only.
 
 **Framework and DUT bugs**
@@ -145,4 +145,5 @@ Accept every legal outcome; use the trap log's fields to tell them apart. Typica
 - **Field modulation.** A write that changes another field's legal values leaves that field UNSPECIFIED. Write it again before checking.
 - **Time.** `time` cannot be stopped, so use margins (time + k·2^32), not equality. On RV32, order the timeh/time reads so a carry between them cannot make a "future" value past (or the reverse). Reading `time` below M-mode needs mcounteren.TM=1 and Zicntr.
 - **Unexpected traps** fail at the trap with "Unexpected trap" and xcause/xepc/xtval. If one appears in a mode change, check that the window did not enter the mode with a pending, enabled interrupt you did not expect.
-- **DUT bug triage.** QEMU rv32 fails three Sstc tests because of known QEMU #4611 (mstateen0 writes clear mstateen0h.ENVCFG), which `config/qemu/ci.yaml` already excludes. Check known issues before reporting a bug.
+- **SIE after an xret.** An `sret` from HS-mode into VS or VU (or from S into U) copies SPIE into the returning mode's SIE, and the framework boots with SIE=1. Clear SIE before enabling an interrupt that HS- or S-mode must take only inside a window.
+- **DUT bug triage.** QEMU rv32 fails every Sstc test that writes `henvcfgh` (illegal-instruction on `csrs henvcfgh`) because of known QEMU #4611 (mstateen0 writes clear mstateen0h.ENVCFG), which `config/qemu/ci.yaml` already excludes. Check known issues before reporting a bug.

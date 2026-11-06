@@ -75,6 +75,22 @@ SSTC_MUTANTS = {
     "vs_virtual_stce0": "VS-mode access with menvcfg.STCE=0 raises virtual-instruction",
     "sticky_stip": "a software-set STIP survives setting STCE",
     "spp_wrong": "a trap from U-mode records sstatus.SPP = S",
+    "vs_direct_vstimecmp_ok": "VS-mode may access vstimecmp by its own address",
+    "vs_compare_32bit": "only the low 32 bits of time + htimedelta and vstimecmp compared",
+    "vs_signed_compare": "time + htimedelta >= vstimecmp compared as signed",
+    "vs_ignore_htimedelta": "the vstimecmp comparison uses time without htimedelta",
+    "vs_no_truncate": "time + htimedelta is not truncated to 64 bits",
+    "vs_carry_dropped": "the carry from the low half of time + htimedelta is lost",
+    "vu_access_leak": "VU-mode may access stimecmp when every gate is set",
+    "vstip_timer_with_henvcfg_stce0": "vstimecmp still drives hip.VSTIP with henvcfg.STCE=0",
+    "henvcfg_stce_illegal": "henvcfg.STCE=0 makes VS-mode access illegal- instead of virtual-instruction",
+    "hcounteren_ignored": "hcounteren.TM does not gate VS-mode stimecmp access",
+    "mcounteren_tm_virtual": "mcounteren.TM=0 makes VS-mode access virtual- instead of illegal-instruction",
+    "vstip_only_on_write": "hip.VSTIP is re-evaluated only when vstimecmp is written",
+    "vsti_ignores_vs_sie": "a delegated VS timer interrupt ignores vsstatus.SIE in VS-mode",
+    "vstip_hvip_ignored": "hip.VSTIP ignores hvip.VSTIP when Sstc drives it",
+    "hip_vstip_writable": "hip.VSTIP is writable",
+    "vstip_not_reverted": "vstimecmp still drives hip.VSTIP with menvcfg.STCE=0",
 }
 
 

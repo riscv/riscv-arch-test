@@ -14,7 +14,7 @@ from __future__ import annotations
 import hashlib
 import random
 import textwrap
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from contextlib import AbstractContextManager, contextmanager
 from dataclasses import dataclass
 from pathlib import Path
@@ -290,8 +290,39 @@ class TestFile:
         if oks:
             self.emit(f"j {done}")
             self.emit(f"{skip}:", 0)
-            self.emit(f"AI_SKIP({len(self.table) - first})")
+            self.code += self._skip_lines(first, len(self.table))
             self.emit(f"{done}:", 0)
+
+    def _skip_lines(self, lo: int, hi: int) -> list[str]:
+        """AI_SKIP over table entries lo..hi-1, counted per XLEN (entries may be XLEN-specific)."""
+        n = {}
+        for xlen in (32, 64):
+            n[xlen] = 0
+            for _, conds in self.table[lo:hi]:
+                extra = [c for c in conds if c not in self._conds and not c.startswith("__riscv_xlen")]
+                assert not extra, f"{self.rule}: a run-time branch cannot hold entries under {extra}"
+                if f"__riscv_xlen == {96 - xlen}" not in conds:
+                    n[xlen] += 1
+        if n[32] == n[64]:
+            return [f"  AI_SKIP({n[64]})"]
+        return ["#if __riscv_xlen == 64", f"  AI_SKIP({n[64]})", "#else", f"  AI_SKIP({n[32]})", "#endif"]
+
+    def either(self, reg: str, if_set: Callable[[], object], if_clear: Callable[[], object]) -> None:
+        """Run-time branch on reg, e.g. a probed WARL bit: if_set runs when reg is nonzero, if_clear when it
+        is zero. Both paths are emitted with their own table entries, and each skips the other's."""
+        clear, done = self.label("clear"), self.label("done")
+        self.emit(f"beqz {reg}, {clear}")
+        a = len(self.table)
+        if_set()
+        b = len(self.table)
+        hole = len(self.code)
+        self.code.append("")  # filled in below: skip if_clear's entries
+        self.emit(f"j {done}")
+        self.emit(f"{clear}:", 0)
+        self.code += self._skip_lines(a, b)
+        if_clear()
+        self.code[hole] = "\n".join(self._skip_lines(b, len(self.table)))
+        self.emit(f"{done}:", 0)
 
     # ---------- privilege-mode windows ----------
     def enter(self, mode: str) -> None:

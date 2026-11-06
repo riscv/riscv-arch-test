@@ -20,7 +20,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 from aigen import POOL_TRAP, TestFile, X
 
 if TYPE_CHECKING:
-    from aigen import Value
+    from aigen import Expect, Value
 
 SUITE = "Sstc"
 ISSUE = "https://github.com/riscv/riscv-isa-manual/issues/"
@@ -1144,6 +1144,937 @@ def gen() -> list[TestFile]:
         t.emit(f"{'csrs' if stm else 'csrc'} scounteren, x7")
         access(t, "U", "stimecmp", FORMS[0], "illegal", f"STCE=1, TM=1, scounteren.TM={stm}: S-mode only")
     teardown(t)
+    tests.append(t)
+
+    tests += gen_vs()
+    return tests
+
+
+# ---------------------------------------------------------------- VS level (H)
+REQ_H = ["I", "S", "H", "Sstc"]
+REQ_HT = ["I", "S", "H", "Sstc", "Zicntr"]  # VS-level tests that read time
+HYP = "src/priv/hypervisor.adoc"
+VSTIP = 0x40  # hip/mip/hvip/hie/hideleg bit 6
+VSTI_HS = X((1 << 31) | 6, (1 << 63) | 6)  # VS-level timer interrupt taken in HS-mode
+ISSUE_2040 = (
+    f"{ISSUE}2040: VS-mode reaches vstimecmp only through the stimecmp address; hcounteren.TM gates that "
+    "access, and vstimecmp's own address is not accessible from V=1 (radimkrcmar: \"vstimecmp CSR access in VS "
+    'mode is not affected by the TM bit").'
+)
+ISSUE_1898 = (
+    f"{ISSUE}1898: with mcounteren.TM=0, a VS-mode stimecmp access raises illegal-instruction, not "
+    "virtual-instruction: the virtual-instruction rule covers instructions disabled by a supervisor or "
+    'hypervisor CSR, "which clearly does not apply to an instruction being disabled by a machine CSR such as '
+    'mcounteren" (gfavor).'
+)
+ISSUE_1636_VS = (
+    f"{ISSUE}1636: when STCE changes, the timer-driven pending bit takes an UNSPECIFIED value until it is "
+    "written; tests write hvip.VSTIP after changing STCE before relying on hip.VSTIP."
+)
+HTM_WARL = (
+    "hcounteren bits may be read-only zero (hcounteren_warl). Tests set hcounteren.TM, read it back, and where it "
+    "reads 0 expect VS-mode accesses to raise virtual-instruction instead."
+)
+
+
+def henv_stce(t: TestFile, on: bool) -> None:
+    t.comment(f"henvcfg.STCE = {int(on)}")
+    op = "csrs" if on else "csrc"
+    with t.rv64_only():
+        t.li("x7", 1)
+        t.emit("slli x7, x7, 63")
+        t.emit(f"{op} CSR_HENVCFG, x7")
+    with t.rv32_only():
+        t.li("x7", 0x80000000)
+        t.emit(f"{op} CSR_HENVCFGH, x7")
+
+
+def hbit(t: TestFile, csr: str, bit: int, on: bool, name: str) -> None:
+    t.comment(f"{name} = {int(on)}")
+    t.li("x7", bit)
+    t.emit(f"{'csrs' if on else 'csrc'} {csr}, x7")
+
+
+def htm(t: TestFile, on: bool) -> None:
+    hbit(t, "CSR_HCOUNTEREN", 2, on, "hcounteren.TM")
+
+
+def htm_probe(t: TestFile) -> None:
+    """Set hcounteren.TM and leave its read-back value in x1: 2, or 0 if it is read-only zero."""
+    htm(t, True)
+    t.emit("csrr x1, CSR_HCOUNTEREN")
+    t.emit("andi x1, x1, 2")
+
+
+def hvip(t: TestFile, on: bool) -> None:
+    hbit(t, "CSR_HVIP", VSTIP, on, "hvip.VSTIP")
+
+
+def hideleg(t: TestFile, on: bool) -> None:
+    hbit(t, "CSR_HIDELEG", VSTIP, on, "hideleg[6] (VS-level timer interrupt delegated to VS)")
+
+
+def hie(t: TestFile, on: bool) -> None:
+    """Set or clear hie.VSTIE. Setting it first clears sstatus.SIE: an sret into VS or VU copies SPIE (1) into
+    HS-mode's SIE, and HS-mode must take the interrupt only inside a window that sets SIE itself."""
+    if on:
+        t.li("x7", SIE)
+        t.emit("csrc sstatus, x7")
+    hbit(t, "CSR_HIE", VSTIP, on, "hie.VSTIE")
+
+
+def wr64(t: TestFile, lo: str, hi: str, v: int, note: str) -> None:
+    """HS-mode write of a 64-bit constant to a CSR (lo) and, on RV32, its high half (hi), high half first."""
+    with t.rv64_only():
+        t.load("x6", v, note)
+        t.emit(f"csrw {lo}, x6")
+    with t.rv32_only():
+        t.load("x6", v >> 32, f"{note} (high half)")
+        t.emit(f"csrw {hi}, x6")
+        t.load("x6", v & 0xFFFFFFFF, f"{note} (low half)")
+        t.emit(f"csrw {lo}, x6")
+
+
+def vcmp(t: TestFile, v: int, note: str) -> None:
+    wr64(t, "CSR_VSTIMECMP", "CSR_VSTIMECMPH", v, f"vstimecmp = {note}")
+
+
+def htd(t: TestFile, v: int, note: str) -> None:
+    wr64(t, "CSR_HTIMEDELTA", "CSR_HTIMEDELTAH", v, f"htimedelta = {note}")
+
+
+def vcmp_now(t: TestFile, k: int, delta: bool = True) -> None:
+    """HS-mode write vstimecmp = time (+ htimedelta when delta) + k*2^32, truncated to 64 bits; k is a small
+    signed integer. The time read order makes k <= 0 never in the future and k > 0 always in the future."""
+    t.comment(f"vstimecmp = time{' + htimedelta' if delta else ''} + {k}*2^32")
+    with t.rv64_only():
+        t.emit("csrr x6, time")
+        if delta:
+            t.emit("csrr x7, CSR_HTIMEDELTA")
+            t.emit("add x6, x6, x7")
+        if k:
+            t.li("x7", k)
+            t.emit("slli x7, x7, 32")
+            t.emit("add x6, x6, x7")
+        t.emit("csrw CSR_VSTIMECMP, x6")
+    with t.rv32_only():
+        if k > 0:
+            t.emit("csrr x7, time")
+            t.emit("csrr x6, timeh")
+        else:
+            t.emit("csrr x6, timeh")
+            t.emit("csrr x7, time")
+        if delta:
+            t.emit("csrr x8, CSR_HTIMEDELTA")
+            t.emit("add x7, x7, x8")
+            t.emit("sltu x8, x7, x8")  # carry out of the low half
+            t.emit("add x6, x6, x8")
+            t.emit("csrr x8, CSR_HTIMEDELTAH")
+            t.emit("add x6, x6, x8")
+        if k:
+            t.emit(f"addi x6, x6, {k}")
+        t.emit("csrw CSR_VSTIMECMPH, x6")
+        t.emit("csrw CSR_VSTIMECMP, x7")
+
+
+def poll_vstip(t: TestFile, until: int, n: int = 500) -> None:
+    """Read hip.VSTIP into x8 until it equals `until` or n reads pass (bounded wait, no checks inside)."""
+    loop, done = t.label("wait"), t.label("waitdone")
+    t.li("x9", n)
+    t.emit(f"{loop}:", 0)
+    t.emit("csrr x8, CSR_HIP", n)
+    t.emit(f"andi x8, x8, {VSTIP}", n)
+    t.emit(f"{'bnez' if until else 'beqz'} x8, {done}", n)
+    t.emit("addi x9, x9, -1", n)
+    t.emit(f"bnez x9, {loop}", n)
+    t.emit(f"{done}:", 0)
+
+
+def expect_vstip(t: TestFile, value: int, desc: str, settle: bool = True, mview: bool = True) -> None:
+    """Check hip.VSTIP (awaiting a change, or watching a steady value) and, when mview, mip.VSTIP read in
+    M-mode, which aliases it."""
+    lab = t.label("vstip")
+    poll_vstip(t, until=value if settle else 1 - value, n=500 if settle else 50)
+    t.emit(f"{lab}:", 0)
+    t.check("x8", VSTIP if value else 0, lab, f"hip.VSTIP after {desc}")
+    if mview:
+        t.tsbi_csr("READ", "MIP")
+        t.emit(f"andi a0, a0, {VSTIP}")
+        t.check("a0", VSTIP if value else 0, lab, f"mip.VSTIP (M-mode read) after {desc}")
+
+
+def vsetup(t: TestFile) -> None:
+    setup(t)
+    t.comment(
+        "VS setup: henvcfg.STCE=1, hcounteren.TM=1, htimedelta=0, vstimecmp all ones, hvip.VSTIP=0, "
+        "hie.VSTIE=0, hideleg[6]=0"
+    )
+    henv_stce(t, True)
+    htm(t, True)
+    htd(t, 0, "0")
+    vcmp(t, MAX64, "all ones")
+    hvip(t, False)
+    hie(t, False)
+    hideleg(t, False)
+    t.blank()
+
+
+def vteardown(t: TestFile) -> None:
+    t.blank()
+    t.comment("VS teardown")
+    hie(t, False)
+    hideleg(t, False)
+    hvip(t, False)
+    t.li("x6", SIE)
+    t.emit("csrc CSR_VSSTATUS, x6")
+    vcmp(t, MAX64, "all ones")
+    htd(t, 0, "0")
+    henv_stce(t, False)
+    teardown(t)
+
+
+def delay_window(t: TestFile, mode: str, expect: Expect, desc: str) -> str:
+    """A trap window that enters `mode` (from HS) and waits 50 iterations there, for interrupt checks."""
+    lab = t.label(f"int{mode}")
+    t.allow(1)
+    if mode != "S":
+        t.enter(mode)
+    t.emit(f"{lab}:", 0)
+    loop = t.label("delay")
+    t.li("x9", 50)
+    t.emit(f"{loop}:", 0)
+    t.emit("addi x9, x9, -1", 50)
+    t.emit(f"bnez x9, {loop}", 50)
+    if mode != "S":
+        t.leave()
+    t.outcome(expect, lab, desc, epc=False, origin=mode)
+    return lab
+
+
+def vs_int_case(t: TestFile, deleg: int, mode: str, sie: int, vstie: int, pending: int) -> None:
+    """VS-level timer interrupt from vstimecmp (hvip.VSTIP=0) in `mode` (VS, VU or S for HS-mode), with
+    hideleg[6] = deleg already set. sie is vsstatus.SIE for VS/VU and sstatus.SIE for HS."""
+    if deleg:
+        taken = pending and vstie and (mode == "VU" or (mode == "VS" and (sie or MUT == "vsti_ignores_vs_sie")))
+    else:
+        taken = pending and vstie and (mode != "S" or sie)
+    where = {"S": "HS"}.get(mode, mode)
+    sreg = "sstatus" if mode == "S" else "vsstatus"
+    desc = f"{where}-mode, hideleg[6]={deleg}, {sreg}.SIE={sie}, hie.VSTIE={vstie}, VSTIP pending={pending}"
+    t.comment(desc)
+    vcmp(t, 0 if pending else MAX64, "0 (pending)" if pending else "all ones (not pending)")
+    if pending:
+        poll_vstip(t, 1)
+    hie(t, bool(vstie))
+    t.li("x6", SIE)
+    if mode == "S":
+        lab = t.label("intHS")
+        t.allow(1)
+        t.emit(f"{lab}:", 0)
+        if sie:
+            t.emit("csrs sstatus, x6")
+        poll_vstip(t, 2, 50)  # a 50-iteration delay
+        t.emit("csrc sstatus, x6")
+        t.outcome(
+            VSTI_HS if taken else "ok",
+            lab,
+            f"{desc}: VS-level timer interrupt {'must' if taken else 'must not'} be taken",
+            epc=False,
+            origin="S",
+        )
+    else:
+        t.emit(f"{'csrs' if sie else 'csrc'} CSR_VSSTATUS, x6")
+        lab = delay_window(
+            t,
+            mode,
+            (STI if deleg else VSTI_HS) if taken else "ok",
+            f"{desc}: VS-level timer interrupt {'must' if taken else 'must not'} be taken",
+        )
+        t.emit("csrc CSR_VSSTATUS, x6")
+    if taken:
+        t.emit("AI_LOG(x15, TRAPLOG_VECT)", 10)
+        t.emit("andi x15, x15, 3")
+        t.check(
+            "x15", 2 if deleg else 1, lab, f"{desc}: taken in {'VS' if deleg else 'HS'}-mode (handler mode 2 VS, 1 HS)"
+        )
+    hie(t, False)
+
+
+def vs_forms(t: TestFile, csr: str) -> None:
+    """Every CSR instruction form on stimecmp (or stimecmph) in VS-mode, which operates on vstimecmp (or
+    vstimecmph): returns the old value and leaves the value the form defines."""
+    hcsr = {"stimecmp": "CSR_VSTIMECMP", "stimecmph": "CSR_VSTIMECMPH"}[csr]
+    for form in FORMS:
+        old = X(t.rand(32), t.rand(64))
+        rs = X(t.rand(32), t.rand(64))
+        t.comment(f"{form[4]} on {csr} in VS-mode")
+        if csr == "stimecmp":
+            with t.rv64_only():
+                t.load("x7", old.num(64), "old vstimecmp")
+            with t.rv32_only():
+                t.load("x7", old.num(32), "old vstimecmp")
+        else:
+            t.load("x7", old.num(32), "old vstimecmph")
+        t.emit(f"csrw {hcsr}, x7")
+        t.load("x6", rs, "rs1 value")
+        lab = access(t, "VS", csr, form, "ok", "henvcfg.STCE=1, hcounteren.TM=1")
+        r32, n32 = form_value(form, old.num(32), rs.num(32), 32)
+        r64, n64 = form_value(form, old.num(64), rs.num(64), 64)
+        if r32 is not None and r64 is not None:
+            t.check("x7", X(r32, r64), lab, f"{form[4]} of {csr} in VS-mode returns the old vstimecmp value")
+        t.emit(f"csrr x7, {hcsr}")
+        t.check("x7", X(n32, n64), lab, f"{form[4]} of {csr} in VS-mode leaves the defined value in vstimecmp")
+
+
+def gen_vs() -> list[TestFile]:
+    tests = []
+
+    # ---- vstimecmp_exist ----
+    t = new("vstimecmp_exist", REQ_H)
+    t.describe(
+        source=SSTC,
+        rule_text="This extension adds the S-level stimecmp CSR (<<stimecmp>>) and the VS-level vstimecmp CSR "
+        "(<<vstimecmp>>).",
+        context="This file covers the VS-level CSR (stimecmp_exist covers stimecmp). vstimecmp (0x24D, and "
+        "vstimecmph 0x25D on RV32) is an HS-mode CSR; VS-mode reaches it through the stimecmp address. The test "
+        "sets every gate: menvcfg.STCE, mcounteren.TM, henvcfg.STCE and hcounteren.TM.",
+        issues=ISSUE_1169 + "\n" + ISSUE_2040 + "\n" + HTM_WARL,
+        plan="1. HS-mode reads and writes vstimecmp (and vstimecmph on RV32) without a trap.\n"
+        "2. Round trip from HS-mode: 0, all ones, 2^63 and two random 64-bit values.\n"
+        "3. VS-mode's stimecmp is vstimecmp: a VS-mode read of stimecmp returns what HS-mode wrote to "
+        "vstimecmp, a VS-mode write lands in vstimecmp, and HS-mode's stimecmp is unchanged.\n"
+        "4. vstimecmp's own address raises virtual-instruction from VS and VU (and vstimecmph from VS on RV32).",
+    )
+    vsetup(t)
+    access(t, "S", "vstimecmp", FORMS[0], "ok", "HS-mode")
+    t.emit("li x6, 0")
+    access(t, "S", "vstimecmp", FORMS[1], "ok", "HS-mode")
+    with t.rv32_only():
+        access(t, "S", "vstimecmph", FORMS[0], "ok", "HS-mode")
+    for v, note in [(0, "zero"), (MAX64, "all ones"), (1 << 63, "2^63")] + [(t.rand(64), "random") for _ in range(2)]:
+        vcmp(t, v, note)
+        lab = t.label("rt")
+        t.emit(f"{lab}:", 0)
+        t.emit("csrr x7, CSR_VSTIMECMP")
+        t.check("x7", X(v & 0xFFFFFFFF, v), lab, f"vstimecmp round trip ({note})")
+        with t.rv32_only():
+            t.emit("csrr x7, CSR_VSTIMECMPH")
+            t.check("x7", v >> 32, lab, f"vstimecmph round trip ({note})")
+    sv, hv, gv = t.rand(64), t.rand(64), X(t.rand(32), t.rand(64))
+    cmp_s(t, sv, "HS-mode stimecmp")
+    vcmp(t, hv, "value VS-mode reads through stimecmp")
+    htm_probe(t)
+
+    def vs_view() -> None:
+        lab = access(t, "VS", "stimecmp", FORMS[0], "ok", "all gates set")
+        t.check("x7", X(hv & 0xFFFFFFFF, hv), lab, "VS-mode reads vstimecmp through stimecmp")
+        t.load("x6", gv, "value VS-mode writes through stimecmp")
+        lab = access(t, "VS", "stimecmp", FORMS[1], "ok", "all gates set")
+        t.emit("csrr x7, CSR_VSTIMECMP")
+        t.check("x7", gv, lab, "a VS-mode write of stimecmp lands in vstimecmp")
+        t.emit("csrr x7, stimecmp")
+        t.check("x7", X(sv & 0xFFFFFFFF, sv), lab, "a VS-mode write of stimecmp leaves HS-mode's stimecmp")
+
+    t.either("x1", vs_view, lambda: access(t, "VS", "stimecmp", FORMS[0], "virtual", "hcounteren.TM read-only zero"))
+    direct = "ok" if MUT == "vs_direct_vstimecmp_ok" else "virtual"
+    for mode in ("VS", "VU"):
+        access(t, mode, "vstimecmp", FORMS[0], direct, "vstimecmp's own address from V=1")
+    with t.rv32_only():
+        access(t, "VS", "vstimecmph", FORMS[0], "virtual", "vstimecmph's own address from V=1")
+    vteardown(t)
+    tests.append(t)
+
+    # ---- vstimecmp_sz ----
+    t = new("vstimecmp_sz", REQ_HT)
+    t.describe(
+        source=HYP,
+        rule_text="The vstimecmp CSR is a 64-bit register and has 64-bit precision on all RV32 and RV64 systems.",
+        context="VSTIP reflects time + htimedelta >= vstimecmp (hip_vstip_op), so 64-bit precision applies to "
+        "both sides of the comparison.",
+        issues=ISSUE_1169,
+        plan="1. Three random 64-bit values round-trip through vstimecmp (both halves on RV32).\n"
+        "2. The comparison uses all 64 bits: with htimedelta = 0 and with a random multiple of 2^32, vstimecmp = "
+        "time + htimedelta + 2^32 and + 2^33 (equal low halves, larger high half) gives VSTIP=0; lowering only "
+        "the high half to that of time + htimedelta gives VSTIP=1.\n"
+        "3. Unsigned comparison: vstimecmp = 2^63 gives VSTIP=0.",
+    )
+    vsetup(t)
+    for _ in range(3):
+        v = t.rand(64)
+        vcmp(t, v, "random")
+        lab = t.label("rt")
+        t.emit(f"{lab}:", 0)
+        t.emit("csrr x7, CSR_VSTIMECMP")
+        t.check("x7", X(v & 0xFFFFFFFF, v), lab, "vstimecmp keeps its value")
+        with t.rv32_only():
+            t.emit("csrr x7, CSR_VSTIMECMPH")
+            t.check("x7", v >> 32, lab, "vstimecmph keeps its value")
+    for delta in (0, (t.rand(20) | 1) << 32):
+        htd(t, delta, f"{delta:#x}")
+        for k in (1, 2):
+            vcmp_now(t, k)
+            expect_vstip(
+                t,
+                int(MUT == "vs_compare_32bit"),
+                f"vstimecmp = time + htimedelta + {k}*2^32, htimedelta = {delta:#x}",
+                mview=False,
+            )
+        t.comment("lower only the high half: vstimecmp = time + htimedelta as read, now <= time + htimedelta")
+        with t.rv64_only():
+            t.emit("csrr x6, CSR_VSTIMECMP")
+            t.li("x7", 2)
+            t.emit("slli x7, x7, 32")
+            t.emit("sub x6, x6, x7")
+            t.emit("csrw CSR_VSTIMECMP, x6")
+        with t.rv32_only():
+            t.emit("csrr x6, CSR_VSTIMECMPH")
+            t.emit("addi x6, x6, -2")
+            t.emit("csrw CSR_VSTIMECMPH, x6")
+        expect_vstip(t, 1, f"lowering only the high half of vstimecmp, htimedelta = {delta:#x}")
+    htd(t, 0, "0")
+    vcmp(t, 1 << 63, "2^63")
+    expect_vstip(t, 0, "vstimecmp = 2^63 (unsigned comparison)")
+    vteardown(t)
+    tests.append(t)
+
+    # ---- vstimecmp_acc ----
+    t = new("vstimecmp_acc", REQ_H)
+    t.describe(
+        source=HYP,
+        rule_text="In RV32 only, accesses to the vstimecmp CSR access the low 32 bits, while accesses to the "
+        "vstimecmph CSR access the high 32 bits of vstimecmp.",
+        context="VS-mode reaches vstimecmp and vstimecmph through stimecmp and stimecmph. On RV64, "
+        "vstimecmph and stimecmph do not exist, so accessing them is illegal in HS-mode and, because the "
+        "instruction is not valid in HS-mode either (not HS-qualified), illegal rather than virtual in VS-mode.",
+        issues=HTM_WARL,
+        plan="1. RV32, HS-mode: writing vstimecmp leaves vstimecmph unchanged and vice versa (random values).\n"
+        "2. RV32, VS-mode: a write through stimecmp changes only the low half of vstimecmp, and a write through "
+        "stimecmph only the high half.\n"
+        "3. RV64: HS-mode access to vstimecmph and VS-mode access to stimecmph raise illegal-instruction.",
+    )
+    vsetup(t)
+    with t.rv32_only():
+        for first, second in (("CSR_VSTIMECMP", "CSR_VSTIMECMPH"), ("CSR_VSTIMECMPH", "CSR_VSTIMECMP")):
+            a, b, c = t.rand(32), t.rand(32), t.rand(32)
+            t.load("x6", a, "first half")
+            t.emit(f"csrw {first}, x6")
+            t.load("x6", b, "other half")
+            t.emit(f"csrw {second}, x6")
+            t.load("x6", c, "new first half")
+            lab = t.label("half")
+            t.emit(f"{lab}:", 0)
+            t.emit(f"csrw {first}, x6")
+            t.emit(f"csrr x7, {second}")
+            t.check("x7", b, lab, f"HS-mode write of {first[4:].lower()} leaves {second[4:].lower()} unchanged")
+            t.emit(f"csrr x7, {first}")
+            t.check("x7", c, lab, f"{first[4:].lower()} holds its own write")
+        htm_probe(t)
+
+        def vs_halves() -> None:
+            for vcsr, own, other in (
+                ("stimecmp", "CSR_VSTIMECMP", "CSR_VSTIMECMPH"),
+                ("stimecmph", "CSR_VSTIMECMPH", "CSR_VSTIMECMP"),
+            ):
+                a, b, c = t.rand(32), t.rand(32), t.rand(32)
+                t.load("x6", a, "half VS-mode writes")
+                t.emit(f"csrw {own}, x6")
+                t.load("x6", b, "other half")
+                t.emit(f"csrw {other}, x6")
+                t.load("x6", c, f"value VS-mode writes through {vcsr}")
+                lab = access(t, "VS", vcsr, FORMS[1], "ok", "RV32 halves")
+                t.emit(f"csrr x7, {other}")
+                t.check("x7", b, lab, f"a VS-mode write of {vcsr} leaves the other half of vstimecmp")
+                t.emit(f"csrr x7, {own}")
+                t.check("x7", c, lab, f"a VS-mode write of {vcsr} lands in {own[4:].lower()}")
+
+        t.either(
+            "x1", vs_halves, lambda: access(t, "VS", "stimecmp", FORMS[0], "virtual", "hcounteren.TM read-only zero")
+        )
+    with t.rv64_only():
+        access(t, "S", "vstimecmph", FORMS[0], "illegal", "RV64 has no vstimecmph")
+        access(t, "VS", "stimecmph", FORMS[0], "illegal", "RV64 has no stimecmph")
+    vteardown(t)
+    tests.append(t)
+
+    # ---- henvcfg_stce ----
+    t = new("henvcfg_stce", REQ_H)
+    t.describe(
+        source=HYP,
+        rule_text="The Sstc extension adds the STCE (STimecmp Enable) bit to henvcfg CSR.",
+        context="STCE is henvcfg bit 63 (henvcfgh bit 31 on RV32). It is read-only zero while menvcfg.STCE=0 "
+        "(menvcfg_stce_zero_op), so the test sets menvcfg.STCE first.",
+        issues=f"{ISSUE}1312: writes to henvcfg.STCE while it is read-only zero are ignored.",
+        plan="1. With menvcfg.STCE=1, HS-mode clears and sets henvcfg.STCE with csrc/csrs and with full writes "
+        "(csrw of the current value with the bit changed), reading 0 and 1 back.\n"
+        "2. Changing STCE leaves the other bits of henvcfg unchanged.",
+    )
+    vsetup(t)
+    for csrn, bitpos, cond in (("CSR_HENVCFG", 63, "__riscv_xlen == 64"), ("CSR_HENVCFGH", 31, "__riscv_xlen == 32")):
+        with t.only_if(cond):
+            t.emit(f"csrr x8, {csrn}")
+            t.li("x6", 1)
+            t.emit(f"slli x6, x6, {bitpos}")
+            for how, val in (("csrc", 0), ("csrs", 1), ("csrw", 0), ("csrw", 1)):
+                lab = t.label("stce")
+                if how == "csrw":
+                    t.emit(f"csrr x7, {csrn}")
+                    t.emit(f"{'or' if val else 'xor'} x7, x7, x6")
+                    t.emit(f"{lab}:", 0)
+                    t.emit(f"csrw {csrn}, x7")
+                else:
+                    t.emit(f"{lab}:", 0)
+                    t.emit(f"{how} {csrn}, x6")
+                t.emit(f"csrr x7, {csrn}")
+                t.emit(f"srli x7, x7, {bitpos}")
+                t.check("x7", val, lab, f"henvcfg.STCE reads {val} after {how}")
+            t.comment("the other bits are unchanged")
+            lab = t.label("others")
+            t.emit(f"{lab}:", 0)
+            t.emit(f"csrr x7, {csrn}")
+            t.emit("xor x7, x7, x8")
+            t.check("x7", 0, lab, "changing henvcfg.STCE leaves the other henvcfg bits (STCE was 1 before)")
+    vteardown(t)
+    tests.append(t)
+
+    # ---- henvcfg_stce_op ----
+    t = new("henvcfg_stce_op", REQ_H)
+    t.describe(
+        source=HYP,
+        rule_text="The STCE bit enables vstimecmp for VS-mode when set to one.",
+        context="VS-mode access also needs menvcfg.STCE=1, mcounteren.TM=1 and hcounteren.TM=1, which the test "
+        "sets. Enabling means VS-mode CSR instructions on stimecmp operate on vstimecmp, and the vstimecmp "
+        "comparison drives hip.VSTIP.",
+        issues=ISSUE_1985 + "\n" + HTM_WARL,
+        plan="1. henvcfg.STCE=0 then 1: the same VS-mode read of stimecmp raises virtual-instruction, then "
+        "succeeds.\n"
+        "2. With STCE=1, every CSR instruction form on stimecmp in VS-mode returns the old vstimecmp value and "
+        "leaves the value the form defines; on RV32 also on stimecmph.\n"
+        "3. With STCE=1 the comparison drives hip.VSTIP (htimedelta = 0, hvip.VSTIP = 0): vstimecmp = 0 gives 1, "
+        "all ones gives 0.\n"
+        "4. Enabling is for VS-mode only: VU-mode reads and writes of stimecmp raise virtual-instruction, with "
+        "scounteren.TM at 1 and 0.\n"
+        "5. Transition: with vstimecmp = 0 and hvip.VSTIP = 0, hip.VSTIP is 0 while henvcfg.STCE=0 and becomes 1 "
+        "when STCE is set.",
+    )
+    vsetup(t)
+    henv_stce(t, False)
+    access(t, "VS", "stimecmp", FORMS[0], "virtual", "henvcfg.STCE=0, before enabling")
+    henv_stce(t, True)
+    htm_probe(t)
+
+    def enabled() -> None:
+        access(t, "VS", "stimecmp", FORMS[0], "ok", "henvcfg.STCE=1, after enabling")
+        vs_forms(t, "stimecmp")
+        with t.rv32_only():
+            vs_forms(t, "stimecmph")
+
+    t.either("x1", enabled, lambda: access(t, "VS", "stimecmp", FORMS[0], "virtual", "hcounteren.TM read-only zero"))
+    vcmp(t, 0, "0")
+    expect_vstip(t, 1, "vstimecmp = 0 with henvcfg.STCE=1")
+    vcmp(t, MAX64, "all ones")
+    expect_vstip(t, 0, "vstimecmp = all ones with henvcfg.STCE=1")
+    t.comment("enabling is for VS-mode only")
+    for stm in (1, 0):
+        t.li("x7", 2)
+        t.emit(f"{'csrs' if stm else 'csrc'} scounteren, x7")
+        uexp = "ok" if MUT == "vu_access_leak" and stm else "virtual"
+        access(t, "VU", "stimecmp", FORMS[0], uexp, f"all gates set, scounteren.TM={stm}")
+        access(t, "VU", "stimecmp", FORMS[1], uexp, f"all gates set, scounteren.TM={stm}")
+    t.comment("transition: STCE=0 then 1 with vstimecmp = 0 and hvip.VSTIP = 0")
+    henv_stce(t, False)
+    vcmp(t, 0, "0")
+    hvip(t, False)
+    expect_vstip(t, int(MUT == "vstip_timer_with_henvcfg_stce0"), "henvcfg.STCE=0, vstimecmp=0, hvip.VSTIP=0")
+    henv_stce(t, True)
+    expect_vstip(t, 1, "setting henvcfg.STCE=1 with vstimecmp=0")
+    vteardown(t)
+    tests.append(t)
+
+    # ---- henvcfg_stce_zero_op ----
+    t = new("henvcfg_stce_zero_op", REQ_H)
+    t.describe(
+        source=HYP,
+        rule_text="When STCE bit is henvcfg is zero, an attempt to access stimecmp (really vstimecmp) when V=1 "
+        "raises a virtual-instruction exception, and VSTIP in hip reverts to its defined behavior as if this "
+        "extension is not implemented.",
+        context="Here menvcfg.STCE=1; with menvcfg.STCE=0 the access raises illegal-instruction instead "
+        "(menvcfg_stce_zero_op). Without Sstc, hip.VSTIP is hvip.VSTIP (hip_vstip_acc).",
+        issues=ISSUE_1985 + "\n" + ISSUE_1636_VS,
+        plan="1. With henvcfg.STCE=0 and hcounteren.TM at 1 and 0: every CSR instruction form on stimecmp in "
+        "VS-mode raises virtual-instruction (xtval 0 or the instruction bits); on RV32 also stimecmph. A VU-mode "
+        "read does too.\n"
+        "2. HS-mode access to vstimecmp is unaffected: a write of a random value reads back.\n"
+        "3. hip.VSTIP reverts to hvip.VSTIP: with vstimecmp = 0 and with all ones, hvip.VSTIP = 0, 1, 0 gives "
+        "hip.VSTIP (and mip.VSTIP read in M-mode) 0, 1, 0.\n"
+        "4. The comparison does not drive interrupts: with hideleg[6]=0, hie.VSTIE=1, vstimecmp=0 and "
+        "hvip.VSTIP=0, VS-mode takes no interrupt; once hvip.VSTIP=1 it takes one into HS-mode (cause 6).",
+    )
+    vsetup(t)
+    vcmp(t, 0, "0 (comparison true)")
+    henv_stce(t, False)
+    vexp = "illegal" if MUT == "henvcfg_stce_illegal" else "virtual"
+    for htmv in (1, 0):
+        htm(t, bool(htmv))
+        t.load("x6", t.rand_x(), "rs1 value")
+        for form in FORMS:
+            access(t, "VS", "stimecmp", form, vexp, f"henvcfg.STCE=0, hcounteren.TM={htmv}")
+        with t.rv32_only():
+            for form in (FORMS[0], FORMS[2]):
+                access(t, "VS", "stimecmph", form, vexp, f"henvcfg.STCE=0, hcounteren.TM={htmv}")
+        access(t, "VU", "stimecmp", FORMS[0], "virtual", f"henvcfg.STCE=0, hcounteren.TM={htmv}")
+    htm(t, True)
+    v = t.rand(64)
+    vcmp(t, v, "random, HS-mode write with henvcfg.STCE=0")
+    lab = t.label("hsrw")
+    t.emit(f"{lab}:", 0)
+    t.emit("csrr x7, CSR_VSTIMECMP")
+    t.check("x7", X(v & 0xFFFFFFFF, v), lab, "HS-mode vstimecmp read/write works with henvcfg.STCE=0")
+    for cmpv, note in ((0, "0"), (MAX64, "all ones")):
+        vcmp(t, cmpv, note)
+        for on in (False, True, False):
+            hvip(t, on)
+            exp = 1 if (on or (cmpv == 0 and MUT == "vstip_timer_with_henvcfg_stce0")) else 0
+            expect_vstip(t, exp, f"hvip.VSTIP={int(on)} with henvcfg.STCE=0, vstimecmp={note}")
+    t.comment("the comparison does not drive interrupts")
+    vcmp(t, 0, "0")
+    hvip(t, False)
+    hie(t, True)
+    delay_window(
+        t,
+        "VS",
+        VSTI_HS if MUT == "vstip_timer_with_henvcfg_stce0" else "ok",
+        "henvcfg.STCE=0, vstimecmp=0, hvip.VSTIP=0, hideleg[6]=0, hie.VSTIE=1: no interrupt",
+    )
+    hie(t, True)
+    hvip(t, True)
+    delay_window(t, "VS", VSTI_HS, "henvcfg.STCE=0, hvip.VSTIP=1, hideleg[6]=0, hie.VSTIE=1: interrupt into HS")
+    vteardown(t)
+    tests.append(t)
+
+    # ---- hcounteren_acc ----
+    t = new("hcounteren_acc", REQ_H)
+    t.describe(
+        source=HYP,
+        rule_text="In addition, when the TM bit in the hcounteren register is clear, attempts to access the "
+        "vstimecmp register (via stimecmp) while executing in VS-mode will cause a virtual-instruction exception "
+        "if the same bit in mcounteren is set. When this bit and the same bit in mcounteren are both set, access "
+        "to the vstimecmp register (if implemented) is permitted in VS-mode.",
+        context="menvcfg.STCE=1 and henvcfg.STCE=1 throughout. hcounteren.TM does not apply to HS-mode.",
+        issues=ISSUE_2040 + "\n" + ISSUE_1898 + "\n" + HTM_WARL,
+        plan="1. With mcounteren.TM=1 and hcounteren.TM=0, every CSR instruction form on stimecmp in VS-mode "
+        "raises virtual-instruction; on RV32 also stimecmph.\n"
+        "2. hcounteren.TM does not gate HS-mode: with hcounteren.TM=0, HS-mode accesses to vstimecmp and stimecmp "
+        "succeed.\n"
+        "3. Negative dependency: hcounteren.TM=0 does not stop the vstimecmp comparison: vstimecmp = 0 gives "
+        "hip.VSTIP=1, all ones gives 0.\n"
+        "4. hcounteren.TM=1 permits access: a VS-mode read returns vstimecmp and a write lands in it (or, if "
+        "hcounteren.TM is read-only zero, the read still raises virtual-instruction).\n"
+        "5. mcounteren.TM=0 takes precedence: VS-mode access raises illegal-instruction with hcounteren.TM at 1 "
+        "and 0.",
+    )
+    vsetup(t)
+    htm(t, False)
+    t.load("x6", t.rand_x(), "rs1 value")
+    hexp = "ok" if MUT == "hcounteren_ignored" else "virtual"
+    for form in FORMS:
+        access(t, "VS", "stimecmp", form, hexp, "mcounteren.TM=1, hcounteren.TM=0")
+    with t.rv32_only():
+        for form in (FORMS[0], FORMS[2]):
+            access(t, "VS", "stimecmph", form, hexp, "mcounteren.TM=1, hcounteren.TM=0")
+    access(t, "S", "vstimecmp", FORMS[0], "ok", "hcounteren.TM=0, HS-mode")
+    access(t, "S", "vstimecmp", FORMS[1], "ok", "hcounteren.TM=0, HS-mode")
+    access(t, "S", "stimecmp", FORMS[0], "ok", "hcounteren.TM=0, HS-mode")
+    vcmp(t, 0, "0")
+    expect_vstip(t, 1, "vstimecmp = 0 with hcounteren.TM=0")
+    vcmp(t, MAX64, "all ones")
+    expect_vstip(t, 0, "vstimecmp = all ones with hcounteren.TM=0")
+    old, gv = t.rand(64), X(t.rand(32), t.rand(64))
+    vcmp(t, old, "random")
+    htm_probe(t)
+
+    def permitted() -> None:
+        lab = access(t, "VS", "stimecmp", FORMS[0], "ok", "mcounteren.TM=1, hcounteren.TM=1")
+        t.check("x7", X(old & 0xFFFFFFFF, old), lab, "a VS-mode read of stimecmp returns vstimecmp")
+        t.load("x6", gv, "value VS-mode writes")
+        lab = access(t, "VS", "stimecmp", FORMS[1], "ok", "mcounteren.TM=1, hcounteren.TM=1")
+        t.emit("csrr x7, CSR_VSTIMECMP")
+        t.check("x7", gv, lab, "a VS-mode write of stimecmp lands in vstimecmp")
+
+    t.either("x1", permitted, lambda: access(t, "VS", "stimecmp", FORMS[0], "virtual", "hcounteren.TM read-only zero"))
+    tm(t, False)
+    for htmv in (1, 0):
+        htm(t, bool(htmv))
+        access(
+            t,
+            "VS",
+            "stimecmp",
+            FORMS[0],
+            "virtual" if MUT == "mcounteren_tm_virtual" else "illegal",
+            f"mcounteren.TM=0, hcounteren.TM={htmv}",
+        )
+    tm(t, True)
+    vteardown(t)
+    tests.append(t)
+
+    # ---- hip_vstip_op ----
+    t = new("hip_vstip_op", REQ_HT)
+    t.describe(
+        source=HYP,
+        rule_text="A virtual supervisor timer interrupt becomes pending, as reflected in the vstip bit in the hip "
+        "register, whenever (time + htimedelta), truncated to 64 bits, contains a value greater than or equal to "
+        "vstimecmp, treating the values as unsigned integers.",
+        context="hvip.VSTIP is 0 throughout, so hip.VSTIP is the comparison result (hip_vstip_acc). mip.VSTIP "
+        "aliases hip.VSTIP and is also read, in M-mode through T-SBI. htimedelta and the comparison inputs are "
+        "computed in HS-mode from time and htimedelta.",
+        issues=ISSUE_1169 + "\n" + ISSUE_2237,
+        plan="1. htimedelta = 0: vstimecmp = 0, = time (just read), = time + 2^32 (equal low halves), = 2^63 "
+        "(unsigned), = all ones.\n"
+        "2. htimedelta = 2^40: vstimecmp = time + 2^39 is pending only because htimedelta is added; = time + "
+        "htimedelta + 2^32 is not.\n"
+        "3. htimedelta = -2^40 (2^64 - 2^40): vstimecmp = time is pending (the sum is a large unsigned value); "
+        "= time + htimedelta + 2^32 is not.\n"
+        "4. htimedelta = all ones: the sum wraps to time - 1 (truncated to 64 bits), so vstimecmp = time + 2^32 "
+        "is not pending and vstimecmp = 0 is.\n"
+        "5. htimedelta = 2^32 - 1, which carries out of the low half: vstimecmp = time + htimedelta is pending, "
+        "and + 2^32 is not.",
+    )
+    vsetup(t)
+    m = MUT
+    cases: list[tuple[int, str, list[tuple[str, int, int, str]]]] = [
+        (
+            0,
+            "0",
+            [
+                ("const", 0, 1, "0"),
+                ("now", 0, 1, "time"),
+                ("now", 1, int(m == "vs_compare_32bit"), "time + 2^32"),
+                ("const", 1 << 63, int(m == "vs_signed_compare"), "2^63"),
+                ("const", MAX64, 0, "all ones"),
+            ],
+        ),
+        (
+            1 << 40,
+            "2^40",
+            [("raw", 128, int(m != "vs_ignore_htimedelta"), "time + 2^39"), ("now", 1, 0, "time + htimedelta + 2^32")],
+        ),
+        (
+            (1 << 64) - (1 << 40),
+            "-2^40",
+            [("raw", 0, int(m != "vs_signed_compare"), "time"), ("now", 1, 0, "time + htimedelta + 2^32")],
+        ),
+        (MAX64, "all ones (-1)", [("raw", 1, int(m == "vs_no_truncate"), "time + 2^32"), ("const", 0, 1, "0")]),
+        (
+            0xFFFFFFFF,
+            "2^32 - 1",
+            [("now", 0, int(m != "vs_carry_dropped"), "time + htimedelta"), ("now", 1, 0, "time + htimedelta + 2^32")],
+        ),
+    ]
+    for delta, dnote, checks in cases:
+        htd(t, delta, dnote)
+        for how, v, exp, note in checks:
+            if how == "const":
+                vcmp(t, v, note)
+            else:
+                vcmp_now(t, v, delta=how == "now")
+            expect_vstip(t, exp, f"vstimecmp = {note}, htimedelta = {dnote}")
+    vteardown(t)
+    tests.append(t)
+
+    # ---- hip_vstip_clear ----
+    t = new("hip_vstip_clear", REQ_HT)
+    t.describe(
+        source=HYP,
+        rule_text="If the result of this comparison changes, it is guaranteed to be reflected in vstip eventually, "
+        "but not necessarily immediately. The interrupt remains posted until vstimecmp becomes greater than (time "
+        "+ htimedelta), typically as a result of writing vstimecmp.",
+        context='"Eventually" is handled by polling hip.VSTIP a bounded number of times before each check. '
+        "hvip.VSTIP is 0 throughout.",
+        issues=ISSUE_1169,
+        plan="1. With vstimecmp = 0, VSTIP is 1 and stays 1 across a delay.\n"
+        "2. Taking the interrupt does not clear it: with hideleg[6]=0 and hie.VSTIE=1, VS-mode takes the "
+        "interrupt into HS-mode (cause 6), and VSTIP is still 1 afterwards.\n"
+        "3. Writing vstimecmp above time + htimedelta clears it.\n"
+        "4. A change of htimedelta alone is reflected: with vstimecmp = time + htimedelta + 2^32 (VSTIP 0), "
+        "raising htimedelta by 2^33 sets VSTIP, and lowering it back clears it.",
+    )
+    vsetup(t)
+    vcmp(t, 0, "0")
+    expect_vstip(t, 1, "vstimecmp = 0")
+    expect_vstip(t, 1, "vstimecmp = 0, after a further delay", settle=False)
+    hie(t, True)
+    delay_window(t, "VS", VSTI_HS, "hideleg[6]=0, hie.VSTIE=1, vstimecmp=0: interrupt into HS")
+    expect_vstip(t, 1, "taking the interrupt (vstimecmp still 0)", settle=False)
+    hie(t, False)
+    vcmp_now(t, 1)
+    expect_vstip(t, 0, "writing vstimecmp = time + htimedelta + 2^32")
+    htd(t, 1 << 33, "2^33")
+    expect_vstip(t, int(MUT != "vstip_only_on_write"), "raising htimedelta by 2^33 (vstimecmp unchanged)")
+    htd(t, 0, "0")
+    expect_vstip(t, 0, "lowering htimedelta back to 0")
+    vteardown(t)
+    tests.append(t)
+
+    # ---- hip_vstip_enable ----
+    t = new("hip_vstip_enable", REQ_H)
+    t.describe(
+        source=HYP,
+        rule_text="The interrupt will be taken based on the standard interrupt enable and delegation rules while V=1.",
+        context="mideleg[6] is read-only one with H, so the VS-level timer interrupt goes to HS-mode unless "
+        "hideleg[6] delegates it to VS-mode, where it is a supervisor timer interrupt (cause 5). An interrupt "
+        "delegated to VS is taken only when V=1: in VS-mode when vsstatus.SIE=1 and vsie.STIE (= hie.VSTIE) = 1, "
+        "and in VU-mode whenever it is enabled. One taken in HS-mode (cause 6) is always enabled while V=1, and "
+        "in HS-mode needs sstatus.SIE=1. The interrupt comes from vstimecmp = 0 with hvip.VSTIP = 0.",
+        plan="1. hideleg[6]=1: in VS-mode, (vsstatus.SIE, hie.VSTIE) in {00, 01, 10, 11} with VSTIP pending, and "
+        "11 not pending: taken into VS-mode (cause 5) only for 11 pending. In VU-mode with vsstatus.SIE=0: taken "
+        "iff hie.VSTIE=1. In HS-mode with sstatus.SIE=1 and hie.VSTIE=1: never taken.\n"
+        "2. hideleg[6]=0: in VS-mode and VU-mode with every SIE 0: taken into HS-mode (cause 6) iff hie.VSTIE=1. "
+        "In HS-mode: taken iff sstatus.SIE=1 and hie.VSTIE=1.\n"
+        "Each taken interrupt is checked for its cause, the handler's mode, and the mode it came from.",
+    )
+    vsetup(t)
+    hideleg(t, True)
+    for sie, vstie in ((0, 0), (0, 1), (1, 0), (1, 1)):
+        vs_int_case(t, 1, "VS", sie, vstie, 1)
+    vs_int_case(t, 1, "VS", 1, 1, 0)
+    for vstie in (0, 1):
+        vs_int_case(t, 1, "VU", 0, vstie, 1)
+    vs_int_case(t, 1, "S", 1, 1, 1)
+    hideleg(t, False)
+    for mode in ("VS", "VU"):
+        for vstie in (0, 1):
+            vs_int_case(t, 0, mode, 0, vstie, 1)
+    vs_int_case(t, 0, "S", 1, 1, 1)
+    vs_int_case(t, 0, "S", 0, 1, 1)
+    vteardown(t)
+    tests.append(t)
+
+    # ---- hip_vstip_vstimecmp_op ----
+    t = new("hip_vstip_vstimecmp_op", REQ_HT)
+    t.describe(
+        source=HYP,
+        rule_text="The hip[vstip] bit, in response to timer interrupts generated by vstimecmp, is set by writing "
+        "vstimecmp with a value that is less than or equal to the sum of time and htimedelta, truncated to 64 "
+        "bits; it is cleared by writing vstimecmp with a greater value.",
+        context="VS-mode writes vstimecmp through stimecmp, and reads time as time + htimedelta, so a guest that "
+        "programs its timer from its own time sees the same rule.",
+        issues=ISSUE_1169 + "\n" + HTM_WARL,
+        plan="1. htimedelta = a random large value. HS-mode writes vstimecmp = time + htimedelta - 2^32 and = "
+        "time + htimedelta (both set VSTIP), and = time + htimedelta + 2^32 and all ones (both clear it).\n"
+        "2. VS-mode reads its time and writes stimecmp = that time (sets VSTIP), then = that time + 2^32 (clears "
+        "it). If hcounteren.TM reads back 0, the VS-mode time read raises virtual-instruction instead.",
+    )
+    vsetup(t)
+    d = ((t.rand(23) | 1) << 32) | t.rand(32)
+    htd(t, d, f"{d:#x}")
+    for k, exp in ((-1, 1), (1, 0), (0, 1)):
+        vcmp_now(t, k)
+        expect_vstip(t, exp, f"HS-mode write vstimecmp = time + htimedelta + {k}*2^32")
+    vcmp(t, MAX64, "all ones")
+    expect_vstip(t, 0, "HS-mode write vstimecmp = all ones")
+    htm_probe(t)
+
+    def guest_writes() -> None:
+        for k, exp in ((0, 1), (1, 0)):
+            desc = f"VS-mode write stimecmp = its time + {k}*2^32"
+            with t.rv64_only():
+                lines = ["csrr x6, time"] + (["LI(x7, 1)", "slli x7, x7, 32", "add x6, x6, x7"] if k else [])
+                t.window("VS", lines + ["csrw stimecmp, x6"], "ok", desc)
+            with t.rv32_only():
+                rd = ["csrr x7, time", "csrr x6, timeh", "addi x6, x6, 1"] if k else ["csrr x6, timeh", "csrr x7, time"]
+                t.window("VS", rd + ["csrw stimecmph, x6", "csrw stimecmp, x7"], "ok", desc)
+            expect_vstip(t, exp, desc)
+
+    t.either(
+        "x1",
+        guest_writes,
+        lambda: t.window(
+            "VS", ["csrr x6, time"], 22, "time read, hcounteren.TM read-only zero", tval=[0, enc(0xC01, 2, 6, 0)]
+        ),
+    )
+    vteardown(t)
+    tests.append(t)
+
+    # ---- hip_vstip_acc ----
+    t = new("hip_vstip_acc", REQ_H)
+    t.describe(
+        source=HYP,
+        rule_text="vstip is read-only in hip, and is the logical-OR of hvip[vstip] and, when the sstc extension "
+        "is implemented, the timer interrupt signal resulting from vstimecmp.",
+        context="henvcfg.STCE=1 (the timer signal exists) and htimedelta = 0. The H suite covers hip.VSTIP "
+        "without Sstc.",
+        plan="1. (hvip.VSTIP, comparison) over 00, 01, 10, 11, with vstimecmp = all ones or 0: hip.VSTIP, and "
+        "mip.VSTIP read in M-mode, is the OR; hvip.VSTIP reads back what was written, independent of the timer.\n"
+        "2. hip.VSTIP is read-only: csrs of hip with VSTIP=0, and csrc of hip with VSTIP=1 from the timer and from "
+        "hvip, leave it unchanged.",
+    )
+    vsetup(t)
+    for hv, cm in ((0, 0), (0, 1), (1, 0), (1, 1)):
+        hvip(t, bool(hv))
+        vcmp(t, 0 if cm else MAX64, "0 (comparison true)" if cm else "all ones")
+        exp = cm if MUT == "vstip_hvip_ignored" else (hv | cm)
+        expect_vstip(t, exp, f"hvip.VSTIP={hv}, comparison={cm}")
+        lab = t.label("hvip")
+        t.emit(f"{lab}:", 0)
+        t.emit("csrr x7, CSR_HVIP")
+        t.emit(f"andi x7, x7, {VSTIP}")
+        t.check("x7", VSTIP if hv else 0, lab, f"hvip.VSTIP reads back {hv} (comparison={cm})")
+    t.comment("hip.VSTIP is read-only")
+    hvip(t, False)
+    vcmp(t, MAX64, "all ones")
+    expect_vstip(t, 0, "hvip.VSTIP=0, vstimecmp all ones")
+    t.li("x6", VSTIP)
+    t.emit("csrs CSR_HIP, x6")
+    expect_vstip(t, int(MUT == "hip_vstip_writable"), "csrs hip.VSTIP (read-only)", settle=False)
+    vcmp(t, 0, "0")
+    expect_vstip(t, 1, "vstimecmp = 0")
+    t.li("x6", VSTIP)
+    t.emit("csrc CSR_HIP, x6")
+    expect_vstip(t, 1, "csrc hip.VSTIP with VSTIP from the timer (read-only)", settle=False)
+    vcmp(t, MAX64, "all ones")
+    hvip(t, True)
+    expect_vstip(t, 1, "hvip.VSTIP=1")
+    t.li("x6", VSTIP)
+    t.emit("csrc CSR_HIP, x6")
+    expect_vstip(t, 1, "csrc hip.VSTIP with VSTIP from hvip (read-only)", settle=False)
+    vteardown(t)
+    tests.append(t)
+
+    # ---- menvcfg_stce_zero_vstip ----
+    t = new("menvcfg_stce_zero_vstip", REQ_H)
+    t.describe(
+        source=MAC,
+        rule_text="Further, if the H extension is implemented, then hip.VSTIP also reverts its defined behavior "
+        "as if this extension is not implemented.",
+        context="This follows menvcfg_stce_zero_op (menvcfg.STCE=0). Without Sstc, hip.VSTIP is hvip.VSTIP "
+        "(hip_vstip_acc). menvcfg.STCE=0 also makes henvcfg.STCE read-only zero, so henvcfg.STCE=1 is masked.",
+        issues=ISSUE_1636_VS,
+        plan="1. With menvcfg.STCE=1, henvcfg.STCE=1, vstimecmp = 0 and hvip.VSTIP = 0, hip.VSTIP is 1.\n"
+        "2. menvcfg.STCE=0: hvip.VSTIP = 0, 1, 0 gives hip.VSTIP (and mip.VSTIP read in M-mode) 0, 1, 0, with "
+        "vstimecmp = 0.\n"
+        "3. No interrupt from the comparison: with hideleg[6]=0, hie.VSTIE=1, vstimecmp = 0 and hvip.VSTIP = 0, "
+        "VS-mode takes no interrupt.\n"
+        "4. Setting menvcfg.STCE and henvcfg.STCE again: hip.VSTIP is 1 again.",
+    )
+    vsetup(t)
+    vcmp(t, 0, "0")
+    expect_vstip(t, 1, "menvcfg.STCE=1, henvcfg.STCE=1, vstimecmp=0")
+    stce(t, False)
+    for on in (False, True, False):
+        hvip(t, on)
+        exp = 1 if on or MUT == "vstip_not_reverted" else 0
+        expect_vstip(t, exp, f"menvcfg.STCE=0, vstimecmp=0, hvip.VSTIP={int(on)}")
+    hie(t, True)
+    delay_window(
+        t,
+        "VS",
+        VSTI_HS if MUT == "vstip_not_reverted" else "ok",
+        "menvcfg.STCE=0, vstimecmp=0, hvip.VSTIP=0, hideleg[6]=0, hie.VSTIE=1: no interrupt",
+    )
+    hie(t, False)
+    stce(t, True)
+    henv_stce(t, True)
+    expect_vstip(t, 1, "setting menvcfg.STCE and henvcfg.STCE again (vstimecmp=0)")
+    vteardown(t)
     tests.append(t)
 
     return tests

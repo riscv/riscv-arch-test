@@ -88,3 +88,6 @@ SKIP_COVERPOINTS = frozenset(
 MIN_SEW_MIN = 8
 ELEN_MAX = 64
 VLEN_MAX = 1024
+
+# Bytes of vector test data emitted per data directive line
+VECTOR_DATA_BYTES_PER_LINE = 32

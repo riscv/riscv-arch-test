@@ -1,0 +1,33 @@
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0
+# CI configuration for the VexRiscv core (LiteX "imac" netlist)
+
+ci_enabled: true
+
+# Netlist: litex-hub/pythondata-cpu-vexriscv 642ecfe, VexRiscv_IMAC.v. Source paths are under
+# https://github.com/SpinalHDL/VexRiscv/blob/b6118e5cc2a33323425df6455697139021d50c72/src/main/scala/vexriscv/
+exclude_extensions:
+  # ebreak and c.ebreak raise an illegal-instruction exception, not a breakpoint: CsrPluginConfig.all
+  # leaves ebreakGen false (plugin/CsrPlugin.scala#L63, warning at #L557)
+  - Exceptions_Sm-
+  - Exceptions_Zc
+  # mepc[0] is writable: mepc is a full 32-bit register (plugin/CsrPlugin.scala#L982, #L1043)
+  - Zicsr
+  - Sm_mcsr_access
+  # Writing a read-only CSR (cycle, mvendorid, ...) does not trap: for a CSR with only a read
+  # mapping, any read opcode clears illegalAccess (plugin/CsrPlugin.scala#L1606-L1613)
+  - Sm_csr_ro
+  # ecall writes its encoding to mtval (plugin/CsrPlugin.scala#L1539)
+  - Sm_inst
+  - Sm_Zicntr
+  # An interrupt leaves mtval unchanged instead of writing 0 (plugin/CsrPlugin.scala#L1420-L1422)
+  - InterruptsSm_trigger_M
+  # mret sets mstatus.MPP to 0 (U) on a hart without U-mode (plugin/CsrPlugin.scala#L1462)
+  - Sm_xret
+  # A csrw to minstret takes effect in execute, and the csrw is then counted when it retires in
+  # writeback, so minstret reads one higher than written (plugin/CsrPlugin.scala#L1049, #L1176-L1178)
+  - Sm_mcsr_cntr
+
+apt_packages: "autoconf flex bison help2man libfl-dev ccache"
+install_script: ".github/scripts/install-vexriscv.sh"
+setup_script: ".github/scripts/setup-vexriscv.sh"

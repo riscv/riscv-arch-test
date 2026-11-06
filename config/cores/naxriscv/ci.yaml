@@ -1,0 +1,69 @@
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0
+# CI configuration for the NaxRiscv core
+
+ci_enabled: true
+
+# SpinalHDL/NaxRiscv 9f452d5; paths are under
+# https://github.com/SpinalHDL/NaxRiscv/blob/9f452d50560d02fb391bc8039f5453c54e0911af/src/main/scala/naxriscv/
+exclude_extensions:
+  # A fetch from a region that is not executable (the I/O region holding
+  # RVMODEL_ACCESS_FAULT_ADDRESS) raises an instruction page fault, not an access fault: the fetch
+  # stage folds !ALLOW_EXECUTE into its page-fault flag (fetch/FetchCachePlugin.scala#L545). Loads
+  # and stores that the MMU marks ACCESS_FAULT are reported as page faults the same way
+  # (lsu2/Lsu2Plugin.scala#L1203, #L1300-L1304).
+  - Exceptions_Sm
+  - Exceptions_S
+  - Exceptions_U
+  - Sv_Exceptions_sv39_exceptions
+  # Waived: an AMO to the unmapped I/O address RVMODEL_ACCESS_FAULT_ADDRESS raises no exception
+  # and returns all ones. NaxRiscv sends every AMO and SC through the data cache's atomic path,
+  # whatever the address, and only other accesses to I/O to the peripheral bus that reports the
+  # error (lsu2/Lsu2Plugin.scala#L1611-L1612). The spec only recommends that PMA violations trap
+  # precisely and lets error responses be reported as imprecise bus-error interrupts
+  # (norm:pma_precise_recom, norm:pma_imprecise_ok), so ACT cannot require the access fault (https://github.com/riscv/riscv-arch-test/issues/3127).
+  - Exceptions_Zaamo
+  - Sv_ExceptionsZaamo
+  - Sv_ExceptionsZaamoSm_sv39_exceptions_Zaamo_mprv
+  # Waived: legal implementation-defined behavior that the test does not allow for. An sc.w with
+  # no reservation fails without a bus access, so it raises no access fault at
+  # RVMODEL_ACCESS_FAULT_ADDRESS (the same case as Hazard3's Exceptions_Zalrsc exclusion,
+  # https://github.com/riscv/riscv-isa-manual/issues/3350, https://github.com/riscv/riscv-arch-test/issues/3127).
+  - Exceptions_Zalrsc
+  - Sv_ExceptionsZalrsc
+  - Sv_ExceptionsZalrscSm_sv39_exceptions_Zalrsc_mprv
+  # mcounteren and scounteren read 0 but do not gate S/U-mode access to cycle, instret and
+  # hpmcounter*: PerformanceCounterPlugin only allows the CSR addresses
+  # (misc/PerformanceCounterPlugin.scala#L49-L57).
+  - Sm_Zicntr
+  - S_Zicntr
+  - U_Zicntr
+  # Interrupt priority follows registration order, the last pending source wins: STI over SSI,
+  # and an undelegated SEI/SSI/STI over MEI/MSI/MTI (misc/PrivilegedPlugin.scala#L481-L483,
+  # #L544-L546, #L645-L660).
+  - InterruptsSm_priority_mideleg_M
+  - InterruptsSm_priority_mie
+  - InterruptsSm_priority_mip
+  - InterruptsS_priority
+  # With mstatus.MPRV = 1 and MPP = S, SUM and the U-page check use the current privilege (M)
+  # instead of MPP (misc/MmuPlugin.scala#L322).
+  - Sv_Sm_sv39_upage_mprv_set_sum_unset
+  # Sv39 does not check that VA bits 63:39 equal bit 38; a non-canonical address is translated.
+  - Sv_sv39_canonical
+  # feq, flt, fle, fmin and fmax treat the subnormal with only the top mantissa bit set (single
+  # 0x00400000, double 0x0008000000000000) as equal to zero of the same sign: rs1Equal compares
+  # the internal exponent and mantissa without the zero mode (execute/fpu/FpuCore.scala#L530).
+  - F-feq.s
+  - F-fle.s
+  - F-flt.s
+  - F-fmax.s
+  - F-fmin.s
+  - D-feq.d
+  - D-fle.d
+  - D-flt.d
+  - D-fmax.d
+  - D-fmin.d
+
+apt_packages: "autoconf flex bison help2man libfl-dev ccache device-tree-compiler libboost-regex-dev libboost-system-dev libsdl2-dev"
+install_script: ".github/scripts/install-naxriscv.sh"
+setup_script: ".github/scripts/setup-naxriscv.sh"

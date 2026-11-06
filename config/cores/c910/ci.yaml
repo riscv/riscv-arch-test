@@ -24,16 +24,6 @@ exclude_extensions:
   - F-fnmsub.s
   # FMA misses UF in cp_underflow_after_rounding_fma_s.
   - ZicsrF
-  # A load bus error is an imprecise access fault (user manual 5.2.3).
-  - Exceptions_F
-  - Exceptions_S
-  - Exceptions_Sm
-  - Exceptions_SmS
-  - Exceptions_U
-  - Exceptions_Zc
-  # The same imprecise load fault, and a store bus error raises no fault.
-  - Sv_Exceptions
-  - Sv_ExceptionsSm_sv39_exceptions
   # LR takes store/AMO causes 6, 7 and 15 (lsu/rtl/ct_lsu_ld_dc.v#L1239-L1247).
   - Exceptions_Zalrsc
   - Sv_ExceptionsZalrsc

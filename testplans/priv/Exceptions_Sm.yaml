@@ -88,21 +88,19 @@ coverpoints:
     bins: "1"
   - name: cp_misaligned_priority_load
     goal: Priority of exceptions
-    description: Attempt lb, lbu, lh, lhu, lw, (lwu, ld) from memory location causing  access fault and misaligned. Also exercised in PMP, VM.
+    description: Attempt lb, lbu, lh, lhu, lw, (lwu, ld) from memory location causing access fault and misaligned. Also exercised in PMP, VM.
     expectation: Highest priority exception should be taken.
     bins: 7 ops * 8 lsbs
   - name: cp_misaligned_priority_store
     goal: Priority of exceptions
-    description: Attempt sb, sh, sw (sd) from memory location causing  access fault and misaligned}. Also exercised in PMP, VM.
+    description: Attempt sb, sh, sw, (sd) to memory location causing access fault and misaligned. Also exercised in PMP, VM.
     expectation: Highest priority exception should be taken.
     bins: 4 ops * 8 lsbs
   - name: cp_misaligned_priority_fetch
     goal: Priority of exceptions
-    description: Attempt fetch from memory location causing  access fault and misaligned}. Also exercised in PMP, VM.
+    description: Attempt fetch from aligned and misaligned legal and access-fault addresses. Also exercised in PMP, VM.
     expectation: Highest priority exception should be taken.
-    bins: "***"
-    rules:
-      - "*** missing from ExceptionsM. Split other Exceptions* test plans by type of cp_misaligned_priority as well"
+    bins: 2 alignments * 2 addresses
   - name: cp_mstatus_ie
     goal: Interrupt Enables
     description: ecall with mstatus.MIE = {0/1}

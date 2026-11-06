@@ -588,7 +588,7 @@
         // vector spec marks reserved and recommends, but does not require, trapping.
         // "Vstart_Illegal" - raise an illegal instruction exception.
         // "Vstart_Ignore"  - treat as a no-op, the instruction writes nothing.
-        "vstart_out_of_bounds": "Vstart_Ignore"
+        "vstart_out_of_bounds": "Vstart_Illegal"
       },
       "vl_use_ceil": false,
       // The maximum index EEW for indexed vector addressing mode, as

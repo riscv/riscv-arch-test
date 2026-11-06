@@ -365,23 +365,8 @@ def _filter_testplans(
 ) -> dict[str, dict[tuple[str, str], list[str]]]:
     """Filter testplans by comma-separated include/exclude extension lists.
 
-    Matches exact post-expansion keys (e.g. Vx8), and also allows vector base names
-    such as Vx, Zvkb, or Zvabd to match their per-SEW variants.
+    Matches against post-expansion keys (e.g. Vx8, not Vx).
     """
-
-    def matches_filter(arch: str, filters: set[str] | None) -> bool:
-        if filters is None:
-            return True
-
-        for ext in filters:
-            if arch == ext:
-                return True
-
-            if arch.startswith(ext) and arch[len(ext) :].isdigit():
-                return True
-
-        return False
-
     include_set: set[str] | None = None
     if extensions != "all":
         include_set = {ext.strip() for ext in extensions.split(",") if ext.strip()}
@@ -392,7 +377,7 @@ def _filter_testplans(
     return {
         arch: tp
         for arch, tp in test_plans.items()
-        if matches_filter(arch, include_set) and not matches_filter(arch, exclude_set)
+        if (include_set is None or arch in include_set) and arch not in exclude_set
     }
 
 

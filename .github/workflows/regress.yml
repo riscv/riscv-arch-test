@@ -238,7 +238,7 @@ jobs:
       - name: Build ELFs
         run: |
           ENABLE_EXPERIMENTAL_EXTENSIONS=True \
-          EXTENSIONS=Zibi,Exceptions \
+          EXTENSIONS=Zibi,Exceptions,Zvabd8,Zvabd16,Zvabd32,Zvabd64 \
           CONFIG_FILES=config/spike/spike-rv64-experimental/test_config.yaml \
           make elfs
 

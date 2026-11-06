@@ -28,10 +28,30 @@ from testgen.priv.extensions.exceptions.ExceptionsCommon import (
     generate_misaligned_priority_store_tests,
     generate_store_access_fault_tests,
     generate_store_address_misaligned_tests,
+    generate_vectored_exception_tests,
 )
 from testgen.priv.registry import add_priv_test_generator
 
 _CG = "Exceptions_Sm_cg"
+
+
+def _generate_mtvec_vectored_tests(test_data: TestData) -> list[str]:
+    """Synchronous exceptions taken in M-mode with mtvec.MODE = Vectored.
+
+    The trap handler selects Direct when the hart supports it, so these are the only recorded exceptions taken
+    with Vectored.  A hart that supports only Vectored takes every trap that way.
+    """
+    covergroup, coverpoint = _CG, "cp_mtvec_vectored_exc"
+    return [
+        comment_banner(coverpoint, "Synchronous exceptions with mtvec.MODE = Vectored go to BASE"),
+        "#if defined(UDB_MTVEC_MODES_0) && defined(UDB_MTVEC_MODES_1)",
+        "csrsi mtvec, 1  # mtvec.MODE = Vectored",
+        *generate_vectored_exception_tests(test_data, covergroup, coverpoint, "m"),
+        test_data.add_testcase("ecall_m", coverpoint, covergroup),
+        "RVTEST_TSBI_ECALL_TEST  # ecall to the execution environment, recorded in the trap signature",
+        "csrci mtvec, 1  # mtvec.MODE = Direct",
+        "#endif",
+    ]
 
 
 _MEDELEG_WALK = (
@@ -280,6 +300,10 @@ def _generate_xstatus_ie_tests(test_data: TestData, mode_tag: str, priv_mode: in
 def make_exceptionssm(test_data: TestData) -> list[TestChunk]:
     """Main entry point for Sm exception test generation (refactored)."""
     test_chunks: list[TestChunk] = []
+    tc = test_data.begin_test_chunk("Sm_mtvec_vectored")
+    tc.code.extend(_generate_mtvec_vectored_tests(test_data))
+    test_chunks.append(test_data.end_test_chunk())
+
     tc = test_data.begin_test_chunk("Sm")
 
     tc.code.extend(generate_instr_adr_misaligned_branch_tests(test_data, _CG))

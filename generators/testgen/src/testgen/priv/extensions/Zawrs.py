@@ -37,6 +37,11 @@ def _sstatus_sie(priv: str, r_temp: int, value: int) -> list[str]:
     return lines
 
 
+def _if_s(priv: str, lines: list[str]) -> list[str]:
+    """``lines`` guarded by S_SUPPORTED, unless the test runs in S-mode."""
+    return lines if priv == "S" else ["#ifdef S_SUPPORTED", *lines, "#endif"]
+
+
 def _disable_interrupts(priv: str, r_temp: int) -> list[str]:
     """mie = 0, mstatus.MIE = MPIE = 0, and SPIE/SIE = 0 where it exists."""
     lines = [
@@ -284,12 +289,15 @@ def wrs_no_mie_helper(
             lines.extend(
                 [
                     "# Set the S mode interrupts if supported",
-                    "#ifdef S_SUPPORTED",
-                    f"RVTEST_SET_STIME_INT_{priv}",
-                    "# set SSI and SEI through mip",
-                    f"LI(x{r_temp}, 0x202)",
-                    tsbi_call_or_direct(f"csrs mip, x{r_temp}", priv),
-                    "#endif",
+                    *_if_s(
+                        priv,
+                        [
+                            f"RVTEST_SET_STIME_INT_{priv}",
+                            "# set SSI and SEI through mip",
+                            f"LI(x{r_temp}, 0x202)",
+                            tsbi_call_or_direct(f"csrs mip, x{r_temp}", priv),
+                        ],
+                    ),
                     "",
                     "# Set TW bit",
                     f"LI(x{r_temp}, 0x200000)",
@@ -335,11 +343,14 @@ def wrs_no_mie_helper(
             lines.extend(
                 [
                     "# Clear S mode interrupts",
-                    "#ifdef S_SUPPORTED",
-                    "# clear SSI, STI and SEI through mip, the way they were set",
-                    f"LI(x{r_temp}, 0x222)",
-                    tsbi_call_or_direct(f"csrc mip, x{r_temp}", priv),
-                    "#endif",
+                    *_if_s(
+                        priv,
+                        [
+                            "# clear SSI, STI and SEI through mip, the way they were set",
+                            f"LI(x{r_temp}, 0x222)",
+                            tsbi_call_or_direct(f"csrc mip, x{r_temp}", priv),
+                        ],
+                    ),
                 ]
             )
         lines.extend(

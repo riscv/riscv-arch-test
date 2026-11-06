@@ -529,7 +529,7 @@ covergroup Zicfiss_U_cg with function sample(ins_t ins);
     jalr_instr: coverpoint ins.current.insn {
         wildcard bins jalr = {JALR};
     }
-    jalr_target_ss_page: coverpoint ((ins.current.rs1_val + ins.current.imm) & ~1) {
+    jalr_target_ss_page: coverpoint (ins.current.eff_addr & ~1) {
         `ifdef UDB_MXLEN_64
             bins ss_page = {[64'h140300000:64'h140300FFF]};
         `else

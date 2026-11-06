@@ -2443,6 +2443,10 @@
         .string "RVCP: XSTATUS: "
     trap_sig_offset_mismatch:
         .string "\"Trap count mismatch.\"";
+#ifdef RVTEST_NOSIG
+    traplog_unexpected_str:
+        .string "\"Unexpected trap: the test did not permit a trap here (rvtest_trap_allow = 0). The actual value is xcause.\"";
+#endif
     sv_Mvect_str:
         .string "\"Mismatch in trap signature! Trap was being handled in M-Mode.\"";
     sv_Svect_str:

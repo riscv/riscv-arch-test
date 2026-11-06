@@ -281,20 +281,46 @@ vset_i_vli_vlmax_unchanged : coverpoint (get_vtype_vlmax(ins.hart, ins.issue, `S
                                         bins true = {1};
                                     }
 
-vtype_all_lmul_supported : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
-    `ifdef LMULf8_SUPPORTED
-    bins eighth  = {5};
+// Legal (vtype.vsew, vtype.vlmul) pairs: fractional LMUL = 1/N needs SEW * N <= ELEN (ELEN >= 32).
+// Other pairs set vill, which clears vsew and vlmul, so they never appear in vtype.
+vtype_sew_lmul_legal : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew")[1:0],
+                                   get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0]} {
+    `ifdef SEW8_SUPPORTED
+    `ifdef UDB_ELEN_64
+    bins e8_eighth = {5'b00_101};
     `endif
-    `ifdef LMULf4_SUPPORTED
-    bins fourth = {6};
+    bins e8_fourth = {5'b00_110};
+    bins e8_half = {5'b00_111};
+    bins e8_one = {5'b00_000};
+    bins e8_two = {5'b00_001};
+    bins e8_four = {5'b00_010};
+    bins e8_eight = {5'b00_011};
     `endif
-    `ifdef LMULf2_SUPPORTED
-    bins half   = {7};
+    `ifdef SEW16_SUPPORTED
+    `ifdef UDB_ELEN_64
+    bins e16_fourth = {5'b01_110};
     `endif
-    bins one    = {0};
-    bins two    = {1};
-    bins four   = {2};
-    bins eight  = {3};
+    bins e16_half = {5'b01_111};
+    bins e16_one = {5'b01_000};
+    bins e16_two = {5'b01_001};
+    bins e16_four = {5'b01_010};
+    bins e16_eight = {5'b01_011};
+    `endif
+    `ifdef SEW32_SUPPORTED
+    `ifdef UDB_ELEN_64
+    bins e32_half = {5'b10_111};
+    `endif
+    bins e32_one = {5'b10_000};
+    bins e32_two = {5'b10_001};
+    bins e32_four = {5'b10_010};
+    bins e32_eight = {5'b10_011};
+    `endif
+    `ifdef SEW64_SUPPORTED
+    bins e64_one = {5'b11_000};
+    bins e64_two = {5'b11_001};
+    bins e64_four = {5'b11_010};
+    bins e64_eight = {5'b11_011};
+    `endif
 }
 
 //////////////////////////////////////////////////////////////////////////////////

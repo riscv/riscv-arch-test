@@ -11,12 +11,13 @@
         // Fractional LMULs gated by SEW: LMUL >= SEW/ELEN required
         // mf8 never valid for FP (SEW >= 16, needs SEW <= 8)
         `ifdef COVER_VFCUSTOM16
-            `ifdef LMULf4_SUPPORTED
+            `ifdef UDB_ELEN_64
                 bins fourth = {6};
             `endif
+            bins half   = {7};
         `endif
-        `ifndef COVER_VFCUSTOM64
-            `ifdef LMULf2_SUPPORTED
+        `ifdef COVER_VFCUSTOM32
+            `ifdef UDB_ELEN_64
                 bins half   = {7};
             `endif
         `endif

@@ -36,8 +36,12 @@
     Vf64_vfmsub_vv_cg = new(); Vf64_vfmsub_vv_cg.set_inst_name("obj_Vf64_vfmsub_vv");
     Vf64_vfmul_vf_cg = new(); Vf64_vfmul_vf_cg.set_inst_name("obj_Vf64_vfmul_vf");
     Vf64_vfmul_vv_cg = new(); Vf64_vfmul_vv_cg.set_inst_name("obj_Vf64_vfmul_vv");
+`ifdef V_SUPPORTED
     Vf64_vfmv_f_s_cg = new(); Vf64_vfmv_f_s_cg.set_inst_name("obj_Vf64_vfmv_f_s");
+`endif
+`ifdef V_SUPPORTED
     Vf64_vfmv_s_f_cg = new(); Vf64_vfmv_s_f_cg.set_inst_name("obj_Vf64_vfmv_s_f");
+`endif
     Vf64_vfmv_v_f_cg = new(); Vf64_vfmv_v_f_cg.set_inst_name("obj_Vf64_vfmv_v_f");
     Vf64_vfnmacc_vf_cg = new(); Vf64_vfnmacc_vf_cg.set_inst_name("obj_Vf64_vfnmacc_vf");
     Vf64_vfnmacc_vv_cg = new(); Vf64_vfnmacc_vv_cg.set_inst_name("obj_Vf64_vfnmacc_vv");
@@ -61,8 +65,12 @@
     Vf64_vfsgnjn_vv_cg = new(); Vf64_vfsgnjn_vv_cg.set_inst_name("obj_Vf64_vfsgnjn_vv");
     Vf64_vfsgnjx_vf_cg = new(); Vf64_vfsgnjx_vf_cg.set_inst_name("obj_Vf64_vfsgnjx_vf");
     Vf64_vfsgnjx_vv_cg = new(); Vf64_vfsgnjx_vv_cg.set_inst_name("obj_Vf64_vfsgnjx_vv");
+`ifdef V_SUPPORTED
     Vf64_vfslide1down_vf_cg = new(); Vf64_vfslide1down_vf_cg.set_inst_name("obj_Vf64_vfslide1down_vf");
+`endif
+`ifdef V_SUPPORTED
     Vf64_vfslide1up_vf_cg = new(); Vf64_vfslide1up_vf_cg.set_inst_name("obj_Vf64_vfslide1up_vf");
+`endif
     Vf64_vfsqrt_v_cg = new(); Vf64_vfsqrt_v_cg.set_inst_name("obj_Vf64_vfsqrt_v");
     Vf64_vfsub_vf_cg = new(); Vf64_vfsub_vf_cg.set_inst_name("obj_Vf64_vfsub_vf");
     Vf64_vfsub_vv_cg = new(); Vf64_vfsub_vv_cg.set_inst_name("obj_Vf64_vfsub_vv");

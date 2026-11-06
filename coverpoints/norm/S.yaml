@@ -601,6 +601,18 @@ normative_rule_definitions:
     coverpoint:
       ["S_Zicntr_cg/{cp_scounteren_access_u, cp_mscounteren_access_u}"]
 
+  # When the CY, TM, IR, or HPMn bit in the mcounteren register is clear, attempts
+  # to read the cycle, time, instret, or hpmcountern register while executing in
+  # S-mode or U-mode will cause an illegal-instruction exception.
+  - name: mcounteren_clr_ill_inst_exc
+    coverpoint: ["S_Zicntr_cg/cp_mcounteren_access_s"]
+
+  # When one of these bits is set, access to the corresponding register is permitted
+  # in the next implemented privilege mode (S-mode if implemented, otherwise
+  # U-mode).
+  - name: mcounteren_set_nxt_priv
+    coverpoint: ["S_Zicntr_cg/cp_mcounteren_access_s"]
+
   # The settings in this register only control accessibility. The act of reading or
   # writing this register does not affect the underlying counters, which continue to
   # increment even when not accessible.

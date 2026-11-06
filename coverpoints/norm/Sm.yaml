@@ -1918,7 +1918,19 @@ normative_rule_definitions:
 
   # mstatus.TVM and TSR do not affect VS-mode; TW affects every mode except M-mode
   - names: [mstatus_modes]
-    coverpoint: ["Sm_H_tvm_cg/cp_tvm_vs"]
+    coverpoint: ["Sm_H_tvm_cg/{cp_tvm_vs, cp_tvm_vu}"]
+
+  # in VS-mode or VU-mode, attempts to access an implemented non-high-half hypervisor CSR
+  # or VS CSR when the same access (read/write) would be allowed in HS-mode, assuming
+  # mstatus.TVM=0;
+  # hgatp and vsatp from VS-mode and VU-mode with mstatus.TVM = 1
+  - name: H_virtinst_vu_vs_nonhigh_allowedhs_tvm0
+    coverpoint: ["Sm_H_tvm_cg/{cp_tvm_vs, cp_tvm_vu}"]
+  # in VU-mode, attempts to access an implemented non-high-half supervisor CSR when the
+  # same access (read/write) would be allowed in HS-mode, assuming mstatus.TVM=0;
+  # satp from VU-mode with mstatus.TVM = 1
+  - name: H_virtinst_vu_nonhigh_supervisor_allowedhs_tvm0
+    coverpoint: ["Sm_H_tvm_cg/cp_tvm_vu"]
 
   # hstatus.VTVM traps satp accesses and sfence.vma in VS-mode
   - names: [hstatus_vtvm_op, H_virtinst_vs_sfence_sinval_satp_vtvm1]

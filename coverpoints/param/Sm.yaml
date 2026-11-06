@@ -118,11 +118,10 @@ parameter_definitions:
         "Sm_mcsr_cg/cp_mcsr_access",
         "Sm_mcsr_cg/cp_mcsrwalk",
         "Sm_Zicntr_cg/cp_instret_wfi_pending",
-        "Sm_Zicntr_cg/cp_instret_wfi_taken",
       ]
     effect:
       [
-        "If false, the `mie` and `mip` MTI bits are read-only zero. The `cp_instret_wfi_pending` and `cp_instret_wfi_taken` coverpoints apply only if the parameter is true.",
+        "If false, the `mie` and `mip` MTI bits are read-only zero. The `cp_instret_wfi_pending` coverpoint applies only if the parameter is true.",
       ]
   - name: MEI_INTR_IMPL
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access", "Sm_mcsr_cg/cp_mcsrwalk"]

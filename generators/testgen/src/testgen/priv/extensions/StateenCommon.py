@@ -15,7 +15,7 @@ gate the state (mstateen0, hstateen0 or sstateen0) and in the modes the state is
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 
-from testgen.asm.csr import csr_access_test, csr_walk_test
+from testgen.asm.csr import csr_access_test, csr_walk_test, upper_half
 from testgen.asm.helpers import arch_block, comment_banner, gated, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -46,6 +46,20 @@ STATEEN0_SAIL_GAP_BITS = [
     (0b11 << 58, "SSAIA_SUPPORTED"),  # IMSIC, AIA
     (1 << 60, "SSCSRIND_SUPPORTED"),  # CSRIND
 ]
+
+
+def sail_gap_bits(csr: str) -> list[tuple[int, str]] | None:
+    """The STATEEN0_SAIL_GAP_BITS in csr, as unwalked_bits for csr_walk_test.
+
+    The RV32 upper halves hold the bits from 32 up, shifted down, and the 32-bit sstateen0 those below 32.
+    """
+    if csr.endswith("stateen0h"):
+        return upper_half(STATEEN0_SAIL_GAP_BITS)
+    if csr == "sstateen0":
+        return [(bits, define) for bits, define in STATEEN0_SAIL_GAP_BITS if not bits >> 32] or None
+    if csr.endswith("stateen0"):
+        return STATEEN0_SAIL_GAP_BITS
+    return None
 
 
 @dataclass(frozen=True)
@@ -336,8 +350,10 @@ def stateen_walk_tests(
     """Walk each mstateen or hstateen CSR from `base` mode, and its upper half on RV32, each in a new test chunk."""
     guard_h = f"{guard} && __riscv_xlen == 32" if guard else "__riscv_xlen == 32"
     for csr in csrs:
-        gap = STATEEN0_SAIL_GAP_BITS if csr.endswith("stateen0") else None
-        gap_h = [(bits >> 32, define) for bits, define in gap or [] if bits >> 32] or None
-        for name, cond, bits in ((csr, guard, gap), (f"{csr}h", guard_h, gap_h)):
+        for name, cond in ((csr, guard), (f"{csr}h", guard_h)):
             tc = test_data.new_test_chunk(test_chunks)
-            tc.code.extend(walk_tests(test_data, cg, cp, name, modes=[base], base=base, guard=cond, unwalked_bits=bits))
+            tc.code.extend(
+                walk_tests(
+                    test_data, cg, cp, name, modes=[base], base=base, guard=cond, unwalked_bits=sail_gap_bits(name)
+                )
+            )

@@ -11,7 +11,7 @@
 
 """Sm privileged extension test generator."""
 
-from testgen.asm.csr import cntr_access_test, csr_access_test, csr_walk_test, gen_csr_read_sigupd
+from testgen.asm.csr import cntr_access_test, csr_access_test, csr_walk_test, gen_csr_read_sigupd, upper_half
 from testgen.asm.helpers import comment_banner, gated, write_sigupd
 from testgen.constants import INDENT
 from testgen.data.state import TestData
@@ -518,21 +518,6 @@ def _mbe_check(test_data: TestData, covergroup: str, coverpoint: str) -> list[st
     return lines
 
 
-def _mcountinhibit_checked_defines() -> list[str]:
-    """Define MCOUNTINHIBIT_CHECKED: the mcountinhibit bits of CY, IR and each implemented mhpmcounter."""
-    lines = []
-    for n in range(3, 32):
-        lines += [
-            f"#ifdef UDB_HPM_COUNTER_EN_{n}",
-            f"  #define MCOUNTINHIBIT_HPM{n} {1 << n:#x}",
-            "#else",
-            f"  #define MCOUNTINHIBIT_HPM{n} 0",
-            "#endif",
-        ]
-    hpm = " | ".join(f"MCOUNTINHIBIT_HPM{n}" for n in range(3, 32))
-    return [*lines, f"#define MCOUNTINHIBIT_CHECKED (0x5 | {hpm})"]
-
-
 def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     """Generate CSR tests"""
     covergroup = "Sm_mcsr_cg"
@@ -632,19 +617,17 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     # mcountinhibit is optional, so it is accessed under UDB_MCOUNTINHIBIT_IMPLEMENTED.  Every bit is
     # written, but only the bits of implemented counters are checked: the spec leaves the inhibit
     # bits of absent counters unconstrained (they may be writable, read-only zero or read-only one).
-    csr_mcountinhibit = ("mcountinhibit", "MCOUNTINHIBIT_CHECKED")
+    csr_mcountinhibit = ("mcountinhibit", 0xFFFFFFFD)  # every counter's bit; bit 1 has no counter
+    mcountinhibit_unchecked = [(1 << n, f"!defined(UDB_HPM_COUNTER_EN_{n})") for n in range(3, 32)]
     csr_menvcfg = ("menvcfg", menvcfg_mask)
     # TODO: Walk menvcfg.CDE everywhere (and add it to menvcfg_mask) once Sail implements Smcdeleg.
     # The walks skip it where Smcdeleg is implemented, so its coverage reports missing, and check it
     # as read-only zero elsewhere.
     cde_unwalked = [(MENVCFG_CDE, "SMCDELEG_SUPPORTED")]
-    csr_menvcfg_walk = ("menvcfg", menvcfg_mask | MENVCFG_CDE)
     csr_mseccfg = ("mseccfg", mseccfg_mask)
     # RV32-only high CSRs
     csr_mstatush = ("mstatush", (mstatus_mask >> 32) & 0x7FFFFFFF)  # SD not in bit 31 of mstatush
     csr_menvcfgh = ("menvcfgh", menvcfg_mask >> 32)
-    cdeh_unwalked = [(MENVCFG_CDE >> 32, "SMCDELEG_SUPPORTED")]
-    csr_menvcfgh_walk = ("menvcfgh", (menvcfg_mask | MENVCFG_CDE) >> 32)
     csr_mseccfgh = ("mseccfgh", mseccfg_mask >> 32)
     # medelegh (0x312) by number: clang 20 does not accept the CSR name (gcc does).  All bits reserved/custom.
     csr_medelegh = ("0x312", 0x00000000)
@@ -681,8 +664,9 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
 
     tc = test_data.new_test_chunk(test_chunks)
     tc.code.append("\n#ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED")
-    tc.code.extend(_mcountinhibit_checked_defines())
-    tc.code.extend(csr_access_test(test_data, csr_mcountinhibit, covergroup, coverpoint))
+    tc.code.extend(
+        csr_access_test(test_data, csr_mcountinhibit, covergroup, coverpoint, unchecked_bits=mcountinhibit_unchecked)
+    )
     tc.code.append("#endif // UDB_MCOUNTINHIBIT_IMPLEMENTED")
 
     tc = test_data.new_test_chunk(test_chunks)
@@ -806,8 +790,9 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
 
     tc = test_data.new_test_chunk(test_chunks)
     tc.code.append("\n#ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED")
-    tc.code.extend(_mcountinhibit_checked_defines())
-    tc.code.extend(csr_walk_test(test_data, csr_mcountinhibit, covergroup, coverpoint))
+    tc.code.extend(
+        csr_walk_test(test_data, csr_mcountinhibit, covergroup, coverpoint, unchecked_bits=mcountinhibit_unchecked)
+    )
     tc.code.append("#endif // UDB_MCOUNTINHIBIT_IMPLEMENTED")
 
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
@@ -815,11 +800,10 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     tc.code.extend(
         csr_walk_test(
             test_data,
-            csr_menvcfg_walk,
+            csr_menvcfg,
             covergroup,
             coverpoint_masked,
             warl_fields=warl_fields,
-            maskedwrites=True,
             unwalked_bits=cde_unwalked,
         )
     )
@@ -849,11 +833,10 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     tc.code.extend(
         csr_walk_test(
             test_data,
-            csr_menvcfgh_walk,
+            csr_menvcfgh,
             covergroup,
             coverpoint_masked,
-            maskedwrites=True,
-            unwalked_bits=cdeh_unwalked,
+            unwalked_bits=upper_half(cde_unwalked),
         )
     )
     tc.code.append("#endif // SM1P12P0_OR_LATER_SUPPORTED")

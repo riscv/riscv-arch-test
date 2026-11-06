@@ -42,6 +42,16 @@ def _expand_debug_placeholders(command: str, *, debug: bool) -> str:
     return " ".join(result.split())
 
 
+def split_env_assignments(tokens: list[str]) -> tuple[dict[str, str], list[str]]:
+    """Split the leading KEY=VALUE environment assignments off a command's tokens."""
+    env: dict[str, str] = {}
+    while tokens and "=" in tokens[0] and not tokens[0].startswith("-"):
+        key, _, value = tokens[0].partition("=")
+        env[key] = value
+        tokens = tokens[1:]
+    return env, tokens
+
+
 def _color(code: str, text: str) -> str:
     if USE_COLOR:
         return f"\033[{code}m{text}\033[0m"
@@ -113,13 +123,8 @@ def run_test(
     # Build display command from the substituted tokens
     test_command = shlex.join(tokens)
 
-    # Extract leading KEY=VALUE env var assignments
-    env_overrides: dict[str, str] = {}
-    while tokens and "=" in tokens[0] and not tokens[0].startswith("-"):
-        key, _, value = tokens.pop(0).partition("=")
-        env_overrides[key] = value
+    env_overrides, cmd = split_env_assignments(tokens)
     env = {**os.environ, **env_overrides} if env_overrides else None
-    cmd = tokens
 
     full_cmd = [*cmd, str(elf_path)]
     display_cmd = f"{test_command} {elf_path}"

@@ -367,6 +367,35 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
             bins stip = {'h20};
         }
 
+        // cp_trigger_vsti_sstc: vstimecmp written to its minimum, as stimecmp_min, with henvcfg.STCE = 1,
+        // hie.VSTIE = 1 and hideleg.VSTI = 0/1
+        `ifdef H_SUPPORTED
+            `ifdef UDB_MXLEN_64
+                vstimecmp_min: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vstimecmp", "vstimecmp") {
+                    bins min = {'0};
+                }
+            `else
+                vstimecmp_min: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vstimecmph", "vstimecmph"), get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vstimecmp", "vstimecmp")} {
+                    bins min = {'0};
+                }
+            `endif
+            `ifdef UDB_MXLEN_64
+                henvcfg_stce_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "stce")[0] {
+                    bins one = {1};
+                }
+            `else
+                henvcfg_stce_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfgh", "stce")[0] {
+                    bins one = {1};
+                }
+            `endif
+            hideleg_vstip: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "vstip")[0] {
+                // autofill 0/1
+            }
+            hie_vstie_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "vstie")[0] {
+                bins one = {1};
+            }
+        `endif
+
     `endif
     mie_zeros: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mie")[15:0] {
         wildcard bins zeros = {16'b????0?0?0?0?0?0?};
@@ -484,6 +513,10 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
                                                     binsof(stimecmp_max_min.min);
                 `endif
             }
+        `endif
+        `ifdef H_SUPPORTED
+            // vstimecmp armed from M-mode raises VSTI in HS-mode or, delegated by hideleg, STI in VS-mode
+            cp_trigger_vsti_sstc: cross priv_mode_m, vstimecmp_min, menvcfg_stce_one, henvcfg_stce_one, hie_vstie_one, hideleg_vstip;
         `endif
     `endif
         // can not check whether the conditions correspond to each other

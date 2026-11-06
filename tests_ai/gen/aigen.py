@@ -213,14 +213,14 @@ class TestFile:
         return f"{self.rule.replace('-', '_')}_{stem}_{self._lab}"  # rule names may contain '-'
 
     def comment(self, text: str) -> None:
-        self.code.append(f"  // {text}")
+        self.code.append(f"  // {text}".rstrip())
 
     def blank(self) -> None:
         self.code.append("")
 
     def emit(self, line: str, n: int = 1) -> None:
         """Emit raw assembly; n is its dynamic instruction count for the budget."""
-        self.code.append(("" if line.endswith(":") else "  ") + line)
+        self.code.append((("" if line.endswith(":") else "  ") + line).rstrip())
         self.ninst += n
 
     def li(self, reg: str, value: int) -> None:

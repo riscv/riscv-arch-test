@@ -155,12 +155,12 @@ def _add_load_fault(
 
     if is_sp:
         t_lines.append(f"mv x{base_reg}, sp")
-        t_lines.append("LI(sp, RVMODEL_ACCESS_FAULT_ADDRESS)")
+        t_lines.append("LI_FIXED_LEN(sp, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)")
         t_lines.append(test_data.add_testcase(test_label, coverpoint, covergroup))
         t_lines.append(f"{op} {reg_str}, 0(sp)")
         t_lines.append(f"mv sp, x{base_reg}")
     else:
-        t_lines.append(f"LI(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)")
+        t_lines.append(f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)")
         t_lines.append(test_data.add_testcase(test_label, coverpoint, covergroup))
         t_lines.append(f"{op} {reg_str}, 0(x{addr_reg})")
 
@@ -190,12 +190,12 @@ def _add_store_fault(
 
     if is_sp:
         t_lines.append(f"mv x{base_reg}, sp")
-        t_lines.append("LI(sp, RVMODEL_ACCESS_FAULT_ADDRESS)")
+        t_lines.append("LI_FIXED_LEN(sp, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)")
         t_lines.append(test_data.add_testcase(test_label, coverpoint, covergroup))
         t_lines.append(f"{op} {reg_str}, 0(sp)")
         t_lines.append(f"mv sp, x{base_reg}")
     else:
-        t_lines.append(f"LI(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)")
+        t_lines.append(f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)")
         t_lines.append(test_data.add_testcase(test_label, coverpoint, covergroup))
         t_lines.append(f"{op} {reg_str}, 0(x{addr_reg})")
 
@@ -291,7 +291,7 @@ def _generate_load_access_fault_tests(test_data: TestData) -> list[str]:
     covergroup, coverpoint = "Exceptions_Zc_cg", "cp_load_access_fault"
 
     lines = [
-        "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
+        "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD",
         comment_banner(
             coverpoint,
             "Test every type of compressed load to a faulting address and check that each one throws a load access fault.",
@@ -338,7 +338,7 @@ def _generate_store_access_fault_tests(test_data: TestData) -> list[str]:
     covergroup, coverpoint = "Exceptions_Zc_cg", "cp_store_access_fault"
 
     lines = [
-        "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
+        "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE",
         comment_banner(
             coverpoint,
             "Test every type of compressed store to a faulting address and check that each one throws a store access fault.",

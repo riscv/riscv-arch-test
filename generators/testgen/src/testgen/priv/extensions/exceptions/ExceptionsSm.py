@@ -64,9 +64,9 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
         # are in the ExceptionsCommon generator and are not repeated here.
         lines.extend(
             [
-                "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
+                "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_FETCH",
                 test_data.add_testcase(tag, "cp_medeleg_msu_instrmisaligned", covergroup),
-                f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+                f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_FETCH)",
                 f"jalr x1, 0(x{addr_reg})  # aligned target",
                 "LI(x1, 0xB0BACAFE)",
                 f"jalr x1, 2(x{addr_reg})  # misaligned target",
@@ -78,9 +78,9 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
         # Instruction access fault
         lines.extend(
             [
-                "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
+                "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_FETCH",
                 test_data.add_testcase(tag, "cp_medeleg_msu_instraccessfault", covergroup),
-                f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+                f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_FETCH)",
                 f"jalr x1, 0(x{addr_reg})",
                 "#endif",
             ]
@@ -139,11 +139,11 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
         lines.append(write_sigupd(data_reg, test_data))
 
         # Load access fault
-        lines.append("#ifdef RVMODEL_ACCESS_FAULT_ADDRESS")
+        lines.append("#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD")
         lines.extend(
             [
                 test_data.add_testcase(tag, "cp_medeleg_msu_loadaccessfault", covergroup),
-                f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+                f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)",
                 f"LI(x{check_reg}, 0xB0BACAFE)  # each faulting load must leave rd unchanged",
             ]
         )
@@ -180,11 +180,11 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
             )
 
         # Store access fault
-        lines.append("#ifdef RVMODEL_ACCESS_FAULT_ADDRESS")
+        lines.append("#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE")
         lines.extend(
             [
                 test_data.add_testcase(tag, "cp_medeleg_msu_storeaccessfault", covergroup),
-                f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+                f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)",
                 f"LI(x{data_reg}, 0xADDEDCAB)",
             ]
         )

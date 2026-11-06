@@ -458,12 +458,12 @@ def _generate_load_access_fault_tests(test_data: TestData) -> list[str]:
     addr_reg = test_data.int_regs.get_register()
     check_reg = test_data.float_regs.get_register()
 
-    lines.append("#ifdef RVMODEL_ACCESS_FAULT_ADDRESS")
+    lines.append("#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD")
     lines.extend(
         [
             f"LI(x{addr_reg}, 0xBEE1CAFE)",
             f"fcvt.s.w f{check_reg}, x{addr_reg}",
-            f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+            f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)",
         ]
     )
     lines.extend(
@@ -505,7 +505,7 @@ def _generate_load_access_fault_tests(test_data: TestData) -> list[str]:
             # "nop",
             # "",
             # "#endif",
-            "#endif // RVMODEL_ACCESS_FAULT_ADDRESS",
+            "#endif // RVMODEL_ACCESS_FAULT_ADDRESS_LOAD",
             "",
         ]
     )
@@ -559,12 +559,12 @@ def _generate_store_access_fault_tests(test_data: TestData) -> list[str]:
     addr_reg = test_data.int_regs.get_register()
     data_reg = test_data.float_regs.get_register()
 
-    lines.append("#ifdef RVMODEL_ACCESS_FAULT_ADDRESS")
+    lines.append("#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE")
     lines.extend(
         [
             f"LI(x{addr_reg}, 0xBEE1CAFE)",
             f"fcvt.s.w f{data_reg}, x{addr_reg}",
-            f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+            f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)",
         ]
     )
     lines.extend(
@@ -601,7 +601,7 @@ def _generate_store_access_fault_tests(test_data: TestData) -> list[str]:
             # "nop",
             # "",
             # "#endif",
-            "#endif // RVMODEL_ACCESS_FAULT_ADDRESS",
+            "#endif // RVMODEL_ACCESS_FAULT_ADDRESS_STORE",
             "",
         ]
     )

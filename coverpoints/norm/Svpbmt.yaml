@@ -93,7 +93,13 @@ normative_rule_definitions:
   # if hgatp.MODE is not equal to zero, non-zero G-stage PTE PBMT bits override the
   # attributes in the PMA to produce an intermediate set of attributes.
   - names: [Svpbmt_hgatp_stage_override_rule, Svpbmt_vsatp_stage_override_rule]
-    coverpoint: ["Svpbmt_H_cg/{cp_vsatp_pbmt,cp_hgatp_pbmt}"]
+    # Svpbmt_H sets one stage at a time; the Zicfiss_H crosses set both, and the final
+    # type is observable because IO faults shadow stack instructions (VS NC over G IO does not)
+    coverpoint:
+      [
+        "Svpbmt_H_cg/{cp_vsatp_pbmt,cp_hgatp_pbmt}",
+        "{Zicfiss_H_cg}/{cp_ss_non_idempotent_virt,cp_ss_non_idempotent_virt_swap}",
+      ]
 
   - name: menvcfg_pbmte_henvcfg_pbmte_rdonly0
     coverpoint: ["Svpbmt_H_cg/cp_henvcfg_menvcfg"]

@@ -63,7 +63,7 @@
 - Allocate registers through `TestData` register allocators. Do not hard-code or separately exclude registers already reserved by the framework. Framework routines and T-SBI can clobber `ra` and `a0` through `a2`, so `generate/priv.py` removes them from the privileged-test pool so they are never allocated.
 - In generated assembly, use Python loops to emit repeated code. Avoid assembly loops so testcase labels and debug strings stay unique.
 - Do not use the target-dependent `.align` directive in assembly. Use `.p2align` or `.balign`.
-- Do not use the `la` or `li` pseduoinstructions. Use the `LA()` and `LI()` macros.
+- Do not use the `la` or `li` pseudoinstructions. Use `LA()` for labels and `LI()` for constants. Use `LI_FIXED_LEN()` for values that come from `RVMODEL_*` macros, so code size does not depend on the DUT. In generators, `load_constant()` selects `LI()` or `LI_FIXED_LEN()`.
 - Do not hand-edit `framework/src/act/fcov/coverage/RISCV_imported_decode_pkg.svh`; it is generated from `riscv-opcodes`.
 
 ## Configurations And CI

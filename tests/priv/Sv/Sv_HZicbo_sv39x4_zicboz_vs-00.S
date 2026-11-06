@@ -990,11 +990,11 @@ Sv_HZicbo_cg_cp_vs_gpa_vs_sv39_l1_nonleaf_gpa_unmapped_cbo_zero:
   or x9, x9, x6
   SREG x9, 0(x15)
   LA(x15, rvtest_hlvl0_pg_tbl + (((0x2c0000000) >> 12) & 0x1ff) * 8)
-  LI(x9, (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 7) & ~7)) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
+  LI_FIXED_LEN(x9, (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 7) & ~7)) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x9, 0(x15)
   hfence.gvma
   hfence.vvma
-  LI(x8, ((((0x140802000) & ~0x3fe00000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 7) & ~7) & 0xFFF) / 8) << 21)) >> 21) << 21)
+  LI_FIXED_LEN(x8, ((((0x140802000) & ~0x3fe00000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 7) & ~7) & 0xFFF) / 8) << 21)) >> 21) << 21)
   LA(x9, svhzicbo_data)
   slli x9, x9, 43
   srli x9, x9, 43
@@ -1683,11 +1683,11 @@ Sv_HZicbo_cg_cp_vs_gpa_vs_sv39_l0_nonleaf_gpa_unmapped_cbo_zero:
   or x15, x15, x9
   SREG x15, 0(x13)
   LA(x13, rvtest_hlvl0_pg_tbl + (((0x2c0000000) >> 12) & 0x1ff) * 8)
-  LI(x15, (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 7) & ~7)) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
+  LI_FIXED_LEN(x15, (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 7) & ~7)) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x15, 0(x13)
   hfence.gvma
   hfence.vvma
-  LI(x8, ((((0x140802000) & ~0x1ff000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 7) & ~7) & 0xFFF) / 8) << 12)) >> 12) << 12)
+  LI_FIXED_LEN(x8, ((((0x140802000) & ~0x1ff000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 7) & ~7) & 0xFFF) / 8) << 12)) >> 12) << 12)
   LA(x13, svhzicbo_data)
   slli x13, x13, 52
   srli x13, x13, 52
@@ -2596,11 +2596,11 @@ Sv_HZicbo_cg_cp_vs_gpa_vu_sv39_l1_nonleaf_gpa_unmapped_cbo_zero:
   or x6, x6, x14
   SREG x6, 0(x9)
   LA(x9, rvtest_hlvl0_pg_tbl + (((0x2c0000000) >> 12) & 0x1ff) * 8)
-  LI(x6, (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 7) & ~7)) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
+  LI_FIXED_LEN(x6, (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 7) & ~7)) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x6, 0(x9)
   hfence.gvma
   hfence.vvma
-  LI(x8, ((((0x140802000) & ~0x3fe00000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 7) & ~7) & 0xFFF) / 8) << 21)) >> 21) << 21)
+  LI_FIXED_LEN(x8, ((((0x140802000) & ~0x3fe00000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 7) & ~7) & 0xFFF) / 8) << 21)) >> 21) << 21)
   LA(x9, svhzicbo_data)
   slli x9, x9, 43
   srli x9, x9, 43
@@ -3247,11 +3247,11 @@ Sv_HZicbo_cg_cp_vs_gpa_vu_sv39_l0_nonleaf_gpa_unmapped_cbo_zero:
   or x9, x9, x15
   SREG x9, 0(x6)
   LA(x6, rvtest_hlvl0_pg_tbl + (((0x2c0000000) >> 12) & 0x1ff) * 8)
-  LI(x9, (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 7) & ~7)) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
+  LI_FIXED_LEN(x9, (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 7) & ~7)) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x9, 0(x6)
   hfence.gvma
   hfence.vvma
-  LI(x8, ((((0x140802000) & ~0x1ff000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 7) & ~7) & 0xFFF) / 8) << 12)) >> 12) << 12)
+  LI_FIXED_LEN(x8, ((((0x140802000) & ~0x1ff000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 7) & ~7) & 0xFFF) / 8) << 12)) >> 12) << 12)
   LA(x9, svhzicbo_data)
   slli x9, x9, 52
   srli x9, x9, 52

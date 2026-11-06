@@ -143,6 +143,17 @@ def file_hash(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()[:12]
 
 
+def simulator_cache_hash(install_script: Path, extra_inputs: Sequence[str]) -> str:
+    """Hash the installer and any additional sources compiled or copied by it."""
+    if not extra_inputs:
+        return file_hash(install_script)
+    digest = hashlib.sha256(install_script.read_bytes())
+    for name in sorted(set(extra_inputs)):
+        digest.update(b"\0" + name.encode() + b"\0")
+        digest.update(hashlib.sha256((REPO_ROOT / name).read_bytes()).digest())
+    return digest.hexdigest()[:12]
+
+
 def _warm_udb_outputs(config_dir: Path, workdir: Path) -> None:
     """Generate UDB outputs for every CI-enabled config in one parallel pass.
 
@@ -221,13 +232,15 @@ def discover_configs(config_dir: Path, workdir: Path | None = None) -> list[dict
                     f"{sim_ci_yaml}: 'config_shards[{config_name}]' must be >= 1, got {config_shards[str(config_name)]}"
                 )
 
-        # Cache key is derived from the install script's content hash.
-        # When the script changes (e.g., version bump), the cache automatically invalidates.
+        # Include separate harness sources and installed runners when requested by the simulator.
+        cache_inputs = sim_config.get("cache_inputs") or []
+        if not isinstance(cache_inputs, list) or any(not isinstance(name, str) for name in cache_inputs):
+            raise TypeError(f"{sim_ci_yaml}: 'cache_inputs' must be a list of repository-relative file paths")
         cache_key = ""
         if install_script:
-            script_path = Path(install_script)
+            script_path = REPO_ROOT / install_script
             if script_path.is_file():
-                cache_key = f"{sim_name}-{file_hash(script_path)}"
+                cache_key = f"{sim_name}-{simulator_cache_hash(script_path, cache_inputs)}"
 
         # Find all configs with run_cmd.txt
         for run_cmd_file in sorted(sim_dir.rglob("*/run_cmd.txt")):

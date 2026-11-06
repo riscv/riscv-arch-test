@@ -185,18 +185,27 @@ def _clear_unchecked(csr: str, reg: int, tmp: int) -> list[str]:
     return lines
 
 
-def _unchecked_access_test(test_data: TestData, cg: str, cp: str, csr: str, bin_prefix: str) -> list[str]:
-    """csr_access_test for hstateen0 or hstateen0h, with the STATEEN0_UNCHECKED_BITS cleared from each readback."""
+def _sail_gap_access_test(test_data: TestData, cg: str, cp: str, csr: str, bin_prefix: str) -> list[str]:
+    """csr_access_test for hstateen0 or hstateen0h, except that on a DUT implementing the extension of a
+    STATEEN0_SAIL_GAP_BITS bit, the accesses keep that bit at its saved value and the readbacks do not check it,
+    as the stateen walks do."""
     save, ones, check, tmp = test_data.int_regs.get_registers(4)
-    lines = ["", f"# CSR Access Tests for {csr}", f"csrr x{save}, {csr}    # Save CSR", f"LI(x{ones}, -1)"]
-    for name, op in (
-        ("csrrw1", f"csrw {csr}, x{ones}"),
-        ("csrrw0", f"csrw {csr}, zero"),
-        ("csrs_all", f"csrs {csr}, x{ones}"),
-        ("csrrc_all", f"csrc {csr}, x{ones}"),
+    lines = [
+        "",
+        f"# CSR Access Tests for {csr}",
+        f"csrr x{save}, {csr}    # Save CSR",
+        f"LI(x{ones}, -1)    # bits to write: all but the Sail-gap bits of implemented extensions",
+        *_clear_unchecked(csr, ones, tmp),
+    ]
+    for name, setup, op in (
+        ("csrrw1", [f"or x{tmp}, x{save}, x{ones}"], f"csrw {csr}, x{tmp}    # Write all 1s"),
+        ("csrrw0", [f"not x{tmp}, x{ones}", f"and x{tmp}, x{tmp}, x{save}"], f"csrw {csr}, x{tmp}    # Write all 0s"),
+        ("csrs_all", [], f"csrs {csr}, x{ones}    # Set all 1s"),
+        ("csrrc_all", [], f"csrc {csr}, x{ones}    # Clear all 1s"),
     ):
         lines += [
             "",
+            *setup,
             test_data.add_testcase(f"{bin_prefix}{csr}_{name}", cp, cg),
             op,
             f"csrr x{check}, {csr}",
@@ -218,7 +227,7 @@ def _csr_lines(test_data: TestData, cg: str, cp: str, csrs: tuple[str, ...], tag
     if readable:
         for csr in csrs:
             if csr in ("hstateen0", "hstateen0h"):  # TODO: Remove once Sail models every hstateen0 bit
-                access = _unchecked_access_test(test_data, cg, cp, csr, f"{tag}_")
+                access = _sail_gap_access_test(test_data, cg, cp, csr, f"{tag}_")
             else:
                 access = csr_access_test(test_data, (csr, None), cg, cp, bin_prefix=f"{tag}_")
             lines += gated(access, CSR_GUARDS.get(csr))

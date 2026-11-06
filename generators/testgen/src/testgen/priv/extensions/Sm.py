@@ -25,6 +25,7 @@ from testgen.priv.extensions.HCommon import (
     REPLICAS,
     guest_page_fault_tests,
     hcsr_tests,
+    hcsr_walk_tests,
     hlv_tests,
     replica_read,
     replica_rw_tests,
@@ -480,66 +481,76 @@ def _add_deleg_alias(r1: int, r2: int, coverpoint: str, covergroup: str, test_da
     return lines
 
 
+# Writable bits of the M-mode CSRs walked in Sm, shared by the RV32 high-half walks
+_MSTATUS_MASK = (
+    (1 << 1)  # SIE:  Supervisor Interrupt Enable
+    | (1 << 3)  # MIE:  Machine Interrupt Enable
+    | (1 << 5)  # SPIE: Supervisor Previous Interrupt Enable
+    | (0 << 6)  # UBE not yet supported by Sail; test in Endian
+    | (1 << 7)  # MPIE: Machine Previous Interrupt Enable
+    | (1 << 8)  # SPP:  Supervisor Previous Privilege
+    | (3 << 9)  # VS:   Vector Status
+    | (3 << 11)  # MPP:  Machine Previous Privilege
+    | (3 << 13)  # FS:   Floating-Point Status
+    | (3 << 15)  # XS:   User-Mode Extension Status
+    | (1 << 17)  # MPRV: Modify Privilege
+    | (1 << 18)  # SUM:  Supervisor User Memory Access
+    | (1 << 19)  # MXR:  Make eXecutable Readable
+    | (1 << 20)  # TVM:  Trap Virtual Memory
+    | (1 << 21)  # TW:   Timeout Wait
+    | (1 << 22)  # TSR:  Trap SRET
+    | (1 << 23)  # SPELP: Supervisor Previous Expect Landing Pad
+    | (1 << 24)  # SDT: Supervisor Disable Trap
+    | (1 << 31)  # SD for RV32 (probably shouldn't be tested for RV64, but seems to work ok)
+    | (0 << 32)  # UXL:  User-Mode XLEN not supported by Sail.  Test in xlen suite.
+    | (0 << 34)  # SXL:  Supervisor-Mode XLEN  not supported by Sail.  Test in xlen suite.
+    | (0 << 36)  # SBE not supported by Sail; test in Endian
+    | (0 << 37)  # MBE not supported by Sail; test in Endian
+    | (1 << 38)
+    | (1 << 39)
+    | (1 << 41)  # MPELP: Machine Previous Expect Landing Pad
+    | (1 << 42)  # MDT: Machine Disable Trap
+    | (1 << 63)  # SD for RV64
+)
+_MSECCFG_MASK = (
+    (0 << 0)  # Smepmp MML not supported TODO: change these to 1 when Sail implements & boot code sets it up
+    | (0 << 1)  # Smepmp MMWP not supported
+    | (0 << 2)  # Smepmp RLB not supported
+    | (1 << 8)  # USEED User mode seed access
+    | (1 << 9)  # SSEED Supervisor mode seed access
+    | (1 << 10)  # MLPE Machine landing pads enabled
+    | (3 << 32)  # Pointer masking
+)
+_MENVCFG_MASK = (
+    (1 << 0)  # FIOM: Fence of I/O implies memory
+    | (1 << 2)  # LPE: Landing Pad enable
+    | (1 << 3)  # SSE: Shadow Stack Enable
+    | (3 << 4)  # CBIE: Cache Block Invalidate Enable
+    | (1 << 6)  # CBCFE: Cache Block Clean and Flush Enable
+    | (1 << 7)  # CBZE: Cache Block Zero Enable
+    | (3 << 32)  # PMM: Pointer Masking
+    | (1 << 59)  # DTE: Double Trap Enable
+    | (0 << 60)  # Counter Delegation Smcdeleg not supported by Sail; TODO change to 1 when Smcdeleg implemented
+    | (1 << 61)  # ADUE: A/D
+    | (1 << 62)  # PBMTE: Page-Based Memory Type Enable
+    | (1 << 63)  # STCE: Supervisor Timer Compare Enable
+)
+
+
+# RV32-only high CSRs
+_CSR_MSTATUSH = ("mstatush", (_MSTATUS_MASK >> 32) & 0x7FFFFFFF)  # SD not in bit 31 of mstatush
+_CSR_MENVCFGH = ("menvcfgh", _MENVCFG_MASK >> 32)
+_CSR_MSECCFGH = ("mseccfgh", _MSECCFG_MASK >> 32)
+# medelegh (0x312) by number: clang 20 does not accept the CSR name (gcc does).  All bits reserved/custom.
+_CSR_MEDELEGH = ("0x312", 0x00000000)
+
+
 def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     """Generate CSR tests"""
     covergroup = "Sm_mcsr_cg"
 
     # Standard M-mode CSRs
     # Format: (CSR Name, Mask).  Mask specifies a set of bits to check
-    mstatus_mask = (
-        (1 << 1)  # SIE:  Supervisor Interrupt Enable
-        | (1 << 3)  # MIE:  Machine Interrupt Enable
-        | (1 << 5)  # SPIE: Supervisor Previous Interrupt Enable
-        | (0 << 6)  # UBE not yet supported by Sail; test in Endian
-        | (1 << 7)  # MPIE: Machine Previous Interrupt Enable
-        | (1 << 8)  # SPP:  Supervisor Previous Privilege
-        | (3 << 9)  # VS:   Vector Status
-        | (3 << 11)  # MPP:  Machine Previous Privilege
-        | (3 << 13)  # FS:   Floating-Point Status
-        | (3 << 15)  # XS:   User-Mode Extension Status
-        | (1 << 17)  # MPRV: Modify Privilege
-        | (1 << 18)  # SUM:  Supervisor User Memory Access
-        | (1 << 19)  # MXR:  Make eXecutable Readable
-        | (1 << 20)  # TVM:  Trap Virtual Memory
-        | (1 << 21)  # TW:   Timeout Wait
-        | (1 << 22)  # TSR:  Trap SRET
-        | (1 << 23)  # SPELP: Supervisor Previous Expect Landing Pad
-        | (1 << 24)  # SDT: Supervisor Disable Trap
-        | (1 << 31)  # SD for RV32 (probably shouldn't be tested for RV64, but seems to work ok)
-        | (0 << 32)  # UXL:  User-Mode XLEN not supported by Sail.  Test in xlen suite.
-        | (0 << 34)  # SXL:  Supervisor-Mode XLEN  not supported by Sail.  Test in xlen suite.
-        | (0 << 36)  # SBE not supported by Sail; test in Endian
-        | (0 << 37)  # MBE not supported by Sail; test in Endian
-        | (1 << 38)
-        | (1 << 39)
-        | (1 << 41)  # MPELP: Machine Previous Expect Landing Pad
-        | (1 << 42)  # MDT: Machine Disable Trap
-        | (1 << 63)  # SD for RV64
-    )
-    mseccfg_mask = (
-        (0 << 0)  # Smepmp MML not supported TODO: change these to 1 when Sail implements & boot code sets it up
-        | (0 << 1)  # Smepmp MMWP not supported
-        | (0 << 2)  # Smepmp RLB not supported
-        | (1 << 8)  # USEED User mode seed access
-        | (1 << 9)  # SSEED Supervisor mode seed access
-        | (1 << 10)  # MLPE Machine landing pads enabled
-        | (3 << 32)  # Pointer masking
-    )
-    menvcfg_mask = (
-        (1 << 0)  # FIOM: Fence of I/O implies memory
-        | (1 << 2)  # LPE: Landing Pad enable
-        | (1 << 3)  # SSE: Shadow Stack Enable
-        | (3 << 4)  # CBIE: Cache Block Invalidate Enable
-        | (1 << 6)  # CBCFE: Cache Block Clean and Flush Enable
-        | (1 << 7)  # CBZE: Cache Block Zero Enable
-        | (3 << 32)  # PMM: Pointer Masking
-        | (1 << 59)  # DTE: Double Trap Enable
-        | (0 << 60)  # Counter Delegation Smcdeleg not supported by Sail; TODO change to 1 when Smcdeleg implemented
-        | (1 << 61)  # ADUE: A/D
-        | (1 << 62)  # PBMTE: Page-Based Memory Type Enable
-        | (1 << 63)  # STCE: Supervisor Timer Compare Enable
-    )
-
     csrm = [
         (
             "medeleg",
@@ -587,14 +598,8 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     # mcountinhibit is optional, so it is accessed under UDB_MCOUNTINHIBIT_IMPLEMENTED
     # TODO: remove mcountinhibit mask when Sail gets parameters for writable bits
     csr_mcountinhibit = ("mcountinhibit", 0b111)
-    csr_menvcfg = ("menvcfg", menvcfg_mask)
-    csr_mseccfg = ("mseccfg", mseccfg_mask)
-    # RV32-only high CSRs
-    csr_mstatush = ("mstatush", (mstatus_mask >> 32) & 0x7FFFFFFF)  # SD not in bit 31 of mstatush
-    csr_menvcfgh = ("menvcfgh", menvcfg_mask >> 32)
-    csr_mseccfgh = ("mseccfgh", mseccfg_mask >> 32)
-    # medelegh (0x312) by number: clang 20 does not accept the CSR name (gcc does).  All bits reserved/custom.
-    csr_medelegh = ("0x312", 0x00000000)
+    csr_menvcfg = ("menvcfg", _MENVCFG_MASK)
+    csr_mseccfg = ("mseccfg", _MSECCFG_MASK)
     # Read-only CSRs
     csrmro = [("mvendorid", None), ("mimpid", None), ("marchid", None), ("mhartid", None)]
     csr_mconfigptr = ("mconfigptr", None)
@@ -613,7 +618,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
 
     tc = test_data.new_test_chunk(test_chunks)
     tc.code.extend(
-        csr_access_test(test_data, ("mstatus", mstatus_mask), covergroup, coverpoint_masked, maskedwrites=True)
+        csr_access_test(test_data, ("mstatus", _MSTATUS_MASK), covergroup, coverpoint_masked, maskedwrites=True)
     )
 
     for csr in csrm:
@@ -650,14 +655,14 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     )
 
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
-    tc.code.extend(csr_access_test(test_data, csr_mstatush, covergroup, coverpoint_masked, maskedwrites=True))
-    tc.code.extend(csr_access_test(test_data, csr_menvcfgh, covergroup, coverpoint_masked, maskedwrites=True))
+    tc.code.extend(csr_access_test(test_data, _CSR_MSTATUSH, covergroup, coverpoint_masked, maskedwrites=True))
+    tc.code.extend(csr_access_test(test_data, _CSR_MENVCFGH, covergroup, coverpoint_masked, maskedwrites=True))
     tc.code.append("#endif //  SM1P12P0_OR_LATER_SUPPORTED")
     tc.code.append("\n#ifdef MSECCFG_SUPPORTED")
-    tc.code.extend(csr_access_test(test_data, csr_mseccfgh, covergroup, coverpoint_masked, maskedwrites=True))
+    tc.code.extend(csr_access_test(test_data, _CSR_MSECCFGH, covergroup, coverpoint_masked, maskedwrites=True))
     tc.code.append("#endif // MSECCFG")
     tc.code.append("\n#ifdef SM1P13P0_OR_LATER_SUPPORTED")
-    tc.code.extend(csr_access_test(test_data, csr_medelegh, covergroup, coverpoint))
+    tc.code.extend(csr_access_test(test_data, _CSR_MEDELEGH, covergroup, coverpoint))
     tc.code.extend(
         [
             "#endif // SM1P13P0_OR_LATER_SUPPORTED",
@@ -683,7 +688,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     tc.code.extend(
         csr_walk_test(
             test_data,
-            ("mstatus", mstatus_mask),
+            ("mstatus", _MSTATUS_MASK),
             covergroup,
             coverpoint_masked,
             warl_fields=warl_fields,
@@ -753,26 +758,6 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     )
     tc.code.append("#endif")
 
-    tc = test_data.new_test_chunk(test_chunks)
-    tc.code.extend(
-        [
-            "// RV32-only h CSRs",
-            "#if __riscv_xlen == 32",
-        ]
-    )
-
-    tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
-    tc.code.extend(csr_walk_test(test_data, csr_mstatush, covergroup, coverpoint_masked, maskedwrites=True))
-    tc.code.extend(csr_walk_test(test_data, csr_menvcfgh, covergroup, coverpoint_masked, maskedwrites=True))
-    tc.code.append("#endif // SM1P12P0_OR_LATER_SUPPORTED")
-    tc.code.append("\n#ifdef MSECCFG_SUPPORTED")
-    tc.code.extend(csr_walk_test(test_data, csr_mseccfgh, covergroup, coverpoint_masked, maskedwrites=True))
-    tc.code.append("#endif // MSECCFG")
-    tc.code.append("\n#ifdef SM1P13P0_OR_LATER_SUPPORTED")
-    tc.code.extend(csr_walk_test(test_data, csr_medelegh, covergroup, coverpoint))
-    tc.code.append("#endif // MEDELEGH")
-    tc.code.append("#endif // __riscv_xlen == 32")
-
     tc = test_data.new_test_chunk(test_chunks, "mcsr_addr")
     tc.section_header = comment_banner(
         "cp_mtval_zero / cp_mtval_ilen_walk1 / cp_mtval_ilen_ones",
@@ -791,126 +776,6 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         "Attempt to read debug-mode registers.  Should throw illegal instruction",
     )
     csr_ro_write_tests(test_data, test_chunks, covergroup, [range(0xC00, 0x1000)], "csr_ro")
-
-    ######################################
-    coverpoint = "cp_scsr_from_m"
-    ######################################
-    tc = test_data.new_test_chunk(test_chunks, "scsr_from_m")
-    tc.section_header = comment_banner(
-        coverpoint,
-        "Read, write all 1s, write all 0s, set all 1s, set all 0s, restore all S-mode CSRs from M-mode",
-    )
-
-    tc.code.append("#ifdef S_SUPPORTED")
-    for csr in S_CSRS:
-        tc.code.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
-    tc.code.extend(["", "#ifdef S1P12P0_OR_LATER_SUPPORTED"])
-    tc.code.extend(csr_access_test(test_data, S_CSR_SENVCFG, covergroup, coverpoint))
-    tc.code.extend(["", "#endif // S1P12P0_OR_LATER_SUPPORTED"])
-
-    ######################################
-    coverpoint = "cp_scause_from_m"
-    ######################################
-    # The scause Exception Code is WLRL: write each code it must hold (SCAUSE_CODES, as cp_scause_write_exception)
-    save_reg, val_reg, check_reg = test_data.int_regs.get_registers(3)
-    tc.code.extend(["", "# Write scause with each guaranteed Exception Code 0-31", f"csrr x{save_reg}, scause # save"])
-    for code, gate in sorted(SCAUSE_CODES["exception"].items()):
-        body = [
-            f"LI(x{val_reg}, {code})",
-            test_data.add_testcase(f"scause_{code}", coverpoint, covergroup),
-            f"csrw scause, x{val_reg}",
-            gen_csr_read_sigupd(check_reg, ("scause", None), test_data),
-        ]
-        tc.code.extend(gated(body, gate))
-    tc.code.append(f"csrw scause, x{save_reg} # restore")
-    test_data.int_regs.return_registers([save_reg, val_reg, check_reg])
-    tc.code.append("#endif // S_SUPPORTED")
-
-    ######################################
-    coverpoint = "cp_satp_from_m"
-    ######################################
-    tc = test_data.new_test_chunk(test_chunks, "satp_from_m")
-    tc.section_header = comment_banner(coverpoint, "Read satp from M-mode with mstatus.TVM = 1 and 0")
-    temp_reg, tvm_reg = test_data.int_regs.get_registers(2)
-    tc.code.extend(
-        [
-            "#ifdef S_SUPPORTED",
-            f"LI(x{tvm_reg}, 0x00100000) # mstatus.TVM (bit 20)",
-            f"csrs mstatus, x{tvm_reg}",
-            test_data.add_testcase("tvm_enabled", coverpoint, covergroup),
-            f"csrr x{temp_reg}, satp # read satp with mstatus.TVM = 1; TVM only traps S-mode, so expect no trap",
-            f"csrc mstatus, x{tvm_reg}",
-            test_data.add_testcase("tvm_disabled", coverpoint, covergroup),
-            f"csrr x{temp_reg}, satp # read satp with mstatus.TVM = 0; expect no trap.  Value is WARL and unpredictable so don't sigupd it",
-            "#endif // S_SUPPORTED",
-        ]
-    )
-    test_data.int_regs.return_registers([temp_reg, tvm_reg])
-
-    ######################################
-    coverpoint = "cp_satp_from_s"
-    ######################################
-    tc = test_data.new_test_chunk(test_chunks, "satp_from_s")
-    tc.section_header = comment_banner(coverpoint, "Read satp from S-mode with mstatus.TVM = 1 and 0")
-    temp_reg, tvm_reg = test_data.int_regs.get_registers(2)
-    # This suite does not delegate illegal instructions, so the TVM = 1 trap is taken in M-mode,
-    # whose handler can read satp.  The S suite cannot host this case: it delegates to S-mode and
-    # the S-mode handler reads satp itself.
-    tc.code.extend(
-        [
-            "#ifdef S_SUPPORTED",
-            f"LI(x{tvm_reg}, 0x00100000) # mstatus.TVM (bit 20)",
-            f"csrs mstatus, x{tvm_reg}",
-            "RVTEST_TSBI_GOTO_SMODE",
-            test_data.add_testcase("tvm_enabled", coverpoint, covergroup),
-            f"csrr x{temp_reg}, satp # read satp from S-mode with mstatus.TVM = 1; expect illegal instruction trap",
-            "RVTEST_TSBI_GOTO_MMODE",
-            f"csrc mstatus, x{tvm_reg}",
-            "RVTEST_TSBI_GOTO_SMODE",
-            test_data.add_testcase("tvm_disabled", coverpoint, covergroup),
-            f"csrr x{temp_reg}, satp # read satp from S-mode with mstatus.TVM = 0; expect no trap.  Value is WARL and unpredictable so don't sigupd it",
-            "RVTEST_TSBI_GOTO_MMODE",
-            "#endif // S_SUPPORTED",
-        ]
-    )
-    test_data.int_regs.return_registers([temp_reg, tvm_reg])
-
-    ######################################
-    coverpoint = "cp_shadow"
-    ######################################
-    tc = test_data.new_test_chunk(test_chunks, "shadow")
-    tc.section_header = comment_banner(
-        coverpoint,
-        "Check that values written to shadowed registers are consistent between machine and supervisor mode",
-    )
-    # Moved here from the S suite: the cp_shadow coverpoint samples a csrw of the M-mode CSR
-    # immediately followed by a csrr of its S-mode shadow (and vice versa) in M-mode.
-    r1, r2, rmask, rsave = test_data.int_regs.get_registers(4)
-    tc.code.extend(
-        [
-            "#ifdef S_SUPPORTED",
-            f"LI(x{r1}, 0x007FFFBF) # skip UBE, UXL bits which would cause weird behavior",
-            _add_shadow(r1, r2, rmask, rsave, "mstatus", "sstatus", 0xCFFFFFFCF, coverpoint, covergroup, test_data),
-            _add_shadow(r1, r2, rmask, rsave, "sstatus", "mstatus", 0xCFFFFFFCF, coverpoint, covergroup, test_data),
-            f"LI(x{r1}, 0xFFFF) # all interrupts",
-            "# Without delegation, S-mode should not see any of the M-mode interrupts",
-            "csrw mideleg, zero # disable delegation",
-            _add_shadow(r1, r2, rmask, rsave, "mie", "sie", 0x3EEE, coverpoint, covergroup, test_data),
-            _add_shadow(r1, r2, rmask, rsave, "mip", "sip", 0x3EEE, coverpoint, covergroup, test_data),
-            _add_shadow(r1, r2, rmask, rsave, "sie", "mie", 0x3EEE, coverpoint, covergroup, test_data),
-            _add_shadow(r1, r2, rmask, rsave, "sip", "mip", 0x3EEE, coverpoint, covergroup, test_data),
-            "# With delegation, S-mode should see the delegated M-mode interrupts",
-            f"csrw mideleg, x{r1} # delegate all interrupts to S-mode",
-            _add_shadow(r1, r2, rmask, rsave, "mie", "sie", 0x3EEE, coverpoint, covergroup, test_data, "_deleg"),
-            _add_shadow(r1, r2, rmask, rsave, "mip", "sip", 0x3EEE, coverpoint, covergroup, test_data, "_deleg"),
-            _add_shadow(r1, r2, rmask, rsave, "sie", "mie", 0x3EEE, coverpoint, covergroup, test_data, "_deleg"),
-            _add_shadow(r1, r2, rmask, rsave, "sip", "mip", 0x3EEE, coverpoint, covergroup, test_data, "_deleg"),
-            *_add_deleg_alias(r1, r2, coverpoint, covergroup, test_data),
-            # mideleg restored to 0 by _add_deleg_alias()
-            "#endif // S_SUPPORTED",
-        ]
-    )
-    test_data.int_regs.return_registers([r1, r2, rmask, rsave])
 
     ######################################
     coverpoint = "cp_misa_mxl"
@@ -1228,6 +1093,146 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     test_chunks.append(test_data.end_test_chunk())
 
 
+def _generate_mcsr_walk_rv32_tests(test_data: TestData, test_chunks: list) -> None:
+    """Set and clear each bit of the RV32-only high halves of the M-mode CSRs."""
+    covergroup = "Sm_mcsr_cg"
+    coverpoint = "cp_mcsrwalk"
+    coverpoint_masked = "cp_mcsrwalk_masked"
+
+    tc = test_data.new_test_chunk(test_chunks, "mcsr_walk_rv32")
+    tc.section_header = comment_banner(
+        coverpoint, "Set and clear each bit individually in the RV32-only high halves of the M-mode CSRs"
+    )
+
+    tc.code.append("#ifdef SM1P12P0_OR_LATER_SUPPORTED")
+    tc.code.extend(csr_walk_test(test_data, _CSR_MSTATUSH, covergroup, coverpoint_masked, maskedwrites=True))
+    tc.code.extend(csr_walk_test(test_data, _CSR_MENVCFGH, covergroup, coverpoint_masked, maskedwrites=True))
+    tc.code.append("#endif // SM1P12P0_OR_LATER_SUPPORTED")
+    tc.code.append("\n#ifdef MSECCFG_SUPPORTED")
+    tc.code.extend(csr_walk_test(test_data, _CSR_MSECCFGH, covergroup, coverpoint_masked, maskedwrites=True))
+    tc.code.append("#endif // MSECCFG")
+    tc.code.append("\n#ifdef SM1P13P0_OR_LATER_SUPPORTED")
+    tc.code.extend(csr_walk_test(test_data, _CSR_MEDELEGH, covergroup, coverpoint))
+    tc.code.append("#endif // MEDELEGH")
+
+
+def _generate_mcsr_s_tests(test_data: TestData, test_chunks: list) -> None:
+    """Access the S-mode CSRs and satp from M-mode and S-mode, and check the M/S shadow CSRs."""
+    covergroup = "Sm_mcsr_cg"
+
+    ######################################
+    coverpoint = "cp_scsr_from_m"
+    ######################################
+    tc = test_data.new_test_chunk(test_chunks, "scsr_from_m")
+    tc.section_header = comment_banner(
+        coverpoint,
+        "Read, write all 1s, write all 0s, set all 1s, set all 0s, restore all S-mode CSRs from M-mode",
+    )
+
+    for csr in S_CSRS:
+        tc.code.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
+    tc.code.extend(["", "#ifdef S1P12P0_OR_LATER_SUPPORTED"])
+    tc.code.extend(csr_access_test(test_data, S_CSR_SENVCFG, covergroup, coverpoint))
+    tc.code.extend(["", "#endif // S1P12P0_OR_LATER_SUPPORTED"])
+
+    ######################################
+    coverpoint = "cp_scause_from_m"
+    ######################################
+    # The scause Exception Code is WLRL: write each code it must hold (SCAUSE_CODES, as cp_scause_write_exception)
+    save_reg, val_reg, check_reg = test_data.int_regs.get_registers(3)
+    tc.code.extend(["", "# Write scause with each guaranteed Exception Code 0-31", f"csrr x{save_reg}, scause # save"])
+    for code, gate in sorted(SCAUSE_CODES["exception"].items()):
+        body = [
+            f"LI(x{val_reg}, {code})",
+            test_data.add_testcase(f"scause_{code}", coverpoint, covergroup),
+            f"csrw scause, x{val_reg}",
+            gen_csr_read_sigupd(check_reg, ("scause", None), test_data),
+        ]
+        tc.code.extend(gated(body, gate))
+    tc.code.append(f"csrw scause, x{save_reg} # restore")
+    test_data.int_regs.return_registers([save_reg, val_reg, check_reg])
+
+    ######################################
+    coverpoint = "cp_satp_from_m"
+    ######################################
+    tc = test_data.new_test_chunk(test_chunks, "satp_from_m")
+    tc.section_header = comment_banner(coverpoint, "Read satp from M-mode with mstatus.TVM = 1 and 0")
+    temp_reg, tvm_reg = test_data.int_regs.get_registers(2)
+    tc.code.extend(
+        [
+            f"LI(x{tvm_reg}, 0x00100000) # mstatus.TVM (bit 20)",
+            f"csrs mstatus, x{tvm_reg}",
+            test_data.add_testcase("tvm_enabled", coverpoint, covergroup),
+            f"csrr x{temp_reg}, satp # read satp with mstatus.TVM = 1; TVM only traps S-mode, so expect no trap",
+            f"csrc mstatus, x{tvm_reg}",
+            test_data.add_testcase("tvm_disabled", coverpoint, covergroup),
+            f"csrr x{temp_reg}, satp # read satp with mstatus.TVM = 0; expect no trap.  Value is WARL and unpredictable so don't sigupd it",
+        ]
+    )
+    test_data.int_regs.return_registers([temp_reg, tvm_reg])
+
+    ######################################
+    coverpoint = "cp_satp_from_s"
+    ######################################
+    tc = test_data.new_test_chunk(test_chunks, "satp_from_s")
+    tc.section_header = comment_banner(coverpoint, "Read satp from S-mode with mstatus.TVM = 1 and 0")
+    temp_reg, tvm_reg = test_data.int_regs.get_registers(2)
+    # This suite does not delegate illegal instructions, so the TVM = 1 trap is taken in M-mode,
+    # whose handler can read satp.  The S suite cannot host this case: it delegates to S-mode and
+    # the S-mode handler reads satp itself.
+    tc.code.extend(
+        [
+            f"LI(x{tvm_reg}, 0x00100000) # mstatus.TVM (bit 20)",
+            f"csrs mstatus, x{tvm_reg}",
+            "RVTEST_TSBI_GOTO_SMODE",
+            test_data.add_testcase("tvm_enabled", coverpoint, covergroup),
+            f"csrr x{temp_reg}, satp # read satp from S-mode with mstatus.TVM = 1; expect illegal instruction trap",
+            "RVTEST_TSBI_GOTO_MMODE",
+            f"csrc mstatus, x{tvm_reg}",
+            "RVTEST_TSBI_GOTO_SMODE",
+            test_data.add_testcase("tvm_disabled", coverpoint, covergroup),
+            f"csrr x{temp_reg}, satp # read satp from S-mode with mstatus.TVM = 0; expect no trap.  Value is WARL and unpredictable so don't sigupd it",
+            "RVTEST_TSBI_GOTO_MMODE",
+        ]
+    )
+    test_data.int_regs.return_registers([temp_reg, tvm_reg])
+
+    ######################################
+    coverpoint = "cp_shadow"
+    ######################################
+    tc = test_data.new_test_chunk(test_chunks, "shadow")
+    tc.section_header = comment_banner(
+        coverpoint,
+        "Check that values written to shadowed registers are consistent between machine and supervisor mode",
+    )
+    # Moved here from the S suite: the cp_shadow coverpoint samples a csrw of the M-mode CSR
+    # immediately followed by a csrr of its S-mode shadow (and vice versa) in M-mode.
+    r1, r2, rmask, rsave = test_data.int_regs.get_registers(4)
+    tc.code.extend(
+        [
+            f"LI(x{r1}, 0x007FFFBF) # skip UBE, UXL bits which would cause weird behavior",
+            _add_shadow(r1, r2, rmask, rsave, "mstatus", "sstatus", 0xCFFFFFFCF, coverpoint, covergroup, test_data),
+            _add_shadow(r1, r2, rmask, rsave, "sstatus", "mstatus", 0xCFFFFFFCF, coverpoint, covergroup, test_data),
+            f"LI(x{r1}, 0xFFFF) # all interrupts",
+            "# Without delegation, S-mode should not see any of the M-mode interrupts",
+            "csrw mideleg, zero # disable delegation",
+            _add_shadow(r1, r2, rmask, rsave, "mie", "sie", 0x3EEE, coverpoint, covergroup, test_data),
+            _add_shadow(r1, r2, rmask, rsave, "mip", "sip", 0x3EEE, coverpoint, covergroup, test_data),
+            _add_shadow(r1, r2, rmask, rsave, "sie", "mie", 0x3EEE, coverpoint, covergroup, test_data),
+            _add_shadow(r1, r2, rmask, rsave, "sip", "mip", 0x3EEE, coverpoint, covergroup, test_data),
+            "# With delegation, S-mode should see the delegated M-mode interrupts",
+            f"csrw mideleg, x{r1} # delegate all interrupts to S-mode",
+            _add_shadow(r1, r2, rmask, rsave, "mie", "sie", 0x3EEE, coverpoint, covergroup, test_data, "_deleg"),
+            _add_shadow(r1, r2, rmask, rsave, "mip", "sip", 0x3EEE, coverpoint, covergroup, test_data, "_deleg"),
+            _add_shadow(r1, r2, rmask, rsave, "sie", "mie", 0x3EEE, coverpoint, covergroup, test_data, "_deleg"),
+            _add_shadow(r1, r2, rmask, rsave, "sip", "mip", 0x3EEE, coverpoint, covergroup, test_data, "_deleg"),
+            *_add_deleg_alias(r1, r2, coverpoint, covergroup, test_data),
+            # mideleg restored to 0 by _add_deleg_alias()
+        ]
+    )
+    test_data.int_regs.return_registers([r1, r2, rmask, rsave])
+
+
 # The xepc[1] masking tests run only on harts whose misa.C is writable (UDB_MUTABLE_MISA_C) and that implement Zca, so
 # that clearing misa.C changes IALIGN from 16 to 32.  The static case, xepc[1] writable with Zca and read-only zero
 # without it, is covered by the xepc walks.  misa is written only in M-mode; S-mode and VS-mode are entered with the
@@ -1407,7 +1412,10 @@ def _xepc_ialign32_tests(test_data: TestData, covergroup: str) -> list[str]:
 
 
 def _vsepc_ialign32_tests(test_data: TestData) -> list[str]:
-    """vsepc with misa.C = 0: sret and a read (as sepc) in VS-mode, and reads of vsepc from M-mode and HS-mode."""
+    """vsepc with misa.C = 0: sret and a read (as sepc) in VS-mode, and reads of vsepc from M-mode and HS-mode.
+
+    The generator header requires Zca and a writable misa.C (IALIGN32_GATE).
+    """
     saved_vsstatus_reg, target_reg, value_reg = test_data.int_regs.get_registers(3)
 
     def masked_read(coverpoint: str, label: str, epc_csr: str) -> list[str]:
@@ -1416,7 +1424,6 @@ def _vsepc_ialign32_tests(test_data: TestData) -> list[str]:
         )
 
     lines = [
-        f"#if {IALIGN32_GATE}",
         f"csrr x{saved_vsstatus_reg}, vsstatus",
         *_clear_misa_c(value_reg),
         "RVTEST_TSBI_GOTO_VSMODE",
@@ -1451,7 +1458,6 @@ def _vsepc_ialign32_tests(test_data: TestData) -> list[str]:
             value_reg=value_reg,
         ),
         f"csrw vsstatus, x{saved_vsstatus_reg}",
-        f"#endif // {IALIGN32_GATE}",
     ]
     test_data.int_regs.return_registers([saved_vsstatus_reg, target_reg, value_reg])
     return lines
@@ -1786,6 +1792,33 @@ def make_sm(test_data: TestData) -> list[TestChunk]:
 
     _generate_mcsr_tests(test_data, test_chunks)
 
+    return test_chunks
+
+
+@add_priv_test_generator(
+    "Sm",
+    required_extensions=["Sm"],
+    params=["MXLEN: 32"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_sm_rv32(test_data: TestData) -> list[TestChunk]:
+    """Generate Sm tests of the RV32-only high-half M-mode CSRs."""
+    test_chunks: list[TestChunk] = []
+    _generate_mcsr_walk_rv32_tests(test_data, test_chunks)
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks
+
+
+@add_priv_test_generator(
+    "Sm",
+    required_extensions=["Sm", "S"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_sm_s(test_data: TestData) -> list[TestChunk]:
+    """Generate Sm tests of the S-mode CSRs from M-mode and of the M/S shadow CSRs."""
+    test_chunks: list[TestChunk] = []
+    _generate_mcsr_s_tests(test_data, test_chunks)
+    test_chunks.append(test_data.end_test_chunk())
     return test_chunks
 
 
@@ -2159,6 +2192,35 @@ def make_smh(test_data: TestData) -> list[TestChunk]:
         ]
     )
 
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks
+
+
+@add_priv_test_generator(
+    "Sm",
+    required_extensions=["Sm", "H", "Sstc"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_smh_sstc(test_data: TestData) -> list[TestChunk]:
+    """Generate Sm_H walks of the H CSRs that Sstc adds."""
+    test_chunks: list[TestChunk] = []
+    sstc_csrs = [csr for csr in [*H_M_CSRS, *H_HS_CSRS, *H_VS_CSRS] if csr.extension == "Sstc"]
+    hcsr_walk_tests(test_data, test_chunks, sstc_csrs, _H_CSR_CG, "H_hcsr_walk_sstc")
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks
+
+
+# IALIGN32_GATE in header form: only harts with Zca and a writable misa.C can change IALIGN
+@add_priv_test_generator(
+    "Sm",
+    required_extensions=["Sm", "H", "Zca"],
+    march_extensions=["H"],  # no Zca: the assembler must not emit compressed instructions while misa.C = 0
+    params=["MUTABLE_MISA_C: true"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_smh_vsepc(test_data: TestData) -> list[TestChunk]:
+    """Generate Sm_H tests of vsepc[1] masking while IALIGN = 32."""
+    test_chunks: list[TestChunk] = []
     tc = test_data.new_test_chunk(test_chunks, "H_vsepc")
     tc.code.extend(
         [
@@ -2170,7 +2232,6 @@ def make_smh(test_data: TestData) -> list[TestChunk]:
             *_vsepc_ialign32_tests(test_data),
         ]
     )
-
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks
 

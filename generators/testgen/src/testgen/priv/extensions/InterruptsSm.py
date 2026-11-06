@@ -51,7 +51,6 @@ SUITE = InterruptSuite(
     status={"csr": "mstatus", "mask": 0x88, "field": "MIE"},
     # cp_wfi: wake on the machine timer, enabled by mie.MTIE, pending in mip.MTIP
     wfi={
-        "guard": "UDB_MTI_INTR_IMPL",
         "timer": "MTIME",
         "ie": ("MTIE", 0x80),
         "ip": ("mip", "MTIP", 0x80),
@@ -170,7 +169,6 @@ def _generate_cp_write_stip_sstc(
     tmp_reg = test_data.int_regs.get_register()
 
     tc.code += [
-        "#ifdef SSTC_SUPPORTED",
         "csrw mideleg, zero # mideleg = zeros",
         "csrw mie, zero # mie = 0 so a pending STIP is not taken",
         *write_stce(test_data, True, priv),
@@ -191,7 +189,7 @@ def _generate_cp_write_stip_sstc(
                 write_sigupd(tmp_reg, test_data),
                 "",
             ]
-    tc.code += ["#endif // SSTC_SUPPORTED", ""]
+    tc.code.append("")
 
     test_data.int_regs.return_register(tmp_reg)
 
@@ -204,39 +202,97 @@ _COMMON_GENERATORS = [
 ]
 
 
-# One generator per test mode, each requiring the extension for its mode, so no test file is
-# compiled away entirely on a target without that mode.
+# One generator per test mode and section, each requiring the extensions and parameters its section needs, so no
+# test file is compiled away entirely on a target without them.  cp_wfi waits for the machine timer, so it needs
+# MTI_INTR_IMPL; cp_priority_mideleg delegates S-level interrupts, so it needs S.
+
+
 @add_priv_test_generator(SUITE.name, required_extensions=["Sm"], extra_defines=["#define BOOT_TO_MMODE"])
 def make_interruptssm_m(test_data: TestData) -> list[TestChunk]:
     """InterruptsSm tests that run in M-mode."""
-    generators = _COMMON_GENERATORS + [
-        generate_cp_wfi,
-        _generate_cp_priority_mideleg,
-        _generate_cp_write_stip_sstc,
-        generate_cp_trigger_vsti_sstc,
-    ]
-    return emit_interrupts(test_data, SUITE, "M", generators)
+    return emit_interrupts(test_data, SUITE, "M", _COMMON_GENERATORS)
+
+
+@add_priv_test_generator(
+    SUITE.name, required_extensions=["Sm"], params=["MTI_INTR_IMPL: true"], extra_defines=["#define BOOT_TO_MMODE"]
+)
+def make_interruptssm_m_wfi(test_data: TestData) -> list[TestChunk]:
+    """InterruptsSm WFI test that runs in M-mode."""
+    return emit_interrupts(test_data, SUITE, "M", [generate_cp_wfi])
+
+
+@add_priv_test_generator(SUITE.name, required_extensions=["Sm", "S"], extra_defines=["#define BOOT_TO_MMODE"])
+def make_interruptssm_m_mideleg(test_data: TestData) -> list[TestChunk]:
+    """InterruptsSm delegated-interrupt priority test that runs in M-mode."""
+    return emit_interrupts(test_data, SUITE, "M", [_generate_cp_priority_mideleg])
+
+
+@add_priv_test_generator(SUITE.name, required_extensions=["Sm", "Sstc"], extra_defines=["#define BOOT_TO_MMODE"])
+def make_interruptssm_m_sstc(test_data: TestData) -> list[TestChunk]:
+    """InterruptsSm stimecmp test that runs in M-mode."""
+    return emit_interrupts(test_data, SUITE, "M", [_generate_cp_write_stip_sstc])
+
+
+@add_priv_test_generator(SUITE.name, required_extensions=["Sm", "H", "Sstc"], extra_defines=["#define BOOT_TO_MMODE"])
+def make_interruptssm_m_vsti_sstc(test_data: TestData) -> list[TestChunk]:
+    """InterruptsSm vstimecmp test that runs in M-mode."""
+    return emit_interrupts(test_data, SUITE, "M", [generate_cp_trigger_vsti_sstc])
 
 
 @add_priv_test_generator(SUITE.name, required_extensions=["Sm", "S"], extra_defines=["#define BOOT_TO_MMODE"])
 def make_interruptssm_s(test_data: TestData) -> list[TestChunk]:
     """InterruptsSm tests that run in S-mode."""
-    generators = _COMMON_GENERATORS + [generate_cp_wfi, generate_cp_wfi_timeout, _generate_cp_priority_mideleg]
+    generators = _COMMON_GENERATORS + [generate_cp_wfi_timeout, _generate_cp_priority_mideleg]
     return emit_interrupts(test_data, SUITE, "S", generators)
+
+
+@add_priv_test_generator(
+    SUITE.name, required_extensions=["Sm", "S"], params=["MTI_INTR_IMPL: true"], extra_defines=["#define BOOT_TO_MMODE"]
+)
+def make_interruptssm_s_wfi(test_data: TestData) -> list[TestChunk]:
+    """InterruptsSm WFI test that runs in S-mode."""
+    return emit_interrupts(test_data, SUITE, "S", [generate_cp_wfi])
 
 
 @add_priv_test_generator(SUITE.name, required_extensions=["Sm", "U"], extra_defines=["#define BOOT_TO_MMODE"])
 def make_interruptssm_u(test_data: TestData) -> list[TestChunk]:
     """InterruptsSm tests that run in U-mode."""
-    generators = _COMMON_GENERATORS + [generate_cp_wfi, generate_cp_wfi_timeout, _generate_cp_priority_mideleg]
+    generators = _COMMON_GENERATORS + [generate_cp_wfi_timeout]
     return emit_interrupts(test_data, SUITE, "U", generators)
+
+
+@add_priv_test_generator(SUITE.name, required_extensions=["Sm", "U", "S"], extra_defines=["#define BOOT_TO_MMODE"])
+def make_interruptssm_u_mideleg(test_data: TestData) -> list[TestChunk]:
+    """InterruptsSm delegated-interrupt priority test that runs in U-mode."""
+    return emit_interrupts(test_data, SUITE, "U", [_generate_cp_priority_mideleg])
+
+
+# U-mode WFI only waits when S-mode is not implemented
+@add_priv_test_generator(
+    SUITE.name,
+    required_extensions=["Sm", "U"],
+    forbidden_extensions=["S"],
+    params=["MTI_INTR_IMPL: true"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_interruptssm_u_wfi(test_data: TestData) -> list[TestChunk]:
+    """InterruptsSm WFI test that runs in U-mode."""
+    return emit_interrupts(test_data, SUITE, "U", [generate_cp_wfi])
 
 
 @add_priv_test_generator(SUITE.name, required_extensions=["Sm", "H"], extra_defines=["#define BOOT_TO_MMODE"])
 def make_interruptssm_vs(test_data: TestData) -> list[TestChunk]:
     """InterruptsSm tests that run in VS-mode."""
-    generators = _COMMON_GENERATORS + [generate_cp_wfi, generate_cp_wfi_timeout, _generate_cp_priority_mideleg]
+    generators = _COMMON_GENERATORS + [generate_cp_wfi_timeout, _generate_cp_priority_mideleg]
     return emit_interrupts(test_data, SUITE, "VS", generators)
+
+
+@add_priv_test_generator(
+    SUITE.name, required_extensions=["Sm", "H"], params=["MTI_INTR_IMPL: true"], extra_defines=["#define BOOT_TO_MMODE"]
+)
+def make_interruptssm_vs_wfi(test_data: TestData) -> list[TestChunk]:
+    """InterruptsSm WFI test that runs in VS-mode."""
+    return emit_interrupts(test_data, SUITE, "VS", [generate_cp_wfi])
 
 
 @add_priv_test_generator(SUITE.name, required_extensions=["Sm", "H"], extra_defines=["#define BOOT_TO_MMODE"])

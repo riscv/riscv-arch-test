@@ -12,7 +12,6 @@ from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ZpmCommon import (
     EDGE_CASES,
     IMAGE_TABLES,
-    MODE_GUARDS,
     MODES,
     PMLEN_BY_PMM,
     SPLITS,
@@ -41,69 +40,54 @@ COVERGROUP = "Ssnpm_cg"
 SM_COVERGROUP = "Ssnpm_Sm_cg"
 
 
-def _ssnpm_sweep(test_data: TestData, pmm: int) -> list[TestChunk]:
-    """Build the chunks for one senvcfg.PMM setting, across every satp mode."""
+def _ssnpm_sweep(test_data: TestData, pmm: int, mode: str) -> list[TestChunk]:
+    """Build the chunks for one senvcfg.PMM setting and one satp mode."""
     pmlen = PMLEN_BY_PMM[pmm]
     label = f"pmm{pmm:02b}"
     chunks = []
-    for mode in MODES:
-        # Each PMM setting is split into three files to keep every test under 100k instructions.
-        # sweep_lowtags and sweep_hightags run every load, store, AMO, CBO and vector instruction through
-        # a tagged pointer: the first with tags that leave bit 63 clear, the second with tags that set it.
-        # edgecases holds the remaining checks, such as misaligned accesses, JALR, access faults and MXR.
-        for split, uppers in SPLITS:
-            tc = test_data.begin_test_chunk(split_name=f"{mode}_{label}_{split}")
-            guard = MODE_GUARDS[mode]
-            if guard:
-                tc.raw_data.append(f"#ifdef {guard}")
-            tc.raw_data.extend(data_page("pm_lo_page"))
-            if mode != "bare":
-                tc.raw_data.extend(
-                    [
-                        *data_page("pm_hi_page"),
-                        *data_slvl_tables(mode),
-                        *data_slvl_tables(mode, IMAGE_TABLES),
-                        *ss_data_page(),
-                    ]
-                )
-            if guard:
-                tc.raw_data.append(f"#endif // {guard}")
-            tc.code = _ssnpm_chunk(mode, pmm, pmlen, label, split, uppers, test_data)
-            chunks.append(test_data.end_test_chunk())
+    # Each PMM setting is split into three files to keep every test under 100k instructions.
+    # sweep_lowtags and sweep_hightags run every load, store, AMO, CBO and vector instruction through
+    # a tagged pointer: the first with tags that leave bit 63 clear, the second with tags that set it.
+    # edgecases holds the remaining checks, such as misaligned accesses, JALR, access faults and MXR.
+    for split, uppers in SPLITS:
+        tc = test_data.begin_test_chunk(split_name=f"{mode}_{label}_{split}")
+        tc.raw_data.extend(data_page("pm_lo_page"))
+        if mode != "bare":
+            tc.raw_data.extend(
+                [
+                    *data_page("pm_hi_page"),
+                    *data_slvl_tables(mode),
+                    *data_slvl_tables(mode, IMAGE_TABLES),
+                    *ss_data_page(),
+                ]
+            )
+        tc.code = _ssnpm_chunk(mode, pmm, pmlen, label, split, uppers, test_data)
+        chunks.append(test_data.end_test_chunk())
     return chunks
 
 
-# One generator per PMLEN. The header params select the file only when the config supports that PMLEN.
-@add_priv_test_generator(
-    "Ssnpm",
-    required_extensions=["Ssnpm"],
-    march_extensions=["I", "A", "F", "D", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz", "Zicfiss"],
-    extra_defines=["#define BOOT_TO_SMODE"],
-)
-def make_ssnpm_pmm00(test_data: TestData) -> list[TestChunk]:
-    return _ssnpm_sweep(test_data, 0b00)
+def _register_ssnpm(pmm: int, mode: str, params: list[str]) -> None:
+    """Register the sweep for one senvcfg.PMM setting and satp mode as its own generator.
+
+    The header params select the files only when the config supports the PMLEN, and required_extensions only
+    when it supports the satp mode.
+    """
+
+    @add_priv_test_generator(
+        "Ssnpm",
+        required_extensions=["Ssnpm", *([] if mode == "bare" else [mode.capitalize()])],
+        march_extensions=["I", "A", "F", "D", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz", "Zicfiss"],
+        extra_defines=["#define BOOT_TO_SMODE"],
+        params=params,
+    )
+    def make_ssnpm(test_data: TestData) -> list[TestChunk]:
+        return _ssnpm_sweep(test_data, pmm, mode)
 
 
-@add_priv_test_generator(
-    "Ssnpm",
-    required_extensions=["Ssnpm"],
-    march_extensions=["I", "A", "F", "D", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz", "Zicfiss"],
-    extra_defines=["#define BOOT_TO_SMODE"],
-    params=["SUPPORTED_PMLEN_SSNPM: 7"],
-)
-def make_ssnpm_pmm10(test_data: TestData) -> list[TestChunk]:
-    return _ssnpm_sweep(test_data, 0b10)
-
-
-@add_priv_test_generator(
-    "Ssnpm",
-    required_extensions=["Ssnpm"],
-    march_extensions=["I", "A", "F", "D", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz", "Zicfiss"],
-    extra_defines=["#define BOOT_TO_SMODE"],
-    params=["SUPPORTED_PMLEN_SSNPM: 16"],
-)
-def make_ssnpm_pmm11(test_data: TestData) -> list[TestChunk]:
-    return _ssnpm_sweep(test_data, 0b11)
+for _mode in MODES:
+    _register_ssnpm(0b00, _mode, [])
+    _register_ssnpm(0b10, _mode, ["SUPPORTED_PMLEN_SSNPM: 7"])
+    _register_ssnpm(0b11, _mode, ["SUPPORTED_PMLEN_SSNPM: 16"])
 
 
 def _ssnpm_chunk(
@@ -113,17 +97,14 @@ def _ssnpm_chunk(
 
     The edge-case file carries the probes that are not part of the instruction sweep.
     """
-    guard, is_bare = MODE_GUARDS[mode], mode == "bare"
+    is_bare = mode == "bare"
     prefix = f"{label}_{mode}"
-    lines = [] if not guard else [f"#ifdef {guard}"]
-    lines.extend(
-        [
-            ".p2align 12",
-            "pm_utext_begin:",
-            "# sstatus.SUM = 1: S-mode setup code touches the U-accessible data pages",
-            *csr_op("csrs", "sstatus", "SSTATUS_SUM", test_data),
-        ]
-    )
+    lines = [
+        ".p2align 12",
+        "pm_utext_begin:",
+        "# sstatus.SUM = 1: S-mode setup code touches the U-accessible data pages",
+        *csr_op("csrs", "sstatus", "SSTATUS_SUM", test_data),
+    ]
     if not is_bare:
         lines.extend(
             [
@@ -205,8 +186,6 @@ def _ssnpm_chunk(
     if not is_bare:
         lines.extend([*set_sse("senvcfg", False, test_data), *set_sse("menvcfg", False, test_data, tsbi=True)])
     lines.extend([".p2align 12", "pm_utext_end:"])
-    if guard:
-        lines.append(f"#endif // {guard}")
     return lines
 
 

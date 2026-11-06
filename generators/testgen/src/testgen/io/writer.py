@@ -8,6 +8,7 @@
 
 """Test file writing utilities."""
 
+import re
 from pathlib import Path
 
 from testgen.asm.sections import generate_test_data_section, generate_test_string_section, generate_vector_data_section
@@ -18,6 +19,14 @@ from testgen.data.test_chunk import TestChunk
 from testgen.io.templates import insert_footer_template, insert_header_template
 
 SIGUPD_MARGIN = 10
+
+# rvtest_Sroot_pg_tbl, and the rvtest_macros.h macros that name it
+_S_PAGE_TABLE_RE = re.compile(
+    r"rvtest_Sroot_pg_tbl"
+    r"|\b(?:SUPERPAGE_)?PTE_SETUP_(?:RV32|RV64|SV32|SV39|SV48|SV57)\b"
+    r"|\bPTE_PERMUPD_RV32\b"
+    r"|\bSATP_SETUP_(?:SV32|RV64)\b"
+)
 
 
 def _reinit_pointer_registers(first_chunk: TestChunk) -> str:
@@ -88,6 +97,8 @@ def write_test_file(
         extra_defines.append("#define RVTEST_USES_TEST_CSR")
     if any("RVTEST_CYCLE_CSR" in line for tc in test_chunks for line in tc.code):
         extra_defines.append("#define RVTEST_USES_CYCLE_CSR")
+    if any(_S_PAGE_TABLE_RE.search(line) for tc in test_chunks for line in [*tc.code, *tc.raw_data]):
+        extra_defines.append("#define RVTEST_USES_S_PAGE_TABLES")
     if any(
         "rvtest_Hroot_pg_tbl" in line or "rvtest_Vroot_pg_tbl" in line
         for tc in test_chunks

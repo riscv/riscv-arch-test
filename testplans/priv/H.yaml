@@ -584,12 +584,11 @@ coverpoints:
       - hstatus_vgein_acc
     notes: |-
       hgatp.PPN[1:0] may be read-only zero or writable, and no UDB parameter records the choice.  With GEILEN = 0 the only legal VGEIN value is 0, so a read-only-zero VGEIN cannot be distinguished from a writable one.
-  - goal: henvcfg.SSE and henvcfg.DTE control Zicfiss and Ssdbltrp in VS-mode
+  - goal: henvcfg.DTE controls Ssdbltrp in VS-mode
     status: Not tested
     rules:
-      - henvcfg_sse_op
       - henvcfg_dte_op
       - vsstatus_sdt_op
       - sret_dt
     notes: |-
-      These belong to ZicfissH and SsdbltrpH, which have no tests yet.
+      These belong to SsdbltrpH, which has no tests yet.  henvcfg.SSE, which controls Zicfiss in VS-mode, is covered by Zicfiss_H.

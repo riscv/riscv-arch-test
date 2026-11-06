@@ -99,6 +99,17 @@ exclude_extensions:
   # - Zicfiss_U
   # - Zicfiss_S
   # - Zicfiss_Sm
+  # Zicfiss_H: Sail completes HLVX on a VS-stage shadow stack page, which is not executable
+  # (https://github.com/riscv/sail-riscv/issues/2081), and keeps a TLB-cached VS-stage shadow stack page valid
+  # after henvcfg.SSE is cleared without a fence (cp_ss_sse_change_no_fence), so the model's faults mismatch.
+  # The model also raises a load access fault on the HLVX, where Spike and Whisper raise a load page fault.
+  - Zicfiss_H-
+  # Zicfiss_H_g_stage and Zicfiss_Sm, seen with Imperas-HMC101126-eng-build: with vsatp.MODE=Bare at V=1, or
+  # MPRV=1 and MPV=1 from M-mode, SS instructions complete instead of raising a store/AMO access fault
+  # (cp_ss_vsatp_bare, cp_ssamoswap_mprv_virt); and SSAMOSWAP from M-mode with MPRV=1, MPV=1 raises an
+  # illegal-instruction exception while henvcfg.SSE=0, although only the real mode, M, gates it.
+  - Zicfiss_H_g_stage
+  - Zicfiss_Sm
 # Not excluded:
 # - Zama16b is not declared. The model has no misaligned atomicity granule: Zam=T performs every
 #   misaligned AMO, including SSAMOSWAP (riscv-isa-manual#3426), so the configs use Zam=F, where

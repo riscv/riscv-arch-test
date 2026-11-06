@@ -8,6 +8,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "{Zicfiss_U_cg}/{cp_ssp_csr_gating_u,cp_ssamoswap_sse_gating,cp_ss_instr_inactive_u}",
+        "{Zicfiss_H_cg}/{cp_ssp_csr_gating_vu,cp_ssamoswap_sse_gating_vu,cp_ss_enable_chain_cross}",
       ]
 
   # The Zicfiss extension adds the SSE field to menvcfg. When the SSE field is set to 1
@@ -34,6 +35,7 @@ normative_rule_definitions:
         "{Zicfiss_Sm_cg}/{cp_ss_instr_inactive_s}",
         "{Zicfiss_S_cg}/{cp_ss_page_enc_load,cp_ssamoswap_sse_gating_s}",
         "{Zicfiss_U_cg}/{cp_ss_instr_inactive_u,cp_ssamoswap_sse_gating}",
+        "{Zicfiss_H_cg}/{cp_ss_enable_chain_cross,cp_ss_page_enc_virt}",
       ]
 
   # When menvcfg.SSE is 0, the henvcfg.SSE and senvcfg.SSE fields are read-only zero.
@@ -52,7 +54,7 @@ normative_rule_definitions:
   - name: henvcfg_sse_op
     coverpoint:
       [
-        "{Zicfiss_H_cg}/{cp_ssp_csr_gating_vs,cp_ssamoswap_sse_gating_vs,cp_ss_instr_inactive_virt,cp_envcfg_sse_rdonly0_virt}",
+        "{Zicfiss_H_cg}/{cp_ssp_csr_gating_vs,cp_ssamoswap_sse_gating_vs,cp_ss_enable_chain_cross,cp_envcfg_sse_rdonly0_virt,cp_ss_page_enc_virt,cp_ss_sse_change_no_fence}",
       ]
 
   # If the privilege mode is less than M and csr:menvcfg[sse] is 0, an illegal-instruction
@@ -63,17 +65,18 @@ normative_rule_definitions:
         "{Zicfiss_Sm_cg}/{cp_menvcfg_sse_gating}",
         "{Zicfiss_S_cg}/{cp_ssp_csr_gating_s}",
         "{Zicfiss_U_cg}/{cp_ssp_csr_gating_u}",
+        "{Zicfiss_H_cg}/{cp_ssp_csr_gating_vs,cp_ssp_csr_gating_vu}",
       ]
   # Attempts to access the csr:ssp[] CSR may result in either an illegal-instruction
   # exception or a virtual-instruction exception, contingent upon the state of the
   # csr:envcfg[sse] fields. The conditions are specified as follows:
   - name: Zicfiss_ssp_csr
-    # Representative coverpoints; also Zicfiss_H_cg cp_ssp_csr_gating_{vs,vu}
     coverpoint:
       [
         "{Zicfiss_Sm_cg}/{cp_menvcfg_sse_gating}",
         "{Zicfiss_S_cg}/{cp_ssp_csr_gating_s}",
         "{Zicfiss_U_cg}/{cp_ssp_csr_gating_u,cp_ssp_access}",
+        "{Zicfiss_H_cg}/{cp_ssp_csr_gating_vs,cp_ssp_csr_gating_vu,cp_ssp_shared}",
       ]
 
   # Otherwise, if in U-mode and csr:senvcfg[sse] is 0, an illegal-instruction exception is
@@ -94,7 +97,11 @@ normative_rule_definitions:
   # Otherwise, the access is allowed.
   - name: Zicfiss_sse_access
     coverpoint:
-      ["{Zicfiss_S_cg}/{cp_ssp_csr_gating_s}", "{Zicfiss_U_cg}/{cp_ssp_access}"]
+      [
+        "{Zicfiss_S_cg}/{cp_ssp_csr_gating_s}",
+        "{Zicfiss_U_cg}/{cp_ssp_access}",
+        "{Zicfiss_H_cg}/{cp_ssp_csr_gating_vs,cp_ssp_csr_gating_vu,cp_ssp_access}",
+      ]
 
   # When S-mode is not implemented, then xSSE is 0 at both M and U privilege modes.
   - name: Zicfiss_smode_xsse
@@ -115,18 +122,26 @@ normative_rule_definitions:
       [
         "{Zicfiss_S_cg}/{cp_ss_page_enc,cp_ss_page_enc_load,cp_ss_page_enc_store}",
         "{Zicfiss_Sm_cg}/{cp_menvcfg_sse_ss_page}",
+        "{Zicfiss_H_cg}/{cp_ss_page_enc_virt}",
       ]
 
   # Similarly, when V=1 and henvcfg.SSE=0, this encoding remains reserved at VS and
   # VU levels.
   - name: ssmp_henvcfg_sse
-    coverpoint: ["{Zicfiss_H_cg}/{cp_ss_page_enc_virt}"]
+    coverpoint:
+      [
+        "{Zicfiss_H_cg}/{cp_ss_page_enc_virt,cp_ss_hlv_hsv_load,cp_ss_hlv_hsv_store}",
+      ]
 
   # If satp.MODE (or vsatp.MODE when V=1) is set to Bare and the effective privilege
   # mode is less than M, shadow stack instructions raise a store/AMO access-fault
   # exception.
   - name: satp_mode_bare
-    coverpoint: ["{Zicfiss_Sm_cg}/{cp_ss_satp_bare,cp_ssamoswap_mprv_s}"]
+    coverpoint:
+      [
+        "{Zicfiss_Sm_cg}/{cp_ss_satp_bare,cp_ssamoswap_mprv_s,cp_ssamoswap_mprv_virt}",
+        "{Zicfiss_H_cg}/{cp_ss_vsatp_bare}",
+      ]
 
   # When the effective privilege mode is M, memory access by an SSAMOSWAP.W/D
   # instruction results in a store/AMO access-fault exception.
@@ -144,17 +159,25 @@ normative_rule_definitions:
       [
         "{Zicfiss_U_cg}/{cp_ss_page_access_store,cp_ss_page_access_store_misaligned,cp_ss_page_access_amo,cp_ss_vector_store}",
         "{Zicfiss_S_cg}/{cp_ss_page_enc_store,cp_ss_page_access_store_misaligned_s}",
+        "{Zicfiss_H_cg}/{cp_ss_page_access_store,cp_ss_page_access_store_misaligned,cp_ss_page_access_amo,cp_ss_hlv_hsv_store}",
       ]
   # Access to a SS page using cache-block operation (insn:cbo.*[]) instructions is not
   # permitted. Such accesses will raise a store/AMO access-fault exception.
   - name: ssmp_ss_cache_block_access_fault
     coverpoint:
-      ["{Zicfiss_U_cg}/{cp_ss_page_access_cbo,cp_ss_page_access_cboz}"]
+      [
+        "{Zicfiss_U_cg}/{cp_ss_page_access_cbo,cp_ss_page_access_cboz}",
+        "{Zicfiss_H_cg}/{cp_ss_page_access_cbo,cp_ss_page_access_cboz}",
+      ]
   # Implicit accesses, including instruction fetches to an SS page, are not permitted.
   # Such accesses will raise an access-fault exception appropriate to the access type.
   - name: ssmp_ss_implicit_access_fault
     # Representative: an instruction fetch from an SS page
-    coverpoint: ["{Zicfiss_U_cg}/{cp_ss_page_fetch}"]
+    coverpoint:
+      [
+        "{Zicfiss_U_cg}/{cp_ss_page_fetch}",
+        "{Zicfiss_H_cg}/{cp_ss_page_fetch,cp_ss_page_enc_virt}",
+      ]
   # However, the shadow stack is readable by all instructions that only load from memory.
   - name: ssmp_ss_load
     # Representative coverpoints; also cp_ss_page_perm_priority_load and
@@ -163,6 +186,7 @@ normative_rule_definitions:
       [
         "{Zicfiss_U_cg}/{cp_ss_page_access_load,cp_ss_page_access_lrsc,cp_ss_vector_load}",
         "{Zicfiss_S_cg}/{cp_ss_page_enc_load}",
+        "{Zicfiss_H_cg}/{cp_ss_page_access_load,cp_ss_page_access_lrsc,cp_ss_hlv_hsv_load}",
       ]
   # If a shadow stack (SS) instruction raises an access-fault, page-fault, or
   # guest-page-fault exception that is supposed to indicate the original instruction type
@@ -177,6 +201,7 @@ normative_rule_definitions:
       [
         "{Zicfiss_U_cg}/{cp_ss_instr_target_page,cp_sspopchk_fault_priority}",
         "{Zicfiss_Sm_cg}/{cp_ss_pmp_permissions,cp_ss_satp_bare}",
+        "{Zicfiss_H_cg}/{cp_ss_g_stage,cp_ss_instr_target_page,cp_ss_vsatp_bare,cp_ss_fault_delegation}",
       ]
   # Should a shadow stack instruction access a page that is not designated as a shadow
   # stack page and is not marked as read-only (pte.xwr=0b001), a store/AMO access-fault
@@ -186,6 +211,7 @@ normative_rule_definitions:
       [
         "{Zicfiss_U_cg}/{cp_ss_instr_target_page}",
         "{Zicfiss_S_cg}/{cp_ss_instr_target_page_s}",
+        "{Zicfiss_H_cg}/{cp_ss_instr_target_page,cp_ss_instr_target_page_swap}",
       ]
   # Conversely, if the page being accessed by a shadow stack instruction is a read-only
   # page, a store/AMO page-fault exception will be triggered.
@@ -194,6 +220,7 @@ normative_rule_definitions:
       [
         "{Zicfiss_U_cg}/{cp_ss_instr_target_page}",
         "{Zicfiss_S_cg}/{cp_ss_instr_target_page_s}",
+        "{Zicfiss_H_cg}/{cp_ss_instr_target_page,cp_ss_instr_target_page_swap}",
       ]
 
   # If the virtual address in ssp is not XLEN aligned, then the SSPUSH/
@@ -204,6 +231,7 @@ normative_rule_definitions:
       [
         "{Zicfiss_U_cg}/{cp_ss_address_alignment_ssp,cp_ss_address_alignment_pop}",
         "{Zicfiss_S_cg}/{cp_ss_address_alignment_ssp_s,cp_ss_address_alignment_pop_s}",
+        "{Zicfiss_H_cg}/{cp_ss_address_alignment_ssp,cp_ss_address_alignment_pop}",
       ]
 
   # If the memory referenced by SSPUSH/C.SSPUSH/SSPOPCHK/C.SSPOPCHK/SSAMOSWAP.W/D
@@ -215,13 +243,17 @@ normative_rule_definitions:
         "{Zicfiss_Sm_cg}/{cp_ssamoswap_mprv_non_idempotent}",
         "{Zicfiss_S_cg}/{cp_ss_non_idempotent_s}",
         "{Zicfiss_U_cg}/{cp_ss_non_idempotent}",
+        "{Zicfiss_H_cg}/{cp_ss_non_idempotent_virt,cp_ss_non_idempotent_virt_swap}",
       ]
 
   # When G-stage page tables are active, the shadow stack instructions that access
   # memory require the G-stage page table to have read-write permission for the
   # accessed memory; else a store/AMO guest-page-fault exception is raised.
   - name: active_g_stage_pte
-    coverpoint: ["{Zicfiss_H_cg}/{cp_ss_g_stage}"]
+    coverpoint:
+      [
+        "{Zicfiss_H_cg}/{cp_ss_g_stage,cp_ss_g_stage_swap,cp_ss_g_stage_page_enc}",
+      ]
 
   # The Zicfiss instructions, except SSAMOSWAP.W and SSAMOSWAP.D, are encoded using a
   # subset of May-Be-Operation instructions defined by the Zimop and Zcmop
@@ -349,6 +381,7 @@ normative_rule_definitions:
         "{Zicfiss_U_cg}/{cp_sspopchk_mismatch,cp_sspopchk_fault_priority}",
         "{Zicfiss_S_cg}/{cp_sspopchk_mismatch_s}",
         "{Zicfiss_Sm_cg}/{cp_ss_pmp_permissions}",
+        "{Zicfiss_H_cg}/{cp_sspopchk_mismatch,cp_sspopchk_mismatch_virt}",
       ]
   # The csr:ssp[] is incremented by insn:sspopchk[] and insn:c.sspopchk[] only if the load
   # from the shadow stack completes successfully and no software-check exception is

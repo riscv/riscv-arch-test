@@ -10,7 +10,7 @@ coverpoints:
       Repeat each with mstatus.MPRV=1 and MPP=M, where the effective privilege mode is still M.
     expectation: |-
       Store/AMO access-fault raised whenever the EFFECTIVE privilege mode is M, independent of menvcfg.SSE, satp.MODE and MPRV with MPP=M.
-      With MPRV=1 and MPP < M the effective privilege mode is no longer M, so this rule does not apply; see cp_ssamoswap_mprv_s and cp_ssamoswap_mprv_non_idempotent.
+      With MPRV=1 and MPP < M the effective privilege mode is no longer M, so this rule does not apply; see cp_ssamoswap_mprv_s, cp_ssamoswap_mprv_non_idempotent and cp_ssamoswap_mprv_virt.
       Memory and rd are unchanged.
     bins: instr {SSAMOSWAP.W, SSAMOSWAP.D} x menvcfg.SSE {0,1} x satp.MODE {Bare, Sv} x {MPRV=0, MPRV=1 with MPP=M}
   - name: cp_ssamoswap_mprv_s
@@ -37,6 +37,29 @@ coverpoints:
       PBMT=PMA: the swap is performed.
       PBMT=IO: the memory is non-idempotent, so the swap raises a store/AMO access-fault (cause=7) taken in M-mode, with mtval = the faulting VA. rd and memory are unchanged.
     bins: priv_mode {M} x instr {SSAMOSWAP.W, SSAMOSWAP.D} x {mstatus.MPRV=1, MPP=S} x pte.xwr {010} x pte.PBMT {PMA, IO}
+  - name: cp_ssamoswap_mprv_virt
+    goal: Verify SSAMOSWAP from M-mode with MPRV=1 and MPV=1 follows the guest's two-stage shadow stack rules
+    description: |-
+      Requires H.  With menvcfg.SSE=1 and henvcfg.SSE=1, vsatp pointing at VS-stage tables with a shadow stack page, and hgatp mapping the test image to itself, set mstatus.MPRV=1 and MPV=1 and execute SSAMOSWAP.W and SSAMOSWAP.D (RV64):
+      (a) MPP=S, against the VS-stage SS page;
+      (b) MPP=S with henvcfg.SSE=0 (followed by HFENCE.VVMA), against the same page;
+      (c) MPP=S, against a VS-stage SS page over a read-only G-stage leaf;
+      (d) MPP=S with vsatp.MODE=Bare, against the page's guest physical address;
+      (e) MPP=U, against a VS-stage user SS page.
+      MPRV and MPV are cleared straight after each swap, before its result is recorded.
+    expectation: |-
+      The effective privilege mode is VS (MPP=S) or VU (MPP=U), so the access is translated in two stages and the VS-stage shadow stack rules apply; SSAMOSWAP is not gated by any xSSE, because the hart is in M-mode.
+      (a), (e) the swap is performed.
+      (b) the VS-stage xwr=010 encoding is reserved: store/AMO page fault (15).
+      (c) the G-stage leaf lacks W: store/AMO guest-page fault (23), with GVA=1 and mtval2 = the guest physical address >> 2.
+      (d) vsatp.MODE=Bare below M: store/AMO access fault (7).
+      Faults are taken in M-mode; rd and memory are unchanged.
+    bins: priv_mode {M} x instr {SSAMOSWAP.W, SSAMOSWAP.D} x case {MPP=S on the SS page, MPP=S with henvcfg.SSE=0, MPP=S over a read-only G-stage leaf, MPP=S with vsatp Bare, MPP=U on a user SS page}
+    rules:
+      - mstatus_mprv_hypervisor
+      - ssmp_henvcfg_sse
+      - active_g_stage_pte
+      - satp_mode_bare
   - name: |-
       cp_menvcfg_sse_gating
       cp_menvcfg_sse_ss_page

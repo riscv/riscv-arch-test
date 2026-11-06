@@ -20,6 +20,11 @@ exclude_extensions:
   # vsiselect, vstopi, vstopei, hvien), where Sail raises illegal instruction because it lacks them.
   - Ssstrict_S_CSR
   - Ssstrict_H_vs_CSR
+  # Zicfiss_H: Sail completes HLVX on a VS-stage shadow stack page, which is not executable
+  # (https://github.com/riscv/sail-riscv/issues/2081), and keeps a TLB-cached VS-stage shadow stack page valid
+  # after henvcfg.SSE is cleared without a fence (cp_ss_sse_change_no_fence,
+  # https://github.com/riscv/sail-riscv/issues/2083), so Whisper's load page faults mismatch.
+  - Zicfiss_H-
 install_script: ".github/scripts/install-whisper.sh"
 apt_packages: "libboost-program-options-dev"
 shards: 2

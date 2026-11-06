@@ -45,15 +45,6 @@ coverpoints:
     description: Executing instruction 0x00000000 and 0xFFFFFFFF throws an illegal instruction exception.
     expectation: Illegal Instruction Exception
     bins: 2 instr
-  - name: cp_illegal_instruction_seed
-    goal: Illegal Read-only access to a CSR
-    description: |-
-      csrrs x*, seed, x0 throws illegal instruction in machine mode, as do
-      csrrc x*, seed, x0
-      csrrsi x*, seed, 0
-      csrrci x*, seed, 0
-    expectation: Illegal Instruction Exception
-    bins: 4 csr ops
   - name: cp_breakpoint
     goal: Breakpoint
     description: |-

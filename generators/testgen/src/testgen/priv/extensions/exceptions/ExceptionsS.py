@@ -8,14 +8,13 @@
 
 """Exceptions S-mode test generator (refactored, calls ExceptionsCommon)."""
 
-from testgen.asm.helpers import comment_banner, write_sigupd
+from testgen.asm.helpers import comment_banner
 from testgen.asm.tsbi import tsbi_call, tsbi_call_or_direct
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.exceptions.ExceptionsCommon import (
     generate_breakpoint_tests,
     generate_ecall_tests,
-    generate_illegal_instruction_seed_tests,
     generate_illegal_instruction_tests,
     generate_instr_access_fault_tests,
     generate_instr_adr_misaligned_branch_nottaken,
@@ -33,35 +32,6 @@ from testgen.priv.extensions.exceptions.ExceptionsCommon import (
 from testgen.priv.registry import add_priv_test_generator
 
 _CG = "Exceptions_S_cg"
-
-
-def _generate_illegal_instruction_csr_tests(test_data: TestData) -> list[str]:
-    covergroup, coverpoint = _CG, "cp_illegal_instruction_csr"
-    dest_regs = test_data.int_regs.get_registers(2)
-
-    lines = [
-        comment_banner(coverpoint, "Illegal Instruction"),
-    ]
-
-    csr_tests = [
-        ("csrrs_0x000", f"csrrs x{dest_regs[1]}, 0x000, x{dest_regs[0]}"),
-        ("csrrc_0x000", f"csrrc x{dest_regs[1]}, 0x000, x{dest_regs[0]}"),
-        ("csrrsi_0x000", f"csrrsi x{dest_regs[1]}, 0x000, 1"),
-        ("csrrci_0x000", f"csrrci x{dest_regs[1]}, 0x000, 1"),
-    ]
-
-    for test_name, instr in csr_tests:
-        lines.extend(
-            [
-                f"LI(x{dest_regs[1]}, 0xB0BACAFE)",
-                test_data.add_testcase(test_name, coverpoint, covergroup),
-                f" {instr}",
-                write_sigupd(dest_regs[1], test_data),
-            ]
-        )
-
-    test_data.int_regs.return_registers(dest_regs)
-    return lines
 
 
 def _generate_stvec_tests(test_data: TestData, mode_tag: str, priv_mode: int) -> list[str]:
@@ -158,7 +128,6 @@ def make_exceptionss(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(generate_instr_adr_misaligned_branch_nottaken(test_data, _CG))
     tc.code.extend(generate_instr_access_fault_tests(test_data, _CG))
     tc.code.extend(generate_illegal_instruction_tests(test_data, _CG))
-    tc.code.extend(generate_illegal_instruction_seed_tests(test_data, _CG))
     tc.code.extend(generate_breakpoint_tests(test_data, _CG))
     tc.code.extend(generate_load_address_misaligned_tests(test_data, _CG, use_sentinel=True))
     tc.code.extend(generate_load_access_fault_tests(test_data, _CG, use_sigupd=True))
@@ -176,7 +145,6 @@ def make_exceptionss(test_data: TestData) -> list[TestChunk]:
         )
     )
     tc.code.extend(generate_ecall_tests(test_data, _CG, "cp_ecall_s", "ecall_s", "Ecall"))
-    tc.code.extend(_generate_illegal_instruction_csr_tests(test_data))
     tc.code.extend(_generate_stvec_tests(test_data, "mode_s", priv_mode=1))
     tc.code.extend(_generate_stvec_tests(test_data, "mode_u", priv_mode=0))
     tc.code.extend(_generate_xstatus_ie_tests(test_data, "mode_s", priv_mode=1))

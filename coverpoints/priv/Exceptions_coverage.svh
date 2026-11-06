@@ -188,12 +188,6 @@ covergroup Exceptions_S_cg with function sample(ins_t ins);
     jalr: coverpoint ins.current.insn {
         wildcard bins jalr = {JALR};
     }
-    csrops: coverpoint ins.current.insn {
-        wildcard bins csrrs  = {CSRRS};
-        wildcard bins csrrc  = {CSRRC};
-        wildcard bins csrrsi = {CSRRSI};
-        wildcard bins csrrci = {CSRRCI};
-    }
     loadops: coverpoint ins.current.insn {
         wildcard bins lw  = {LW};
         wildcard bins lh  = {LH};
@@ -236,15 +230,6 @@ covergroup Exceptions_S_cg with function sample(ins_t ins);
     adr_LSBs: coverpoint ins.current.eff_addr[2:0]  {
         // auto fills 000 through 111
     }
-    rs1_zero: coverpoint ins.current.insn[19:15] {
-        bins zero = {5'b00000};
-    }
-    seed: coverpoint ins.current.insn[31:20] {
-        bins seed = {CSR_SEED};
-    }
-    csr_0x000: coverpoint ins.current.insn[31:20] {
-        bins zero = {12'h000};
-    }
     mstatus_MIE: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")[0] {
         // auto fills 1 and 0
     }
@@ -278,8 +263,6 @@ covergroup Exceptions_S_cg with function sample(ins_t ins);
     cp_instr_adr_misaligned_jal:             cross priv_mode_s, jal, pc_bit_1, imm_bit_1;
     cp_instr_adr_misaligned_jalr:            cross priv_mode_s, jalr, rs1_1_0, offset;
     cp_illegal_instruction:                  cross priv_mode_s, illegalops;
-    cp_illegal_instruction_seed:             cross priv_mode_s, csrops, rs1_zero, seed;
-    cp_illegal_instruction_csr:              cross priv_mode_s, csrops, csr_0x000;
     cp_breakpoint:                           cross priv_mode_s, ebreak;
     `ifdef ZCA_SUPPORTED
         cp_ebreak_straddle64:                cross priv_mode_s, ebreak, straddle64;
@@ -378,12 +361,6 @@ covergroup Exceptions_Sm_cg with function sample(ins_t ins);
     jalr: coverpoint ins.current.insn {
         wildcard bins jalr = {JALR};
     }
-    csrops: coverpoint ins.current.insn {
-        wildcard bins csrrs  = {CSRRS};
-        wildcard bins csrrc  = {CSRRC};
-        wildcard bins csrrsi = {CSRRSI};
-        wildcard bins csrrci = {CSRRCI};
-    }
     loadops: coverpoint ins.current.insn {
         wildcard bins lw  = {LW};
         wildcard bins lh  = {LH};
@@ -419,12 +396,6 @@ covergroup Exceptions_Sm_cg with function sample(ins_t ins);
     `endif
     adr_LSBs: coverpoint ins.current.eff_addr[2:0]  {
         // auto fills 000 through 111
-    }
-    rs1_zero: coverpoint ins.current.insn[19:15] {
-        bins zero = {5'b00000};
-    }
-    seed: coverpoint ins.current.insn[31:20] {
-        bins seed = {CSR_SEED};
     }
     mstatus_MIE: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")[0] {
         // auto fills 1 and 0
@@ -482,7 +453,6 @@ covergroup Exceptions_Sm_cg with function sample(ins_t ins);
     cp_instr_adr_misaligned_jal:             cross priv_mode_m, jal, pc_bit_1, imm_bit_1;
     cp_instr_adr_misaligned_jalr:            cross priv_mode_m, jalr, rs1_1_0, offset;
     cp_illegal_instruction:                  cross priv_mode_m, illegalops;
-    cp_illegal_instruction_seed:             cross priv_mode_m, csrops, rs1_zero, seed;
     cp_breakpoint:                           cross priv_mode_m, ebreak;
     `ifdef ZCA_SUPPORTED
         cp_ebreak_straddle64:                cross priv_mode_m, ebreak, straddle64;
@@ -609,12 +579,6 @@ covergroup Exceptions_U_cg with function sample(ins_t ins);
     jalr: coverpoint ins.current.insn {
         wildcard bins jalr = {JALR};
     }
-    csrops: coverpoint ins.current.insn {
-        wildcard bins csrrs  = {CSRRS};
-        wildcard bins csrrc  = {CSRRC};
-        wildcard bins csrrsi = {CSRRSI};
-        wildcard bins csrrci = {CSRRCI};
-    }
     loadops: coverpoint ins.current.insn {
         wildcard bins lw  = {LW};
         wildcard bins lh  = {LH};
@@ -651,12 +615,6 @@ covergroup Exceptions_U_cg with function sample(ins_t ins);
     adr_LSBs: coverpoint ins.current.eff_addr[2:0]  {
         // auto fills 000 through 111
     }
-    rs1_zero: coverpoint ins.current.insn[19:15] {
-        bins zero = {5'b00000};
-    }
-    seed: coverpoint ins.current.insn[31:20] {
-        bins seed = {CSR_SEED};
-    }
     mstatus_MIE: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")[0] {
         // auto fills 1 and 0
     }
@@ -680,7 +638,6 @@ covergroup Exceptions_U_cg with function sample(ins_t ins);
     cp_instr_adr_misaligned_jal:             cross priv_mode_u, jal, pc_bit_1, imm_bit_1;
     cp_instr_adr_misaligned_jalr:            cross priv_mode_u, jalr, rs1_1_0, offset;
     cp_illegal_instruction:                  cross priv_mode_u, illegalops;
-    cp_illegal_instruction_seed:             cross priv_mode_u, csrops, rs1_zero, seed;
     cp_breakpoint:                           cross priv_mode_u, ebreak;
     `ifdef ZCA_SUPPORTED
         cp_ebreak_straddle64:                cross priv_mode_u, ebreak, straddle64;

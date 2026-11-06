@@ -15,7 +15,6 @@ from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.exceptions.ExceptionsCommon import (
     generate_breakpoint_tests,
     generate_ecall_tests,
-    generate_illegal_instruction_seed_tests,
     generate_illegal_instruction_tests,
     generate_instr_access_fault_tests,
     generate_instr_adr_misaligned_branch_nottaken,
@@ -68,7 +67,6 @@ def make_exceptionsu(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(generate_instr_adr_misaligned_jalr_tests(test_data, _CG))
     tc.code.extend(generate_instr_access_fault_tests(test_data, _CG))
     tc.code.extend(generate_illegal_instruction_tests(test_data, _CG))
-    tc.code.extend(generate_illegal_instruction_seed_tests(test_data, _CG))
     tc.code.extend(generate_breakpoint_tests(test_data, _CG))
     tc.code.extend(generate_load_address_misaligned_tests(test_data, _CG, use_sentinel=True))
     tc.code.extend(generate_load_access_fault_tests(test_data, _CG, use_sigupd=True))

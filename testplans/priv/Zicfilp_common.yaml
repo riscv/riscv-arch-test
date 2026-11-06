@@ -144,7 +144,7 @@ coverpoints:
     description: |-
       Test Environment:
       xLPE=1.
-      (1) Execute an Indirect_CT with rs1 != {x1,x5,x7} targeting RVMODEL_ACCESS_FAULT_ADDRESS: the instruction access fault is taken, not the software-check exception, and xPELP records LP_EXPECTED.
+      (1) Execute an Indirect_CT with rs1 != {x1,x5,x7} targeting RVMODEL_ACCESS_FAULT_ADDRESS_FETCH: the instruction access fault is taken, not the software-check exception, and xPELP records LP_EXPECTED.
       (2) Target an illegal instruction: the software-check exception is taken, not an illegal-instruction exception.
     expectation: Instruction access fault (cause=1) is taken in preference to the software-check exception, and the software-check exception is taken in preference to an illegal-instruction exception (cause=2).
     bins: N privilege modes x {instruction access fault at the target, illegal instruction at the target}

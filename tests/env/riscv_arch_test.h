@@ -6,6 +6,7 @@
 #include "rvtest_config.h"
 #include "derived_config.h"
 #include "encoding.h"
+#include "tsbi.h"
 #ifdef ENABLE_EXPERIMENTAL_EXTENSIONS
   #include "rvtest_experimental.h"
 #endif

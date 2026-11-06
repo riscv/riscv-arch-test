@@ -115,7 +115,9 @@ def canonicalize_extensions(
     """
     # Use required_extensions if provided, otherwise parse from testsuite name
     ext_components = (
-        required_extensions.copy() if required_extensions is not None else re.findall(r"[A-Z][a-z]*", testsuite)
+        required_extensions.copy()
+        if required_extensions is not None
+        else re.findall(r"[A-Z][a-z]*(?:\d+[a-z]+)*", testsuite)
     )
     ext_components.extend(extra_extensions)
 

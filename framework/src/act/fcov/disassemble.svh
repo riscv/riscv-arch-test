@@ -1485,6 +1485,15 @@ function string disassemble (logic [31:0] instrRaw);
     VFWMACCBF16_VV:  $sformat(decoded, "vfwmaccbf16.vv %s, %s, %s%s",     vd, vs1, vs2, vm);
     VFWMACCBF16_VF:  $sformat(decoded, "vfwmaccbf16.vf %s, %s, %s%s",     vd, fs1, vs2, vm);
 
+    // Zvdot4a8i Extension: Vector 4-Element 8-bit Integer Dot Product
+    VDOT4A_VV:    $sformat(decoded, "vdot4a.vv %s, %s, %s%s",      vd, vs2, vs1, vm);
+    VDOT4A_VX:    $sformat(decoded, "vdot4a.vx %s, %s, %s%s",      vd, vs2, rs1, vm);
+    VDOT4AU_VV:   $sformat(decoded, "vdot4au.vv %s, %s, %s%s",     vd, vs2, vs1, vm);
+    VDOT4AU_VX:   $sformat(decoded, "vdot4au.vx %s, %s, %s%s",     vd, vs2, rs1, vm);
+    VDOT4ASU_VV:  $sformat(decoded, "vdot4asu.vv %s, %s, %s%s",    vd, vs2, vs1, vm);
+    VDOT4ASU_VX:  $sformat(decoded, "vdot4asu.vx %s, %s, %s%s",    vd, vs2, rs1, vm);
+    VDOT4AUS_VX:  $sformat(decoded, "vdot4aus.vx %s, %s, %s%s",    vd, vs2, rs1, vm);
+
 
     default: decoded = "illegal";
   endcase

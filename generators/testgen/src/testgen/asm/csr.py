@@ -99,20 +99,20 @@ def _mask_with_unwalked_bits(csr: tuple, unwalked_bits: list[tuple[int, str]]) -
     csr_name, mask = csr
     if mask is None:
         mask = (1 << 64) - 1
-    for bits, _cond in unwalked_bits:
+    for bits, _define in unwalked_bits:
         mask |= bits
     return (csr_name, mask)
 
 
 def clear_unwalked_bits(reg: int, tmp_reg: int, unwalked_bits: list[tuple[int, str]] | None) -> list[str]:
-    """Clear from x{reg} each of the unwalked_bits whose condition holds, using x{tmp_reg} as scratch."""
+    """Clear from x{reg} each of the unwalked_bits whose define is defined, using x{tmp_reg} as scratch."""
     lines: list[str] = []
-    for bits, cond in unwalked_bits or []:
+    for bits, define in unwalked_bits or []:
         lines += [
-            f"#ifdef {cond}" if cond.isidentifier() else f"#if {cond}",
+            f"#ifdef {define}",
             f"LI(x{tmp_reg}, {~bits & ((1 << 64) - 1)})    # Neither write nor check bits {bits:#x}",
             f"and x{reg}, x{reg}, x{tmp_reg}",
-            f"#endif // {cond}",
+            f"#endif // {define}",
         ]
     return lines
 
@@ -137,7 +137,7 @@ def csr_access_test(
         coverpoint: Coverpoint name for testcase strings
         maskedwrites: If True, the CSR is written with a mask applied to the value being written.
         bin_prefix: Prefix for the testcase bin names, to keep them unique when a CSR is tested more than once.
-        unwalked_bits: As for csr_walk_test: where a pair's condition holds, its bits are neither written
+        unwalked_bits: As for csr_walk_test: where a pair's define is defined, its bits are neither written
             nor checked.
 
     Returns:
@@ -265,6 +265,11 @@ def _warl_reserved_check(
     return lines
 
 
+def upper_half(unwalked_bits: list[tuple[int, str]]) -> list[tuple[int, str]] | None:
+    """The unwalked_bits from bit 32 up, shifted down, for the RV32 upper-half CSR."""
+    return [(bits >> 32, define) for bits, define in unwalked_bits if bits >> 32] or None
+
+
 def csr_walk_test(
     test_data: TestData,
     csr: tuple,
@@ -303,8 +308,8 @@ def csr_walk_test(
             other iterations check the field exactly as usual (see _warl_reserved_check).
         maskedwrites: If True, the CSR is written with a mask applied to the value being written.
         bin_prefix: Prefix for testcase bin names, to walk the same CSR more than once under one coverpoint.
-        unwalked_bits: Optional (bits, cond) pairs for state the reference model cannot model. `cond` is a
-            define name, or an #if expression. Where it holds, the bits are neither written nor checked,
+        unwalked_bits: Optional (bits, define) pairs for state the reference model cannot model. Where the
+            define is defined, the bits are neither written nor checked,
             so their coverage reports missing; elsewhere they are walked and checked (read-only). Implies
             maskedwrites, with the bits added to the csr mask, or all ones if None.
     """

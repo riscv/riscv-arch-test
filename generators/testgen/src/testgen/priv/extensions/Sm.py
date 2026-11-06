@@ -11,7 +11,7 @@
 
 """Sm privileged extension test generator."""
 
-from testgen.asm.csr import cntr_access_test, csr_access_test, csr_walk_test, gen_csr_read_sigupd
+from testgen.asm.csr import cntr_access_test, csr_access_test, csr_walk_test, gen_csr_read_sigupd, upper_half
 from testgen.asm.helpers import comment_banner, gated, write_sigupd
 from testgen.constants import INDENT
 from testgen.data.state import TestData
@@ -594,13 +594,10 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     # The walks skip it where Smcdeleg is implemented, so its coverage reports missing, and check it
     # as read-only zero elsewhere.
     cde_unwalked = [(MENVCFG_CDE, "SMCDELEG_SUPPORTED")]
-    csr_menvcfg_walk = ("menvcfg", menvcfg_mask | MENVCFG_CDE)
     csr_mseccfg = ("mseccfg", mseccfg_mask)
     # RV32-only high CSRs
     csr_mstatush = ("mstatush", (mstatus_mask >> 32) & 0x7FFFFFFF)  # SD not in bit 31 of mstatush
     csr_menvcfgh = ("menvcfgh", menvcfg_mask >> 32)
-    cdeh_unwalked = [(MENVCFG_CDE >> 32, "SMCDELEG_SUPPORTED")]
-    csr_menvcfgh_walk = ("menvcfgh", (menvcfg_mask | MENVCFG_CDE) >> 32)
     csr_mseccfgh = ("mseccfgh", mseccfg_mask >> 32)
     # medelegh (0x312) by number: clang 20 does not accept the CSR name (gcc does).  All bits reserved/custom.
     csr_medelegh = ("0x312", 0x00000000)
@@ -753,11 +750,10 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     tc.code.extend(
         csr_walk_test(
             test_data,
-            csr_menvcfg_walk,
+            csr_menvcfg,
             covergroup,
             coverpoint_masked,
             warl_fields=warl_fields,
-            maskedwrites=True,
             unwalked_bits=cde_unwalked,
         )
     )
@@ -783,11 +779,10 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     tc.code.extend(
         csr_walk_test(
             test_data,
-            csr_menvcfgh_walk,
+            csr_menvcfgh,
             covergroup,
             coverpoint_masked,
-            maskedwrites=True,
-            unwalked_bits=cdeh_unwalked,
+            unwalked_bits=upper_half(cde_unwalked),
         )
     )
     tc.code.append("#endif // SM1P12P0_OR_LATER_SUPPORTED")

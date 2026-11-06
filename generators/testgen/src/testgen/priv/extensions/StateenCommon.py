@@ -15,7 +15,7 @@ gate the state (mstateen0, hstateen0 or sstateen0) and in the modes the state is
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 
-from testgen.asm.csr import clear_unwalked_bits, csr_access_test, csr_walk_test
+from testgen.asm.csr import clear_unwalked_bits, csr_access_test, csr_walk_test, upper_half
 from testgen.asm.helpers import arch_block, comment_banner, gated, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -54,14 +54,12 @@ def sail_gap_bits(csr: str) -> list[tuple[int, str]] | None:
     The RV32 upper halves hold the bits from 32 up, shifted down, and the 32-bit sstateen0 those below 32.
     """
     if csr.endswith("stateen0h"):
-        bits = [(b >> 32, define) for b, define in STATEEN0_SAIL_GAP_BITS if b >> 32]
-    elif csr == "sstateen0":
-        bits = [(b, define) for b, define in STATEEN0_SAIL_GAP_BITS if not b >> 32]
-    elif csr.endswith("stateen0"):
-        bits = STATEEN0_SAIL_GAP_BITS
-    else:
-        return None
-    return bits or None
+        return upper_half(STATEEN0_SAIL_GAP_BITS)
+    if csr == "sstateen0":
+        return [(bits, define) for bits, define in STATEEN0_SAIL_GAP_BITS if not bits >> 32] or None
+    if csr.endswith("stateen0"):
+        return STATEEN0_SAIL_GAP_BITS
+    return None
 
 
 @dataclass(frozen=True)

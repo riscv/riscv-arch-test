@@ -298,10 +298,26 @@
   addi _DATA_PTR, _DATA_PTR, SIG_STRIDE
 
 //-----------------------------------------------------------------------
-//Fixed length la, li macros; # of ops is ADDR_SZ dependent, not data dependent
+// Load macros. Use these instead of the li and la pseudoinstructions.
+//
+// LI(reg, imm)            Load a constant that is the same for every DUT.
+//                         The number of instructions depends on the value
+//                         (1 to 2 on RV32, 1 to 8 on RV64) but is compiler
+//                         independent.
+// LI_FIXED_LEN(reg, imm)  Load a constant that can change between DUTs, such
+//                         as a value from an RVMODEL_* macro. The number of
+//                         instructions is always the same (2 on RV32, 8 on
+//                         RV64). This ensures constant code size between the
+//                         DUT and reference model.
+// LA(reg, label)          Load the address of a label. It is padded to a fixed
+//                         size to ensure constant code size between the DUT and
+//                         reference model. It uses a PC-relative auipc/addi pair,
+//                         so the label must be within +/-2 GiB of the LA. Do not
+//                         use LA for RVMODEL_* addresses: la of a constant
+//                         accepts only sign-extended 32-bit values.
 //-----------------------------------------------------------------------
 
-/**** fixed length LI macro ****/
+/**** LI: constant that does not depend on the DUT; variable length ****/
 // this generates a constants using the standard addi or lui/addi sequences
 // but also handles cases that are contiguous bit masks in any position,
 // and also constants handled with the addi/lui/addi but are shifted left
@@ -420,6 +436,32 @@
   .option pop
 #endif
 
+/**** LI_FIXED_LEN: constant that can depend on the DUT; fixed length ****/
+// Loads any UDB_MXLEN-bit value. Only the immediates change with the value.
+#if (UDB_MXLEN<64)
+  #define LI_FIXED_LEN(reg, imm)                                                  ;\
+    .option push                                                                  ;\
+    .option norelax                                                               ;\
+    .option norvc                                                                 ;\
+    lui  reg, (((((imm) & MASK) + 0x800) >> 12) & LIMMMSK) /* bits 31:12 */       ;\
+    addi reg, reg, SEXT_IMM((imm) & MASK)                  /* bits 11:0  */       ;\
+    .option pop
+#else
+  #define LI_FIXED_LEN(reg, imm)                                                  ;\
+    .option push                                                                  ;\
+    .option norelax                                                               ;\
+    .option norvc                                                                 ;\
+    lui  reg, ((((((imm) >> 32) & WDMSK) + 0x800) >> 12) & LIMMMSK) /* 63:44 */  ;\
+    addi reg, reg, SEXT_IMM(((imm) >> 32) & WDMSK)                /* 43:32 */     ;\
+    slli reg, reg, 11                                                             ;\
+    addi reg, reg, (((imm) >> 21) & 0x7FF)                        /* 31:21 */     ;\
+    slli reg, reg, 11                                                             ;\
+    addi reg, reg, (((imm) >> 10) & 0x7FF)                        /* 20:10 */     ;\
+    slli reg, reg, 10                                                             ;\
+    addi reg, reg, ((imm) & 0x3FF)                                /* 9:0   */     ;\
+    .option pop
+#endif
+
 // Alignment size for LA macro. Must be larger than the longest instruction
 // sequence that the la pseudo-instruction can expand into (to account for the jump hack).
 // On some rv64 targets, this may need to be increased to 6.
@@ -427,7 +469,7 @@
   #define UNROLLSZ 5
 #endif
 
-/**** fixed length LA macro; alignment and rvc/norvc unknown before execution ****/
+/**** LA: address of a label; fixed length; alignment and rvc/norvc unknown before execution ****/
 #define LA(reg,val) ;\
   .ifnc(reg, X0)    ;\
     .option push    ;\
@@ -452,16 +494,16 @@
 
 // Interrupt Macros
 // Idle for interrupt latency
-// using LA to ensure that the tests have consistent code length across different simulators
+// using LI_FIXED_LEN to ensure that the tests have consistent code length across different DUTs
 #define RVTEST_IDLE_FOR_INTERRUPT(_R1) \
-    LA(_R1, RVMODEL_INTERRUPT_LATENCY); \
+    LI_FIXED_LEN(_R1, RVMODEL_INTERRUPT_LATENCY); \
     99: addi _R1, _R1, -1; \
         bnez _R1, 99b;
 
 // From M-mode, poll mip until bit _BIT is pending, for at most RVMODEL_INTERRUPT_LATENCY iterations.
 // Unlike RVTEST_IDLE_FOR_INTERRUPT, it stops as soon as the interrupt is pending.
 #define RVTEST_WAIT_MIP_PENDING_M(_R1, _R2, _BIT) \
-    LA(_R1, RVMODEL_INTERRUPT_LATENCY); \
+    LI_FIXED_LEN(_R1, RVMODEL_INTERRUPT_LATENCY); \
     98: csrr _R2, mip; \
         srli _R2, _R2, _BIT; \
         andi _R2, _R2, 1; \

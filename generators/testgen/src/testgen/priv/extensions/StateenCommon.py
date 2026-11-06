@@ -15,7 +15,7 @@ gate the state (mstateen0, hstateen0 or sstateen0) and in the modes the state is
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 
-from testgen.asm.csr import clear_unwalked_bits, csr_access_test, csr_walk_test, upper_half
+from testgen.asm.csr import clear_conditional_bits, csr_access_test, csr_walk_test, upper_half
 from testgen.asm.helpers import arch_block, comment_banner, gated, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -206,7 +206,7 @@ def _csr_lines(test_data: TestData, cg: str, cp: str, csrs: tuple[str, ...], tag
     lines.append(f"LI(x{rs}, -1)")
     for csr in csrs:
         gap = sail_gap_bits(csr)
-        access = clear_unwalked_bits(rs, rd, gap)  # write and check only the bits Sail models
+        access = clear_conditional_bits(rs, rd, gap, "Do not write or check")
         for op in ("csrrw", "csrrs", "csrrc"):
             access += ["", test_data.add_testcase(f"{tag}_{csr}_{op}", cp, cg), f"{op} x{rd}, {csr}, x{rs}"]
             if gap:

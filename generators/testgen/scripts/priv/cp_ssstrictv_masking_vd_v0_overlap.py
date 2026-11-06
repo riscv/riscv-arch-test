@@ -52,7 +52,7 @@ def make(instruction: str) -> None:
         common.writeLine(f"\n# Testcase {CP} (lmul={lmul}, sew={sew})")
         scratch = common.pickPrivScratch(instruction_data[1])
         emit_vsetivli(scratch, vl=1, sew=sew, lmul=lmul)
-        init_operand_regs(instruction, instruction_data[0], sew, scratch)
+        init_operand_regs(instruction, instruction_data[0], scratch)
         # Re-emit vsetivli right before the test so SAMPLE_BEFORE sees vtype.
         emit_vsetivli(scratch, vl=1, sew=sew, lmul=lmul)
 

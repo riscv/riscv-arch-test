@@ -17,6 +17,7 @@ from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.PrivCommon import (
     STATUS_CSR,
+    VIRTUAL_MODES,
     gen_status_read_sigupd,
     hs_status_values,
     hs_tag,
@@ -31,10 +32,11 @@ _VSET_M1 = "vsetivli x0, 1, e32, m1, tu, mu"
 
 
 def _check_vset(rd_reg: int, check_reg: int, test_data: TestData) -> list[str]:
-    """Commit what a vset* produced: the vl written to rd, and the resulting vtype."""
+    """Commit what a vset* produced: the vl written to rd, and the resulting vtype and vl."""
     return [
         write_sigupd(rd_reg, test_data),
         gen_csr_read_sigupd(check_reg, ("vtype", None), test_data),
+        gen_csr_read_sigupd(check_reg, ("vl", None), test_data),
     ]
 
 
@@ -73,7 +75,7 @@ def _gen_vcsrrswc(test_data: TestData, temp_reg: int, covergroup: str, priv: str
                         *set_status_fields(temp_reg, priv, vs=vs, hs_vs=hs),
                         test_data.add_testcase(f"{csr}_{op}_vs{vs}{hs_tag(hs)}", coverpoint, covergroup),
                         f"{op} x0, {csr}, x{save_reg}",
-                        f"LI(x{temp_reg}, MSTATUS_VS)",
+                        f"LI(x{temp_reg}, MSTATUS_VS | MSTATUS_SD)",
                         gen_status_read_sigupd(check_reg, test_data, priv, temp_reg),
                         gen_csr_read_sigupd(check_reg, (csr, None), test_data),
                     ]
@@ -131,6 +133,7 @@ def _gen_status_vs_dirty(test_data: TestData, temp_reg: int, covergroup: str, pr
         lines.append(_VSET_M1)
         lines.append("vmv.v.i v1, 1")
         lines.append("vmv.v.i v2, 2")
+        lines.append("vmv.v.i v3, 0  # so the vadd.vv changes v3")
         lines.extend(set_status_fields(temp_reg, priv, vs=vs, hs_vs=hs))
         lines.append(
             test_data.add_testcase(f"vadd_vs{vs}{hs_tag(hs)}", f"cp_{status}_vs_set_dirty_arithmetic", covergroup)
@@ -141,6 +144,7 @@ def _gen_status_vs_dirty(test_data: TestData, temp_reg: int, covergroup: str, pr
     lines.append(comment_banner(f"cp_{status}_vs_set_dirty_csr", "VS=Initial/Clean/Dirty -> vsetvli -> expect Dirty"))
     for vs, hs in itertools.product((1, 2, 3), hs_status_values(priv, include_off=False)):
         lines.extend(set_status_fields(temp_reg, priv, vs=3))
+        lines.append(f"{_VSET_M1}  # so the vsetvli changes vtype and vl")
         lines.extend(set_status_fields(temp_reg, priv, vs=vs, hs_vs=hs))
         lines.append(test_data.add_testcase(f"vsetvli_vs{vs}{hs_tag(hs)}", f"cp_{status}_vs_set_dirty_csr", covergroup))
         lines.append(f"vsetvli x{temp_reg}, x0, e16, m2, tu, mu")
@@ -158,27 +162,88 @@ def _gen_status_vs_off(test_data: TestData, temp_reg: int, covergroup: str, priv
             "VS=Off -> vector arithmetic traps illegal-instruction",
         ),
     ]
+    rd_reg, check_reg = test_data.int_regs.get_registers(2)
     for vs, hs in off_status_pairs(priv):
         lines.extend(set_status_fields(temp_reg, priv, vs=3))
         lines.append(_VSET_M1)
         lines.append("vmv.v.i v1, 1")
         lines.append("vmv.v.i v2, 2")
+        lines.append("vmv.v.i v3, 7  # preset so a vadd.vv that runs shows in the signature")
         lines.extend(set_status_fields(temp_reg, priv, vs=vs, hs_vs=hs))
         lines.append(
             test_data.add_testcase(f"vadd_vs_off{off_tag(vs, hs)}", f"cp_{status}_vs_off_arithmetic", covergroup)
         )
         lines.append("vadd.vv v3, v1, v2  # traps: VS=Off")
         lines.extend(set_status_fields(temp_reg, priv, vs=3))
+        lines.extend(_check_vector_state_kept(check_reg, test_data))
         lines.append("")
 
     lines.append(comment_banner(f"cp_{status}_vs_off_csr", "VS=Off -> vsetvli traps illegal-instruction"))
     for vs, hs in off_status_pairs(priv):
         lines.extend(set_status_fields(temp_reg, priv, vs=3))
+        lines.append(_VSET_M1)
+        lines.append(f"LI(x{rd_reg}, 0x5a)  # preset so a vsetvli that runs shows in the signature")
         lines.extend(set_status_fields(temp_reg, priv, vs=vs, hs_vs=hs))
         lines.append(test_data.add_testcase(f"vsetvli_vs_off{off_tag(vs, hs)}", f"cp_{status}_vs_off_csr", covergroup))
-        lines.append(f"vsetvli x{temp_reg}, x0, e8, m1, tu, mu  # traps: VS=Off")
+        lines.append(f"vsetvli x{rd_reg}, x0, e8, m1, tu, mu  # traps: VS=Off")
+        lines.extend(set_status_fields(temp_reg, priv, vs=3))
+        lines.append(write_sigupd(rd_reg, test_data))
+        lines.extend(_check_vector_state_kept(check_reg, test_data))
+        lines.append("")
+    test_data.int_regs.return_registers([rd_reg, check_reg])
+    return lines
+
+
+def _check_vector_state_kept(check_reg: int, test_data: TestData) -> list[str]:
+    """After a trapped vector instruction, commit v3 element 0, vl, vtype and vstart."""
+    return [
+        f"vmv.x.s x{check_reg}, v3",
+        write_sigupd(check_reg, test_data),
+        gen_csr_read_sigupd(check_reg, ("vl", None), test_data),
+        gen_csr_read_sigupd(check_reg, ("vtype", None), test_data),
+        write_sigupd(None, test_data, "vstart"),
+    ]
+
+
+def _gen_status_vs_off_more(test_data: TestData, temp_reg: int, covergroup: str, priv: str) -> list[str]:
+    """cp_xstatus_vs_off_vector_instruction / _vcsr_read / _vcsr_write: other vector instructions and CSR accesses trap."""
+    status = STATUS_CSR[priv]
+    base_reg, data_reg = test_data.int_regs.get_registers(2)
+    instrs = {
+        "vle32_v": f"vle32.v v1, (x{base_reg})",
+        "vse32_v": f"vse32.v v1, (x{base_reg})",
+        "vl1re32_v": f"vl1re32.v v1, (x{base_reg})",
+        "vs1r_v": f"vs1r.v v1, (x{base_reg})",
+        "vmv1r_v": "vmv1r.v v2, v1",
+        "vmv_x_s": f"vmv.x.s x{data_reg}, v1",
+        "vsetivli": f"vsetivli x{data_reg}, 1, e8, m1, tu, mu",
+        "vsetvl": f"vsetvl x{data_reg}, x{data_reg}, x0",
+    }
+    accesses = [(f"{csr}_csrr", f"csrr x{data_reg}, {csr}", "vcsr_read") for csr in _VECTOR_CSRS]
+    for csr in _VECTOR_CSRS_WR:
+        accesses.append((f"{csr}_csrw", f"csrw {csr}, x{data_reg}", "vcsr_write"))
+        accesses.append((f"{csr}_csrwi", f"csrwi {csr}, 1", "vcsr_write"))
+    cases = [(name, instr, "vector_instruction") for name, instr in instrs.items()] + accesses
+    lines = [
+        comment_banner(
+            f"cp_{status}_vs_off_vector_instruction / vcsr_read / vcsr_write",
+            "VS=Off -> vector loads/stores, moves, vset* and vector CSR accesses trap illegal-instruction",
+        ),
+    ]
+    for vs, hs in off_status_pairs(priv):
+        lines.extend(set_status_fields(temp_reg, priv, vs=3))
+        lines.append(_VSET_M1)
+        lines.append(f"LA(x{base_reg}, scratch)")
+        lines.append(f"LI(x{data_reg}, 1)")
+        lines.extend(set_status_fields(temp_reg, priv, vs=vs, hs_vs=hs))
+        for name, instr, cp in cases:
+            lines.append(
+                test_data.add_testcase(f"{name}_vs_off{off_tag(vs, hs)}", f"cp_{status}_vs_off_{cp}", covergroup)
+            )
+            lines.append(f"{instr}  # traps: VS=Off")
         lines.extend(set_status_fields(temp_reg, priv, vs=3))
         lines.append("")
+    test_data.int_regs.return_registers([base_reg, data_reg])
     return lines
 
 
@@ -389,6 +454,7 @@ def _gen_vtype_vill_set_vl_0(test_data: TestData, temp_reg: int, covergroup: str
     lines.append("#else")
     lines.append(f"LI(x{rs2_reg}, 0x8000000000000000)")
     lines.append("#endif")
+    lines.append(f"vsetivli x{temp_reg}, 1, e8, m1, tu, mu  # vl = 1 before the vill write")
     lines.append(test_data.add_testcase("vill_set_vl_0", coverpoint, covergroup))
     lines.append(f"vsetvl x{temp_reg}, x{rs1_reg}, x{rs2_reg}  # rs2 vill set -> vl=0")
     lines.extend(_check_vset(temp_reg, check_reg, test_data))  # the promised vl=0 check
@@ -635,6 +701,7 @@ def gen_v_tests(test_data: TestData, priv: str, covergroup: str) -> list[TestChu
     for gen in (
         _gen_status_vs_dirty,
         _gen_status_vs_off,
+        _gen_status_vs_off_more,
         _gen_sew_lmul_vsetvl,
         _gen_sew_lmul_vset_i_vli,
         _gen_vill_vsetvl,
@@ -651,6 +718,12 @@ def gen_v_tests(test_data: TestData, priv: str, covergroup: str) -> list[TestChu
 
     _gen_vl_walking1s_sew_lmul(test_data, temp_reg, test_chunks, covergroup, priv)
 
-    test_data.int_regs.return_registers([temp_reg])
     test_chunks.append(test_data.end_test_chunk())
+
+    # No FP instruction runs here, so turn FS Off to make SD reflect VS only.
+    fs_off = set_status_fields(temp_reg, priv, fs=0, hs_fs=0 if priv in VIRTUAL_MODES else None)
+    fs_on = set_status_fields(temp_reg, priv, fs=3)
+    for chunk in test_chunks:
+        chunk.code = [*fs_off, *chunk.code, *fs_on]
+    test_data.int_regs.return_registers([temp_reg])
     return test_chunks

@@ -84,6 +84,27 @@ vsetvli_instruction: coverpoint ins.current.insn {
     wildcard bins vsetvli   =   {VSETVLI};
 }
 
+// vector instructions decoders can let through with xstatus.VS = Off
+vs_off_vector_instruction: coverpoint ins.current.insn {
+    wildcard bins vle32_v   =   {VLE32_V};
+    wildcard bins vse32_v   =   {VSE32_V};
+    wildcard bins vl1re32_v =   {VL1RE32_V};
+    wildcard bins vs1r_v    =   {VS1R_V};
+    wildcard bins vmv1r_v   =   {VMV1R_V};
+    wildcard bins vmv_x_s   =   {VMV_X_S};
+    wildcard bins vsetivli  =   {VSETIVLI};
+    wildcard bins vsetvl    =   {VSETVL};
+}
+
+vcsr_read_op: coverpoint ins.current.insn {
+    wildcard bins csrr      =   {32'b????????????_00000_010_?????_1110011};  // csrrs rs1 = x0
+}
+
+vcsr_write_op: coverpoint ins.current.insn {
+    wildcard bins csrrw     =   {CSRRW};
+    wildcard bins csrrwi    =   {CSRRWI};
+}
+
 //////////////////////////////////////////////////////////////////////////////////
 // cp_sew_lmul_vset*
 // writes all combinations of lmul and sew to vtype with all vset* instructions

@@ -160,13 +160,20 @@ def _gen_fs_off(test_data: TestData, temp_reg: int, covergroup: str, priv: str) 
             coverpoint, "vfadd.vv with FS=Off (VS=Dirty) -> illegal-instruction trap; cover all vs1/vs2 patterns"
         ),
     ]
+    check_reg = test_data.int_regs.get_register()
     for (vs2_reg, vs1_reg, name), (fs, hs) in itertools.product(_VFADD_PATTERNS, off_status_pairs(priv)):
         lines.extend(set_status_fields(temp_reg, priv, fs=3, vs=3))
         lines.extend(_load_v_zero_one(temp_reg))
+        lines.append("vmv.v.i v3, 7  # preset so a vfadd.vv that runs shows in the signature")
+        lines.append("csrw fflags, x0")
         lines.extend(set_status_fields(temp_reg, priv, fs=fs, vs=3, hs_fs=hs))
         lines.append(test_data.add_testcase(f"vfadd_{name}_fs_off{off_tag(fs, hs)}", coverpoint, covergroup))
         lines.append(f"vfadd.vv v3, {vs2_reg}, {vs1_reg}  # traps: FS=Off")
-    lines.extend(set_status_fields(temp_reg, priv, fs=3, vs=3))
+        lines.extend(set_status_fields(temp_reg, priv, fs=3, vs=3))
+        lines.append(f"vmv.x.s x{check_reg}, v3")
+        lines.append(write_sigupd(check_reg, test_data))
+        lines.append(write_sigupd(None, test_data, "fflags"))
+    test_data.int_regs.return_registers([check_reg])
     return lines
 
 

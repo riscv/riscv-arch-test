@@ -830,6 +830,21 @@ covergroup H_V_cg with function sample(ins_t ins);
                                                                                                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 ) {
         ignore_bins both_on = binsof(vsstatus_vs_all) intersect {[1:3]} && binsof(hsstatus_vs_all) intersect {[1:3]};
     }
+    cp_vsstatus_vs_off_vector_instruction: cross priv_mode_vs_vu, vsstatus_vs_all, hsstatus_vs_all, vs_off_vector_instruction iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                                                                                                                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                                                                                                                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 ) {
+        ignore_bins both_on = binsof(vsstatus_vs_all) intersect {[1:3]} && binsof(hsstatus_vs_all) intersect {[1:3]};
+    }
+    cp_vsstatus_vs_off_vcsr_read        : cross priv_mode_vs_vu, vsstatus_vs_all, hsstatus_vs_all, vcsrs, vcsr_read_op iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                                                                                                                           get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                                                                                                                           get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 ) {
+        ignore_bins both_on = binsof(vsstatus_vs_all) intersect {[1:3]} && binsof(hsstatus_vs_all) intersect {[1:3]};
+    }
+    cp_vsstatus_vs_off_vcsr_write       : cross priv_mode_vs_vu, vsstatus_vs_all, hsstatus_vs_all, vcsrs_writable, vcsr_write_op iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                                                                                                                                     get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                                                                                                                                     get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 ) {
+        ignore_bins both_on = binsof(vsstatus_vs_all) intersect {[1:3]} && binsof(hsstatus_vs_all) intersect {[1:3]};
+    }
 
 endgroup
 `endif

@@ -86,6 +86,30 @@ coverpoints:
     notes: |-
       test written: yes, confirm sig
       spec: Attempts to execute any vector instruction, or to access the vector CSRs, raise an illegal-instruction exception when mstatus.VS is set to Off.
+  - name: cp_mstatus_vs_off_vector_instruction
+    goal: Confirm that when misa.V is 1 and mstatus.VS is off, a vector load, store, whole-register move, vmv.x.s, vsetivli or vsetvl raises an illegal instruction exception
+    description: With misa.V = 1 (its reset value), set mstatus.VS = {00} and run vle32.v, vse32.v, vl1re32.v, vs1r.v, vmv1r.v, vmv.x.s, vsetivli and vsetvl
+    expectation: illegal instruction exception
+    bins: "8"
+    notes: |-
+      test written: yes
+      spec: Attempts to execute any vector instruction, or to access the vector CSRs, raise an illegal-instruction exception when mstatus.VS is set to Off.
+  - name: cp_mstatus_vs_off_vcsr_read
+    goal: Confirm that when misa.V is 1 and mstatus.VS is off, a read of a vector CSR raises an illegal instruction exception
+    description: With misa.V = 1 (its reset value), set mstatus.VS = {00} and csrr each of vstart, vxsat, vxrm, vcsr, vl, vtype and vlenb
+    expectation: illegal instruction exception
+    bins: "7"
+    notes: |-
+      test written: yes
+      spec: Attempts to execute any vector instruction, or to access the vector CSRs, raise an illegal-instruction exception when mstatus.VS is set to Off.
+  - name: cp_mstatus_vs_off_vcsr_write
+    goal: Confirm that when misa.V is 1 and mstatus.VS is off, a write of a vector CSR raises an illegal instruction exception
+    description: With misa.V = 1 (its reset value), set mstatus.VS = {00} and csrw and csrwi each of vstart, vxsat, vxrm and vcsr
+    expectation: illegal instruction exception
+    bins: "8"
+    notes: |-
+      test written: yes
+      spec: Attempts to execute any vector instruction, or to access the vector CSRs, raise an illegal-instruction exception when mstatus.VS is set to Off.
   - description: For implementations with a writable misa.V field, the vsstatus.VS field may exist even if misa.V is clear.
     notes: "feature (coverpoint written): Untestable"
   - heading: Vset{i}vl{i}

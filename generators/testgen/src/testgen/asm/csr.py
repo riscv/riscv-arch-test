@@ -229,9 +229,27 @@ def _warl_reserved_check(
     return lines
 
 
-def upper_half(unwalked_bits: list[tuple[int, str]]) -> list[tuple[int, str]] | None:
-    """The unwalked_bits from bit 32 up, shifted down, for the RV32 upper-half CSR."""
-    return [(bits >> 32, define) for bits, define in unwalked_bits if bits >> 32] or None
+def upper_half(conditional_bits: list[tuple[int, str]]) -> list[tuple[int, str]] | None:
+    """The (bits, cond) pairs from bit 32 up, shifted down, for the RV32 upper-half CSR."""
+    return [(bits >> 32, cond) for bits, cond in conditional_bits if bits >> 32] or None
+
+
+def clear_conditional_bits(
+    reg: int, tmp_reg: int, conditional_bits: list[tuple[int, str]] | None, why: str
+) -> list[str]:
+    """Clear from x{reg} the bits of each (bits, cond) pair whose cond holds, using x{tmp_reg} as scratch.
+
+    cond is a define name or an #if expression; why starts the comment on each clear.
+    """
+    lines: list[str] = []
+    for bits, cond in conditional_bits or []:
+        lines += [
+            f"#ifdef {cond}" if cond.isidentifier() else f"#if {cond}",
+            f"LI(x{tmp_reg}, {~bits & ((1 << 64) - 1)})    # {why} bits {bits:#x}",
+            f"and x{reg}, x{reg}, x{tmp_reg}",
+            f"#endif // {cond}",
+        ]
+    return lines
 
 
 def csr_walk_test(
@@ -272,8 +290,8 @@ def csr_walk_test(
             other iterations check the field exactly as usual (see _warl_reserved_check).
         maskedwrites: If True, the CSR is written with a mask applied to the value being written.
         bin_prefix: Prefix for testcase bin names, to walk the same CSR more than once under one coverpoint.
-        unwalked_bits: Optional (bits, define) pairs for state the reference model cannot model. Where the
-            define is defined, the bits are neither written nor checked,
+        unwalked_bits: Optional (bits, cond) pairs for state the reference model cannot model. `cond` is a
+            define name, or an #if expression. Where it holds, the bits are neither written nor checked,
             so their coverage reports missing; elsewhere they are walked and checked (read-only). Implies
             maskedwrites, with the bits added to the csr mask, or all ones if None.
     """
@@ -368,15 +386,9 @@ def csr_walk_test(
         f"csrr x{save_reg}, {csr_name}      # Save CSR",
         f"LI(x{walk_reg}, {1 << start_bit})              # 1 in bit {start_bit}",
     ]
-    if mask is not None:
+    if mask_reg is not None:
         lines.append(f"LI(x{mask_reg}, {mask})    # Load mask ({mask:#x})")
-        for bits, define in unwalked_bits or []:
-            lines += [
-                f"#ifdef {define}",
-                f"LI(x{check_reg}, {~bits & ((1 << 64) - 1)})    # Do not walk bits {bits:#x}",
-                f"and x{mask_reg}, x{mask_reg}, x{check_reg}",
-                f"#endif // {define}",
-            ]
+        lines += clear_conditional_bits(mask_reg, check_reg, unwalked_bits, "Do not walk")
     if walk_zeros:
         lines.append(f"LI(x{temp_reg}, -1)             # x{temp_reg} = all 1s")
 

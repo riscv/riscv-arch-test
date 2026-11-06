@@ -198,6 +198,16 @@ covergroup Sstc_H_cg with function sample(ins_t ins);
     hvip_vstip: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hvip", "vstip")[0] {
         // autofill 0/1
     }
+    // Writes of VSTIP (bit 6) alone
+    vstip_writes: coverpoint ins.current.insn {
+        wildcard bins csrrs_vstip = {CSRRS} iff (ins.current.rs1_val == 'h40);
+        wildcard bins csrrw_vstip = {CSRRW} iff (ins.current.rs1_val == 'h40);
+        wildcard bins csrrc_vstip = {CSRRC} iff (ins.current.rs1_val == 'h40);
+        wildcard bins csrrw_zero  = {CSRRW} iff (ins.current.rs1_val == 0);
+    }
+    hvip: coverpoint ins.current.insn[31:20] {
+        bins hvip = {CSR_HVIP};
+    }
     `ifdef UDB_MXLEN_64
         vstimecmp_val: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstimecmp", "vstimecmp") {
             bins zero = {64'h0};
@@ -222,6 +232,9 @@ covergroup Sstc_H_cg with function sample(ins_t ins);
             bins neg2_60 = {64'hF000000000000000};
         }
         htimedelta_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "htimedelta", "htimedelta") {
+            bins zero = {64'h0};
+        }
+        vstimecmp_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstimecmp", "vstimecmp") {
             bins zero = {64'h0};
         }
     `else
@@ -254,6 +267,10 @@ covergroup Sstc_H_cg with function sample(ins_t ins);
                                      get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "htimedelta", "htimedelta")} {
             bins zero = {64'h0};
         }
+        vstimecmp_zero: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstimecmph", "vstimecmph"),
+                                    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstimecmp", "vstimecmp")} {
+            bins zero = {64'h0};
+        }
     `endif
 
     // main coverpoints
@@ -271,6 +288,8 @@ covergroup Sstc_H_cg with function sample(ins_t ins);
     cp_u_timecmp_inaccessible:    cross priv_mode_u, csrr, timecmp_csrs, stce_pair, tm_pair;
     // hip.VSTIP is hvip.VSTIP | (menvcfg.STCE & henvcfg.STCE & time + htimedelta >= vstimecmp), unsigned
     cp_vstip:                     cross priv_mode_hs, csrr, hip, stce_pair, hvip_vstip, vstimecmp_val, htimedelta_zero;
+    // hvip.VSTIP stays writable while the comparison holds hip.VSTIP at 1
+    cp_hvip_vstip_pending:        cross priv_mode_hs, vstip_writes, hvip, stce_pair_ones, hvip_vstip, vstimecmp_zero, htimedelta_zero;
     cp_htimedelta:                cross priv_mode_hs, csrr, hip, stce_pair_ones, htimedelta_val, vstimecmp_delta;
 endgroup
 
@@ -346,6 +365,19 @@ covergroup Sstc_HSm_cg with function sample(ins_t ins);
     hvip_vstip: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hvip", "vstip")[0] {
         // autofill 0/1
     }
+    // Writes of VSTIP (bit 6) alone
+    vstip_writes: coverpoint ins.current.insn {
+        wildcard bins csrrs_vstip = {CSRRS} iff (ins.current.rs1_val == 'h40);
+        wildcard bins csrrw_vstip = {CSRRW} iff (ins.current.rs1_val == 'h40);
+        wildcard bins csrrc_vstip = {CSRRC} iff (ins.current.rs1_val == 'h40);
+        wildcard bins csrrw_zero  = {CSRRW} iff (ins.current.rs1_val == 0);
+    }
+    hvip: coverpoint ins.current.insn[31:20] {
+        bins hvip = {CSR_HVIP};
+    }
+    mip: coverpoint ins.current.insn[31:20] {
+        bins mip = {CSR_MIP};
+    }
     `ifdef UDB_MXLEN_64
         vstimecmp_val: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstimecmp", "vstimecmp") {
             bins zero = {64'h0};
@@ -371,6 +403,12 @@ covergroup Sstc_HSm_cg with function sample(ins_t ins);
         }
         htimedelta_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "htimedelta", "htimedelta") {
             bins zero = {64'h0};
+        }
+        vstimecmp_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstimecmp", "vstimecmp") {
+            bins zero = {64'h0};
+        }
+        vstimecmp_max: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstimecmp", "vstimecmp") {
+            bins max = {64'hFFFFFFFFFFFFFFFF};
         }
     `else
         vstimecmp_val: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstimecmph", "vstimecmph"),
@@ -402,11 +440,23 @@ covergroup Sstc_HSm_cg with function sample(ins_t ins);
                                      get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "htimedelta", "htimedelta")} {
             bins zero = {64'h0};
         }
+        vstimecmp_zero: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstimecmph", "vstimecmph"),
+                                    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstimecmp", "vstimecmp")} {
+            bins zero = {64'h0};
+        }
+        vstimecmp_max: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstimecmph", "vstimecmph"),
+                                   get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstimecmp", "vstimecmp")} {
+            bins max = {64'hFFFFFFFFFFFFFFFF};
+        }
     `endif
 
     // main coverpoints
     // hip.VSTIP is hvip.VSTIP | (menvcfg.STCE & henvcfg.STCE & time + htimedelta >= vstimecmp), unsigned
     cp_vstip:                  cross priv_mode_m, csrr, hip, stce_pair, hvip_vstip, vstimecmp_val, htimedelta_zero;
+    // hvip.VSTIP stays writable while the comparison holds hip.VSTIP at 1
+    cp_hvip_vstip_pending:     cross priv_mode_m, vstip_writes, hvip, stce_pair_ones, hvip_vstip, vstimecmp_zero, htimedelta_zero;
+    // mip.VSTIP is an alias of read-only hip.VSTIP: writes change neither mip nor hvip
+    cp_mip_vstip_ro:           cross priv_mode_m, vstip_writes, mip, stce_pair, hvip_vstip, vstimecmp_max, htimedelta_zero;
     cp_htimedelta:             cross priv_mode_m, csrr, hip, stce_pair_ones, htimedelta_val, vstimecmp_delta;
     // M-mode reaches vstimecmp whatever the enables hold
     cp_m_vstimecmp_accessible: cross priv_mode_m, csrr, vstimecmp_csrs, stce_pair, tm_pair;

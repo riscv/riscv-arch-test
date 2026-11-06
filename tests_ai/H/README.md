@@ -127,3 +127,21 @@ tables, memory-fault checks).
     with HS-mode's own value, so a write that wrongly lands in the HS CSR is still caught.
   - An `sret` into VS or VU, and a T-SBI return to HS, copy SPIE into HS-mode's SIE. Interrupt windows clear SIE and
     SPIE first.
+
+## Model bugs found by this suite
+
+- **Whisper:**
+  - [#227](https://github.com/tenstorrent/whisper/issues/227): with TVM=1, a VS/VU write of hgatp/satp raises
+    illegal- instead of virtual-instruction.
+  - [#228](https://github.com/tenstorrent/whisper/issues/228): SRET does not clear vsstatus.SDT.
+  - [#229](https://github.com/tenstorrent/whisper/issues/229): HFENCE does not ignore the reserved rs2 bits.
+- **Spike:** [riscv-isa-sim#2531](https://github.com/riscv-software-src/riscv-isa-sim/issues/2531): hip.VSEIP stays
+  set after VGEIN changes to 0.
+- **QEMU, new:**
+  - [#4812](https://gitlab.com/qemu-project/qemu/-/work_items/4812): VS-mode FP/vector CSR writes do not dirty
+    sstatus.FS/VS.
+  - [#4813](https://gitlab.com/qemu-project/qemu/-/work_items/4813): a VS ebreak leaves hstatus.GVA=0.
+  - [#4814](https://gitlab.com/qemu-project/qemu/-/work_items/4814): hideleg bits 63:16 are writable.
+  - [#4815](https://gitlab.com/qemu-project/qemu/-/work_items/4815): HLV/HSV ignore henvcfg.ADUE/PBMTE.
+- **QEMU, already reported:** #4420, #4588, #4589, #4591, #4592, #4594, #4595, #4597, #4611, #4612, #4615, #4620,
+  #4787, #4809, #3621.

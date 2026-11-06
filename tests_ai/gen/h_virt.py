@@ -1225,13 +1225,17 @@ def gen_xtval() -> list[TestFile]:
 # ---------------------------------------------------------------- FS / VS / SD
 FS_MASK, VS_MASK = 0x6000, 0x600
 FMV_X_W = 0xE00003D3  # fmv.x.w x7, f0 (reads FP state)
-FMV_W_X = 0xF00000D3  # fmv.w.x f1, x0 (writes f1)
+FMV_W_X = 0xF00300D3  # fmv.w.x f1, x6 (writes f1 = x6)
+FMV_W_X0 = 0xF00000D3  # fmv.w.x f1, x0 (state reset)
 FCSR_R = enc_csr(0x003, 2, 7, 0)  # csrr x7, fcsr
-FFLAGS_W = enc_csr(0x001, 1, 0, 0)  # csrw fflags, x0
-FRM_W = enc_csr(0x002, 1, 0, 0)  # csrw frm, x0
-FCSR_W = enc_csr(0x003, 1, 0, 0)  # csrw fcsr, x0
-VXRM_W = enc_csr(0x00A, 1, 0, 0)  # csrw vxrm, x0
-VCSR_W = enc_csr(0x00F, 1, 0, 0)  # csrw vcsr, x0
+FFLAGS_W = enc_csr(0x001, 1, 0, 6)  # csrw fflags, x6
+FRM_W = enc_csr(0x002, 1, 0, 6)  # csrw frm, x6
+FCSR_W = enc_csr(0x003, 1, 0, 6)  # csrw fcsr, x6
+FCSR_W0 = enc_csr(0x003, 1, 0, 0)  # csrw fcsr, x0 (state reset)
+VXRM_W = enc_csr(0x00A, 1, 0, 6)  # csrw vxrm, x6
+VCSR_W = enc_csr(0x00F, 1, 0, 6)  # csrw vcsr, x6
+VCSR_W0 = enc_csr(0x00F, 1, 0, 0)  # csrw vcsr, x0 (state reset)
+VSETVLI_E16 = 0x008073D7  # vsetvli x7, x0, e16, m1 (state reset)
 VSETVLI = 0x000073D7  # vsetvli x7, x0, e8, m1
 VSTART_R = enc_csr(0x008, 2, 7, 0)  # csrr x7, vstart
 
@@ -1298,14 +1302,28 @@ def gen_fs() -> list[TestFile]:
         fld, mask, sh = ("FS", FS_MASK, 13) if is_f else ("VS", VS_MASK, 9)
         modify = (
             [
-                (FMV_W_X, "fmv.w.x f1, x0"),
-                (FFLAGS_W, "csrw fflags, x0"),
-                (FRM_W, "csrw frm, x0"),
-                (FCSR_W, "csrw fcsr, x0"),
+                (FMV_W_X, "fmv.w.x f1, x6"),
+                (FFLAGS_W, "csrw fflags, x6"),
+                (FRM_W, "csrw frm, x6"),
+                (FCSR_W, "csrw fcsr, x6"),
             ]
             if is_f
-            else [(VSETVLI, "vsetvli x7, x0, e8, m1"), (VXRM_W, "csrw vxrm, x0"), (VCSR_W, "csrw vcsr, x0")]
+            else [(VSETVLI, "vsetvli x7, x0, e8, m1"), (VXRM_W, "csrw vxrm, x6"), (VCSR_W, "csrw vcsr, x6")]
         )
+
+        def reset_state(t: TestFile = t, is_f: bool = is_f, mask: int = mask, fld: str = fld) -> None:
+            """HS-mode, with sstatus.FS/VS temporarily Dirty: f1 = 0, fcsr = 0 (or vcsr = 0 and vtype = e16), so
+            each checked modification below changes the contents; then x6 = 1, the value the modification
+            writes (fmv.w.x f1, x6 makes f1 nonzero; vsetvli selects e8)."""
+            set_field(t, "sstatus", mask, mask, f"sstatus.{fld} = 3 while the state is reset")
+            if is_f:
+                t.emit(word(FMV_W_X0, "fmv.w.x f1, x0"))
+                t.emit(word(FCSR_W0, "csrw fcsr, x0"))
+            else:
+                t.emit(word(VCSR_W0, "csrw vcsr, x0"))
+                t.emit(word(VSETVLI_E16, "vsetvli x7, x0, e16, m1"))
+            t.li("x6", 1)
+
         readi = (FMV_X_W, "fmv.x.w x7, f0") if is_f else (VSTART_R, "csrr x7, vstart")
         what = "floating-point" if is_f else "vector"
         t.describe(
@@ -1319,8 +1337,12 @@ def gen_fs() -> list[TestFile]:
                 "execute a vector instruction when either field is 0 (Off) raise an illegal-instruction "
                 "exception. Modifying the vector state when V=1 causes both fields to be set to 3 (Dirty)."
             ),
-            context=f"{fld} encodings: 0 Off, 1 Initial, 2 Clean, 3 Dirty. Whether an instruction that does not "
-            f"modify {what} state may set Dirty is left open, so Dirty is checked only after modifications. When "
+            context=f"{fld} encodings: 0 Off, 1 Initial, 2 Clean, 3 Dirty. machine.adoc "
+            + ("norm:mstatus_fs_no_change_dirty" if is_f else "norm:mstatus_vs_imprecise")
+            + f" makes it implementation-defined whether a write that does not alter the {what} state moves "
+            f"{fld} from Initial or Clean to Dirty, so each checked modification really changes the contents: "
+            "HS-mode first resets the state (f1 = 0 and fcsr = 0, or vcsr = 0 and vtype = e16), and the "
+            "instruction under test writes a different value (x6 = 1, or vsetvli to e8). When "
             f"V=0, vsstatus does not affect the machine: modifying {what} state in HS-mode sets sstatus.{fld} "
             f"only.",
             plan=f"1. Every (sstatus.{fld}, vsstatus.{fld}) pair in 0..3: a {what} instruction in VS-mode "
@@ -1342,6 +1364,7 @@ def gen_fs() -> list[TestFile]:
                     iw(t, "VS", readi[0], readi[1], "ok" if ok else ILLEGAL, f"sstatus.{fld}={a}, vsstatus.{fld}={b}")
             for a, b, mode in ((1, 1, "VS"), (1, 2, "VS"), (2, 1, "VS"), (2, 2, "VS"), (1, 2, "VU")):
                 for e, note in modify:
+                    reset_state()
                     set_field(t, "sstatus", mask, a << sh, f"sstatus.{fld} = {a}")
                     set_field(t, "vsstatus", mask, b << sh, f"vsstatus.{fld} = {b}")
                     lab = iw(t, mode, e, note, "ok", f"sstatus.{fld}={a}, vsstatus.{fld}={b}")
@@ -1356,6 +1379,7 @@ def gen_fs() -> list[TestFile]:
                     hs_read(t, "x7", "vsstatus")
                     t.check_masked("x7", mask, mask, lab, f"{note} in {mode}-mode sets vsstatus.{fld} to Dirty")
             for e, note in modify:
+                reset_state()
                 set_field(t, "sstatus", mask, 1 << sh, f"sstatus.{fld} = 1")
                 set_field(t, "vsstatus", mask, 1 << sh, f"vsstatus.{fld} = 1")
                 lab = iw(t, "S", e, note, "ok", f"HS-mode, sstatus.{fld}=1, vsstatus.{fld}=1")

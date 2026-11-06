@@ -11,21 +11,24 @@
 //     (Dirty).
 //
 // Context:
-//   FS encodings: 0 Off, 1 Initial, 2 Clean, 3 Dirty. Whether an instruction that does not modify
-//     floating-point state may set Dirty is left open, so Dirty is checked only after
-//     modifications. When V=0, vsstatus does not affect the machine: modifying floating-point state
-//     in HS-mode sets sstatus.FS only.
+//   FS encodings: 0 Off, 1 Initial, 2 Clean, 3 Dirty. machine.adoc norm:mstatus_fs_no_change_dirty
+//     makes it implementation-defined whether a write that does not alter the floating-point state
+//     moves FS from Initial or Clean to Dirty, so each checked modification really changes the
+//     contents: HS-mode first resets the state (f1 = 0 and fcsr = 0, or vcsr = 0 and vtype = e16),
+//     and the instruction under test writes a different value (x6 = 1, or vsetvli to e8). When V=0,
+//     vsstatus does not affect the machine: modifying floating-point state in HS-mode sets
+//     sstatus.FS only.
 //
 // Test plan:
 //   1. Every (sstatus.FS, vsstatus.FS) pair in 0..3: a floating-point instruction in VS-mode
 //     succeeds when both are nonzero and raises illegal-instruction otherwise.
 //   2. For (1,1), (1,2), (2,1) and (2,2): each floating-point-state-modifying instruction (fmv.w.x
-//     f1, x0, csrw fflags, x0, csrw frm, x0, csrw fcsr, x0) in VS-mode, and in VU-mode for (1,2),
+//     f1, x6, csrw fflags, x6, csrw frm, x6, csrw fcsr, x6) in VS-mode, and in VU-mode for (1,2),
 //     leaves both fields Dirty (3).
 //   3. V=0: with sstatus.FS=1 and vsstatus.FS=1, the same modification in HS-mode sets sstatus.FS=3
 //     and leaves vsstatus.FS=1.
 //
-// Approximate dynamic instruction count: 7425
+// Approximate dynamic instruction count: 7665
 //
 
 ##### START_TEST_CONFIG #####
@@ -501,6 +504,14 @@ vsstatus_fs_op_in_VS_45:
   AI_OUTCOME
   AI_CHECK(x13, vsstatus_fs_op_in_VS_45, vsstatus_fs_op_in_VS_45_s51)
   AI_CHECK(x14, vsstatus_fs_op_in_VS_45, vsstatus_fs_op_in_VS_45_s52)
+  // sstatus.FS = 3 while the state is reset
+  LI(x7, 24576)
+  csrc 0x100, x7  // sstatus
+  LI(x7, 24576)
+  csrs 0x100, x7  // sstatus
+  .word 0xf00000d3  // fmv.w.x f1, x0
+  .word 0x301073  // csrw fcsr, x0
+  LI(x6, 1)
   // sstatus.FS = 1
   LI(x7, 24576)
   csrc 0x100, x7  // sstatus
@@ -523,7 +534,7 @@ vsstatus_fs_op_in_VS_45:
   sret
 vsstatus_fs_op_inVS_48:
 vsstatus_fs_op_in_VS_47:
-  .word 0xf00000d3  // fmv.w.x f1, x0
+  .word 0xf00300d3  // fmv.w.x f1, x6
   RVTEST_TSBI_GOTO_SMODE
   AI_OUTCOME
   AI_CHECK(x13, vsstatus_fs_op_in_VS_47, vsstatus_fs_op_in_VS_47_s53)
@@ -536,6 +547,14 @@ vsstatus_fs_op_in_VS_47:
   AI_LOAD(x5)  // mask of the checked bits
   and x5, x5, x7
   AI_CHECK_X5(vsstatus_fs_op_in_VS_47, vsstatus_fs_op_in_VS_47_s56)
+  // sstatus.FS = 3 while the state is reset
+  LI(x7, 24576)
+  csrc 0x100, x7  // sstatus
+  LI(x7, 24576)
+  csrs 0x100, x7  // sstatus
+  .word 0xf00000d3  // fmv.w.x f1, x0
+  .word 0x301073  // csrw fcsr, x0
+  LI(x6, 1)
   // sstatus.FS = 1
   LI(x7, 24576)
   csrc 0x100, x7  // sstatus
@@ -558,7 +577,7 @@ vsstatus_fs_op_in_VS_47:
   sret
 vsstatus_fs_op_inVS_50:
 vsstatus_fs_op_in_VS_49:
-  .word 0x101073  // csrw fflags, x0
+  .word 0x131073  // csrw fflags, x6
   RVTEST_TSBI_GOTO_SMODE
   AI_OUTCOME
   AI_CHECK(x13, vsstatus_fs_op_in_VS_49, vsstatus_fs_op_in_VS_49_s57)
@@ -571,6 +590,14 @@ vsstatus_fs_op_in_VS_49:
   AI_LOAD(x5)  // mask of the checked bits
   and x5, x5, x7
   AI_CHECK_X5(vsstatus_fs_op_in_VS_49, vsstatus_fs_op_in_VS_49_s60)
+  // sstatus.FS = 3 while the state is reset
+  LI(x7, 24576)
+  csrc 0x100, x7  // sstatus
+  LI(x7, 24576)
+  csrs 0x100, x7  // sstatus
+  .word 0xf00000d3  // fmv.w.x f1, x0
+  .word 0x301073  // csrw fcsr, x0
+  LI(x6, 1)
   // sstatus.FS = 1
   LI(x7, 24576)
   csrc 0x100, x7  // sstatus
@@ -593,7 +620,7 @@ vsstatus_fs_op_in_VS_49:
   sret
 vsstatus_fs_op_inVS_52:
 vsstatus_fs_op_in_VS_51:
-  .word 0x201073  // csrw frm, x0
+  .word 0x231073  // csrw frm, x6
   RVTEST_TSBI_GOTO_SMODE
   AI_OUTCOME
   AI_CHECK(x13, vsstatus_fs_op_in_VS_51, vsstatus_fs_op_in_VS_51_s61)
@@ -606,6 +633,14 @@ vsstatus_fs_op_in_VS_51:
   AI_LOAD(x5)  // mask of the checked bits
   and x5, x5, x7
   AI_CHECK_X5(vsstatus_fs_op_in_VS_51, vsstatus_fs_op_in_VS_51_s64)
+  // sstatus.FS = 3 while the state is reset
+  LI(x7, 24576)
+  csrc 0x100, x7  // sstatus
+  LI(x7, 24576)
+  csrs 0x100, x7  // sstatus
+  .word 0xf00000d3  // fmv.w.x f1, x0
+  .word 0x301073  // csrw fcsr, x0
+  LI(x6, 1)
   // sstatus.FS = 1
   LI(x7, 24576)
   csrc 0x100, x7  // sstatus
@@ -628,7 +663,7 @@ vsstatus_fs_op_in_VS_51:
   sret
 vsstatus_fs_op_inVS_54:
 vsstatus_fs_op_in_VS_53:
-  .word 0x301073  // csrw fcsr, x0
+  .word 0x331073  // csrw fcsr, x6
   RVTEST_TSBI_GOTO_SMODE
   AI_OUTCOME
   AI_CHECK(x13, vsstatus_fs_op_in_VS_53, vsstatus_fs_op_in_VS_53_s65)
@@ -641,6 +676,14 @@ vsstatus_fs_op_in_VS_53:
   AI_LOAD(x5)  // mask of the checked bits
   and x5, x5, x7
   AI_CHECK_X5(vsstatus_fs_op_in_VS_53, vsstatus_fs_op_in_VS_53_s68)
+  // sstatus.FS = 3 while the state is reset
+  LI(x7, 24576)
+  csrc 0x100, x7  // sstatus
+  LI(x7, 24576)
+  csrs 0x100, x7  // sstatus
+  .word 0xf00000d3  // fmv.w.x f1, x0
+  .word 0x301073  // csrw fcsr, x0
+  LI(x6, 1)
   // sstatus.FS = 1
   LI(x7, 24576)
   csrc 0x100, x7  // sstatus
@@ -663,7 +706,7 @@ vsstatus_fs_op_in_VS_53:
   sret
 vsstatus_fs_op_inVS_56:
 vsstatus_fs_op_in_VS_55:
-  .word 0xf00000d3  // fmv.w.x f1, x0
+  .word 0xf00300d3  // fmv.w.x f1, x6
   RVTEST_TSBI_GOTO_SMODE
   AI_OUTCOME
   AI_CHECK(x13, vsstatus_fs_op_in_VS_55, vsstatus_fs_op_in_VS_55_s69)
@@ -676,6 +719,14 @@ vsstatus_fs_op_in_VS_55:
   AI_LOAD(x5)  // mask of the checked bits
   and x5, x5, x7
   AI_CHECK_X5(vsstatus_fs_op_in_VS_55, vsstatus_fs_op_in_VS_55_s72)
+  // sstatus.FS = 3 while the state is reset
+  LI(x7, 24576)
+  csrc 0x100, x7  // sstatus
+  LI(x7, 24576)
+  csrs 0x100, x7  // sstatus
+  .word 0xf00000d3  // fmv.w.x f1, x0
+  .word 0x301073  // csrw fcsr, x0
+  LI(x6, 1)
   // sstatus.FS = 1
   LI(x7, 24576)
   csrc 0x100, x7  // sstatus
@@ -698,7 +749,7 @@ vsstatus_fs_op_in_VS_55:
   sret
 vsstatus_fs_op_inVS_58:
 vsstatus_fs_op_in_VS_57:
-  .word 0x101073  // csrw fflags, x0
+  .word 0x131073  // csrw fflags, x6
   RVTEST_TSBI_GOTO_SMODE
   AI_OUTCOME
   AI_CHECK(x13, vsstatus_fs_op_in_VS_57, vsstatus_fs_op_in_VS_57_s73)
@@ -711,6 +762,14 @@ vsstatus_fs_op_in_VS_57:
   AI_LOAD(x5)  // mask of the checked bits
   and x5, x5, x7
   AI_CHECK_X5(vsstatus_fs_op_in_VS_57, vsstatus_fs_op_in_VS_57_s76)
+  // sstatus.FS = 3 while the state is reset
+  LI(x7, 24576)
+  csrc 0x100, x7  // sstatus
+  LI(x7, 24576)
+  csrs 0x100, x7  // sstatus
+  .word 0xf00000d3  // fmv.w.x f1, x0
+  .word 0x301073  // csrw fcsr, x0
+  LI(x6, 1)
   // sstatus.FS = 1
   LI(x7, 24576)
   csrc 0x100, x7  // sstatus
@@ -733,7 +792,7 @@ vsstatus_fs_op_in_VS_57:
   sret
 vsstatus_fs_op_inVS_60:
 vsstatus_fs_op_in_VS_59:
-  .word 0x201073  // csrw frm, x0
+  .word 0x231073  // csrw frm, x6
   RVTEST_TSBI_GOTO_SMODE
   AI_OUTCOME
   AI_CHECK(x13, vsstatus_fs_op_in_VS_59, vsstatus_fs_op_in_VS_59_s77)
@@ -746,6 +805,14 @@ vsstatus_fs_op_in_VS_59:
   AI_LOAD(x5)  // mask of the checked bits
   and x5, x5, x7
   AI_CHECK_X5(vsstatus_fs_op_in_VS_59, vsstatus_fs_op_in_VS_59_s80)
+  // sstatus.FS = 3 while the state is reset
+  LI(x7, 24576)
+  csrc 0x100, x7  // sstatus
+  LI(x7, 24576)
+  csrs 0x100, x7  // sstatus
+  .word 0xf00000d3  // fmv.w.x f1, x0
+  .word 0x301073  // csrw fcsr, x0
+  LI(x6, 1)
   // sstatus.FS = 1
   LI(x7, 24576)
   csrc 0x100, x7  // sstatus
@@ -768,7 +835,7 @@ vsstatus_fs_op_in_VS_59:
   sret
 vsstatus_fs_op_inVS_62:
 vsstatus_fs_op_in_VS_61:
-  .word 0x301073  // csrw fcsr, x0
+  .word 0x331073  // csrw fcsr, x6
   RVTEST_TSBI_GOTO_SMODE
   AI_OUTCOME
   AI_CHECK(x13, vsstatus_fs_op_in_VS_61, vsstatus_fs_op_in_VS_61_s81)
@@ -781,6 +848,14 @@ vsstatus_fs_op_in_VS_61:
   AI_LOAD(x5)  // mask of the checked bits
   and x5, x5, x7
   AI_CHECK_X5(vsstatus_fs_op_in_VS_61, vsstatus_fs_op_in_VS_61_s84)
+  // sstatus.FS = 3 while the state is reset
+  LI(x7, 24576)
+  csrc 0x100, x7  // sstatus
+  LI(x7, 24576)
+  csrs 0x100, x7  // sstatus
+  .word 0xf00000d3  // fmv.w.x f1, x0
+  .word 0x301073  // csrw fcsr, x0
+  LI(x6, 1)
   // sstatus.FS = 2
   LI(x7, 24576)
   csrc 0x100, x7  // sstatus
@@ -803,7 +878,7 @@ vsstatus_fs_op_in_VS_61:
   sret
 vsstatus_fs_op_inVS_64:
 vsstatus_fs_op_in_VS_63:
-  .word 0xf00000d3  // fmv.w.x f1, x0
+  .word 0xf00300d3  // fmv.w.x f1, x6
   RVTEST_TSBI_GOTO_SMODE
   AI_OUTCOME
   AI_CHECK(x13, vsstatus_fs_op_in_VS_63, vsstatus_fs_op_in_VS_63_s85)
@@ -816,6 +891,14 @@ vsstatus_fs_op_in_VS_63:
   AI_LOAD(x5)  // mask of the checked bits
   and x5, x5, x7
   AI_CHECK_X5(vsstatus_fs_op_in_VS_63, vsstatus_fs_op_in_VS_63_s88)
+  // sstatus.FS = 3 while the state is reset
+  LI(x7, 24576)
+  csrc 0x100, x7  // sstatus
+  LI(x7, 24576)
+  csrs 0x100, x7  // sstatus
+  .word 0xf00000d3  // fmv.w.x f1, x0
+  .word 0x301073  // csrw fcsr, x0
+  LI(x6, 1)
   // sstatus.FS = 2
   LI(x7, 24576)
   csrc 0x100, x7  // sstatus
@@ -838,7 +921,7 @@ vsstatus_fs_op_in_VS_63:
   sret
 vsstatus_fs_op_inVS_66:
 vsstatus_fs_op_in_VS_65:
-  .word 0x101073  // csrw fflags, x0
+  .word 0x131073  // csrw fflags, x6
   RVTEST_TSBI_GOTO_SMODE
   AI_OUTCOME
   AI_CHECK(x13, vsstatus_fs_op_in_VS_65, vsstatus_fs_op_in_VS_65_s89)
@@ -851,6 +934,14 @@ vsstatus_fs_op_in_VS_65:
   AI_LOAD(x5)  // mask of the checked bits
   and x5, x5, x7
   AI_CHECK_X5(vsstatus_fs_op_in_VS_65, vsstatus_fs_op_in_VS_65_s92)
+  // sstatus.FS = 3 while the state is reset
+  LI(x7, 24576)
+  csrc 0x100, x7  // sstatus
+  LI(x7, 24576)
+  csrs 0x100, x7  // sstatus
+  .word 0xf00000d3  // fmv.w.x f1, x0
+  .word 0x301073  // csrw fcsr, x0
+  LI(x6, 1)
   // sstatus.FS = 2
   LI(x7, 24576)
   csrc 0x100, x7  // sstatus
@@ -873,7 +964,7 @@ vsstatus_fs_op_in_VS_65:
   sret
 vsstatus_fs_op_inVS_68:
 vsstatus_fs_op_in_VS_67:
-  .word 0x201073  // csrw frm, x0
+  .word 0x231073  // csrw frm, x6
   RVTEST_TSBI_GOTO_SMODE
   AI_OUTCOME
   AI_CHECK(x13, vsstatus_fs_op_in_VS_67, vsstatus_fs_op_in_VS_67_s93)
@@ -886,6 +977,14 @@ vsstatus_fs_op_in_VS_67:
   AI_LOAD(x5)  // mask of the checked bits
   and x5, x5, x7
   AI_CHECK_X5(vsstatus_fs_op_in_VS_67, vsstatus_fs_op_in_VS_67_s96)
+  // sstatus.FS = 3 while the state is reset
+  LI(x7, 24576)
+  csrc 0x100, x7  // sstatus
+  LI(x7, 24576)
+  csrs 0x100, x7  // sstatus
+  .word 0xf00000d3  // fmv.w.x f1, x0
+  .word 0x301073  // csrw fcsr, x0
+  LI(x6, 1)
   // sstatus.FS = 2
   LI(x7, 24576)
   csrc 0x100, x7  // sstatus
@@ -908,7 +1007,7 @@ vsstatus_fs_op_in_VS_67:
   sret
 vsstatus_fs_op_inVS_70:
 vsstatus_fs_op_in_VS_69:
-  .word 0x301073  // csrw fcsr, x0
+  .word 0x331073  // csrw fcsr, x6
   RVTEST_TSBI_GOTO_SMODE
   AI_OUTCOME
   AI_CHECK(x13, vsstatus_fs_op_in_VS_69, vsstatus_fs_op_in_VS_69_s97)
@@ -921,6 +1020,14 @@ vsstatus_fs_op_in_VS_69:
   AI_LOAD(x5)  // mask of the checked bits
   and x5, x5, x7
   AI_CHECK_X5(vsstatus_fs_op_in_VS_69, vsstatus_fs_op_in_VS_69_s100)
+  // sstatus.FS = 3 while the state is reset
+  LI(x7, 24576)
+  csrc 0x100, x7  // sstatus
+  LI(x7, 24576)
+  csrs 0x100, x7  // sstatus
+  .word 0xf00000d3  // fmv.w.x f1, x0
+  .word 0x301073  // csrw fcsr, x0
+  LI(x6, 1)
   // sstatus.FS = 2
   LI(x7, 24576)
   csrc 0x100, x7  // sstatus
@@ -943,7 +1050,7 @@ vsstatus_fs_op_in_VS_69:
   sret
 vsstatus_fs_op_inVS_72:
 vsstatus_fs_op_in_VS_71:
-  .word 0xf00000d3  // fmv.w.x f1, x0
+  .word 0xf00300d3  // fmv.w.x f1, x6
   RVTEST_TSBI_GOTO_SMODE
   AI_OUTCOME
   AI_CHECK(x13, vsstatus_fs_op_in_VS_71, vsstatus_fs_op_in_VS_71_s101)
@@ -956,6 +1063,14 @@ vsstatus_fs_op_in_VS_71:
   AI_LOAD(x5)  // mask of the checked bits
   and x5, x5, x7
   AI_CHECK_X5(vsstatus_fs_op_in_VS_71, vsstatus_fs_op_in_VS_71_s104)
+  // sstatus.FS = 3 while the state is reset
+  LI(x7, 24576)
+  csrc 0x100, x7  // sstatus
+  LI(x7, 24576)
+  csrs 0x100, x7  // sstatus
+  .word 0xf00000d3  // fmv.w.x f1, x0
+  .word 0x301073  // csrw fcsr, x0
+  LI(x6, 1)
   // sstatus.FS = 2
   LI(x7, 24576)
   csrc 0x100, x7  // sstatus
@@ -978,7 +1093,7 @@ vsstatus_fs_op_in_VS_71:
   sret
 vsstatus_fs_op_inVS_74:
 vsstatus_fs_op_in_VS_73:
-  .word 0x101073  // csrw fflags, x0
+  .word 0x131073  // csrw fflags, x6
   RVTEST_TSBI_GOTO_SMODE
   AI_OUTCOME
   AI_CHECK(x13, vsstatus_fs_op_in_VS_73, vsstatus_fs_op_in_VS_73_s105)
@@ -991,6 +1106,14 @@ vsstatus_fs_op_in_VS_73:
   AI_LOAD(x5)  // mask of the checked bits
   and x5, x5, x7
   AI_CHECK_X5(vsstatus_fs_op_in_VS_73, vsstatus_fs_op_in_VS_73_s108)
+  // sstatus.FS = 3 while the state is reset
+  LI(x7, 24576)
+  csrc 0x100, x7  // sstatus
+  LI(x7, 24576)
+  csrs 0x100, x7  // sstatus
+  .word 0xf00000d3  // fmv.w.x f1, x0
+  .word 0x301073  // csrw fcsr, x0
+  LI(x6, 1)
   // sstatus.FS = 2
   LI(x7, 24576)
   csrc 0x100, x7  // sstatus
@@ -1013,7 +1136,7 @@ vsstatus_fs_op_in_VS_73:
   sret
 vsstatus_fs_op_inVS_76:
 vsstatus_fs_op_in_VS_75:
-  .word 0x201073  // csrw frm, x0
+  .word 0x231073  // csrw frm, x6
   RVTEST_TSBI_GOTO_SMODE
   AI_OUTCOME
   AI_CHECK(x13, vsstatus_fs_op_in_VS_75, vsstatus_fs_op_in_VS_75_s109)
@@ -1026,6 +1149,14 @@ vsstatus_fs_op_in_VS_75:
   AI_LOAD(x5)  // mask of the checked bits
   and x5, x5, x7
   AI_CHECK_X5(vsstatus_fs_op_in_VS_75, vsstatus_fs_op_in_VS_75_s112)
+  // sstatus.FS = 3 while the state is reset
+  LI(x7, 24576)
+  csrc 0x100, x7  // sstatus
+  LI(x7, 24576)
+  csrs 0x100, x7  // sstatus
+  .word 0xf00000d3  // fmv.w.x f1, x0
+  .word 0x301073  // csrw fcsr, x0
+  LI(x6, 1)
   // sstatus.FS = 2
   LI(x7, 24576)
   csrc 0x100, x7  // sstatus
@@ -1048,7 +1179,7 @@ vsstatus_fs_op_in_VS_75:
   sret
 vsstatus_fs_op_inVS_78:
 vsstatus_fs_op_in_VS_77:
-  .word 0x301073  // csrw fcsr, x0
+  .word 0x331073  // csrw fcsr, x6
   RVTEST_TSBI_GOTO_SMODE
   AI_OUTCOME
   AI_CHECK(x13, vsstatus_fs_op_in_VS_77, vsstatus_fs_op_in_VS_77_s113)
@@ -1061,6 +1192,14 @@ vsstatus_fs_op_in_VS_77:
   AI_LOAD(x5)  // mask of the checked bits
   and x5, x5, x7
   AI_CHECK_X5(vsstatus_fs_op_in_VS_77, vsstatus_fs_op_in_VS_77_s116)
+  // sstatus.FS = 3 while the state is reset
+  LI(x7, 24576)
+  csrc 0x100, x7  // sstatus
+  LI(x7, 24576)
+  csrs 0x100, x7  // sstatus
+  .word 0xf00000d3  // fmv.w.x f1, x0
+  .word 0x301073  // csrw fcsr, x0
+  LI(x6, 1)
   // sstatus.FS = 1
   LI(x7, 24576)
   csrc 0x100, x7  // sstatus
@@ -1083,7 +1222,7 @@ vsstatus_fs_op_in_VS_77:
   sret
 vsstatus_fs_op_inVU_80:
 vsstatus_fs_op_in_VU_79:
-  .word 0xf00000d3  // fmv.w.x f1, x0
+  .word 0xf00300d3  // fmv.w.x f1, x6
   RVTEST_TSBI_GOTO_SMODE
   AI_OUTCOME
   AI_CHECK(x13, vsstatus_fs_op_in_VU_79, vsstatus_fs_op_in_VU_79_s117)
@@ -1096,6 +1235,14 @@ vsstatus_fs_op_in_VU_79:
   AI_LOAD(x5)  // mask of the checked bits
   and x5, x5, x7
   AI_CHECK_X5(vsstatus_fs_op_in_VU_79, vsstatus_fs_op_in_VU_79_s120)
+  // sstatus.FS = 3 while the state is reset
+  LI(x7, 24576)
+  csrc 0x100, x7  // sstatus
+  LI(x7, 24576)
+  csrs 0x100, x7  // sstatus
+  .word 0xf00000d3  // fmv.w.x f1, x0
+  .word 0x301073  // csrw fcsr, x0
+  LI(x6, 1)
   // sstatus.FS = 1
   LI(x7, 24576)
   csrc 0x100, x7  // sstatus
@@ -1118,7 +1265,7 @@ vsstatus_fs_op_in_VU_79:
   sret
 vsstatus_fs_op_inVU_82:
 vsstatus_fs_op_in_VU_81:
-  .word 0x101073  // csrw fflags, x0
+  .word 0x131073  // csrw fflags, x6
   RVTEST_TSBI_GOTO_SMODE
   AI_OUTCOME
   AI_CHECK(x13, vsstatus_fs_op_in_VU_81, vsstatus_fs_op_in_VU_81_s121)
@@ -1131,6 +1278,14 @@ vsstatus_fs_op_in_VU_81:
   AI_LOAD(x5)  // mask of the checked bits
   and x5, x5, x7
   AI_CHECK_X5(vsstatus_fs_op_in_VU_81, vsstatus_fs_op_in_VU_81_s124)
+  // sstatus.FS = 3 while the state is reset
+  LI(x7, 24576)
+  csrc 0x100, x7  // sstatus
+  LI(x7, 24576)
+  csrs 0x100, x7  // sstatus
+  .word 0xf00000d3  // fmv.w.x f1, x0
+  .word 0x301073  // csrw fcsr, x0
+  LI(x6, 1)
   // sstatus.FS = 1
   LI(x7, 24576)
   csrc 0x100, x7  // sstatus
@@ -1153,7 +1308,7 @@ vsstatus_fs_op_in_VU_81:
   sret
 vsstatus_fs_op_inVU_84:
 vsstatus_fs_op_in_VU_83:
-  .word 0x201073  // csrw frm, x0
+  .word 0x231073  // csrw frm, x6
   RVTEST_TSBI_GOTO_SMODE
   AI_OUTCOME
   AI_CHECK(x13, vsstatus_fs_op_in_VU_83, vsstatus_fs_op_in_VU_83_s125)
@@ -1166,6 +1321,14 @@ vsstatus_fs_op_in_VU_83:
   AI_LOAD(x5)  // mask of the checked bits
   and x5, x5, x7
   AI_CHECK_X5(vsstatus_fs_op_in_VU_83, vsstatus_fs_op_in_VU_83_s128)
+  // sstatus.FS = 3 while the state is reset
+  LI(x7, 24576)
+  csrc 0x100, x7  // sstatus
+  LI(x7, 24576)
+  csrs 0x100, x7  // sstatus
+  .word 0xf00000d3  // fmv.w.x f1, x0
+  .word 0x301073  // csrw fcsr, x0
+  LI(x6, 1)
   // sstatus.FS = 1
   LI(x7, 24576)
   csrc 0x100, x7  // sstatus
@@ -1188,7 +1351,7 @@ vsstatus_fs_op_in_VU_83:
   sret
 vsstatus_fs_op_inVU_86:
 vsstatus_fs_op_in_VU_85:
-  .word 0x301073  // csrw fcsr, x0
+  .word 0x331073  // csrw fcsr, x6
   RVTEST_TSBI_GOTO_SMODE
   AI_OUTCOME
   AI_CHECK(x13, vsstatus_fs_op_in_VU_85, vsstatus_fs_op_in_VU_85_s129)
@@ -1201,6 +1364,14 @@ vsstatus_fs_op_in_VU_85:
   AI_LOAD(x5)  // mask of the checked bits
   and x5, x5, x7
   AI_CHECK_X5(vsstatus_fs_op_in_VU_85, vsstatus_fs_op_in_VU_85_s132)
+  // sstatus.FS = 3 while the state is reset
+  LI(x7, 24576)
+  csrc 0x100, x7  // sstatus
+  LI(x7, 24576)
+  csrs 0x100, x7  // sstatus
+  .word 0xf00000d3  // fmv.w.x f1, x0
+  .word 0x301073  // csrw fcsr, x0
+  LI(x6, 1)
   // sstatus.FS = 1
   LI(x7, 24576)
   csrc 0x100, x7  // sstatus
@@ -1213,7 +1384,7 @@ vsstatus_fs_op_in_VU_85:
   csrs 0x200, x7  // vsstatus
   AI_ALLOW(1)
 vsstatus_fs_op_in_S_87:
-  .word 0xf00000d3  // fmv.w.x f1, x0
+  .word 0xf00300d3  // fmv.w.x f1, x6
   AI_OUTCOME
   AI_CHECK(x13, vsstatus_fs_op_in_S_87, vsstatus_fs_op_in_S_87_s133)
   AI_CHECK(x14, vsstatus_fs_op_in_S_87, vsstatus_fs_op_in_S_87_s134)
@@ -1225,6 +1396,14 @@ vsstatus_fs_op_in_S_87:
   AI_LOAD(x5)  // mask of the checked bits
   and x5, x5, x7
   AI_CHECK_X5(vsstatus_fs_op_in_S_87, vsstatus_fs_op_in_S_87_s136)
+  // sstatus.FS = 3 while the state is reset
+  LI(x7, 24576)
+  csrc 0x100, x7  // sstatus
+  LI(x7, 24576)
+  csrs 0x100, x7  // sstatus
+  .word 0xf00000d3  // fmv.w.x f1, x0
+  .word 0x301073  // csrw fcsr, x0
+  LI(x6, 1)
   // sstatus.FS = 1
   LI(x7, 24576)
   csrc 0x100, x7  // sstatus
@@ -1237,7 +1416,7 @@ vsstatus_fs_op_in_S_87:
   csrs 0x200, x7  // vsstatus
   AI_ALLOW(1)
 vsstatus_fs_op_in_S_88:
-  .word 0x101073  // csrw fflags, x0
+  .word 0x131073  // csrw fflags, x6
   AI_OUTCOME
   AI_CHECK(x13, vsstatus_fs_op_in_S_88, vsstatus_fs_op_in_S_88_s137)
   AI_CHECK(x14, vsstatus_fs_op_in_S_88, vsstatus_fs_op_in_S_88_s138)
@@ -1249,6 +1428,14 @@ vsstatus_fs_op_in_S_88:
   AI_LOAD(x5)  // mask of the checked bits
   and x5, x5, x7
   AI_CHECK_X5(vsstatus_fs_op_in_S_88, vsstatus_fs_op_in_S_88_s140)
+  // sstatus.FS = 3 while the state is reset
+  LI(x7, 24576)
+  csrc 0x100, x7  // sstatus
+  LI(x7, 24576)
+  csrs 0x100, x7  // sstatus
+  .word 0xf00000d3  // fmv.w.x f1, x0
+  .word 0x301073  // csrw fcsr, x0
+  LI(x6, 1)
   // sstatus.FS = 1
   LI(x7, 24576)
   csrc 0x100, x7  // sstatus
@@ -1261,7 +1448,7 @@ vsstatus_fs_op_in_S_88:
   csrs 0x200, x7  // vsstatus
   AI_ALLOW(1)
 vsstatus_fs_op_in_S_89:
-  .word 0x201073  // csrw frm, x0
+  .word 0x231073  // csrw frm, x6
   AI_OUTCOME
   AI_CHECK(x13, vsstatus_fs_op_in_S_89, vsstatus_fs_op_in_S_89_s141)
   AI_CHECK(x14, vsstatus_fs_op_in_S_89, vsstatus_fs_op_in_S_89_s142)
@@ -1273,6 +1460,14 @@ vsstatus_fs_op_in_S_89:
   AI_LOAD(x5)  // mask of the checked bits
   and x5, x5, x7
   AI_CHECK_X5(vsstatus_fs_op_in_S_89, vsstatus_fs_op_in_S_89_s144)
+  // sstatus.FS = 3 while the state is reset
+  LI(x7, 24576)
+  csrc 0x100, x7  // sstatus
+  LI(x7, 24576)
+  csrs 0x100, x7  // sstatus
+  .word 0xf00000d3  // fmv.w.x f1, x0
+  .word 0x301073  // csrw fcsr, x0
+  LI(x6, 1)
   // sstatus.FS = 1
   LI(x7, 24576)
   csrc 0x100, x7  // sstatus
@@ -1285,7 +1480,7 @@ vsstatus_fs_op_in_S_89:
   csrs 0x200, x7  // vsstatus
   AI_ALLOW(1)
 vsstatus_fs_op_in_S_90:
-  .word 0x301073  // csrw fcsr, x0
+  .word 0x331073  // csrw fcsr, x6
   AI_OUTCOME
   AI_CHECK(x13, vsstatus_fs_op_in_S_90, vsstatus_fs_op_in_S_90_s145)
   AI_CHECK(x14, vsstatus_fs_op_in_S_90, vsstatus_fs_op_in_S_90_s146)
@@ -1422,102 +1617,102 @@ vsstatus_fs_op_in_VS_43_s49: .string "vsstatus_fs_op: fmv.x.w x7, f0 (sstatus.FS
 vsstatus_fs_op_in_VS_43_s50: .string "vsstatus_fs_op: fmv.x.w x7, f0 (sstatus.FS=3, vsstatus.FS=2) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
 vsstatus_fs_op_in_VS_45_s51: .string "vsstatus_fs_op: fmv.x.w x7, f0 (sstatus.FS=3, vsstatus.FS=3) in VS-mode: number of traps; expect 0x0000000000000000"
 vsstatus_fs_op_in_VS_45_s52: .string "vsstatus_fs_op: fmv.x.w x7, f0 (sstatus.FS=3, vsstatus.FS=3) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
-vsstatus_fs_op_in_VS_47_s53: .string "vsstatus_fs_op: fmv.w.x f1, x0 (sstatus.FS=1, vsstatus.FS=1) in VS-mode: number of traps; expect 0x0000000000000000"
-vsstatus_fs_op_in_VS_47_s54: .string "vsstatus_fs_op: fmv.w.x f1, x0 (sstatus.FS=1, vsstatus.FS=1) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
-vsstatus_fs_op_in_VS_47_s55: .string "vsstatus_fs_op: fmv.w.x f1, x0 in VS-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_VS_47_s56: .string "vsstatus_fs_op: fmv.w.x f1, x0 in VS-mode sets vsstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_VS_49_s57: .string "vsstatus_fs_op: csrw fflags, x0 (sstatus.FS=1, vsstatus.FS=1) in VS-mode: number of traps; expect 0x0000000000000000"
-vsstatus_fs_op_in_VS_49_s58: .string "vsstatus_fs_op: csrw fflags, x0 (sstatus.FS=1, vsstatus.FS=1) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
-vsstatus_fs_op_in_VS_49_s59: .string "vsstatus_fs_op: csrw fflags, x0 in VS-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_VS_49_s60: .string "vsstatus_fs_op: csrw fflags, x0 in VS-mode sets vsstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_VS_51_s61: .string "vsstatus_fs_op: csrw frm, x0 (sstatus.FS=1, vsstatus.FS=1) in VS-mode: number of traps; expect 0x0000000000000000"
-vsstatus_fs_op_in_VS_51_s62: .string "vsstatus_fs_op: csrw frm, x0 (sstatus.FS=1, vsstatus.FS=1) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
-vsstatus_fs_op_in_VS_51_s63: .string "vsstatus_fs_op: csrw frm, x0 in VS-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_VS_51_s64: .string "vsstatus_fs_op: csrw frm, x0 in VS-mode sets vsstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_VS_53_s65: .string "vsstatus_fs_op: csrw fcsr, x0 (sstatus.FS=1, vsstatus.FS=1) in VS-mode: number of traps; expect 0x0000000000000000"
-vsstatus_fs_op_in_VS_53_s66: .string "vsstatus_fs_op: csrw fcsr, x0 (sstatus.FS=1, vsstatus.FS=1) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
-vsstatus_fs_op_in_VS_53_s67: .string "vsstatus_fs_op: csrw fcsr, x0 in VS-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_VS_53_s68: .string "vsstatus_fs_op: csrw fcsr, x0 in VS-mode sets vsstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_VS_55_s69: .string "vsstatus_fs_op: fmv.w.x f1, x0 (sstatus.FS=1, vsstatus.FS=2) in VS-mode: number of traps; expect 0x0000000000000000"
-vsstatus_fs_op_in_VS_55_s70: .string "vsstatus_fs_op: fmv.w.x f1, x0 (sstatus.FS=1, vsstatus.FS=2) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
-vsstatus_fs_op_in_VS_55_s71: .string "vsstatus_fs_op: fmv.w.x f1, x0 in VS-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_VS_55_s72: .string "vsstatus_fs_op: fmv.w.x f1, x0 in VS-mode sets vsstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_VS_57_s73: .string "vsstatus_fs_op: csrw fflags, x0 (sstatus.FS=1, vsstatus.FS=2) in VS-mode: number of traps; expect 0x0000000000000000"
-vsstatus_fs_op_in_VS_57_s74: .string "vsstatus_fs_op: csrw fflags, x0 (sstatus.FS=1, vsstatus.FS=2) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
-vsstatus_fs_op_in_VS_57_s75: .string "vsstatus_fs_op: csrw fflags, x0 in VS-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_VS_57_s76: .string "vsstatus_fs_op: csrw fflags, x0 in VS-mode sets vsstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_VS_59_s77: .string "vsstatus_fs_op: csrw frm, x0 (sstatus.FS=1, vsstatus.FS=2) in VS-mode: number of traps; expect 0x0000000000000000"
-vsstatus_fs_op_in_VS_59_s78: .string "vsstatus_fs_op: csrw frm, x0 (sstatus.FS=1, vsstatus.FS=2) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
-vsstatus_fs_op_in_VS_59_s79: .string "vsstatus_fs_op: csrw frm, x0 in VS-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_VS_59_s80: .string "vsstatus_fs_op: csrw frm, x0 in VS-mode sets vsstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_VS_61_s81: .string "vsstatus_fs_op: csrw fcsr, x0 (sstatus.FS=1, vsstatus.FS=2) in VS-mode: number of traps; expect 0x0000000000000000"
-vsstatus_fs_op_in_VS_61_s82: .string "vsstatus_fs_op: csrw fcsr, x0 (sstatus.FS=1, vsstatus.FS=2) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
-vsstatus_fs_op_in_VS_61_s83: .string "vsstatus_fs_op: csrw fcsr, x0 in VS-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_VS_61_s84: .string "vsstatus_fs_op: csrw fcsr, x0 in VS-mode sets vsstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_VS_63_s85: .string "vsstatus_fs_op: fmv.w.x f1, x0 (sstatus.FS=2, vsstatus.FS=1) in VS-mode: number of traps; expect 0x0000000000000000"
-vsstatus_fs_op_in_VS_63_s86: .string "vsstatus_fs_op: fmv.w.x f1, x0 (sstatus.FS=2, vsstatus.FS=1) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
-vsstatus_fs_op_in_VS_63_s87: .string "vsstatus_fs_op: fmv.w.x f1, x0 in VS-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_VS_63_s88: .string "vsstatus_fs_op: fmv.w.x f1, x0 in VS-mode sets vsstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_VS_65_s89: .string "vsstatus_fs_op: csrw fflags, x0 (sstatus.FS=2, vsstatus.FS=1) in VS-mode: number of traps; expect 0x0000000000000000"
-vsstatus_fs_op_in_VS_65_s90: .string "vsstatus_fs_op: csrw fflags, x0 (sstatus.FS=2, vsstatus.FS=1) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
-vsstatus_fs_op_in_VS_65_s91: .string "vsstatus_fs_op: csrw fflags, x0 in VS-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_VS_65_s92: .string "vsstatus_fs_op: csrw fflags, x0 in VS-mode sets vsstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_VS_67_s93: .string "vsstatus_fs_op: csrw frm, x0 (sstatus.FS=2, vsstatus.FS=1) in VS-mode: number of traps; expect 0x0000000000000000"
-vsstatus_fs_op_in_VS_67_s94: .string "vsstatus_fs_op: csrw frm, x0 (sstatus.FS=2, vsstatus.FS=1) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
-vsstatus_fs_op_in_VS_67_s95: .string "vsstatus_fs_op: csrw frm, x0 in VS-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_VS_67_s96: .string "vsstatus_fs_op: csrw frm, x0 in VS-mode sets vsstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_VS_69_s97: .string "vsstatus_fs_op: csrw fcsr, x0 (sstatus.FS=2, vsstatus.FS=1) in VS-mode: number of traps; expect 0x0000000000000000"
-vsstatus_fs_op_in_VS_69_s98: .string "vsstatus_fs_op: csrw fcsr, x0 (sstatus.FS=2, vsstatus.FS=1) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
-vsstatus_fs_op_in_VS_69_s99: .string "vsstatus_fs_op: csrw fcsr, x0 in VS-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_VS_69_s100: .string "vsstatus_fs_op: csrw fcsr, x0 in VS-mode sets vsstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_VS_71_s101: .string "vsstatus_fs_op: fmv.w.x f1, x0 (sstatus.FS=2, vsstatus.FS=2) in VS-mode: number of traps; expect 0x0000000000000000"
-vsstatus_fs_op_in_VS_71_s102: .string "vsstatus_fs_op: fmv.w.x f1, x0 (sstatus.FS=2, vsstatus.FS=2) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
-vsstatus_fs_op_in_VS_71_s103: .string "vsstatus_fs_op: fmv.w.x f1, x0 in VS-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_VS_71_s104: .string "vsstatus_fs_op: fmv.w.x f1, x0 in VS-mode sets vsstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_VS_73_s105: .string "vsstatus_fs_op: csrw fflags, x0 (sstatus.FS=2, vsstatus.FS=2) in VS-mode: number of traps; expect 0x0000000000000000"
-vsstatus_fs_op_in_VS_73_s106: .string "vsstatus_fs_op: csrw fflags, x0 (sstatus.FS=2, vsstatus.FS=2) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
-vsstatus_fs_op_in_VS_73_s107: .string "vsstatus_fs_op: csrw fflags, x0 in VS-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_VS_73_s108: .string "vsstatus_fs_op: csrw fflags, x0 in VS-mode sets vsstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_VS_75_s109: .string "vsstatus_fs_op: csrw frm, x0 (sstatus.FS=2, vsstatus.FS=2) in VS-mode: number of traps; expect 0x0000000000000000"
-vsstatus_fs_op_in_VS_75_s110: .string "vsstatus_fs_op: csrw frm, x0 (sstatus.FS=2, vsstatus.FS=2) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
-vsstatus_fs_op_in_VS_75_s111: .string "vsstatus_fs_op: csrw frm, x0 in VS-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_VS_75_s112: .string "vsstatus_fs_op: csrw frm, x0 in VS-mode sets vsstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_VS_77_s113: .string "vsstatus_fs_op: csrw fcsr, x0 (sstatus.FS=2, vsstatus.FS=2) in VS-mode: number of traps; expect 0x0000000000000000"
-vsstatus_fs_op_in_VS_77_s114: .string "vsstatus_fs_op: csrw fcsr, x0 (sstatus.FS=2, vsstatus.FS=2) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
-vsstatus_fs_op_in_VS_77_s115: .string "vsstatus_fs_op: csrw fcsr, x0 in VS-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_VS_77_s116: .string "vsstatus_fs_op: csrw fcsr, x0 in VS-mode sets vsstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_VU_79_s117: .string "vsstatus_fs_op: fmv.w.x f1, x0 (sstatus.FS=1, vsstatus.FS=2) in VU-mode: number of traps; expect 0x0000000000000000"
-vsstatus_fs_op_in_VU_79_s118: .string "vsstatus_fs_op: fmv.w.x f1, x0 (sstatus.FS=1, vsstatus.FS=2) in VU-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
-vsstatus_fs_op_in_VU_79_s119: .string "vsstatus_fs_op: fmv.w.x f1, x0 in VU-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_VU_79_s120: .string "vsstatus_fs_op: fmv.w.x f1, x0 in VU-mode sets vsstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_VU_81_s121: .string "vsstatus_fs_op: csrw fflags, x0 (sstatus.FS=1, vsstatus.FS=2) in VU-mode: number of traps; expect 0x0000000000000000"
-vsstatus_fs_op_in_VU_81_s122: .string "vsstatus_fs_op: csrw fflags, x0 (sstatus.FS=1, vsstatus.FS=2) in VU-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
-vsstatus_fs_op_in_VU_81_s123: .string "vsstatus_fs_op: csrw fflags, x0 in VU-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_VU_81_s124: .string "vsstatus_fs_op: csrw fflags, x0 in VU-mode sets vsstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_VU_83_s125: .string "vsstatus_fs_op: csrw frm, x0 (sstatus.FS=1, vsstatus.FS=2) in VU-mode: number of traps; expect 0x0000000000000000"
-vsstatus_fs_op_in_VU_83_s126: .string "vsstatus_fs_op: csrw frm, x0 (sstatus.FS=1, vsstatus.FS=2) in VU-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
-vsstatus_fs_op_in_VU_83_s127: .string "vsstatus_fs_op: csrw frm, x0 in VU-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_VU_83_s128: .string "vsstatus_fs_op: csrw frm, x0 in VU-mode sets vsstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_VU_85_s129: .string "vsstatus_fs_op: csrw fcsr, x0 (sstatus.FS=1, vsstatus.FS=2) in VU-mode: number of traps; expect 0x0000000000000000"
-vsstatus_fs_op_in_VU_85_s130: .string "vsstatus_fs_op: csrw fcsr, x0 (sstatus.FS=1, vsstatus.FS=2) in VU-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
-vsstatus_fs_op_in_VU_85_s131: .string "vsstatus_fs_op: csrw fcsr, x0 in VU-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_VU_85_s132: .string "vsstatus_fs_op: csrw fcsr, x0 in VU-mode sets vsstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_S_87_s133: .string "vsstatus_fs_op: fmv.w.x f1, x0 (HS-mode, sstatus.FS=1, vsstatus.FS=1) in S-mode: number of traps; expect 0x0000000000000000"
-vsstatus_fs_op_in_S_87_s134: .string "vsstatus_fs_op: fmv.w.x f1, x0 (HS-mode, sstatus.FS=1, vsstatus.FS=1) in S-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
-vsstatus_fs_op_in_S_87_s135: .string "vsstatus_fs_op: fmv.w.x f1, x0 in HS-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_S_87_s136: .string "vsstatus_fs_op: fmv.w.x f1, x0 in HS-mode leaves vsstatus.FS (V=0); expect 0x0000000000002000"
-vsstatus_fs_op_in_S_88_s137: .string "vsstatus_fs_op: csrw fflags, x0 (HS-mode, sstatus.FS=1, vsstatus.FS=1) in S-mode: number of traps; expect 0x0000000000000000"
-vsstatus_fs_op_in_S_88_s138: .string "vsstatus_fs_op: csrw fflags, x0 (HS-mode, sstatus.FS=1, vsstatus.FS=1) in S-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
-vsstatus_fs_op_in_S_88_s139: .string "vsstatus_fs_op: csrw fflags, x0 in HS-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_S_88_s140: .string "vsstatus_fs_op: csrw fflags, x0 in HS-mode leaves vsstatus.FS (V=0); expect 0x0000000000002000"
-vsstatus_fs_op_in_S_89_s141: .string "vsstatus_fs_op: csrw frm, x0 (HS-mode, sstatus.FS=1, vsstatus.FS=1) in S-mode: number of traps; expect 0x0000000000000000"
-vsstatus_fs_op_in_S_89_s142: .string "vsstatus_fs_op: csrw frm, x0 (HS-mode, sstatus.FS=1, vsstatus.FS=1) in S-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
-vsstatus_fs_op_in_S_89_s143: .string "vsstatus_fs_op: csrw frm, x0 in HS-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_S_89_s144: .string "vsstatus_fs_op: csrw frm, x0 in HS-mode leaves vsstatus.FS (V=0); expect 0x0000000000002000"
-vsstatus_fs_op_in_S_90_s145: .string "vsstatus_fs_op: csrw fcsr, x0 (HS-mode, sstatus.FS=1, vsstatus.FS=1) in S-mode: number of traps; expect 0x0000000000000000"
-vsstatus_fs_op_in_S_90_s146: .string "vsstatus_fs_op: csrw fcsr, x0 (HS-mode, sstatus.FS=1, vsstatus.FS=1) in S-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
-vsstatus_fs_op_in_S_90_s147: .string "vsstatus_fs_op: csrw fcsr, x0 in HS-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
-vsstatus_fs_op_in_S_90_s148: .string "vsstatus_fs_op: csrw fcsr, x0 in HS-mode leaves vsstatus.FS (V=0); expect 0x0000000000002000"
+vsstatus_fs_op_in_VS_47_s53: .string "vsstatus_fs_op: fmv.w.x f1, x6 (sstatus.FS=1, vsstatus.FS=1) in VS-mode: number of traps; expect 0x0000000000000000"
+vsstatus_fs_op_in_VS_47_s54: .string "vsstatus_fs_op: fmv.w.x f1, x6 (sstatus.FS=1, vsstatus.FS=1) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
+vsstatus_fs_op_in_VS_47_s55: .string "vsstatus_fs_op: fmv.w.x f1, x6 in VS-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_VS_47_s56: .string "vsstatus_fs_op: fmv.w.x f1, x6 in VS-mode sets vsstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_VS_49_s57: .string "vsstatus_fs_op: csrw fflags, x6 (sstatus.FS=1, vsstatus.FS=1) in VS-mode: number of traps; expect 0x0000000000000000"
+vsstatus_fs_op_in_VS_49_s58: .string "vsstatus_fs_op: csrw fflags, x6 (sstatus.FS=1, vsstatus.FS=1) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
+vsstatus_fs_op_in_VS_49_s59: .string "vsstatus_fs_op: csrw fflags, x6 in VS-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_VS_49_s60: .string "vsstatus_fs_op: csrw fflags, x6 in VS-mode sets vsstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_VS_51_s61: .string "vsstatus_fs_op: csrw frm, x6 (sstatus.FS=1, vsstatus.FS=1) in VS-mode: number of traps; expect 0x0000000000000000"
+vsstatus_fs_op_in_VS_51_s62: .string "vsstatus_fs_op: csrw frm, x6 (sstatus.FS=1, vsstatus.FS=1) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
+vsstatus_fs_op_in_VS_51_s63: .string "vsstatus_fs_op: csrw frm, x6 in VS-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_VS_51_s64: .string "vsstatus_fs_op: csrw frm, x6 in VS-mode sets vsstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_VS_53_s65: .string "vsstatus_fs_op: csrw fcsr, x6 (sstatus.FS=1, vsstatus.FS=1) in VS-mode: number of traps; expect 0x0000000000000000"
+vsstatus_fs_op_in_VS_53_s66: .string "vsstatus_fs_op: csrw fcsr, x6 (sstatus.FS=1, vsstatus.FS=1) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
+vsstatus_fs_op_in_VS_53_s67: .string "vsstatus_fs_op: csrw fcsr, x6 in VS-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_VS_53_s68: .string "vsstatus_fs_op: csrw fcsr, x6 in VS-mode sets vsstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_VS_55_s69: .string "vsstatus_fs_op: fmv.w.x f1, x6 (sstatus.FS=1, vsstatus.FS=2) in VS-mode: number of traps; expect 0x0000000000000000"
+vsstatus_fs_op_in_VS_55_s70: .string "vsstatus_fs_op: fmv.w.x f1, x6 (sstatus.FS=1, vsstatus.FS=2) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
+vsstatus_fs_op_in_VS_55_s71: .string "vsstatus_fs_op: fmv.w.x f1, x6 in VS-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_VS_55_s72: .string "vsstatus_fs_op: fmv.w.x f1, x6 in VS-mode sets vsstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_VS_57_s73: .string "vsstatus_fs_op: csrw fflags, x6 (sstatus.FS=1, vsstatus.FS=2) in VS-mode: number of traps; expect 0x0000000000000000"
+vsstatus_fs_op_in_VS_57_s74: .string "vsstatus_fs_op: csrw fflags, x6 (sstatus.FS=1, vsstatus.FS=2) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
+vsstatus_fs_op_in_VS_57_s75: .string "vsstatus_fs_op: csrw fflags, x6 in VS-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_VS_57_s76: .string "vsstatus_fs_op: csrw fflags, x6 in VS-mode sets vsstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_VS_59_s77: .string "vsstatus_fs_op: csrw frm, x6 (sstatus.FS=1, vsstatus.FS=2) in VS-mode: number of traps; expect 0x0000000000000000"
+vsstatus_fs_op_in_VS_59_s78: .string "vsstatus_fs_op: csrw frm, x6 (sstatus.FS=1, vsstatus.FS=2) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
+vsstatus_fs_op_in_VS_59_s79: .string "vsstatus_fs_op: csrw frm, x6 in VS-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_VS_59_s80: .string "vsstatus_fs_op: csrw frm, x6 in VS-mode sets vsstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_VS_61_s81: .string "vsstatus_fs_op: csrw fcsr, x6 (sstatus.FS=1, vsstatus.FS=2) in VS-mode: number of traps; expect 0x0000000000000000"
+vsstatus_fs_op_in_VS_61_s82: .string "vsstatus_fs_op: csrw fcsr, x6 (sstatus.FS=1, vsstatus.FS=2) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
+vsstatus_fs_op_in_VS_61_s83: .string "vsstatus_fs_op: csrw fcsr, x6 in VS-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_VS_61_s84: .string "vsstatus_fs_op: csrw fcsr, x6 in VS-mode sets vsstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_VS_63_s85: .string "vsstatus_fs_op: fmv.w.x f1, x6 (sstatus.FS=2, vsstatus.FS=1) in VS-mode: number of traps; expect 0x0000000000000000"
+vsstatus_fs_op_in_VS_63_s86: .string "vsstatus_fs_op: fmv.w.x f1, x6 (sstatus.FS=2, vsstatus.FS=1) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
+vsstatus_fs_op_in_VS_63_s87: .string "vsstatus_fs_op: fmv.w.x f1, x6 in VS-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_VS_63_s88: .string "vsstatus_fs_op: fmv.w.x f1, x6 in VS-mode sets vsstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_VS_65_s89: .string "vsstatus_fs_op: csrw fflags, x6 (sstatus.FS=2, vsstatus.FS=1) in VS-mode: number of traps; expect 0x0000000000000000"
+vsstatus_fs_op_in_VS_65_s90: .string "vsstatus_fs_op: csrw fflags, x6 (sstatus.FS=2, vsstatus.FS=1) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
+vsstatus_fs_op_in_VS_65_s91: .string "vsstatus_fs_op: csrw fflags, x6 in VS-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_VS_65_s92: .string "vsstatus_fs_op: csrw fflags, x6 in VS-mode sets vsstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_VS_67_s93: .string "vsstatus_fs_op: csrw frm, x6 (sstatus.FS=2, vsstatus.FS=1) in VS-mode: number of traps; expect 0x0000000000000000"
+vsstatus_fs_op_in_VS_67_s94: .string "vsstatus_fs_op: csrw frm, x6 (sstatus.FS=2, vsstatus.FS=1) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
+vsstatus_fs_op_in_VS_67_s95: .string "vsstatus_fs_op: csrw frm, x6 in VS-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_VS_67_s96: .string "vsstatus_fs_op: csrw frm, x6 in VS-mode sets vsstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_VS_69_s97: .string "vsstatus_fs_op: csrw fcsr, x6 (sstatus.FS=2, vsstatus.FS=1) in VS-mode: number of traps; expect 0x0000000000000000"
+vsstatus_fs_op_in_VS_69_s98: .string "vsstatus_fs_op: csrw fcsr, x6 (sstatus.FS=2, vsstatus.FS=1) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
+vsstatus_fs_op_in_VS_69_s99: .string "vsstatus_fs_op: csrw fcsr, x6 in VS-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_VS_69_s100: .string "vsstatus_fs_op: csrw fcsr, x6 in VS-mode sets vsstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_VS_71_s101: .string "vsstatus_fs_op: fmv.w.x f1, x6 (sstatus.FS=2, vsstatus.FS=2) in VS-mode: number of traps; expect 0x0000000000000000"
+vsstatus_fs_op_in_VS_71_s102: .string "vsstatus_fs_op: fmv.w.x f1, x6 (sstatus.FS=2, vsstatus.FS=2) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
+vsstatus_fs_op_in_VS_71_s103: .string "vsstatus_fs_op: fmv.w.x f1, x6 in VS-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_VS_71_s104: .string "vsstatus_fs_op: fmv.w.x f1, x6 in VS-mode sets vsstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_VS_73_s105: .string "vsstatus_fs_op: csrw fflags, x6 (sstatus.FS=2, vsstatus.FS=2) in VS-mode: number of traps; expect 0x0000000000000000"
+vsstatus_fs_op_in_VS_73_s106: .string "vsstatus_fs_op: csrw fflags, x6 (sstatus.FS=2, vsstatus.FS=2) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
+vsstatus_fs_op_in_VS_73_s107: .string "vsstatus_fs_op: csrw fflags, x6 in VS-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_VS_73_s108: .string "vsstatus_fs_op: csrw fflags, x6 in VS-mode sets vsstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_VS_75_s109: .string "vsstatus_fs_op: csrw frm, x6 (sstatus.FS=2, vsstatus.FS=2) in VS-mode: number of traps; expect 0x0000000000000000"
+vsstatus_fs_op_in_VS_75_s110: .string "vsstatus_fs_op: csrw frm, x6 (sstatus.FS=2, vsstatus.FS=2) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
+vsstatus_fs_op_in_VS_75_s111: .string "vsstatus_fs_op: csrw frm, x6 in VS-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_VS_75_s112: .string "vsstatus_fs_op: csrw frm, x6 in VS-mode sets vsstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_VS_77_s113: .string "vsstatus_fs_op: csrw fcsr, x6 (sstatus.FS=2, vsstatus.FS=2) in VS-mode: number of traps; expect 0x0000000000000000"
+vsstatus_fs_op_in_VS_77_s114: .string "vsstatus_fs_op: csrw fcsr, x6 (sstatus.FS=2, vsstatus.FS=2) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
+vsstatus_fs_op_in_VS_77_s115: .string "vsstatus_fs_op: csrw fcsr, x6 in VS-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_VS_77_s116: .string "vsstatus_fs_op: csrw fcsr, x6 in VS-mode sets vsstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_VU_79_s117: .string "vsstatus_fs_op: fmv.w.x f1, x6 (sstatus.FS=1, vsstatus.FS=2) in VU-mode: number of traps; expect 0x0000000000000000"
+vsstatus_fs_op_in_VU_79_s118: .string "vsstatus_fs_op: fmv.w.x f1, x6 (sstatus.FS=1, vsstatus.FS=2) in VU-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
+vsstatus_fs_op_in_VU_79_s119: .string "vsstatus_fs_op: fmv.w.x f1, x6 in VU-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_VU_79_s120: .string "vsstatus_fs_op: fmv.w.x f1, x6 in VU-mode sets vsstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_VU_81_s121: .string "vsstatus_fs_op: csrw fflags, x6 (sstatus.FS=1, vsstatus.FS=2) in VU-mode: number of traps; expect 0x0000000000000000"
+vsstatus_fs_op_in_VU_81_s122: .string "vsstatus_fs_op: csrw fflags, x6 (sstatus.FS=1, vsstatus.FS=2) in VU-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
+vsstatus_fs_op_in_VU_81_s123: .string "vsstatus_fs_op: csrw fflags, x6 in VU-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_VU_81_s124: .string "vsstatus_fs_op: csrw fflags, x6 in VU-mode sets vsstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_VU_83_s125: .string "vsstatus_fs_op: csrw frm, x6 (sstatus.FS=1, vsstatus.FS=2) in VU-mode: number of traps; expect 0x0000000000000000"
+vsstatus_fs_op_in_VU_83_s126: .string "vsstatus_fs_op: csrw frm, x6 (sstatus.FS=1, vsstatus.FS=2) in VU-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
+vsstatus_fs_op_in_VU_83_s127: .string "vsstatus_fs_op: csrw frm, x6 in VU-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_VU_83_s128: .string "vsstatus_fs_op: csrw frm, x6 in VU-mode sets vsstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_VU_85_s129: .string "vsstatus_fs_op: csrw fcsr, x6 (sstatus.FS=1, vsstatus.FS=2) in VU-mode: number of traps; expect 0x0000000000000000"
+vsstatus_fs_op_in_VU_85_s130: .string "vsstatus_fs_op: csrw fcsr, x6 (sstatus.FS=1, vsstatus.FS=2) in VU-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
+vsstatus_fs_op_in_VU_85_s131: .string "vsstatus_fs_op: csrw fcsr, x6 in VU-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_VU_85_s132: .string "vsstatus_fs_op: csrw fcsr, x6 in VU-mode sets vsstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_S_87_s133: .string "vsstatus_fs_op: fmv.w.x f1, x6 (HS-mode, sstatus.FS=1, vsstatus.FS=1) in S-mode: number of traps; expect 0x0000000000000000"
+vsstatus_fs_op_in_S_87_s134: .string "vsstatus_fs_op: fmv.w.x f1, x6 (HS-mode, sstatus.FS=1, vsstatus.FS=1) in S-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
+vsstatus_fs_op_in_S_87_s135: .string "vsstatus_fs_op: fmv.w.x f1, x6 in HS-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_S_87_s136: .string "vsstatus_fs_op: fmv.w.x f1, x6 in HS-mode leaves vsstatus.FS (V=0); expect 0x0000000000002000"
+vsstatus_fs_op_in_S_88_s137: .string "vsstatus_fs_op: csrw fflags, x6 (HS-mode, sstatus.FS=1, vsstatus.FS=1) in S-mode: number of traps; expect 0x0000000000000000"
+vsstatus_fs_op_in_S_88_s138: .string "vsstatus_fs_op: csrw fflags, x6 (HS-mode, sstatus.FS=1, vsstatus.FS=1) in S-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
+vsstatus_fs_op_in_S_88_s139: .string "vsstatus_fs_op: csrw fflags, x6 in HS-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_S_88_s140: .string "vsstatus_fs_op: csrw fflags, x6 in HS-mode leaves vsstatus.FS (V=0); expect 0x0000000000002000"
+vsstatus_fs_op_in_S_89_s141: .string "vsstatus_fs_op: csrw frm, x6 (HS-mode, sstatus.FS=1, vsstatus.FS=1) in S-mode: number of traps; expect 0x0000000000000000"
+vsstatus_fs_op_in_S_89_s142: .string "vsstatus_fs_op: csrw frm, x6 (HS-mode, sstatus.FS=1, vsstatus.FS=1) in S-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
+vsstatus_fs_op_in_S_89_s143: .string "vsstatus_fs_op: csrw frm, x6 in HS-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_S_89_s144: .string "vsstatus_fs_op: csrw frm, x6 in HS-mode leaves vsstatus.FS (V=0); expect 0x0000000000002000"
+vsstatus_fs_op_in_S_90_s145: .string "vsstatus_fs_op: csrw fcsr, x6 (HS-mode, sstatus.FS=1, vsstatus.FS=1) in S-mode: number of traps; expect 0x0000000000000000"
+vsstatus_fs_op_in_S_90_s146: .string "vsstatus_fs_op: csrw fcsr, x6 (HS-mode, sstatus.FS=1, vsstatus.FS=1) in S-mode: outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
+vsstatus_fs_op_in_S_90_s147: .string "vsstatus_fs_op: csrw fcsr, x6 in HS-mode sets sstatus.FS to Dirty; expect 0x0000000000006000"
+vsstatus_fs_op_in_S_90_s148: .string "vsstatus_fs_op: csrw fcsr, x6 in HS-mode leaves vsstatus.FS (V=0); expect 0x0000000000002000"
 #endif
 #else
 #if (defined(F_SUPPORTED))
@@ -1627,102 +1822,102 @@ vsstatus_fs_op_in_VS_43_s49: .string "vsstatus_fs_op: fmv.x.w x7, f0 (sstatus.FS
 vsstatus_fs_op_in_VS_43_s50: .string "vsstatus_fs_op: fmv.x.w x7, f0 (sstatus.FS=3, vsstatus.FS=2) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
 vsstatus_fs_op_in_VS_45_s51: .string "vsstatus_fs_op: fmv.x.w x7, f0 (sstatus.FS=3, vsstatus.FS=3) in VS-mode: number of traps; expect 0x00000000"
 vsstatus_fs_op_in_VS_45_s52: .string "vsstatus_fs_op: fmv.x.w x7, f0 (sstatus.FS=3, vsstatus.FS=3) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
-vsstatus_fs_op_in_VS_47_s53: .string "vsstatus_fs_op: fmv.w.x f1, x0 (sstatus.FS=1, vsstatus.FS=1) in VS-mode: number of traps; expect 0x00000000"
-vsstatus_fs_op_in_VS_47_s54: .string "vsstatus_fs_op: fmv.w.x f1, x0 (sstatus.FS=1, vsstatus.FS=1) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
-vsstatus_fs_op_in_VS_47_s55: .string "vsstatus_fs_op: fmv.w.x f1, x0 in VS-mode sets sstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_VS_47_s56: .string "vsstatus_fs_op: fmv.w.x f1, x0 in VS-mode sets vsstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_VS_49_s57: .string "vsstatus_fs_op: csrw fflags, x0 (sstatus.FS=1, vsstatus.FS=1) in VS-mode: number of traps; expect 0x00000000"
-vsstatus_fs_op_in_VS_49_s58: .string "vsstatus_fs_op: csrw fflags, x0 (sstatus.FS=1, vsstatus.FS=1) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
-vsstatus_fs_op_in_VS_49_s59: .string "vsstatus_fs_op: csrw fflags, x0 in VS-mode sets sstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_VS_49_s60: .string "vsstatus_fs_op: csrw fflags, x0 in VS-mode sets vsstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_VS_51_s61: .string "vsstatus_fs_op: csrw frm, x0 (sstatus.FS=1, vsstatus.FS=1) in VS-mode: number of traps; expect 0x00000000"
-vsstatus_fs_op_in_VS_51_s62: .string "vsstatus_fs_op: csrw frm, x0 (sstatus.FS=1, vsstatus.FS=1) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
-vsstatus_fs_op_in_VS_51_s63: .string "vsstatus_fs_op: csrw frm, x0 in VS-mode sets sstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_VS_51_s64: .string "vsstatus_fs_op: csrw frm, x0 in VS-mode sets vsstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_VS_53_s65: .string "vsstatus_fs_op: csrw fcsr, x0 (sstatus.FS=1, vsstatus.FS=1) in VS-mode: number of traps; expect 0x00000000"
-vsstatus_fs_op_in_VS_53_s66: .string "vsstatus_fs_op: csrw fcsr, x0 (sstatus.FS=1, vsstatus.FS=1) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
-vsstatus_fs_op_in_VS_53_s67: .string "vsstatus_fs_op: csrw fcsr, x0 in VS-mode sets sstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_VS_53_s68: .string "vsstatus_fs_op: csrw fcsr, x0 in VS-mode sets vsstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_VS_55_s69: .string "vsstatus_fs_op: fmv.w.x f1, x0 (sstatus.FS=1, vsstatus.FS=2) in VS-mode: number of traps; expect 0x00000000"
-vsstatus_fs_op_in_VS_55_s70: .string "vsstatus_fs_op: fmv.w.x f1, x0 (sstatus.FS=1, vsstatus.FS=2) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
-vsstatus_fs_op_in_VS_55_s71: .string "vsstatus_fs_op: fmv.w.x f1, x0 in VS-mode sets sstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_VS_55_s72: .string "vsstatus_fs_op: fmv.w.x f1, x0 in VS-mode sets vsstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_VS_57_s73: .string "vsstatus_fs_op: csrw fflags, x0 (sstatus.FS=1, vsstatus.FS=2) in VS-mode: number of traps; expect 0x00000000"
-vsstatus_fs_op_in_VS_57_s74: .string "vsstatus_fs_op: csrw fflags, x0 (sstatus.FS=1, vsstatus.FS=2) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
-vsstatus_fs_op_in_VS_57_s75: .string "vsstatus_fs_op: csrw fflags, x0 in VS-mode sets sstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_VS_57_s76: .string "vsstatus_fs_op: csrw fflags, x0 in VS-mode sets vsstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_VS_59_s77: .string "vsstatus_fs_op: csrw frm, x0 (sstatus.FS=1, vsstatus.FS=2) in VS-mode: number of traps; expect 0x00000000"
-vsstatus_fs_op_in_VS_59_s78: .string "vsstatus_fs_op: csrw frm, x0 (sstatus.FS=1, vsstatus.FS=2) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
-vsstatus_fs_op_in_VS_59_s79: .string "vsstatus_fs_op: csrw frm, x0 in VS-mode sets sstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_VS_59_s80: .string "vsstatus_fs_op: csrw frm, x0 in VS-mode sets vsstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_VS_61_s81: .string "vsstatus_fs_op: csrw fcsr, x0 (sstatus.FS=1, vsstatus.FS=2) in VS-mode: number of traps; expect 0x00000000"
-vsstatus_fs_op_in_VS_61_s82: .string "vsstatus_fs_op: csrw fcsr, x0 (sstatus.FS=1, vsstatus.FS=2) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
-vsstatus_fs_op_in_VS_61_s83: .string "vsstatus_fs_op: csrw fcsr, x0 in VS-mode sets sstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_VS_61_s84: .string "vsstatus_fs_op: csrw fcsr, x0 in VS-mode sets vsstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_VS_63_s85: .string "vsstatus_fs_op: fmv.w.x f1, x0 (sstatus.FS=2, vsstatus.FS=1) in VS-mode: number of traps; expect 0x00000000"
-vsstatus_fs_op_in_VS_63_s86: .string "vsstatus_fs_op: fmv.w.x f1, x0 (sstatus.FS=2, vsstatus.FS=1) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
-vsstatus_fs_op_in_VS_63_s87: .string "vsstatus_fs_op: fmv.w.x f1, x0 in VS-mode sets sstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_VS_63_s88: .string "vsstatus_fs_op: fmv.w.x f1, x0 in VS-mode sets vsstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_VS_65_s89: .string "vsstatus_fs_op: csrw fflags, x0 (sstatus.FS=2, vsstatus.FS=1) in VS-mode: number of traps; expect 0x00000000"
-vsstatus_fs_op_in_VS_65_s90: .string "vsstatus_fs_op: csrw fflags, x0 (sstatus.FS=2, vsstatus.FS=1) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
-vsstatus_fs_op_in_VS_65_s91: .string "vsstatus_fs_op: csrw fflags, x0 in VS-mode sets sstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_VS_65_s92: .string "vsstatus_fs_op: csrw fflags, x0 in VS-mode sets vsstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_VS_67_s93: .string "vsstatus_fs_op: csrw frm, x0 (sstatus.FS=2, vsstatus.FS=1) in VS-mode: number of traps; expect 0x00000000"
-vsstatus_fs_op_in_VS_67_s94: .string "vsstatus_fs_op: csrw frm, x0 (sstatus.FS=2, vsstatus.FS=1) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
-vsstatus_fs_op_in_VS_67_s95: .string "vsstatus_fs_op: csrw frm, x0 in VS-mode sets sstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_VS_67_s96: .string "vsstatus_fs_op: csrw frm, x0 in VS-mode sets vsstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_VS_69_s97: .string "vsstatus_fs_op: csrw fcsr, x0 (sstatus.FS=2, vsstatus.FS=1) in VS-mode: number of traps; expect 0x00000000"
-vsstatus_fs_op_in_VS_69_s98: .string "vsstatus_fs_op: csrw fcsr, x0 (sstatus.FS=2, vsstatus.FS=1) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
-vsstatus_fs_op_in_VS_69_s99: .string "vsstatus_fs_op: csrw fcsr, x0 in VS-mode sets sstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_VS_69_s100: .string "vsstatus_fs_op: csrw fcsr, x0 in VS-mode sets vsstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_VS_71_s101: .string "vsstatus_fs_op: fmv.w.x f1, x0 (sstatus.FS=2, vsstatus.FS=2) in VS-mode: number of traps; expect 0x00000000"
-vsstatus_fs_op_in_VS_71_s102: .string "vsstatus_fs_op: fmv.w.x f1, x0 (sstatus.FS=2, vsstatus.FS=2) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
-vsstatus_fs_op_in_VS_71_s103: .string "vsstatus_fs_op: fmv.w.x f1, x0 in VS-mode sets sstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_VS_71_s104: .string "vsstatus_fs_op: fmv.w.x f1, x0 in VS-mode sets vsstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_VS_73_s105: .string "vsstatus_fs_op: csrw fflags, x0 (sstatus.FS=2, vsstatus.FS=2) in VS-mode: number of traps; expect 0x00000000"
-vsstatus_fs_op_in_VS_73_s106: .string "vsstatus_fs_op: csrw fflags, x0 (sstatus.FS=2, vsstatus.FS=2) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
-vsstatus_fs_op_in_VS_73_s107: .string "vsstatus_fs_op: csrw fflags, x0 in VS-mode sets sstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_VS_73_s108: .string "vsstatus_fs_op: csrw fflags, x0 in VS-mode sets vsstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_VS_75_s109: .string "vsstatus_fs_op: csrw frm, x0 (sstatus.FS=2, vsstatus.FS=2) in VS-mode: number of traps; expect 0x00000000"
-vsstatus_fs_op_in_VS_75_s110: .string "vsstatus_fs_op: csrw frm, x0 (sstatus.FS=2, vsstatus.FS=2) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
-vsstatus_fs_op_in_VS_75_s111: .string "vsstatus_fs_op: csrw frm, x0 in VS-mode sets sstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_VS_75_s112: .string "vsstatus_fs_op: csrw frm, x0 in VS-mode sets vsstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_VS_77_s113: .string "vsstatus_fs_op: csrw fcsr, x0 (sstatus.FS=2, vsstatus.FS=2) in VS-mode: number of traps; expect 0x00000000"
-vsstatus_fs_op_in_VS_77_s114: .string "vsstatus_fs_op: csrw fcsr, x0 (sstatus.FS=2, vsstatus.FS=2) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
-vsstatus_fs_op_in_VS_77_s115: .string "vsstatus_fs_op: csrw fcsr, x0 in VS-mode sets sstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_VS_77_s116: .string "vsstatus_fs_op: csrw fcsr, x0 in VS-mode sets vsstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_VU_79_s117: .string "vsstatus_fs_op: fmv.w.x f1, x0 (sstatus.FS=1, vsstatus.FS=2) in VU-mode: number of traps; expect 0x00000000"
-vsstatus_fs_op_in_VU_79_s118: .string "vsstatus_fs_op: fmv.w.x f1, x0 (sstatus.FS=1, vsstatus.FS=2) in VU-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
-vsstatus_fs_op_in_VU_79_s119: .string "vsstatus_fs_op: fmv.w.x f1, x0 in VU-mode sets sstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_VU_79_s120: .string "vsstatus_fs_op: fmv.w.x f1, x0 in VU-mode sets vsstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_VU_81_s121: .string "vsstatus_fs_op: csrw fflags, x0 (sstatus.FS=1, vsstatus.FS=2) in VU-mode: number of traps; expect 0x00000000"
-vsstatus_fs_op_in_VU_81_s122: .string "vsstatus_fs_op: csrw fflags, x0 (sstatus.FS=1, vsstatus.FS=2) in VU-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
-vsstatus_fs_op_in_VU_81_s123: .string "vsstatus_fs_op: csrw fflags, x0 in VU-mode sets sstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_VU_81_s124: .string "vsstatus_fs_op: csrw fflags, x0 in VU-mode sets vsstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_VU_83_s125: .string "vsstatus_fs_op: csrw frm, x0 (sstatus.FS=1, vsstatus.FS=2) in VU-mode: number of traps; expect 0x00000000"
-vsstatus_fs_op_in_VU_83_s126: .string "vsstatus_fs_op: csrw frm, x0 (sstatus.FS=1, vsstatus.FS=2) in VU-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
-vsstatus_fs_op_in_VU_83_s127: .string "vsstatus_fs_op: csrw frm, x0 in VU-mode sets sstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_VU_83_s128: .string "vsstatus_fs_op: csrw frm, x0 in VU-mode sets vsstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_VU_85_s129: .string "vsstatus_fs_op: csrw fcsr, x0 (sstatus.FS=1, vsstatus.FS=2) in VU-mode: number of traps; expect 0x00000000"
-vsstatus_fs_op_in_VU_85_s130: .string "vsstatus_fs_op: csrw fcsr, x0 (sstatus.FS=1, vsstatus.FS=2) in VU-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
-vsstatus_fs_op_in_VU_85_s131: .string "vsstatus_fs_op: csrw fcsr, x0 in VU-mode sets sstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_VU_85_s132: .string "vsstatus_fs_op: csrw fcsr, x0 in VU-mode sets vsstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_S_87_s133: .string "vsstatus_fs_op: fmv.w.x f1, x0 (HS-mode, sstatus.FS=1, vsstatus.FS=1) in S-mode: number of traps; expect 0x00000000"
-vsstatus_fs_op_in_S_87_s134: .string "vsstatus_fs_op: fmv.w.x f1, x0 (HS-mode, sstatus.FS=1, vsstatus.FS=1) in S-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
-vsstatus_fs_op_in_S_87_s135: .string "vsstatus_fs_op: fmv.w.x f1, x0 in HS-mode sets sstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_S_87_s136: .string "vsstatus_fs_op: fmv.w.x f1, x0 in HS-mode leaves vsstatus.FS (V=0); expect 0x00002000"
-vsstatus_fs_op_in_S_88_s137: .string "vsstatus_fs_op: csrw fflags, x0 (HS-mode, sstatus.FS=1, vsstatus.FS=1) in S-mode: number of traps; expect 0x00000000"
-vsstatus_fs_op_in_S_88_s138: .string "vsstatus_fs_op: csrw fflags, x0 (HS-mode, sstatus.FS=1, vsstatus.FS=1) in S-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
-vsstatus_fs_op_in_S_88_s139: .string "vsstatus_fs_op: csrw fflags, x0 in HS-mode sets sstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_S_88_s140: .string "vsstatus_fs_op: csrw fflags, x0 in HS-mode leaves vsstatus.FS (V=0); expect 0x00002000"
-vsstatus_fs_op_in_S_89_s141: .string "vsstatus_fs_op: csrw frm, x0 (HS-mode, sstatus.FS=1, vsstatus.FS=1) in S-mode: number of traps; expect 0x00000000"
-vsstatus_fs_op_in_S_89_s142: .string "vsstatus_fs_op: csrw frm, x0 (HS-mode, sstatus.FS=1, vsstatus.FS=1) in S-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
-vsstatus_fs_op_in_S_89_s143: .string "vsstatus_fs_op: csrw frm, x0 in HS-mode sets sstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_S_89_s144: .string "vsstatus_fs_op: csrw frm, x0 in HS-mode leaves vsstatus.FS (V=0); expect 0x00002000"
-vsstatus_fs_op_in_S_90_s145: .string "vsstatus_fs_op: csrw fcsr, x0 (HS-mode, sstatus.FS=1, vsstatus.FS=1) in S-mode: number of traps; expect 0x00000000"
-vsstatus_fs_op_in_S_90_s146: .string "vsstatus_fs_op: csrw fcsr, x0 (HS-mode, sstatus.FS=1, vsstatus.FS=1) in S-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
-vsstatus_fs_op_in_S_90_s147: .string "vsstatus_fs_op: csrw fcsr, x0 in HS-mode sets sstatus.FS to Dirty; expect 0x00006000"
-vsstatus_fs_op_in_S_90_s148: .string "vsstatus_fs_op: csrw fcsr, x0 in HS-mode leaves vsstatus.FS (V=0); expect 0x00002000"
+vsstatus_fs_op_in_VS_47_s53: .string "vsstatus_fs_op: fmv.w.x f1, x6 (sstatus.FS=1, vsstatus.FS=1) in VS-mode: number of traps; expect 0x00000000"
+vsstatus_fs_op_in_VS_47_s54: .string "vsstatus_fs_op: fmv.w.x f1, x6 (sstatus.FS=1, vsstatus.FS=1) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
+vsstatus_fs_op_in_VS_47_s55: .string "vsstatus_fs_op: fmv.w.x f1, x6 in VS-mode sets sstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_VS_47_s56: .string "vsstatus_fs_op: fmv.w.x f1, x6 in VS-mode sets vsstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_VS_49_s57: .string "vsstatus_fs_op: csrw fflags, x6 (sstatus.FS=1, vsstatus.FS=1) in VS-mode: number of traps; expect 0x00000000"
+vsstatus_fs_op_in_VS_49_s58: .string "vsstatus_fs_op: csrw fflags, x6 (sstatus.FS=1, vsstatus.FS=1) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
+vsstatus_fs_op_in_VS_49_s59: .string "vsstatus_fs_op: csrw fflags, x6 in VS-mode sets sstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_VS_49_s60: .string "vsstatus_fs_op: csrw fflags, x6 in VS-mode sets vsstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_VS_51_s61: .string "vsstatus_fs_op: csrw frm, x6 (sstatus.FS=1, vsstatus.FS=1) in VS-mode: number of traps; expect 0x00000000"
+vsstatus_fs_op_in_VS_51_s62: .string "vsstatus_fs_op: csrw frm, x6 (sstatus.FS=1, vsstatus.FS=1) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
+vsstatus_fs_op_in_VS_51_s63: .string "vsstatus_fs_op: csrw frm, x6 in VS-mode sets sstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_VS_51_s64: .string "vsstatus_fs_op: csrw frm, x6 in VS-mode sets vsstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_VS_53_s65: .string "vsstatus_fs_op: csrw fcsr, x6 (sstatus.FS=1, vsstatus.FS=1) in VS-mode: number of traps; expect 0x00000000"
+vsstatus_fs_op_in_VS_53_s66: .string "vsstatus_fs_op: csrw fcsr, x6 (sstatus.FS=1, vsstatus.FS=1) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
+vsstatus_fs_op_in_VS_53_s67: .string "vsstatus_fs_op: csrw fcsr, x6 in VS-mode sets sstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_VS_53_s68: .string "vsstatus_fs_op: csrw fcsr, x6 in VS-mode sets vsstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_VS_55_s69: .string "vsstatus_fs_op: fmv.w.x f1, x6 (sstatus.FS=1, vsstatus.FS=2) in VS-mode: number of traps; expect 0x00000000"
+vsstatus_fs_op_in_VS_55_s70: .string "vsstatus_fs_op: fmv.w.x f1, x6 (sstatus.FS=1, vsstatus.FS=2) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
+vsstatus_fs_op_in_VS_55_s71: .string "vsstatus_fs_op: fmv.w.x f1, x6 in VS-mode sets sstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_VS_55_s72: .string "vsstatus_fs_op: fmv.w.x f1, x6 in VS-mode sets vsstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_VS_57_s73: .string "vsstatus_fs_op: csrw fflags, x6 (sstatus.FS=1, vsstatus.FS=2) in VS-mode: number of traps; expect 0x00000000"
+vsstatus_fs_op_in_VS_57_s74: .string "vsstatus_fs_op: csrw fflags, x6 (sstatus.FS=1, vsstatus.FS=2) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
+vsstatus_fs_op_in_VS_57_s75: .string "vsstatus_fs_op: csrw fflags, x6 in VS-mode sets sstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_VS_57_s76: .string "vsstatus_fs_op: csrw fflags, x6 in VS-mode sets vsstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_VS_59_s77: .string "vsstatus_fs_op: csrw frm, x6 (sstatus.FS=1, vsstatus.FS=2) in VS-mode: number of traps; expect 0x00000000"
+vsstatus_fs_op_in_VS_59_s78: .string "vsstatus_fs_op: csrw frm, x6 (sstatus.FS=1, vsstatus.FS=2) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
+vsstatus_fs_op_in_VS_59_s79: .string "vsstatus_fs_op: csrw frm, x6 in VS-mode sets sstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_VS_59_s80: .string "vsstatus_fs_op: csrw frm, x6 in VS-mode sets vsstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_VS_61_s81: .string "vsstatus_fs_op: csrw fcsr, x6 (sstatus.FS=1, vsstatus.FS=2) in VS-mode: number of traps; expect 0x00000000"
+vsstatus_fs_op_in_VS_61_s82: .string "vsstatus_fs_op: csrw fcsr, x6 (sstatus.FS=1, vsstatus.FS=2) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
+vsstatus_fs_op_in_VS_61_s83: .string "vsstatus_fs_op: csrw fcsr, x6 in VS-mode sets sstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_VS_61_s84: .string "vsstatus_fs_op: csrw fcsr, x6 in VS-mode sets vsstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_VS_63_s85: .string "vsstatus_fs_op: fmv.w.x f1, x6 (sstatus.FS=2, vsstatus.FS=1) in VS-mode: number of traps; expect 0x00000000"
+vsstatus_fs_op_in_VS_63_s86: .string "vsstatus_fs_op: fmv.w.x f1, x6 (sstatus.FS=2, vsstatus.FS=1) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
+vsstatus_fs_op_in_VS_63_s87: .string "vsstatus_fs_op: fmv.w.x f1, x6 in VS-mode sets sstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_VS_63_s88: .string "vsstatus_fs_op: fmv.w.x f1, x6 in VS-mode sets vsstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_VS_65_s89: .string "vsstatus_fs_op: csrw fflags, x6 (sstatus.FS=2, vsstatus.FS=1) in VS-mode: number of traps; expect 0x00000000"
+vsstatus_fs_op_in_VS_65_s90: .string "vsstatus_fs_op: csrw fflags, x6 (sstatus.FS=2, vsstatus.FS=1) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
+vsstatus_fs_op_in_VS_65_s91: .string "vsstatus_fs_op: csrw fflags, x6 in VS-mode sets sstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_VS_65_s92: .string "vsstatus_fs_op: csrw fflags, x6 in VS-mode sets vsstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_VS_67_s93: .string "vsstatus_fs_op: csrw frm, x6 (sstatus.FS=2, vsstatus.FS=1) in VS-mode: number of traps; expect 0x00000000"
+vsstatus_fs_op_in_VS_67_s94: .string "vsstatus_fs_op: csrw frm, x6 (sstatus.FS=2, vsstatus.FS=1) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
+vsstatus_fs_op_in_VS_67_s95: .string "vsstatus_fs_op: csrw frm, x6 in VS-mode sets sstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_VS_67_s96: .string "vsstatus_fs_op: csrw frm, x6 in VS-mode sets vsstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_VS_69_s97: .string "vsstatus_fs_op: csrw fcsr, x6 (sstatus.FS=2, vsstatus.FS=1) in VS-mode: number of traps; expect 0x00000000"
+vsstatus_fs_op_in_VS_69_s98: .string "vsstatus_fs_op: csrw fcsr, x6 (sstatus.FS=2, vsstatus.FS=1) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
+vsstatus_fs_op_in_VS_69_s99: .string "vsstatus_fs_op: csrw fcsr, x6 in VS-mode sets sstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_VS_69_s100: .string "vsstatus_fs_op: csrw fcsr, x6 in VS-mode sets vsstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_VS_71_s101: .string "vsstatus_fs_op: fmv.w.x f1, x6 (sstatus.FS=2, vsstatus.FS=2) in VS-mode: number of traps; expect 0x00000000"
+vsstatus_fs_op_in_VS_71_s102: .string "vsstatus_fs_op: fmv.w.x f1, x6 (sstatus.FS=2, vsstatus.FS=2) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
+vsstatus_fs_op_in_VS_71_s103: .string "vsstatus_fs_op: fmv.w.x f1, x6 in VS-mode sets sstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_VS_71_s104: .string "vsstatus_fs_op: fmv.w.x f1, x6 in VS-mode sets vsstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_VS_73_s105: .string "vsstatus_fs_op: csrw fflags, x6 (sstatus.FS=2, vsstatus.FS=2) in VS-mode: number of traps; expect 0x00000000"
+vsstatus_fs_op_in_VS_73_s106: .string "vsstatus_fs_op: csrw fflags, x6 (sstatus.FS=2, vsstatus.FS=2) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
+vsstatus_fs_op_in_VS_73_s107: .string "vsstatus_fs_op: csrw fflags, x6 in VS-mode sets sstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_VS_73_s108: .string "vsstatus_fs_op: csrw fflags, x6 in VS-mode sets vsstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_VS_75_s109: .string "vsstatus_fs_op: csrw frm, x6 (sstatus.FS=2, vsstatus.FS=2) in VS-mode: number of traps; expect 0x00000000"
+vsstatus_fs_op_in_VS_75_s110: .string "vsstatus_fs_op: csrw frm, x6 (sstatus.FS=2, vsstatus.FS=2) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
+vsstatus_fs_op_in_VS_75_s111: .string "vsstatus_fs_op: csrw frm, x6 in VS-mode sets sstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_VS_75_s112: .string "vsstatus_fs_op: csrw frm, x6 in VS-mode sets vsstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_VS_77_s113: .string "vsstatus_fs_op: csrw fcsr, x6 (sstatus.FS=2, vsstatus.FS=2) in VS-mode: number of traps; expect 0x00000000"
+vsstatus_fs_op_in_VS_77_s114: .string "vsstatus_fs_op: csrw fcsr, x6 (sstatus.FS=2, vsstatus.FS=2) in VS-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
+vsstatus_fs_op_in_VS_77_s115: .string "vsstatus_fs_op: csrw fcsr, x6 in VS-mode sets sstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_VS_77_s116: .string "vsstatus_fs_op: csrw fcsr, x6 in VS-mode sets vsstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_VU_79_s117: .string "vsstatus_fs_op: fmv.w.x f1, x6 (sstatus.FS=1, vsstatus.FS=2) in VU-mode: number of traps; expect 0x00000000"
+vsstatus_fs_op_in_VU_79_s118: .string "vsstatus_fs_op: fmv.w.x f1, x6 (sstatus.FS=1, vsstatus.FS=2) in VU-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
+vsstatus_fs_op_in_VU_79_s119: .string "vsstatus_fs_op: fmv.w.x f1, x6 in VU-mode sets sstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_VU_79_s120: .string "vsstatus_fs_op: fmv.w.x f1, x6 in VU-mode sets vsstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_VU_81_s121: .string "vsstatus_fs_op: csrw fflags, x6 (sstatus.FS=1, vsstatus.FS=2) in VU-mode: number of traps; expect 0x00000000"
+vsstatus_fs_op_in_VU_81_s122: .string "vsstatus_fs_op: csrw fflags, x6 (sstatus.FS=1, vsstatus.FS=2) in VU-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
+vsstatus_fs_op_in_VU_81_s123: .string "vsstatus_fs_op: csrw fflags, x6 in VU-mode sets sstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_VU_81_s124: .string "vsstatus_fs_op: csrw fflags, x6 in VU-mode sets vsstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_VU_83_s125: .string "vsstatus_fs_op: csrw frm, x6 (sstatus.FS=1, vsstatus.FS=2) in VU-mode: number of traps; expect 0x00000000"
+vsstatus_fs_op_in_VU_83_s126: .string "vsstatus_fs_op: csrw frm, x6 (sstatus.FS=1, vsstatus.FS=2) in VU-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
+vsstatus_fs_op_in_VU_83_s127: .string "vsstatus_fs_op: csrw frm, x6 in VU-mode sets sstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_VU_83_s128: .string "vsstatus_fs_op: csrw frm, x6 in VU-mode sets vsstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_VU_85_s129: .string "vsstatus_fs_op: csrw fcsr, x6 (sstatus.FS=1, vsstatus.FS=2) in VU-mode: number of traps; expect 0x00000000"
+vsstatus_fs_op_in_VU_85_s130: .string "vsstatus_fs_op: csrw fcsr, x6 (sstatus.FS=1, vsstatus.FS=2) in VU-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
+vsstatus_fs_op_in_VU_85_s131: .string "vsstatus_fs_op: csrw fcsr, x6 in VU-mode sets sstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_VU_85_s132: .string "vsstatus_fs_op: csrw fcsr, x6 in VU-mode sets vsstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_S_87_s133: .string "vsstatus_fs_op: fmv.w.x f1, x6 (HS-mode, sstatus.FS=1, vsstatus.FS=1) in S-mode: number of traps; expect 0x00000000"
+vsstatus_fs_op_in_S_87_s134: .string "vsstatus_fs_op: fmv.w.x f1, x6 (HS-mode, sstatus.FS=1, vsstatus.FS=1) in S-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
+vsstatus_fs_op_in_S_87_s135: .string "vsstatus_fs_op: fmv.w.x f1, x6 in HS-mode sets sstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_S_87_s136: .string "vsstatus_fs_op: fmv.w.x f1, x6 in HS-mode leaves vsstatus.FS (V=0); expect 0x00002000"
+vsstatus_fs_op_in_S_88_s137: .string "vsstatus_fs_op: csrw fflags, x6 (HS-mode, sstatus.FS=1, vsstatus.FS=1) in S-mode: number of traps; expect 0x00000000"
+vsstatus_fs_op_in_S_88_s138: .string "vsstatus_fs_op: csrw fflags, x6 (HS-mode, sstatus.FS=1, vsstatus.FS=1) in S-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
+vsstatus_fs_op_in_S_88_s139: .string "vsstatus_fs_op: csrw fflags, x6 in HS-mode sets sstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_S_88_s140: .string "vsstatus_fs_op: csrw fflags, x6 in HS-mode leaves vsstatus.FS (V=0); expect 0x00002000"
+vsstatus_fs_op_in_S_89_s141: .string "vsstatus_fs_op: csrw frm, x6 (HS-mode, sstatus.FS=1, vsstatus.FS=1) in S-mode: number of traps; expect 0x00000000"
+vsstatus_fs_op_in_S_89_s142: .string "vsstatus_fs_op: csrw frm, x6 (HS-mode, sstatus.FS=1, vsstatus.FS=1) in S-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
+vsstatus_fs_op_in_S_89_s143: .string "vsstatus_fs_op: csrw frm, x6 in HS-mode sets sstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_S_89_s144: .string "vsstatus_fs_op: csrw frm, x6 in HS-mode leaves vsstatus.FS (V=0); expect 0x00002000"
+vsstatus_fs_op_in_S_90_s145: .string "vsstatus_fs_op: csrw fcsr, x6 (HS-mode, sstatus.FS=1, vsstatus.FS=1) in S-mode: number of traps; expect 0x00000000"
+vsstatus_fs_op_in_S_90_s146: .string "vsstatus_fs_op: csrw fcsr, x6 (HS-mode, sstatus.FS=1, vsstatus.FS=1) in S-mode: outcome (xcause, or all ones for no trap); expect 0xffffffff"
+vsstatus_fs_op_in_S_90_s147: .string "vsstatus_fs_op: csrw fcsr, x6 in HS-mode sets sstatus.FS to Dirty; expect 0x00006000"
+vsstatus_fs_op_in_S_90_s148: .string "vsstatus_fs_op: csrw fcsr, x6 in HS-mode leaves vsstatus.FS (V=0); expect 0x00002000"
 #endif
 #endif
 

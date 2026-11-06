@@ -10,7 +10,7 @@ How the extension is tested:
   - All eight CSR instruction forms (read-only, write-only, swap, set, clear, and the three immediate forms) run in S-mode, plus `stimecmph` on RV32.
   - TM is swept with STCE=0 to show STCE alone denies access, and vice versa.
   - U-mode access must trap even when STCE, TM and scounteren.TM are all 1.
-  - With H, VS-mode access with menvcfg.STCE=0 or mcounteren.TM=0 must raise illegal-instruction, not virtual-instruction. A VS-mode write of `stimecmp` must land in `vstimecmp`.
+  - With H, VS-mode access with menvcfg.STCE=0 or mcounteren.TM=0 must raise illegal-instruction, not virtual-instruction. With menvcfg.STCE=0 so must VU-mode reads and writes of `stimecmp` and VS- and VU-mode access to `vstimecmp` by its own address, with every other gate set. A VS-mode write of `stimecmp` must land in `vstimecmp`.
   - Negative dependency: TM=0 does not stop the comparison from driving STIP.
 - **The comparison** is swept through stimecmp = 0, = `time`, = `time` + 2^32 and + 2^40, = 2^63, and all ones. The 2^32 offsets keep the low halves equal, so a 32-bit comparison is caught; 2^63 catches a signed comparison. STIP is checked in both `sip` (S-mode) and `mip` (M-mode read). With mtimecmp written through `RVMODEL_MTIMECMP_ADDRESS`, the two timers are checked not to cross.
 - **Interrupt delivery** sweeps (sstatus.SIE, sie.STIE) in S-mode and U-mode, with STI pending and not pending. In U-mode SIE is set through SPIE, and the interrupt must be taken regardless of SIE.
@@ -21,14 +21,13 @@ How the extension is tested:
   - The comparison `time + htimedelta >= vstimecmp` is swept over htimedelta = 0, 2^40, -2^40, all ones (the sum wraps and must be truncated) and 2^32-1 (a carry out of the low half), each with values on both sides. hip.VSTIP and mip.VSTIP are both checked.
   - hip.VSTIP is checked to be hvip.VSTIP OR the comparison, read-only, and to revert to hvip.VSTIP when henvcfg.STCE or menvcfg.STCE is 0. A change of htimedelta alone must change VSTIP.
   - Interrupt delivery sweeps hideleg[6], vsstatus.SIE/sstatus.SIE and hie.VSTIE in VS, VU and HS, and checks the cause, the handler's mode and the mode the interrupt came from.
-- **Mutation check.** `gen/mutate.py` has 25 Sstc mutants: 9 at S level (signed or 32-bit comparison, U-mode leak, SIE gating STI in U-mode, TM ignored, writable mip.STIP, virtual- instead of illegal-instruction, sticky STIP, wrong SPP) and 16 at VS level (comparison without htimedelta, signed, 32-bit, untruncated or carry-dropping; access gates ignored or raising the wrong cause; VSTIP ignoring hvip, writable, not reverting or re-evaluated only on writes; vsstatus.SIE ignored). Each one fails a test on Sail.
+- **Mutation check.** `gen/mutate.py` has 27 Sstc mutants: 11 at S level (signed or 32-bit comparison, U-mode leak, SIE gating STI in U-mode, TM ignored, writable mip.STIP, virtual- instead of illegal-instruction, sticky STIP, wrong SPP) and 16 at VS level (comparison without htimedelta, signed, 32-bit, untruncated or carry-dropping; access gates ignored or raising the wrong cause; VSTIP ignoring hvip, writable, not reverting or re-evaluated only on writes; vsstatus.SIE ignored). Each one fails a test on Sail.
 
 Rules not covered:
 
 - `menvcfg_stce_rdonly0` and `henvcfg_stce_rdonly0` apply only when Sstc is not implemented, while this suite runs only when it is. They belong in a suite gated with `FORBIDDEN_EXTENSIONS: [Sstc]`.
 - `mip_stip_no_stimecmp_acc` and `mip_stip_no_stimecmp_mmode_write` describe a hart without stimecmp. Their STCE=0 equivalent, the reverted writable `mip.STIP`, is tested in `menvcfg_stce_zero_op`.
 - Rules that mention STIP but belong to other suites: `mip_stip_mie_stie_op`, `mip_sxip_mie_sxie_rdonly0` (S/Sm), and `vsip_vsie_sti`, `mip_mie_alias`, `hvip_acc`, `hip_vstip_vstie_acc_op`, `hip_vstip_defined_v0` (H).
-- VU-mode access with menvcfg.STCE=0 is not tested. The STCE rule says illegal-instruction, while VU's insufficient privilege for an HS-qualified CSR says virtual-instruction, and no clarification resolves the conflict.
 - `time` == `stimecmp` (or `time + htimedelta` == `vstimecmp`) exactly is not tested, because the test cannot stop `time`. The "≤" side is tested with the value just read.
 - `hcounteren_op`, `hcounteren_set_op` and the other counter rules of `hcounteren` belong to the H/Zicntr suites; only its TM gate on `vstimecmp` is tested here. `htimedelta_sz_acc_op` (the VS view of `time`) belongs to H; it is used, not tested, here.
 - `time` wrapping at 2^64-1 cannot be reached.
@@ -41,5 +40,6 @@ Subtleties:
 - STIP need only reflect a comparison change "eventually". Each check polls `sip` up to 500 times first, in a bounded wait loop that contains no checks. Steady-state negatives poll 50 times for a glitch.
 - Reading `time` below M-mode needs mcounteren.TM=1, so the TM=0 test never reads `time`. Tests that read `time` require `Zicntr`.
 - `hcounteren` bits may be read-only zero (`hcounteren_warl`). VS-level tests set hcounteren.TM, read it back, and branch at run time: where it reads 0, VS-mode access must raise virtual-instruction instead.
-- From V=1, `vstimecmp` is reached only through `stimecmp`; its own address raises virtual-instruction whatever TM is ([#2040](https://github.com/riscv/riscv-isa-manual/issues/2040)). mcounteren.TM=0 gives illegal-instruction even from VS-mode, because it is a machine-level control ([#1898](https://github.com/riscv/riscv-isa-manual/issues/1898)).
+- From V=1, `vstimecmp` is reached only through `stimecmp`; its own address raises virtual-instruction whatever hcounteren.TM is ([#2040](https://github.com/riscv/riscv-isa-manual/issues/2040)). mcounteren.TM=0 gives illegal-instruction even from VS-mode, because it is a machine-level control ([#1898](https://github.com/riscv/riscv-isa-manual/issues/1898)).
+- menvcfg.STCE=0 is a machine-level control too: the STCE rule's illegal-instruction for `stimecmp` or `vstimecmp` in any mode but M takes precedence over H's virtual-instruction rules. So VU-mode access to `stimecmp` (an HS-qualified CSR VU lacks privilege for) and V=1 access to `vstimecmp` by its own address both raise illegal-instruction.
 - An `sret` from HS-mode into VS or VU copies SPIE (1) into HS-mode's `sstatus.SIE`, so after any VS window HS-mode has SIE=1. Tests clear SIE before enabling hie.VSTIE, so HS-mode takes the interrupt only inside windows.

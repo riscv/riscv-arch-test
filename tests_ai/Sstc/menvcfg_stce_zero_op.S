@@ -37,10 +37,12 @@
 //     while mip.STIP=0 and stimecmp=0; an interrupt once M-mode sets mip.STIP.
 //   5. sip.STIP stays read-only from S-mode with STCE=0: csrrs/csrrc of sip do not flip it.
 //   6. With H: henvcfg.STCE was 1 before menvcfg.STCE was cleared and must now read 0, and still
-//     reads 0 after HS-mode tries to set it; HS-mode access to vstimecmp and VS-mode access to
-//     stimecmp (henvcfg/hcounteren enabled) raise illegal-instruction, not virtual-instruction.
+//     reads 0 after HS-mode tries to set it; HS-mode access to vstimecmp, VS-mode access to
+//     stimecmp, VU-mode reads and writes of stimecmp, and VS- and VU-mode access to vstimecmp by
+//     its own address (henvcfg, hcounteren and scounteren enabled) raise illegal-instruction, not
+//     virtual-instruction.
 //
-// Approximate dynamic instruction count: 12293
+// Approximate dynamic instruction count: 13201
 //
 
 ##### START_TEST_CONFIG #####
@@ -326,135 +328,230 @@ menvcfg_stce_zero_op_in_VS_42:
   AI_CHECK2(x15, menvcfg_stce_zero_op_in_VS_42, menvcfg_stce_zero_op_in_VS_42_s68)
   AI_ORIGIN
   AI_CHECK(x15, menvcfg_stce_zero_op_in_VS_42, menvcfg_stce_zero_op_in_VS_42_s69)
+  LI(x7, 2)
+  csrs scounteren, x7
+  AI_ALLOW(1)
+  LA(x14, menvcfg_stce_zero_op_inVU_47)
+  csrw sepc, x14
+  LI(x14, 256)
+  csrc sstatus, x14
+  #ifdef H_SUPPORTED
+  LI(x14, HSTATUS_SPV)
+  csrs CSR_HSTATUS, x14
+  #endif
+  sret
+menvcfg_stce_zero_op_inVU_47:
+menvcfg_stce_zero_op_in_VU_46:
+  csrrs x7, stimecmp, x0
+  RVTEST_TSBI_GOTO_SMODE
+  AI_OUTCOME
+  AI_CHECK(x13, menvcfg_stce_zero_op_in_VU_46, menvcfg_stce_zero_op_in_VU_46_s70)
+  AI_CHECK(x14, menvcfg_stce_zero_op_in_VU_46, menvcfg_stce_zero_op_in_VU_46_s71)
+  AI_LOG(x15, TRAPLOG_EPC)
+  AI_CHECK(x15, menvcfg_stce_zero_op_in_VU_46, menvcfg_stce_zero_op_in_VU_46_s72)
+  AI_LOG(x15, TRAPLOG_TVAL)
+  AI_CHECK2(x15, menvcfg_stce_zero_op_in_VU_46, menvcfg_stce_zero_op_in_VU_46_s73)
+  AI_ORIGIN
+  AI_CHECK(x15, menvcfg_stce_zero_op_in_VU_46, menvcfg_stce_zero_op_in_VU_46_s74)
+  AI_ALLOW(1)
+  LA(x14, menvcfg_stce_zero_op_inVU_51)
+  csrw sepc, x14
+  LI(x14, 256)
+  csrc sstatus, x14
+  #ifdef H_SUPPORTED
+  LI(x14, HSTATUS_SPV)
+  csrs CSR_HSTATUS, x14
+  #endif
+  sret
+menvcfg_stce_zero_op_inVU_51:
+menvcfg_stce_zero_op_in_VU_50:
+  csrrw x0, stimecmp, x6
+  RVTEST_TSBI_GOTO_SMODE
+  AI_OUTCOME
+  AI_CHECK(x13, menvcfg_stce_zero_op_in_VU_50, menvcfg_stce_zero_op_in_VU_50_s75)
+  AI_CHECK(x14, menvcfg_stce_zero_op_in_VU_50, menvcfg_stce_zero_op_in_VU_50_s76)
+  AI_LOG(x15, TRAPLOG_EPC)
+  AI_CHECK(x15, menvcfg_stce_zero_op_in_VU_50, menvcfg_stce_zero_op_in_VU_50_s77)
+  AI_LOG(x15, TRAPLOG_TVAL)
+  AI_CHECK2(x15, menvcfg_stce_zero_op_in_VU_50, menvcfg_stce_zero_op_in_VU_50_s78)
+  AI_ORIGIN
+  AI_CHECK(x15, menvcfg_stce_zero_op_in_VU_50, menvcfg_stce_zero_op_in_VU_50_s79)
+  AI_ALLOW(1)
+  LA(x14, menvcfg_stce_zero_op_inVS_55)
+  csrw sepc, x14
+  LI(x14, 256)
+  csrs sstatus, x14
+  #ifdef H_SUPPORTED
+  LI(x14, HSTATUS_SPV)
+  csrs CSR_HSTATUS, x14
+  #endif
+  sret
+menvcfg_stce_zero_op_inVS_55:
+menvcfg_stce_zero_op_in_VS_54:
+  csrrs x7, vstimecmp, x0
+  RVTEST_TSBI_GOTO_SMODE
+  AI_OUTCOME
+  AI_CHECK(x13, menvcfg_stce_zero_op_in_VS_54, menvcfg_stce_zero_op_in_VS_54_s80)
+  AI_CHECK(x14, menvcfg_stce_zero_op_in_VS_54, menvcfg_stce_zero_op_in_VS_54_s81)
+  AI_LOG(x15, TRAPLOG_EPC)
+  AI_CHECK(x15, menvcfg_stce_zero_op_in_VS_54, menvcfg_stce_zero_op_in_VS_54_s82)
+  AI_LOG(x15, TRAPLOG_TVAL)
+  AI_CHECK2(x15, menvcfg_stce_zero_op_in_VS_54, menvcfg_stce_zero_op_in_VS_54_s83)
+  AI_ORIGIN
+  AI_CHECK(x15, menvcfg_stce_zero_op_in_VS_54, menvcfg_stce_zero_op_in_VS_54_s84)
+  AI_ALLOW(1)
+  LA(x14, menvcfg_stce_zero_op_inVU_59)
+  csrw sepc, x14
+  LI(x14, 256)
+  csrc sstatus, x14
+  #ifdef H_SUPPORTED
+  LI(x14, HSTATUS_SPV)
+  csrs CSR_HSTATUS, x14
+  #endif
+  sret
+menvcfg_stce_zero_op_inVU_59:
+menvcfg_stce_zero_op_in_VU_58:
+  csrrs x7, vstimecmp, x0
+  RVTEST_TSBI_GOTO_SMODE
+  AI_OUTCOME
+  AI_CHECK(x13, menvcfg_stce_zero_op_in_VU_58, menvcfg_stce_zero_op_in_VU_58_s85)
+  AI_CHECK(x14, menvcfg_stce_zero_op_in_VU_58, menvcfg_stce_zero_op_in_VU_58_s86)
+  AI_LOG(x15, TRAPLOG_EPC)
+  AI_CHECK(x15, menvcfg_stce_zero_op_in_VU_58, menvcfg_stce_zero_op_in_VU_58_s87)
+  AI_LOG(x15, TRAPLOG_TVAL)
+  AI_CHECK2(x15, menvcfg_stce_zero_op_in_VU_58, menvcfg_stce_zero_op_in_VU_58_s88)
+  AI_ORIGIN
+  AI_CHECK(x15, menvcfg_stce_zero_op_in_VU_58, menvcfg_stce_zero_op_in_VU_58_s89)
+  csrc scounteren, x7
   #endif
   // mcounteren.TM = 0
   LI(a1, 2)
   RVTEST_TSBI_CSR_ACCESS TSBI_CSR_CLEAR(CSR_MCOUNTEREN)
   AI_LOAD(x6)  // rs1 value
   AI_ALLOW(1)
-menvcfg_stce_zero_op_in_S_46:
+menvcfg_stce_zero_op_in_S_62:
   csrrs x7, stimecmp, x0
   AI_OUTCOME
-  AI_CHECK(x13, menvcfg_stce_zero_op_in_S_46, menvcfg_stce_zero_op_in_S_46_s70)
-  AI_CHECK(x14, menvcfg_stce_zero_op_in_S_46, menvcfg_stce_zero_op_in_S_46_s71)
+  AI_CHECK(x13, menvcfg_stce_zero_op_in_S_62, menvcfg_stce_zero_op_in_S_62_s90)
+  AI_CHECK(x14, menvcfg_stce_zero_op_in_S_62, menvcfg_stce_zero_op_in_S_62_s91)
   AI_LOG(x15, TRAPLOG_EPC)
-  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_46, menvcfg_stce_zero_op_in_S_46_s72)
+  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_62, menvcfg_stce_zero_op_in_S_62_s92)
   AI_LOG(x15, TRAPLOG_TVAL)
-  AI_CHECK2(x15, menvcfg_stce_zero_op_in_S_46, menvcfg_stce_zero_op_in_S_46_s73)
+  AI_CHECK2(x15, menvcfg_stce_zero_op_in_S_62, menvcfg_stce_zero_op_in_S_62_s93)
   AI_ORIGIN
-  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_46, menvcfg_stce_zero_op_in_S_46_s74)
+  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_62, menvcfg_stce_zero_op_in_S_62_s94)
   AI_ALLOW(1)
-menvcfg_stce_zero_op_in_S_49:
+menvcfg_stce_zero_op_in_S_65:
   csrrw x0, stimecmp, x6
   AI_OUTCOME
-  AI_CHECK(x13, menvcfg_stce_zero_op_in_S_49, menvcfg_stce_zero_op_in_S_49_s75)
-  AI_CHECK(x14, menvcfg_stce_zero_op_in_S_49, menvcfg_stce_zero_op_in_S_49_s76)
+  AI_CHECK(x13, menvcfg_stce_zero_op_in_S_65, menvcfg_stce_zero_op_in_S_65_s95)
+  AI_CHECK(x14, menvcfg_stce_zero_op_in_S_65, menvcfg_stce_zero_op_in_S_65_s96)
   AI_LOG(x15, TRAPLOG_EPC)
-  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_49, menvcfg_stce_zero_op_in_S_49_s77)
+  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_65, menvcfg_stce_zero_op_in_S_65_s97)
   AI_LOG(x15, TRAPLOG_TVAL)
-  AI_CHECK2(x15, menvcfg_stce_zero_op_in_S_49, menvcfg_stce_zero_op_in_S_49_s78)
+  AI_CHECK2(x15, menvcfg_stce_zero_op_in_S_65, menvcfg_stce_zero_op_in_S_65_s98)
   AI_ORIGIN
-  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_49, menvcfg_stce_zero_op_in_S_49_s79)
+  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_65, menvcfg_stce_zero_op_in_S_65_s99)
   AI_ALLOW(1)
-menvcfg_stce_zero_op_in_S_52:
+menvcfg_stce_zero_op_in_S_68:
   csrrw x7, stimecmp, x6
   AI_OUTCOME
-  AI_CHECK(x13, menvcfg_stce_zero_op_in_S_52, menvcfg_stce_zero_op_in_S_52_s80)
-  AI_CHECK(x14, menvcfg_stce_zero_op_in_S_52, menvcfg_stce_zero_op_in_S_52_s81)
+  AI_CHECK(x13, menvcfg_stce_zero_op_in_S_68, menvcfg_stce_zero_op_in_S_68_s100)
+  AI_CHECK(x14, menvcfg_stce_zero_op_in_S_68, menvcfg_stce_zero_op_in_S_68_s101)
   AI_LOG(x15, TRAPLOG_EPC)
-  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_52, menvcfg_stce_zero_op_in_S_52_s82)
+  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_68, menvcfg_stce_zero_op_in_S_68_s102)
   AI_LOG(x15, TRAPLOG_TVAL)
-  AI_CHECK2(x15, menvcfg_stce_zero_op_in_S_52, menvcfg_stce_zero_op_in_S_52_s83)
+  AI_CHECK2(x15, menvcfg_stce_zero_op_in_S_68, menvcfg_stce_zero_op_in_S_68_s103)
   AI_ORIGIN
-  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_52, menvcfg_stce_zero_op_in_S_52_s84)
+  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_68, menvcfg_stce_zero_op_in_S_68_s104)
   AI_ALLOW(1)
-menvcfg_stce_zero_op_in_S_55:
+menvcfg_stce_zero_op_in_S_71:
   csrrs x7, stimecmp, x6
   AI_OUTCOME
-  AI_CHECK(x13, menvcfg_stce_zero_op_in_S_55, menvcfg_stce_zero_op_in_S_55_s85)
-  AI_CHECK(x14, menvcfg_stce_zero_op_in_S_55, menvcfg_stce_zero_op_in_S_55_s86)
+  AI_CHECK(x13, menvcfg_stce_zero_op_in_S_71, menvcfg_stce_zero_op_in_S_71_s105)
+  AI_CHECK(x14, menvcfg_stce_zero_op_in_S_71, menvcfg_stce_zero_op_in_S_71_s106)
   AI_LOG(x15, TRAPLOG_EPC)
-  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_55, menvcfg_stce_zero_op_in_S_55_s87)
+  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_71, menvcfg_stce_zero_op_in_S_71_s107)
   AI_LOG(x15, TRAPLOG_TVAL)
-  AI_CHECK2(x15, menvcfg_stce_zero_op_in_S_55, menvcfg_stce_zero_op_in_S_55_s88)
+  AI_CHECK2(x15, menvcfg_stce_zero_op_in_S_71, menvcfg_stce_zero_op_in_S_71_s108)
   AI_ORIGIN
-  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_55, menvcfg_stce_zero_op_in_S_55_s89)
+  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_71, menvcfg_stce_zero_op_in_S_71_s109)
   AI_ALLOW(1)
-menvcfg_stce_zero_op_in_S_58:
+menvcfg_stce_zero_op_in_S_74:
   csrrc x7, stimecmp, x6
   AI_OUTCOME
-  AI_CHECK(x13, menvcfg_stce_zero_op_in_S_58, menvcfg_stce_zero_op_in_S_58_s90)
-  AI_CHECK(x14, menvcfg_stce_zero_op_in_S_58, menvcfg_stce_zero_op_in_S_58_s91)
+  AI_CHECK(x13, menvcfg_stce_zero_op_in_S_74, menvcfg_stce_zero_op_in_S_74_s110)
+  AI_CHECK(x14, menvcfg_stce_zero_op_in_S_74, menvcfg_stce_zero_op_in_S_74_s111)
   AI_LOG(x15, TRAPLOG_EPC)
-  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_58, menvcfg_stce_zero_op_in_S_58_s92)
+  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_74, menvcfg_stce_zero_op_in_S_74_s112)
   AI_LOG(x15, TRAPLOG_TVAL)
-  AI_CHECK2(x15, menvcfg_stce_zero_op_in_S_58, menvcfg_stce_zero_op_in_S_58_s93)
+  AI_CHECK2(x15, menvcfg_stce_zero_op_in_S_74, menvcfg_stce_zero_op_in_S_74_s113)
   AI_ORIGIN
-  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_58, menvcfg_stce_zero_op_in_S_58_s94)
+  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_74, menvcfg_stce_zero_op_in_S_74_s114)
   AI_ALLOW(1)
-menvcfg_stce_zero_op_in_S_61:
+menvcfg_stce_zero_op_in_S_77:
   csrrwi x7, stimecmp, 0x15
   AI_OUTCOME
-  AI_CHECK(x13, menvcfg_stce_zero_op_in_S_61, menvcfg_stce_zero_op_in_S_61_s95)
-  AI_CHECK(x14, menvcfg_stce_zero_op_in_S_61, menvcfg_stce_zero_op_in_S_61_s96)
+  AI_CHECK(x13, menvcfg_stce_zero_op_in_S_77, menvcfg_stce_zero_op_in_S_77_s115)
+  AI_CHECK(x14, menvcfg_stce_zero_op_in_S_77, menvcfg_stce_zero_op_in_S_77_s116)
   AI_LOG(x15, TRAPLOG_EPC)
-  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_61, menvcfg_stce_zero_op_in_S_61_s97)
+  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_77, menvcfg_stce_zero_op_in_S_77_s117)
   AI_LOG(x15, TRAPLOG_TVAL)
-  AI_CHECK2(x15, menvcfg_stce_zero_op_in_S_61, menvcfg_stce_zero_op_in_S_61_s98)
+  AI_CHECK2(x15, menvcfg_stce_zero_op_in_S_77, menvcfg_stce_zero_op_in_S_77_s118)
   AI_ORIGIN
-  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_61, menvcfg_stce_zero_op_in_S_61_s99)
+  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_77, menvcfg_stce_zero_op_in_S_77_s119)
   AI_ALLOW(1)
-menvcfg_stce_zero_op_in_S_64:
+menvcfg_stce_zero_op_in_S_80:
   csrrsi x7, stimecmp, 0
   AI_OUTCOME
-  AI_CHECK(x13, menvcfg_stce_zero_op_in_S_64, menvcfg_stce_zero_op_in_S_64_s100)
-  AI_CHECK(x14, menvcfg_stce_zero_op_in_S_64, menvcfg_stce_zero_op_in_S_64_s101)
+  AI_CHECK(x13, menvcfg_stce_zero_op_in_S_80, menvcfg_stce_zero_op_in_S_80_s120)
+  AI_CHECK(x14, menvcfg_stce_zero_op_in_S_80, menvcfg_stce_zero_op_in_S_80_s121)
   AI_LOG(x15, TRAPLOG_EPC)
-  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_64, menvcfg_stce_zero_op_in_S_64_s102)
+  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_80, menvcfg_stce_zero_op_in_S_80_s122)
   AI_LOG(x15, TRAPLOG_TVAL)
-  AI_CHECK2(x15, menvcfg_stce_zero_op_in_S_64, menvcfg_stce_zero_op_in_S_64_s103)
+  AI_CHECK2(x15, menvcfg_stce_zero_op_in_S_80, menvcfg_stce_zero_op_in_S_80_s123)
   AI_ORIGIN
-  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_64, menvcfg_stce_zero_op_in_S_64_s104)
+  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_80, menvcfg_stce_zero_op_in_S_80_s124)
   AI_ALLOW(1)
-menvcfg_stce_zero_op_in_S_67:
+menvcfg_stce_zero_op_in_S_83:
   csrrci x7, stimecmp, 0x15
   AI_OUTCOME
-  AI_CHECK(x13, menvcfg_stce_zero_op_in_S_67, menvcfg_stce_zero_op_in_S_67_s105)
-  AI_CHECK(x14, menvcfg_stce_zero_op_in_S_67, menvcfg_stce_zero_op_in_S_67_s106)
+  AI_CHECK(x13, menvcfg_stce_zero_op_in_S_83, menvcfg_stce_zero_op_in_S_83_s125)
+  AI_CHECK(x14, menvcfg_stce_zero_op_in_S_83, menvcfg_stce_zero_op_in_S_83_s126)
   AI_LOG(x15, TRAPLOG_EPC)
-  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_67, menvcfg_stce_zero_op_in_S_67_s107)
+  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_83, menvcfg_stce_zero_op_in_S_83_s127)
   AI_LOG(x15, TRAPLOG_TVAL)
-  AI_CHECK2(x15, menvcfg_stce_zero_op_in_S_67, menvcfg_stce_zero_op_in_S_67_s108)
+  AI_CHECK2(x15, menvcfg_stce_zero_op_in_S_83, menvcfg_stce_zero_op_in_S_83_s128)
   AI_ORIGIN
-  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_67, menvcfg_stce_zero_op_in_S_67_s109)
+  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_83, menvcfg_stce_zero_op_in_S_83_s129)
   #if __riscv_xlen == 32
   AI_ALLOW(1)
-menvcfg_stce_zero_op_in_S_70:
+menvcfg_stce_zero_op_in_S_86:
   csrrs x7, stimecmph, x0
   AI_OUTCOME
-  AI_CHECK(x13, menvcfg_stce_zero_op_in_S_70, menvcfg_stce_zero_op_in_S_70_s110)
-  AI_CHECK(x14, menvcfg_stce_zero_op_in_S_70, menvcfg_stce_zero_op_in_S_70_s111)
+  AI_CHECK(x13, menvcfg_stce_zero_op_in_S_86, menvcfg_stce_zero_op_in_S_86_s130)
+  AI_CHECK(x14, menvcfg_stce_zero_op_in_S_86, menvcfg_stce_zero_op_in_S_86_s131)
   AI_LOG(x15, TRAPLOG_EPC)
-  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_70, menvcfg_stce_zero_op_in_S_70_s112)
+  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_86, menvcfg_stce_zero_op_in_S_86_s132)
   AI_LOG(x15, TRAPLOG_TVAL)
-  AI_CHECK2(x15, menvcfg_stce_zero_op_in_S_70, menvcfg_stce_zero_op_in_S_70_s113)
+  AI_CHECK2(x15, menvcfg_stce_zero_op_in_S_86, menvcfg_stce_zero_op_in_S_86_s133)
   AI_ORIGIN
-  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_70, menvcfg_stce_zero_op_in_S_70_s114)
+  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_86, menvcfg_stce_zero_op_in_S_86_s134)
   AI_ALLOW(1)
-menvcfg_stce_zero_op_in_S_73:
+menvcfg_stce_zero_op_in_S_89:
   csrrw x7, stimecmph, x6
   AI_OUTCOME
-  AI_CHECK(x13, menvcfg_stce_zero_op_in_S_73, menvcfg_stce_zero_op_in_S_73_s115)
-  AI_CHECK(x14, menvcfg_stce_zero_op_in_S_73, menvcfg_stce_zero_op_in_S_73_s116)
+  AI_CHECK(x13, menvcfg_stce_zero_op_in_S_89, menvcfg_stce_zero_op_in_S_89_s135)
+  AI_CHECK(x14, menvcfg_stce_zero_op_in_S_89, menvcfg_stce_zero_op_in_S_89_s136)
   AI_LOG(x15, TRAPLOG_EPC)
-  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_73, menvcfg_stce_zero_op_in_S_73_s117)
+  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_89, menvcfg_stce_zero_op_in_S_89_s137)
   AI_LOG(x15, TRAPLOG_TVAL)
-  AI_CHECK2(x15, menvcfg_stce_zero_op_in_S_73, menvcfg_stce_zero_op_in_S_73_s118)
+  AI_CHECK2(x15, menvcfg_stce_zero_op_in_S_89, menvcfg_stce_zero_op_in_S_89_s138)
   AI_ORIGIN
-  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_73, menvcfg_stce_zero_op_in_S_73_s119)
+  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_89, menvcfg_stce_zero_op_in_S_89_s139)
   #endif
   AI_ALLOW(1)
-  LA(x14, menvcfg_stce_zero_op_inU_77)
+  LA(x14, menvcfg_stce_zero_op_inU_93)
   csrw sepc, x14
   LI(x14, 256)
   csrc sstatus, x14
@@ -463,21 +560,21 @@ menvcfg_stce_zero_op_in_S_73:
   csrc CSR_HSTATUS, x14
   #endif
   sret
-menvcfg_stce_zero_op_inU_77:
-menvcfg_stce_zero_op_in_U_76:
+menvcfg_stce_zero_op_inU_93:
+menvcfg_stce_zero_op_in_U_92:
   csrrs x7, stimecmp, x0
   RVTEST_TSBI_GOTO_SMODE
   AI_OUTCOME
-  AI_CHECK(x13, menvcfg_stce_zero_op_in_U_76, menvcfg_stce_zero_op_in_U_76_s120)
-  AI_CHECK(x14, menvcfg_stce_zero_op_in_U_76, menvcfg_stce_zero_op_in_U_76_s121)
+  AI_CHECK(x13, menvcfg_stce_zero_op_in_U_92, menvcfg_stce_zero_op_in_U_92_s140)
+  AI_CHECK(x14, menvcfg_stce_zero_op_in_U_92, menvcfg_stce_zero_op_in_U_92_s141)
   AI_LOG(x15, TRAPLOG_EPC)
-  AI_CHECK(x15, menvcfg_stce_zero_op_in_U_76, menvcfg_stce_zero_op_in_U_76_s122)
+  AI_CHECK(x15, menvcfg_stce_zero_op_in_U_92, menvcfg_stce_zero_op_in_U_92_s142)
   AI_LOG(x15, TRAPLOG_TVAL)
-  AI_CHECK2(x15, menvcfg_stce_zero_op_in_U_76, menvcfg_stce_zero_op_in_U_76_s123)
+  AI_CHECK2(x15, menvcfg_stce_zero_op_in_U_92, menvcfg_stce_zero_op_in_U_92_s143)
   AI_ORIGIN
-  AI_CHECK(x15, menvcfg_stce_zero_op_in_U_76, menvcfg_stce_zero_op_in_U_76_s124)
+  AI_CHECK(x15, menvcfg_stce_zero_op_in_U_92, menvcfg_stce_zero_op_in_U_92_s144)
   AI_ALLOW(1)
-  LA(x14, menvcfg_stce_zero_op_inU_81)
+  LA(x14, menvcfg_stce_zero_op_inU_97)
   csrw sepc, x14
   LI(x14, 256)
   csrc sstatus, x14
@@ -486,32 +583,32 @@ menvcfg_stce_zero_op_in_U_76:
   csrc CSR_HSTATUS, x14
   #endif
   sret
-menvcfg_stce_zero_op_inU_81:
-menvcfg_stce_zero_op_in_U_80:
+menvcfg_stce_zero_op_inU_97:
+menvcfg_stce_zero_op_in_U_96:
   csrrw x0, stimecmp, x6
   RVTEST_TSBI_GOTO_SMODE
   AI_OUTCOME
-  AI_CHECK(x13, menvcfg_stce_zero_op_in_U_80, menvcfg_stce_zero_op_in_U_80_s125)
-  AI_CHECK(x14, menvcfg_stce_zero_op_in_U_80, menvcfg_stce_zero_op_in_U_80_s126)
+  AI_CHECK(x13, menvcfg_stce_zero_op_in_U_96, menvcfg_stce_zero_op_in_U_96_s145)
+  AI_CHECK(x14, menvcfg_stce_zero_op_in_U_96, menvcfg_stce_zero_op_in_U_96_s146)
   AI_LOG(x15, TRAPLOG_EPC)
-  AI_CHECK(x15, menvcfg_stce_zero_op_in_U_80, menvcfg_stce_zero_op_in_U_80_s127)
+  AI_CHECK(x15, menvcfg_stce_zero_op_in_U_96, menvcfg_stce_zero_op_in_U_96_s147)
   AI_LOG(x15, TRAPLOG_TVAL)
-  AI_CHECK2(x15, menvcfg_stce_zero_op_in_U_80, menvcfg_stce_zero_op_in_U_80_s128)
+  AI_CHECK2(x15, menvcfg_stce_zero_op_in_U_96, menvcfg_stce_zero_op_in_U_96_s148)
   AI_ORIGIN
-  AI_CHECK(x15, menvcfg_stce_zero_op_in_U_80, menvcfg_stce_zero_op_in_U_80_s129)
+  AI_CHECK(x15, menvcfg_stce_zero_op_in_U_96, menvcfg_stce_zero_op_in_U_96_s149)
   #if defined(H_SUPPORTED)
   AI_ALLOW(1)
-menvcfg_stce_zero_op_in_S_84:
+menvcfg_stce_zero_op_in_S_100:
   csrrs x7, vstimecmp, x0
   AI_OUTCOME
-  AI_CHECK(x13, menvcfg_stce_zero_op_in_S_84, menvcfg_stce_zero_op_in_S_84_s130)
-  AI_CHECK(x14, menvcfg_stce_zero_op_in_S_84, menvcfg_stce_zero_op_in_S_84_s131)
+  AI_CHECK(x13, menvcfg_stce_zero_op_in_S_100, menvcfg_stce_zero_op_in_S_100_s150)
+  AI_CHECK(x14, menvcfg_stce_zero_op_in_S_100, menvcfg_stce_zero_op_in_S_100_s151)
   AI_LOG(x15, TRAPLOG_EPC)
-  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_84, menvcfg_stce_zero_op_in_S_84_s132)
+  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_100, menvcfg_stce_zero_op_in_S_100_s152)
   AI_LOG(x15, TRAPLOG_TVAL)
-  AI_CHECK2(x15, menvcfg_stce_zero_op_in_S_84, menvcfg_stce_zero_op_in_S_84_s133)
+  AI_CHECK2(x15, menvcfg_stce_zero_op_in_S_100, menvcfg_stce_zero_op_in_S_100_s153)
   AI_ORIGIN
-  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_84, menvcfg_stce_zero_op_in_S_84_s134)
+  AI_CHECK(x15, menvcfg_stce_zero_op_in_S_100, menvcfg_stce_zero_op_in_S_100_s154)
   #endif
   // mcounteren.TM = 1
   LI(a1, 2)
@@ -526,15 +623,15 @@ menvcfg_stce_zero_op_in_S_84:
   AI_LOAD(a1)  // random, M-mode write with STCE=0 (low half)
   RVTEST_TSBI_CSR_ACCESS TSBI_CSR_WRITE(CSR_STIMECMP)
   #endif
-menvcfg_stce_zero_op_mrw_87:
+menvcfg_stce_zero_op_mrw_103:
   RVTEST_TSBI_CSR_ACCESS TSBI_CSR_READ(CSR_STIMECMP)
   #if __riscv_xlen == 64
-  AI_CHECK(a0, menvcfg_stce_zero_op_mrw_87, menvcfg_stce_zero_op_mrw_87_s135)
+  AI_CHECK(a0, menvcfg_stce_zero_op_mrw_103, menvcfg_stce_zero_op_mrw_103_s155)
   #endif
   #if __riscv_xlen == 32
-  AI_CHECK(a0, menvcfg_stce_zero_op_mrw_87, menvcfg_stce_zero_op_mrw_87_s136)
+  AI_CHECK(a0, menvcfg_stce_zero_op_mrw_103, menvcfg_stce_zero_op_mrw_103_s156)
   RVTEST_TSBI_CSR_ACCESS TSBI_CSR_READ(CSR_STIMECMPH)
-  AI_CHECK(a0, menvcfg_stce_zero_op_mrw_87, menvcfg_stce_zero_op_mrw_87_s137)
+  AI_CHECK(a0, menvcfg_stce_zero_op_mrw_103, menvcfg_stce_zero_op_mrw_103_s157)
   #endif
   #if __riscv_xlen == 64
   AI_LOAD(a1)  // stimecmp=0
@@ -549,90 +646,90 @@ menvcfg_stce_zero_op_mrw_87:
   // M-mode write mip.STIP = 0
   LI(a1, 32)
   RVTEST_TSBI_CSR_ACCESS TSBI_CSR_CLEAR(CSR_MIP)
-menvcfg_stce_zero_op_mip_88:
+menvcfg_stce_zero_op_mip_104:
   RVTEST_TSBI_CSR_ACCESS TSBI_CSR_READ(CSR_MIP)
   andi a0, a0, 32
-  AI_CHECK(a0, menvcfg_stce_zero_op_mip_88, menvcfg_stce_zero_op_mip_88_s138)
+  AI_CHECK(a0, menvcfg_stce_zero_op_mip_104, menvcfg_stce_zero_op_mip_104_s158)
   LI(x9, 50)
-menvcfg_stce_zero_op_wait_90:
+menvcfg_stce_zero_op_wait_106:
   csrr x8, sip
   andi x8, x8, 32
-  bnez x8, menvcfg_stce_zero_op_waitdone_91
+  bnez x8, menvcfg_stce_zero_op_waitdone_107
   addi x9, x9, -1
-  bnez x9, menvcfg_stce_zero_op_wait_90
-menvcfg_stce_zero_op_waitdone_91:
-menvcfg_stce_zero_op_stip_89:
-  AI_CHECK(x8, menvcfg_stce_zero_op_stip_89, menvcfg_stce_zero_op_stip_89_s139)
+  bnez x9, menvcfg_stce_zero_op_wait_106
+menvcfg_stce_zero_op_waitdone_107:
+menvcfg_stce_zero_op_stip_105:
+  AI_CHECK(x8, menvcfg_stce_zero_op_stip_105, menvcfg_stce_zero_op_stip_105_s159)
   LI(x6, 32)
   csrs sip, x6
   LI(x9, 50)
-menvcfg_stce_zero_op_wait_93:
+menvcfg_stce_zero_op_wait_109:
   csrr x8, sip
   andi x8, x8, 32
-  bnez x8, menvcfg_stce_zero_op_waitdone_94
+  bnez x8, menvcfg_stce_zero_op_waitdone_110
   addi x9, x9, -1
-  bnez x9, menvcfg_stce_zero_op_wait_93
-menvcfg_stce_zero_op_waitdone_94:
-menvcfg_stce_zero_op_stip_92:
-  AI_CHECK(x8, menvcfg_stce_zero_op_stip_92, menvcfg_stce_zero_op_stip_92_s140)
+  bnez x9, menvcfg_stce_zero_op_wait_109
+menvcfg_stce_zero_op_waitdone_110:
+menvcfg_stce_zero_op_stip_108:
+  AI_CHECK(x8, menvcfg_stce_zero_op_stip_108, menvcfg_stce_zero_op_stip_108_s160)
   // M-mode write mip.STIP = 1
   LI(a1, 32)
   RVTEST_TSBI_CSR_ACCESS TSBI_CSR_SET(CSR_MIP)
-menvcfg_stce_zero_op_mip_95:
+menvcfg_stce_zero_op_mip_111:
   RVTEST_TSBI_CSR_ACCESS TSBI_CSR_READ(CSR_MIP)
   andi a0, a0, 32
-  AI_CHECK(a0, menvcfg_stce_zero_op_mip_95, menvcfg_stce_zero_op_mip_95_s141)
+  AI_CHECK(a0, menvcfg_stce_zero_op_mip_111, menvcfg_stce_zero_op_mip_111_s161)
   LI(x9, 50)
-menvcfg_stce_zero_op_wait_97:
+menvcfg_stce_zero_op_wait_113:
   csrr x8, sip
   andi x8, x8, 32
-  beqz x8, menvcfg_stce_zero_op_waitdone_98
+  beqz x8, menvcfg_stce_zero_op_waitdone_114
   addi x9, x9, -1
-  bnez x9, menvcfg_stce_zero_op_wait_97
-menvcfg_stce_zero_op_waitdone_98:
-menvcfg_stce_zero_op_stip_96:
-  AI_CHECK(x8, menvcfg_stce_zero_op_stip_96, menvcfg_stce_zero_op_stip_96_s142)
+  bnez x9, menvcfg_stce_zero_op_wait_113
+menvcfg_stce_zero_op_waitdone_114:
+menvcfg_stce_zero_op_stip_112:
+  AI_CHECK(x8, menvcfg_stce_zero_op_stip_112, menvcfg_stce_zero_op_stip_112_s162)
   LI(x6, 32)
   csrc sip, x6
   LI(x9, 50)
-menvcfg_stce_zero_op_wait_100:
+menvcfg_stce_zero_op_wait_116:
   csrr x8, sip
   andi x8, x8, 32
-  beqz x8, menvcfg_stce_zero_op_waitdone_101
+  beqz x8, menvcfg_stce_zero_op_waitdone_117
   addi x9, x9, -1
-  bnez x9, menvcfg_stce_zero_op_wait_100
-menvcfg_stce_zero_op_waitdone_101:
-menvcfg_stce_zero_op_stip_99:
-  AI_CHECK(x8, menvcfg_stce_zero_op_stip_99, menvcfg_stce_zero_op_stip_99_s143)
+  bnez x9, menvcfg_stce_zero_op_wait_116
+menvcfg_stce_zero_op_waitdone_117:
+menvcfg_stce_zero_op_stip_115:
+  AI_CHECK(x8, menvcfg_stce_zero_op_stip_115, menvcfg_stce_zero_op_stip_115_s163)
   // M-mode write mip.STIP = 0
   LI(a1, 32)
   RVTEST_TSBI_CSR_ACCESS TSBI_CSR_CLEAR(CSR_MIP)
-menvcfg_stce_zero_op_mip_102:
+menvcfg_stce_zero_op_mip_118:
   RVTEST_TSBI_CSR_ACCESS TSBI_CSR_READ(CSR_MIP)
   andi a0, a0, 32
-  AI_CHECK(a0, menvcfg_stce_zero_op_mip_102, menvcfg_stce_zero_op_mip_102_s144)
+  AI_CHECK(a0, menvcfg_stce_zero_op_mip_118, menvcfg_stce_zero_op_mip_118_s164)
   LI(x9, 50)
-menvcfg_stce_zero_op_wait_104:
+menvcfg_stce_zero_op_wait_120:
   csrr x8, sip
   andi x8, x8, 32
-  bnez x8, menvcfg_stce_zero_op_waitdone_105
+  bnez x8, menvcfg_stce_zero_op_waitdone_121
   addi x9, x9, -1
-  bnez x9, menvcfg_stce_zero_op_wait_104
-menvcfg_stce_zero_op_waitdone_105:
-menvcfg_stce_zero_op_stip_103:
-  AI_CHECK(x8, menvcfg_stce_zero_op_stip_103, menvcfg_stce_zero_op_stip_103_s145)
+  bnez x9, menvcfg_stce_zero_op_wait_120
+menvcfg_stce_zero_op_waitdone_121:
+menvcfg_stce_zero_op_stip_119:
+  AI_CHECK(x8, menvcfg_stce_zero_op_stip_119, menvcfg_stce_zero_op_stip_119_s165)
   LI(x6, 32)
   csrs sip, x6
   LI(x9, 50)
-menvcfg_stce_zero_op_wait_107:
+menvcfg_stce_zero_op_wait_123:
   csrr x8, sip
   andi x8, x8, 32
-  bnez x8, menvcfg_stce_zero_op_waitdone_108
+  bnez x8, menvcfg_stce_zero_op_waitdone_124
   addi x9, x9, -1
-  bnez x9, menvcfg_stce_zero_op_wait_107
-menvcfg_stce_zero_op_waitdone_108:
-menvcfg_stce_zero_op_stip_106:
-  AI_CHECK(x8, menvcfg_stce_zero_op_stip_106, menvcfg_stce_zero_op_stip_106_s146)
+  bnez x9, menvcfg_stce_zero_op_wait_123
+menvcfg_stce_zero_op_waitdone_124:
+menvcfg_stce_zero_op_stip_122:
+  AI_CHECK(x8, menvcfg_stce_zero_op_stip_122, menvcfg_stce_zero_op_stip_122_s166)
   #if __riscv_xlen == 64
   AI_LOAD(a1)  // stimecmp=all ones
   RVTEST_TSBI_CSR_ACCESS TSBI_CSR_WRITE(CSR_STIMECMP)
@@ -646,90 +743,90 @@ menvcfg_stce_zero_op_stip_106:
   // M-mode write mip.STIP = 0
   LI(a1, 32)
   RVTEST_TSBI_CSR_ACCESS TSBI_CSR_CLEAR(CSR_MIP)
-menvcfg_stce_zero_op_mip_109:
+menvcfg_stce_zero_op_mip_125:
   RVTEST_TSBI_CSR_ACCESS TSBI_CSR_READ(CSR_MIP)
   andi a0, a0, 32
-  AI_CHECK(a0, menvcfg_stce_zero_op_mip_109, menvcfg_stce_zero_op_mip_109_s147)
+  AI_CHECK(a0, menvcfg_stce_zero_op_mip_125, menvcfg_stce_zero_op_mip_125_s167)
   LI(x9, 50)
-menvcfg_stce_zero_op_wait_111:
+menvcfg_stce_zero_op_wait_127:
   csrr x8, sip
   andi x8, x8, 32
-  bnez x8, menvcfg_stce_zero_op_waitdone_112
+  bnez x8, menvcfg_stce_zero_op_waitdone_128
   addi x9, x9, -1
-  bnez x9, menvcfg_stce_zero_op_wait_111
-menvcfg_stce_zero_op_waitdone_112:
-menvcfg_stce_zero_op_stip_110:
-  AI_CHECK(x8, menvcfg_stce_zero_op_stip_110, menvcfg_stce_zero_op_stip_110_s148)
+  bnez x9, menvcfg_stce_zero_op_wait_127
+menvcfg_stce_zero_op_waitdone_128:
+menvcfg_stce_zero_op_stip_126:
+  AI_CHECK(x8, menvcfg_stce_zero_op_stip_126, menvcfg_stce_zero_op_stip_126_s168)
   LI(x6, 32)
   csrs sip, x6
   LI(x9, 50)
-menvcfg_stce_zero_op_wait_114:
+menvcfg_stce_zero_op_wait_130:
   csrr x8, sip
   andi x8, x8, 32
-  bnez x8, menvcfg_stce_zero_op_waitdone_115
+  bnez x8, menvcfg_stce_zero_op_waitdone_131
   addi x9, x9, -1
-  bnez x9, menvcfg_stce_zero_op_wait_114
-menvcfg_stce_zero_op_waitdone_115:
-menvcfg_stce_zero_op_stip_113:
-  AI_CHECK(x8, menvcfg_stce_zero_op_stip_113, menvcfg_stce_zero_op_stip_113_s149)
+  bnez x9, menvcfg_stce_zero_op_wait_130
+menvcfg_stce_zero_op_waitdone_131:
+menvcfg_stce_zero_op_stip_129:
+  AI_CHECK(x8, menvcfg_stce_zero_op_stip_129, menvcfg_stce_zero_op_stip_129_s169)
   // M-mode write mip.STIP = 1
   LI(a1, 32)
   RVTEST_TSBI_CSR_ACCESS TSBI_CSR_SET(CSR_MIP)
-menvcfg_stce_zero_op_mip_116:
+menvcfg_stce_zero_op_mip_132:
   RVTEST_TSBI_CSR_ACCESS TSBI_CSR_READ(CSR_MIP)
   andi a0, a0, 32
-  AI_CHECK(a0, menvcfg_stce_zero_op_mip_116, menvcfg_stce_zero_op_mip_116_s150)
+  AI_CHECK(a0, menvcfg_stce_zero_op_mip_132, menvcfg_stce_zero_op_mip_132_s170)
   LI(x9, 50)
-menvcfg_stce_zero_op_wait_118:
+menvcfg_stce_zero_op_wait_134:
   csrr x8, sip
   andi x8, x8, 32
-  beqz x8, menvcfg_stce_zero_op_waitdone_119
+  beqz x8, menvcfg_stce_zero_op_waitdone_135
   addi x9, x9, -1
-  bnez x9, menvcfg_stce_zero_op_wait_118
-menvcfg_stce_zero_op_waitdone_119:
-menvcfg_stce_zero_op_stip_117:
-  AI_CHECK(x8, menvcfg_stce_zero_op_stip_117, menvcfg_stce_zero_op_stip_117_s151)
+  bnez x9, menvcfg_stce_zero_op_wait_134
+menvcfg_stce_zero_op_waitdone_135:
+menvcfg_stce_zero_op_stip_133:
+  AI_CHECK(x8, menvcfg_stce_zero_op_stip_133, menvcfg_stce_zero_op_stip_133_s171)
   LI(x6, 32)
   csrc sip, x6
   LI(x9, 50)
-menvcfg_stce_zero_op_wait_121:
+menvcfg_stce_zero_op_wait_137:
   csrr x8, sip
   andi x8, x8, 32
-  beqz x8, menvcfg_stce_zero_op_waitdone_122
+  beqz x8, menvcfg_stce_zero_op_waitdone_138
   addi x9, x9, -1
-  bnez x9, menvcfg_stce_zero_op_wait_121
-menvcfg_stce_zero_op_waitdone_122:
-menvcfg_stce_zero_op_stip_120:
-  AI_CHECK(x8, menvcfg_stce_zero_op_stip_120, menvcfg_stce_zero_op_stip_120_s152)
+  bnez x9, menvcfg_stce_zero_op_wait_137
+menvcfg_stce_zero_op_waitdone_138:
+menvcfg_stce_zero_op_stip_136:
+  AI_CHECK(x8, menvcfg_stce_zero_op_stip_136, menvcfg_stce_zero_op_stip_136_s172)
   // M-mode write mip.STIP = 0
   LI(a1, 32)
   RVTEST_TSBI_CSR_ACCESS TSBI_CSR_CLEAR(CSR_MIP)
-menvcfg_stce_zero_op_mip_123:
+menvcfg_stce_zero_op_mip_139:
   RVTEST_TSBI_CSR_ACCESS TSBI_CSR_READ(CSR_MIP)
   andi a0, a0, 32
-  AI_CHECK(a0, menvcfg_stce_zero_op_mip_123, menvcfg_stce_zero_op_mip_123_s153)
+  AI_CHECK(a0, menvcfg_stce_zero_op_mip_139, menvcfg_stce_zero_op_mip_139_s173)
   LI(x9, 50)
-menvcfg_stce_zero_op_wait_125:
+menvcfg_stce_zero_op_wait_141:
   csrr x8, sip
   andi x8, x8, 32
-  bnez x8, menvcfg_stce_zero_op_waitdone_126
+  bnez x8, menvcfg_stce_zero_op_waitdone_142
   addi x9, x9, -1
-  bnez x9, menvcfg_stce_zero_op_wait_125
-menvcfg_stce_zero_op_waitdone_126:
-menvcfg_stce_zero_op_stip_124:
-  AI_CHECK(x8, menvcfg_stce_zero_op_stip_124, menvcfg_stce_zero_op_stip_124_s154)
+  bnez x9, menvcfg_stce_zero_op_wait_141
+menvcfg_stce_zero_op_waitdone_142:
+menvcfg_stce_zero_op_stip_140:
+  AI_CHECK(x8, menvcfg_stce_zero_op_stip_140, menvcfg_stce_zero_op_stip_140_s174)
   LI(x6, 32)
   csrs sip, x6
   LI(x9, 50)
-menvcfg_stce_zero_op_wait_128:
+menvcfg_stce_zero_op_wait_144:
   csrr x8, sip
   andi x8, x8, 32
-  bnez x8, menvcfg_stce_zero_op_waitdone_129
+  bnez x8, menvcfg_stce_zero_op_waitdone_145
   addi x9, x9, -1
-  bnez x9, menvcfg_stce_zero_op_wait_128
-menvcfg_stce_zero_op_waitdone_129:
-menvcfg_stce_zero_op_stip_127:
-  AI_CHECK(x8, menvcfg_stce_zero_op_stip_127, menvcfg_stce_zero_op_stip_127_s155)
+  bnez x9, menvcfg_stce_zero_op_wait_144
+menvcfg_stce_zero_op_waitdone_145:
+menvcfg_stce_zero_op_stip_143:
+  AI_CHECK(x8, menvcfg_stce_zero_op_stip_143, menvcfg_stce_zero_op_stip_143_s175)
   // interrupt delivery through the reverted mip.STIP
   #if __riscv_xlen == 64
   AI_LOAD(a1)  // zero
@@ -748,22 +845,22 @@ menvcfg_stce_zero_op_stip_127:
   csrs sie, x6
   LI(x6, 2)
   AI_ALLOW(1)
-menvcfg_stce_zero_op_noint_130:
+menvcfg_stce_zero_op_noint_146:
   csrs sstatus, x6
   LI(x9, 50)
-menvcfg_stce_zero_op_wait_131:
+menvcfg_stce_zero_op_wait_147:
   csrr x8, sip
   andi x8, x8, 32
-  bnez x8, menvcfg_stce_zero_op_waitdone_132
+  bnez x8, menvcfg_stce_zero_op_waitdone_148
   addi x9, x9, -1
-  bnez x9, menvcfg_stce_zero_op_wait_131
-menvcfg_stce_zero_op_waitdone_132:
+  bnez x9, menvcfg_stce_zero_op_wait_147
+menvcfg_stce_zero_op_waitdone_148:
   csrc sstatus, x6
   LI(x6, 32)
   csrc sie, x6
   AI_OUTCOME
-  AI_CHECK(x13, menvcfg_stce_zero_op_noint_130, menvcfg_stce_zero_op_noint_130_s156)
-  AI_CHECK(x14, menvcfg_stce_zero_op_noint_130, menvcfg_stce_zero_op_noint_130_s157)
+  AI_CHECK(x13, menvcfg_stce_zero_op_noint_146, menvcfg_stce_zero_op_noint_146_s176)
+  AI_CHECK(x14, menvcfg_stce_zero_op_noint_146, menvcfg_stce_zero_op_noint_146_s177)
   // M-mode write mip.STIP = 1
   LI(a1, 32)
   RVTEST_TSBI_CSR_ACCESS TSBI_CSR_SET(CSR_MIP)
@@ -771,29 +868,29 @@ menvcfg_stce_zero_op_waitdone_132:
   csrs sie, x6
   LI(x6, 2)
   AI_ALLOW(1)
-menvcfg_stce_zero_op_int_133:
+menvcfg_stce_zero_op_int_149:
   csrs sstatus, x6
   LI(x9, 50)
-menvcfg_stce_zero_op_wait_134:
+menvcfg_stce_zero_op_wait_150:
   csrr x8, sip
   andi x8, x8, 32
-  bnez x8, menvcfg_stce_zero_op_waitdone_135
+  bnez x8, menvcfg_stce_zero_op_waitdone_151
   addi x9, x9, -1
-  bnez x9, menvcfg_stce_zero_op_wait_134
-menvcfg_stce_zero_op_waitdone_135:
+  bnez x9, menvcfg_stce_zero_op_wait_150
+menvcfg_stce_zero_op_waitdone_151:
   csrc sstatus, x6
   LI(x6, 32)
   csrc sie, x6
   AI_OUTCOME
-  AI_CHECK(x13, menvcfg_stce_zero_op_int_133, menvcfg_stce_zero_op_int_133_s158)
-  AI_CHECK(x14, menvcfg_stce_zero_op_int_133, menvcfg_stce_zero_op_int_133_s159)
+  AI_CHECK(x13, menvcfg_stce_zero_op_int_149, menvcfg_stce_zero_op_int_149_s178)
+  AI_CHECK(x14, menvcfg_stce_zero_op_int_149, menvcfg_stce_zero_op_int_149_s179)
   AI_ORIGIN
-  AI_CHECK(x15, menvcfg_stce_zero_op_int_133, menvcfg_stce_zero_op_int_133_s160)
+  AI_CHECK(x15, menvcfg_stce_zero_op_int_149, menvcfg_stce_zero_op_int_149_s180)
   // M-mode write mip.STIP = 0
   LI(a1, 32)
   RVTEST_TSBI_CSR_ACCESS TSBI_CSR_CLEAR(CSR_MIP)
   #if defined(H_SUPPORTED)
-menvcfg_stce_zero_op_henvcfg_masked_138:
+menvcfg_stce_zero_op_henvcfg_masked_154:
   #if __riscv_xlen == 64
   csrr x7, CSR_HENVCFG
   srli x7, x7, 63
@@ -802,23 +899,23 @@ menvcfg_stce_zero_op_henvcfg_masked_138:
   csrr x7, CSR_HENVCFGH
   srli x7, x7, 31
   #endif
-  AI_CHECK(x7, menvcfg_stce_zero_op_henvcfg_masked_138, menvcfg_stce_zero_op_henvcfg_masked_138_s161)
+  AI_CHECK(x7, menvcfg_stce_zero_op_henvcfg_masked_154, menvcfg_stce_zero_op_henvcfg_masked_154_s181)
   #if __riscv_xlen == 64
   LI(x6, 1)
   slli x6, x6, 63
-menvcfg_stce_zero_op_henvcfg_139:
+menvcfg_stce_zero_op_henvcfg_155:
   csrs CSR_HENVCFG, x6
   csrr x7, CSR_HENVCFG
   srli x7, x7, 63
   #endif
   #if __riscv_xlen == 32
   LI(x6, 2147483648)
-menvcfg_stce_zero_op_henvcfg_139:
+menvcfg_stce_zero_op_henvcfg_155:
   csrs CSR_HENVCFGH, x6
   csrr x7, CSR_HENVCFGH
   srli x7, x7, 31
   #endif
-  AI_CHECK(x7, menvcfg_stce_zero_op_henvcfg_139, menvcfg_stce_zero_op_henvcfg_139_s162)
+  AI_CHECK(x7, menvcfg_stce_zero_op_henvcfg_155, menvcfg_stce_zero_op_henvcfg_155_s182)
   #endif
 
   // teardown: sie.STIE=0, stimecmp all ones (M write), STCE=0, TM=1
@@ -876,25 +973,31 @@ ai_table:
   .dword 0x0000000000000001, 0x0000000000000002, menvcfg_stce_zero_op_in_S_39, 0x0000000000000000
   .dword 0x0000000024d023f3, 0x0000000000000001, 0x0000000000000001, 0x0000000000000002
   .dword menvcfg_stce_zero_op_in_VS_42, 0x0000000000000000, 0x0000000014d023f3, 0x0000000000000005
+  .dword 0x0000000000000001, 0x0000000000000002, menvcfg_stce_zero_op_in_VU_46, 0x0000000000000000
+  .dword 0x0000000014d023f3, 0x0000000000000004, 0x0000000000000001, 0x0000000000000002
+  .dword menvcfg_stce_zero_op_in_VU_50, 0x0000000000000000, 0x0000000014d31073, 0x0000000000000004
+  .dword 0x0000000000000001, 0x0000000000000002, menvcfg_stce_zero_op_in_VS_54, 0x0000000000000000
+  .dword 0x0000000024d023f3, 0x0000000000000005, 0x0000000000000001, 0x0000000000000002
+  .dword menvcfg_stce_zero_op_in_VU_58, 0x0000000000000000, 0x0000000024d023f3, 0x0000000000000004
 #endif
-  .dword 0xa5179f759e2a69d7, 0x0000000000000001, 0x0000000000000002, menvcfg_stce_zero_op_in_S_46
+  .dword 0xa5179f759e2a69d7, 0x0000000000000001, 0x0000000000000002, menvcfg_stce_zero_op_in_S_62
   .dword 0x0000000000000000, 0x0000000014d023f3, 0x0000000000000001, 0x0000000000000001
-  .dword 0x0000000000000002, menvcfg_stce_zero_op_in_S_49, 0x0000000000000000, 0x0000000014d31073
-  .dword 0x0000000000000001, 0x0000000000000001, 0x0000000000000002, menvcfg_stce_zero_op_in_S_52
+  .dword 0x0000000000000002, menvcfg_stce_zero_op_in_S_65, 0x0000000000000000, 0x0000000014d31073
+  .dword 0x0000000000000001, 0x0000000000000001, 0x0000000000000002, menvcfg_stce_zero_op_in_S_68
   .dword 0x0000000000000000, 0x0000000014d313f3, 0x0000000000000001, 0x0000000000000001
-  .dword 0x0000000000000002, menvcfg_stce_zero_op_in_S_55, 0x0000000000000000, 0x0000000014d323f3
-  .dword 0x0000000000000001, 0x0000000000000001, 0x0000000000000002, menvcfg_stce_zero_op_in_S_58
+  .dword 0x0000000000000002, menvcfg_stce_zero_op_in_S_71, 0x0000000000000000, 0x0000000014d323f3
+  .dword 0x0000000000000001, 0x0000000000000001, 0x0000000000000002, menvcfg_stce_zero_op_in_S_74
   .dword 0x0000000000000000, 0x0000000014d333f3, 0x0000000000000001, 0x0000000000000001
-  .dword 0x0000000000000002, menvcfg_stce_zero_op_in_S_61, 0x0000000000000000, 0x0000000014dad3f3
-  .dword 0x0000000000000001, 0x0000000000000001, 0x0000000000000002, menvcfg_stce_zero_op_in_S_64
+  .dword 0x0000000000000002, menvcfg_stce_zero_op_in_S_77, 0x0000000000000000, 0x0000000014dad3f3
+  .dword 0x0000000000000001, 0x0000000000000001, 0x0000000000000002, menvcfg_stce_zero_op_in_S_80
   .dword 0x0000000000000000, 0x0000000014d063f3, 0x0000000000000001, 0x0000000000000001
-  .dword 0x0000000000000002, menvcfg_stce_zero_op_in_S_67, 0x0000000000000000, 0x0000000014daf3f3
+  .dword 0x0000000000000002, menvcfg_stce_zero_op_in_S_83, 0x0000000000000000, 0x0000000014daf3f3
   .dword 0x0000000000000001
-  .dword 0x0000000000000001, 0x0000000000000002, menvcfg_stce_zero_op_in_U_76, 0x0000000000000000
+  .dword 0x0000000000000001, 0x0000000000000002, menvcfg_stce_zero_op_in_U_92, 0x0000000000000000
   .dword 0x0000000014d023f3, 0x0000000000000000, 0x0000000000000001, 0x0000000000000002
-  .dword menvcfg_stce_zero_op_in_U_80, 0x0000000000000000, 0x0000000014d31073, 0x0000000000000000
+  .dword menvcfg_stce_zero_op_in_U_96, 0x0000000000000000, 0x0000000014d31073, 0x0000000000000000
 #if (defined(H_SUPPORTED))
-  .dword 0x0000000000000001, 0x0000000000000002, menvcfg_stce_zero_op_in_S_84, 0x0000000000000000
+  .dword 0x0000000000000001, 0x0000000000000002, menvcfg_stce_zero_op_in_S_100, 0x0000000000000000
   .dword 0x0000000024d023f3, 0x0000000000000001
 #endif
   .dword 0xd23ce5c9f3f497f4
@@ -975,91 +1078,111 @@ menvcfg_stce_zero_op_in_VS_42_s66: .string "menvcfg_stce_zero_op: read (csrrs rs
 menvcfg_stce_zero_op_in_VS_42_s67: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=1, hcounteren.TM=1) in VS-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_VS_42"
 menvcfg_stce_zero_op_in_VS_42_s68: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=1, hcounteren.TM=1) in VS-mode: xtval is one of its legal values; expect 0x0000000000000000 or 0x0000000014d023f3"
 menvcfg_stce_zero_op_in_VS_42_s69: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=1, hcounteren.TM=1) in VS-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x0000000000000005"
+menvcfg_stce_zero_op_in_VU_46_s70: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1) in VU-mode: number of traps; expect 0x0000000000000001"
+menvcfg_stce_zero_op_in_VU_46_s71: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1) in VU-mode: outcome (xcause, or all ones for no trap); expect 0x0000000000000002"
+menvcfg_stce_zero_op_in_VU_46_s72: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1) in VU-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_VU_46"
+menvcfg_stce_zero_op_in_VU_46_s73: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1) in VU-mode: xtval is one of its legal values; expect 0x0000000000000000 or 0x0000000014d023f3"
+menvcfg_stce_zero_op_in_VU_46_s74: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1) in VU-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x0000000000000004"
+menvcfg_stce_zero_op_in_VU_50_s75: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1) in VU-mode: number of traps; expect 0x0000000000000001"
+menvcfg_stce_zero_op_in_VU_50_s76: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1) in VU-mode: outcome (xcause, or all ones for no trap); expect 0x0000000000000002"
+menvcfg_stce_zero_op_in_VU_50_s77: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1) in VU-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_VU_50"
+menvcfg_stce_zero_op_in_VU_50_s78: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1) in VU-mode: xtval is one of its legal values; expect 0x0000000000000000 or 0x0000000014d31073"
+menvcfg_stce_zero_op_in_VU_50_s79: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1) in VU-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x0000000000000004"
+menvcfg_stce_zero_op_in_VS_54_s80: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of vstimecmp (STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1) in VS-mode: number of traps; expect 0x0000000000000001"
+menvcfg_stce_zero_op_in_VS_54_s81: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of vstimecmp (STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1) in VS-mode: outcome (xcause, or all ones for no trap); expect 0x0000000000000002"
+menvcfg_stce_zero_op_in_VS_54_s82: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of vstimecmp (STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1) in VS-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_VS_54"
+menvcfg_stce_zero_op_in_VS_54_s83: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of vstimecmp (STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1) in VS-mode: xtval is one of its legal values; expect 0x0000000000000000 or 0x0000000024d023f3"
+menvcfg_stce_zero_op_in_VS_54_s84: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of vstimecmp (STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1) in VS-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x0000000000000005"
+menvcfg_stce_zero_op_in_VU_58_s85: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of vstimecmp (STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1) in VU-mode: number of traps; expect 0x0000000000000001"
+menvcfg_stce_zero_op_in_VU_58_s86: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of vstimecmp (STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1) in VU-mode: outcome (xcause, or all ones for no trap); expect 0x0000000000000002"
+menvcfg_stce_zero_op_in_VU_58_s87: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of vstimecmp (STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1) in VU-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_VU_58"
+menvcfg_stce_zero_op_in_VU_58_s88: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of vstimecmp (STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1) in VU-mode: xtval is one of its legal values; expect 0x0000000000000000 or 0x0000000024d023f3"
+menvcfg_stce_zero_op_in_VU_58_s89: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of vstimecmp (STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1) in VU-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x0000000000000004"
 #endif
-menvcfg_stce_zero_op_in_S_46_s70: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=0) in S-mode: number of traps; expect 0x0000000000000001"
-menvcfg_stce_zero_op_in_S_46_s71: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=0) in S-mode: outcome (xcause, or all ones for no trap); expect 0x0000000000000002"
-menvcfg_stce_zero_op_in_S_46_s72: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=0) in S-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_S_46"
-menvcfg_stce_zero_op_in_S_46_s73: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=0) in S-mode: xtval is one of its legal values; expect 0x0000000000000000 or 0x0000000014d023f3"
-menvcfg_stce_zero_op_in_S_46_s74: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=0) in S-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x0000000000000001"
-menvcfg_stce_zero_op_in_S_49_s75: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=0) in S-mode: number of traps; expect 0x0000000000000001"
-menvcfg_stce_zero_op_in_S_49_s76: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=0) in S-mode: outcome (xcause, or all ones for no trap); expect 0x0000000000000002"
-menvcfg_stce_zero_op_in_S_49_s77: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=0) in S-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_S_49"
-menvcfg_stce_zero_op_in_S_49_s78: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=0) in S-mode: xtval is one of its legal values; expect 0x0000000000000000 or 0x0000000014d31073"
-menvcfg_stce_zero_op_in_S_49_s79: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=0) in S-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x0000000000000001"
-menvcfg_stce_zero_op_in_S_52_s80: .string "menvcfg_stce_zero_op: swap (csrrw) of stimecmp (STCE=0, TM=0) in S-mode: number of traps; expect 0x0000000000000001"
-menvcfg_stce_zero_op_in_S_52_s81: .string "menvcfg_stce_zero_op: swap (csrrw) of stimecmp (STCE=0, TM=0) in S-mode: outcome (xcause, or all ones for no trap); expect 0x0000000000000002"
-menvcfg_stce_zero_op_in_S_52_s82: .string "menvcfg_stce_zero_op: swap (csrrw) of stimecmp (STCE=0, TM=0) in S-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_S_52"
-menvcfg_stce_zero_op_in_S_52_s83: .string "menvcfg_stce_zero_op: swap (csrrw) of stimecmp (STCE=0, TM=0) in S-mode: xtval is one of its legal values; expect 0x0000000000000000 or 0x0000000014d313f3"
-menvcfg_stce_zero_op_in_S_52_s84: .string "menvcfg_stce_zero_op: swap (csrrw) of stimecmp (STCE=0, TM=0) in S-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x0000000000000001"
-menvcfg_stce_zero_op_in_S_55_s85: .string "menvcfg_stce_zero_op: set (csrrs) of stimecmp (STCE=0, TM=0) in S-mode: number of traps; expect 0x0000000000000001"
-menvcfg_stce_zero_op_in_S_55_s86: .string "menvcfg_stce_zero_op: set (csrrs) of stimecmp (STCE=0, TM=0) in S-mode: outcome (xcause, or all ones for no trap); expect 0x0000000000000002"
-menvcfg_stce_zero_op_in_S_55_s87: .string "menvcfg_stce_zero_op: set (csrrs) of stimecmp (STCE=0, TM=0) in S-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_S_55"
-menvcfg_stce_zero_op_in_S_55_s88: .string "menvcfg_stce_zero_op: set (csrrs) of stimecmp (STCE=0, TM=0) in S-mode: xtval is one of its legal values; expect 0x0000000000000000 or 0x0000000014d323f3"
-menvcfg_stce_zero_op_in_S_55_s89: .string "menvcfg_stce_zero_op: set (csrrs) of stimecmp (STCE=0, TM=0) in S-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x0000000000000001"
-menvcfg_stce_zero_op_in_S_58_s90: .string "menvcfg_stce_zero_op: clear (csrrc) of stimecmp (STCE=0, TM=0) in S-mode: number of traps; expect 0x0000000000000001"
-menvcfg_stce_zero_op_in_S_58_s91: .string "menvcfg_stce_zero_op: clear (csrrc) of stimecmp (STCE=0, TM=0) in S-mode: outcome (xcause, or all ones for no trap); expect 0x0000000000000002"
-menvcfg_stce_zero_op_in_S_58_s92: .string "menvcfg_stce_zero_op: clear (csrrc) of stimecmp (STCE=0, TM=0) in S-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_S_58"
-menvcfg_stce_zero_op_in_S_58_s93: .string "menvcfg_stce_zero_op: clear (csrrc) of stimecmp (STCE=0, TM=0) in S-mode: xtval is one of its legal values; expect 0x0000000000000000 or 0x0000000014d333f3"
-menvcfg_stce_zero_op_in_S_58_s94: .string "menvcfg_stce_zero_op: clear (csrrc) of stimecmp (STCE=0, TM=0) in S-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x0000000000000001"
-menvcfg_stce_zero_op_in_S_61_s95: .string "menvcfg_stce_zero_op: write immediate (csrrwi) of stimecmp (STCE=0, TM=0) in S-mode: number of traps; expect 0x0000000000000001"
-menvcfg_stce_zero_op_in_S_61_s96: .string "menvcfg_stce_zero_op: write immediate (csrrwi) of stimecmp (STCE=0, TM=0) in S-mode: outcome (xcause, or all ones for no trap); expect 0x0000000000000002"
-menvcfg_stce_zero_op_in_S_61_s97: .string "menvcfg_stce_zero_op: write immediate (csrrwi) of stimecmp (STCE=0, TM=0) in S-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_S_61"
-menvcfg_stce_zero_op_in_S_61_s98: .string "menvcfg_stce_zero_op: write immediate (csrrwi) of stimecmp (STCE=0, TM=0) in S-mode: xtval is one of its legal values; expect 0x0000000000000000 or 0x0000000014dad3f3"
-menvcfg_stce_zero_op_in_S_61_s99: .string "menvcfg_stce_zero_op: write immediate (csrrwi) of stimecmp (STCE=0, TM=0) in S-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x0000000000000001"
-menvcfg_stce_zero_op_in_S_64_s100: .string "menvcfg_stce_zero_op: read (csrrsi uimm=0) of stimecmp (STCE=0, TM=0) in S-mode: number of traps; expect 0x0000000000000001"
-menvcfg_stce_zero_op_in_S_64_s101: .string "menvcfg_stce_zero_op: read (csrrsi uimm=0) of stimecmp (STCE=0, TM=0) in S-mode: outcome (xcause, or all ones for no trap); expect 0x0000000000000002"
-menvcfg_stce_zero_op_in_S_64_s102: .string "menvcfg_stce_zero_op: read (csrrsi uimm=0) of stimecmp (STCE=0, TM=0) in S-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_S_64"
-menvcfg_stce_zero_op_in_S_64_s103: .string "menvcfg_stce_zero_op: read (csrrsi uimm=0) of stimecmp (STCE=0, TM=0) in S-mode: xtval is one of its legal values; expect 0x0000000000000000 or 0x0000000014d063f3"
-menvcfg_stce_zero_op_in_S_64_s104: .string "menvcfg_stce_zero_op: read (csrrsi uimm=0) of stimecmp (STCE=0, TM=0) in S-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x0000000000000001"
-menvcfg_stce_zero_op_in_S_67_s105: .string "menvcfg_stce_zero_op: clear immediate (csrrci) of stimecmp (STCE=0, TM=0) in S-mode: number of traps; expect 0x0000000000000001"
-menvcfg_stce_zero_op_in_S_67_s106: .string "menvcfg_stce_zero_op: clear immediate (csrrci) of stimecmp (STCE=0, TM=0) in S-mode: outcome (xcause, or all ones for no trap); expect 0x0000000000000002"
-menvcfg_stce_zero_op_in_S_67_s107: .string "menvcfg_stce_zero_op: clear immediate (csrrci) of stimecmp (STCE=0, TM=0) in S-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_S_67"
-menvcfg_stce_zero_op_in_S_67_s108: .string "menvcfg_stce_zero_op: clear immediate (csrrci) of stimecmp (STCE=0, TM=0) in S-mode: xtval is one of its legal values; expect 0x0000000000000000 or 0x0000000014daf3f3"
-menvcfg_stce_zero_op_in_S_67_s109: .string "menvcfg_stce_zero_op: clear immediate (csrrci) of stimecmp (STCE=0, TM=0) in S-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x0000000000000001"
-menvcfg_stce_zero_op_in_U_76_s120: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=0) in U-mode: number of traps; expect 0x0000000000000001"
-menvcfg_stce_zero_op_in_U_76_s121: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=0) in U-mode: outcome (xcause, or all ones for no trap); expect 0x0000000000000002"
-menvcfg_stce_zero_op_in_U_76_s122: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=0) in U-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_U_76"
-menvcfg_stce_zero_op_in_U_76_s123: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=0) in U-mode: xtval is one of its legal values; expect 0x0000000000000000 or 0x0000000014d023f3"
-menvcfg_stce_zero_op_in_U_76_s124: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=0) in U-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x0000000000000000"
-menvcfg_stce_zero_op_in_U_80_s125: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=0) in U-mode: number of traps; expect 0x0000000000000001"
-menvcfg_stce_zero_op_in_U_80_s126: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=0) in U-mode: outcome (xcause, or all ones for no trap); expect 0x0000000000000002"
-menvcfg_stce_zero_op_in_U_80_s127: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=0) in U-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_U_80"
-menvcfg_stce_zero_op_in_U_80_s128: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=0) in U-mode: xtval is one of its legal values; expect 0x0000000000000000 or 0x0000000014d31073"
-menvcfg_stce_zero_op_in_U_80_s129: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=0) in U-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x0000000000000000"
+menvcfg_stce_zero_op_in_S_62_s90: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=0) in S-mode: number of traps; expect 0x0000000000000001"
+menvcfg_stce_zero_op_in_S_62_s91: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=0) in S-mode: outcome (xcause, or all ones for no trap); expect 0x0000000000000002"
+menvcfg_stce_zero_op_in_S_62_s92: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=0) in S-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_S_62"
+menvcfg_stce_zero_op_in_S_62_s93: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=0) in S-mode: xtval is one of its legal values; expect 0x0000000000000000 or 0x0000000014d023f3"
+menvcfg_stce_zero_op_in_S_62_s94: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=0) in S-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x0000000000000001"
+menvcfg_stce_zero_op_in_S_65_s95: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=0) in S-mode: number of traps; expect 0x0000000000000001"
+menvcfg_stce_zero_op_in_S_65_s96: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=0) in S-mode: outcome (xcause, or all ones for no trap); expect 0x0000000000000002"
+menvcfg_stce_zero_op_in_S_65_s97: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=0) in S-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_S_65"
+menvcfg_stce_zero_op_in_S_65_s98: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=0) in S-mode: xtval is one of its legal values; expect 0x0000000000000000 or 0x0000000014d31073"
+menvcfg_stce_zero_op_in_S_65_s99: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=0) in S-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x0000000000000001"
+menvcfg_stce_zero_op_in_S_68_s100: .string "menvcfg_stce_zero_op: swap (csrrw) of stimecmp (STCE=0, TM=0) in S-mode: number of traps; expect 0x0000000000000001"
+menvcfg_stce_zero_op_in_S_68_s101: .string "menvcfg_stce_zero_op: swap (csrrw) of stimecmp (STCE=0, TM=0) in S-mode: outcome (xcause, or all ones for no trap); expect 0x0000000000000002"
+menvcfg_stce_zero_op_in_S_68_s102: .string "menvcfg_stce_zero_op: swap (csrrw) of stimecmp (STCE=0, TM=0) in S-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_S_68"
+menvcfg_stce_zero_op_in_S_68_s103: .string "menvcfg_stce_zero_op: swap (csrrw) of stimecmp (STCE=0, TM=0) in S-mode: xtval is one of its legal values; expect 0x0000000000000000 or 0x0000000014d313f3"
+menvcfg_stce_zero_op_in_S_68_s104: .string "menvcfg_stce_zero_op: swap (csrrw) of stimecmp (STCE=0, TM=0) in S-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x0000000000000001"
+menvcfg_stce_zero_op_in_S_71_s105: .string "menvcfg_stce_zero_op: set (csrrs) of stimecmp (STCE=0, TM=0) in S-mode: number of traps; expect 0x0000000000000001"
+menvcfg_stce_zero_op_in_S_71_s106: .string "menvcfg_stce_zero_op: set (csrrs) of stimecmp (STCE=0, TM=0) in S-mode: outcome (xcause, or all ones for no trap); expect 0x0000000000000002"
+menvcfg_stce_zero_op_in_S_71_s107: .string "menvcfg_stce_zero_op: set (csrrs) of stimecmp (STCE=0, TM=0) in S-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_S_71"
+menvcfg_stce_zero_op_in_S_71_s108: .string "menvcfg_stce_zero_op: set (csrrs) of stimecmp (STCE=0, TM=0) in S-mode: xtval is one of its legal values; expect 0x0000000000000000 or 0x0000000014d323f3"
+menvcfg_stce_zero_op_in_S_71_s109: .string "menvcfg_stce_zero_op: set (csrrs) of stimecmp (STCE=0, TM=0) in S-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x0000000000000001"
+menvcfg_stce_zero_op_in_S_74_s110: .string "menvcfg_stce_zero_op: clear (csrrc) of stimecmp (STCE=0, TM=0) in S-mode: number of traps; expect 0x0000000000000001"
+menvcfg_stce_zero_op_in_S_74_s111: .string "menvcfg_stce_zero_op: clear (csrrc) of stimecmp (STCE=0, TM=0) in S-mode: outcome (xcause, or all ones for no trap); expect 0x0000000000000002"
+menvcfg_stce_zero_op_in_S_74_s112: .string "menvcfg_stce_zero_op: clear (csrrc) of stimecmp (STCE=0, TM=0) in S-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_S_74"
+menvcfg_stce_zero_op_in_S_74_s113: .string "menvcfg_stce_zero_op: clear (csrrc) of stimecmp (STCE=0, TM=0) in S-mode: xtval is one of its legal values; expect 0x0000000000000000 or 0x0000000014d333f3"
+menvcfg_stce_zero_op_in_S_74_s114: .string "menvcfg_stce_zero_op: clear (csrrc) of stimecmp (STCE=0, TM=0) in S-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x0000000000000001"
+menvcfg_stce_zero_op_in_S_77_s115: .string "menvcfg_stce_zero_op: write immediate (csrrwi) of stimecmp (STCE=0, TM=0) in S-mode: number of traps; expect 0x0000000000000001"
+menvcfg_stce_zero_op_in_S_77_s116: .string "menvcfg_stce_zero_op: write immediate (csrrwi) of stimecmp (STCE=0, TM=0) in S-mode: outcome (xcause, or all ones for no trap); expect 0x0000000000000002"
+menvcfg_stce_zero_op_in_S_77_s117: .string "menvcfg_stce_zero_op: write immediate (csrrwi) of stimecmp (STCE=0, TM=0) in S-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_S_77"
+menvcfg_stce_zero_op_in_S_77_s118: .string "menvcfg_stce_zero_op: write immediate (csrrwi) of stimecmp (STCE=0, TM=0) in S-mode: xtval is one of its legal values; expect 0x0000000000000000 or 0x0000000014dad3f3"
+menvcfg_stce_zero_op_in_S_77_s119: .string "menvcfg_stce_zero_op: write immediate (csrrwi) of stimecmp (STCE=0, TM=0) in S-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x0000000000000001"
+menvcfg_stce_zero_op_in_S_80_s120: .string "menvcfg_stce_zero_op: read (csrrsi uimm=0) of stimecmp (STCE=0, TM=0) in S-mode: number of traps; expect 0x0000000000000001"
+menvcfg_stce_zero_op_in_S_80_s121: .string "menvcfg_stce_zero_op: read (csrrsi uimm=0) of stimecmp (STCE=0, TM=0) in S-mode: outcome (xcause, or all ones for no trap); expect 0x0000000000000002"
+menvcfg_stce_zero_op_in_S_80_s122: .string "menvcfg_stce_zero_op: read (csrrsi uimm=0) of stimecmp (STCE=0, TM=0) in S-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_S_80"
+menvcfg_stce_zero_op_in_S_80_s123: .string "menvcfg_stce_zero_op: read (csrrsi uimm=0) of stimecmp (STCE=0, TM=0) in S-mode: xtval is one of its legal values; expect 0x0000000000000000 or 0x0000000014d063f3"
+menvcfg_stce_zero_op_in_S_80_s124: .string "menvcfg_stce_zero_op: read (csrrsi uimm=0) of stimecmp (STCE=0, TM=0) in S-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x0000000000000001"
+menvcfg_stce_zero_op_in_S_83_s125: .string "menvcfg_stce_zero_op: clear immediate (csrrci) of stimecmp (STCE=0, TM=0) in S-mode: number of traps; expect 0x0000000000000001"
+menvcfg_stce_zero_op_in_S_83_s126: .string "menvcfg_stce_zero_op: clear immediate (csrrci) of stimecmp (STCE=0, TM=0) in S-mode: outcome (xcause, or all ones for no trap); expect 0x0000000000000002"
+menvcfg_stce_zero_op_in_S_83_s127: .string "menvcfg_stce_zero_op: clear immediate (csrrci) of stimecmp (STCE=0, TM=0) in S-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_S_83"
+menvcfg_stce_zero_op_in_S_83_s128: .string "menvcfg_stce_zero_op: clear immediate (csrrci) of stimecmp (STCE=0, TM=0) in S-mode: xtval is one of its legal values; expect 0x0000000000000000 or 0x0000000014daf3f3"
+menvcfg_stce_zero_op_in_S_83_s129: .string "menvcfg_stce_zero_op: clear immediate (csrrci) of stimecmp (STCE=0, TM=0) in S-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x0000000000000001"
+menvcfg_stce_zero_op_in_U_92_s140: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=0) in U-mode: number of traps; expect 0x0000000000000001"
+menvcfg_stce_zero_op_in_U_92_s141: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=0) in U-mode: outcome (xcause, or all ones for no trap); expect 0x0000000000000002"
+menvcfg_stce_zero_op_in_U_92_s142: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=0) in U-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_U_92"
+menvcfg_stce_zero_op_in_U_92_s143: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=0) in U-mode: xtval is one of its legal values; expect 0x0000000000000000 or 0x0000000014d023f3"
+menvcfg_stce_zero_op_in_U_92_s144: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=0) in U-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x0000000000000000"
+menvcfg_stce_zero_op_in_U_96_s145: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=0) in U-mode: number of traps; expect 0x0000000000000001"
+menvcfg_stce_zero_op_in_U_96_s146: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=0) in U-mode: outcome (xcause, or all ones for no trap); expect 0x0000000000000002"
+menvcfg_stce_zero_op_in_U_96_s147: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=0) in U-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_U_96"
+menvcfg_stce_zero_op_in_U_96_s148: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=0) in U-mode: xtval is one of its legal values; expect 0x0000000000000000 or 0x0000000014d31073"
+menvcfg_stce_zero_op_in_U_96_s149: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=0) in U-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x0000000000000000"
 #if (defined(H_SUPPORTED))
-menvcfg_stce_zero_op_in_S_84_s130: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of vstimecmp (STCE=0, TM=0, HS-mode) in S-mode: number of traps; expect 0x0000000000000001"
-menvcfg_stce_zero_op_in_S_84_s131: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of vstimecmp (STCE=0, TM=0, HS-mode) in S-mode: outcome (xcause, or all ones for no trap); expect 0x0000000000000002"
-menvcfg_stce_zero_op_in_S_84_s132: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of vstimecmp (STCE=0, TM=0, HS-mode) in S-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_S_84"
-menvcfg_stce_zero_op_in_S_84_s133: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of vstimecmp (STCE=0, TM=0, HS-mode) in S-mode: xtval is one of its legal values; expect 0x0000000000000000 or 0x0000000024d023f3"
-menvcfg_stce_zero_op_in_S_84_s134: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of vstimecmp (STCE=0, TM=0, HS-mode) in S-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x0000000000000001"
+menvcfg_stce_zero_op_in_S_100_s150: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of vstimecmp (STCE=0, TM=0, HS-mode) in S-mode: number of traps; expect 0x0000000000000001"
+menvcfg_stce_zero_op_in_S_100_s151: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of vstimecmp (STCE=0, TM=0, HS-mode) in S-mode: outcome (xcause, or all ones for no trap); expect 0x0000000000000002"
+menvcfg_stce_zero_op_in_S_100_s152: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of vstimecmp (STCE=0, TM=0, HS-mode) in S-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_S_100"
+menvcfg_stce_zero_op_in_S_100_s153: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of vstimecmp (STCE=0, TM=0, HS-mode) in S-mode: xtval is one of its legal values; expect 0x0000000000000000 or 0x0000000024d023f3"
+menvcfg_stce_zero_op_in_S_100_s154: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of vstimecmp (STCE=0, TM=0, HS-mode) in S-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x0000000000000001"
 #endif
-menvcfg_stce_zero_op_mrw_87_s135: .string "menvcfg_stce_zero_op: M-mode stimecmp read/write works with STCE=0; expect 0xd23ce5c9f3f497f4"
-menvcfg_stce_zero_op_mip_88_s138: .string "menvcfg_stce_zero_op: mip.STIP (M-mode read) after M-mode writes mip.STIP=0 with STCE=0, stimecmp=0; expect 0x0000000000000000"
-menvcfg_stce_zero_op_stip_89_s139: .string "menvcfg_stce_zero_op: sip.STIP after M-mode writes mip.STIP=0 with STCE=0, stimecmp=0; expect 0x0000000000000000"
-menvcfg_stce_zero_op_stip_92_s140: .string "menvcfg_stce_zero_op: sip.STIP after S-mode tries to flip read-only sip.STIP=0 with STCE=0; expect 0x0000000000000000"
-menvcfg_stce_zero_op_mip_95_s141: .string "menvcfg_stce_zero_op: mip.STIP (M-mode read) after M-mode writes mip.STIP=1 with STCE=0, stimecmp=0; expect 0x0000000000000020"
-menvcfg_stce_zero_op_stip_96_s142: .string "menvcfg_stce_zero_op: sip.STIP after M-mode writes mip.STIP=1 with STCE=0, stimecmp=0; expect 0x0000000000000020"
-menvcfg_stce_zero_op_stip_99_s143: .string "menvcfg_stce_zero_op: sip.STIP after S-mode tries to flip read-only sip.STIP=1 with STCE=0; expect 0x0000000000000020"
-menvcfg_stce_zero_op_mip_102_s144: .string "menvcfg_stce_zero_op: mip.STIP (M-mode read) after M-mode writes mip.STIP=0 with STCE=0, stimecmp=0; expect 0x0000000000000000"
-menvcfg_stce_zero_op_stip_103_s145: .string "menvcfg_stce_zero_op: sip.STIP after M-mode writes mip.STIP=0 with STCE=0, stimecmp=0; expect 0x0000000000000000"
-menvcfg_stce_zero_op_stip_106_s146: .string "menvcfg_stce_zero_op: sip.STIP after S-mode tries to flip read-only sip.STIP=0 with STCE=0; expect 0x0000000000000000"
-menvcfg_stce_zero_op_mip_109_s147: .string "menvcfg_stce_zero_op: mip.STIP (M-mode read) after M-mode writes mip.STIP=0 with STCE=0, stimecmp=all ones; expect 0x0000000000000000"
-menvcfg_stce_zero_op_stip_110_s148: .string "menvcfg_stce_zero_op: sip.STIP after M-mode writes mip.STIP=0 with STCE=0, stimecmp=all ones; expect 0x0000000000000000"
-menvcfg_stce_zero_op_stip_113_s149: .string "menvcfg_stce_zero_op: sip.STIP after S-mode tries to flip read-only sip.STIP=0 with STCE=0; expect 0x0000000000000000"
-menvcfg_stce_zero_op_mip_116_s150: .string "menvcfg_stce_zero_op: mip.STIP (M-mode read) after M-mode writes mip.STIP=1 with STCE=0, stimecmp=all ones; expect 0x0000000000000020"
-menvcfg_stce_zero_op_stip_117_s151: .string "menvcfg_stce_zero_op: sip.STIP after M-mode writes mip.STIP=1 with STCE=0, stimecmp=all ones; expect 0x0000000000000020"
-menvcfg_stce_zero_op_stip_120_s152: .string "menvcfg_stce_zero_op: sip.STIP after S-mode tries to flip read-only sip.STIP=1 with STCE=0; expect 0x0000000000000020"
-menvcfg_stce_zero_op_mip_123_s153: .string "menvcfg_stce_zero_op: mip.STIP (M-mode read) after M-mode writes mip.STIP=0 with STCE=0, stimecmp=all ones; expect 0x0000000000000000"
-menvcfg_stce_zero_op_stip_124_s154: .string "menvcfg_stce_zero_op: sip.STIP after M-mode writes mip.STIP=0 with STCE=0, stimecmp=all ones; expect 0x0000000000000000"
-menvcfg_stce_zero_op_stip_127_s155: .string "menvcfg_stce_zero_op: sip.STIP after S-mode tries to flip read-only sip.STIP=0 with STCE=0; expect 0x0000000000000000"
-menvcfg_stce_zero_op_noint_130_s156: .string "menvcfg_stce_zero_op: no interrupt with STCE=0, mip.STIP=0 and stimecmp=0 (STIE=SIE=1): number of traps; expect 0x0000000000000000"
-menvcfg_stce_zero_op_noint_130_s157: .string "menvcfg_stce_zero_op: no interrupt with STCE=0, mip.STIP=0 and stimecmp=0 (STIE=SIE=1): outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
-menvcfg_stce_zero_op_int_133_s158: .string "menvcfg_stce_zero_op: interrupt taken once M-mode sets mip.STIP with STCE=0 (STIE=SIE=1): number of traps; expect 0x0000000000000001"
-menvcfg_stce_zero_op_int_133_s159: .string "menvcfg_stce_zero_op: interrupt taken once M-mode sets mip.STIP with STCE=0 (STIE=SIE=1): outcome (xcause, or all ones for no trap); expect 0x8000000000000005"
-menvcfg_stce_zero_op_int_133_s160: .string "menvcfg_stce_zero_op: interrupt taken once M-mode sets mip.STIP with STCE=0 (STIE=SIE=1): xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x0000000000000001"
+menvcfg_stce_zero_op_mrw_103_s155: .string "menvcfg_stce_zero_op: M-mode stimecmp read/write works with STCE=0; expect 0xd23ce5c9f3f497f4"
+menvcfg_stce_zero_op_mip_104_s158: .string "menvcfg_stce_zero_op: mip.STIP (M-mode read) after M-mode writes mip.STIP=0 with STCE=0, stimecmp=0; expect 0x0000000000000000"
+menvcfg_stce_zero_op_stip_105_s159: .string "menvcfg_stce_zero_op: sip.STIP after M-mode writes mip.STIP=0 with STCE=0, stimecmp=0; expect 0x0000000000000000"
+menvcfg_stce_zero_op_stip_108_s160: .string "menvcfg_stce_zero_op: sip.STIP after S-mode tries to flip read-only sip.STIP=0 with STCE=0; expect 0x0000000000000000"
+menvcfg_stce_zero_op_mip_111_s161: .string "menvcfg_stce_zero_op: mip.STIP (M-mode read) after M-mode writes mip.STIP=1 with STCE=0, stimecmp=0; expect 0x0000000000000020"
+menvcfg_stce_zero_op_stip_112_s162: .string "menvcfg_stce_zero_op: sip.STIP after M-mode writes mip.STIP=1 with STCE=0, stimecmp=0; expect 0x0000000000000020"
+menvcfg_stce_zero_op_stip_115_s163: .string "menvcfg_stce_zero_op: sip.STIP after S-mode tries to flip read-only sip.STIP=1 with STCE=0; expect 0x0000000000000020"
+menvcfg_stce_zero_op_mip_118_s164: .string "menvcfg_stce_zero_op: mip.STIP (M-mode read) after M-mode writes mip.STIP=0 with STCE=0, stimecmp=0; expect 0x0000000000000000"
+menvcfg_stce_zero_op_stip_119_s165: .string "menvcfg_stce_zero_op: sip.STIP after M-mode writes mip.STIP=0 with STCE=0, stimecmp=0; expect 0x0000000000000000"
+menvcfg_stce_zero_op_stip_122_s166: .string "menvcfg_stce_zero_op: sip.STIP after S-mode tries to flip read-only sip.STIP=0 with STCE=0; expect 0x0000000000000000"
+menvcfg_stce_zero_op_mip_125_s167: .string "menvcfg_stce_zero_op: mip.STIP (M-mode read) after M-mode writes mip.STIP=0 with STCE=0, stimecmp=all ones; expect 0x0000000000000000"
+menvcfg_stce_zero_op_stip_126_s168: .string "menvcfg_stce_zero_op: sip.STIP after M-mode writes mip.STIP=0 with STCE=0, stimecmp=all ones; expect 0x0000000000000000"
+menvcfg_stce_zero_op_stip_129_s169: .string "menvcfg_stce_zero_op: sip.STIP after S-mode tries to flip read-only sip.STIP=0 with STCE=0; expect 0x0000000000000000"
+menvcfg_stce_zero_op_mip_132_s170: .string "menvcfg_stce_zero_op: mip.STIP (M-mode read) after M-mode writes mip.STIP=1 with STCE=0, stimecmp=all ones; expect 0x0000000000000020"
+menvcfg_stce_zero_op_stip_133_s171: .string "menvcfg_stce_zero_op: sip.STIP after M-mode writes mip.STIP=1 with STCE=0, stimecmp=all ones; expect 0x0000000000000020"
+menvcfg_stce_zero_op_stip_136_s172: .string "menvcfg_stce_zero_op: sip.STIP after S-mode tries to flip read-only sip.STIP=1 with STCE=0; expect 0x0000000000000020"
+menvcfg_stce_zero_op_mip_139_s173: .string "menvcfg_stce_zero_op: mip.STIP (M-mode read) after M-mode writes mip.STIP=0 with STCE=0, stimecmp=all ones; expect 0x0000000000000000"
+menvcfg_stce_zero_op_stip_140_s174: .string "menvcfg_stce_zero_op: sip.STIP after M-mode writes mip.STIP=0 with STCE=0, stimecmp=all ones; expect 0x0000000000000000"
+menvcfg_stce_zero_op_stip_143_s175: .string "menvcfg_stce_zero_op: sip.STIP after S-mode tries to flip read-only sip.STIP=0 with STCE=0; expect 0x0000000000000000"
+menvcfg_stce_zero_op_noint_146_s176: .string "menvcfg_stce_zero_op: no interrupt with STCE=0, mip.STIP=0 and stimecmp=0 (STIE=SIE=1): number of traps; expect 0x0000000000000000"
+menvcfg_stce_zero_op_noint_146_s177: .string "menvcfg_stce_zero_op: no interrupt with STCE=0, mip.STIP=0 and stimecmp=0 (STIE=SIE=1): outcome (xcause, or all ones for no trap); expect 0xffffffffffffffff"
+menvcfg_stce_zero_op_int_149_s178: .string "menvcfg_stce_zero_op: interrupt taken once M-mode sets mip.STIP with STCE=0 (STIE=SIE=1): number of traps; expect 0x0000000000000001"
+menvcfg_stce_zero_op_int_149_s179: .string "menvcfg_stce_zero_op: interrupt taken once M-mode sets mip.STIP with STCE=0 (STIE=SIE=1): outcome (xcause, or all ones for no trap); expect 0x8000000000000005"
+menvcfg_stce_zero_op_int_149_s180: .string "menvcfg_stce_zero_op: interrupt taken once M-mode sets mip.STIP with STCE=0 (STIE=SIE=1): xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x0000000000000001"
 #if (defined(H_SUPPORTED))
-menvcfg_stce_zero_op_henvcfg_masked_138_s161: .string "menvcfg_stce_zero_op: henvcfg.STCE reads 0 after menvcfg.STCE is cleared with henvcfg.STCE=1; expect 0x0000000000000000"
-menvcfg_stce_zero_op_henvcfg_139_s162: .string "menvcfg_stce_zero_op: henvcfg.STCE is read-only zero while menvcfg.STCE=0 (after HS-mode set); expect 0x0000000000000000"
+menvcfg_stce_zero_op_henvcfg_masked_154_s181: .string "menvcfg_stce_zero_op: henvcfg.STCE reads 0 after menvcfg.STCE is cleared with henvcfg.STCE=1; expect 0x0000000000000000"
+menvcfg_stce_zero_op_henvcfg_155_s182: .string "menvcfg_stce_zero_op: henvcfg.STCE is read-only zero while menvcfg.STCE=0 (after HS-mode set); expect 0x0000000000000000"
 #endif
 #else
   .word 0xffffffff, 0xffffffff
@@ -1087,28 +1210,34 @@ menvcfg_stce_zero_op_henvcfg_139_s162: .string "menvcfg_stce_zero_op: henvcfg.ST
   .word 0x00000001, 0x00000002, menvcfg_stce_zero_op_in_S_39, 0x00000000
   .word 0x24d023f3, 0x00000001, 0x00000001, 0x00000002
   .word menvcfg_stce_zero_op_in_VS_42, 0x00000000, 0x14d023f3, 0x00000005
+  .word 0x00000001, 0x00000002, menvcfg_stce_zero_op_in_VU_46, 0x00000000
+  .word 0x14d023f3, 0x00000004, 0x00000001, 0x00000002
+  .word menvcfg_stce_zero_op_in_VU_50, 0x00000000, 0x14d31073, 0x00000004
+  .word 0x00000001, 0x00000002, menvcfg_stce_zero_op_in_VS_54, 0x00000000
+  .word 0x24d023f3, 0x00000005, 0x00000001, 0x00000002
+  .word menvcfg_stce_zero_op_in_VU_58, 0x00000000, 0x24d023f3, 0x00000004
 #endif
-  .word 0x54a37881, 0x00000001, 0x00000002, menvcfg_stce_zero_op_in_S_46
+  .word 0x54a37881, 0x00000001, 0x00000002, menvcfg_stce_zero_op_in_S_62
   .word 0x00000000, 0x14d023f3, 0x00000001, 0x00000001
-  .word 0x00000002, menvcfg_stce_zero_op_in_S_49, 0x00000000, 0x14d31073
-  .word 0x00000001, 0x00000001, 0x00000002, menvcfg_stce_zero_op_in_S_52
+  .word 0x00000002, menvcfg_stce_zero_op_in_S_65, 0x00000000, 0x14d31073
+  .word 0x00000001, 0x00000001, 0x00000002, menvcfg_stce_zero_op_in_S_68
   .word 0x00000000, 0x14d313f3, 0x00000001, 0x00000001
-  .word 0x00000002, menvcfg_stce_zero_op_in_S_55, 0x00000000, 0x14d323f3
-  .word 0x00000001, 0x00000001, 0x00000002, menvcfg_stce_zero_op_in_S_58
+  .word 0x00000002, menvcfg_stce_zero_op_in_S_71, 0x00000000, 0x14d323f3
+  .word 0x00000001, 0x00000001, 0x00000002, menvcfg_stce_zero_op_in_S_74
   .word 0x00000000, 0x14d333f3, 0x00000001, 0x00000001
-  .word 0x00000002, menvcfg_stce_zero_op_in_S_61, 0x00000000, 0x14dad3f3
-  .word 0x00000001, 0x00000001, 0x00000002, menvcfg_stce_zero_op_in_S_64
+  .word 0x00000002, menvcfg_stce_zero_op_in_S_77, 0x00000000, 0x14dad3f3
+  .word 0x00000001, 0x00000001, 0x00000002, menvcfg_stce_zero_op_in_S_80
   .word 0x00000000, 0x14d063f3, 0x00000001, 0x00000001
-  .word 0x00000002, menvcfg_stce_zero_op_in_S_67, 0x00000000, 0x14daf3f3
+  .word 0x00000002, menvcfg_stce_zero_op_in_S_83, 0x00000000, 0x14daf3f3
   .word 0x00000001
-  .word 0x00000001, 0x00000002, menvcfg_stce_zero_op_in_S_70, 0x00000000
+  .word 0x00000001, 0x00000002, menvcfg_stce_zero_op_in_S_86, 0x00000000
   .word 0x15d023f3, 0x00000001, 0x00000001, 0x00000002
-  .word menvcfg_stce_zero_op_in_S_73, 0x00000000, 0x15d313f3, 0x00000001
-  .word 0x00000001, 0x00000002, menvcfg_stce_zero_op_in_U_76, 0x00000000
+  .word menvcfg_stce_zero_op_in_S_89, 0x00000000, 0x15d313f3, 0x00000001
+  .word 0x00000001, 0x00000002, menvcfg_stce_zero_op_in_U_92, 0x00000000
   .word 0x14d023f3, 0x00000000, 0x00000001, 0x00000002
-  .word menvcfg_stce_zero_op_in_U_80, 0x00000000, 0x14d31073, 0x00000000
+  .word menvcfg_stce_zero_op_in_U_96, 0x00000000, 0x14d31073, 0x00000000
 #if (defined(H_SUPPORTED))
-  .word 0x00000001, 0x00000002, menvcfg_stce_zero_op_in_S_84, 0x00000000
+  .word 0x00000001, 0x00000002, menvcfg_stce_zero_op_in_S_100, 0x00000000
   .word 0x24d023f3, 0x00000001
 #endif
   .word 0xd23ce5c9, 0xf3f497f4
@@ -1199,102 +1328,122 @@ menvcfg_stce_zero_op_in_VS_42_s66: .string "menvcfg_stce_zero_op: read (csrrs rs
 menvcfg_stce_zero_op_in_VS_42_s67: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=1, hcounteren.TM=1) in VS-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_VS_42"
 menvcfg_stce_zero_op_in_VS_42_s68: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=1, hcounteren.TM=1) in VS-mode: xtval is one of its legal values; expect 0x00000000 or 0x14d023f3"
 menvcfg_stce_zero_op_in_VS_42_s69: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=1, hcounteren.TM=1) in VS-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x00000005"
+menvcfg_stce_zero_op_in_VU_46_s70: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1) in VU-mode: number of traps; expect 0x00000001"
+menvcfg_stce_zero_op_in_VU_46_s71: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1) in VU-mode: outcome (xcause, or all ones for no trap); expect 0x00000002"
+menvcfg_stce_zero_op_in_VU_46_s72: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1) in VU-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_VU_46"
+menvcfg_stce_zero_op_in_VU_46_s73: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1) in VU-mode: xtval is one of its legal values; expect 0x00000000 or 0x14d023f3"
+menvcfg_stce_zero_op_in_VU_46_s74: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1) in VU-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x00000004"
+menvcfg_stce_zero_op_in_VU_50_s75: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1) in VU-mode: number of traps; expect 0x00000001"
+menvcfg_stce_zero_op_in_VU_50_s76: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1) in VU-mode: outcome (xcause, or all ones for no trap); expect 0x00000002"
+menvcfg_stce_zero_op_in_VU_50_s77: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1) in VU-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_VU_50"
+menvcfg_stce_zero_op_in_VU_50_s78: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1) in VU-mode: xtval is one of its legal values; expect 0x00000000 or 0x14d31073"
+menvcfg_stce_zero_op_in_VU_50_s79: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1) in VU-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x00000004"
+menvcfg_stce_zero_op_in_VS_54_s80: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of vstimecmp (STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1) in VS-mode: number of traps; expect 0x00000001"
+menvcfg_stce_zero_op_in_VS_54_s81: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of vstimecmp (STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1) in VS-mode: outcome (xcause, or all ones for no trap); expect 0x00000002"
+menvcfg_stce_zero_op_in_VS_54_s82: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of vstimecmp (STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1) in VS-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_VS_54"
+menvcfg_stce_zero_op_in_VS_54_s83: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of vstimecmp (STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1) in VS-mode: xtval is one of its legal values; expect 0x00000000 or 0x24d023f3"
+menvcfg_stce_zero_op_in_VS_54_s84: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of vstimecmp (STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1) in VS-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x00000005"
+menvcfg_stce_zero_op_in_VU_58_s85: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of vstimecmp (STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1) in VU-mode: number of traps; expect 0x00000001"
+menvcfg_stce_zero_op_in_VU_58_s86: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of vstimecmp (STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1) in VU-mode: outcome (xcause, or all ones for no trap); expect 0x00000002"
+menvcfg_stce_zero_op_in_VU_58_s87: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of vstimecmp (STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1) in VU-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_VU_58"
+menvcfg_stce_zero_op_in_VU_58_s88: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of vstimecmp (STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1) in VU-mode: xtval is one of its legal values; expect 0x00000000 or 0x24d023f3"
+menvcfg_stce_zero_op_in_VU_58_s89: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of vstimecmp (STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1) in VU-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x00000004"
 #endif
-menvcfg_stce_zero_op_in_S_46_s70: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=0) in S-mode: number of traps; expect 0x00000001"
-menvcfg_stce_zero_op_in_S_46_s71: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=0) in S-mode: outcome (xcause, or all ones for no trap); expect 0x00000002"
-menvcfg_stce_zero_op_in_S_46_s72: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=0) in S-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_S_46"
-menvcfg_stce_zero_op_in_S_46_s73: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=0) in S-mode: xtval is one of its legal values; expect 0x00000000 or 0x14d023f3"
-menvcfg_stce_zero_op_in_S_46_s74: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=0) in S-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x00000001"
-menvcfg_stce_zero_op_in_S_49_s75: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=0) in S-mode: number of traps; expect 0x00000001"
-menvcfg_stce_zero_op_in_S_49_s76: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=0) in S-mode: outcome (xcause, or all ones for no trap); expect 0x00000002"
-menvcfg_stce_zero_op_in_S_49_s77: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=0) in S-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_S_49"
-menvcfg_stce_zero_op_in_S_49_s78: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=0) in S-mode: xtval is one of its legal values; expect 0x00000000 or 0x14d31073"
-menvcfg_stce_zero_op_in_S_49_s79: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=0) in S-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x00000001"
-menvcfg_stce_zero_op_in_S_52_s80: .string "menvcfg_stce_zero_op: swap (csrrw) of stimecmp (STCE=0, TM=0) in S-mode: number of traps; expect 0x00000001"
-menvcfg_stce_zero_op_in_S_52_s81: .string "menvcfg_stce_zero_op: swap (csrrw) of stimecmp (STCE=0, TM=0) in S-mode: outcome (xcause, or all ones for no trap); expect 0x00000002"
-menvcfg_stce_zero_op_in_S_52_s82: .string "menvcfg_stce_zero_op: swap (csrrw) of stimecmp (STCE=0, TM=0) in S-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_S_52"
-menvcfg_stce_zero_op_in_S_52_s83: .string "menvcfg_stce_zero_op: swap (csrrw) of stimecmp (STCE=0, TM=0) in S-mode: xtval is one of its legal values; expect 0x00000000 or 0x14d313f3"
-menvcfg_stce_zero_op_in_S_52_s84: .string "menvcfg_stce_zero_op: swap (csrrw) of stimecmp (STCE=0, TM=0) in S-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x00000001"
-menvcfg_stce_zero_op_in_S_55_s85: .string "menvcfg_stce_zero_op: set (csrrs) of stimecmp (STCE=0, TM=0) in S-mode: number of traps; expect 0x00000001"
-menvcfg_stce_zero_op_in_S_55_s86: .string "menvcfg_stce_zero_op: set (csrrs) of stimecmp (STCE=0, TM=0) in S-mode: outcome (xcause, or all ones for no trap); expect 0x00000002"
-menvcfg_stce_zero_op_in_S_55_s87: .string "menvcfg_stce_zero_op: set (csrrs) of stimecmp (STCE=0, TM=0) in S-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_S_55"
-menvcfg_stce_zero_op_in_S_55_s88: .string "menvcfg_stce_zero_op: set (csrrs) of stimecmp (STCE=0, TM=0) in S-mode: xtval is one of its legal values; expect 0x00000000 or 0x14d323f3"
-menvcfg_stce_zero_op_in_S_55_s89: .string "menvcfg_stce_zero_op: set (csrrs) of stimecmp (STCE=0, TM=0) in S-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x00000001"
-menvcfg_stce_zero_op_in_S_58_s90: .string "menvcfg_stce_zero_op: clear (csrrc) of stimecmp (STCE=0, TM=0) in S-mode: number of traps; expect 0x00000001"
-menvcfg_stce_zero_op_in_S_58_s91: .string "menvcfg_stce_zero_op: clear (csrrc) of stimecmp (STCE=0, TM=0) in S-mode: outcome (xcause, or all ones for no trap); expect 0x00000002"
-menvcfg_stce_zero_op_in_S_58_s92: .string "menvcfg_stce_zero_op: clear (csrrc) of stimecmp (STCE=0, TM=0) in S-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_S_58"
-menvcfg_stce_zero_op_in_S_58_s93: .string "menvcfg_stce_zero_op: clear (csrrc) of stimecmp (STCE=0, TM=0) in S-mode: xtval is one of its legal values; expect 0x00000000 or 0x14d333f3"
-menvcfg_stce_zero_op_in_S_58_s94: .string "menvcfg_stce_zero_op: clear (csrrc) of stimecmp (STCE=0, TM=0) in S-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x00000001"
-menvcfg_stce_zero_op_in_S_61_s95: .string "menvcfg_stce_zero_op: write immediate (csrrwi) of stimecmp (STCE=0, TM=0) in S-mode: number of traps; expect 0x00000001"
-menvcfg_stce_zero_op_in_S_61_s96: .string "menvcfg_stce_zero_op: write immediate (csrrwi) of stimecmp (STCE=0, TM=0) in S-mode: outcome (xcause, or all ones for no trap); expect 0x00000002"
-menvcfg_stce_zero_op_in_S_61_s97: .string "menvcfg_stce_zero_op: write immediate (csrrwi) of stimecmp (STCE=0, TM=0) in S-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_S_61"
-menvcfg_stce_zero_op_in_S_61_s98: .string "menvcfg_stce_zero_op: write immediate (csrrwi) of stimecmp (STCE=0, TM=0) in S-mode: xtval is one of its legal values; expect 0x00000000 or 0x14dad3f3"
-menvcfg_stce_zero_op_in_S_61_s99: .string "menvcfg_stce_zero_op: write immediate (csrrwi) of stimecmp (STCE=0, TM=0) in S-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x00000001"
-menvcfg_stce_zero_op_in_S_64_s100: .string "menvcfg_stce_zero_op: read (csrrsi uimm=0) of stimecmp (STCE=0, TM=0) in S-mode: number of traps; expect 0x00000001"
-menvcfg_stce_zero_op_in_S_64_s101: .string "menvcfg_stce_zero_op: read (csrrsi uimm=0) of stimecmp (STCE=0, TM=0) in S-mode: outcome (xcause, or all ones for no trap); expect 0x00000002"
-menvcfg_stce_zero_op_in_S_64_s102: .string "menvcfg_stce_zero_op: read (csrrsi uimm=0) of stimecmp (STCE=0, TM=0) in S-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_S_64"
-menvcfg_stce_zero_op_in_S_64_s103: .string "menvcfg_stce_zero_op: read (csrrsi uimm=0) of stimecmp (STCE=0, TM=0) in S-mode: xtval is one of its legal values; expect 0x00000000 or 0x14d063f3"
-menvcfg_stce_zero_op_in_S_64_s104: .string "menvcfg_stce_zero_op: read (csrrsi uimm=0) of stimecmp (STCE=0, TM=0) in S-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x00000001"
-menvcfg_stce_zero_op_in_S_67_s105: .string "menvcfg_stce_zero_op: clear immediate (csrrci) of stimecmp (STCE=0, TM=0) in S-mode: number of traps; expect 0x00000001"
-menvcfg_stce_zero_op_in_S_67_s106: .string "menvcfg_stce_zero_op: clear immediate (csrrci) of stimecmp (STCE=0, TM=0) in S-mode: outcome (xcause, or all ones for no trap); expect 0x00000002"
-menvcfg_stce_zero_op_in_S_67_s107: .string "menvcfg_stce_zero_op: clear immediate (csrrci) of stimecmp (STCE=0, TM=0) in S-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_S_67"
-menvcfg_stce_zero_op_in_S_67_s108: .string "menvcfg_stce_zero_op: clear immediate (csrrci) of stimecmp (STCE=0, TM=0) in S-mode: xtval is one of its legal values; expect 0x00000000 or 0x14daf3f3"
-menvcfg_stce_zero_op_in_S_67_s109: .string "menvcfg_stce_zero_op: clear immediate (csrrci) of stimecmp (STCE=0, TM=0) in S-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x00000001"
-menvcfg_stce_zero_op_in_S_70_s110: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmph (STCE=0, TM=0) in S-mode: number of traps; expect 0x00000001"
-menvcfg_stce_zero_op_in_S_70_s111: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmph (STCE=0, TM=0) in S-mode: outcome (xcause, or all ones for no trap); expect 0x00000002"
-menvcfg_stce_zero_op_in_S_70_s112: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmph (STCE=0, TM=0) in S-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_S_70"
-menvcfg_stce_zero_op_in_S_70_s113: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmph (STCE=0, TM=0) in S-mode: xtval is one of its legal values; expect 0x00000000 or 0x15d023f3"
-menvcfg_stce_zero_op_in_S_70_s114: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmph (STCE=0, TM=0) in S-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x00000001"
-menvcfg_stce_zero_op_in_S_73_s115: .string "menvcfg_stce_zero_op: swap (csrrw) of stimecmph (STCE=0, TM=0) in S-mode: number of traps; expect 0x00000001"
-menvcfg_stce_zero_op_in_S_73_s116: .string "menvcfg_stce_zero_op: swap (csrrw) of stimecmph (STCE=0, TM=0) in S-mode: outcome (xcause, or all ones for no trap); expect 0x00000002"
-menvcfg_stce_zero_op_in_S_73_s117: .string "menvcfg_stce_zero_op: swap (csrrw) of stimecmph (STCE=0, TM=0) in S-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_S_73"
-menvcfg_stce_zero_op_in_S_73_s118: .string "menvcfg_stce_zero_op: swap (csrrw) of stimecmph (STCE=0, TM=0) in S-mode: xtval is one of its legal values; expect 0x00000000 or 0x15d313f3"
-menvcfg_stce_zero_op_in_S_73_s119: .string "menvcfg_stce_zero_op: swap (csrrw) of stimecmph (STCE=0, TM=0) in S-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x00000001"
-menvcfg_stce_zero_op_in_U_76_s120: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=0) in U-mode: number of traps; expect 0x00000001"
-menvcfg_stce_zero_op_in_U_76_s121: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=0) in U-mode: outcome (xcause, or all ones for no trap); expect 0x00000002"
-menvcfg_stce_zero_op_in_U_76_s122: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=0) in U-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_U_76"
-menvcfg_stce_zero_op_in_U_76_s123: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=0) in U-mode: xtval is one of its legal values; expect 0x00000000 or 0x14d023f3"
-menvcfg_stce_zero_op_in_U_76_s124: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=0) in U-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x00000000"
-menvcfg_stce_zero_op_in_U_80_s125: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=0) in U-mode: number of traps; expect 0x00000001"
-menvcfg_stce_zero_op_in_U_80_s126: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=0) in U-mode: outcome (xcause, or all ones for no trap); expect 0x00000002"
-menvcfg_stce_zero_op_in_U_80_s127: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=0) in U-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_U_80"
-menvcfg_stce_zero_op_in_U_80_s128: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=0) in U-mode: xtval is one of its legal values; expect 0x00000000 or 0x14d31073"
-menvcfg_stce_zero_op_in_U_80_s129: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=0) in U-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x00000000"
+menvcfg_stce_zero_op_in_S_62_s90: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=0) in S-mode: number of traps; expect 0x00000001"
+menvcfg_stce_zero_op_in_S_62_s91: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=0) in S-mode: outcome (xcause, or all ones for no trap); expect 0x00000002"
+menvcfg_stce_zero_op_in_S_62_s92: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=0) in S-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_S_62"
+menvcfg_stce_zero_op_in_S_62_s93: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=0) in S-mode: xtval is one of its legal values; expect 0x00000000 or 0x14d023f3"
+menvcfg_stce_zero_op_in_S_62_s94: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=0) in S-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x00000001"
+menvcfg_stce_zero_op_in_S_65_s95: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=0) in S-mode: number of traps; expect 0x00000001"
+menvcfg_stce_zero_op_in_S_65_s96: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=0) in S-mode: outcome (xcause, or all ones for no trap); expect 0x00000002"
+menvcfg_stce_zero_op_in_S_65_s97: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=0) in S-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_S_65"
+menvcfg_stce_zero_op_in_S_65_s98: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=0) in S-mode: xtval is one of its legal values; expect 0x00000000 or 0x14d31073"
+menvcfg_stce_zero_op_in_S_65_s99: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=0) in S-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x00000001"
+menvcfg_stce_zero_op_in_S_68_s100: .string "menvcfg_stce_zero_op: swap (csrrw) of stimecmp (STCE=0, TM=0) in S-mode: number of traps; expect 0x00000001"
+menvcfg_stce_zero_op_in_S_68_s101: .string "menvcfg_stce_zero_op: swap (csrrw) of stimecmp (STCE=0, TM=0) in S-mode: outcome (xcause, or all ones for no trap); expect 0x00000002"
+menvcfg_stce_zero_op_in_S_68_s102: .string "menvcfg_stce_zero_op: swap (csrrw) of stimecmp (STCE=0, TM=0) in S-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_S_68"
+menvcfg_stce_zero_op_in_S_68_s103: .string "menvcfg_stce_zero_op: swap (csrrw) of stimecmp (STCE=0, TM=0) in S-mode: xtval is one of its legal values; expect 0x00000000 or 0x14d313f3"
+menvcfg_stce_zero_op_in_S_68_s104: .string "menvcfg_stce_zero_op: swap (csrrw) of stimecmp (STCE=0, TM=0) in S-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x00000001"
+menvcfg_stce_zero_op_in_S_71_s105: .string "menvcfg_stce_zero_op: set (csrrs) of stimecmp (STCE=0, TM=0) in S-mode: number of traps; expect 0x00000001"
+menvcfg_stce_zero_op_in_S_71_s106: .string "menvcfg_stce_zero_op: set (csrrs) of stimecmp (STCE=0, TM=0) in S-mode: outcome (xcause, or all ones for no trap); expect 0x00000002"
+menvcfg_stce_zero_op_in_S_71_s107: .string "menvcfg_stce_zero_op: set (csrrs) of stimecmp (STCE=0, TM=0) in S-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_S_71"
+menvcfg_stce_zero_op_in_S_71_s108: .string "menvcfg_stce_zero_op: set (csrrs) of stimecmp (STCE=0, TM=0) in S-mode: xtval is one of its legal values; expect 0x00000000 or 0x14d323f3"
+menvcfg_stce_zero_op_in_S_71_s109: .string "menvcfg_stce_zero_op: set (csrrs) of stimecmp (STCE=0, TM=0) in S-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x00000001"
+menvcfg_stce_zero_op_in_S_74_s110: .string "menvcfg_stce_zero_op: clear (csrrc) of stimecmp (STCE=0, TM=0) in S-mode: number of traps; expect 0x00000001"
+menvcfg_stce_zero_op_in_S_74_s111: .string "menvcfg_stce_zero_op: clear (csrrc) of stimecmp (STCE=0, TM=0) in S-mode: outcome (xcause, or all ones for no trap); expect 0x00000002"
+menvcfg_stce_zero_op_in_S_74_s112: .string "menvcfg_stce_zero_op: clear (csrrc) of stimecmp (STCE=0, TM=0) in S-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_S_74"
+menvcfg_stce_zero_op_in_S_74_s113: .string "menvcfg_stce_zero_op: clear (csrrc) of stimecmp (STCE=0, TM=0) in S-mode: xtval is one of its legal values; expect 0x00000000 or 0x14d333f3"
+menvcfg_stce_zero_op_in_S_74_s114: .string "menvcfg_stce_zero_op: clear (csrrc) of stimecmp (STCE=0, TM=0) in S-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x00000001"
+menvcfg_stce_zero_op_in_S_77_s115: .string "menvcfg_stce_zero_op: write immediate (csrrwi) of stimecmp (STCE=0, TM=0) in S-mode: number of traps; expect 0x00000001"
+menvcfg_stce_zero_op_in_S_77_s116: .string "menvcfg_stce_zero_op: write immediate (csrrwi) of stimecmp (STCE=0, TM=0) in S-mode: outcome (xcause, or all ones for no trap); expect 0x00000002"
+menvcfg_stce_zero_op_in_S_77_s117: .string "menvcfg_stce_zero_op: write immediate (csrrwi) of stimecmp (STCE=0, TM=0) in S-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_S_77"
+menvcfg_stce_zero_op_in_S_77_s118: .string "menvcfg_stce_zero_op: write immediate (csrrwi) of stimecmp (STCE=0, TM=0) in S-mode: xtval is one of its legal values; expect 0x00000000 or 0x14dad3f3"
+menvcfg_stce_zero_op_in_S_77_s119: .string "menvcfg_stce_zero_op: write immediate (csrrwi) of stimecmp (STCE=0, TM=0) in S-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x00000001"
+menvcfg_stce_zero_op_in_S_80_s120: .string "menvcfg_stce_zero_op: read (csrrsi uimm=0) of stimecmp (STCE=0, TM=0) in S-mode: number of traps; expect 0x00000001"
+menvcfg_stce_zero_op_in_S_80_s121: .string "menvcfg_stce_zero_op: read (csrrsi uimm=0) of stimecmp (STCE=0, TM=0) in S-mode: outcome (xcause, or all ones for no trap); expect 0x00000002"
+menvcfg_stce_zero_op_in_S_80_s122: .string "menvcfg_stce_zero_op: read (csrrsi uimm=0) of stimecmp (STCE=0, TM=0) in S-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_S_80"
+menvcfg_stce_zero_op_in_S_80_s123: .string "menvcfg_stce_zero_op: read (csrrsi uimm=0) of stimecmp (STCE=0, TM=0) in S-mode: xtval is one of its legal values; expect 0x00000000 or 0x14d063f3"
+menvcfg_stce_zero_op_in_S_80_s124: .string "menvcfg_stce_zero_op: read (csrrsi uimm=0) of stimecmp (STCE=0, TM=0) in S-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x00000001"
+menvcfg_stce_zero_op_in_S_83_s125: .string "menvcfg_stce_zero_op: clear immediate (csrrci) of stimecmp (STCE=0, TM=0) in S-mode: number of traps; expect 0x00000001"
+menvcfg_stce_zero_op_in_S_83_s126: .string "menvcfg_stce_zero_op: clear immediate (csrrci) of stimecmp (STCE=0, TM=0) in S-mode: outcome (xcause, or all ones for no trap); expect 0x00000002"
+menvcfg_stce_zero_op_in_S_83_s127: .string "menvcfg_stce_zero_op: clear immediate (csrrci) of stimecmp (STCE=0, TM=0) in S-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_S_83"
+menvcfg_stce_zero_op_in_S_83_s128: .string "menvcfg_stce_zero_op: clear immediate (csrrci) of stimecmp (STCE=0, TM=0) in S-mode: xtval is one of its legal values; expect 0x00000000 or 0x14daf3f3"
+menvcfg_stce_zero_op_in_S_83_s129: .string "menvcfg_stce_zero_op: clear immediate (csrrci) of stimecmp (STCE=0, TM=0) in S-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x00000001"
+menvcfg_stce_zero_op_in_S_86_s130: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmph (STCE=0, TM=0) in S-mode: number of traps; expect 0x00000001"
+menvcfg_stce_zero_op_in_S_86_s131: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmph (STCE=0, TM=0) in S-mode: outcome (xcause, or all ones for no trap); expect 0x00000002"
+menvcfg_stce_zero_op_in_S_86_s132: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmph (STCE=0, TM=0) in S-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_S_86"
+menvcfg_stce_zero_op_in_S_86_s133: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmph (STCE=0, TM=0) in S-mode: xtval is one of its legal values; expect 0x00000000 or 0x15d023f3"
+menvcfg_stce_zero_op_in_S_86_s134: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmph (STCE=0, TM=0) in S-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x00000001"
+menvcfg_stce_zero_op_in_S_89_s135: .string "menvcfg_stce_zero_op: swap (csrrw) of stimecmph (STCE=0, TM=0) in S-mode: number of traps; expect 0x00000001"
+menvcfg_stce_zero_op_in_S_89_s136: .string "menvcfg_stce_zero_op: swap (csrrw) of stimecmph (STCE=0, TM=0) in S-mode: outcome (xcause, or all ones for no trap); expect 0x00000002"
+menvcfg_stce_zero_op_in_S_89_s137: .string "menvcfg_stce_zero_op: swap (csrrw) of stimecmph (STCE=0, TM=0) in S-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_S_89"
+menvcfg_stce_zero_op_in_S_89_s138: .string "menvcfg_stce_zero_op: swap (csrrw) of stimecmph (STCE=0, TM=0) in S-mode: xtval is one of its legal values; expect 0x00000000 or 0x15d313f3"
+menvcfg_stce_zero_op_in_S_89_s139: .string "menvcfg_stce_zero_op: swap (csrrw) of stimecmph (STCE=0, TM=0) in S-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x00000001"
+menvcfg_stce_zero_op_in_U_92_s140: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=0) in U-mode: number of traps; expect 0x00000001"
+menvcfg_stce_zero_op_in_U_92_s141: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=0) in U-mode: outcome (xcause, or all ones for no trap); expect 0x00000002"
+menvcfg_stce_zero_op_in_U_92_s142: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=0) in U-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_U_92"
+menvcfg_stce_zero_op_in_U_92_s143: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=0) in U-mode: xtval is one of its legal values; expect 0x00000000 or 0x14d023f3"
+menvcfg_stce_zero_op_in_U_92_s144: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of stimecmp (STCE=0, TM=0) in U-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x00000000"
+menvcfg_stce_zero_op_in_U_96_s145: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=0) in U-mode: number of traps; expect 0x00000001"
+menvcfg_stce_zero_op_in_U_96_s146: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=0) in U-mode: outcome (xcause, or all ones for no trap); expect 0x00000002"
+menvcfg_stce_zero_op_in_U_96_s147: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=0) in U-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_U_96"
+menvcfg_stce_zero_op_in_U_96_s148: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=0) in U-mode: xtval is one of its legal values; expect 0x00000000 or 0x14d31073"
+menvcfg_stce_zero_op_in_U_96_s149: .string "menvcfg_stce_zero_op: write (csrrw rd=x0) of stimecmp (STCE=0, TM=0) in U-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x00000000"
 #if (defined(H_SUPPORTED))
-menvcfg_stce_zero_op_in_S_84_s130: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of vstimecmp (STCE=0, TM=0, HS-mode) in S-mode: number of traps; expect 0x00000001"
-menvcfg_stce_zero_op_in_S_84_s131: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of vstimecmp (STCE=0, TM=0, HS-mode) in S-mode: outcome (xcause, or all ones for no trap); expect 0x00000002"
-menvcfg_stce_zero_op_in_S_84_s132: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of vstimecmp (STCE=0, TM=0, HS-mode) in S-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_S_84"
-menvcfg_stce_zero_op_in_S_84_s133: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of vstimecmp (STCE=0, TM=0, HS-mode) in S-mode: xtval is one of its legal values; expect 0x00000000 or 0x24d023f3"
-menvcfg_stce_zero_op_in_S_84_s134: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of vstimecmp (STCE=0, TM=0, HS-mode) in S-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x00000001"
+menvcfg_stce_zero_op_in_S_100_s150: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of vstimecmp (STCE=0, TM=0, HS-mode) in S-mode: number of traps; expect 0x00000001"
+menvcfg_stce_zero_op_in_S_100_s151: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of vstimecmp (STCE=0, TM=0, HS-mode) in S-mode: outcome (xcause, or all ones for no trap); expect 0x00000002"
+menvcfg_stce_zero_op_in_S_100_s152: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of vstimecmp (STCE=0, TM=0, HS-mode) in S-mode: xepc is the trapping instruction; expect menvcfg_stce_zero_op_in_S_100"
+menvcfg_stce_zero_op_in_S_100_s153: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of vstimecmp (STCE=0, TM=0, HS-mode) in S-mode: xtval is one of its legal values; expect 0x00000000 or 0x24d023f3"
+menvcfg_stce_zero_op_in_S_100_s154: .string "menvcfg_stce_zero_op: read (csrrs rs1=x0) of vstimecmp (STCE=0, TM=0, HS-mode) in S-mode: xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x00000001"
 #endif
-menvcfg_stce_zero_op_mrw_87_s136: .string "menvcfg_stce_zero_op: M-mode stimecmp read/write works with STCE=0; expect 0xf3f497f4"
-menvcfg_stce_zero_op_mrw_87_s137: .string "menvcfg_stce_zero_op: M-mode stimecmph read/write works with STCE=0; expect 0xd23ce5c9"
-menvcfg_stce_zero_op_mip_88_s138: .string "menvcfg_stce_zero_op: mip.STIP (M-mode read) after M-mode writes mip.STIP=0 with STCE=0, stimecmp=0; expect 0x00000000"
-menvcfg_stce_zero_op_stip_89_s139: .string "menvcfg_stce_zero_op: sip.STIP after M-mode writes mip.STIP=0 with STCE=0, stimecmp=0; expect 0x00000000"
-menvcfg_stce_zero_op_stip_92_s140: .string "menvcfg_stce_zero_op: sip.STIP after S-mode tries to flip read-only sip.STIP=0 with STCE=0; expect 0x00000000"
-menvcfg_stce_zero_op_mip_95_s141: .string "menvcfg_stce_zero_op: mip.STIP (M-mode read) after M-mode writes mip.STIP=1 with STCE=0, stimecmp=0; expect 0x00000020"
-menvcfg_stce_zero_op_stip_96_s142: .string "menvcfg_stce_zero_op: sip.STIP after M-mode writes mip.STIP=1 with STCE=0, stimecmp=0; expect 0x00000020"
-menvcfg_stce_zero_op_stip_99_s143: .string "menvcfg_stce_zero_op: sip.STIP after S-mode tries to flip read-only sip.STIP=1 with STCE=0; expect 0x00000020"
-menvcfg_stce_zero_op_mip_102_s144: .string "menvcfg_stce_zero_op: mip.STIP (M-mode read) after M-mode writes mip.STIP=0 with STCE=0, stimecmp=0; expect 0x00000000"
-menvcfg_stce_zero_op_stip_103_s145: .string "menvcfg_stce_zero_op: sip.STIP after M-mode writes mip.STIP=0 with STCE=0, stimecmp=0; expect 0x00000000"
-menvcfg_stce_zero_op_stip_106_s146: .string "menvcfg_stce_zero_op: sip.STIP after S-mode tries to flip read-only sip.STIP=0 with STCE=0; expect 0x00000000"
-menvcfg_stce_zero_op_mip_109_s147: .string "menvcfg_stce_zero_op: mip.STIP (M-mode read) after M-mode writes mip.STIP=0 with STCE=0, stimecmp=all ones; expect 0x00000000"
-menvcfg_stce_zero_op_stip_110_s148: .string "menvcfg_stce_zero_op: sip.STIP after M-mode writes mip.STIP=0 with STCE=0, stimecmp=all ones; expect 0x00000000"
-menvcfg_stce_zero_op_stip_113_s149: .string "menvcfg_stce_zero_op: sip.STIP after S-mode tries to flip read-only sip.STIP=0 with STCE=0; expect 0x00000000"
-menvcfg_stce_zero_op_mip_116_s150: .string "menvcfg_stce_zero_op: mip.STIP (M-mode read) after M-mode writes mip.STIP=1 with STCE=0, stimecmp=all ones; expect 0x00000020"
-menvcfg_stce_zero_op_stip_117_s151: .string "menvcfg_stce_zero_op: sip.STIP after M-mode writes mip.STIP=1 with STCE=0, stimecmp=all ones; expect 0x00000020"
-menvcfg_stce_zero_op_stip_120_s152: .string "menvcfg_stce_zero_op: sip.STIP after S-mode tries to flip read-only sip.STIP=1 with STCE=0; expect 0x00000020"
-menvcfg_stce_zero_op_mip_123_s153: .string "menvcfg_stce_zero_op: mip.STIP (M-mode read) after M-mode writes mip.STIP=0 with STCE=0, stimecmp=all ones; expect 0x00000000"
-menvcfg_stce_zero_op_stip_124_s154: .string "menvcfg_stce_zero_op: sip.STIP after M-mode writes mip.STIP=0 with STCE=0, stimecmp=all ones; expect 0x00000000"
-menvcfg_stce_zero_op_stip_127_s155: .string "menvcfg_stce_zero_op: sip.STIP after S-mode tries to flip read-only sip.STIP=0 with STCE=0; expect 0x00000000"
-menvcfg_stce_zero_op_noint_130_s156: .string "menvcfg_stce_zero_op: no interrupt with STCE=0, mip.STIP=0 and stimecmp=0 (STIE=SIE=1): number of traps; expect 0x00000000"
-menvcfg_stce_zero_op_noint_130_s157: .string "menvcfg_stce_zero_op: no interrupt with STCE=0, mip.STIP=0 and stimecmp=0 (STIE=SIE=1): outcome (xcause, or all ones for no trap); expect 0xffffffff"
-menvcfg_stce_zero_op_int_133_s158: .string "menvcfg_stce_zero_op: interrupt taken once M-mode sets mip.STIP with STCE=0 (STIE=SIE=1): number of traps; expect 0x00000001"
-menvcfg_stce_zero_op_int_133_s159: .string "menvcfg_stce_zero_op: interrupt taken once M-mode sets mip.STIP with STCE=0 (STIE=SIE=1): outcome (xcause, or all ones for no trap); expect 0x80000005"
-menvcfg_stce_zero_op_int_133_s160: .string "menvcfg_stce_zero_op: interrupt taken once M-mode sets mip.STIP with STCE=0 (STIE=SIE=1): xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x00000001"
+menvcfg_stce_zero_op_mrw_103_s156: .string "menvcfg_stce_zero_op: M-mode stimecmp read/write works with STCE=0; expect 0xf3f497f4"
+menvcfg_stce_zero_op_mrw_103_s157: .string "menvcfg_stce_zero_op: M-mode stimecmph read/write works with STCE=0; expect 0xd23ce5c9"
+menvcfg_stce_zero_op_mip_104_s158: .string "menvcfg_stce_zero_op: mip.STIP (M-mode read) after M-mode writes mip.STIP=0 with STCE=0, stimecmp=0; expect 0x00000000"
+menvcfg_stce_zero_op_stip_105_s159: .string "menvcfg_stce_zero_op: sip.STIP after M-mode writes mip.STIP=0 with STCE=0, stimecmp=0; expect 0x00000000"
+menvcfg_stce_zero_op_stip_108_s160: .string "menvcfg_stce_zero_op: sip.STIP after S-mode tries to flip read-only sip.STIP=0 with STCE=0; expect 0x00000000"
+menvcfg_stce_zero_op_mip_111_s161: .string "menvcfg_stce_zero_op: mip.STIP (M-mode read) after M-mode writes mip.STIP=1 with STCE=0, stimecmp=0; expect 0x00000020"
+menvcfg_stce_zero_op_stip_112_s162: .string "menvcfg_stce_zero_op: sip.STIP after M-mode writes mip.STIP=1 with STCE=0, stimecmp=0; expect 0x00000020"
+menvcfg_stce_zero_op_stip_115_s163: .string "menvcfg_stce_zero_op: sip.STIP after S-mode tries to flip read-only sip.STIP=1 with STCE=0; expect 0x00000020"
+menvcfg_stce_zero_op_mip_118_s164: .string "menvcfg_stce_zero_op: mip.STIP (M-mode read) after M-mode writes mip.STIP=0 with STCE=0, stimecmp=0; expect 0x00000000"
+menvcfg_stce_zero_op_stip_119_s165: .string "menvcfg_stce_zero_op: sip.STIP after M-mode writes mip.STIP=0 with STCE=0, stimecmp=0; expect 0x00000000"
+menvcfg_stce_zero_op_stip_122_s166: .string "menvcfg_stce_zero_op: sip.STIP after S-mode tries to flip read-only sip.STIP=0 with STCE=0; expect 0x00000000"
+menvcfg_stce_zero_op_mip_125_s167: .string "menvcfg_stce_zero_op: mip.STIP (M-mode read) after M-mode writes mip.STIP=0 with STCE=0, stimecmp=all ones; expect 0x00000000"
+menvcfg_stce_zero_op_stip_126_s168: .string "menvcfg_stce_zero_op: sip.STIP after M-mode writes mip.STIP=0 with STCE=0, stimecmp=all ones; expect 0x00000000"
+menvcfg_stce_zero_op_stip_129_s169: .string "menvcfg_stce_zero_op: sip.STIP after S-mode tries to flip read-only sip.STIP=0 with STCE=0; expect 0x00000000"
+menvcfg_stce_zero_op_mip_132_s170: .string "menvcfg_stce_zero_op: mip.STIP (M-mode read) after M-mode writes mip.STIP=1 with STCE=0, stimecmp=all ones; expect 0x00000020"
+menvcfg_stce_zero_op_stip_133_s171: .string "menvcfg_stce_zero_op: sip.STIP after M-mode writes mip.STIP=1 with STCE=0, stimecmp=all ones; expect 0x00000020"
+menvcfg_stce_zero_op_stip_136_s172: .string "menvcfg_stce_zero_op: sip.STIP after S-mode tries to flip read-only sip.STIP=1 with STCE=0; expect 0x00000020"
+menvcfg_stce_zero_op_mip_139_s173: .string "menvcfg_stce_zero_op: mip.STIP (M-mode read) after M-mode writes mip.STIP=0 with STCE=0, stimecmp=all ones; expect 0x00000000"
+menvcfg_stce_zero_op_stip_140_s174: .string "menvcfg_stce_zero_op: sip.STIP after M-mode writes mip.STIP=0 with STCE=0, stimecmp=all ones; expect 0x00000000"
+menvcfg_stce_zero_op_stip_143_s175: .string "menvcfg_stce_zero_op: sip.STIP after S-mode tries to flip read-only sip.STIP=0 with STCE=0; expect 0x00000000"
+menvcfg_stce_zero_op_noint_146_s176: .string "menvcfg_stce_zero_op: no interrupt with STCE=0, mip.STIP=0 and stimecmp=0 (STIE=SIE=1): number of traps; expect 0x00000000"
+menvcfg_stce_zero_op_noint_146_s177: .string "menvcfg_stce_zero_op: no interrupt with STCE=0, mip.STIP=0 and stimecmp=0 (STIE=SIE=1): outcome (xcause, or all ones for no trap); expect 0xffffffff"
+menvcfg_stce_zero_op_int_149_s178: .string "menvcfg_stce_zero_op: interrupt taken once M-mode sets mip.STIP with STCE=0 (STIE=SIE=1): number of traps; expect 0x00000001"
+menvcfg_stce_zero_op_int_149_s179: .string "menvcfg_stce_zero_op: interrupt taken once M-mode sets mip.STIP with STCE=0 (STIE=SIE=1): outcome (xcause, or all ones for no trap); expect 0x80000005"
+menvcfg_stce_zero_op_int_149_s180: .string "menvcfg_stce_zero_op: interrupt taken once M-mode sets mip.STIP with STCE=0 (STIE=SIE=1): xPP/xPV record the mode the trap came from (0 U, 1 S, 3 M, 4 VU, 5 VS); expect 0x00000001"
 #if (defined(H_SUPPORTED))
-menvcfg_stce_zero_op_henvcfg_masked_138_s161: .string "menvcfg_stce_zero_op: henvcfg.STCE reads 0 after menvcfg.STCE is cleared with henvcfg.STCE=1; expect 0x00000000"
-menvcfg_stce_zero_op_henvcfg_139_s162: .string "menvcfg_stce_zero_op: henvcfg.STCE is read-only zero while menvcfg.STCE=0 (after HS-mode set); expect 0x00000000"
+menvcfg_stce_zero_op_henvcfg_masked_154_s181: .string "menvcfg_stce_zero_op: henvcfg.STCE reads 0 after menvcfg.STCE is cleared with henvcfg.STCE=1; expect 0x00000000"
+menvcfg_stce_zero_op_henvcfg_155_s182: .string "menvcfg_stce_zero_op: henvcfg.STCE is read-only zero while menvcfg.STCE=0 (after HS-mode set); expect 0x00000000"
 #endif
 #endif
 

@@ -559,8 +559,9 @@ def gen() -> list[TestFile]:
         "while mip.STIP=0 and stimecmp=0; an interrupt once M-mode sets mip.STIP.\n"
         "5. sip.STIP stays read-only from S-mode with STCE=0: csrrs/csrrc of sip do not flip it.\n"
         "6. With H: henvcfg.STCE was 1 before menvcfg.STCE was cleared and must now read 0, and still reads "
-        "0 after HS-mode tries to set it; HS-mode access to vstimecmp and VS-mode access to stimecmp "
-        "(henvcfg/hcounteren enabled) raise illegal-instruction, not virtual-instruction.",
+        "0 after HS-mode tries to set it; HS-mode access to vstimecmp, VS-mode access to stimecmp, "
+        "VU-mode reads and writes of stimecmp, and VS- and VU-mode access to vstimecmp by its own address "
+        "(henvcfg, hcounteren and scounteren enabled) raise illegal-instruction, not virtual-instruction.",
     )
     setup(t)
     cmp_s(t, 0, "zero (comparison true)")
@@ -590,6 +591,17 @@ def gen() -> list[TestFile]:
                     "virtual" if MUT == "vs_virtual_stce0" else "illegal",
                     "STCE=0, TM=1, hcounteren.TM=1",
                 )
+                # VU-mode also lacks privilege for stimecmp, and vstimecmp's own address is a VS CSR, which
+                # V=1 normally reaches with virtual-instruction; menvcfg.STCE=0 still makes all of them illegal
+                t.li("x7", 2)
+                t.emit("csrs scounteren, x7")
+                uexp = "virtual" if MUT == "vu_virtual_stce0" else "illegal"
+                for form in (FORMS[0], FORMS[1]):
+                    access(t, "VU", "stimecmp", form, uexp, "STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1")
+                dexp = "virtual" if MUT == "vstimecmp_virtual_stce0" else "illegal"
+                for mode in ("VS", "VU"):
+                    access(t, mode, "vstimecmp", FORMS[0], dexp, "STCE=0, TM=1, hcounteren.TM=1, scounteren.TM=1")
+                t.emit("csrc scounteren, x7")
     tm(t, True)
     v = t.rand(64)
     cmp_m(t, v, "random, M-mode write with STCE=0")

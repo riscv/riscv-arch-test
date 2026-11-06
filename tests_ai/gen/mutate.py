@@ -75,6 +75,9 @@ SSTC_MUTANTS = {
     "tm_ignored": "mcounteren.TM does not gate S-mode stimecmp access",
     "mip_stip_writable": "M-mode can set mip.STIP while STCE=1",
     "vs_virtual_stce0": "VS-mode access with menvcfg.STCE=0 raises virtual-instruction",
+    "vu_virtual_stce0": "VU-mode access to stimecmp with menvcfg.STCE=0 raises virtual-instruction",
+    "vstimecmp_virtual_stce0": "V=1 access to vstimecmp by its own address with menvcfg.STCE=0 raises "
+    "virtual-instruction",
     "sticky_stip": "a software-set STIP survives setting STCE",
     "spp_wrong": "a trap from U-mode records sstatus.SPP = S",
     "vs_direct_vstimecmp_ok": "VS-mode may access vstimecmp by its own address",

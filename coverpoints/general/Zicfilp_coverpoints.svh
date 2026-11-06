@@ -153,15 +153,15 @@
     // Exception priority at the target of an ELP-setting Indirect_CT:
     // an instruction access fault (logged with the JALR, which has no target record) or an illegal instruction
     priority_case: coverpoint {
-        `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_FETCH
             (`ZICFILP_LP_JALR(ins.current) &&
-             ((ins.current.imm + ins.current.rs1_val) == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS))),
+             ((ins.current.imm + ins.current.rs1_val) == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS_FETCH))),
         `else
             1'b0,
         `endif
         (`ZICFILP_LP_BRANCH(ins.prev) && (ins.current.insn == 32'hFFFFFFFF))
     } {
-        `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_FETCH
             bins instr_access_fault = {2'b10};
         `endif
         bins illegal_instruction = {2'b01};

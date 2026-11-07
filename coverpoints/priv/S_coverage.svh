@@ -1435,9 +1435,6 @@ covergroup S_Zicntr_cg with function sample(ins_t ins);
         }
     `endif
     `ifdef SSTC_SUPPORTED
-        mip_stip_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mip", "stip")[0] {
-            bins zero = {0};
-        }
         mie_stie_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "stie")[0] {
             bins one = {1};
         }
@@ -1463,7 +1460,9 @@ covergroup S_Zicntr_cg with function sample(ins_t ins);
         cp_instret_wfi_pending: cross priv_mode_s, wfi, mip_ssip_one, mie_ssie_one, mstatus_sie_zero, prev_instret_read;
     `endif
     `ifdef SSTC_SUPPORTED
-        cp_instret_wfi_wake: cross priv_mode_s, wfi, mip_stip_zero, mie_stie_one, mstatus_sie_zero;
+        // The test runs wfi only after reading sip.STIP = 0; a trace may attribute the timer's mip.STIP change
+        // to the instruction that retires with the woken wfi, so the cross does not check STIP
+        cp_instret_wfi_wake: cross priv_mode_s, wfi, mie_stie_one, mstatus_sie_zero;
     `endif
     `ifdef ZAWRS_SUPPORTED
         cp_instret_wrs_nto: cross priv_mode_s, wrs_nto, prev_instret_read;

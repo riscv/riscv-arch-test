@@ -1,0 +1,1 @@
+run-cva6.sh --target cv64a6_imafdc_sv39_hpdcache {debug:--trace __TRACEFILE__} --elf

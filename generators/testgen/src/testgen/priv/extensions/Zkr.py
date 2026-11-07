@@ -10,8 +10,6 @@ The shared test-case generators are called with mode in {"M", "S", "U"}. The H g
 VS-mode and VU-mode, where every access traps.
 """
 
-from collections.abc import Iterator
-
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.asm.tsbi import tsbi_call_or_direct
 from testgen.data.state import TestData
@@ -28,23 +26,26 @@ def _record_seed_reserved(dest_reg: int, test_data: TestData) -> list[str]:
     ]
 
 
-# (op, is_immediate) for each CSR op to test on seed
+# (op, is_immediate) for each CSR op to test on seed.
+# csrrw and csrrwi always write seed. csrrs, csrrc, csrrsi and csrrci write it only with a nonzero rs1/uimm;
+# with x0 or 0 they are read-only accesses, which always trap.
 _SEED_CSR_OPS = (
     ("csrrs", False),
     ("csrrc", False),
-    ("csrrwi", True),  # not a read of seed, so it does not trap where seed is accessible
+    ("csrrwi", True),
     ("csrrsi", True),
     ("csrrci", True),
-    ("csrrw", False),  # not a read of seed, so it does not trap where seed is accessible
+    ("csrrw", False),
 )
 
 
-def _seed_csr_ops(dest_reg: int, rs1_reg: int) -> Iterator[tuple[str, int, str]]:
+def _seed_csr_instrs(dest_reg: int, rs1_reg: int) -> list[tuple[str, int, str]]:
     """(op, rs1/uimm value, instruction) for each op in _SEED_CSR_OPS with rs1/uimm = 0 and nonzero."""
-    for op, is_imm in _SEED_CSR_OPS:
-        for rs1_imm_val in (0, 1):
-            rs1 = rs1_imm_val if is_imm else ("x0" if rs1_imm_val == 0 else f"x{rs1_reg}")
-            yield op, rs1_imm_val, f"{op} x{dest_reg}, seed, {rs1}"
+    return [
+        (op, rs1_imm_val, f"{op} x{dest_reg}, seed, {rs1}")
+        for op, is_imm in _SEED_CSR_OPS
+        for rs1_imm_val, rs1 in enumerate(("0", "1") if is_imm else ("x0", f"x{rs1_reg}"))
+    ]
 
 
 def _gate(mode: str, lines: list[str]) -> list[str]:
@@ -121,7 +122,7 @@ def gen_seed_illegal_csr_op_tests(test_data: TestData, covergroup: str, mode: st
         f"LI(x{rs1_reg}, 0)",
     ]
 
-    for op, rs1_imm_val, instr in _seed_csr_ops(dest_reg, rs1_reg):
+    for op, rs1_imm_val, instr in _seed_csr_instrs(dest_reg, rs1_reg):
         lines.extend(
             [
                 test_data.add_testcase(f"{mode}_{op}_rs1imm{rs1_imm_val}", coverpoint, covergroup),
@@ -229,7 +230,7 @@ def gen_seed_virtual_access_tests(test_data: TestData, covergroup: str, mode: st
                     tsbi_call_or_direct(f"csrw mseccfg, x{mseccfg_reg}", mode),
                 ]
             )
-            for op, rs1_imm_val, instr in _seed_csr_ops(dest_reg, rs1_reg):
+            for op, rs1_imm_val, instr in _seed_csr_instrs(dest_reg, rs1_reg):
                 tag = f"{mode}_{op}_rs1imm{rs1_imm_val}_sseed{sseed}_useed{useed}"
                 lines.extend(
                     [
@@ -316,7 +317,7 @@ def make_zkrh(test_data: TestData) -> list[TestChunk]:
     for mode in ("VS", "VU"):
         tc.code.append(f"RVTEST_TSBI_GOTO_{mode}MODE")
         tc.code.extend(gen_seed_virtual_access_tests(test_data, "Zkr_H_cg", mode))
-        tc.code.append("RVTEST_TSBI_GOTO_SMODE")
+    tc.code.append("RVTEST_TSBI_GOTO_SMODE")
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

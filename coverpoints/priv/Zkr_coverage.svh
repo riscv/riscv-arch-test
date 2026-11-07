@@ -162,10 +162,8 @@ covergroup Zkr_H_cg with function sample(ins_t ins);
         bins nonzero = {[5'b00001:5'b11111]};
     }
 
-    mseccfg_sseed: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mseccfg", "sseed")[0] {
-    }
-    mseccfg_useed: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mseccfg", "useed")[0] {
-    }
+    mseccfg_sseed: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mseccfg", "sseed")[0] {}
+    mseccfg_useed: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mseccfg", "useed")[0] {}
 
     // Main coverpoint (VS-mode and VU-mode)
     cp_zkr_seed_access_h: cross priv_mode_vs_vu, csrops, seed_csr, rs1_imm_0_1, mseccfg_sseed, mseccfg_useed;

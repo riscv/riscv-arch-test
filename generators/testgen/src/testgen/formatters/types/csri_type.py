@@ -19,8 +19,10 @@ csri_config = InstructionTypeConfig(
 def zicsr_accessi(instr_name: str, rd: int, temp_reg: int, immval: int) -> str:
     """Helper function to determine which CSR to use for testing based on supported extensions."""
     # instret requires special treatment because it is not writable, and the value is not initialized
-    if instr_name in ["csrrw", "csrrwi"] or rd == 0:
-        read_only_access = f"li x{rd}, 0x42 # avoid write to read-only CSR, or inconsistent result with rd = 0"
+    if instr_name in ["csrrw", "csrrwi"]:
+        read_only_access = f"li x{rd}, 0x42 # avoid write to read-only CSR"
+    elif rd == 0:
+        read_only_access = f"{instr_name} x0, RVTEST_TEST_CSR, 0  # uimm = 0 does not write; the result is discarded"
     else:
         read_only_access = (
             f"{instr_name} x{temp_reg}, RVTEST_TEST_CSR, 0\n"

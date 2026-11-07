@@ -268,96 +268,160 @@ covergroup U_Zicntr_cg with function sample(ins_t ins);
     }
 
     counters_mcounteren: coverpoint {ins.current.insn[31:20], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "mcounteren")[31:0] } {
+        `ifdef UDB_MCOUNTENABLE_EN_0
         bins cycle_enabled         = {44'b110000000000_00000000000000000000000000000001};
+        `endif
+        `ifdef UDB_MCOUNTENABLE_EN_1
         bins time_enabled          = {44'b110000000001_00000000000000000000000000000010};
+        `endif
+        `ifdef UDB_MCOUNTENABLE_EN_2
         bins instret_enabled       = {44'b110000000010_00000000000000000000000000000100};
+        `endif
         `ifdef ZIHPM_SUPPORTED
           `ifdef UDB_HPM_COUNTER_EN_3
+            `ifdef UDB_MCOUNTENABLE_EN_3
             bins hpmcounter3_enabled   = {44'b110000000011_00000000000000000000000000001000};
+            `endif
           `endif
           `ifdef UDB_HPM_COUNTER_EN_4
+            `ifdef UDB_MCOUNTENABLE_EN_4
             bins hpmcounter4_enabled   = {44'b110000000100_00000000000000000000000000010000};
+            `endif
           `endif
           `ifdef UDB_HPM_COUNTER_EN_5
+            `ifdef UDB_MCOUNTENABLE_EN_5
             bins hpmcounter5_enabled   = {44'b110000000101_00000000000000000000000000100000};
+            `endif
           `endif
           `ifdef UDB_HPM_COUNTER_EN_6
+            `ifdef UDB_MCOUNTENABLE_EN_6
             bins hpmcounter6_enabled   = {44'b110000000110_00000000000000000000000001000000};
+            `endif
           `endif
           `ifdef UDB_HPM_COUNTER_EN_7
+            `ifdef UDB_MCOUNTENABLE_EN_7
             bins hpmcounter7_enabled   = {44'b110000000111_00000000000000000000000010000000};
+            `endif
           `endif
           `ifdef UDB_HPM_COUNTER_EN_8
+            `ifdef UDB_MCOUNTENABLE_EN_8
             bins hpmcounter8_enabled   = {44'b110000001000_00000000000000000000000100000000};
+            `endif
           `endif
           `ifdef UDB_HPM_COUNTER_EN_9
+            `ifdef UDB_MCOUNTENABLE_EN_9
             bins hpmcounter9_enabled   = {44'b110000001001_00000000000000000000001000000000};
+            `endif
           `endif
           `ifdef UDB_HPM_COUNTER_EN_10
+            `ifdef UDB_MCOUNTENABLE_EN_10
             bins hpmcounter10_enabled  = {44'b110000001010_00000000000000000000010000000000};
+            `endif
           `endif
           `ifdef UDB_HPM_COUNTER_EN_11
+            `ifdef UDB_MCOUNTENABLE_EN_11
             bins hpmcounter11_enabled  = {44'b110000001011_00000000000000000000100000000000};
+            `endif
           `endif
           `ifdef UDB_HPM_COUNTER_EN_12
+            `ifdef UDB_MCOUNTENABLE_EN_12
             bins hpmcounter12_enabled  = {44'b110000001100_00000000000000000001000000000000};
+            `endif
           `endif
           `ifdef UDB_HPM_COUNTER_EN_13
+            `ifdef UDB_MCOUNTENABLE_EN_13
             bins hpmcounter13_enabled  = {44'b110000001101_00000000000000000010000000000000};
+            `endif
           `endif
           `ifdef UDB_HPM_COUNTER_EN_14
+            `ifdef UDB_MCOUNTENABLE_EN_14
             bins hpmcounter14_enabled  = {44'b110000001110_00000000000000000100000000000000};
+            `endif
           `endif
           `ifdef UDB_HPM_COUNTER_EN_15
+            `ifdef UDB_MCOUNTENABLE_EN_15
             bins hpmcounter15_enabled  = {44'b110000001111_00000000000000001000000000000000};
+            `endif
           `endif
           `ifdef UDB_HPM_COUNTER_EN_16
+            `ifdef UDB_MCOUNTENABLE_EN_16
             bins hpmcounter16_enabled  = {44'b110000010000_00000000000000010000000000000000};
+            `endif
           `endif
           `ifdef UDB_HPM_COUNTER_EN_17
+            `ifdef UDB_MCOUNTENABLE_EN_17
             bins hpmcounter17_enabled  = {44'b110000010001_00000000000000100000000000000000};
+            `endif
           `endif
           `ifdef UDB_HPM_COUNTER_EN_18
+            `ifdef UDB_MCOUNTENABLE_EN_18
             bins hpmcounter18_enabled  = {44'b110000010010_00000000000001000000000000000000};
+            `endif
           `endif
           `ifdef UDB_HPM_COUNTER_EN_19
+            `ifdef UDB_MCOUNTENABLE_EN_19
             bins hpmcounter19_enabled  = {44'b110000010011_00000000000010000000000000000000};
+            `endif
           `endif
           `ifdef UDB_HPM_COUNTER_EN_20
+            `ifdef UDB_MCOUNTENABLE_EN_20
             bins hpmcounter20_enabled  = {44'b110000010100_00000000000100000000000000000000};
+            `endif
           `endif
           `ifdef UDB_HPM_COUNTER_EN_21
+            `ifdef UDB_MCOUNTENABLE_EN_21
             bins hpmcounter21_enabled  = {44'b110000010101_00000000001000000000000000000000};
+            `endif
           `endif
           `ifdef UDB_HPM_COUNTER_EN_22
+            `ifdef UDB_MCOUNTENABLE_EN_22
             bins hpmcounter22_enabled  = {44'b110000010110_00000000010000000000000000000000};
+            `endif
           `endif
           `ifdef UDB_HPM_COUNTER_EN_23
+            `ifdef UDB_MCOUNTENABLE_EN_23
             bins hpmcounter23_enabled  = {44'b110000010111_00000000100000000000000000000000};
+            `endif
           `endif
           `ifdef UDB_HPM_COUNTER_EN_24
+            `ifdef UDB_MCOUNTENABLE_EN_24
             bins hpmcounter24_enabled  = {44'b110000011000_00000001000000000000000000000000};
+            `endif
           `endif
           `ifdef UDB_HPM_COUNTER_EN_25
+            `ifdef UDB_MCOUNTENABLE_EN_25
             bins hpmcounter25_enabled  = {44'b110000011001_00000010000000000000000000000000};
+            `endif
           `endif
           `ifdef UDB_HPM_COUNTER_EN_26
+            `ifdef UDB_MCOUNTENABLE_EN_26
             bins hpmcounter26_enabled  = {44'b110000011010_00000100000000000000000000000000};
+            `endif
           `endif
           `ifdef UDB_HPM_COUNTER_EN_27
+            `ifdef UDB_MCOUNTENABLE_EN_27
             bins hpmcounter27_enabled  = {44'b110000011011_00001000000000000000000000000000};
+            `endif
           `endif
           `ifdef UDB_HPM_COUNTER_EN_28
+            `ifdef UDB_MCOUNTENABLE_EN_28
             bins hpmcounter28_enabled  = {44'b110000011100_00010000000000000000000000000000};
+            `endif
           `endif
           `ifdef UDB_HPM_COUNTER_EN_29
+            `ifdef UDB_MCOUNTENABLE_EN_29
             bins hpmcounter29_enabled  = {44'b110000011101_00100000000000000000000000000000};
+            `endif
           `endif
           `ifdef UDB_HPM_COUNTER_EN_30
+            `ifdef UDB_MCOUNTENABLE_EN_30
             bins hpmcounter30_enabled  = {44'b110000011110_01000000000000000000000000000000};
+            `endif
           `endif
           `ifdef UDB_HPM_COUNTER_EN_31
+            `ifdef UDB_MCOUNTENABLE_EN_31
             bins hpmcounter31_enabled  = {44'b110000011111_10000000000000000000000000000000};
+            `endif
           `endif
         `endif
 
@@ -455,96 +519,160 @@ covergroup U_Zicntr_cg with function sample(ins_t ins);
         `endif
 
         `ifdef UDB_MXLEN_32
+            `ifdef UDB_MCOUNTENABLE_EN_0
             bins cycleh_enabled         = {44'b110010000000_00000000000000000000000000000001};
+            `endif
+            `ifdef UDB_MCOUNTENABLE_EN_1
             bins timeh_enabled          = {44'b110010000001_00000000000000000000000000000010};
+            `endif
+            `ifdef UDB_MCOUNTENABLE_EN_2
             bins instreth_enabled       = {44'b110010000010_00000000000000000000000000000100};
+            `endif
             `ifdef ZIHPM_SUPPORTED
               `ifdef UDB_HPM_COUNTER_EN_3
+                `ifdef UDB_MCOUNTENABLE_EN_3
                 bins hpmcounter3h_enabled   = {44'b110010000011_00000000000000000000000000001000};
+                `endif
               `endif
               `ifdef UDB_HPM_COUNTER_EN_4
+                `ifdef UDB_MCOUNTENABLE_EN_4
                 bins hpmcounter4h_enabled   = {44'b110010000100_00000000000000000000000000010000};
+                `endif
               `endif
               `ifdef UDB_HPM_COUNTER_EN_5
+                `ifdef UDB_MCOUNTENABLE_EN_5
                 bins hpmcounter5h_enabled   = {44'b110010000101_00000000000000000000000000100000};
+                `endif
               `endif
               `ifdef UDB_HPM_COUNTER_EN_6
+                `ifdef UDB_MCOUNTENABLE_EN_6
                 bins hpmcounter6h_enabled   = {44'b110010000110_00000000000000000000000001000000};
+                `endif
               `endif
               `ifdef UDB_HPM_COUNTER_EN_7
+                `ifdef UDB_MCOUNTENABLE_EN_7
                 bins hpmcounter7h_enabled   = {44'b110010000111_00000000000000000000000010000000};
+                `endif
               `endif
               `ifdef UDB_HPM_COUNTER_EN_8
+                `ifdef UDB_MCOUNTENABLE_EN_8
                 bins hpmcounter8h_enabled   = {44'b110010001000_00000000000000000000000100000000};
+                `endif
               `endif
               `ifdef UDB_HPM_COUNTER_EN_9
+                `ifdef UDB_MCOUNTENABLE_EN_9
                 bins hpmcounter9h_enabled   = {44'b110010001001_00000000000000000000001000000000};
+                `endif
               `endif
               `ifdef UDB_HPM_COUNTER_EN_10
+                `ifdef UDB_MCOUNTENABLE_EN_10
                 bins hpmcounter10h_enabled  = {44'b110010001010_00000000000000000000010000000000};
+                `endif
               `endif
               `ifdef UDB_HPM_COUNTER_EN_11
+                `ifdef UDB_MCOUNTENABLE_EN_11
                 bins hpmcounter11h_enabled  = {44'b110010001011_00000000000000000000100000000000};
+                `endif
               `endif
               `ifdef UDB_HPM_COUNTER_EN_12
+                `ifdef UDB_MCOUNTENABLE_EN_12
                 bins hpmcounter12h_enabled  = {44'b110010001100_00000000000000000001000000000000};
+                `endif
               `endif
               `ifdef UDB_HPM_COUNTER_EN_13
+                `ifdef UDB_MCOUNTENABLE_EN_13
                 bins hpmcounter13h_enabled  = {44'b110010001101_00000000000000000010000000000000};
+                `endif
               `endif
               `ifdef UDB_HPM_COUNTER_EN_14
+                `ifdef UDB_MCOUNTENABLE_EN_14
                 bins hpmcounter14h_enabled  = {44'b110010001110_00000000000000000100000000000000};
+                `endif
               `endif
               `ifdef UDB_HPM_COUNTER_EN_15
+                `ifdef UDB_MCOUNTENABLE_EN_15
                 bins hpmcounter15h_enabled  = {44'b110010001111_00000000000000001000000000000000};
+                `endif
               `endif
               `ifdef UDB_HPM_COUNTER_EN_16
+                `ifdef UDB_MCOUNTENABLE_EN_16
                 bins hpmcounter16h_enabled  = {44'b110010010000_00000000000000010000000000000000};
+                `endif
               `endif
               `ifdef UDB_HPM_COUNTER_EN_17
+                `ifdef UDB_MCOUNTENABLE_EN_17
                 bins hpmcounter17h_enabled  = {44'b110010010001_00000000000000100000000000000000};
+                `endif
               `endif
               `ifdef UDB_HPM_COUNTER_EN_18
+                `ifdef UDB_MCOUNTENABLE_EN_18
                 bins hpmcounter18h_enabled  = {44'b110010010010_00000000000001000000000000000000};
+                `endif
               `endif
               `ifdef UDB_HPM_COUNTER_EN_19
+                `ifdef UDB_MCOUNTENABLE_EN_19
                 bins hpmcounter19h_enabled  = {44'b110010010011_00000000000010000000000000000000};
+                `endif
               `endif
               `ifdef UDB_HPM_COUNTER_EN_20
+                `ifdef UDB_MCOUNTENABLE_EN_20
                 bins hpmcounter20h_enabled  = {44'b110010010100_00000000000100000000000000000000};
+                `endif
               `endif
               `ifdef UDB_HPM_COUNTER_EN_21
+                `ifdef UDB_MCOUNTENABLE_EN_21
                 bins hpmcounter21h_enabled  = {44'b110010010101_00000000001000000000000000000000};
+                `endif
               `endif
               `ifdef UDB_HPM_COUNTER_EN_22
+                `ifdef UDB_MCOUNTENABLE_EN_22
                 bins hpmcounter22h_enabled  = {44'b110010010110_00000000010000000000000000000000};
+                `endif
               `endif
               `ifdef UDB_HPM_COUNTER_EN_23
+                `ifdef UDB_MCOUNTENABLE_EN_23
                 bins hpmcounter23h_enabled  = {44'b110010010111_00000000100000000000000000000000};
+                `endif
               `endif
               `ifdef UDB_HPM_COUNTER_EN_24
+                `ifdef UDB_MCOUNTENABLE_EN_24
                 bins hpmcounter24h_enabled  = {44'b110010011000_00000001000000000000000000000000};
+                `endif
               `endif
               `ifdef UDB_HPM_COUNTER_EN_25
+                `ifdef UDB_MCOUNTENABLE_EN_25
                 bins hpmcounter25h_enabled  = {44'b110010011001_00000010000000000000000000000000};
+                `endif
               `endif
               `ifdef UDB_HPM_COUNTER_EN_26
+                `ifdef UDB_MCOUNTENABLE_EN_26
                 bins hpmcounter26h_enabled  = {44'b110010011010_00000100000000000000000000000000};
+                `endif
               `endif
               `ifdef UDB_HPM_COUNTER_EN_27
+                `ifdef UDB_MCOUNTENABLE_EN_27
                 bins hpmcounter27h_enabled  = {44'b110010011011_00001000000000000000000000000000};
+                `endif
               `endif
               `ifdef UDB_HPM_COUNTER_EN_28
+                `ifdef UDB_MCOUNTENABLE_EN_28
                 bins hpmcounter28h_enabled  = {44'b110010011100_00010000000000000000000000000000};
+                `endif
               `endif
               `ifdef UDB_HPM_COUNTER_EN_29
+                `ifdef UDB_MCOUNTENABLE_EN_29
                 bins hpmcounter29h_enabled  = {44'b110010011101_00100000000000000000000000000000};
+                `endif
               `endif
               `ifdef UDB_HPM_COUNTER_EN_30
+                `ifdef UDB_MCOUNTENABLE_EN_30
                 bins hpmcounter30h_enabled  = {44'b110010011110_01000000000000000000000000000000};
+                `endif
               `endif
               `ifdef UDB_HPM_COUNTER_EN_31
+                `ifdef UDB_MCOUNTENABLE_EN_31
                 bins hpmcounter31h_enabled  = {44'b110010011111_10000000000000000000000000000000};
+                `endif
               `endif
             `endif
 
@@ -645,6 +773,14 @@ covergroup U_Zicntr_cg with function sample(ins_t ins);
 
     // main coverpoints
     cp_mcounteren_access_u: cross csraccess, counters_mcounteren, priv_mode_u;
+    `ifdef UDB_MCOUNTENABLE_EN_2
+        `ifndef S_SUPPORTED
+            `define U_ZICNTR_INSTRET_READABLE
+        `elsif UDB_SCOUNTENABLE_EN_2
+            `define U_ZICNTR_INSTRET_READABLE
+        `endif
+    `endif
+    `ifdef U_ZICNTR_INSTRET_READABLE
     cp_mcounter_inc_inaccessible: cross mcounteren_zeros, priv_mode_u;
 
     // ---- instret delta coverpoints ----
@@ -714,6 +850,8 @@ covergroup U_Zicntr_cg with function sample(ins_t ins);
         cp_instret_wrs_sto: cross priv_mode_u, wrs_sto, prev_instret_read;
     `endif
 
+    `endif
+    `undef U_ZICNTR_INSTRET_READABLE
 endgroup
 `endif
 

@@ -87,9 +87,9 @@ params:
 
   # Sm params
   WFI_U_MODE: true
-  MEI_INTR_IMPL: false
-  MSI_INTR_IMPL: false
-  MTI_INTR_IMPL: false
+  MEI_INTR_IMPL: true
+  MSI_INTR_IMPL: true
+  MTI_INTR_IMPL: true
   WFI_FINITE: false
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true # VERIFIED — mepc set to current PC on exception
   MARCHID_IMPLEMENTED: true

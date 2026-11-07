@@ -431,7 +431,8 @@
     "Zicfilp": { "supported": false },
     "Zicfiss": { "supported": false },
     "Zicond": { "supported": false },
-    "Zicntr": { "supported": true },
+    // no cycle, time or instret CSRs (User Manual, Performance Counters)
+    "Zicntr": { "supported": false },
     "Zicsr": { "supported": true },
     "Zifencei": { "supported": true },
     "Zihintntl": { "supported": false },

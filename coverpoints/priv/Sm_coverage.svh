@@ -1835,7 +1835,9 @@ covergroup Sm_Zicntr_cg with function sample(ins_t ins);
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD};
         }
     `endif
+    // Serves crosses that a config may compile out, so only the crosses count
     wfi: coverpoint ins.current.insn {
+        type_option.weight = 0;
         bins wfi = {WFI};
     }
     mstatus_mie_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")[0] {

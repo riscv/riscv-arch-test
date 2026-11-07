@@ -26,24 +26,22 @@ def _record_seed_reserved(dest_reg: int, test_data: TestData) -> list[str]:
     ]
 
 
-# (op, is_immediate) for each CSR op to test on seed.
-# csrrw and csrrwi always write seed. csrrs, csrrc, csrrsi and csrrci write it only with a nonzero rs1/uimm;
-# with x0 or 0 they are read-only accesses, which always trap.
-_SEED_CSR_OPS = (
-    ("csrrs", False),
-    ("csrrc", False),
-    ("csrrwi", True),
-    ("csrrsi", True),
-    ("csrrci", True),
-    ("csrrw", False),
-)
-
-
 def _seed_csr_instrs(dest_reg: int, rs1_reg: int) -> list[tuple[str, int, str]]:
-    """(op, rs1/uimm value, instruction) for each op in _SEED_CSR_OPS with rs1/uimm = 0 and nonzero."""
+    """(op, rs1/uimm value, instruction) for each CSR op on seed with rs1/uimm = 0 and nonzero."""
+    # (op, is_immediate) for each CSR op to test on seed.
+    # csrrw and csrrwi always write seed. csrrs, csrrc, csrrsi and csrrci write it only with a nonzero rs1/uimm;
+    # with x0 or 0 they are read-only accesses, which always trap.
+    csr_ops = (
+        ("csrrs", False),
+        ("csrrc", False),
+        ("csrrwi", True),
+        ("csrrsi", True),
+        ("csrrci", True),
+        ("csrrw", False),
+    )
     return [
         (op, rs1_imm_val, f"{op} x{dest_reg}, seed, {rs1}")
-        for op, is_imm in _SEED_CSR_OPS
+        for op, is_imm in csr_ops
         for rs1_imm_val, rs1 in enumerate(("0", "1") if is_imm else ("x0", f"x{rs1_reg}"))
     ]
 

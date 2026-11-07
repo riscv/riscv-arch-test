@@ -50,8 +50,6 @@ triggernum_chain_end: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER,
 }
 tdata1_m: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "m")[0] {
     type_option.weight = 0;
-    bins disabled = {1'b0};
-    bins enabled  = {1'b1};
 }
 tdata1_match_cmp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "match")[3:0] {
     type_option.weight = 0;
@@ -397,14 +395,12 @@ chain_store_x0: coverpoint ins.current.insn[24:20] {
     type_option.weight = 0;
     bins x0 = {5'd0};
 }
-chain_store_adr: coverpoint (ins.current.csr[CSR_TDATA2] == ins.current.rs1_val + ins.current.imm) {
+chain_store_adr: coverpoint (ins.current.csr[CSR_TDATA2] == ins.current.eff_addr) {
     type_option.weight = 0;
     bins watched = {1'b1};
 }
 chain_fired: coverpoint sdtrig_bp_taken(ins) {
     type_option.weight = 0;
-    bins fired     = {1'b1};
-    bins not_fired = {1'b0};
 }
 `ifndef SDTRIG_SUITE_SM
 // SdtrigS/U cp_mcontrol6_priv_bits: a sw to the address watched by an mcontrol6 store trigger (select = 0, store = 1)
@@ -413,7 +409,7 @@ priv_bits_sw: coverpoint ins.current.insn iff (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tdata1", "type")[3:0] == 4'd6 &&
         get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tdata1", "store")[0] &&
         !get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tdata1", "select")[0] &&
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tdata2", "tdata2") == ins.current.rs1_val + ins.current.imm) {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tdata2", "tdata2") == ins.current.eff_addr) {
     type_option.weight = 0;
     wildcard bins sw = {SW};
 }

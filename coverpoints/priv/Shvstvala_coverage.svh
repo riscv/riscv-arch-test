@@ -81,12 +81,12 @@ covergroup Shvstvala_cg with function sample(ins_t ins);
     // vstval holds the load or store address, the jalr target, or the instruction.  The test sets vstval
     // to a random value before each trap.
     vstval_address : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vstval", "vstval") ==
-                                ins.current.rs1_val + ins.current.imm {
+                                ins.current.eff_addr {
         type_option.weight = 0;
         bins match = {1};
     }
     vstval_target : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vstval", "vstval") ==
-                               ((ins.current.rs1_val + ins.current.imm) & ~1) {
+                               (ins.current.eff_addr & ~1) {
         type_option.weight = 0;
         bins match = {1};
     }
@@ -94,22 +94,26 @@ covergroup Shvstvala_cg with function sample(ins_t ins);
         bins match = {1};
     }
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_FETCH
         instr_access_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vscause", "code")
             iff (ins.current.csr_wb[CSR_VSCAUSE]) {
             bins vscause = {1};
         }
+        cp_instr_access_fault: cross priv_mode_vs_vu, jalr,     instr_access_fault, vstval_target;
+    `endif
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
         load_access_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vscause", "code")
             iff (ins.current.csr_wb[CSR_VSCAUSE]) {
             bins vscause = {5};
         }
+        cp_load_access_fault:  cross priv_mode_vs_vu, loadops,  load_access_fault,  vstval_address;
+    `endif
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
         store_access_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vscause", "code")
             iff (ins.current.csr_wb[CSR_VSCAUSE]) {
             bins vscause = {7};
         }
-        cp_load_access_fault:  cross priv_mode_vs_vu, loadops,  load_access_fault,  vstval_address;
         cp_store_access_fault: cross priv_mode_vs_vu, storeops, store_access_fault, vstval_address;
-        cp_instr_access_fault: cross priv_mode_vs_vu, jalr,     instr_access_fault, vstval_target;
     `endif
 
     // Misaligned loads and stores trap only when the implementation does not perform them
@@ -137,7 +141,7 @@ covergroup Shvstvala_cg with function sample(ins_t ins);
             type_option.weight = 0;
             wildcard bins sw = {SW};
         }
-        word_misalignment : coverpoint (ins.current.rs1_val + ins.current.imm) & 3 {
+        word_misalignment : coverpoint ins.current.eff_addr & 3 {
             type_option.weight = 0;
             bins offset[] = {[1:3]};
         }
@@ -152,7 +156,7 @@ covergroup Shvstvala_cg with function sample(ins_t ins);
                 type_option.weight = 0;
                 wildcard bins sd = {SD};
             }
-            doubleword_misalignment : coverpoint (ins.current.rs1_val + ins.current.imm) & 7 {
+            doubleword_misalignment : coverpoint ins.current.eff_addr & 7 {
                 type_option.weight = 0;
                 bins offset[] = {[1:7]};
             }

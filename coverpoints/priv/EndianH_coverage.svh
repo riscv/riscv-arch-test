@@ -58,14 +58,14 @@ covergroup EndianH_cg with function sample(ins_t ins);
         }
     `endif
 
-    cp_byteoffset: coverpoint {ins.current.imm + ins.current.rs1_val}[2:0] {
+    cp_byteoffset: coverpoint ins.current.eff_addr[2:0] {
         // all byte offsets
     }
-    cp_halfoffset: coverpoint {ins.current.imm + ins.current.rs1_val}[2:0] {
+    cp_halfoffset: coverpoint ins.current.eff_addr[2:0] {
         wildcard ignore_bins lsb = {3'b??1};
         // all halfword offsets
     }
-    cp_wordoffset: coverpoint {ins.current.imm + ins.current.rs1_val}[2:0] {
+    cp_wordoffset: coverpoint ins.current.eff_addr[2:0] {
         wildcard ignore_bins b0 = {3'b??1};
         wildcard ignore_bins b2 = {3'b?1?};
         // all word offsets

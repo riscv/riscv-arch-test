@@ -42,6 +42,43 @@
   `endif
 `endif
 
+// PMP_HSvZicbo needs a NAPOT entry the size of the 4 KiB test page (a grain of at most 4 KiB) below the background
+// entry
+`ifdef H_SUPPORTED
+  `ifdef PMP_HAS_CBO
+    `ifdef UDB_PMP_NAPOT_SUPPORTED
+      `ifdef UDB_PMP_GRANULARITY_2
+        `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_3
+        `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_4
+        `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_5
+        `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_6
+        `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_7
+        `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_8
+        `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_9
+        `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_10
+        `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_11
+        `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_12
+        `define PMP_COVER_HSVZICBO
+      `endif
+      `ifdef UDB_NUM_PMP_ENTRIES_0
+        `undef PMP_COVER_HSVZICBO
+      `elsif UDB_NUM_PMP_ENTRIES_1
+        `undef PMP_COVER_HSVZICBO
+      `endif
+    `endif
+  `endif
+`endif
+
 
 `ifdef F_SUPPORTED
 covergroup PMP_F_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],logic [14:0] pmp_hit);
@@ -50,7 +87,7 @@ covergroup PMP_F_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],log
 
   // The test places its NAPOT region at PMP_NAPOT_REGION_START, which is g_napot-aligned, so the
   // fld/fsd probes are naturally aligned at every grain.
-  addr_in_napot_region: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+  addr_in_napot_region: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
     bins at_region = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};
   }
 
@@ -131,13 +168,13 @@ covergroup PMP_S_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
   option.per_instance = 0;
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
-  addr_in_region: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+  addr_in_region: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
     bins at_region = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};
   }
 
   // Bins are relative to PMP_NAPOT_REGION_START (not PMP_REGION_START): the actual
   // NAPOT region-under-test sits g_napot-aligned to avoid swallowing the return-pad
-  addr_offset_napot: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+  addr_offset_napot: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
     bins at_base      = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};                // Access exactly at the region base
     bins below_base   = {(`PMP_NAPOT_REGION_START - 4) & `PMP_ADDR_LOWMASK};            // Access 4 bytes below the region
     bins just_inside  = {(`PMP_NAPOT_REGION_START + 4) & `PMP_ADDR_LOWMASK};            // Access 4 bytes into the region
@@ -145,7 +182,7 @@ covergroup PMP_S_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
     bins just_beyond  = {(`PMP_NAPOT_REGION_START + `g_napot) & `PMP_ADDR_LOWMASK};     // Access exactly at the end of the region
   }
 
-  addr_offset_na4: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+  addr_offset_na4: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
     bins at_base     = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};      // Access exactly at the region base
     bins below_base  = {(`PMP_REGION_START - 4) & `PMP_ADDR_LOWMASK};  // Access below region base
     bins beyond_top  = {(`PMP_REGION_START + 4) & `PMP_ADDR_LOWMASK};  // Access beyond top of region
@@ -153,7 +190,7 @@ covergroup PMP_S_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
 
   `ifdef UDB_PMP_TOR_SUPPORTED
     // if range is from `PMP_REGION_START to `PMP_REGION_START + `g
-    addr_offset_tor: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+    addr_offset_tor: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
       bins at_base      = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};              // Access exactly at the region base
       bins below_base   = {(`PMP_REGION_START - 4) & `PMP_ADDR_LOWMASK};          // Access 4 bytes below the base
       bins at_top       = {(`PMP_REGION_START + `g_tor) & `PMP_ADDR_LOWMASK};     // Access exactly at top of range
@@ -202,7 +239,7 @@ covergroup PMP_S_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
   // Accesses to a NAPOT region that the tests place at PMP_NAPOT_REGION_START (cp_cfg_X/R/W and
   // cp_mprv_*). That base is g_napot-aligned, so the 8-byte ld/sd probes are naturally aligned at
   // every grain; PMP_REGION_START is only 4-byte aligned at PMP_GRANULARITY 2.
-  addr_in_napot_region: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+  addr_in_napot_region: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
     bins at_region = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};
   }
 
@@ -316,10 +353,7 @@ covergroup PMP_S_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
     wildcard bins csrrw  = {CSRRW};
   }
 
-  mprv_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv")[0]{
-    bins set   = {1};
-    bins unset = {0};
-  }
+  mprv_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv")[0]{}
 
   mpp_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0] {
     bins S_mode = {2'b01};
@@ -538,18 +572,18 @@ covergroup PMP_Sm_cg with function sample(
 
   // Address coverpoints mask the access address to its code-size-invariant low bits (see
   // PMP_ADDR_LOWMASK) so they match wherever .data landed (region at 0x80005xxx or 0x80009xxx).
-  addr_in_region: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+  addr_in_region: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
     bins at_region = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};   // NAPOT/OFF region-under-test start
   }
 
-  addr_offset_cp_cfg_A_napot_all: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+  addr_offset_cp_cfg_A_napot_all: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
     bins at_base      = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};
     bins below_base   = {(`PMP_NAPOT_REGION_START-4) & `PMP_ADDR_LOWMASK};
     bins just_beyond  = {(`PMP_NAPOT_REGION_START+`g_napot) & `PMP_ADDR_LOWMASK};
   }
 
   `ifdef UDB_PMP_TOR_SUPPORTED
-    address_offsets_tor: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+    address_offsets_tor: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
       bins at_base      = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};
       bins below_base   = {(`PMP_REGION_START-4) & `PMP_ADDR_LOWMASK};
       bins above_base   = {(`PMP_REGION_START+4) & `PMP_ADDR_LOWMASK};
@@ -558,7 +592,7 @@ covergroup PMP_Sm_cg with function sample(
     }
   `endif
 
-  address_offsets_napot: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+  address_offsets_napot: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
     bins at_base      = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};
     bins below_base   = {(`PMP_NAPOT_REGION_START-4) & `PMP_ADDR_LOWMASK};
     bins above_base   = {(`PMP_NAPOT_REGION_START+4) & `PMP_ADDR_LOWMASK};
@@ -567,7 +601,7 @@ covergroup PMP_Sm_cg with function sample(
   }
 
   `ifdef UDB_PMP_NA4_SUPPORTED
-    addr_offset_cp_cfg_A_na4: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+    addr_offset_cp_cfg_A_na4: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
       bins at_base     = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};
       bins just_beyond = {(`PMP_REGION_START+4) & `PMP_ADDR_LOWMASK};
       bins below_base  = {(`PMP_REGION_START-4) & `PMP_ADDR_LOWMASK};
@@ -575,7 +609,7 @@ covergroup PMP_Sm_cg with function sample(
   `endif
 
   `ifdef UDB_PMP_TOR_SUPPORTED
-    addr_offset_cp_cfg_A_tor0: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+    addr_offset_cp_cfg_A_tor0: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
       bins at_base      = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};
       bins below_base   = {(`PMP_REGION_START-4) & `PMP_ADDR_LOWMASK};
     }
@@ -630,65 +664,65 @@ covergroup PMP_Sm_cg with function sample(
     // Addresses for TOR regions moving up by g*i. Masked to low bits (see
     // PMP_ADDR_LOWMASK) so they match wherever .data landed for this test's code
     // size, same rationale as addr_in_region/address_offsets_tor above.
-    addr_for_tor_all_region0: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+    addr_for_tor_all_region0: coverpoint(ins.current.eff_addr & `PMP_ADDR_LOWMASK){
       bins address = {(`PMP_REGION_START-4) & `PMP_ADDR_LOWMASK}; // Region with XWR-111 for test to be executed.
     }
     // Access at the start of the region
-    addr_for_tor_all_region1: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+    addr_for_tor_all_region1: coverpoint(ins.current.eff_addr & `PMP_ADDR_LOWMASK){
       bins address = {(`PMP_REGION_START) & `PMP_ADDR_LOWMASK};
     }
-    addr_for_tor_all_region2: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+    addr_for_tor_all_region2: coverpoint(ins.current.eff_addr & `PMP_ADDR_LOWMASK){
       bins address = {(`PMP_REGION_START + `g_tor) & `PMP_ADDR_LOWMASK};
     }
-    addr_for_tor_all_region3: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+    addr_for_tor_all_region3: coverpoint(ins.current.eff_addr & `PMP_ADDR_LOWMASK){
       bins address = {(`PMP_REGION_START + 3*`g_tor) & `PMP_ADDR_LOWMASK};
     }
-    addr_for_tor_all_region4: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+    addr_for_tor_all_region4: coverpoint(ins.current.eff_addr & `PMP_ADDR_LOWMASK){
       bins address = {(`PMP_REGION_START + 6*`g_tor) & `PMP_ADDR_LOWMASK};
     }
-    addr_for_tor_all_region5: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+    addr_for_tor_all_region5: coverpoint(ins.current.eff_addr & `PMP_ADDR_LOWMASK){
       bins address = {(`PMP_REGION_START + 10*`g_tor) & `PMP_ADDR_LOWMASK};
     }
-    addr_for_tor_all_region6: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+    addr_for_tor_all_region6: coverpoint(ins.current.eff_addr & `PMP_ADDR_LOWMASK){
       bins address = {(`PMP_REGION_START + 15*`g_tor) & `PMP_ADDR_LOWMASK};
     }
     `ifdef PMP_ENTRY7_BELOW_BACKGROUND
-    addr_for_tor_all_region7: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+    addr_for_tor_all_region7: coverpoint(ins.current.eff_addr & `PMP_ADDR_LOWMASK){
       bins address = {(`PMP_REGION_START + 21*`g_tor) & `PMP_ADDR_LOWMASK};
     }
     `endif
     `ifdef PMP_ENTRY8_BELOW_BACKGROUND
-    addr_for_tor_all_region8: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+    addr_for_tor_all_region8: coverpoint(ins.current.eff_addr & `PMP_ADDR_LOWMASK){
       bins address = {(`PMP_REGION_START + 28*`g_tor) & `PMP_ADDR_LOWMASK};
     }
     `endif
     `ifdef PMP_ENTRY9_BELOW_BACKGROUND
-    addr_for_tor_all_region9: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+    addr_for_tor_all_region9: coverpoint(ins.current.eff_addr & `PMP_ADDR_LOWMASK){
       bins address = {(`PMP_REGION_START + 36*`g_tor) & `PMP_ADDR_LOWMASK};
     }
     `endif
     `ifdef PMP_ENTRY10_BELOW_BACKGROUND
-    addr_for_tor_all_region10: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+    addr_for_tor_all_region10: coverpoint(ins.current.eff_addr & `PMP_ADDR_LOWMASK){
       bins address = {(`PMP_REGION_START + 45*`g_tor) & `PMP_ADDR_LOWMASK};
     }
     `endif
     `ifdef PMP_ENTRY11_BELOW_BACKGROUND
-    addr_for_tor_all_region11: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+    addr_for_tor_all_region11: coverpoint(ins.current.eff_addr & `PMP_ADDR_LOWMASK){
       bins address = {(`PMP_REGION_START + 55*`g_tor) & `PMP_ADDR_LOWMASK};
     }
     `endif
     `ifdef PMP_ENTRY12_BELOW_BACKGROUND
-    addr_for_tor_all_region12: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+    addr_for_tor_all_region12: coverpoint(ins.current.eff_addr & `PMP_ADDR_LOWMASK){
       bins address = {(`PMP_REGION_START + 66*`g_tor) & `PMP_ADDR_LOWMASK};
     }
     `endif
     `ifdef PMP_ENTRY13_BELOW_BACKGROUND
-    addr_for_tor_all_region13: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+    addr_for_tor_all_region13: coverpoint(ins.current.eff_addr & `PMP_ADDR_LOWMASK){
       bins address = {(`PMP_REGION_START + 78*`g_tor) & `PMP_ADDR_LOWMASK};
     }
     `endif
     `ifdef PMP_ENTRY14_BELOW_BACKGROUND
-    addr_for_tor_all_region14: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+    addr_for_tor_all_region14: coverpoint(ins.current.eff_addr & `PMP_ADDR_LOWMASK){
       bins address = {(`PMP_REGION_START + 91*`g_tor) & `PMP_ADDR_LOWMASK};
     }
     `endif
@@ -1007,7 +1041,7 @@ covergroup PMP_Sm_cg with function sample(
       bins range = {`NON_STANDARD_REGION & `PMP_PMPADDR_LOWMASK};
     }
 
-    addr_for_tor_bot: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+    addr_for_tor_bot: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
       bins pmpaddr0_4 = {(((`NON_STANDARD_REGION)<<2)-4) & `PMP_ADDR_LOWMASK}; //pmpaddr0-4
       bins pmpaddr0   = {((`NON_STANDARD_REGION)<<2) & `PMP_ADDR_LOWMASK}; //pmpaddr0
       bins pmpaddr1_4 = {((`PMP_REGION_START+`g_tor)-4) & `PMP_ADDR_LOWMASK}; //pmpaddr1-4 NOTE: PMP_REGION_START>>2 => NON_STANDARD_REGION (pmp encoded address)
@@ -1034,7 +1068,7 @@ covergroup PMP_Sm_cg with function sample(
       bins pmp_cfg_tor1 =  {16'b10001000_00000000}; //L=1 for pmpcfg1 and L=0 for pmpcfg0,A=TOR for cf1 and A=OFF for 0,XWR=000(both)
     }
 
-    addr_for_tor_nonoverlap: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+    addr_for_tor_nonoverlap: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
       bins addr1 = {((`NON_STANDARD_REGION)<<2) & `PMP_ADDR_LOWMASK}; //pmpaddr1
       bins addr2 = {(((`NON_STANDARD_REGION)<<2)+4) & `PMP_ADDR_LOWMASK}; //pmpaddr1+4
       bins addr3 = {(((`NON_STANDARD_REGION)<<2)-4) & `PMP_ADDR_LOWMASK}; //pmpaddr1-4
@@ -1305,10 +1339,7 @@ covergroup PMP_Sm_cg with function sample(
   }
 
   // L = {0/1} pmp_region_1 and check the writes on pmp_region_1 and pmp_region_0
-  lock_checking: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "pmpcfg0", "pmp1cfg_l")[0] {
-    bins locked_region = {1};
-    bins unlocked_region = {0};
-  }
+  lock_checking: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "pmpcfg0", "pmp1cfg_l")[0] {}
 
   // Attempt to write values in given PMP CSRs when A = {OFF/TOR/NAPOT} and L = {0/1}
   // rs1 should be x0 while writing to pmpaddr1 & pmp1cfg0 in order to write all 0s.
@@ -1503,6 +1534,7 @@ covergroup PMP_Sm_cg with function sample(
 //-------------------------------------------------------
 
   `ifdef UDB_NUM_PMP_ENTRIES_64
+  `ifdef PMP_ENTRY15_BELOW_BACKGROUND
     pmp64: coverpoint {pmpcfg_L, pmpcfg_X, pmpcfg_WR, pmp_HIT} {
       `ifdef PMP_ENTRY15_BELOW_BACKGROUND
       wildcard bins pmp15cfg = {240'b???????????????????????????????????????????????1_???????????????????????????????????????????????1_??????????????????????????????????????????????????????????????????????????????????????????????01_???????????????????????????????????????????????1};
@@ -1639,13 +1671,17 @@ covergroup PMP_Sm_cg with function sample(
       `ifdef PMP_ENTRY59_BELOW_BACKGROUND
       wildcard bins pmp59cfg = {240'b???1????????????????????????????????????????????_???1????????????????????????????????????????????_??????01????????????????????????????????????????????????????????????????????????????????????????_???100000000000000000000000000000000000000000000};
       `endif
+      `ifdef PMP_ENTRY60_BELOW_BACKGROUND
+      wildcard bins pmp60cfg = {240'b??1?????????????????????????????????????????????_??1?????????????????????????????????????????????_????01??????????????????????????????????????????????????????????????????????????????????????????_??1000000000000000000000000000000000000000000000};
+      `endif
       `ifdef PMP_ENTRY61_BELOW_BACKGROUND
-      wildcard bins pmp61cfg = {240'b??1?????????????????????????????????????????????_??1?????????????????????????????????????????????_????01??????????????????????????????????????????????????????????????????????????????????????????_??1000000000000000000000000000000000000000000000};
+      wildcard bins pmp61cfg = {240'b?1??????????????????????????????????????????????_?1??????????????????????????????????????????????_??01????????????????????????????????????????????????????????????????????????????????????????????_?10000000000000000000000000000000000000000000000};
       `endif
       `ifdef PMP_ENTRY62_BELOW_BACKGROUND
-      wildcard bins pmp62cfg = {240'b?1??????????????????????????????????????????????_?1??????????????????????????????????????????????_??01????????????????????????????????????????????????????????????????????????????????????????????_?10000000000000000000000000000000000000000000000};
+      wildcard bins pmp62cfg = {240'b1???????????????????????????????????????????????_1???????????????????????????????????????????????_01??????????????????????????????????????????????????????????????????????????????????????????????_100000000000000000000000000000000000000000000000};
       `endif
     }
+  `endif
   `endif
 
   rs1_val_for_pmpcfg_A: coverpoint ins.current.rs1_val {
@@ -1696,7 +1732,7 @@ covergroup PMP_Sm_cg with function sample(
 
   // Address at the last word of each overlapping NAPOT region.
   // Region i has size (1<<i)*g_napot, so its last word is at REGIONSTART + (1<<i)*g_napot - 4.
-  addr_offset_for_priority_check: coverpoint ((ins.current.rs1_val+ins.current.imm) & `PMP_ADDR_LOWMASK) {
+  addr_offset_for_priority_check: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
     bins at_end_of_region6 = {(`PMP_NAPOT_PRIORITY_REGION_START + 64*`g_napot - 4) & `PMP_ADDR_LOWMASK};
     bins at_end_of_region5 = {(`PMP_NAPOT_PRIORITY_REGION_START + 32*`g_napot - 4) & `PMP_ADDR_LOWMASK};
     bins at_end_of_region4 = {(`PMP_NAPOT_PRIORITY_REGION_START + 16*`g_napot - 4) & `PMP_ADDR_LOWMASK};
@@ -1856,8 +1892,10 @@ covergroup PMP_Sm_cg with function sample(
   `endif
 
   `ifdef UDB_NUM_PMP_ENTRIES_64
+  `ifdef PMP_ENTRY15_BELOW_BACKGROUND
     cp_pmp64_write: cross priv_mode_m, write_instr_sw, pmp64;
     cp_pmp64_read: cross priv_mode_m, read_instr_lw, pmp64;
+  `endif
   `endif
 
   cp_priority_lw: cross priv_mode_m, pmp_entries_setup, napot_priority_regions, addr_offset_for_priority_check, read_instr_lw ;
@@ -1937,6 +1975,11 @@ function void pmp_Sm_sample(int hart, int issue, ins_t ins);
 
   for (int j = 0; j < 63; j++) begin
     pmpaddr[j] = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, int'(CSR_PMPADDR0) + j, "pmpaddr", "pmpaddr");
+    // A PMPCFG.A transition changes PMPADDR readback without an explicit
+    // PMPADDR write event in RVVI. Restore only the bits architecturally
+    // fixed to one in NAPOT mode at this grain; writable address bits stay intact.
+    if ((`UDB_PMP_GRANULARITY > 3) && (pmpcfg[j][4:3] == 2'b11))
+      pmpaddr[j] |= (64'd1 << (`UDB_PMP_GRANULARITY - 3)) - 1;
   end
 
   for (int k = 0; k < 15; k++) begin  // Check for first 15 PMP regions
@@ -2551,13 +2594,13 @@ covergroup PMP_U_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
   option.per_instance = 0;
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
-  addr_in_region: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+  addr_in_region: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
     bins at_region = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};
   }
 
   // Bins are relative to PMP_NAPOT_REGION_START (not PMP_REGION_START): the actual
   // NAPOT region-under-test sits g_napot-aligned to avoid swallowing the return-pad
-  addr_offset_napot: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+  addr_offset_napot: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
     bins at_base    = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};           // Access exactly at the region base
     bins below_base    = {(`PMP_NAPOT_REGION_START - 4) & `PMP_ADDR_LOWMASK};         // Access 4 bytes below the region
     bins just_inside  = {(`PMP_NAPOT_REGION_START + 4) & `PMP_ADDR_LOWMASK};         // Access 4 bytes into the region
@@ -2565,7 +2608,7 @@ covergroup PMP_U_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
     bins just_beyond  = {(`PMP_NAPOT_REGION_START + `g_napot) & `PMP_ADDR_LOWMASK};      // Access exactly at the end of the region
   }
 
-  addr_offset_na4: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+  addr_offset_na4: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
     bins at_base  = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};     // Access exactly at the region base
     bins below_base  = {(`PMP_REGION_START - 4) & `PMP_ADDR_LOWMASK};  // Access below region base
     bins beyond_top  = {(`PMP_REGION_START + 4) & `PMP_ADDR_LOWMASK};  // Access beyond top of region
@@ -2573,7 +2616,7 @@ covergroup PMP_U_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
 
   `ifdef UDB_PMP_TOR_SUPPORTED
     // if range is from `PMP_REGION_START to `PMP_REGION_START + `g
-    addr_offset_tor: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+    addr_offset_tor: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
       bins at_base    = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};           // Access exactly at the region base
       bins below_base    = {(`PMP_REGION_START - 4) & `PMP_ADDR_LOWMASK};         // Access 4 bytes below the base
       bins at_top      = {(`PMP_REGION_START + `g_tor) & `PMP_ADDR_LOWMASK};    // Access exactly at top of range
@@ -2622,7 +2665,7 @@ covergroup PMP_U_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
   // Accesses to a NAPOT region that the tests place at PMP_NAPOT_REGION_START (cp_cfg_X/R/W and
   // cp_mprv_*). That base is g_napot-aligned, so the 8-byte ld/sd probes are naturally aligned at
   // every grain; PMP_REGION_START is only 4-byte aligned at PMP_GRANULARITY 2.
-  addr_in_napot_region: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+  addr_in_napot_region: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
     bins at_region = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};
   }
 
@@ -2735,10 +2778,7 @@ covergroup PMP_U_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
     wildcard bins csrrw  = {CSRRW};
   }
 
-  mprv_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv")[0]{
-    bins set   = {1};
-    bins unset = {0};
-  }
+  mprv_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv")[0]{}
 
   mpp_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0] {
     bins U_mode = {2'b00};
@@ -3104,7 +3144,7 @@ covergroup PMP_Zca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0],
 
   // The legal_lwrx and Zcb/Zcd/Zcf walks place their NAPOT region at PMP_NAPOT_REGION_START, which
   // is g_napot-aligned, so the 8-byte c.ld/c.sd/c.fld/c.fsd probes are naturally aligned at every grain.
-  addr_in_napot_region: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+  addr_in_napot_region: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
     bins at_region = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};
   }
 
@@ -3169,7 +3209,7 @@ covergroup PMP_Zca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0],
   }
 
   `ifdef UDB_PMP_TOR_SUPPORTED
-    addr_in_consecutive_regions: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+    addr_in_consecutive_regions: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
       bins inside_first_region   = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};
       bins straddle_first_second = {(`PMP_REGION_START + `g_tor - 2) & `PMP_ADDR_LOWMASK};
       bins inside_second_region  = {(`PMP_REGION_START + `g_tor) & `PMP_ADDR_LOWMASK};
@@ -3187,14 +3227,14 @@ covergroup PMP_Zca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0],
   }
 
   `ifdef UDB_PMP_NA4_SUPPORTED
-    addr_in_consecutive_na4: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+    addr_in_consecutive_na4: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
       bins straddle_first_second = {(`PMP_REGION_START + 2) & `PMP_ADDR_LOWMASK};
       bins straddle_second_third = {(`PMP_REGION_START + 6) & `PMP_ADDR_LOWMASK};
     }
   `endif
 
   `ifdef UDB_PMP_TOR_SUPPORTED
-    addr_adjacent_to_pmp_boundary_tor: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+    addr_adjacent_to_pmp_boundary_tor: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
       bins just_below_pmp = {(`PMP_REGION_START - 2) & `PMP_ADDR_LOWMASK};          // 2 bytes before region start (possible straddle)
       bins at_start_pmp   = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};              // aligned to start of region
       bins at_end_pmp     = {(`PMP_REGION_START + `g_tor - 2) & `PMP_ADDR_LOWMASK};   // 2 bytes before end → straddles out
@@ -3203,7 +3243,7 @@ covergroup PMP_Zca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0],
   `endif
 
   // Bins are relative to PMP_NAPOT_REGION_START (not PMP_REGION_START): see addr_in_consecutive_regions_napot.
-  addr_adjacent_to_pmp_boundary_napot: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+  addr_adjacent_to_pmp_boundary_napot: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
     bins just_below_pmp = {(`PMP_NAPOT_REGION_START - 2) & `PMP_ADDR_LOWMASK};          // 2 bytes before region start (possible straddle)
     bins at_start_pmp   = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};              // aligned to start of region
     bins at_end_pmp     = {(`PMP_NAPOT_REGION_START + `g_napot - 2) & `PMP_ADDR_LOWMASK}; // 2 bytes before end → straddles out
@@ -3211,7 +3251,7 @@ covergroup PMP_Zca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0],
   }
 
   `ifdef UDB_PMP_NA4_SUPPORTED
-    addr_adjacent_to_na4_boundary: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+    addr_adjacent_to_na4_boundary: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
       // NA4 region (4 bytes): (PMP_REGION_START, PMP_REGION_START + 4)
       bins just_before_start     = {(`PMP_REGION_START - 2) & `PMP_ADDR_LOWMASK};
       bins at_the_top     = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};
@@ -3711,6 +3751,50 @@ function void pmp_SvZicbo_sample(int hart, int issue, ins_t ins);
 endfunction
 `endif
 
+`ifdef PMP_COVER_HSVZICBO
+// PMP on the final supervisor physical address of a CBO from VS-mode and VU-mode, through a VS-stage or a G-stage
+// kilopage
+covergroup PMP_HSvZicbo_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    cbo: coverpoint ins.current.insn {
+        `ifdef ZICBOM_SUPPORTED
+            wildcard bins clean = {CBO_CLEAN};
+            wildcard bins flush = {CBO_FLUSH};
+            wildcard bins inval = {CBO_INVAL};
+        `endif
+        `ifdef ZICBOZ_SUPPORTED
+            wildcard bins zero = {CBO_ZERO};
+        `endif
+    }
+    // The superpage of the guest virtual address: VS-stage cases use VS_SV39/VS_SV32 data_va, and G-stage cases
+    // SV39X4/SV32X4 data_va through a VS-stage identity superpage
+    `ifdef UDB_MXLEN_64
+        stage: coverpoint ins.current.rs1_val[63:30] {
+            bins vs = {5};
+            bins g  = {11};
+        }
+    `else
+        stage: coverpoint ins.current.rs1_val[31:22] {
+            bins vs = {'h241};
+            bins g  = {'h341};
+        }
+    `endif
+    // PMP entry 0 covers the test page with no permissions, or with read permission only
+    pmp_xwr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmpcfg0")[7:0] {
+        bins none = {8'b00011000};
+        bins r    = {8'b00011001};
+    }
+
+    cp_pmp: cross priv_mode_vs_vu, cbo, stage, pmp_xwr;
+endgroup
+
+function void pmp_HSvZicbo_sample(int hart, int issue, ins_t ins);
+    PMP_HSvZicbo_cg.sample(ins);
+endfunction
+`endif
+
 `ifdef SVADU_SUPPORTED
 covergroup PMP_Svadu_cg with function sample(ins_t ins);
     option.per_instance = 0;
@@ -3851,6 +3935,9 @@ function void pmp_sample(int hart, int issue, ins_t ins);
   `endif
   `ifdef PMP_COVER_SVZICBO
     pmp_SvZicbo_sample(hart, issue, ins);
+  `endif
+  `ifdef PMP_COVER_HSVZICBO
+    pmp_HSvZicbo_sample(hart, issue, ins);
   `endif
   `ifdef SVADU_SUPPORTED
     pmp_Svadu_sample(hart, issue, ins);

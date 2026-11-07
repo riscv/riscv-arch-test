@@ -47,7 +47,7 @@ covergroup Shtvala_cg with function sample(ins_t ins);
         htval_gpa : coverpoint {
             get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htinst", "htinst") == (`UDB_MXLEN == 64 ? 'h3000 : 'h2000),
             ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htval", "htval") << 2) & 'hFFF) ==
-                ((ins.current.rs1_val + ins.current.imm) & 'hFFF)
+                (ins.current.eff_addr & 'hFFF)
         } {
             bins final_gpa    = {2'b01};
             bins implicit_gpa = {2'b10};
@@ -101,7 +101,7 @@ covergroup Shtvala_cg with function sample(ins_t ins);
         // second half: htval holds the guest physical address of the page boundary.  As straddle and
         // htval_page_boundary below, which only harts that perform misaligned accesses compile.
         `ifdef ZCA_SUPPORTED
-            straddle_fetch : coverpoint ((ins.current.rs1_val + ins.current.imm) & 'hFFF) {
+            straddle_fetch : coverpoint (ins.current.eff_addr & 'hFFF) {
                 bins page_end = {'hFFE};
             }
             htval_page_boundary_fetch : coverpoint ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htval", "htval") << 2) & 'hFFF) {
@@ -115,7 +115,7 @@ covergroup Shtvala_cg with function sample(ins_t ins);
         // Other harts raise an address-misaligned exception.
         `ifdef UDB_MISALIGNED_LDST
             // A word two bytes below the end of a page, which continues into the next page
-            straddle : coverpoint ((ins.current.rs1_val + ins.current.imm) & 'hFFF) {
+            straddle : coverpoint (ins.current.eff_addr & 'hFFF) {
                 bins page_end = {'hFFE};
             }
             // As straddle, for HLV and HSV, whose address is rs1 alone: their disassembly has no immediate operand, so

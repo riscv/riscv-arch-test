@@ -58,30 +58,6 @@
         `cover_info("//      ExceptionsV - Enabled");
         `include "ExceptionsV_coverage_init.svh"
     `endif
-    `ifdef COVER_EXCEPTIONSVF16
-        `cover_info("//      ExceptionsVf16 - Enabled");
-        `include "ExceptionsVf16_coverage_init.svh"
-    `endif
-    `ifdef COVER_EXCEPTIONSVF32
-        `cover_info("//      ExceptionsVf32 - Enabled");
-        `include "ExceptionsVf32_coverage_init.svh"
-    `endif
-    `ifdef COVER_EXCEPTIONSVF64
-        `cover_info("//      ExceptionsVf64 - Enabled");
-        `include "ExceptionsVf64_coverage_init.svh"
-    `endif
-    `ifdef COVER_EXCEPTIONSVFMIN
-        `cover_info("//      ExceptionsVfmin - Enabled");
-        `include "ExceptionsVfmin_coverage_init.svh"
-    `endif
-    `ifdef COVER_EXCEPTIONSVLS
-        `cover_info("//      ExceptionsVls - Enabled");
-        `include "ExceptionsVls_coverage_init.svh"
-    `endif
-    `ifdef COVER_EXCEPTIONSVX
-        `cover_info("//      ExceptionsVx - Enabled");
-        `include "ExceptionsVx_coverage_init.svh"
-    `endif
     `ifdef COVER_EXCEPTIONSZVE32F
         `cover_info("//      ExceptionsZve32f - Enabled");
         `include "ExceptionsZve32f_coverage_init.svh"
@@ -133,10 +109,6 @@
     `ifdef COVER_M
         `cover_info("//      M - Enabled");
         `include "M_coverage_init.svh"
-    `endif
-    `ifdef COVER_MISALIGNV
-        `cover_info("//      MisalignV - Enabled");
-        `include "MisalignV_coverage_init.svh"
     `endif
     `ifdef COVER_PMPF
         `cover_info("//      PMPF - Enabled");

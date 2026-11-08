@@ -119,79 +119,6 @@ endgroup
 
 // H group: pointer masking in VS-mode and VU-mode and for HLV, HSV and HLVX (testplans/priv/Ssnpm_H.yaml).
 //
-// (vsatp.MODE, hgatp.MODE) pairs.  A paged pair needs both its VS-stage and G-stage mode.
-`ifdef UDB_SV39_VSMODE_TRANSLATION
-    `ifdef UDB_SV39X4_TRANSLATION
-        `define SSNPMH_SV39_PAIR
-    `endif
-`endif
-`ifdef UDB_SV48_VSMODE_TRANSLATION
-    `ifdef UDB_SV48X4_TRANSLATION
-        `define SSNPMH_SV48_PAIR
-    `endif
-`endif
-`ifdef UDB_SV57_VSMODE_TRANSLATION
-    `ifdef UDB_SV57X4_TRANSLATION
-        `define SSNPMH_SV57_PAIR
-    `endif
-`endif
-`ifdef SSNPMH_SV39_PAIR
-    `define SSNPMH_ANY_PAGED_PAIR
-`elsif SSNPMH_SV48_PAIR
-    `define SSNPMH_ANY_PAGED_PAIR
-`elsif SSNPMH_SV57_PAIR
-    `define SSNPMH_ANY_PAGED_PAIR
-`endif
-
-// PMM and tag bins for the misaligned and stval/htval cases.  Tags a PMLEN masks in full: PMM 10 {0x0000, 0x0400},
-// PMM 11 {0xFFFF}.  Tags 0x0000 and 0x0400 are already covered by PMM 10.
-`ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
-    `define SSNPMH_PMM_TAG_BINS_7 \
-        bins pmlen7_t0000 = {2'b10, 16'h0000}; \
-        bins pmlen7_t0400 = {2'b10, 16'h0400};
-`else
-    `define SSNPMH_PMM_TAG_BINS_7
-`endif
-`ifdef UDB_SUPPORTED_PMLEN_SSNPM_16
-    `define SSNPMH_PMM_TAG_BINS_16 \
-        bins pmlen16_tFFFF = {2'b11, 16'hFFFF};
-`else
-    `define SSNPMH_PMM_TAG_BINS_16
-`endif
-
-// {vsatp.MODE, hgatp.MODE} as sampled before the instruction
-`define SSNPMH_PAIR_VALUE \
-    {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode")[3:0], \
-     get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode")[3:0]}
-
-// BARE_PAIR bin: the widest supported of (Bare, Sv57x4), (Bare, Sv48x4), (Bare, Sv39x4), (Bare, Bare)
-`ifdef UDB_SV57X4_TRANSLATION
-    `define SSNPMH_BARE_PAIR_BIN \
-        bins bare_sv57x4 = {8'h0A};  // vsatp Bare, hgatp Sv57x4
-`elsif UDB_SV48X4_TRANSLATION
-    `define SSNPMH_BARE_PAIR_BIN \
-        bins bare_sv48x4 = {8'h09};  // vsatp Bare, hgatp Sv48x4
-`elsif UDB_SV39X4_TRANSLATION
-    `define SSNPMH_BARE_PAIR_BIN \
-        bins bare_sv39x4 = {8'h08};  // vsatp Bare, hgatp Sv39x4
-`else
-    `define SSNPMH_BARE_PAIR_BIN \
-        bins bare_bare = {8'h00};  // vsatp Bare, hgatp Bare
-`endif
-// PAGED_PAIR bin: the widest supported of (Sv57, Sv57x4), (Sv48, Sv48x4), (Sv39, Sv39x4).  Empty without a paged pair.
-`ifdef SSNPMH_SV57_PAIR
-    `define SSNPMH_PAGED_PAIR_BIN \
-        bins paged_sv57 = {8'hAA};  // vsatp Sv57, hgatp Sv57x4
-`elsif SSNPMH_SV48_PAIR
-    `define SSNPMH_PAGED_PAIR_BIN \
-        bins paged_sv48 = {8'h99};  // vsatp Sv48, hgatp Sv48x4
-`elsif SSNPMH_SV39_PAIR
-    `define SSNPMH_PAGED_PAIR_BIN \
-        bins paged_sv39 = {8'h88};  // vsatp Sv39, hgatp Sv39x4
-`else
-    `define SSNPMH_PAGED_PAIR_BIN
-`endif
-
 `ifdef H_SUPPORTED
 covergroup Ssnpm_H_cg with function sample(ins_t ins);
     option.per_instance = 0;
@@ -265,14 +192,9 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
             wildcard bins vs1r_v      = {VS1R_V};
         `endif
     }
-    // hfence.gvma with rs1 = x0; rs2 is x0 or a VMID
-    hfence_gvma_rs1_x0: coverpoint ins.current.insn iff (ins.current.insn[19:15] == 5'b0) {
-        type_option.weight = 0;
-        wildcard bins hfence_gvma = {HFENCE_GVMA};
-    }
 
-    // ---- Tags: the address bits 63:48 of rs1 ----
-    tag5: coverpoint ((ins.current.rs1_val + ins.current.imm) >> 48) {
+    // ---- Tags: the address bits 63:48 of the effective address ----
+    tag5: coverpoint (ins.current.eff_addr >> 48) {
         type_option.weight = 0;
         bins t0000 = {16'h0000};
         bins t0002 = {16'h0002}; // 0x0002 is bit 49 (PMLEN 16 only)
@@ -280,7 +202,7 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
         bins tFF00 = {16'hFF00}; // masked in full by PMLEN 16 and in part by PMLEN 7.
         bins tFFFF = {16'hFFFF}; // masked in full by PMLEN 16 and in part by PMLEN 7.
     }
-    tag3: coverpoint ((ins.current.rs1_val + ins.current.imm) >> 48) {
+    tag3: coverpoint (ins.current.eff_addr >> 48) {
         type_option.weight = 0;
         bins t0000 = {16'h0000};
         bins t0400 = {16'h0400};
@@ -294,8 +216,10 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
     }
 
     // ---- Translation modes ----
-    // All seven (vsatp.MODE, hgatp.MODE) pairs, each only when supported
-    pair_all: coverpoint `SSNPMH_PAIR_VALUE {
+    // All seven (vsatp.MODE, hgatp.MODE) pairs, each only when supported.  A paged pair needs both its VS-stage and
+    // G-stage mode.
+    pair_all: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode")[3:0],
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode")[3:0]} {
         type_option.weight = 0;
         bins bare_bare = {8'h00};  // vsatp Bare, hgatp Bare
         `ifdef UDB_SV39X4_TRANSLATION
@@ -307,29 +231,125 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
         `ifdef UDB_SV57X4_TRANSLATION
             bins bare_sv57x4 = {8'h0A};  // vsatp Bare, hgatp Sv57x4
         `endif
-        `ifdef SSNPMH_SV39_PAIR
-            bins sv39_sv39x4 = {8'h88};  // vsatp Sv39, hgatp Sv39x4
+        `ifdef UDB_SV39_VSMODE_TRANSLATION
+            `ifdef UDB_SV39X4_TRANSLATION
+                bins sv39_sv39x4 = {8'h88};  // vsatp Sv39, hgatp Sv39x4
+            `endif
         `endif
-        `ifdef SSNPMH_SV48_PAIR
-            bins sv48_sv48x4 = {8'h99};  // vsatp Sv48, hgatp Sv48x4
+        `ifdef UDB_SV48_VSMODE_TRANSLATION
+            `ifdef UDB_SV48X4_TRANSLATION
+                bins sv48_sv48x4 = {8'h99};  // vsatp Sv48, hgatp Sv48x4
+            `endif
         `endif
-        `ifdef SSNPMH_SV57_PAIR
-            bins sv57_sv57x4 = {8'hAA};  // vsatp Sv57, hgatp Sv57x4
+        `ifdef UDB_SV57_VSMODE_TRANSLATION
+            `ifdef UDB_SV57X4_TRANSLATION
+                bins sv57_sv57x4 = {8'hAA};  // vsatp Sv57, hgatp Sv57x4
+            `endif
         `endif
     }
-    // The widest bare pair and the widest paged pair, the only pairs most coverpoints use
-    pair_chosen: coverpoint `SSNPMH_PAIR_VALUE {
+    // The widest bare pair, then the widest paged pair, the only pairs most coverpoints use.  The bare pair is the
+    // first supported of (Bare, Sv57x4), (Bare, Sv48x4), (Bare, Sv39x4), (Bare, Bare).  The paged pair is the first
+    // supported of (Sv57, Sv57x4), (Sv48, Sv48x4), (Sv39, Sv39x4), and absent without one.
+    pair_chosen: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode")[3:0],
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode")[3:0]} {
         type_option.weight = 0;
-        `SSNPMH_BARE_PAIR_BIN
-        `SSNPMH_PAGED_PAIR_BIN
+        `ifdef UDB_SV57X4_TRANSLATION
+            bins bare_sv57x4 = {8'h0A};  // vsatp Bare, hgatp Sv57x4
+        `elsif UDB_SV48X4_TRANSLATION
+            bins bare_sv48x4 = {8'h09};  // vsatp Bare, hgatp Sv48x4
+        `elsif UDB_SV39X4_TRANSLATION
+            bins bare_sv39x4 = {8'h08};  // vsatp Bare, hgatp Sv39x4
+        `else
+            bins bare_bare = {8'h00};  // vsatp Bare, hgatp Bare
+        `endif
+        `ifdef UDB_SV57_VSMODE_TRANSLATION
+            `ifdef UDB_SV57X4_TRANSLATION
+                bins paged_sv57 = {8'hAA};  // vsatp Sv57, hgatp Sv57x4
+            `else
+                `ifdef UDB_SV48_VSMODE_TRANSLATION
+                    `ifdef UDB_SV48X4_TRANSLATION
+                        bins paged_sv48 = {8'h99};  // vsatp Sv48, hgatp Sv48x4
+                    `else
+                        `ifdef UDB_SV39_VSMODE_TRANSLATION
+                            `ifdef UDB_SV39X4_TRANSLATION
+                                bins paged_sv39 = {8'h88};  // vsatp Sv39, hgatp Sv39x4
+                            `endif
+                        `endif
+                    `endif
+                `else
+                    `ifdef UDB_SV39_VSMODE_TRANSLATION
+                        `ifdef UDB_SV39X4_TRANSLATION
+                            bins paged_sv39 = {8'h88};  // vsatp Sv39, hgatp Sv39x4
+                        `endif
+                    `endif
+                `endif
+            `endif
+        `else
+            `ifdef UDB_SV48_VSMODE_TRANSLATION
+                `ifdef UDB_SV48X4_TRANSLATION
+                    bins paged_sv48 = {8'h99};  // vsatp Sv48, hgatp Sv48x4
+                `else
+                    `ifdef UDB_SV39_VSMODE_TRANSLATION
+                        `ifdef UDB_SV39X4_TRANSLATION
+                            bins paged_sv39 = {8'h88};  // vsatp Sv39, hgatp Sv39x4
+                        `endif
+                    `endif
+                `endif
+            `else
+                `ifdef UDB_SV39_VSMODE_TRANSLATION
+                    `ifdef UDB_SV39X4_TRANSLATION
+                        bins paged_sv39 = {8'h88};  // vsatp Sv39, hgatp Sv39x4
+                    `endif
+                `endif
+            `endif
+        `endif
     }
     // The paged pair alone, for the shadow stack coverpoints
-    `ifdef SSNPMH_ANY_PAGED_PAIR
-        pair_paged: coverpoint `SSNPMH_PAIR_VALUE {
-            type_option.weight = 0;
-            `SSNPMH_PAGED_PAIR_BIN
-        }
-    `endif
+    pair_paged: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode")[3:0],
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode")[3:0]} {
+        type_option.weight = 0;
+        `ifdef UDB_SV57_VSMODE_TRANSLATION
+            `ifdef UDB_SV57X4_TRANSLATION
+                bins paged_sv57 = {8'hAA};  // vsatp Sv57, hgatp Sv57x4
+            `else
+                `ifdef UDB_SV48_VSMODE_TRANSLATION
+                    `ifdef UDB_SV48X4_TRANSLATION
+                        bins paged_sv48 = {8'h99};  // vsatp Sv48, hgatp Sv48x4
+                    `else
+                        `ifdef UDB_SV39_VSMODE_TRANSLATION
+                            `ifdef UDB_SV39X4_TRANSLATION
+                                bins paged_sv39 = {8'h88};  // vsatp Sv39, hgatp Sv39x4
+                            `endif
+                        `endif
+                    `endif
+                `else
+                    `ifdef UDB_SV39_VSMODE_TRANSLATION
+                        `ifdef UDB_SV39X4_TRANSLATION
+                            bins paged_sv39 = {8'h88};  // vsatp Sv39, hgatp Sv39x4
+                        `endif
+                    `endif
+                `endif
+            `endif
+        `else
+            `ifdef UDB_SV48_VSMODE_TRANSLATION
+                `ifdef UDB_SV48X4_TRANSLATION
+                    bins paged_sv48 = {8'h99};  // vsatp Sv48, hgatp Sv48x4
+                `else
+                    `ifdef UDB_SV39_VSMODE_TRANSLATION
+                        `ifdef UDB_SV39X4_TRANSLATION
+                            bins paged_sv39 = {8'h88};  // vsatp Sv39, hgatp Sv39x4
+                        `endif
+                    `endif
+                `endif
+            `else
+                `ifdef UDB_SV39_VSMODE_TRANSLATION
+                    `ifdef UDB_SV39X4_TRANSLATION
+                        bins paged_sv39 = {8'h88};  // vsatp Sv39, hgatp Sv39x4
+                    `endif
+                `endif
+            `endif
+        `endif
+    }
 
     // ---- PMM fields ----
     // henvcfg.PMM applies to VS-mode, senvcfg.PMM to VU-mode and hstatus.HUPMM to HLV/HSV from U-mode
@@ -363,7 +383,6 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
             bins pmlen16 = {2'b11};
         `endif
     }
-    // The largest supported PMM value
     // henvcfg.PMM = senvcfg.PMM = hstatus.HUPMM, for the HLVX cases
     pmm_all_same: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "pmm")[1:0], get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "pmm")[1:0], get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hupmm")[1:0]} {
         type_option.weight = 0;
@@ -374,17 +393,30 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
             bins pmlen16 = {6'b11_11_11};
         `endif
     }
-    // henvcfg.PMM and the tag, for the misaligned and stval/htval cases
-    pmm_tag_h: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "pmm")[1:0], 16'((ins.current.rs1_val + ins.current.imm) >> 48)} {
+    // henvcfg.PMM and the tag, for the MXR, misaligned and stval/htval cases.  Tags that PMLEN masks in full: PMM 10
+    // {0x0000, 0x0400}, PMM 11 {0x0000, 0xFFFF}.
+    pmm_tag_h: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "pmm")[1:0], 16'(ins.current.eff_addr >> 48)} {
         type_option.weight = 0;
-        `SSNPMH_PMM_TAG_BINS_7
-        `SSNPMH_PMM_TAG_BINS_16
+        `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
+            bins pmlen7_t0000 = {{2'b10, 16'h0000}};
+            bins pmlen7_t0400 = {{2'b10, 16'h0400}};
+        `endif
+        `ifdef UDB_SUPPORTED_PMLEN_SSNPM_16
+            bins pmlen16_t0000 = {{2'b11, 16'h0000}};
+            bins pmlen16_tFFFF = {{2'b11, 16'hFFFF}};
+        `endif
     }
-    // senvcfg.PMM and the tag, for the misaligned and stval/htval cases
-    pmm_tag_s: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "pmm")[1:0], 16'((ins.current.rs1_val + ins.current.imm) >> 48)} {
+    // senvcfg.PMM and the tag, for the MXR, misaligned and stval/htval cases
+    pmm_tag_s: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "pmm")[1:0], 16'(ins.current.eff_addr >> 48)} {
         type_option.weight = 0;
-        `SSNPMH_PMM_TAG_BINS_7
-        `SSNPMH_PMM_TAG_BINS_16
+        `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
+            bins pmlen7_t0000 = {{2'b10, 16'h0000}};
+            bins pmlen7_t0400 = {{2'b10, 16'h0400}};
+        `endif
+        `ifdef UDB_SUPPORTED_PMLEN_SSNPM_16
+            bins pmlen16_t0000 = {{2'b11, 16'h0000}};
+            bins pmlen16_tFFFF = {{2'b11, 16'hFFFF}};
+        `endif
     }
     // vsstatus.MXR and sstatus.MXR: either one is MXR in effect for a guest access
     mxr_pair: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "mxr")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "mxr")[0]} {
@@ -432,26 +464,6 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
     }
     cp_vu_pmm_writer_vs: cross priv_mode_vs, csrw_insn, csr_senvcfg, senvcfg_pmm_written;
 
-    // The VS stage produces a GPA whose top bit is in the masked range; masking must not clear it.  The accesses use
-    // an untagged VA, so the sampled state is the PMM value and the paged pair.  Sv48x4 (bit 49) needs PMLEN 16.
-    gstage_case: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode")[3:0], get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode")[3:0], get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "pmm")[1:0]} {
-        type_option.weight = 0;
-        `ifdef SSNPMH_SV48_PAIR
-            `ifdef UDB_SUPPORTED_PMLEN_SSNPM_16
-                bins sv48_pmlen16 = {10'b1001_1001_11};
-            `endif
-        `endif
-        `ifdef SSNPMH_SV57_PAIR
-            `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
-                bins sv57_pmlen7 = {10'b1010_1010_10};
-            `endif
-            `ifdef UDB_SUPPORTED_PMLEN_SSNPM_16
-                bins sv57_pmlen16 = {10'b1010_1010_11};
-            `endif
-        `endif
-    }
-    cp_vs_gstage_no_pmm: cross priv_mode_vs, ld_sd, gstage_case;
-
     // ---- HLV and HSV from HS-mode: henvcfg.PMM with SPVP = 1, senvcfg.PMM with SPVP = 0 ----
     cp_hlv_hs_spvp1_pmm:     cross priv_mode_hs, hlv_hsv, spvp_vs, henvcfg_pmm, tag5, pair_chosen;
     cp_hlv_hs_spvp1_mxr_pmm: cross priv_mode_hs, hlv_hsv, spvp_vs, mxr_pair, pmm_tag_h, pair_chosen;
@@ -476,12 +488,10 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
 
     // ---- Zicfiss: SSAMOSWAP and ssp pushes and pops, paged pair only ----
     `ifdef ZICFISS_SUPPORTED
-        `ifdef SSNPMH_ANY_PAGED_PAIR
-            cp_vs_pmlen_zicfiss_amo: cross priv_mode_vs, pm_ssamoswap_insn, henvcfg_pmm, tag3, pair_paged;
-            cp_vu_pmlen_zicfiss_amo: cross priv_mode_vu, pm_ssamoswap_insn, senvcfg_pmm, tag3, pair_paged;
-            cp_vs_pmlen_zicfiss_ssp: cross priv_mode_vs, pm_ssp_insn, henvcfg_pmm, ssp_tag, pair_paged;
-            cp_vu_pmlen_zicfiss_ssp: cross priv_mode_vu, pm_ssp_insn, senvcfg_pmm, ssp_tag, pair_paged;
-        `endif
+        cp_vs_pmlen_zicfiss_amo: cross priv_mode_vs, pm_ssamoswap_insn, henvcfg_pmm, tag3, pair_paged;
+        cp_vu_pmlen_zicfiss_amo: cross priv_mode_vu, pm_ssamoswap_insn, senvcfg_pmm, tag3, pair_paged;
+        cp_vs_pmlen_zicfiss_ssp: cross priv_mode_vs, pm_ssp_insn, henvcfg_pmm, ssp_tag, pair_paged;
+        cp_vu_pmlen_zicfiss_ssp: cross priv_mode_vu, pm_ssp_insn, senvcfg_pmm, ssp_tag, pair_paged;
     `endif
 
     // ---- Instruction fetch is never masked ----
@@ -492,22 +502,148 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
     cp_vs_pmlen_misaligned_word: cross priv_mode_vs, sw_lw_insn, misaligned_addr, pmm_tag_h, pair_chosen;
     cp_vu_pmlen_misaligned_word: cross priv_mode_vu, sw_lw_insn, misaligned_addr, pmm_tag_s, pair_chosen;
 
-    // ---- stval and htval on a faulting access.  The guest-page-fault base has no fixed address, so only the
-    // access-fault base is distinguished. ----
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
-        cp_vs_hardware_csr_writes_fault_load: cross priv_mode_vs, lw_insn, pmm_tag_h, pair_chosen, illegal_addr_load;
-        cp_vu_hardware_csr_writes_fault_load: cross priv_mode_vu, lw_insn, pmm_tag_s, pair_chosen, illegal_addr_load;
-    `endif
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
-        cp_vs_hardware_csr_writes_fault_store: cross priv_mode_vs, sw_insn, pmm_tag_h, pair_chosen, illegal_addr_store;
-        cp_vu_hardware_csr_writes_fault_store: cross priv_mode_vu, sw_insn, pmm_tag_s, pair_chosen, illegal_addr_store;
-    `endif
+    // ---- stval and htval on a faulting access ----
+    // The cause on the faulting instruction's record tells the two bases of the plan apart: an access fault (5 for a
+    // load, 7 for a store) at RVMODEL_ACCESS_FAULT_ADDRESS_*, and a guest-page-fault (21, 23) at an address with no
+    // G-stage mapping.  It also confirms that the access faulted.  H requires Sv39x4, so the guest-page-fault bins
+    // do not depend on RVMODEL_ACCESS_FAULT_ADDRESS_*.
+    lw_h: coverpoint ins.current.insn {
+        type_option.weight = 0;
+        wildcard bins lw = {LW};
+    }
+    sw_h: coverpoint ins.current.insn {
+        type_option.weight = 0;
+        wildcard bins sw = {SW};
+    }
+    scause_load_fault: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+        type_option.weight = 0;
+        `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
+            bins load_access_fault = {5};
+        `endif
+        bins load_guest_page_fault = {21};
+    }
+    scause_store_fault: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+        type_option.weight = 0;
+        `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
+            bins store_access_fault = {7};
+        `endif
+        bins store_guest_page_fault = {23};
+    }
+    cp_vs_hardware_csr_writes_fault_load:  cross priv_mode_vs, lw_h, pmm_tag_h, pair_chosen, scause_load_fault;
+    cp_vu_hardware_csr_writes_fault_load:  cross priv_mode_vu, lw_h, pmm_tag_s, pair_chosen, scause_load_fault;
+    cp_vs_hardware_csr_writes_fault_store: cross priv_mode_vs, sw_h, pmm_tag_h, pair_chosen, scause_store_fault;
+    cp_vu_hardware_csr_writes_fault_store: cross priv_mode_vu, sw_h, pmm_tag_s, pair_chosen, scause_store_fault;
 
-    // ---- HFENCE.GVMA after a PMM change ----
-    // The tagged accesses of these tests are cp_vs_pmm and cp_hlv_u_spvp0_pmm.  Whether a stale translation is used
-    // after the change is checked by the signature.  Only the fence is sampled here.
-    cp_henvcfg_pmm_change_hfence: cross priv_mode_hs, hfence_gvma_rs1_x0, henvcfg_pmm;
-    cp_hupmm_change_hfence:      cross priv_mode_hs, hfence_gvma_rs1_x0, hstatus_hupmm;
+    // ---- HFENCE.GVMA right after a PMM change ----
+    // The test writes henvcfg or hstatus and execute hfence.gvma x0, x0 in the next instruction.
+    hfence_gvma_rs1_x0: coverpoint ins.current.insn iff (ins.current.insn[19:15] == 5'b0) {
+        type_option.weight = 0;
+        wildcard bins hfence_gvma = {HFENCE_GVMA};
+    }
+    // hgatp.MODE, then henvcfg.PMM before and after a write to henvcfg, sampled on the instruction right after the
+    // write.  ins.prev is the write, record 2 is the state before it and SAMPLE_BEFORE the state after it.
+    henvcfg_pmm_change: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode")[3:0],
+                                get_csr_val(ins.hart, ins.issue, 2, "henvcfg", "pmm")[1:0],
+                                get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "pmm")[1:0]}
+                    iff ((ins.prev.insn ==? CSRW) && (ins.prev.insn[31:20] == CSR_HENVCFG)) {
+        type_option.weight = 0;
+            `ifdef UDB_SV57X4_TRANSLATION
+                `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
+                    bins sv57x4_00_to_10 = {{4'hA, 2'b00, 2'b10}};  // case 1
+                    bins sv57x4_10_to_00 = {{4'hA, 2'b10, 2'b00}};
+                `endif
+                `ifdef UDB_SUPPORTED_PMLEN_SSNPM_16
+                    bins sv57x4_00_to_11 = {{4'hA, 2'b00, 2'b11}};  // case 2
+                    bins sv57x4_11_to_00 = {{4'hA, 2'b11, 2'b00}};
+                    `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
+                        bins sv57x4_10_to_11 = {{4'hA, 2'b10, 2'b11}};  // case 4
+                        bins sv57x4_11_to_10 = {{4'hA, 2'b11, 2'b10}};
+                    `endif
+                `endif
+            `endif
+            `ifdef UDB_SV48X4_TRANSLATION
+                `ifdef UDB_SUPPORTED_PMLEN_SSNPM_16
+                    bins sv48x4_00_to_11 = {{4'h9, 2'b00, 2'b11}};  // case 3
+                    bins sv48x4_11_to_00 = {{4'h9, 2'b11, 2'b00}};
+                `endif
+            `endif
+    }
+    // hgatp.MODE, then hstatus.HUPMM before and after a write to hstatus, sampled on the instruction right after the
+    // write.  ins.prev is the write, record 2 is the state before it and SAMPLE_BEFORE the state after it.
+    hupmm_change: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode")[3:0],
+                                get_csr_val(ins.hart, ins.issue, 2, "hstatus", "hupmm")[1:0],
+                                get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hupmm")[1:0]}
+                    iff ((ins.prev.insn ==? CSRW) && (ins.prev.insn[31:20] == CSR_HSTATUS)) {
+        type_option.weight = 0;
+            `ifdef UDB_SV57X4_TRANSLATION
+                `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
+                    bins sv57x4_00_to_10 = {{4'hA, 2'b00, 2'b10}};  // case 1
+                    bins sv57x4_10_to_00 = {{4'hA, 2'b10, 2'b00}};
+                `endif
+                `ifdef UDB_SUPPORTED_PMLEN_SSNPM_16
+                    bins sv57x4_00_to_11 = {{4'hA, 2'b00, 2'b11}};  // case 2
+                    bins sv57x4_11_to_00 = {{4'hA, 2'b11, 2'b00}};
+                    `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
+                        bins sv57x4_10_to_11 = {{4'hA, 2'b10, 2'b11}};  // case 4
+                        bins sv57x4_11_to_10 = {{4'hA, 2'b11, 2'b10}};
+                    `endif
+                `endif
+            `endif
+            `ifdef UDB_SV48X4_TRANSLATION
+                `ifdef UDB_SUPPORTED_PMLEN_SSNPM_16
+                    bins sv48x4_00_to_11 = {{4'h9, 2'b00, 2'b11}};  // case 3
+                    bins sv48x4_11_to_00 = {{4'h9, 2'b11, 2'b00}};
+                `endif
+            `endif
+    }
+    cp_henvcfg_pmm_change_hfence: cross priv_mode_hs, hfence_gvma_rs1_x0, henvcfg_pmm_change;
+    cp_hupmm_change_hfence:       cross priv_mode_hs, hfence_gvma_rs1_x0, hupmm_change;
+
+    // ---- henvcfg.PMM change with no HFENCE right after it ----
+    // The plan's cases: (vsatp, hgatp) = (Bare, Sv39x4), (Bare, Sv48x4) and (Sv57, Sv57x4).  The cross shows that
+    // the change was not fenced right away; that no fence came later is checked by the signature.
+    henvcfg_pmm_change_no_fence: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode")[3:0],
+                                             get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode")[3:0],
+                                             get_csr_val(ins.hart, ins.issue, 2, "henvcfg", "pmm")[1:0],
+                                             get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "pmm")[1:0]}
+                    iff ((ins.prev.insn ==? CSRW) && (ins.prev.insn[31:20] == CSR_HENVCFG)) {
+        type_option.weight = 0;
+        `ifdef UDB_SV39X4_TRANSLATION
+            `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
+                bins bare_sv39x4_00_to_10 = {{4'h0, 4'h8, 2'b00, 2'b10}};  // case 1
+                bins bare_sv39x4_10_to_00 = {{4'h0, 4'h8, 2'b10, 2'b00}};
+            `endif
+            `ifdef UDB_SUPPORTED_PMLEN_SSNPM_16
+                bins bare_sv39x4_00_to_11 = {{4'h0, 4'h8, 2'b00, 2'b11}};  // case 2
+                bins bare_sv39x4_11_to_00 = {{4'h0, 4'h8, 2'b11, 2'b00}};
+            `endif
+        `endif
+        `ifdef UDB_SV48X4_TRANSLATION
+            `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
+                bins bare_sv48x4_00_to_10 = {{4'h0, 4'h9, 2'b00, 2'b10}};  // case 3
+                bins bare_sv48x4_10_to_00 = {{4'h0, 4'h9, 2'b10, 2'b00}};
+            `endif
+        `endif
+        `ifdef UDB_SV57_VSMODE_TRANSLATION
+            `ifdef UDB_SV57X4_TRANSLATION
+                `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
+                    bins sv57_sv57x4_00_to_10 = {{4'hA, 4'hA, 2'b00, 2'b10}};  // case 4
+                    bins sv57_sv57x4_10_to_00 = {{4'hA, 4'hA, 2'b10, 2'b00}};
+                `endif
+                `ifdef UDB_SUPPORTED_PMLEN_SSNPM_16
+                    bins sv57_sv57x4_00_to_11 = {{4'hA, 4'hA, 2'b00, 2'b11}};  // case 5
+                    bins sv57_sv57x4_11_to_00 = {{4'hA, 4'hA, 2'b11, 2'b00}};
+                `endif
+            `endif
+        `endif
+    }
+    // Any instruction but hfence.gvma
+    not_hfence_gvma: coverpoint ins.current.insn iff (!(ins.current.insn ==? HFENCE_GVMA)) {
+        type_option.weight = 0;
+        bins other = {[0:$]};
+    }
+    cp_henvcfg_pmm_change_no_hfence: cross priv_mode_hs, not_hfence_gvma, henvcfg_pmm_change_no_fence;
+
     // Case 3 of cp_hupmm_change_hfence: (vsatp, hgatp) = (Bare, Sv48x4), tag 0x0002 (bit 49), PMM 00 and 11.
     // cp_hlv_u_spvp0_pmm samples only the widest bare pair, which is Sv57x4 when it is supported.
     `ifdef UDB_SV48X4_TRANSLATION
@@ -515,32 +651,60 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
             hupmm_sv48x4_bit49: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode")[3:0],
                                             get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode")[3:0],
                                             get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hupmm")[1:0],
-                                            16'((ins.current.rs1_val + ins.current.imm) >> 48)} {
+                                            16'(ins.current.eff_addr >> 48)} {
                 type_option.weight = 0;
-                bins pmm00 = {4'h0, 4'h9, 2'b00, 16'h0002};  // vsatp Bare, hgatp Sv48x4
-                bins pmm11 = {4'h0, 4'h9, 2'b11, 16'h0002};
+                bins pmm00 = {{4'h0, 4'h9, 2'b00, 16'h0002}};  // vsatp Bare, hgatp Sv48x4
+                bins pmm11 = {{4'h0, 4'h9, 2'b11, 16'h0002}};
             }
             cp_hupmm_change_hfence_sv48x4: cross priv_mode_u, hstatus_hu, spvp_vu, hlv_hsv, hupmm_sv48x4_bit49;
         `endif
     `endif
 
     // ---- PMM cleared when the XLEN of its mode becomes 32 ----
-    // The inputs are the mode, the PMM value that was set, and the XLEN field being 01.  That PMM reads 00 afterwards
-    // is checked by the test.
+    // Once the XLEN field is 01 its PMM reads 00, so a later instruction cannot sample PMM 10 or 11 with the field at
+    // 01.  The sample is the csrw that sets the field: the PMM before it and the field after it.  That the PMM reads
+    // 00 afterwards is checked by the test.
+    pmm_set_henvcfg: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "pmm") {
+        type_option.weight = 0;
+        `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
+            bins pmlen7 = {2'b10};
+        `endif
+        `ifdef UDB_SUPPORTED_PMLEN_SSNPM_16
+            bins pmlen16 = {2'b11};
+        `endif
+    }
+    pmm_set_senvcfg: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "pmm") {
+        type_option.weight = 0;
+        `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
+            bins pmlen7 = {2'b10};
+        `endif
+        `ifdef UDB_SUPPORTED_PMLEN_SSNPM_16
+            bins pmlen16 = {2'b11};
+        `endif
+    }
     `ifdef UDB_VSXLEN_32
-        vsxl_rv32: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vsxl") {
+        csr_hstatus: coverpoint ins.current.insn[31:20] {
+            type_option.weight = 0;
+            bins hstatus = {CSR_HSTATUS};
+        }
+        vsxl_rv32_after: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hstatus", "vsxl") {
             type_option.weight = 0;
             bins vsxl_01 = {2'b01};
         }
-        cp_pmm_vsxl_clear: cross priv_mode_hs, henvcfg_pmm, vsxl_rv32;
+        cp_pmm_vsxl_clear: cross priv_mode_hs, csrw_insn, csr_hstatus, pmm_set_henvcfg, vsxl_rv32_after;
     `endif
     `ifdef UDB_VUXLEN_32
-        vsuxl_rv32: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "uxl") {
+        // vsstatus.UXL is written from HS-mode (csrw vsstatus) or from VS-mode (csrw sstatus)
+        vsstatus_writer: coverpoint {ins.prev.mode_virt, ins.prev.mode, ins.current.insn[31:20]} {
+            type_option.weight = 0;
+            bins hs_vsstatus = {{3'b001, CSR_VSSTATUS}};
+            bins vs_sstatus  = {{3'b101, CSR_SSTATUS}};
+        }
+        vsuxl_rv32_after: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vsstatus", "uxl") {
             type_option.weight = 0;
             bins uxl_01 = {2'b01};
         }
-        // vsstatus.UXL is written from HS-mode (csrw vsstatus) or from VS-mode (csrw sstatus)
-        cp_pmm_vsuxl_clear: cross priv_mode_hs_vs, senvcfg_pmm, vsuxl_rv32;
+        cp_pmm_vsuxl_clear: cross csrw_insn, vsstatus_writer, pmm_set_senvcfg, vsuxl_rv32_after;
     `endif
 
 endgroup

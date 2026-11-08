@@ -701,6 +701,7 @@ def _gen_covergroup_samples(
 ) -> str:
     """Generate covergroup sample function calls for matching instructions and ExtraExtensions rows."""
     lines: list[str] = []
+    template = "covergroup_case_sample" if not _is_vector(arch) else "covergroup_sample_vector"
     for key in sorted(set(instr_keys).union(*extras.values())):
         instr = key[0]
         extra_rows = [extension for extension, group in sorted(extras.items()) if key in group]
@@ -709,10 +710,9 @@ def _gen_covergroup_samples(
             continue
 
         if extra_rows:
-            base_calls = [customize_template(templates, "covergroup_case_sample", arch, instr)] if key in tp else []
+            base_calls = [customize_template(templates, template, arch, instr)] if key in tp else []
             extra_calls = {
-                ext: customize_template(templates, "covergroup_case_sample", _extra_name(arch, ext), instr)
-                for ext in extra_rows
+                ext: customize_template(templates, template, _extra_name(arch, ext), instr) for ext in extra_rows
             }
             if not base_calls and len(extra_calls) == 1:
                 ((ext, call),) = extra_calls.items()
@@ -727,7 +727,7 @@ def _gen_covergroup_samples(
             idx_eew, macro_prefix = gate
             lines.append(f"`ifdef {macro_prefix}{idx_eew}\n")
 
-        call = customize_template(templates, "covergroup_case_sample", arch, instr)
+        call = customize_template(templates, template, arch, instr)
         lines.append(_gen_sample_arm(templates, instr, [call]))
 
         if gate:

@@ -12,2179 +12,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_SSSTRICTV
-covergroup SsstrictV_vfmv_f_s_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_vfmv_fs_sf_vm0_reserved
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // vfmv.f.s (funct6=010000, funct3=001) and vfmv.s.f (funct6=010000, funct3=101) with vm=0 are reserved
-    vfmv_fs_sf_funct6: coverpoint ins.current.insn[31:26] {
-        bins vfmv = {6'b010000};
-    }
-
-    vfmv_fs_sf_funct3: coverpoint ins.current.insn[14:12] {
-        bins vfmv = {3'b001, 3'b101};
-    }
-
-    vm_masked: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    cp_ssstrictv_vfmv_fs_sf_vm0_reserved: cross std_trap_vec, vfmv_fs_sf_funct6, vfmv_fs_sf_funct3, vm_masked;
-
-//// end cp_ssstrictv_vfmv_fs_sf_vm0_reserved //////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictV_vfmv_s_f_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_vfmv_fs_sf_vm0_reserved
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // vfmv.f.s (funct6=010000, funct3=001) and vfmv.s.f (funct6=010000, funct3=101) with vm=0 are reserved
-    vfmv_fs_sf_funct6: coverpoint ins.current.insn[31:26] {
-        bins vfmv = {6'b010000};
-    }
-
-    vfmv_fs_sf_funct3: coverpoint ins.current.insn[14:12] {
-        bins vfmv = {3'b001, 3'b101};
-    }
-
-    vm_masked: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    cp_ssstrictv_vfmv_fs_sf_vm0_reserved: cross std_trap_vec, vfmv_fs_sf_funct6, vfmv_fs_sf_funct3, vm_masked;
-
-//// end cp_ssstrictv_vfmv_fs_sf_vm0_reserved //////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictV_vfslide1down_vf_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictV_vfslide1up_vf_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_vslide1up_vd_vs2_overlap
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // vslide1up: destination register group cannot overlap source register group
-    cp_ssstrictv_vslide1up_vd_vs2_overlap: cross std_trap_vec, vd_eq_vs2;
-
-    // We cannot test anything dependent on csr state in Ssstrict, potentially there will be another test suite
-    // where all reserved encodings are tested, so the dependence on lmul is left as a comment.
-    // cp_ssstrictv_vslide1up_vd_vs2_overlap_lmul1: cross std_trap_vec, vtype_lmul_1, vd_eq_vs2;
-
-    // cp_ssstrictv_vslide1up_vd_vs2_overlap_lmul2: cross std_trap_vec, vtype_lmul_2, vs2_vd_overlap_lmul1;
-
-    // cp_ssstrictv_vslide1up_vd_vs2_overlap_lmul4: cross std_trap_vec, vtype_lmul_4, vs2_vd_overlap_lmul2;
-
-    // cp_ssstrictv_vslide1up_vd_vs2_overlap_lmul8: cross std_trap_vec, vtype_lmul_8, vs2_vd_overlap_lmul4;
-
-//// end cp_ssstrictv_vslide1up_vd_vs2_overlap ///////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictV_vloxei64_v_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_eew_lt_sewmin
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
-    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
-    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
-    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
-    // so the coverpoints + crosses are entirely absent on configurations where
-    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
-    `ifndef SEW8_SUPPORTED
-        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-            `ifndef SEW16_SUPPORTED
-                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-            `endif
-            `ifndef SEW32_SUPPORTED
-                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-            `endif
-        }
-
-
-        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
-
-        // Edge case: still reserved when vl=0
-        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-            bins zero = {0};
-        }
-
-        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-            bins active = {[1:3]};
-        }
-
-        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
-
-        // Edge case: still reserved when vstart >= vl
-        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-            bins true = {1'b1};
-        }
-
-        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
-    `endif
-
-//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_mew_reserved
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Vector load/store with mew=1 (bit 28), reserved encoding
-    mew_set: coverpoint ins.current.insn[28] {
-        bins one = {1'b1};
-    }
-
-    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
-
-//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictV_vloxseg2ei64_v_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_eew_lt_sewmin
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
-    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
-    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
-    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
-    // so the coverpoints + crosses are entirely absent on configurations where
-    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
-    `ifndef SEW8_SUPPORTED
-        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-            `ifndef SEW16_SUPPORTED
-                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-            `endif
-            `ifndef SEW32_SUPPORTED
-                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-            `endif
-        }
-
-
-        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
-
-        // Edge case: still reserved when vl=0
-        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-            bins zero = {0};
-        }
-
-        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-            bins active = {[1:3]};
-        }
-
-        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
-
-        // Edge case: still reserved when vstart >= vl
-        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-            bins true = {1'b1};
-        }
-
-        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
-    `endif
-
-//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_mew_reserved
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Vector load/store with mew=1 (bit 28), reserved encoding
-    mew_set: coverpoint ins.current.insn[28] {
-        bins one = {1'b1};
-    }
-
-    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
-
-//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Verify indexed segment load destination groups cannot overlap vs2 index register.
-    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
-    // only fires its own nf, so per-nf bins would leave most always dead.
-    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
-                         ins.current.insn[24:20],
-                         ins.current.insn[31:29]} {
-        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
-                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
-                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
-                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
-                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
-                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
-                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
-                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
-    }
-
-    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
-
-//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_seg_vd_overflow
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
-    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
-    // fires its own nf, so per-nf bins would leave 6/7 always dead.
-    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
-                      ins.current.insn[31:29]} {
-        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
-                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
-                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
-                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
-                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
-                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
-                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
-    }
-
-    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
-
-//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictV_vloxseg3ei64_v_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_eew_lt_sewmin
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
-    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
-    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
-    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
-    // so the coverpoints + crosses are entirely absent on configurations where
-    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
-    `ifndef SEW8_SUPPORTED
-        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-            `ifndef SEW16_SUPPORTED
-                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-            `endif
-            `ifndef SEW32_SUPPORTED
-                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-            `endif
-        }
-
-
-        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
-
-        // Edge case: still reserved when vl=0
-        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-            bins zero = {0};
-        }
-
-        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-            bins active = {[1:3]};
-        }
-
-        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
-
-        // Edge case: still reserved when vstart >= vl
-        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-            bins true = {1'b1};
-        }
-
-        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
-    `endif
-
-//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_mew_reserved
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Vector load/store with mew=1 (bit 28), reserved encoding
-    mew_set: coverpoint ins.current.insn[28] {
-        bins one = {1'b1};
-    }
-
-    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
-
-//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Verify indexed segment load destination groups cannot overlap vs2 index register.
-    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
-    // only fires its own nf, so per-nf bins would leave most always dead.
-    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
-                         ins.current.insn[24:20],
-                         ins.current.insn[31:29]} {
-        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
-                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
-                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
-                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
-                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
-                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
-                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
-                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
-    }
-
-    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
-
-//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_seg_vd_overflow
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
-    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
-    // fires its own nf, so per-nf bins would leave 6/7 always dead.
-    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
-                      ins.current.insn[31:29]} {
-        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
-                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
-                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
-                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
-                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
-                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
-                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
-    }
-
-    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
-
-//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictV_vloxseg4ei64_v_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_eew_lt_sewmin
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
-    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
-    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
-    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
-    // so the coverpoints + crosses are entirely absent on configurations where
-    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
-    `ifndef SEW8_SUPPORTED
-        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-            `ifndef SEW16_SUPPORTED
-                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-            `endif
-            `ifndef SEW32_SUPPORTED
-                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-            `endif
-        }
-
-
-        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
-
-        // Edge case: still reserved when vl=0
-        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-            bins zero = {0};
-        }
-
-        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-            bins active = {[1:3]};
-        }
-
-        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
-
-        // Edge case: still reserved when vstart >= vl
-        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-            bins true = {1'b1};
-        }
-
-        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
-    `endif
-
-//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_mew_reserved
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Vector load/store with mew=1 (bit 28), reserved encoding
-    mew_set: coverpoint ins.current.insn[28] {
-        bins one = {1'b1};
-    }
-
-    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
-
-//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Verify indexed segment load destination groups cannot overlap vs2 index register.
-    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
-    // only fires its own nf, so per-nf bins would leave most always dead.
-    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
-                         ins.current.insn[24:20],
-                         ins.current.insn[31:29]} {
-        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
-                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
-                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
-                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
-                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
-                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
-                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
-                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
-    }
-
-    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
-
-//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_seg_vd_overflow
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
-    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
-    // fires its own nf, so per-nf bins would leave 6/7 always dead.
-    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
-                      ins.current.insn[31:29]} {
-        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
-                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
-                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
-                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
-                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
-                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
-                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
-    }
-
-    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
-
-//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictV_vloxseg5ei64_v_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_eew_lt_sewmin
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
-    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
-    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
-    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
-    // so the coverpoints + crosses are entirely absent on configurations where
-    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
-    `ifndef SEW8_SUPPORTED
-        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-            `ifndef SEW16_SUPPORTED
-                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-            `endif
-            `ifndef SEW32_SUPPORTED
-                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-            `endif
-        }
-
-
-        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
-
-        // Edge case: still reserved when vl=0
-        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-            bins zero = {0};
-        }
-
-        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-            bins active = {[1:3]};
-        }
-
-        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
-
-        // Edge case: still reserved when vstart >= vl
-        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-            bins true = {1'b1};
-        }
-
-        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
-    `endif
-
-//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_mew_reserved
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Vector load/store with mew=1 (bit 28), reserved encoding
-    mew_set: coverpoint ins.current.insn[28] {
-        bins one = {1'b1};
-    }
-
-    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
-
-//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Verify indexed segment load destination groups cannot overlap vs2 index register.
-    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
-    // only fires its own nf, so per-nf bins would leave most always dead.
-    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
-                         ins.current.insn[24:20],
-                         ins.current.insn[31:29]} {
-        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
-                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
-                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
-                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
-                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
-                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
-                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
-                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
-    }
-
-    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
-
-//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_seg_vd_overflow
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
-    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
-    // fires its own nf, so per-nf bins would leave 6/7 always dead.
-    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
-                      ins.current.insn[31:29]} {
-        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
-                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
-                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
-                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
-                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
-                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
-                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
-    }
-
-    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
-
-//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictV_vloxseg6ei64_v_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_eew_lt_sewmin
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
-    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
-    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
-    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
-    // so the coverpoints + crosses are entirely absent on configurations where
-    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
-    `ifndef SEW8_SUPPORTED
-        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-            `ifndef SEW16_SUPPORTED
-                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-            `endif
-            `ifndef SEW32_SUPPORTED
-                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-            `endif
-        }
-
-
-        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
-
-        // Edge case: still reserved when vl=0
-        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-            bins zero = {0};
-        }
-
-        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-            bins active = {[1:3]};
-        }
-
-        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
-
-        // Edge case: still reserved when vstart >= vl
-        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-            bins true = {1'b1};
-        }
-
-        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
-    `endif
-
-//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_mew_reserved
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Vector load/store with mew=1 (bit 28), reserved encoding
-    mew_set: coverpoint ins.current.insn[28] {
-        bins one = {1'b1};
-    }
-
-    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
-
-//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Verify indexed segment load destination groups cannot overlap vs2 index register.
-    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
-    // only fires its own nf, so per-nf bins would leave most always dead.
-    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
-                         ins.current.insn[24:20],
-                         ins.current.insn[31:29]} {
-        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
-                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
-                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
-                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
-                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
-                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
-                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
-                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
-    }
-
-    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
-
-//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_seg_vd_overflow
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
-    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
-    // fires its own nf, so per-nf bins would leave 6/7 always dead.
-    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
-                      ins.current.insn[31:29]} {
-        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
-                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
-                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
-                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
-                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
-                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
-                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
-    }
-
-    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
-
-//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictV_vloxseg7ei64_v_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_eew_lt_sewmin
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
-    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
-    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
-    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
-    // so the coverpoints + crosses are entirely absent on configurations where
-    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
-    `ifndef SEW8_SUPPORTED
-        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-            `ifndef SEW16_SUPPORTED
-                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-            `endif
-            `ifndef SEW32_SUPPORTED
-                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-            `endif
-        }
-
-
-        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
-
-        // Edge case: still reserved when vl=0
-        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-            bins zero = {0};
-        }
-
-        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-            bins active = {[1:3]};
-        }
-
-        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
-
-        // Edge case: still reserved when vstart >= vl
-        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-            bins true = {1'b1};
-        }
-
-        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
-    `endif
-
-//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_mew_reserved
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Vector load/store with mew=1 (bit 28), reserved encoding
-    mew_set: coverpoint ins.current.insn[28] {
-        bins one = {1'b1};
-    }
-
-    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
-
-//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Verify indexed segment load destination groups cannot overlap vs2 index register.
-    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
-    // only fires its own nf, so per-nf bins would leave most always dead.
-    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
-                         ins.current.insn[24:20],
-                         ins.current.insn[31:29]} {
-        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
-                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
-                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
-                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
-                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
-                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
-                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
-                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
-    }
-
-    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
-
-//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_seg_vd_overflow
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
-    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
-    // fires its own nf, so per-nf bins would leave 6/7 always dead.
-    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
-                      ins.current.insn[31:29]} {
-        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
-                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
-                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
-                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
-                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
-                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
-                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
-    }
-
-    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
-
-//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictV_vloxseg8ei64_v_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_eew_lt_sewmin
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
-    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
-    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
-    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
-    // so the coverpoints + crosses are entirely absent on configurations where
-    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
-    `ifndef SEW8_SUPPORTED
-        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-            `ifndef SEW16_SUPPORTED
-                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-            `endif
-            `ifndef SEW32_SUPPORTED
-                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-            `endif
-        }
-
-
-        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
-
-        // Edge case: still reserved when vl=0
-        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-            bins zero = {0};
-        }
-
-        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-            bins active = {[1:3]};
-        }
-
-        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
-
-        // Edge case: still reserved when vstart >= vl
-        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-            bins true = {1'b1};
-        }
-
-        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
-    `endif
-
-//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_mew_reserved
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Vector load/store with mew=1 (bit 28), reserved encoding
-    mew_set: coverpoint ins.current.insn[28] {
-        bins one = {1'b1};
-    }
-
-    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
-
-//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Verify indexed segment load destination groups cannot overlap vs2 index register.
-    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
-    // only fires its own nf, so per-nf bins would leave most always dead.
-    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
-                         ins.current.insn[24:20],
-                         ins.current.insn[31:29]} {
-        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
-                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
-                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
-                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
-                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
-                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
-                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
-                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
-    }
-
-    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
-
-//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_seg_vd_overflow
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
-    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
-    // fires its own nf, so per-nf bins would leave 6/7 always dead.
-    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
-                      ins.current.insn[31:29]} {
-        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
-                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
-                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
-                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
-                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
-                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
-                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
-    }
-
-    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
-
-//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictV_vluxei64_v_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_eew_lt_sewmin
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
-    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
-    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
-    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
-    // so the coverpoints + crosses are entirely absent on configurations where
-    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
-    `ifndef SEW8_SUPPORTED
-        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-            `ifndef SEW16_SUPPORTED
-                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-            `endif
-            `ifndef SEW32_SUPPORTED
-                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-            `endif
-        }
-
-
-        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
-
-        // Edge case: still reserved when vl=0
-        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-            bins zero = {0};
-        }
-
-        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-            bins active = {[1:3]};
-        }
-
-        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
-
-        // Edge case: still reserved when vstart >= vl
-        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-            bins true = {1'b1};
-        }
-
-        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
-    `endif
-
-//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_mew_reserved
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Vector load/store with mew=1 (bit 28), reserved encoding
-    mew_set: coverpoint ins.current.insn[28] {
-        bins one = {1'b1};
-    }
-
-    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
-
-//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictV_vluxseg2ei64_v_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_eew_lt_sewmin
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
-    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
-    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
-    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
-    // so the coverpoints + crosses are entirely absent on configurations where
-    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
-    `ifndef SEW8_SUPPORTED
-        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-            `ifndef SEW16_SUPPORTED
-                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-            `endif
-            `ifndef SEW32_SUPPORTED
-                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-            `endif
-        }
-
-
-        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
-
-        // Edge case: still reserved when vl=0
-        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-            bins zero = {0};
-        }
-
-        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-            bins active = {[1:3]};
-        }
-
-        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
-
-        // Edge case: still reserved when vstart >= vl
-        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-            bins true = {1'b1};
-        }
-
-        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
-    `endif
-
-//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_mew_reserved
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Vector load/store with mew=1 (bit 28), reserved encoding
-    mew_set: coverpoint ins.current.insn[28] {
-        bins one = {1'b1};
-    }
-
-    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
-
-//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Verify indexed segment load destination groups cannot overlap vs2 index register.
-    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
-    // only fires its own nf, so per-nf bins would leave most always dead.
-    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
-                         ins.current.insn[24:20],
-                         ins.current.insn[31:29]} {
-        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
-                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
-                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
-                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
-                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
-                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
-                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
-                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
-    }
-
-    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
-
-//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_seg_vd_overflow
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
-    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
-    // fires its own nf, so per-nf bins would leave 6/7 always dead.
-    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
-                      ins.current.insn[31:29]} {
-        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
-                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
-                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
-                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
-                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
-                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
-                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
-    }
-
-    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
-
-//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictV_vluxseg3ei64_v_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_eew_lt_sewmin
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
-    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
-    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
-    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
-    // so the coverpoints + crosses are entirely absent on configurations where
-    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
-    `ifndef SEW8_SUPPORTED
-        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-            `ifndef SEW16_SUPPORTED
-                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-            `endif
-            `ifndef SEW32_SUPPORTED
-                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-            `endif
-        }
-
-
-        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
-
-        // Edge case: still reserved when vl=0
-        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-            bins zero = {0};
-        }
-
-        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-            bins active = {[1:3]};
-        }
-
-        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
-
-        // Edge case: still reserved when vstart >= vl
-        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-            bins true = {1'b1};
-        }
-
-        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
-    `endif
-
-//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_mew_reserved
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Vector load/store with mew=1 (bit 28), reserved encoding
-    mew_set: coverpoint ins.current.insn[28] {
-        bins one = {1'b1};
-    }
-
-    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
-
-//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Verify indexed segment load destination groups cannot overlap vs2 index register.
-    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
-    // only fires its own nf, so per-nf bins would leave most always dead.
-    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
-                         ins.current.insn[24:20],
-                         ins.current.insn[31:29]} {
-        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
-                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
-                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
-                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
-                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
-                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
-                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
-                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
-    }
-
-    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
-
-//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_seg_vd_overflow
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
-    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
-    // fires its own nf, so per-nf bins would leave 6/7 always dead.
-    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
-                      ins.current.insn[31:29]} {
-        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
-                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
-                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
-                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
-                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
-                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
-                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
-    }
-
-    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
-
-//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictV_vluxseg4ei64_v_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_eew_lt_sewmin
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
-    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
-    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
-    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
-    // so the coverpoints + crosses are entirely absent on configurations where
-    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
-    `ifndef SEW8_SUPPORTED
-        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-            `ifndef SEW16_SUPPORTED
-                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-            `endif
-            `ifndef SEW32_SUPPORTED
-                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-            `endif
-        }
-
-
-        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
-
-        // Edge case: still reserved when vl=0
-        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-            bins zero = {0};
-        }
-
-        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-            bins active = {[1:3]};
-        }
-
-        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
-
-        // Edge case: still reserved when vstart >= vl
-        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-            bins true = {1'b1};
-        }
-
-        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
-    `endif
-
-//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_mew_reserved
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Vector load/store with mew=1 (bit 28), reserved encoding
-    mew_set: coverpoint ins.current.insn[28] {
-        bins one = {1'b1};
-    }
-
-    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
-
-//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Verify indexed segment load destination groups cannot overlap vs2 index register.
-    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
-    // only fires its own nf, so per-nf bins would leave most always dead.
-    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
-                         ins.current.insn[24:20],
-                         ins.current.insn[31:29]} {
-        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
-                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
-                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
-                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
-                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
-                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
-                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
-                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
-    }
-
-    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
-
-//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_seg_vd_overflow
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
-    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
-    // fires its own nf, so per-nf bins would leave 6/7 always dead.
-    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
-                      ins.current.insn[31:29]} {
-        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
-                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
-                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
-                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
-                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
-                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
-                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
-    }
-
-    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
-
-//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictV_vluxseg5ei64_v_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_eew_lt_sewmin
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
-    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
-    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
-    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
-    // so the coverpoints + crosses are entirely absent on configurations where
-    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
-    `ifndef SEW8_SUPPORTED
-        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-            `ifndef SEW16_SUPPORTED
-                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-            `endif
-            `ifndef SEW32_SUPPORTED
-                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-            `endif
-        }
-
-
-        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
-
-        // Edge case: still reserved when vl=0
-        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-            bins zero = {0};
-        }
-
-        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-            bins active = {[1:3]};
-        }
-
-        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
-
-        // Edge case: still reserved when vstart >= vl
-        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-            bins true = {1'b1};
-        }
-
-        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
-    `endif
-
-//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_mew_reserved
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Vector load/store with mew=1 (bit 28), reserved encoding
-    mew_set: coverpoint ins.current.insn[28] {
-        bins one = {1'b1};
-    }
-
-    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
-
-//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Verify indexed segment load destination groups cannot overlap vs2 index register.
-    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
-    // only fires its own nf, so per-nf bins would leave most always dead.
-    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
-                         ins.current.insn[24:20],
-                         ins.current.insn[31:29]} {
-        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
-                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
-                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
-                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
-                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
-                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
-                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
-                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
-    }
-
-    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
-
-//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_seg_vd_overflow
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
-    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
-    // fires its own nf, so per-nf bins would leave 6/7 always dead.
-    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
-                      ins.current.insn[31:29]} {
-        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
-                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
-                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
-                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
-                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
-                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
-                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
-    }
-
-    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
-
-//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictV_vluxseg6ei64_v_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_eew_lt_sewmin
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
-    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
-    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
-    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
-    // so the coverpoints + crosses are entirely absent on configurations where
-    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
-    `ifndef SEW8_SUPPORTED
-        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-            `ifndef SEW16_SUPPORTED
-                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-            `endif
-            `ifndef SEW32_SUPPORTED
-                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-            `endif
-        }
-
-
-        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
-
-        // Edge case: still reserved when vl=0
-        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-            bins zero = {0};
-        }
-
-        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-            bins active = {[1:3]};
-        }
-
-        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
-
-        // Edge case: still reserved when vstart >= vl
-        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-            bins true = {1'b1};
-        }
-
-        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
-    `endif
-
-//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_mew_reserved
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Vector load/store with mew=1 (bit 28), reserved encoding
-    mew_set: coverpoint ins.current.insn[28] {
-        bins one = {1'b1};
-    }
-
-    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
-
-//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Verify indexed segment load destination groups cannot overlap vs2 index register.
-    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
-    // only fires its own nf, so per-nf bins would leave most always dead.
-    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
-                         ins.current.insn[24:20],
-                         ins.current.insn[31:29]} {
-        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
-                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
-                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
-                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
-                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
-                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
-                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
-                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
-    }
-
-    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
-
-//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_seg_vd_overflow
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
-    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
-    // fires its own nf, so per-nf bins would leave 6/7 always dead.
-    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
-                      ins.current.insn[31:29]} {
-        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
-                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
-                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
-                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
-                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
-                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
-                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
-    }
-
-    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
-
-//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictV_vluxseg7ei64_v_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_eew_lt_sewmin
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
-    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
-    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
-    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
-    // so the coverpoints + crosses are entirely absent on configurations where
-    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
-    `ifndef SEW8_SUPPORTED
-        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-            `ifndef SEW16_SUPPORTED
-                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-            `endif
-            `ifndef SEW32_SUPPORTED
-                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-            `endif
-        }
-
-
-        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
-
-        // Edge case: still reserved when vl=0
-        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-            bins zero = {0};
-        }
-
-        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-            bins active = {[1:3]};
-        }
-
-        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
-
-        // Edge case: still reserved when vstart >= vl
-        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-            bins true = {1'b1};
-        }
-
-        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
-    `endif
-
-//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_mew_reserved
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Vector load/store with mew=1 (bit 28), reserved encoding
-    mew_set: coverpoint ins.current.insn[28] {
-        bins one = {1'b1};
-    }
-
-    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
-
-//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Verify indexed segment load destination groups cannot overlap vs2 index register.
-    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
-    // only fires its own nf, so per-nf bins would leave most always dead.
-    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
-                         ins.current.insn[24:20],
-                         ins.current.insn[31:29]} {
-        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
-                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
-                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
-                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
-                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
-                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
-                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
-                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
-    }
-
-    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
-
-//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_seg_vd_overflow
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
-    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
-    // fires its own nf, so per-nf bins would leave 6/7 always dead.
-    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
-                      ins.current.insn[31:29]} {
-        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
-                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
-                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
-                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
-                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
-                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
-                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
-    }
-
-    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
-
-//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictV_vluxseg8ei64_v_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_eew_lt_sewmin
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
-    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
-    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
-    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
-    // so the coverpoints + crosses are entirely absent on configurations where
-    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
-    `ifndef SEW8_SUPPORTED
-        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-            `ifndef SEW16_SUPPORTED
-                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-            `endif
-            `ifndef SEW32_SUPPORTED
-                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-            `endif
-        }
-
-
-        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
-
-        // Edge case: still reserved when vl=0
-        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-            bins zero = {0};
-        }
-
-        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-            bins active = {[1:3]};
-        }
-
-        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
-
-        // Edge case: still reserved when vstart >= vl
-        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-            bins true = {1'b1};
-        }
-
-        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
-    `endif
-
-//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_mew_reserved
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Vector load/store with mew=1 (bit 28), reserved encoding
-    mew_set: coverpoint ins.current.insn[28] {
-        bins one = {1'b1};
-    }
-
-    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
-
-//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Verify indexed segment load destination groups cannot overlap vs2 index register.
-    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
-    // only fires its own nf, so per-nf bins would leave most always dead.
-    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
-                         ins.current.insn[24:20],
-                         ins.current.insn[31:29]} {
-        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
-                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
-                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
-                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
-                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
-                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
-                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
-                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
-    }
-
-    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
-
-//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_seg_vd_overflow
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
-    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
-    // fires its own nf, so per-nf bins would leave 6/7 always dead.
-    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
-                      ins.current.insn[31:29]} {
-        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
-                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
-                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
-                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
-                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
-                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
-                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
-    }
-
-    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
-
-//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictV_vmulh_vv_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictV_vmulh_vv_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2219,7 +47,7 @@ covergroup SsstrictV_vmulh_vv_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictV_vmulh_vx_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictV_vmulh_vx_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2244,67 +72,7 @@ covergroup SsstrictV_vmulh_vx_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictV_vmulhsu_vv_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs1_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs1=v0 at LMUL=1: vs1 group overlaps mask v0, reserved
-    vs1_is_v0_meqv0 : coverpoint ins.current.insn[19:15] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs1_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs1_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs1_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictV_vmulhsu_vx_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictV_vmulhu_vv_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictV_vmulhsu_vv_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2339,7 +107,7 @@ covergroup SsstrictV_vmulhu_vv_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictV_vmulhu_vx_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictV_vmulhsu_vx_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2364,7 +132,7 @@ covergroup SsstrictV_vmulhu_vx_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictV_vsmul_vv_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictV_vmulhu_vv_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2399,7 +167,7 @@ covergroup SsstrictV_vsmul_vv_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictV_vsmul_vx_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictV_vmulhu_vx_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2424,7 +192,154 @@ covergroup SsstrictV_vsmul_vx_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictV_vsoxei64_v_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictV_vsmul_vv_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs1_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs1=v0 at LMUL=1: vs1 group overlaps mask v0, reserved
+    vs1_is_v0_meqv0 : coverpoint ins.current.insn[19:15] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs1_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs1_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs1_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsmul_vx_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+`ifdef UDB_MXLEN_32
+covergroup SsstrictV_vloxei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vloxei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2510,7 +425,7 @@ covergroup SsstrictV_vsoxei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictV_vsoxseg2ei64_v_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictV_vloxei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2575,54 +490,6 @@ covergroup SsstrictV_vsoxseg2ei64_v_sew64__cg with function sample(ins_t ins);
 //// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
 
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Verify indexed segment load destination groups cannot overlap vs2 index register.
-    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
-    // only fires its own nf, so per-nf bins would leave most always dead.
-    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
-                         ins.current.insn[24:20],
-                         ins.current.insn[31:29]} {
-        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
-                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
-                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
-                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
-                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
-                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
-                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
-                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
-    }
-
-    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
-
-//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_seg_vd_overflow
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
-    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
-    // fires its own nf, so per-nf bins would leave 6/7 always dead.
-    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
-                      ins.current.insn[31:29]} {
-        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
-                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
-                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
-                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
-                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
-                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
-                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
-    }
-
-    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
-
-//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -2644,7 +511,7 @@ covergroup SsstrictV_vsoxseg2ei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictV_vsoxseg3ei64_v_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictV_vloxei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2709,54 +576,6 @@ covergroup SsstrictV_vsoxseg3ei64_v_sew64__cg with function sample(ins_t ins);
 //// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
 
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Verify indexed segment load destination groups cannot overlap vs2 index register.
-    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
-    // only fires its own nf, so per-nf bins would leave most always dead.
-    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
-                         ins.current.insn[24:20],
-                         ins.current.insn[31:29]} {
-        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
-                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
-                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
-                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
-                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
-                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
-                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
-                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
-    }
-
-    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
-
-//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_seg_vd_overflow
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
-    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
-    // fires its own nf, so per-nf bins would leave 6/7 always dead.
-    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
-                      ins.current.insn[31:29]} {
-        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
-                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
-                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
-                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
-                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
-                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
-                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
-    }
-
-    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
-
-//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -2778,141 +597,7 @@ covergroup SsstrictV_vsoxseg3ei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictV_vsoxseg4ei64_v_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_eew_lt_sewmin
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
-    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
-    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
-    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
-    // so the coverpoints + crosses are entirely absent on configurations where
-    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
-    `ifndef SEW8_SUPPORTED
-        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-            `ifndef SEW16_SUPPORTED
-                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-            `endif
-            `ifndef SEW32_SUPPORTED
-                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-            `endif
-        }
-
-
-        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
-
-        // Edge case: still reserved when vl=0
-        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-            bins zero = {0};
-        }
-
-        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-            bins active = {[1:3]};
-        }
-
-        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
-
-        // Edge case: still reserved when vstart >= vl
-        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-            bins true = {1'b1};
-        }
-
-        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
-    `endif
-
-//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_mew_reserved
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Vector load/store with mew=1 (bit 28), reserved encoding
-    mew_set: coverpoint ins.current.insn[28] {
-        bins one = {1'b1};
-    }
-
-    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
-
-//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Verify indexed segment load destination groups cannot overlap vs2 index register.
-    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
-    // only fires its own nf, so per-nf bins would leave most always dead.
-    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
-                         ins.current.insn[24:20],
-                         ins.current.insn[31:29]} {
-        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
-                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
-                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
-                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
-                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
-                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
-                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
-                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
-    }
-
-    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
-
-//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_seg_vd_overflow
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
-    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
-    // fires its own nf, so per-nf bins would leave 6/7 always dead.
-    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
-                      ins.current.insn[31:29]} {
-        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
-                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
-                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
-                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
-                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
-                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
-                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
-    }
-
-    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
-
-//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictV_vsoxseg5ei64_v_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictV_vloxseg2ei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3046,7 +731,7 @@ covergroup SsstrictV_vsoxseg5ei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictV_vsoxseg6ei64_v_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictV_vloxseg2ei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3180,7 +865,7 @@ covergroup SsstrictV_vsoxseg6ei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictV_vsoxseg7ei64_v_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictV_vloxseg2ei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3314,7 +999,7 @@ covergroup SsstrictV_vsoxseg7ei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictV_vsoxseg8ei64_v_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictV_vloxseg2ei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3448,93 +1133,7 @@ covergroup SsstrictV_vsoxseg8ei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictV_vsuxei64_v_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_eew_lt_sewmin
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
-    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
-    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
-    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
-    // so the coverpoints + crosses are entirely absent on configurations where
-    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
-    `ifndef SEW8_SUPPORTED
-        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-            `ifndef SEW16_SUPPORTED
-                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-            `endif
-            `ifndef SEW32_SUPPORTED
-                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-            `endif
-        }
-
-
-        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
-
-        // Edge case: still reserved when vl=0
-        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-            bins zero = {0};
-        }
-
-        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-            bins active = {[1:3]};
-        }
-
-        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
-
-        // Edge case: still reserved when vstart >= vl
-        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-            bins true = {1'b1};
-        }
-
-        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
-    `endif
-
-//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_ls_mew_reserved
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Vector load/store with mew=1 (bit 28), reserved encoding
-    mew_set: coverpoint ins.current.insn[28] {
-        bins one = {1'b1};
-    }
-
-    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
-
-//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictV_vsuxseg2ei64_v_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictV_vloxseg3ei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3668,7 +1267,7 @@ covergroup SsstrictV_vsuxseg2ei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictV_vsuxseg3ei64_v_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictV_vloxseg3ei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3802,7 +1401,7 @@ covergroup SsstrictV_vsuxseg3ei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictV_vsuxseg4ei64_v_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictV_vloxseg3ei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3936,7 +1535,7 @@ covergroup SsstrictV_vsuxseg4ei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictV_vsuxseg5ei64_v_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictV_vloxseg3ei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4070,7 +1669,7 @@ covergroup SsstrictV_vsuxseg5ei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictV_vsuxseg6ei64_v_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictV_vloxseg4ei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4204,7 +1803,7 @@ covergroup SsstrictV_vsuxseg6ei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictV_vsuxseg7ei64_v_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictV_vloxseg4ei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4338,7 +1937,7 @@ covergroup SsstrictV_vsuxseg7ei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictV_vsuxseg8ei64_v_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictV_vloxseg4ei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4472,6 +2071,14573 @@ covergroup SsstrictV_vsuxseg8ei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+covergroup SsstrictV_vloxseg4ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vloxseg5ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vloxseg5ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vloxseg5ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vloxseg5ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vloxseg6ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vloxseg6ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vloxseg6ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vloxseg6ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vloxseg7ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vloxseg7ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vloxseg7ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vloxseg7ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vloxseg8ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vloxseg8ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vloxseg8ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vloxseg8ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vluxei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vluxei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vluxei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vluxei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vluxseg2ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vluxseg2ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vluxseg2ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vluxseg2ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vluxseg3ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vluxseg3ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vluxseg3ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vluxseg3ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vluxseg4ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vluxseg4ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vluxseg4ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vluxseg4ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vluxseg5ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vluxseg5ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vluxseg5ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vluxseg5ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vluxseg6ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vluxseg6ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vluxseg6ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vluxseg6ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vluxseg7ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vluxseg7ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vluxseg7ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vluxseg7ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vluxseg8ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vluxseg8ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vluxseg8ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vluxseg8ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsoxei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsoxei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsoxei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsoxei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsoxseg2ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsoxseg2ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsoxseg2ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsoxseg2ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsoxseg3ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsoxseg3ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsoxseg3ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsoxseg3ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsoxseg4ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsoxseg4ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsoxseg4ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsoxseg4ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsoxseg5ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsoxseg5ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsoxseg5ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsoxseg5ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsoxseg6ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsoxseg6ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsoxseg6ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsoxseg6ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsoxseg7ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsoxseg7ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsoxseg7ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsoxseg7ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsoxseg8ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsoxseg8ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsoxseg8ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsoxseg8ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsuxei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsuxei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsuxei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsuxei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsuxseg2ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsuxseg2ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsuxseg2ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsuxseg2ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsuxseg3ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsuxseg3ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsuxseg3ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsuxseg3ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsuxseg4ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsuxseg4ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsuxseg4ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsuxseg4ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsuxseg5ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsuxseg5ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsuxseg5ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsuxseg5ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsuxseg6ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsuxseg6ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsuxseg6ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsuxseg6ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsuxseg7ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsuxseg7ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsuxseg7ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsuxseg7ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsuxseg8ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsuxseg8ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsuxseg8ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictV_vsuxseg8ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_eew_lt_sewmin
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store EEW (from width field) smaller than SEWMIN is reserved.
+    // The whole family only exists when SEWMIN > 8 (i.e. SEW8 isn't supported);
+    // otherwise none of the encodable widths (EEW=8/16/32) are reserved and
+    // these coverpoints have nothing to exercise. Wrap in `ifndef SEW8_SUPPORTED`
+    // so the coverpoints + crosses are entirely absent on configurations where
+    // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
+    `ifndef SEW8_SUPPORTED
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
+
+
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
+
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
+
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+    `endif
+
+//// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_mew_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Vector load/store with mew=1 (bit 28), reserved encoding
+    mew_set: coverpoint ins.current.insn[28] {
+        bins one = {1'b1};
+    }
+
+    cp_ssstrictv_ls_mew_reserved: cross std_trap_vec, mew_set;
+
+//// end cp_ssstrictv_ls_mew_reserved ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Verify indexed segment load destination groups cannot overlap vs2 index register.
+    // Single bin matches every (vd, vs2, nf) overlap tuple — each indexed segment cg
+    // only fires its own nf, so per-nf bins would leave most always dead.
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
+        bins seg_idx_overlap = {{5'd8,  5'd8,  3'b001},  // NFIELDS=2, vs2=vd
+                                {5'd8,  5'd9,  3'b001},  // NFIELDS=2, vs2=vd+1
+                                {5'd8,  5'd10, 3'b010},  // NFIELDS=3, vs2=vd+2
+                                {5'd8,  5'd11, 3'b011},  // NFIELDS=4, vs2=vd+3
+                                {5'd8,  5'd12, 3'b100},  // NFIELDS=5, vs2=vd+4
+                                {5'd8,  5'd13, 3'b101},  // NFIELDS=6, vs2=vd+5
+                                {5'd8,  5'd14, 3'b110},  // NFIELDS=7, vs2=vd+6
+                                {5'd8,  5'd15, 3'b111}}; // NFIELDS=8, vs2=vd+7
+    }
+
+    cp_ssstrictv_ls_seg_idx_vd_vs2_overlap: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_vs2_nf_overlap;
+
+//// end cp_ssstrictv_ls_seg_idx_vd_vs2_overlap ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_ls_seg_vd_overflow
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Segment load/store where vd + NFIELDS > 32 (register numbers past 31).
+    // Single bin matches every (vd, nf) overflow tuple — each segment cg only
+    // fires its own nf, so per-nf bins would leave 6/7 always dead.
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
+        bins seg_overflow = {{5'd31, 3'b001},  // NFIELDS=2, vd=31
+                             {5'd30, 3'b010},  // NFIELDS=3, vd=30
+                             {5'd29, 3'b011},  // NFIELDS=4, vd=29
+                             {5'd28, 3'b100},  // NFIELDS=5, vd=28
+                             {5'd27, 3'b101},  // NFIELDS=6, vd=27
+                             {5'd26, 3'b110},  // NFIELDS=7, vd=26
+                             {5'd25, 3'b111}}; // NFIELDS=8, vd=25
+    }
+
+    cp_ssstrictv_ls_seg_vd_overflow: cross std_trap_vec, vtype_sew_supported, vtype_lmul_1, vd_nf_overflow;
+
+//// end cp_ssstrictv_ls_seg_vd_overflow ///////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+`endif
 function void ssstrictv_sample(int hart, int issue, ins_t ins);
     // Want to sample only if the SEW matches the target SEW of the file, some tests require
     // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
@@ -4479,6 +16645,104 @@ function void ssstrictv_sample(int hart, int issue, ins_t ins);
     if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 0 ||
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
+`ifdef UDB_MXLEN_32
+        "vloxei64.v"     : begin
+            SsstrictV_vloxei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg2ei64.v"     : begin
+            SsstrictV_vloxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg3ei64.v"     : begin
+            SsstrictV_vloxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg4ei64.v"     : begin
+            SsstrictV_vloxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg5ei64.v"     : begin
+            SsstrictV_vloxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg6ei64.v"     : begin
+            SsstrictV_vloxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg7ei64.v"     : begin
+            SsstrictV_vloxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg8ei64.v"     : begin
+            SsstrictV_vloxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxei64.v"     : begin
+            SsstrictV_vluxei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg2ei64.v"     : begin
+            SsstrictV_vluxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg3ei64.v"     : begin
+            SsstrictV_vluxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg4ei64.v"     : begin
+            SsstrictV_vluxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg5ei64.v"     : begin
+            SsstrictV_vluxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg6ei64.v"     : begin
+            SsstrictV_vluxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg7ei64.v"     : begin
+            SsstrictV_vluxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg8ei64.v"     : begin
+            SsstrictV_vluxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxei64.v"     : begin
+            SsstrictV_vsoxei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg2ei64.v"     : begin
+            SsstrictV_vsoxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg3ei64.v"     : begin
+            SsstrictV_vsoxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg4ei64.v"     : begin
+            SsstrictV_vsoxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg5ei64.v"     : begin
+            SsstrictV_vsoxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg6ei64.v"     : begin
+            SsstrictV_vsoxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg7ei64.v"     : begin
+            SsstrictV_vsoxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg8ei64.v"     : begin
+            SsstrictV_vsoxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxei64.v"     : begin
+            SsstrictV_vsuxei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg2ei64.v"     : begin
+            SsstrictV_vsuxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg3ei64.v"     : begin
+            SsstrictV_vsuxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg4ei64.v"     : begin
+            SsstrictV_vsuxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg5ei64.v"     : begin
+            SsstrictV_vsuxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg6ei64.v"     : begin
+            SsstrictV_vsuxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg7ei64.v"     : begin
+            SsstrictV_vsuxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg8ei64.v"     : begin
+            SsstrictV_vsuxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+`endif
             default: ; // a case needs at least one item, and some configurations select none
         endcase
     end
@@ -4488,6 +16752,104 @@ function void ssstrictv_sample(int hart, int issue, ins_t ins);
     if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1 ||
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
+`ifdef UDB_MXLEN_32
+        "vloxei64.v"     : begin
+            SsstrictV_vloxei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg2ei64.v"     : begin
+            SsstrictV_vloxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg3ei64.v"     : begin
+            SsstrictV_vloxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg4ei64.v"     : begin
+            SsstrictV_vloxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg5ei64.v"     : begin
+            SsstrictV_vloxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg6ei64.v"     : begin
+            SsstrictV_vloxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg7ei64.v"     : begin
+            SsstrictV_vloxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg8ei64.v"     : begin
+            SsstrictV_vloxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxei64.v"     : begin
+            SsstrictV_vluxei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg2ei64.v"     : begin
+            SsstrictV_vluxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg3ei64.v"     : begin
+            SsstrictV_vluxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg4ei64.v"     : begin
+            SsstrictV_vluxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg5ei64.v"     : begin
+            SsstrictV_vluxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg6ei64.v"     : begin
+            SsstrictV_vluxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg7ei64.v"     : begin
+            SsstrictV_vluxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg8ei64.v"     : begin
+            SsstrictV_vluxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxei64.v"     : begin
+            SsstrictV_vsoxei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg2ei64.v"     : begin
+            SsstrictV_vsoxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg3ei64.v"     : begin
+            SsstrictV_vsoxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg4ei64.v"     : begin
+            SsstrictV_vsoxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg5ei64.v"     : begin
+            SsstrictV_vsoxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg6ei64.v"     : begin
+            SsstrictV_vsoxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg7ei64.v"     : begin
+            SsstrictV_vsoxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg8ei64.v"     : begin
+            SsstrictV_vsoxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxei64.v"     : begin
+            SsstrictV_vsuxei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg2ei64.v"     : begin
+            SsstrictV_vsuxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg3ei64.v"     : begin
+            SsstrictV_vsuxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg4ei64.v"     : begin
+            SsstrictV_vsuxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg5ei64.v"     : begin
+            SsstrictV_vsuxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg6ei64.v"     : begin
+            SsstrictV_vsuxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg7ei64.v"     : begin
+            SsstrictV_vsuxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg8ei64.v"     : begin
+            SsstrictV_vsuxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+`endif
             default: ; // a case needs at least one item, and some configurations select none
         endcase
     end
@@ -4497,6 +16859,104 @@ function void ssstrictv_sample(int hart, int issue, ins_t ins);
     if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2 ||
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
+`ifdef UDB_MXLEN_32
+        "vloxei64.v"     : begin
+            SsstrictV_vloxei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg2ei64.v"     : begin
+            SsstrictV_vloxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg3ei64.v"     : begin
+            SsstrictV_vloxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg4ei64.v"     : begin
+            SsstrictV_vloxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg5ei64.v"     : begin
+            SsstrictV_vloxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg6ei64.v"     : begin
+            SsstrictV_vloxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg7ei64.v"     : begin
+            SsstrictV_vloxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg8ei64.v"     : begin
+            SsstrictV_vloxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxei64.v"     : begin
+            SsstrictV_vluxei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg2ei64.v"     : begin
+            SsstrictV_vluxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg3ei64.v"     : begin
+            SsstrictV_vluxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg4ei64.v"     : begin
+            SsstrictV_vluxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg5ei64.v"     : begin
+            SsstrictV_vluxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg6ei64.v"     : begin
+            SsstrictV_vluxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg7ei64.v"     : begin
+            SsstrictV_vluxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg8ei64.v"     : begin
+            SsstrictV_vluxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxei64.v"     : begin
+            SsstrictV_vsoxei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg2ei64.v"     : begin
+            SsstrictV_vsoxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg3ei64.v"     : begin
+            SsstrictV_vsoxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg4ei64.v"     : begin
+            SsstrictV_vsoxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg5ei64.v"     : begin
+            SsstrictV_vsoxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg6ei64.v"     : begin
+            SsstrictV_vsoxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg7ei64.v"     : begin
+            SsstrictV_vsoxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg8ei64.v"     : begin
+            SsstrictV_vsoxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxei64.v"     : begin
+            SsstrictV_vsuxei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg2ei64.v"     : begin
+            SsstrictV_vsuxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg3ei64.v"     : begin
+            SsstrictV_vsuxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg4ei64.v"     : begin
+            SsstrictV_vsuxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg5ei64.v"     : begin
+            SsstrictV_vsuxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg6ei64.v"     : begin
+            SsstrictV_vsuxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg7ei64.v"     : begin
+            SsstrictV_vsuxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg8ei64.v"     : begin
+            SsstrictV_vsuxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+`endif
             default: ; // a case needs at least one item, and some configurations select none
         endcase
     end
@@ -4506,138 +16966,128 @@ function void ssstrictv_sample(int hart, int issue, ins_t ins);
     if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 3 ||
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
-        "vfmv.f.s"     : begin
-            SsstrictV_vfmv_f_s_cg.sample(ins);
-        end
-        "vfmv.s.f"     : begin
-            SsstrictV_vfmv_s_f_cg.sample(ins);
-        end
-        "vfslide1down.vf"     : begin
-            SsstrictV_vfslide1down_vf_cg.sample(ins);
-        end
-        "vfslide1up.vf"     : begin
-            SsstrictV_vfslide1up_vf_cg.sample(ins);
-        end
-        "vloxei64.v"     : begin
-            SsstrictV_vloxei64_v_cg.sample(ins);
-        end
-        "vloxseg2ei64.v"     : begin
-            SsstrictV_vloxseg2ei64_v_cg.sample(ins);
-        end
-        "vloxseg3ei64.v"     : begin
-            SsstrictV_vloxseg3ei64_v_cg.sample(ins);
-        end
-        "vloxseg4ei64.v"     : begin
-            SsstrictV_vloxseg4ei64_v_cg.sample(ins);
-        end
-        "vloxseg5ei64.v"     : begin
-            SsstrictV_vloxseg5ei64_v_cg.sample(ins);
-        end
-        "vloxseg6ei64.v"     : begin
-            SsstrictV_vloxseg6ei64_v_cg.sample(ins);
-        end
-        "vloxseg7ei64.v"     : begin
-            SsstrictV_vloxseg7ei64_v_cg.sample(ins);
-        end
-        "vloxseg8ei64.v"     : begin
-            SsstrictV_vloxseg8ei64_v_cg.sample(ins);
-        end
-        "vluxei64.v"     : begin
-            SsstrictV_vluxei64_v_cg.sample(ins);
-        end
-        "vluxseg2ei64.v"     : begin
-            SsstrictV_vluxseg2ei64_v_cg.sample(ins);
-        end
-        "vluxseg3ei64.v"     : begin
-            SsstrictV_vluxseg3ei64_v_cg.sample(ins);
-        end
-        "vluxseg4ei64.v"     : begin
-            SsstrictV_vluxseg4ei64_v_cg.sample(ins);
-        end
-        "vluxseg5ei64.v"     : begin
-            SsstrictV_vluxseg5ei64_v_cg.sample(ins);
-        end
-        "vluxseg6ei64.v"     : begin
-            SsstrictV_vluxseg6ei64_v_cg.sample(ins);
-        end
-        "vluxseg7ei64.v"     : begin
-            SsstrictV_vluxseg7ei64_v_cg.sample(ins);
-        end
-        "vluxseg8ei64.v"     : begin
-            SsstrictV_vluxseg8ei64_v_cg.sample(ins);
-        end
         "vmulh.vv"     : begin
-            SsstrictV_vmulh_vv_cg.sample(ins);
+            SsstrictV_vmulh_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmulh.vx"     : begin
-            SsstrictV_vmulh_vx_cg.sample(ins);
+            SsstrictV_vmulh_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmulhsu.vv"     : begin
-            SsstrictV_vmulhsu_vv_cg.sample(ins);
+            SsstrictV_vmulhsu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmulhsu.vx"     : begin
-            SsstrictV_vmulhsu_vx_cg.sample(ins);
+            SsstrictV_vmulhsu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmulhu.vv"     : begin
-            SsstrictV_vmulhu_vv_cg.sample(ins);
+            SsstrictV_vmulhu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmulhu.vx"     : begin
-            SsstrictV_vmulhu_vx_cg.sample(ins);
+            SsstrictV_vmulhu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vsmul.vv"     : begin
-            SsstrictV_vsmul_vv_cg.sample(ins);
+            SsstrictV_vsmul_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vsmul.vx"     : begin
-            SsstrictV_vsmul_vx_cg.sample(ins);
+            SsstrictV_vsmul_vx_sew@EFFEW@_cg.sample(ins);
+        end
+`ifdef UDB_MXLEN_32
+        "vloxei64.v"     : begin
+            SsstrictV_vloxei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg2ei64.v"     : begin
+            SsstrictV_vloxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg3ei64.v"     : begin
+            SsstrictV_vloxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg4ei64.v"     : begin
+            SsstrictV_vloxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg5ei64.v"     : begin
+            SsstrictV_vloxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg6ei64.v"     : begin
+            SsstrictV_vloxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg7ei64.v"     : begin
+            SsstrictV_vloxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg8ei64.v"     : begin
+            SsstrictV_vloxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxei64.v"     : begin
+            SsstrictV_vluxei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg2ei64.v"     : begin
+            SsstrictV_vluxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg3ei64.v"     : begin
+            SsstrictV_vluxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg4ei64.v"     : begin
+            SsstrictV_vluxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg5ei64.v"     : begin
+            SsstrictV_vluxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg6ei64.v"     : begin
+            SsstrictV_vluxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg7ei64.v"     : begin
+            SsstrictV_vluxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg8ei64.v"     : begin
+            SsstrictV_vluxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxei64.v"     : begin
-            SsstrictV_vsoxei64_v_cg.sample(ins);
+            SsstrictV_vsoxei64_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg2ei64.v"     : begin
-            SsstrictV_vsoxseg2ei64_v_cg.sample(ins);
+            SsstrictV_vsoxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg3ei64.v"     : begin
-            SsstrictV_vsoxseg3ei64_v_cg.sample(ins);
+            SsstrictV_vsoxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg4ei64.v"     : begin
-            SsstrictV_vsoxseg4ei64_v_cg.sample(ins);
+            SsstrictV_vsoxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg5ei64.v"     : begin
-            SsstrictV_vsoxseg5ei64_v_cg.sample(ins);
+            SsstrictV_vsoxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg6ei64.v"     : begin
-            SsstrictV_vsoxseg6ei64_v_cg.sample(ins);
+            SsstrictV_vsoxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg7ei64.v"     : begin
-            SsstrictV_vsoxseg7ei64_v_cg.sample(ins);
+            SsstrictV_vsoxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg8ei64.v"     : begin
-            SsstrictV_vsoxseg8ei64_v_cg.sample(ins);
+            SsstrictV_vsoxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxei64.v"     : begin
-            SsstrictV_vsuxei64_v_cg.sample(ins);
+            SsstrictV_vsuxei64_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg2ei64.v"     : begin
-            SsstrictV_vsuxseg2ei64_v_cg.sample(ins);
+            SsstrictV_vsuxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg3ei64.v"     : begin
-            SsstrictV_vsuxseg3ei64_v_cg.sample(ins);
+            SsstrictV_vsuxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg4ei64.v"     : begin
-            SsstrictV_vsuxseg4ei64_v_cg.sample(ins);
+            SsstrictV_vsuxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg5ei64.v"     : begin
-            SsstrictV_vsuxseg5ei64_v_cg.sample(ins);
+            SsstrictV_vsuxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg6ei64.v"     : begin
-            SsstrictV_vsuxseg6ei64_v_cg.sample(ins);
+            SsstrictV_vsuxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg7ei64.v"     : begin
-            SsstrictV_vsuxseg7ei64_v_cg.sample(ins);
+            SsstrictV_vsuxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg8ei64.v"     : begin
-            SsstrictV_vsuxseg8ei64_v_cg.sample(ins);
+            SsstrictV_vsuxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
         end
+`endif
             default: ; // a case needs at least one item, and some configurations select none
         endcase
     end

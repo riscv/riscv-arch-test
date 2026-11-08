@@ -12,7 +12,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_SSSTRICTZVE64D
-covergroup SsstrictZve64d_vfadd_vf_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfadd_vf_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -36,233 +36,7 @@ covergroup SsstrictZve64d_vfadd_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfadd_vv_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs1_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs1=v0 at LMUL=1: vs1 group overlaps mask v0, reserved
-    vs1_is_v0_meqv0 : coverpoint ins.current.insn[19:15] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs1_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs1_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs1_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictZve64d_vfclass_v_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictZve64d_vfcvt_f_x_v_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictZve64d_vfcvt_f_xu_v_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictZve64d_vfcvt_rtz_x_f_v_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictZve64d_vfcvt_rtz_xu_f_v_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictZve64d_vfcvt_x_f_v_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictZve64d_vfcvt_xu_f_v_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictZve64d_vfdiv_vf_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictZve64d_vfdiv_vv_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfadd_vv_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -296,7 +70,7 @@ covergroup SsstrictZve64d_vfdiv_vv_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfmacc_vf_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfclass_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -320,31 +94,7 @@ covergroup SsstrictZve64d_vfmacc_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfmacc_vv_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs1_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs1=v0 at LMUL=1: vs1 group overlaps mask v0, reserved
-    vs1_is_v0_meqv0 : coverpoint ins.current.insn[19:15] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs1_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs1_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs1_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictZve64d_vfmadd_vf_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfcvt_f_x_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -368,31 +118,7 @@ covergroup SsstrictZve64d_vfmadd_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfmadd_vv_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs1_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs1=v0 at LMUL=1: vs1 group overlaps mask v0, reserved
-    vs1_is_v0_meqv0 : coverpoint ins.current.insn[19:15] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs1_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs1_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs1_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictZve64d_vfmax_vf_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfcvt_f_xu_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -416,41 +142,7 @@ covergroup SsstrictZve64d_vfmax_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfmax_vv_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs1_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs1=v0 at LMUL=1: vs1 group overlaps mask v0, reserved
-    vs1_is_v0_meqv0 : coverpoint ins.current.insn[19:15] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs1_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs1_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs1_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictZve64d_vfmerge_vfm_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfcvt_rtz_x_f_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -474,7 +166,7 @@ covergroup SsstrictZve64d_vfmerge_vfm_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfmin_vf_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfcvt_rtz_xu_f_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -498,41 +190,7 @@ covergroup SsstrictZve64d_vfmin_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfmin_vv_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs1_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs1=v0 at LMUL=1: vs1 group overlaps mask v0, reserved
-    vs1_is_v0_meqv0 : coverpoint ins.current.insn[19:15] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs1_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs1_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs1_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictZve64d_vfmsac_vf_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfcvt_x_f_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -556,31 +214,7 @@ covergroup SsstrictZve64d_vfmsac_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfmsac_vv_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs1_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs1=v0 at LMUL=1: vs1 group overlaps mask v0, reserved
-    vs1_is_v0_meqv0 : coverpoint ins.current.insn[19:15] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs1_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs1_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs1_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictZve64d_vfmsub_vf_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfcvt_xu_f_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -604,31 +238,7 @@ covergroup SsstrictZve64d_vfmsub_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfmsub_vv_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs1_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs1=v0 at LMUL=1: vs1 group overlaps mask v0, reserved
-    vs1_is_v0_meqv0 : coverpoint ins.current.insn[19:15] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs1_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs1_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs1_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictZve64d_vfmul_vf_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfdiv_vf_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -652,7 +262,7 @@ covergroup SsstrictZve64d_vfmul_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfmul_vv_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfdiv_vv_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -686,7 +296,449 @@ covergroup SsstrictZve64d_vfmul_vv_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfmv_v_f_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfmacc_vf_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictZve64d_vfmacc_vv_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs1_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs1=v0 at LMUL=1: vs1 group overlaps mask v0, reserved
+    vs1_is_v0_meqv0 : coverpoint ins.current.insn[19:15] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs1_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs1_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs1_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictZve64d_vfmadd_vf_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictZve64d_vfmadd_vv_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs1_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs1=v0 at LMUL=1: vs1 group overlaps mask v0, reserved
+    vs1_is_v0_meqv0 : coverpoint ins.current.insn[19:15] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs1_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs1_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs1_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictZve64d_vfmax_vf_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictZve64d_vfmax_vv_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs1_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs1=v0 at LMUL=1: vs1 group overlaps mask v0, reserved
+    vs1_is_v0_meqv0 : coverpoint ins.current.insn[19:15] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs1_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs1_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs1_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictZve64d_vfmerge_vfm_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictZve64d_vfmin_vf_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictZve64d_vfmin_vv_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs1_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs1=v0 at LMUL=1: vs1 group overlaps mask v0, reserved
+    vs1_is_v0_meqv0 : coverpoint ins.current.insn[19:15] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs1_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs1_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs1_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictZve64d_vfmsac_vf_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictZve64d_vfmsac_vv_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs1_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs1=v0 at LMUL=1: vs1 group overlaps mask v0, reserved
+    vs1_is_v0_meqv0 : coverpoint ins.current.insn[19:15] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs1_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs1_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs1_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictZve64d_vfmsub_vf_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictZve64d_vfmsub_vv_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs1_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs1=v0 at LMUL=1: vs1 group overlaps mask v0, reserved
+    vs1_is_v0_meqv0 : coverpoint ins.current.insn[19:15] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs1_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs1_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs1_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictZve64d_vfmul_vf_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictZve64d_vfmul_vv_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs1_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs1=v0 at LMUL=1: vs1 group overlaps mask v0, reserved
+    vs1_is_v0_meqv0 : coverpoint ins.current.insn[19:15] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs1_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs1_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs1_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictZve64d_vfmv_f_s_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_vfmv_fs_sf_vm0_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // vfmv.f.s (funct6=010000, funct3=001) and vfmv.s.f (funct6=010000, funct3=101) with vm=0 are reserved
+    vfmv_fs_sf_funct6: coverpoint ins.current.insn[31:26] {
+        bins vfmv = {6'b010000};
+    }
+
+    vfmv_fs_sf_funct3: coverpoint ins.current.insn[14:12] {
+        bins vfmv = {3'b001, 3'b101};
+    }
+
+    vm_masked: coverpoint ins.current.insn[25] {
+        bins masked = {1'b0};
+    }
+
+    cp_ssstrictv_vfmv_fs_sf_vm0_reserved: cross std_trap_vec, vfmv_fs_sf_funct6, vfmv_fs_sf_funct3, vm_masked;
+
+//// end cp_ssstrictv_vfmv_fs_sf_vm0_reserved //////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictZve64d_vfmv_s_f_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_vfmv_fs_sf_vm0_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // vfmv.f.s (funct6=010000, funct3=001) and vfmv.s.f (funct6=010000, funct3=101) with vm=0 are reserved
+    vfmv_fs_sf_funct6: coverpoint ins.current.insn[31:26] {
+        bins vfmv = {6'b010000};
+    }
+
+    vfmv_fs_sf_funct3: coverpoint ins.current.insn[14:12] {
+        bins vfmv = {3'b001, 3'b101};
+    }
+
+    vm_masked: coverpoint ins.current.insn[25] {
+        bins masked = {1'b0};
+    }
+
+    cp_ssstrictv_vfmv_fs_sf_vm0_reserved: cross std_trap_vec, vfmv_fs_sf_funct6, vfmv_fs_sf_funct3, vm_masked;
+
+//// end cp_ssstrictv_vfmv_fs_sf_vm0_reserved //////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictZve64d_vfmv_v_f_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_vfmv_vs2_not_v0_reserved
@@ -704,7 +756,7 @@ covergroup SsstrictZve64d_vfmv_v_f_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfncvt_f_f_w_sew32__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfncvt_f_f_w_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -739,7 +791,7 @@ covergroup SsstrictZve64d_vfncvt_f_f_w_sew32__cg with function sample(ins_t ins)
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfncvt_rod_f_f_w_sew32__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfncvt_rod_f_f_w_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -774,7 +826,7 @@ covergroup SsstrictZve64d_vfncvt_rod_f_f_w_sew32__cg with function sample(ins_t 
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfncvt_rtz_x_f_w_sew32__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfncvt_rtz_x_f_w_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -809,7 +861,7 @@ covergroup SsstrictZve64d_vfncvt_rtz_x_f_w_sew32__cg with function sample(ins_t 
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfncvt_rtz_xu_f_w_sew32__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfncvt_rtz_xu_f_w_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -844,7 +896,7 @@ covergroup SsstrictZve64d_vfncvt_rtz_xu_f_w_sew32__cg with function sample(ins_t
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfncvt_x_f_w_sew32__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfncvt_x_f_w_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -879,7 +931,7 @@ covergroup SsstrictZve64d_vfncvt_x_f_w_sew32__cg with function sample(ins_t ins)
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfncvt_xu_f_w_sew32__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfncvt_xu_f_w_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -914,7 +966,7 @@ covergroup SsstrictZve64d_vfncvt_xu_f_w_sew32__cg with function sample(ins_t ins
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfnmacc_vf_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfnmacc_vf_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -938,7 +990,7 @@ covergroup SsstrictZve64d_vfnmacc_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfnmacc_vv_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfnmacc_vv_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vs1_eq_v0
@@ -962,7 +1014,7 @@ covergroup SsstrictZve64d_vfnmacc_vv_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfnmadd_vf_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfnmadd_vf_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -986,7 +1038,7 @@ covergroup SsstrictZve64d_vfnmadd_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfnmadd_vv_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfnmadd_vv_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vs1_eq_v0
@@ -1010,7 +1062,7 @@ covergroup SsstrictZve64d_vfnmadd_vv_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfnmsac_vf_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfnmsac_vf_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -1034,7 +1086,7 @@ covergroup SsstrictZve64d_vfnmsac_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfnmsac_vv_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfnmsac_vv_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vs1_eq_v0
@@ -1058,7 +1110,7 @@ covergroup SsstrictZve64d_vfnmsac_vv_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfnmsub_vf_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfnmsub_vf_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -1082,7 +1134,7 @@ covergroup SsstrictZve64d_vfnmsub_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfnmsub_vv_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfnmsub_vv_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vs1_eq_v0
@@ -1106,7 +1158,7 @@ covergroup SsstrictZve64d_vfnmsub_vv_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfrdiv_vf_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfrdiv_vf_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -1130,7 +1182,7 @@ covergroup SsstrictZve64d_vfrdiv_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfrec7_v_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfrec7_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -1154,41 +1206,7 @@ covergroup SsstrictZve64d_vfrec7_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfredmax_vs_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs1_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs1=v0 at LMUL=1: vs1 group overlaps mask v0, reserved
-    vs1_is_v0_meqv0 : coverpoint ins.current.insn[19:15] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs1_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs1_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs1_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictZve64d_vfredmin_vs_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfredmax_vs_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -1222,7 +1240,7 @@ covergroup SsstrictZve64d_vfredmin_vs_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfredosum_vs_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfredmin_vs_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -1256,7 +1274,7 @@ covergroup SsstrictZve64d_vfredosum_vs_sew64__cg with function sample(ins_t ins)
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfredusum_vs_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfredosum_vs_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -1290,79 +1308,7 @@ covergroup SsstrictZve64d_vfredusum_vs_sew64__cg with function sample(ins_t ins)
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfrsqrt7_v_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictZve64d_vfrsub_vf_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictZve64d_vfsgnj_vf_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictZve64d_vfsgnj_vv_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfredusum_vs_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -1396,7 +1342,7 @@ covergroup SsstrictZve64d_vfsgnj_vv_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfsgnjn_vf_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfrsqrt7_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -1420,41 +1366,7 @@ covergroup SsstrictZve64d_vfsgnjn_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfsgnjn_vv_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs1_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs1=v0 at LMUL=1: vs1 group overlaps mask v0, reserved
-    vs1_is_v0_meqv0 : coverpoint ins.current.insn[19:15] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs1_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs1_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs1_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictZve64d_vfsgnjx_vf_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfrsub_vf_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -1478,41 +1390,7 @@ covergroup SsstrictZve64d_vfsgnjx_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfsgnjx_vv_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs1_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs1=v0 at LMUL=1: vs1 group overlaps mask v0, reserved
-    vs1_is_v0_meqv0 : coverpoint ins.current.insn[19:15] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs1_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs1_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs1_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictZve64d_vfsqrt_v_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfsgnj_vf_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -1536,31 +1414,7 @@ covergroup SsstrictZve64d_vfsqrt_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfsub_vf_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictZve64d_vfsub_vv_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfsgnj_vv_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -1594,7 +1448,273 @@ covergroup SsstrictZve64d_vfsub_vv_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfwadd_vf_sew32__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfsgnjn_vf_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictZve64d_vfsgnjn_vv_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs1_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs1=v0 at LMUL=1: vs1 group overlaps mask v0, reserved
+    vs1_is_v0_meqv0 : coverpoint ins.current.insn[19:15] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs1_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs1_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs1_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictZve64d_vfsgnjx_vf_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictZve64d_vfsgnjx_vv_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs1_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs1=v0 at LMUL=1: vs1 group overlaps mask v0, reserved
+    vs1_is_v0_meqv0 : coverpoint ins.current.insn[19:15] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs1_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs1_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs1_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictZve64d_vfslide1down_vf_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictZve64d_vfslide1up_vf_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_vslide1up_vd_vs2_overlap
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // vslide1up: destination register group cannot overlap source register group
+    cp_ssstrictv_vslide1up_vd_vs2_overlap: cross std_trap_vec, vd_eq_vs2;
+
+    // We cannot test anything dependent on csr state in Ssstrict, potentially there will be another test suite
+    // where all reserved encodings are tested, so the dependence on lmul is left as a comment.
+    // cp_ssstrictv_vslide1up_vd_vs2_overlap_lmul1: cross std_trap_vec, vtype_lmul_1, vd_eq_vs2;
+
+    // cp_ssstrictv_vslide1up_vd_vs2_overlap_lmul2: cross std_trap_vec, vtype_lmul_2, vs2_vd_overlap_lmul1;
+
+    // cp_ssstrictv_vslide1up_vd_vs2_overlap_lmul4: cross std_trap_vec, vtype_lmul_4, vs2_vd_overlap_lmul2;
+
+    // cp_ssstrictv_vslide1up_vd_vs2_overlap_lmul8: cross std_trap_vec, vtype_lmul_8, vs2_vd_overlap_lmul4;
+
+//// end cp_ssstrictv_vslide1up_vd_vs2_overlap ///////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictZve64d_vfsqrt_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictZve64d_vfsub_vf_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictZve64d_vfsub_vv_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs1_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs1=v0 at LMUL=1: vs1 group overlaps mask v0, reserved
+    vs1_is_v0_meqv0 : coverpoint ins.current.insn[19:15] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs1_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs1_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs1_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictZve64d_vfwadd_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -1629,7 +1749,7 @@ covergroup SsstrictZve64d_vfwadd_vf_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfwadd_vv_sew32__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfwadd_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -1685,7 +1805,7 @@ covergroup SsstrictZve64d_vfwadd_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfwadd_wf_sew32__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfwadd_wf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -1709,7 +1829,7 @@ covergroup SsstrictZve64d_vfwadd_wf_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfwadd_wv_sew32__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfwadd_wv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -1772,7 +1892,7 @@ covergroup SsstrictZve64d_vfwadd_wv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfwcvt_f_f_v_sew32__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfwcvt_f_f_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -1796,7 +1916,7 @@ covergroup SsstrictZve64d_vfwcvt_f_f_v_sew32__cg with function sample(ins_t ins)
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfwcvt_f_x_v_sew32__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfwcvt_f_x_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -1820,7 +1940,7 @@ covergroup SsstrictZve64d_vfwcvt_f_x_v_sew32__cg with function sample(ins_t ins)
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfwcvt_f_xu_v_sew32__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfwcvt_f_xu_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -1844,7 +1964,7 @@ covergroup SsstrictZve64d_vfwcvt_f_xu_v_sew32__cg with function sample(ins_t ins
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfwmacc_vf_sew32__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfwmacc_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -1879,7 +1999,7 @@ covergroup SsstrictZve64d_vfwmacc_vf_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfwmacc_vv_sew32__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfwmacc_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vs1_eq_v0
@@ -1925,7 +2045,7 @@ covergroup SsstrictZve64d_vfwmacc_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfwmsac_vf_sew32__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfwmsac_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -1960,7 +2080,7 @@ covergroup SsstrictZve64d_vfwmsac_vf_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfwmsac_vv_sew32__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfwmsac_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vs1_eq_v0
@@ -2006,7 +2126,7 @@ covergroup SsstrictZve64d_vfwmsac_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfwmul_vf_sew32__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfwmul_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -2041,328 +2161,7 @@ covergroup SsstrictZve64d_vfwmul_vf_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfwmul_vv_sew32__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs1_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs1=v0 at LMUL=1: vs1 group overlaps mask v0, reserved
-    vs1_is_v0_meqv0 : coverpoint ins.current.insn[19:15] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs1_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs1_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs1_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_vwiden_overlapping_vd_vs1_lmul1
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Widening with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-
-    cp_ssstrictv_vwiden_overlapping_vd_vs1_lmul1: cross std_trap_vec, vtype_lmul_1, vd_reg_aligned_lmul_2, vd_eq_vs1, vs2_vd_no_overlap_lmul1;
-
-//// end cp_ssstrictv_vwiden_overlapping_vd_vs1_lmul1 /////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_vwiden_overlapping_vd_vs2_lmul1
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
-
-    cp_ssstrictv_vwiden_overlapping_vd_vs2_lmul1: cross std_trap_vec, vtype_lmul_1, vd_reg_aligned_lmul_2, vd_eq_vs2, vs1_vd_no_overlap_lmul1;
-
-//// end cp_ssstrictv_vwiden_overlapping_vd_vs2_lmul1 /////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictZve64d_vfwnmacc_vf_sew32__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_vwiden_overlapping_vd_vs2_lmul1
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
-
-    cp_ssstrictv_vwiden_overlapping_vd_vs2_lmul1: cross std_trap_vec, vtype_lmul_1, vd_reg_aligned_lmul_2, vd_eq_vs2, vs1_vd_no_overlap_lmul1;
-
-//// end cp_ssstrictv_vwiden_overlapping_vd_vs2_lmul1 /////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictZve64d_vfwnmacc_vv_sew32__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs1_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs1=v0 at LMUL=1: vs1 group overlaps mask v0, reserved
-    vs1_is_v0_meqv0 : coverpoint ins.current.insn[19:15] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs1_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs1_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs1_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_vwiden_overlapping_vd_vs1_lmul1
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Widening with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-
-    cp_ssstrictv_vwiden_overlapping_vd_vs1_lmul1: cross std_trap_vec, vtype_lmul_1, vd_reg_aligned_lmul_2, vd_eq_vs1, vs2_vd_no_overlap_lmul1;
-
-//// end cp_ssstrictv_vwiden_overlapping_vd_vs1_lmul1 /////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_vwiden_overlapping_vd_vs2_lmul1
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
-
-    cp_ssstrictv_vwiden_overlapping_vd_vs2_lmul1: cross std_trap_vec, vtype_lmul_1, vd_reg_aligned_lmul_2, vd_eq_vs2, vs1_vd_no_overlap_lmul1;
-
-//// end cp_ssstrictv_vwiden_overlapping_vd_vs2_lmul1 /////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictZve64d_vfwnmsac_vf_sew32__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_vwiden_overlapping_vd_vs2_lmul1
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
-
-    cp_ssstrictv_vwiden_overlapping_vd_vs2_lmul1: cross std_trap_vec, vtype_lmul_1, vd_reg_aligned_lmul_2, vd_eq_vs2, vs1_vd_no_overlap_lmul1;
-
-//// end cp_ssstrictv_vwiden_overlapping_vd_vs2_lmul1 /////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictZve64d_vfwnmsac_vv_sew32__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs1_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs1=v0 at LMUL=1: vs1 group overlaps mask v0, reserved
-    vs1_is_v0_meqv0 : coverpoint ins.current.insn[19:15] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs1_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs1_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs1_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_vwiden_overlapping_vd_vs1_lmul1
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Widening with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-
-    cp_ssstrictv_vwiden_overlapping_vd_vs1_lmul1: cross std_trap_vec, vtype_lmul_1, vd_reg_aligned_lmul_2, vd_eq_vs1, vs2_vd_no_overlap_lmul1;
-
-//// end cp_ssstrictv_vwiden_overlapping_vd_vs1_lmul1 /////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_vwiden_overlapping_vd_vs2_lmul1
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
-
-    cp_ssstrictv_vwiden_overlapping_vd_vs2_lmul1: cross std_trap_vec, vtype_lmul_1, vd_reg_aligned_lmul_2, vd_eq_vs2, vs1_vd_no_overlap_lmul1;
-
-//// end cp_ssstrictv_vwiden_overlapping_vd_vs2_lmul1 /////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictZve64d_vfwredosum_vs_sew32__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs1_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs1=v0 at LMUL=1: vs1 group overlaps mask v0, reserved
-    vs1_is_v0_meqv0 : coverpoint ins.current.insn[19:15] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs1_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs1_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs1_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictZve64d_vfwredusum_vs_sew32__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs1_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs1=v0 at LMUL=1: vs1 group overlaps mask v0, reserved
-    vs1_is_v0_meqv0 : coverpoint ins.current.insn[19:15] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs1_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs1_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs1_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictZve64d_vfwsub_vf_sew32__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_vwiden_overlapping_vd_vs2_lmul1
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
-
-    cp_ssstrictv_vwiden_overlapping_vd_vs2_lmul1: cross std_trap_vec, vtype_lmul_1, vd_reg_aligned_lmul_2, vd_eq_vs2, vs1_vd_no_overlap_lmul1;
-
-//// end cp_ssstrictv_vwiden_overlapping_vd_vs2_lmul1 /////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictZve64d_vfwsub_vv_sew32__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfwmul_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -2418,7 +2217,328 @@ covergroup SsstrictZve64d_vfwsub_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfwsub_wf_sew32__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfwnmacc_vf_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_vwiden_overlapping_vd_vs2_lmul1
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
+
+    cp_ssstrictv_vwiden_overlapping_vd_vs2_lmul1: cross std_trap_vec, vtype_lmul_1, vd_reg_aligned_lmul_2, vd_eq_vs2, vs1_vd_no_overlap_lmul1;
+
+//// end cp_ssstrictv_vwiden_overlapping_vd_vs2_lmul1 /////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictZve64d_vfwnmacc_vv_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs1_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs1=v0 at LMUL=1: vs1 group overlaps mask v0, reserved
+    vs1_is_v0_meqv0 : coverpoint ins.current.insn[19:15] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs1_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs1_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs1_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_vwiden_overlapping_vd_vs1_lmul1
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Widening with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
+
+    cp_ssstrictv_vwiden_overlapping_vd_vs1_lmul1: cross std_trap_vec, vtype_lmul_1, vd_reg_aligned_lmul_2, vd_eq_vs1, vs2_vd_no_overlap_lmul1;
+
+//// end cp_ssstrictv_vwiden_overlapping_vd_vs1_lmul1 /////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_vwiden_overlapping_vd_vs2_lmul1
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
+
+    cp_ssstrictv_vwiden_overlapping_vd_vs2_lmul1: cross std_trap_vec, vtype_lmul_1, vd_reg_aligned_lmul_2, vd_eq_vs2, vs1_vd_no_overlap_lmul1;
+
+//// end cp_ssstrictv_vwiden_overlapping_vd_vs2_lmul1 /////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictZve64d_vfwnmsac_vf_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_vwiden_overlapping_vd_vs2_lmul1
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
+
+    cp_ssstrictv_vwiden_overlapping_vd_vs2_lmul1: cross std_trap_vec, vtype_lmul_1, vd_reg_aligned_lmul_2, vd_eq_vs2, vs1_vd_no_overlap_lmul1;
+
+//// end cp_ssstrictv_vwiden_overlapping_vd_vs2_lmul1 /////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictZve64d_vfwnmsac_vv_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs1_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs1=v0 at LMUL=1: vs1 group overlaps mask v0, reserved
+    vs1_is_v0_meqv0 : coverpoint ins.current.insn[19:15] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs1_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs1_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs1_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_vwiden_overlapping_vd_vs1_lmul1
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Widening with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
+
+    cp_ssstrictv_vwiden_overlapping_vd_vs1_lmul1: cross std_trap_vec, vtype_lmul_1, vd_reg_aligned_lmul_2, vd_eq_vs1, vs2_vd_no_overlap_lmul1;
+
+//// end cp_ssstrictv_vwiden_overlapping_vd_vs1_lmul1 /////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_vwiden_overlapping_vd_vs2_lmul1
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
+
+    cp_ssstrictv_vwiden_overlapping_vd_vs2_lmul1: cross std_trap_vec, vtype_lmul_1, vd_reg_aligned_lmul_2, vd_eq_vs2, vs1_vd_no_overlap_lmul1;
+
+//// end cp_ssstrictv_vwiden_overlapping_vd_vs2_lmul1 /////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictZve64d_vfwredosum_vs_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs1_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs1=v0 at LMUL=1: vs1 group overlaps mask v0, reserved
+    vs1_is_v0_meqv0 : coverpoint ins.current.insn[19:15] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs1_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs1_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs1_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictZve64d_vfwredusum_vs_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs1_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs1=v0 at LMUL=1: vs1 group overlaps mask v0, reserved
+    vs1_is_v0_meqv0 : coverpoint ins.current.insn[19:15] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs1_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs1_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs1_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictZve64d_vfwsub_vf_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_vwiden_overlapping_vd_vs2_lmul1
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
+
+    cp_ssstrictv_vwiden_overlapping_vd_vs2_lmul1: cross std_trap_vec, vtype_lmul_1, vd_reg_aligned_lmul_2, vd_eq_vs2, vs1_vd_no_overlap_lmul1;
+
+//// end cp_ssstrictv_vwiden_overlapping_vd_vs2_lmul1 /////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictZve64d_vfwsub_vv_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs1_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs1=v0 at LMUL=1: vs1 group overlaps mask v0, reserved
+    vs1_is_v0_meqv0 : coverpoint ins.current.insn[19:15] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs1_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs1_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs1_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_vwiden_overlapping_vd_vs1_lmul1
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Widening with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
+
+    cp_ssstrictv_vwiden_overlapping_vd_vs1_lmul1: cross std_trap_vec, vtype_lmul_1, vd_reg_aligned_lmul_2, vd_eq_vs1, vs2_vd_no_overlap_lmul1;
+
+//// end cp_ssstrictv_vwiden_overlapping_vd_vs1_lmul1 /////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_vwiden_overlapping_vd_vs2_lmul1
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
+
+    cp_ssstrictv_vwiden_overlapping_vd_vs2_lmul1: cross std_trap_vec, vtype_lmul_1, vd_reg_aligned_lmul_2, vd_eq_vs2, vs1_vd_no_overlap_lmul1;
+
+//// end cp_ssstrictv_vwiden_overlapping_vd_vs2_lmul1 /////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictZve64d_vfwsub_wf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -2442,7 +2562,7 @@ covergroup SsstrictZve64d_vfwsub_wf_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vfwsub_wv_sew32__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vfwsub_wv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -2505,7 +2625,7 @@ covergroup SsstrictZve64d_vfwsub_wv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vmfeq_vf_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vmfeq_vf_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -2529,113 +2649,7 @@ covergroup SsstrictZve64d_vmfeq_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vmfeq_vv_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs1_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs1=v0 at LMUL=1: vs1 group overlaps mask v0, reserved
-    vs1_is_v0_meqv0 : coverpoint ins.current.insn[19:15] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs1_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs1_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs1_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictZve64d_vmfge_vf_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictZve64d_vmfgt_vf_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictZve64d_vmfle_vf_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup SsstrictZve64d_vmfle_vv_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vmfeq_vv_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -2669,7 +2683,7 @@ covergroup SsstrictZve64d_vmfle_vv_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vmflt_vf_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vmfge_vf_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -2693,7 +2707,55 @@ covergroup SsstrictZve64d_vmflt_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vmflt_vv_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vmfgt_vf_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictZve64d_vmfle_vf_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictZve64d_vmfle_vv_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -2727,7 +2789,7 @@ covergroup SsstrictZve64d_vmflt_vv_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vmfne_vf_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vmflt_vf_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -2751,7 +2813,65 @@ covergroup SsstrictZve64d_vmfne_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64d_vmfne_vv_sew64__cg with function sample(ins_t ins);
+covergroup SsstrictZve64d_vmflt_vv_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs1_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs1=v0 at LMUL=1: vs1 group overlaps mask v0, reserved
+    vs1_is_v0_meqv0 : coverpoint ins.current.insn[19:15] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs1_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs1_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs1_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictZve64d_vmfne_vf_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vs2_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
+    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
+
+//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup SsstrictZve64d_vmfne_vv_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
@@ -2811,91 +2931,91 @@ function void ssstrictzve64d_sample(int hart, int issue, ins_t ins);
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
         "vfncvt.f.f.w"     : begin
-            SsstrictZve64d_vfncvt_f_f_w_cg.sample(ins);
+            SsstrictZve64d_vfncvt_f_f_w_sew@EFFEW@_cg.sample(ins);
         end
         "vfncvt.rod.f.f.w"     : begin
-            SsstrictZve64d_vfncvt_rod_f_f_w_cg.sample(ins);
+            SsstrictZve64d_vfncvt_rod_f_f_w_sew@EFFEW@_cg.sample(ins);
         end
         "vfncvt.rtz.x.f.w"     : begin
-            SsstrictZve64d_vfncvt_rtz_x_f_w_cg.sample(ins);
+            SsstrictZve64d_vfncvt_rtz_x_f_w_sew@EFFEW@_cg.sample(ins);
         end
         "vfncvt.rtz.xu.f.w"     : begin
-            SsstrictZve64d_vfncvt_rtz_xu_f_w_cg.sample(ins);
+            SsstrictZve64d_vfncvt_rtz_xu_f_w_sew@EFFEW@_cg.sample(ins);
         end
         "vfncvt.x.f.w"     : begin
-            SsstrictZve64d_vfncvt_x_f_w_cg.sample(ins);
+            SsstrictZve64d_vfncvt_x_f_w_sew@EFFEW@_cg.sample(ins);
         end
         "vfncvt.xu.f.w"     : begin
-            SsstrictZve64d_vfncvt_xu_f_w_cg.sample(ins);
+            SsstrictZve64d_vfncvt_xu_f_w_sew@EFFEW@_cg.sample(ins);
         end
         "vfwadd.vf"     : begin
-            SsstrictZve64d_vfwadd_vf_cg.sample(ins);
+            SsstrictZve64d_vfwadd_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfwadd.vv"     : begin
-            SsstrictZve64d_vfwadd_vv_cg.sample(ins);
+            SsstrictZve64d_vfwadd_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfwadd.wf"     : begin
-            SsstrictZve64d_vfwadd_wf_cg.sample(ins);
+            SsstrictZve64d_vfwadd_wf_sew@EFFEW@_cg.sample(ins);
         end
         "vfwadd.wv"     : begin
-            SsstrictZve64d_vfwadd_wv_cg.sample(ins);
+            SsstrictZve64d_vfwadd_wv_sew@EFFEW@_cg.sample(ins);
         end
         "vfwcvt.f.f.v"     : begin
-            SsstrictZve64d_vfwcvt_f_f_v_cg.sample(ins);
+            SsstrictZve64d_vfwcvt_f_f_v_sew@EFFEW@_cg.sample(ins);
         end
         "vfwcvt.f.x.v"     : begin
-            SsstrictZve64d_vfwcvt_f_x_v_cg.sample(ins);
+            SsstrictZve64d_vfwcvt_f_x_v_sew@EFFEW@_cg.sample(ins);
         end
         "vfwcvt.f.xu.v"     : begin
-            SsstrictZve64d_vfwcvt_f_xu_v_cg.sample(ins);
+            SsstrictZve64d_vfwcvt_f_xu_v_sew@EFFEW@_cg.sample(ins);
         end
         "vfwmacc.vf"     : begin
-            SsstrictZve64d_vfwmacc_vf_cg.sample(ins);
+            SsstrictZve64d_vfwmacc_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfwmacc.vv"     : begin
-            SsstrictZve64d_vfwmacc_vv_cg.sample(ins);
+            SsstrictZve64d_vfwmacc_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfwmsac.vf"     : begin
-            SsstrictZve64d_vfwmsac_vf_cg.sample(ins);
+            SsstrictZve64d_vfwmsac_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfwmsac.vv"     : begin
-            SsstrictZve64d_vfwmsac_vv_cg.sample(ins);
+            SsstrictZve64d_vfwmsac_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfwmul.vf"     : begin
-            SsstrictZve64d_vfwmul_vf_cg.sample(ins);
+            SsstrictZve64d_vfwmul_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfwmul.vv"     : begin
-            SsstrictZve64d_vfwmul_vv_cg.sample(ins);
+            SsstrictZve64d_vfwmul_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfwnmacc.vf"     : begin
-            SsstrictZve64d_vfwnmacc_vf_cg.sample(ins);
+            SsstrictZve64d_vfwnmacc_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfwnmacc.vv"     : begin
-            SsstrictZve64d_vfwnmacc_vv_cg.sample(ins);
+            SsstrictZve64d_vfwnmacc_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfwnmsac.vf"     : begin
-            SsstrictZve64d_vfwnmsac_vf_cg.sample(ins);
+            SsstrictZve64d_vfwnmsac_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfwnmsac.vv"     : begin
-            SsstrictZve64d_vfwnmsac_vv_cg.sample(ins);
+            SsstrictZve64d_vfwnmsac_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfwredosum.vs"     : begin
-            SsstrictZve64d_vfwredosum_vs_cg.sample(ins);
+            SsstrictZve64d_vfwredosum_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vfwredusum.vs"     : begin
-            SsstrictZve64d_vfwredusum_vs_cg.sample(ins);
+            SsstrictZve64d_vfwredusum_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vfwsub.vf"     : begin
-            SsstrictZve64d_vfwsub_vf_cg.sample(ins);
+            SsstrictZve64d_vfwsub_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfwsub.vv"     : begin
-            SsstrictZve64d_vfwsub_vv_cg.sample(ins);
+            SsstrictZve64d_vfwsub_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfwsub.wf"     : begin
-            SsstrictZve64d_vfwsub_wf_cg.sample(ins);
+            SsstrictZve64d_vfwsub_wf_sew@EFFEW@_cg.sample(ins);
         end
         "vfwsub.wv"     : begin
-            SsstrictZve64d_vfwsub_wv_cg.sample(ins);
+            SsstrictZve64d_vfwsub_wv_sew@EFFEW@_cg.sample(ins);
         end
             default: ; // a case needs at least one item, and some configurations select none
         endcase
@@ -2907,190 +3027,202 @@ function void ssstrictzve64d_sample(int hart, int issue, ins_t ins);
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
         "vfadd.vf"     : begin
-            SsstrictZve64d_vfadd_vf_cg.sample(ins);
+            SsstrictZve64d_vfadd_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfadd.vv"     : begin
-            SsstrictZve64d_vfadd_vv_cg.sample(ins);
+            SsstrictZve64d_vfadd_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfclass.v"     : begin
-            SsstrictZve64d_vfclass_v_cg.sample(ins);
+            SsstrictZve64d_vfclass_v_sew@EFFEW@_cg.sample(ins);
         end
         "vfcvt.f.x.v"     : begin
-            SsstrictZve64d_vfcvt_f_x_v_cg.sample(ins);
+            SsstrictZve64d_vfcvt_f_x_v_sew@EFFEW@_cg.sample(ins);
         end
         "vfcvt.f.xu.v"     : begin
-            SsstrictZve64d_vfcvt_f_xu_v_cg.sample(ins);
+            SsstrictZve64d_vfcvt_f_xu_v_sew@EFFEW@_cg.sample(ins);
         end
         "vfcvt.rtz.x.f.v"     : begin
-            SsstrictZve64d_vfcvt_rtz_x_f_v_cg.sample(ins);
+            SsstrictZve64d_vfcvt_rtz_x_f_v_sew@EFFEW@_cg.sample(ins);
         end
         "vfcvt.rtz.xu.f.v"     : begin
-            SsstrictZve64d_vfcvt_rtz_xu_f_v_cg.sample(ins);
+            SsstrictZve64d_vfcvt_rtz_xu_f_v_sew@EFFEW@_cg.sample(ins);
         end
         "vfcvt.x.f.v"     : begin
-            SsstrictZve64d_vfcvt_x_f_v_cg.sample(ins);
+            SsstrictZve64d_vfcvt_x_f_v_sew@EFFEW@_cg.sample(ins);
         end
         "vfcvt.xu.f.v"     : begin
-            SsstrictZve64d_vfcvt_xu_f_v_cg.sample(ins);
+            SsstrictZve64d_vfcvt_xu_f_v_sew@EFFEW@_cg.sample(ins);
         end
         "vfdiv.vf"     : begin
-            SsstrictZve64d_vfdiv_vf_cg.sample(ins);
+            SsstrictZve64d_vfdiv_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfdiv.vv"     : begin
-            SsstrictZve64d_vfdiv_vv_cg.sample(ins);
+            SsstrictZve64d_vfdiv_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfmacc.vf"     : begin
-            SsstrictZve64d_vfmacc_vf_cg.sample(ins);
+            SsstrictZve64d_vfmacc_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfmacc.vv"     : begin
-            SsstrictZve64d_vfmacc_vv_cg.sample(ins);
+            SsstrictZve64d_vfmacc_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfmadd.vf"     : begin
-            SsstrictZve64d_vfmadd_vf_cg.sample(ins);
+            SsstrictZve64d_vfmadd_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfmadd.vv"     : begin
-            SsstrictZve64d_vfmadd_vv_cg.sample(ins);
+            SsstrictZve64d_vfmadd_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfmax.vf"     : begin
-            SsstrictZve64d_vfmax_vf_cg.sample(ins);
+            SsstrictZve64d_vfmax_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfmax.vv"     : begin
-            SsstrictZve64d_vfmax_vv_cg.sample(ins);
+            SsstrictZve64d_vfmax_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfmerge.vfm"     : begin
-            SsstrictZve64d_vfmerge_vfm_cg.sample(ins);
+            SsstrictZve64d_vfmerge_vfm_sew@EFFEW@_cg.sample(ins);
         end
         "vfmin.vf"     : begin
-            SsstrictZve64d_vfmin_vf_cg.sample(ins);
+            SsstrictZve64d_vfmin_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfmin.vv"     : begin
-            SsstrictZve64d_vfmin_vv_cg.sample(ins);
+            SsstrictZve64d_vfmin_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfmsac.vf"     : begin
-            SsstrictZve64d_vfmsac_vf_cg.sample(ins);
+            SsstrictZve64d_vfmsac_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfmsac.vv"     : begin
-            SsstrictZve64d_vfmsac_vv_cg.sample(ins);
+            SsstrictZve64d_vfmsac_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfmsub.vf"     : begin
-            SsstrictZve64d_vfmsub_vf_cg.sample(ins);
+            SsstrictZve64d_vfmsub_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfmsub.vv"     : begin
-            SsstrictZve64d_vfmsub_vv_cg.sample(ins);
+            SsstrictZve64d_vfmsub_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfmul.vf"     : begin
-            SsstrictZve64d_vfmul_vf_cg.sample(ins);
+            SsstrictZve64d_vfmul_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfmul.vv"     : begin
-            SsstrictZve64d_vfmul_vv_cg.sample(ins);
+            SsstrictZve64d_vfmul_vv_sew@EFFEW@_cg.sample(ins);
+        end
+        "vfmv.f.s"     : begin
+            SsstrictZve64d_vfmv_f_s_sew@EFFEW@_cg.sample(ins);
+        end
+        "vfmv.s.f"     : begin
+            SsstrictZve64d_vfmv_s_f_sew@EFFEW@_cg.sample(ins);
         end
         "vfmv.v.f"     : begin
-            SsstrictZve64d_vfmv_v_f_cg.sample(ins);
+            SsstrictZve64d_vfmv_v_f_sew@EFFEW@_cg.sample(ins);
         end
         "vfnmacc.vf"     : begin
-            SsstrictZve64d_vfnmacc_vf_cg.sample(ins);
+            SsstrictZve64d_vfnmacc_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfnmacc.vv"     : begin
-            SsstrictZve64d_vfnmacc_vv_cg.sample(ins);
+            SsstrictZve64d_vfnmacc_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfnmadd.vf"     : begin
-            SsstrictZve64d_vfnmadd_vf_cg.sample(ins);
+            SsstrictZve64d_vfnmadd_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfnmadd.vv"     : begin
-            SsstrictZve64d_vfnmadd_vv_cg.sample(ins);
+            SsstrictZve64d_vfnmadd_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfnmsac.vf"     : begin
-            SsstrictZve64d_vfnmsac_vf_cg.sample(ins);
+            SsstrictZve64d_vfnmsac_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfnmsac.vv"     : begin
-            SsstrictZve64d_vfnmsac_vv_cg.sample(ins);
+            SsstrictZve64d_vfnmsac_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfnmsub.vf"     : begin
-            SsstrictZve64d_vfnmsub_vf_cg.sample(ins);
+            SsstrictZve64d_vfnmsub_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfnmsub.vv"     : begin
-            SsstrictZve64d_vfnmsub_vv_cg.sample(ins);
+            SsstrictZve64d_vfnmsub_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfrdiv.vf"     : begin
-            SsstrictZve64d_vfrdiv_vf_cg.sample(ins);
+            SsstrictZve64d_vfrdiv_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfrec7.v"     : begin
-            SsstrictZve64d_vfrec7_v_cg.sample(ins);
+            SsstrictZve64d_vfrec7_v_sew@EFFEW@_cg.sample(ins);
         end
         "vfredmax.vs"     : begin
-            SsstrictZve64d_vfredmax_vs_cg.sample(ins);
+            SsstrictZve64d_vfredmax_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vfredmin.vs"     : begin
-            SsstrictZve64d_vfredmin_vs_cg.sample(ins);
+            SsstrictZve64d_vfredmin_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vfredosum.vs"     : begin
-            SsstrictZve64d_vfredosum_vs_cg.sample(ins);
+            SsstrictZve64d_vfredosum_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vfredusum.vs"     : begin
-            SsstrictZve64d_vfredusum_vs_cg.sample(ins);
+            SsstrictZve64d_vfredusum_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vfrsqrt7.v"     : begin
-            SsstrictZve64d_vfrsqrt7_v_cg.sample(ins);
+            SsstrictZve64d_vfrsqrt7_v_sew@EFFEW@_cg.sample(ins);
         end
         "vfrsub.vf"     : begin
-            SsstrictZve64d_vfrsub_vf_cg.sample(ins);
+            SsstrictZve64d_vfrsub_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfsgnj.vf"     : begin
-            SsstrictZve64d_vfsgnj_vf_cg.sample(ins);
+            SsstrictZve64d_vfsgnj_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfsgnj.vv"     : begin
-            SsstrictZve64d_vfsgnj_vv_cg.sample(ins);
+            SsstrictZve64d_vfsgnj_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfsgnjn.vf"     : begin
-            SsstrictZve64d_vfsgnjn_vf_cg.sample(ins);
+            SsstrictZve64d_vfsgnjn_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfsgnjn.vv"     : begin
-            SsstrictZve64d_vfsgnjn_vv_cg.sample(ins);
+            SsstrictZve64d_vfsgnjn_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfsgnjx.vf"     : begin
-            SsstrictZve64d_vfsgnjx_vf_cg.sample(ins);
+            SsstrictZve64d_vfsgnjx_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfsgnjx.vv"     : begin
-            SsstrictZve64d_vfsgnjx_vv_cg.sample(ins);
+            SsstrictZve64d_vfsgnjx_vv_sew@EFFEW@_cg.sample(ins);
+        end
+        "vfslide1down.vf"     : begin
+            SsstrictZve64d_vfslide1down_vf_sew@EFFEW@_cg.sample(ins);
+        end
+        "vfslide1up.vf"     : begin
+            SsstrictZve64d_vfslide1up_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfsqrt.v"     : begin
-            SsstrictZve64d_vfsqrt_v_cg.sample(ins);
+            SsstrictZve64d_vfsqrt_v_sew@EFFEW@_cg.sample(ins);
         end
         "vfsub.vf"     : begin
-            SsstrictZve64d_vfsub_vf_cg.sample(ins);
+            SsstrictZve64d_vfsub_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfsub.vv"     : begin
-            SsstrictZve64d_vfsub_vv_cg.sample(ins);
+            SsstrictZve64d_vfsub_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmfeq.vf"     : begin
-            SsstrictZve64d_vmfeq_vf_cg.sample(ins);
+            SsstrictZve64d_vmfeq_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vmfeq.vv"     : begin
-            SsstrictZve64d_vmfeq_vv_cg.sample(ins);
+            SsstrictZve64d_vmfeq_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmfge.vf"     : begin
-            SsstrictZve64d_vmfge_vf_cg.sample(ins);
+            SsstrictZve64d_vmfge_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vmfgt.vf"     : begin
-            SsstrictZve64d_vmfgt_vf_cg.sample(ins);
+            SsstrictZve64d_vmfgt_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vmfle.vf"     : begin
-            SsstrictZve64d_vmfle_vf_cg.sample(ins);
+            SsstrictZve64d_vmfle_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vmfle.vv"     : begin
-            SsstrictZve64d_vmfle_vv_cg.sample(ins);
+            SsstrictZve64d_vmfle_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmflt.vf"     : begin
-            SsstrictZve64d_vmflt_vf_cg.sample(ins);
+            SsstrictZve64d_vmflt_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vmflt.vv"     : begin
-            SsstrictZve64d_vmflt_vv_cg.sample(ins);
+            SsstrictZve64d_vmflt_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmfne.vf"     : begin
-            SsstrictZve64d_vmfne_vf_cg.sample(ins);
+            SsstrictZve64d_vmfne_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vmfne.vv"     : begin
-            SsstrictZve64d_vmfne_vv_cg.sample(ins);
+            SsstrictZve64d_vmfne_vv_sew@EFFEW@_cg.sample(ins);
         end
             default: ; // a case needs at least one item, and some configurations select none
         endcase

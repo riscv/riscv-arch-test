@@ -36,6 +36,8 @@
     SsstrictZve64d_vfmsub_vv_sew64_cg = new(); SsstrictZve64d_vfmsub_vv_cg.set_inst_name("obj_SsstrictZve64d_vfmsub_vv");
     SsstrictZve64d_vfmul_vf_sew64_cg = new(); SsstrictZve64d_vfmul_vf_cg.set_inst_name("obj_SsstrictZve64d_vfmul_vf");
     SsstrictZve64d_vfmul_vv_sew64_cg = new(); SsstrictZve64d_vfmul_vv_cg.set_inst_name("obj_SsstrictZve64d_vfmul_vv");
+    SsstrictZve64d_vfmv_f_s_sew64_cg = new(); SsstrictZve64d_vfmv_f_s_cg.set_inst_name("obj_SsstrictZve64d_vfmv_f_s");
+    SsstrictZve64d_vfmv_s_f_sew64_cg = new(); SsstrictZve64d_vfmv_s_f_cg.set_inst_name("obj_SsstrictZve64d_vfmv_s_f");
     SsstrictZve64d_vfmv_v_f_sew64_cg = new(); SsstrictZve64d_vfmv_v_f_cg.set_inst_name("obj_SsstrictZve64d_vfmv_v_f");
     SsstrictZve64d_vfncvt_f_f_w_sew32_cg = new(); SsstrictZve64d_vfncvt_f_f_w_cg.set_inst_name("obj_SsstrictZve64d_vfncvt_f_f_w");
     SsstrictZve64d_vfncvt_rod_f_f_w_sew32_cg = new(); SsstrictZve64d_vfncvt_rod_f_f_w_cg.set_inst_name("obj_SsstrictZve64d_vfncvt_rod_f_f_w");
@@ -65,6 +67,8 @@
     SsstrictZve64d_vfsgnjn_vv_sew64_cg = new(); SsstrictZve64d_vfsgnjn_vv_cg.set_inst_name("obj_SsstrictZve64d_vfsgnjn_vv");
     SsstrictZve64d_vfsgnjx_vf_sew64_cg = new(); SsstrictZve64d_vfsgnjx_vf_cg.set_inst_name("obj_SsstrictZve64d_vfsgnjx_vf");
     SsstrictZve64d_vfsgnjx_vv_sew64_cg = new(); SsstrictZve64d_vfsgnjx_vv_cg.set_inst_name("obj_SsstrictZve64d_vfsgnjx_vv");
+    SsstrictZve64d_vfslide1down_vf_sew64_cg = new(); SsstrictZve64d_vfslide1down_vf_cg.set_inst_name("obj_SsstrictZve64d_vfslide1down_vf");
+    SsstrictZve64d_vfslide1up_vf_sew64_cg = new(); SsstrictZve64d_vfslide1up_vf_cg.set_inst_name("obj_SsstrictZve64d_vfslide1up_vf");
     SsstrictZve64d_vfsqrt_v_sew64_cg = new(); SsstrictZve64d_vfsqrt_v_cg.set_inst_name("obj_SsstrictZve64d_vfsqrt_v");
     SsstrictZve64d_vfsub_vf_sew64_cg = new(); SsstrictZve64d_vfsub_vf_cg.set_inst_name("obj_SsstrictZve64d_vfsub_vf");
     SsstrictZve64d_vfsub_vv_sew64_cg = new(); SsstrictZve64d_vfsub_vv_cg.set_inst_name("obj_SsstrictZve64d_vfsub_vv");

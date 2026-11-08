@@ -12,7 +12,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_ZVKNHA
-covergroup Zvknha_vsha2ch_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zvknha_vsha2ch_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2_egs4
@@ -358,7 +358,7 @@ covergroup Zvknha_vsha2ch_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zvknha_vsha2cl_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zvknha_vsha2cl_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2_egs4
@@ -704,7 +704,7 @@ covergroup Zvknha_vsha2cl_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zvknha_vsha2ms_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zvknha_vsha2ms_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2_egs4
@@ -1076,13 +1076,13 @@ function void zvknha_sample(int hart, int issue, ins_t ins);
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
         "vsha2ch.vv"     : begin
-            Zvknha_vsha2ch_vv_cg.sample(ins);
+            Zvknha_vsha2ch_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vsha2cl.vv"     : begin
-            Zvknha_vsha2cl_vv_cg.sample(ins);
+            Zvknha_vsha2cl_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vsha2ms.vv"     : begin
-            Zvknha_vsha2ms_vv_cg.sample(ins);
+            Zvknha_vsha2ms_vv_sew@EFFEW@_cg.sample(ins);
         end
             default: ; // a case needs at least one item, and some configurations select none
         endcase

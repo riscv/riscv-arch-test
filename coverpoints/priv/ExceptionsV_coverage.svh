@@ -12,131 +12,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_EXCEPTIONSV
-covergroup ExceptionsV_vfmv_f_s_sew64__cg with function sample(ins_t ins);
+covergroup ExceptionsV_vmulh_vv_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_mstatus_fs_off
-    // A vector floating-point instruction must raise an illegal-instruction trap
-    // when mstatus.FS == Off (FP extension disabled). The cross pins mstatus.VS to
-    // a non-Off value so the trap can only be attributed to FS being Off (not VS).
-    //////////////////////////////////////////////////////////////////////////////////
-
-    mstatus_fs_off : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins inactive = {0};
-    }
-
-    mstatus_vs_active_for_fs_off : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
-
-    cp_mstatus_fs_off : cross mstatus_fs_off, mstatus_vs_active_for_fs_off;
-
-    //// end cp_mstatus_fs_off////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_mstatus_vs_off
-    // A vector floating-point instruction must raise an illegal-instruction trap
-    // when mstatus.VS == Off (V extension disabled). The cross pins mstatus.FS to
-    // a non-Off value so the trap can only be attributed to VS being Off (not FS).
-    //////////////////////////////////////////////////////////////////////////////////
-
-    mstatus_vs_off : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins inactive = {0};
-    }
-
-    mstatus_fs_active_for_vs_off : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins active = {[1:3]};
-    }
-
-    cp_mstatus_vs_off : cross mstatus_vs_off, mstatus_fs_active_for_vs_off;
-
-    //// end cp_mstatus_vs_off////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vectorfp_mstatus_fs_state
-    // Sample the vector-FP instruction under each non-Off mstatus.FS starting
-    // state (Initial=1, Clean=2, Dirty=3) with mstatus.VS != Off. We cannot
-    // observe the FS state transition directly (legal impls may hard-wire FS to
-    // Dirty), so this coverpoint only ensures the test exercises every starting
-    // FS state. Combined with signature-based cross-model checking, this catches
-    // transitioning-model bugs.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
-            bins fs_initial = {1};
-        `endif
-        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
-            bins fs_clean   = {2};
-        `endif
-        bins fs_dirty   = {3};
-    }
-
-    mstatus_vs_active_for_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
-
-    cp_vectorfp_mstatus_fs_state : cross mstatus_fs_state, mstatus_vs_active_for_fs_state;
-
-    //// end cp_vectorfp_mstatus_fs_state////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vectorfp_mstatus_fs_state_affecting_csr
-    //
-    // Intentionally empty: this coverpoint cannot be expressed in pure functional
-    // coverage. The "state-affecting CSR" case (e.g. vfdiv.vv 1.0/0.0 raising
-    // the DZ flag in fflags) requires proving that mstatus.FS *transitioned*
-    // to Dirty as a result of the vector-FP instruction modifying a fp CSR.
-    // The RISC-V spec permits a legal always-Dirty implementation that
-    // hard-wires mstatus.FS, so a coverage sample cannot distinguish "model
-    // correctly transitioned FS" from "model is always-Dirty".
-    //
-    // The corresponding test sequence is still emitted by the priv test
-    // generator (see generators/testgen/scripts/priv/cp_vectorfp_mstatus_fs_state_affecting_csr.py)
-    // so that a transitioning model can be cross-checked against an always-Dirty
-    // model via signature comparison.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    //// end cp_vectorfp_mstatus_fs_state_affecting_csr////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vectorfp_mstatus_fs_state_affecting_register
-    //
-    // Intentionally empty: this coverpoint cannot be expressed in pure functional
-    // coverage. The "state-affecting register" case (e.g. vfmv.f.s) requires
-    // proving that mstatus.FS *transitioned* to Dirty as a result of the
-    // vector-FP instruction writing an architectural f-register. The RISC-V
-    // spec permits a legal always-Dirty implementation that hard-wires
-    // mstatus.FS, so a coverage sample cannot distinguish "model correctly
-    // transitioned FS" from "model is always-Dirty".
-    //
-    // The corresponding test sequence is still emitted by the priv test
-    // generator (see generators/testgen/scripts/priv/cp_vectorfp_mstatus_fs_state_affecting_register.py)
-    // so that a transitioning model can be cross-checked against an always-Dirty
-    // model via signature comparison.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    //// end cp_vectorfp_mstatus_fs_state_affecting_register////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vectorfp_mstatus_fs_state_nonaffecting
-    //
-    // Intentionally empty: this coverpoint cannot be expressed in pure functional
-    // coverage. The "nonaffecting" case (e.g. vfadd.vv with vs1_val == vs2_val
-    // == 0) requires proving that mstatus.FS *did not* transition out of
-    // Initial/Clean as a result of the vector-FP instruction. The RISC-V spec
-    // permits a legal always-Dirty implementation that hard-wires mstatus.FS,
-    // so a coverage sample of FS after the instruction cannot distinguish
-    // "model correctly left FS unchanged" from "model is always-Dirty".
-    //
-    // The corresponding test sequence is still emitted by the priv test
-    // generator (see generators/testgen/scripts/priv/cp_vectorfp_mstatus_fs_state_nonaffecting.py)
-    // so that a transitioning model can be cross-checked against an always-Dirty
-    // model via signature comparison.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    //// end cp_vectorfp_mstatus_fs_state_nonaffecting////////////////////////////////////////////////
-
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -173,131 +50,8 @@ covergroup ExceptionsV_vfmv_f_s_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsV_vfmv_s_f_sew64__cg with function sample(ins_t ins);
+covergroup ExceptionsV_vmulh_vx_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_mstatus_fs_off
-    // A vector floating-point instruction must raise an illegal-instruction trap
-    // when mstatus.FS == Off (FP extension disabled). The cross pins mstatus.VS to
-    // a non-Off value so the trap can only be attributed to FS being Off (not VS).
-    //////////////////////////////////////////////////////////////////////////////////
-
-    mstatus_fs_off : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins inactive = {0};
-    }
-
-    mstatus_vs_active_for_fs_off : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
-
-    cp_mstatus_fs_off : cross mstatus_fs_off, mstatus_vs_active_for_fs_off;
-
-    //// end cp_mstatus_fs_off////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_mstatus_vs_off
-    // A vector floating-point instruction must raise an illegal-instruction trap
-    // when mstatus.VS == Off (V extension disabled). The cross pins mstatus.FS to
-    // a non-Off value so the trap can only be attributed to VS being Off (not FS).
-    //////////////////////////////////////////////////////////////////////////////////
-
-    mstatus_vs_off : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins inactive = {0};
-    }
-
-    mstatus_fs_active_for_vs_off : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins active = {[1:3]};
-    }
-
-    cp_mstatus_vs_off : cross mstatus_vs_off, mstatus_fs_active_for_vs_off;
-
-    //// end cp_mstatus_vs_off////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vectorfp_mstatus_fs_state
-    // Sample the vector-FP instruction under each non-Off mstatus.FS starting
-    // state (Initial=1, Clean=2, Dirty=3) with mstatus.VS != Off. We cannot
-    // observe the FS state transition directly (legal impls may hard-wire FS to
-    // Dirty), so this coverpoint only ensures the test exercises every starting
-    // FS state. Combined with signature-based cross-model checking, this catches
-    // transitioning-model bugs.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
-            bins fs_initial = {1};
-        `endif
-        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
-            bins fs_clean   = {2};
-        `endif
-        bins fs_dirty   = {3};
-    }
-
-    mstatus_vs_active_for_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
-
-    cp_vectorfp_mstatus_fs_state : cross mstatus_fs_state, mstatus_vs_active_for_fs_state;
-
-    //// end cp_vectorfp_mstatus_fs_state////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vectorfp_mstatus_fs_state_affecting_csr
-    //
-    // Intentionally empty: this coverpoint cannot be expressed in pure functional
-    // coverage. The "state-affecting CSR" case (e.g. vfdiv.vv 1.0/0.0 raising
-    // the DZ flag in fflags) requires proving that mstatus.FS *transitioned*
-    // to Dirty as a result of the vector-FP instruction modifying a fp CSR.
-    // The RISC-V spec permits a legal always-Dirty implementation that
-    // hard-wires mstatus.FS, so a coverage sample cannot distinguish "model
-    // correctly transitioned FS" from "model is always-Dirty".
-    //
-    // The corresponding test sequence is still emitted by the priv test
-    // generator (see generators/testgen/scripts/priv/cp_vectorfp_mstatus_fs_state_affecting_csr.py)
-    // so that a transitioning model can be cross-checked against an always-Dirty
-    // model via signature comparison.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    //// end cp_vectorfp_mstatus_fs_state_affecting_csr////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vectorfp_mstatus_fs_state_affecting_register
-    //
-    // Intentionally empty: this coverpoint cannot be expressed in pure functional
-    // coverage. The "state-affecting register" case (e.g. vfmv.f.s) requires
-    // proving that mstatus.FS *transitioned* to Dirty as a result of the
-    // vector-FP instruction writing an architectural f-register. The RISC-V
-    // spec permits a legal always-Dirty implementation that hard-wires
-    // mstatus.FS, so a coverage sample cannot distinguish "model correctly
-    // transitioned FS" from "model is always-Dirty".
-    //
-    // The corresponding test sequence is still emitted by the priv test
-    // generator (see generators/testgen/scripts/priv/cp_vectorfp_mstatus_fs_state_affecting_register.py)
-    // so that a transitioning model can be cross-checked against an always-Dirty
-    // model via signature comparison.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    //// end cp_vectorfp_mstatus_fs_state_affecting_register////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vectorfp_mstatus_fs_state_nonaffecting
-    //
-    // Intentionally empty: this coverpoint cannot be expressed in pure functional
-    // coverage. The "nonaffecting" case (e.g. vfadd.vv with vs1_val == vs2_val
-    // == 0) requires proving that mstatus.FS *did not* transition out of
-    // Initial/Clean as a result of the vector-FP instruction. The RISC-V spec
-    // permits a legal always-Dirty implementation that hard-wires mstatus.FS,
-    // so a coverage sample of FS after the instruction cannot distinguish
-    // "model correctly left FS unchanged" from "model is always-Dirty".
-    //
-    // The corresponding test sequence is still emitted by the priv test
-    // generator (see generators/testgen/scripts/priv/cp_vectorfp_mstatus_fs_state_nonaffecting.py)
-    // so that a transitioning model can be cross-checked against an always-Dirty
-    // model via signature comparison.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    //// end cp_vectorfp_mstatus_fs_state_nonaffecting////////////////////////////////////////////////
-
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -334,131 +88,8 @@ covergroup ExceptionsV_vfmv_s_f_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsV_vfslide1down_vf_sew64__cg with function sample(ins_t ins);
+covergroup ExceptionsV_vmulhsu_vv_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_mstatus_fs_off
-    // A vector floating-point instruction must raise an illegal-instruction trap
-    // when mstatus.FS == Off (FP extension disabled). The cross pins mstatus.VS to
-    // a non-Off value so the trap can only be attributed to FS being Off (not VS).
-    //////////////////////////////////////////////////////////////////////////////////
-
-    mstatus_fs_off : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins inactive = {0};
-    }
-
-    mstatus_vs_active_for_fs_off : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
-
-    cp_mstatus_fs_off : cross mstatus_fs_off, mstatus_vs_active_for_fs_off;
-
-    //// end cp_mstatus_fs_off////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_mstatus_vs_off
-    // A vector floating-point instruction must raise an illegal-instruction trap
-    // when mstatus.VS == Off (V extension disabled). The cross pins mstatus.FS to
-    // a non-Off value so the trap can only be attributed to VS being Off (not FS).
-    //////////////////////////////////////////////////////////////////////////////////
-
-    mstatus_vs_off : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins inactive = {0};
-    }
-
-    mstatus_fs_active_for_vs_off : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins active = {[1:3]};
-    }
-
-    cp_mstatus_vs_off : cross mstatus_vs_off, mstatus_fs_active_for_vs_off;
-
-    //// end cp_mstatus_vs_off////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vectorfp_mstatus_fs_state
-    // Sample the vector-FP instruction under each non-Off mstatus.FS starting
-    // state (Initial=1, Clean=2, Dirty=3) with mstatus.VS != Off. We cannot
-    // observe the FS state transition directly (legal impls may hard-wire FS to
-    // Dirty), so this coverpoint only ensures the test exercises every starting
-    // FS state. Combined with signature-based cross-model checking, this catches
-    // transitioning-model bugs.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
-            bins fs_initial = {1};
-        `endif
-        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
-            bins fs_clean   = {2};
-        `endif
-        bins fs_dirty   = {3};
-    }
-
-    mstatus_vs_active_for_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
-
-    cp_vectorfp_mstatus_fs_state : cross mstatus_fs_state, mstatus_vs_active_for_fs_state;
-
-    //// end cp_vectorfp_mstatus_fs_state////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vectorfp_mstatus_fs_state_affecting_csr
-    //
-    // Intentionally empty: this coverpoint cannot be expressed in pure functional
-    // coverage. The "state-affecting CSR" case (e.g. vfdiv.vv 1.0/0.0 raising
-    // the DZ flag in fflags) requires proving that mstatus.FS *transitioned*
-    // to Dirty as a result of the vector-FP instruction modifying a fp CSR.
-    // The RISC-V spec permits a legal always-Dirty implementation that
-    // hard-wires mstatus.FS, so a coverage sample cannot distinguish "model
-    // correctly transitioned FS" from "model is always-Dirty".
-    //
-    // The corresponding test sequence is still emitted by the priv test
-    // generator (see generators/testgen/scripts/priv/cp_vectorfp_mstatus_fs_state_affecting_csr.py)
-    // so that a transitioning model can be cross-checked against an always-Dirty
-    // model via signature comparison.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    //// end cp_vectorfp_mstatus_fs_state_affecting_csr////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vectorfp_mstatus_fs_state_affecting_register
-    //
-    // Intentionally empty: this coverpoint cannot be expressed in pure functional
-    // coverage. The "state-affecting register" case (e.g. vfmv.f.s) requires
-    // proving that mstatus.FS *transitioned* to Dirty as a result of the
-    // vector-FP instruction writing an architectural f-register. The RISC-V
-    // spec permits a legal always-Dirty implementation that hard-wires
-    // mstatus.FS, so a coverage sample cannot distinguish "model correctly
-    // transitioned FS" from "model is always-Dirty".
-    //
-    // The corresponding test sequence is still emitted by the priv test
-    // generator (see generators/testgen/scripts/priv/cp_vectorfp_mstatus_fs_state_affecting_register.py)
-    // so that a transitioning model can be cross-checked against an always-Dirty
-    // model via signature comparison.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    //// end cp_vectorfp_mstatus_fs_state_affecting_register////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vectorfp_mstatus_fs_state_nonaffecting
-    //
-    // Intentionally empty: this coverpoint cannot be expressed in pure functional
-    // coverage. The "nonaffecting" case (e.g. vfadd.vv with vs1_val == vs2_val
-    // == 0) requires proving that mstatus.FS *did not* transition out of
-    // Initial/Clean as a result of the vector-FP instruction. The RISC-V spec
-    // permits a legal always-Dirty implementation that hard-wires mstatus.FS,
-    // so a coverage sample of FS after the instruction cannot distinguish
-    // "model correctly left FS unchanged" from "model is always-Dirty".
-    //
-    // The corresponding test sequence is still emitted by the priv test
-    // generator (see generators/testgen/scripts/priv/cp_vectorfp_mstatus_fs_state_nonaffecting.py)
-    // so that a transitioning model can be cross-checked against an always-Dirty
-    // model via signature comparison.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    //// end cp_vectorfp_mstatus_fs_state_nonaffecting////////////////////////////////////////////////
-
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -495,131 +126,8 @@ covergroup ExceptionsV_vfslide1down_vf_sew64__cg with function sample(ins_t ins)
 
 endgroup
 // ---------------------
-covergroup ExceptionsV_vfslide1up_vf_sew64__cg with function sample(ins_t ins);
+covergroup ExceptionsV_vmulhsu_vx_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_mstatus_fs_off
-    // A vector floating-point instruction must raise an illegal-instruction trap
-    // when mstatus.FS == Off (FP extension disabled). The cross pins mstatus.VS to
-    // a non-Off value so the trap can only be attributed to FS being Off (not VS).
-    //////////////////////////////////////////////////////////////////////////////////
-
-    mstatus_fs_off : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins inactive = {0};
-    }
-
-    mstatus_vs_active_for_fs_off : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
-
-    cp_mstatus_fs_off : cross mstatus_fs_off, mstatus_vs_active_for_fs_off;
-
-    //// end cp_mstatus_fs_off////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_mstatus_vs_off
-    // A vector floating-point instruction must raise an illegal-instruction trap
-    // when mstatus.VS == Off (V extension disabled). The cross pins mstatus.FS to
-    // a non-Off value so the trap can only be attributed to VS being Off (not FS).
-    //////////////////////////////////////////////////////////////////////////////////
-
-    mstatus_vs_off : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins inactive = {0};
-    }
-
-    mstatus_fs_active_for_vs_off : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins active = {[1:3]};
-    }
-
-    cp_mstatus_vs_off : cross mstatus_vs_off, mstatus_fs_active_for_vs_off;
-
-    //// end cp_mstatus_vs_off////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vectorfp_mstatus_fs_state
-    // Sample the vector-FP instruction under each non-Off mstatus.FS starting
-    // state (Initial=1, Clean=2, Dirty=3) with mstatus.VS != Off. We cannot
-    // observe the FS state transition directly (legal impls may hard-wire FS to
-    // Dirty), so this coverpoint only ensures the test exercises every starting
-    // FS state. Combined with signature-based cross-model checking, this catches
-    // transitioning-model bugs.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
-            bins fs_initial = {1};
-        `endif
-        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
-            bins fs_clean   = {2};
-        `endif
-        bins fs_dirty   = {3};
-    }
-
-    mstatus_vs_active_for_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
-
-    cp_vectorfp_mstatus_fs_state : cross mstatus_fs_state, mstatus_vs_active_for_fs_state;
-
-    //// end cp_vectorfp_mstatus_fs_state////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vectorfp_mstatus_fs_state_affecting_csr
-    //
-    // Intentionally empty: this coverpoint cannot be expressed in pure functional
-    // coverage. The "state-affecting CSR" case (e.g. vfdiv.vv 1.0/0.0 raising
-    // the DZ flag in fflags) requires proving that mstatus.FS *transitioned*
-    // to Dirty as a result of the vector-FP instruction modifying a fp CSR.
-    // The RISC-V spec permits a legal always-Dirty implementation that
-    // hard-wires mstatus.FS, so a coverage sample cannot distinguish "model
-    // correctly transitioned FS" from "model is always-Dirty".
-    //
-    // The corresponding test sequence is still emitted by the priv test
-    // generator (see generators/testgen/scripts/priv/cp_vectorfp_mstatus_fs_state_affecting_csr.py)
-    // so that a transitioning model can be cross-checked against an always-Dirty
-    // model via signature comparison.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    //// end cp_vectorfp_mstatus_fs_state_affecting_csr////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vectorfp_mstatus_fs_state_affecting_register
-    //
-    // Intentionally empty: this coverpoint cannot be expressed in pure functional
-    // coverage. The "state-affecting register" case (e.g. vfmv.f.s) requires
-    // proving that mstatus.FS *transitioned* to Dirty as a result of the
-    // vector-FP instruction writing an architectural f-register. The RISC-V
-    // spec permits a legal always-Dirty implementation that hard-wires
-    // mstatus.FS, so a coverage sample cannot distinguish "model correctly
-    // transitioned FS" from "model is always-Dirty".
-    //
-    // The corresponding test sequence is still emitted by the priv test
-    // generator (see generators/testgen/scripts/priv/cp_vectorfp_mstatus_fs_state_affecting_register.py)
-    // so that a transitioning model can be cross-checked against an always-Dirty
-    // model via signature comparison.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    //// end cp_vectorfp_mstatus_fs_state_affecting_register////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vectorfp_mstatus_fs_state_nonaffecting
-    //
-    // Intentionally empty: this coverpoint cannot be expressed in pure functional
-    // coverage. The "nonaffecting" case (e.g. vfadd.vv with vs1_val == vs2_val
-    // == 0) requires proving that mstatus.FS *did not* transition out of
-    // Initial/Clean as a result of the vector-FP instruction. The RISC-V spec
-    // permits a legal always-Dirty implementation that hard-wires mstatus.FS,
-    // so a coverage sample of FS after the instruction cannot distinguish
-    // "model correctly left FS unchanged" from "model is always-Dirty".
-    //
-    // The corresponding test sequence is still emitted by the priv test
-    // generator (see generators/testgen/scripts/priv/cp_vectorfp_mstatus_fs_state_nonaffecting.py)
-    // so that a transitioning model can be cross-checked against an always-Dirty
-    // model via signature comparison.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    //// end cp_vectorfp_mstatus_fs_state_nonaffecting////////////////////////////////////////////////
-
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -656,7 +164,160 @@ covergroup ExceptionsV_vfslide1up_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsV_vloxei64_v_sew64__cg with function sample(ins_t ins);
+covergroup ExceptionsV_vmulhu_vv_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vmulhu_vx_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsmul_vv_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsmul_vx_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+`ifdef UDB_MXLEN_32
+covergroup ExceptionsV_vloxei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_exceptionsv_LS
@@ -815,7 +476,7 @@ covergroup ExceptionsV_vloxei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsV_vloxseg2ei64_v_sew64__cg with function sample(ins_t ins);
+covergroup ExceptionsV_vloxei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_exceptionsv_LS
@@ -974,7 +635,7 @@ covergroup ExceptionsV_vloxseg2ei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsV_vloxseg3ei64_v_sew64__cg with function sample(ins_t ins);
+covergroup ExceptionsV_vloxei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_exceptionsv_LS
@@ -1133,7 +794,7 @@ covergroup ExceptionsV_vloxseg3ei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsV_vloxseg4ei64_v_sew64__cg with function sample(ins_t ins);
+covergroup ExceptionsV_vloxei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_exceptionsv_LS
@@ -1292,7 +953,7 @@ covergroup ExceptionsV_vloxseg4ei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsV_vloxseg5ei64_v_sew64__cg with function sample(ins_t ins);
+covergroup ExceptionsV_vloxseg2ei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_exceptionsv_LS
@@ -1451,7 +1112,7 @@ covergroup ExceptionsV_vloxseg5ei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsV_vloxseg6ei64_v_sew64__cg with function sample(ins_t ins);
+covergroup ExceptionsV_vloxseg2ei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_exceptionsv_LS
@@ -1610,7 +1271,7 @@ covergroup ExceptionsV_vloxseg6ei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsV_vloxseg7ei64_v_sew64__cg with function sample(ins_t ins);
+covergroup ExceptionsV_vloxseg2ei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_exceptionsv_LS
@@ -1769,7 +1430,7 @@ covergroup ExceptionsV_vloxseg7ei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsV_vloxseg8ei64_v_sew64__cg with function sample(ins_t ins);
+covergroup ExceptionsV_vloxseg2ei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_exceptionsv_LS
@@ -1928,7 +1589,7 @@ covergroup ExceptionsV_vloxseg8ei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsV_vluxei64_v_sew64__cg with function sample(ins_t ins);
+covergroup ExceptionsV_vloxseg3ei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_exceptionsv_LS
@@ -2087,7 +1748,7 @@ covergroup ExceptionsV_vluxei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsV_vluxseg2ei64_v_sew64__cg with function sample(ins_t ins);
+covergroup ExceptionsV_vloxseg3ei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_exceptionsv_LS
@@ -2246,7 +1907,7 @@ covergroup ExceptionsV_vluxseg2ei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsV_vluxseg3ei64_v_sew64__cg with function sample(ins_t ins);
+covergroup ExceptionsV_vloxseg3ei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_exceptionsv_LS
@@ -2405,7 +2066,7 @@ covergroup ExceptionsV_vluxseg3ei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsV_vluxseg4ei64_v_sew64__cg with function sample(ins_t ins);
+covergroup ExceptionsV_vloxseg3ei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_exceptionsv_LS
@@ -2564,7 +2225,7 @@ covergroup ExceptionsV_vluxseg4ei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsV_vluxseg5ei64_v_sew64__cg with function sample(ins_t ins);
+covergroup ExceptionsV_vloxseg4ei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_exceptionsv_LS
@@ -2723,7 +2384,7 @@ covergroup ExceptionsV_vluxseg5ei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsV_vluxseg6ei64_v_sew64__cg with function sample(ins_t ins);
+covergroup ExceptionsV_vloxseg4ei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_exceptionsv_LS
@@ -2882,7 +2543,7 @@ covergroup ExceptionsV_vluxseg6ei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsV_vluxseg7ei64_v_sew64__cg with function sample(ins_t ins);
+covergroup ExceptionsV_vloxseg4ei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_exceptionsv_LS
@@ -3041,7 +2702,7 @@ covergroup ExceptionsV_vluxseg7ei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsV_vluxseg8ei64_v_sew64__cg with function sample(ins_t ins);
+covergroup ExceptionsV_vloxseg4ei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_exceptionsv_LS
@@ -3200,311 +2861,7 @@ covergroup ExceptionsV_vluxseg8ei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsV_vmulh_vv_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vill
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
-        bins one  = {1};
-    }
-
-    //// end cp_vill////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vstart
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
-        bins vstart_one     = {vstart_one};
-        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
-        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
-        bins vstart_legal   = {vstart_legal};   // random vstart
-    }
-
-    //// end cp_vstart////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vstart_gt_vl
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
-        bins true = {1};
-    }
-
-    //// end cp_vstart_gt_vl////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup ExceptionsV_vmulh_vx_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vill
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
-        bins one  = {1};
-    }
-
-    //// end cp_vill////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vstart
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
-        bins vstart_one     = {vstart_one};
-        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
-        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
-        bins vstart_legal   = {vstart_legal};   // random vstart
-    }
-
-    //// end cp_vstart////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vstart_gt_vl
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
-        bins true = {1};
-    }
-
-    //// end cp_vstart_gt_vl////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup ExceptionsV_vmulhsu_vv_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vill
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
-        bins one  = {1};
-    }
-
-    //// end cp_vill////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vstart
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
-        bins vstart_one     = {vstart_one};
-        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
-        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
-        bins vstart_legal   = {vstart_legal};   // random vstart
-    }
-
-    //// end cp_vstart////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vstart_gt_vl
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
-        bins true = {1};
-    }
-
-    //// end cp_vstart_gt_vl////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup ExceptionsV_vmulhsu_vx_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vill
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
-        bins one  = {1};
-    }
-
-    //// end cp_vill////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vstart
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
-        bins vstart_one     = {vstart_one};
-        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
-        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
-        bins vstart_legal   = {vstart_legal};   // random vstart
-    }
-
-    //// end cp_vstart////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vstart_gt_vl
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
-        bins true = {1};
-    }
-
-    //// end cp_vstart_gt_vl////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup ExceptionsV_vmulhu_vv_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vill
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
-        bins one  = {1};
-    }
-
-    //// end cp_vill////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vstart
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
-        bins vstart_one     = {vstart_one};
-        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
-        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
-        bins vstart_legal   = {vstart_legal};   // random vstart
-    }
-
-    //// end cp_vstart////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vstart_gt_vl
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
-        bins true = {1};
-    }
-
-    //// end cp_vstart_gt_vl////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup ExceptionsV_vmulhu_vx_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vill
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
-        bins one  = {1};
-    }
-
-    //// end cp_vill////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vstart
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
-        bins vstart_one     = {vstart_one};
-        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
-        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
-        bins vstart_legal   = {vstart_legal};   // random vstart
-    }
-
-    //// end cp_vstart////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vstart_gt_vl
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
-        bins true = {1};
-    }
-
-    //// end cp_vstart_gt_vl////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup ExceptionsV_vsmul_vv_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vill
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
-        bins one  = {1};
-    }
-
-    //// end cp_vill////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vstart
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
-        bins vstart_one     = {vstart_one};
-        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
-        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
-        bins vstart_legal   = {vstart_legal};   // random vstart
-    }
-
-    //// end cp_vstart////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vstart_gt_vl
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
-        bins true = {1};
-    }
-
-    //// end cp_vstart_gt_vl////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup ExceptionsV_vsmul_vx_sew64__cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vill
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
-        bins one  = {1};
-    }
-
-    //// end cp_vill////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vstart
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
-        bins vstart_one     = {vstart_one};
-        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
-        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
-        bins vstart_legal   = {vstart_legal};   // random vstart
-    }
-
-    //// end cp_vstart////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vstart_gt_vl
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
-        bins true = {1};
-    }
-
-    //// end cp_vstart_gt_vl////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup ExceptionsV_vsoxei64_v_sew64__cg with function sample(ins_t ins);
+covergroup ExceptionsV_vloxseg5ei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_exceptionsv_LS
@@ -3663,7 +3020,7 @@ covergroup ExceptionsV_vsoxei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsV_vsoxseg2ei64_v_sew64__cg with function sample(ins_t ins);
+covergroup ExceptionsV_vloxseg5ei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_exceptionsv_LS
@@ -3822,7 +3179,7 @@ covergroup ExceptionsV_vsoxseg2ei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsV_vsoxseg3ei64_v_sew64__cg with function sample(ins_t ins);
+covergroup ExceptionsV_vloxseg5ei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_exceptionsv_LS
@@ -3981,7 +3338,7 @@ covergroup ExceptionsV_vsoxseg3ei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsV_vsoxseg4ei64_v_sew64__cg with function sample(ins_t ins);
+covergroup ExceptionsV_vloxseg5ei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_exceptionsv_LS
@@ -4140,7 +3497,7 @@ covergroup ExceptionsV_vsoxseg4ei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsV_vsoxseg5ei64_v_sew64__cg with function sample(ins_t ins);
+covergroup ExceptionsV_vloxseg6ei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_exceptionsv_LS
@@ -4299,7 +3656,7 @@ covergroup ExceptionsV_vsoxseg5ei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsV_vsoxseg6ei64_v_sew64__cg with function sample(ins_t ins);
+covergroup ExceptionsV_vloxseg6ei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_exceptionsv_LS
@@ -4458,7 +3815,7 @@ covergroup ExceptionsV_vsoxseg6ei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsV_vsoxseg7ei64_v_sew64__cg with function sample(ins_t ins);
+covergroup ExceptionsV_vloxseg6ei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_exceptionsv_LS
@@ -4617,7 +3974,7 @@ covergroup ExceptionsV_vsoxseg7ei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsV_vsoxseg8ei64_v_sew64__cg with function sample(ins_t ins);
+covergroup ExceptionsV_vloxseg6ei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_exceptionsv_LS
@@ -4776,7 +4133,7 @@ covergroup ExceptionsV_vsoxseg8ei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsV_vsuxei64_v_sew64__cg with function sample(ins_t ins);
+covergroup ExceptionsV_vloxseg7ei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_exceptionsv_LS
@@ -4935,7 +4292,7 @@ covergroup ExceptionsV_vsuxei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsV_vsuxseg2ei64_v_sew64__cg with function sample(ins_t ins);
+covergroup ExceptionsV_vloxseg7ei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_exceptionsv_LS
@@ -5094,7 +4451,7 @@ covergroup ExceptionsV_vsuxseg2ei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsV_vsuxseg3ei64_v_sew64__cg with function sample(ins_t ins);
+covergroup ExceptionsV_vloxseg7ei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_exceptionsv_LS
@@ -5253,7 +4610,7 @@ covergroup ExceptionsV_vsuxseg3ei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsV_vsuxseg4ei64_v_sew64__cg with function sample(ins_t ins);
+covergroup ExceptionsV_vloxseg7ei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_exceptionsv_LS
@@ -5412,7 +4769,7 @@ covergroup ExceptionsV_vsuxseg4ei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsV_vsuxseg5ei64_v_sew64__cg with function sample(ins_t ins);
+covergroup ExceptionsV_vloxseg8ei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_exceptionsv_LS
@@ -5571,7 +4928,7 @@ covergroup ExceptionsV_vsuxseg5ei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsV_vsuxseg6ei64_v_sew64__cg with function sample(ins_t ins);
+covergroup ExceptionsV_vloxseg8ei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_exceptionsv_LS
@@ -5730,7 +5087,7 @@ covergroup ExceptionsV_vsuxseg6ei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsV_vsuxseg7ei64_v_sew64__cg with function sample(ins_t ins);
+covergroup ExceptionsV_vloxseg8ei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_exceptionsv_LS
@@ -5889,7 +5246,7 @@ covergroup ExceptionsV_vsuxseg7ei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsV_vsuxseg8ei64_v_sew64__cg with function sample(ins_t ins);
+covergroup ExceptionsV_vloxseg8ei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_exceptionsv_LS
@@ -6048,6 +5405,15271 @@ covergroup ExceptionsV_vsuxseg8ei64_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+covergroup ExceptionsV_vluxei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vluxei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vluxei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vluxei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vluxseg2ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vluxseg2ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vluxseg2ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vluxseg2ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vluxseg3ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vluxseg3ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vluxseg3ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vluxseg3ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vluxseg4ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vluxseg4ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vluxseg4ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vluxseg4ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vluxseg5ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vluxseg5ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vluxseg5ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vluxseg5ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vluxseg6ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vluxseg6ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vluxseg6ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vluxseg6ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vluxseg7ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vluxseg7ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vluxseg7ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vluxseg7ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vluxseg8ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vluxseg8ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vluxseg8ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vluxseg8ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsoxei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsoxei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsoxei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsoxei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsoxseg2ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsoxseg2ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsoxseg2ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsoxseg2ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsoxseg3ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsoxseg3ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsoxseg3ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsoxseg3ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsoxseg4ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsoxseg4ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsoxseg4ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsoxseg4ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsoxseg5ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsoxseg5ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsoxseg5ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsoxseg5ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsoxseg6ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsoxseg6ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsoxseg6ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsoxseg6ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsoxseg7ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsoxseg7ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsoxseg7ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsoxseg7ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsoxseg8ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsoxseg8ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsoxseg8ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsoxseg8ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsuxei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsuxei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsuxei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsuxei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsuxseg2ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsuxseg2ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsuxseg2ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsuxseg2ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsuxseg3ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsuxseg3ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsuxseg3ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsuxseg3ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsuxseg4ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsuxseg4ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsuxseg4ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsuxseg4ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsuxseg5ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsuxseg5ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsuxseg5ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsuxseg5ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsuxseg6ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsuxseg6ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsuxseg6ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsuxseg6ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsuxseg7ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsuxseg7ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsuxseg7ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsuxseg7ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsuxseg8ei64_v_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsuxseg8ei64_v_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsuxseg8ei64_v_sew8_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup ExceptionsV_vsuxseg8ei64_v_sew16_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_LS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector load/store exception operations
+
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_LS////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_address_fault
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Helper: valid vector type (vill=0)
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause).
+    // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
+    // traps at decode with an illegal-instruction exception, not during memory access.
+    // Accept ILLEGAL_INSTRUCTION for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
+    trap_occurred_20000f: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_ACCESS_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == LOAD_PAGE_FAULT |
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == STORE_AMO_PAGE_FAULT
+        `ifndef MAXINDEXEEW_GE64
+            | (ins.current.insn[27:26] inside {2'b01, 2'b11} &&
+               ins.current.insn[14:12] inside {3'b111
+                   `ifndef MAXINDEXEEW_GE32
+                       , 3'b110
+                       `ifndef MAXINDEXEEW_GE16
+                           , 3'b101
+                       `endif
+                   `endif
+               } &&
+               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == ILLEGAL_INSTRUCTION)
+        `endif
+    ) {
+        bins trapped = {1'b1};
+    }
+
+    // Cross: valid vtype AND trap occurred
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
+
+//// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_index_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Cover that an indexed load/store with EEW=64 > MAXINDEXEEW was attempted and trapped.
+    // ins.current.insn[14:12] encodes the index EEW (000=8, 101=16, 110=32, 111=64).
+    // Assign this coverpoint only to instructions with index EEW=64 (ei64 instructions).
+    // Note: std_trap_vec is defined in cp_exceptionsv_LS (always present alongside this).
+
+    `ifndef MAXINDEXEEW_GE64
+        index_eew64 : coverpoint ins.current.insn[14:12] {
+            bins e64 = {3'b111};
+        }
+        cp_exceptionsv_index_eew64 : cross std_trap_vec, index_eew64;
+    `endif
+
+    //// end cp_exceptionsv_index_eew64//////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_indexed
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Records that an indexed vector load/store was executed under otherwise-legal
+    // conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0, rs1 aligned to 8 bytes so
+    // no element is misaligned for any supported SEW). Because every other
+    // precondition is valid, any trap observed for this instruction is attributable
+    // to MAXINDEXEEW gating the index EEW.
+
+    cp_exceptionsv_indexed : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0 &
+                        ins.current.rs1_val[2:0] == 3'b000
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vill
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins one  = {1};
+    }
+
+    //// end cp_vill////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_gt_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+        bins true = {1};
+    }
+
+    //// end cp_vstart_gt_vl////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+`endif
 function void exceptionsv_sample(int hart, int issue, ins_t ins);
     // Want to sample only if the SEW matches the target SEW of the file, some tests require
     // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
@@ -6055,6 +20677,104 @@ function void exceptionsv_sample(int hart, int issue, ins_t ins);
     if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 0 ||
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
+`ifdef UDB_MXLEN_32
+        "vloxei64.v"     : begin
+            ExceptionsV_vloxei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg2ei64.v"     : begin
+            ExceptionsV_vloxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg3ei64.v"     : begin
+            ExceptionsV_vloxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg4ei64.v"     : begin
+            ExceptionsV_vloxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg5ei64.v"     : begin
+            ExceptionsV_vloxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg6ei64.v"     : begin
+            ExceptionsV_vloxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg7ei64.v"     : begin
+            ExceptionsV_vloxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg8ei64.v"     : begin
+            ExceptionsV_vloxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxei64.v"     : begin
+            ExceptionsV_vluxei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg2ei64.v"     : begin
+            ExceptionsV_vluxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg3ei64.v"     : begin
+            ExceptionsV_vluxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg4ei64.v"     : begin
+            ExceptionsV_vluxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg5ei64.v"     : begin
+            ExceptionsV_vluxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg6ei64.v"     : begin
+            ExceptionsV_vluxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg7ei64.v"     : begin
+            ExceptionsV_vluxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg8ei64.v"     : begin
+            ExceptionsV_vluxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxei64.v"     : begin
+            ExceptionsV_vsoxei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg2ei64.v"     : begin
+            ExceptionsV_vsoxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg3ei64.v"     : begin
+            ExceptionsV_vsoxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg4ei64.v"     : begin
+            ExceptionsV_vsoxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg5ei64.v"     : begin
+            ExceptionsV_vsoxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg6ei64.v"     : begin
+            ExceptionsV_vsoxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg7ei64.v"     : begin
+            ExceptionsV_vsoxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg8ei64.v"     : begin
+            ExceptionsV_vsoxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxei64.v"     : begin
+            ExceptionsV_vsuxei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg2ei64.v"     : begin
+            ExceptionsV_vsuxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg3ei64.v"     : begin
+            ExceptionsV_vsuxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg4ei64.v"     : begin
+            ExceptionsV_vsuxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg5ei64.v"     : begin
+            ExceptionsV_vsuxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg6ei64.v"     : begin
+            ExceptionsV_vsuxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg7ei64.v"     : begin
+            ExceptionsV_vsuxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg8ei64.v"     : begin
+            ExceptionsV_vsuxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+`endif
             default: ; // a case needs at least one item, and some configurations select none
         endcase
     end
@@ -6064,6 +20784,104 @@ function void exceptionsv_sample(int hart, int issue, ins_t ins);
     if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1 ||
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
+`ifdef UDB_MXLEN_32
+        "vloxei64.v"     : begin
+            ExceptionsV_vloxei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg2ei64.v"     : begin
+            ExceptionsV_vloxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg3ei64.v"     : begin
+            ExceptionsV_vloxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg4ei64.v"     : begin
+            ExceptionsV_vloxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg5ei64.v"     : begin
+            ExceptionsV_vloxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg6ei64.v"     : begin
+            ExceptionsV_vloxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg7ei64.v"     : begin
+            ExceptionsV_vloxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg8ei64.v"     : begin
+            ExceptionsV_vloxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxei64.v"     : begin
+            ExceptionsV_vluxei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg2ei64.v"     : begin
+            ExceptionsV_vluxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg3ei64.v"     : begin
+            ExceptionsV_vluxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg4ei64.v"     : begin
+            ExceptionsV_vluxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg5ei64.v"     : begin
+            ExceptionsV_vluxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg6ei64.v"     : begin
+            ExceptionsV_vluxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg7ei64.v"     : begin
+            ExceptionsV_vluxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg8ei64.v"     : begin
+            ExceptionsV_vluxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxei64.v"     : begin
+            ExceptionsV_vsoxei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg2ei64.v"     : begin
+            ExceptionsV_vsoxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg3ei64.v"     : begin
+            ExceptionsV_vsoxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg4ei64.v"     : begin
+            ExceptionsV_vsoxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg5ei64.v"     : begin
+            ExceptionsV_vsoxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg6ei64.v"     : begin
+            ExceptionsV_vsoxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg7ei64.v"     : begin
+            ExceptionsV_vsoxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg8ei64.v"     : begin
+            ExceptionsV_vsoxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxei64.v"     : begin
+            ExceptionsV_vsuxei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg2ei64.v"     : begin
+            ExceptionsV_vsuxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg3ei64.v"     : begin
+            ExceptionsV_vsuxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg4ei64.v"     : begin
+            ExceptionsV_vsuxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg5ei64.v"     : begin
+            ExceptionsV_vsuxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg6ei64.v"     : begin
+            ExceptionsV_vsuxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg7ei64.v"     : begin
+            ExceptionsV_vsuxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg8ei64.v"     : begin
+            ExceptionsV_vsuxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+`endif
             default: ; // a case needs at least one item, and some configurations select none
         endcase
     end
@@ -6073,6 +20891,104 @@ function void exceptionsv_sample(int hart, int issue, ins_t ins);
     if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2 ||
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
+`ifdef UDB_MXLEN_32
+        "vloxei64.v"     : begin
+            ExceptionsV_vloxei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg2ei64.v"     : begin
+            ExceptionsV_vloxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg3ei64.v"     : begin
+            ExceptionsV_vloxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg4ei64.v"     : begin
+            ExceptionsV_vloxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg5ei64.v"     : begin
+            ExceptionsV_vloxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg6ei64.v"     : begin
+            ExceptionsV_vloxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg7ei64.v"     : begin
+            ExceptionsV_vloxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg8ei64.v"     : begin
+            ExceptionsV_vloxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxei64.v"     : begin
+            ExceptionsV_vluxei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg2ei64.v"     : begin
+            ExceptionsV_vluxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg3ei64.v"     : begin
+            ExceptionsV_vluxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg4ei64.v"     : begin
+            ExceptionsV_vluxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg5ei64.v"     : begin
+            ExceptionsV_vluxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg6ei64.v"     : begin
+            ExceptionsV_vluxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg7ei64.v"     : begin
+            ExceptionsV_vluxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg8ei64.v"     : begin
+            ExceptionsV_vluxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxei64.v"     : begin
+            ExceptionsV_vsoxei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg2ei64.v"     : begin
+            ExceptionsV_vsoxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg3ei64.v"     : begin
+            ExceptionsV_vsoxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg4ei64.v"     : begin
+            ExceptionsV_vsoxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg5ei64.v"     : begin
+            ExceptionsV_vsoxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg6ei64.v"     : begin
+            ExceptionsV_vsoxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg7ei64.v"     : begin
+            ExceptionsV_vsoxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsoxseg8ei64.v"     : begin
+            ExceptionsV_vsoxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxei64.v"     : begin
+            ExceptionsV_vsuxei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg2ei64.v"     : begin
+            ExceptionsV_vsuxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg3ei64.v"     : begin
+            ExceptionsV_vsuxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg4ei64.v"     : begin
+            ExceptionsV_vsuxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg5ei64.v"     : begin
+            ExceptionsV_vsuxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg6ei64.v"     : begin
+            ExceptionsV_vsuxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg7ei64.v"     : begin
+            ExceptionsV_vsuxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vsuxseg8ei64.v"     : begin
+            ExceptionsV_vsuxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+`endif
             default: ; // a case needs at least one item, and some configurations select none
         endcase
     end
@@ -6082,138 +20998,128 @@ function void exceptionsv_sample(int hart, int issue, ins_t ins);
     if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 3 ||
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
-        "vfmv.f.s"     : begin
-            ExceptionsV_vfmv_f_s_cg.sample(ins);
-        end
-        "vfmv.s.f"     : begin
-            ExceptionsV_vfmv_s_f_cg.sample(ins);
-        end
-        "vfslide1down.vf"     : begin
-            ExceptionsV_vfslide1down_vf_cg.sample(ins);
-        end
-        "vfslide1up.vf"     : begin
-            ExceptionsV_vfslide1up_vf_cg.sample(ins);
-        end
-        "vloxei64.v"     : begin
-            ExceptionsV_vloxei64_v_cg.sample(ins);
-        end
-        "vloxseg2ei64.v"     : begin
-            ExceptionsV_vloxseg2ei64_v_cg.sample(ins);
-        end
-        "vloxseg3ei64.v"     : begin
-            ExceptionsV_vloxseg3ei64_v_cg.sample(ins);
-        end
-        "vloxseg4ei64.v"     : begin
-            ExceptionsV_vloxseg4ei64_v_cg.sample(ins);
-        end
-        "vloxseg5ei64.v"     : begin
-            ExceptionsV_vloxseg5ei64_v_cg.sample(ins);
-        end
-        "vloxseg6ei64.v"     : begin
-            ExceptionsV_vloxseg6ei64_v_cg.sample(ins);
-        end
-        "vloxseg7ei64.v"     : begin
-            ExceptionsV_vloxseg7ei64_v_cg.sample(ins);
-        end
-        "vloxseg8ei64.v"     : begin
-            ExceptionsV_vloxseg8ei64_v_cg.sample(ins);
-        end
-        "vluxei64.v"     : begin
-            ExceptionsV_vluxei64_v_cg.sample(ins);
-        end
-        "vluxseg2ei64.v"     : begin
-            ExceptionsV_vluxseg2ei64_v_cg.sample(ins);
-        end
-        "vluxseg3ei64.v"     : begin
-            ExceptionsV_vluxseg3ei64_v_cg.sample(ins);
-        end
-        "vluxseg4ei64.v"     : begin
-            ExceptionsV_vluxseg4ei64_v_cg.sample(ins);
-        end
-        "vluxseg5ei64.v"     : begin
-            ExceptionsV_vluxseg5ei64_v_cg.sample(ins);
-        end
-        "vluxseg6ei64.v"     : begin
-            ExceptionsV_vluxseg6ei64_v_cg.sample(ins);
-        end
-        "vluxseg7ei64.v"     : begin
-            ExceptionsV_vluxseg7ei64_v_cg.sample(ins);
-        end
-        "vluxseg8ei64.v"     : begin
-            ExceptionsV_vluxseg8ei64_v_cg.sample(ins);
-        end
         "vmulh.vv"     : begin
-            ExceptionsV_vmulh_vv_cg.sample(ins);
+            ExceptionsV_vmulh_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmulh.vx"     : begin
-            ExceptionsV_vmulh_vx_cg.sample(ins);
+            ExceptionsV_vmulh_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmulhsu.vv"     : begin
-            ExceptionsV_vmulhsu_vv_cg.sample(ins);
+            ExceptionsV_vmulhsu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmulhsu.vx"     : begin
-            ExceptionsV_vmulhsu_vx_cg.sample(ins);
+            ExceptionsV_vmulhsu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmulhu.vv"     : begin
-            ExceptionsV_vmulhu_vv_cg.sample(ins);
+            ExceptionsV_vmulhu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmulhu.vx"     : begin
-            ExceptionsV_vmulhu_vx_cg.sample(ins);
+            ExceptionsV_vmulhu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vsmul.vv"     : begin
-            ExceptionsV_vsmul_vv_cg.sample(ins);
+            ExceptionsV_vsmul_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vsmul.vx"     : begin
-            ExceptionsV_vsmul_vx_cg.sample(ins);
+            ExceptionsV_vsmul_vx_sew@EFFEW@_cg.sample(ins);
+        end
+`ifdef UDB_MXLEN_32
+        "vloxei64.v"     : begin
+            ExceptionsV_vloxei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg2ei64.v"     : begin
+            ExceptionsV_vloxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg3ei64.v"     : begin
+            ExceptionsV_vloxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg4ei64.v"     : begin
+            ExceptionsV_vloxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg5ei64.v"     : begin
+            ExceptionsV_vloxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg6ei64.v"     : begin
+            ExceptionsV_vloxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg7ei64.v"     : begin
+            ExceptionsV_vloxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vloxseg8ei64.v"     : begin
+            ExceptionsV_vloxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxei64.v"     : begin
+            ExceptionsV_vluxei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg2ei64.v"     : begin
+            ExceptionsV_vluxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg3ei64.v"     : begin
+            ExceptionsV_vluxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg4ei64.v"     : begin
+            ExceptionsV_vluxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg5ei64.v"     : begin
+            ExceptionsV_vluxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg6ei64.v"     : begin
+            ExceptionsV_vluxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg7ei64.v"     : begin
+            ExceptionsV_vluxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+        end
+        "vluxseg8ei64.v"     : begin
+            ExceptionsV_vluxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxei64.v"     : begin
-            ExceptionsV_vsoxei64_v_cg.sample(ins);
+            ExceptionsV_vsoxei64_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg2ei64.v"     : begin
-            ExceptionsV_vsoxseg2ei64_v_cg.sample(ins);
+            ExceptionsV_vsoxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg3ei64.v"     : begin
-            ExceptionsV_vsoxseg3ei64_v_cg.sample(ins);
+            ExceptionsV_vsoxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg4ei64.v"     : begin
-            ExceptionsV_vsoxseg4ei64_v_cg.sample(ins);
+            ExceptionsV_vsoxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg5ei64.v"     : begin
-            ExceptionsV_vsoxseg5ei64_v_cg.sample(ins);
+            ExceptionsV_vsoxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg6ei64.v"     : begin
-            ExceptionsV_vsoxseg6ei64_v_cg.sample(ins);
+            ExceptionsV_vsoxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg7ei64.v"     : begin
-            ExceptionsV_vsoxseg7ei64_v_cg.sample(ins);
+            ExceptionsV_vsoxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg8ei64.v"     : begin
-            ExceptionsV_vsoxseg8ei64_v_cg.sample(ins);
+            ExceptionsV_vsoxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxei64.v"     : begin
-            ExceptionsV_vsuxei64_v_cg.sample(ins);
+            ExceptionsV_vsuxei64_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg2ei64.v"     : begin
-            ExceptionsV_vsuxseg2ei64_v_cg.sample(ins);
+            ExceptionsV_vsuxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg3ei64.v"     : begin
-            ExceptionsV_vsuxseg3ei64_v_cg.sample(ins);
+            ExceptionsV_vsuxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg4ei64.v"     : begin
-            ExceptionsV_vsuxseg4ei64_v_cg.sample(ins);
+            ExceptionsV_vsuxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg5ei64.v"     : begin
-            ExceptionsV_vsuxseg5ei64_v_cg.sample(ins);
+            ExceptionsV_vsuxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg6ei64.v"     : begin
-            ExceptionsV_vsuxseg6ei64_v_cg.sample(ins);
+            ExceptionsV_vsuxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg7ei64.v"     : begin
-            ExceptionsV_vsuxseg7ei64_v_cg.sample(ins);
+            ExceptionsV_vsuxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg8ei64.v"     : begin
-            ExceptionsV_vsuxseg8ei64_v_cg.sample(ins);
+            ExceptionsV_vsuxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
         end
+`endif
             default: ; // a case needs at least one item, and some configurations select none
         endcase
     end

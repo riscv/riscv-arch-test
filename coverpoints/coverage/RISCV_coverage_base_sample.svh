@@ -79,6 +79,12 @@
     `ifdef COVER_EXCEPTIONSZVE64X
         exceptionszve64x_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_EXCEPTIONSZVFH
+        exceptionszvfh_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_EXCEPTIONSZVFHMIN
+        exceptionszvfhmin_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_F
         f_sample(hart, issue, ins);
     `endif
@@ -184,6 +190,12 @@
     `ifdef COVER_SSSTRICTZVE64X
         ssstrictzve64x_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_SSSTRICTZVFH
+        ssstrictzvfh_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SSSTRICTZVFHMIN
+        ssstrictzvfhmin_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_SSTC
         sstc_sample(hart, issue, ins);
     `endif
@@ -237,42 +249,6 @@
     `endif
     `ifdef COVER_V
         v_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_VF16
-        vf16_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_VF32
-        vf32_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_VF64
-        vf64_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_VF8
-        vf8_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_VLS16
-        vls16_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_VLS32
-        vls32_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_VLS64
-        vls64_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_VLS8
-        vls8_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_VX16
-        vx16_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_VX32
-        vx32_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_VX64
-        vx64_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_VX8
-        vx8_sample(hart, issue, ins);
     `endif
     `ifdef COVER_ZA64RS
         za64rs_sample(hart, issue, ins);
@@ -453,6 +429,9 @@
     `endif
     `ifdef COVER_ZVFBFWMA
         zvfbfwma_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_ZVFH
+        zvfh_sample(hart, issue, ins);
     `endif
     `ifdef COVER_ZVFHMIN
         zvfhmin_sample(hart, issue, ins);

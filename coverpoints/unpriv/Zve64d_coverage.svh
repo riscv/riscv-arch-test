@@ -12,7 +12,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_ZVE64D
-covergroup Zve64d_vfadd_vf_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfadd_vf_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -253,7 +253,7 @@ covergroup Zve64d_vfadd_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfadd_vv_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfadd_vv_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -530,7 +530,7 @@ covergroup Zve64d_vfadd_vv_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfclass_v_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfclass_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -700,7 +700,7 @@ covergroup Zve64d_vfclass_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfcvt_f_x_v_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfcvt_f_x_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -854,7 +854,7 @@ covergroup Zve64d_vfcvt_f_x_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfcvt_f_xu_v_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfcvt_f_xu_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -1008,7 +1008,7 @@ covergroup Zve64d_vfcvt_f_xu_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfcvt_rtz_x_f_v_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfcvt_rtz_x_f_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -1194,7 +1194,7 @@ covergroup Zve64d_vfcvt_rtz_x_f_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfcvt_rtz_xu_f_v_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfcvt_rtz_xu_f_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -1380,7 +1380,7 @@ covergroup Zve64d_vfcvt_rtz_xu_f_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfcvt_x_f_v_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfcvt_x_f_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -1575,7 +1575,7 @@ covergroup Zve64d_vfcvt_x_f_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfcvt_xu_f_v_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfcvt_xu_f_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -1770,7 +1770,7 @@ covergroup Zve64d_vfcvt_xu_f_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfdiv_vf_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfdiv_vf_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -2021,7 +2021,7 @@ covergroup Zve64d_vfdiv_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfdiv_vv_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfdiv_vv_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -2308,7 +2308,7 @@ covergroup Zve64d_vfdiv_vv_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfmacc_vf_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfmacc_vf_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -2551,7 +2551,7 @@ covergroup Zve64d_vfmacc_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfmacc_vv_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfmacc_vv_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -2830,7 +2830,7 @@ covergroup Zve64d_vfmacc_vv_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfmadd_vf_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfmadd_vf_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -3073,7 +3073,7 @@ covergroup Zve64d_vfmadd_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfmadd_vv_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfmadd_vv_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -3352,7 +3352,7 @@ covergroup Zve64d_vfmadd_vv_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfmax_vf_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfmax_vf_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -3580,7 +3580,7 @@ covergroup Zve64d_vfmax_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfmax_vv_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfmax_vv_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -3844,7 +3844,7 @@ covergroup Zve64d_vfmax_vv_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfmerge_vfm_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfmerge_vfm_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_nv0
@@ -4048,7 +4048,7 @@ covergroup Zve64d_vfmerge_vfm_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfmin_vf_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfmin_vf_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -4276,7 +4276,7 @@ covergroup Zve64d_vfmin_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfmin_vv_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfmin_vv_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -4540,7 +4540,7 @@ covergroup Zve64d_vfmin_vv_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfmsac_vf_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfmsac_vf_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -4783,7 +4783,7 @@ covergroup Zve64d_vfmsac_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfmsac_vv_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfmsac_vv_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -5062,7 +5062,7 @@ covergroup Zve64d_vfmsac_vv_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfmsub_vf_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfmsub_vf_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -5305,7 +5305,7 @@ covergroup Zve64d_vfmsub_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfmsub_vv_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfmsub_vv_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -5584,7 +5584,7 @@ covergroup Zve64d_vfmsub_vv_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfmul_vf_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfmul_vf_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -5827,7 +5827,7 @@ covergroup Zve64d_vfmul_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfmul_vv_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfmul_vv_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -6106,7 +6106,359 @@ covergroup Zve64d_vfmul_vv_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfmv_v_f_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfmv_f_s_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    cp_asm_count : coverpoint ins.ins_str == "vfmv.f.s"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_fmv_fs_vs2_all_lmul
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Scalar read ignores LMUL: vs2 can be any register at any LMUL
+
+    vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {2};
+    }
+
+    vtype_lmul_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {3};
+    }
+
+    vs2_all_reg_unaligned_lmul_2: coverpoint ins.current.insn[24:20] {
+        wildcard ignore_bins divisible_by_2 = {5'b????0};
+    }
+
+    vs2_all_reg_unaligned_lmul_4: coverpoint ins.current.insn[24:20] {
+        wildcard ignore_bins divisible_by_4 = {5'b???00};
+    }
+
+    vs2_all_reg_unaligned_lmul_8: coverpoint ins.current.insn[24:20] {
+        wildcard ignore_bins divisible_by_8 = {5'b??000};
+    }
+
+    cp_custom_voffgroup_vs2_lmul2:    cross std_vec, vtype_lmul_2, vs2_all_reg_unaligned_lmul_2;
+    cp_custom_voffgroup_vs2_lmul4:    cross std_vec, vtype_lmul_4, vs2_all_reg_unaligned_lmul_4;
+    cp_custom_voffgroup_vs2_lmul8:    cross std_vec, vtype_lmul_8, vs2_all_reg_unaligned_lmul_8;
+
+//// end cp_custom_fmv_fs_vs2_all_lmul ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_vfp_NaN_input
+    //////////////////////////////////////////////////////////////////////////////////
+
+    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
+        bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
+    }
+
+    cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
+
+    //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_vfp_state
+    //
+    // Spec: any vector FP instruction that modifies FP extension state
+    // (an f register or an FP CSR) must set mstatus.FS to Dirty.
+    // Lockstep with a reference model verifies mstatus.FS is correctly dirtied;
+    // this coverpoint only confirms the setup conditions exist: the instruction
+    // modified FP state while mstatus.FS was not already Dirty.
+    //
+    // Note: vfmv.f.s (the only user) never sets fflags, so only the
+    // register-write path is covered here.
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // f register modified (e.g. vfmv.f.s writes fd)
+    fd_changed_value : coverpoint (ins.current.fd_val != ins.prev.fd_val) {
+        bins target = {1};
+    }
+
+    // mstatus.FS before the instruction was not Dirty (Off=0, Initial=1, Clean=2)
+    mstatus_fs_prev_not_dirty : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
+        bins not_dirty = {[0:2]};
+    }
+
+    cp_custom_vfp_register_state_mstatus_dirty : cross std_vec, fd_changed_value, mstatus_fs_prev_not_dirty;
+
+    //// end cp_custom_vfp_state////////////////////////////////////////////////
+
+    cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
+        // FD register assignment
+    }
+
+    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+    bins zero = {0};
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vs2
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vs2 : coverpoint ins.get_vr_reg(ins.current.vs2)  iff (ins.trap == 0 )  {
+        // VS2 register assignment
+    }
+
+    //// end cp_vs2////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vs2_edges_f_sew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vs2_edges_f_sew64 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val)[63:0]  iff (ins.trap == 0 )  {
+        // (Double Precision)
+        bins pos0                   = {64'h0000000000000000};
+        bins neg0                   = {64'h8000000000000000};
+        bins pos1                   = {64'h3FF0000000000000};
+        bins neg1                   = {64'hBFF0000000000000};
+        bins posminnorm             = {64'h0010000000000000};
+        bins negmaxnorm             = {64'hFFEFFFFFFFFFFFFF};
+        bins posinfinity            = {64'h7FF0000000000000};
+        bins neginfinity            = {64'hFFF0000000000000};
+        bins pos0p5                 = {64'h3FE0000000000000};
+        bins pos1p5                 = {64'h3FF8000000000000};
+        bins neg2                   = {64'hC000000000000000};
+        bins pi                     = {64'h400921FB54442D18};
+        bins twoToEmax              = {64'h7FE0000000000000};   // 2^1023
+        bins onePulp                = {64'h3FF0000000000001};   // 1 + ULP
+        bins largestsubnorm         = {64'h000FFFFFFFFFFFFF};
+        bins negSubnormLeadingOne   = {64'h8008000000000000};
+        bins min_subnorm            = {64'h0000000000000001};
+        bins canonicalQNaN          = {64'h7FF8000000000000};   // quiet NaN, canonical payload
+        bins negNoncanonicalQNaN    = {[64'hFFF8000000000001:64'hFFFFFFFFFFFFFFFF]}; // other quiet NaNs
+        bins sNaN_payload1          = {64'h7FF0000000000001};   // signaling NaN with payload 1
+    }
+
+    //// end cp_vs2_edges_f_sew64////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cr_vl_lmul_sew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vtype_lmul_all_sew64_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 3) {
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        bins one    = {0};
+        bins two    = {1};
+        bins four   = {2};
+        bins eight  = {3};
+    }
+
+    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
+        // Edges values of VL (vector length)
+        bins one        = {vl_one       };
+        bins vlmax      = {vl_vlmax     };
+        bins legal      = {vl_legal     };
+    }
+
+    cr_vl_lmul_sew64 : cross cp_csr_vtype_lmul_all_sew64_lmul_le_8, cp_csr_vl_edges {
+        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+
+    //// end cr_vl_lmul_sew64////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cr_vtype_agnostic_nomask
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+        // Value of VTYPE.vta (vector tail agnostic)
+        bins undisturbed = {0};
+        bins agnostic    = {1};
+    }
+
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+        // Value of VTYPE.vma (vector mask agnostic)
+        bins undisturbed = {0};
+        bins agnostic    = {1};
+    }
+
+    not_maskable: coverpoint ins.current.insn[25] {
+        // For instructions that cannot be masked (vm = 1)
+        bins enabled = {1'b1};
+    }
+
+    cr_vtype_agnostic_nomask : cross cp_csr_vtype_vta,cp_csr_vtype_vma,not_maskable iff (ins.trap == 0 )  {
+        // Cross coverage of vector tail and mask agnostic behaviors
+    }
+
+    //// end cr_vtype_agnostic_nomask////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup Zve64d_vfmv_s_f_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    cp_asm_count : coverpoint ins.ins_str == "vfmv.s.f"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_fmv_sf_vd_all_lmul
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Scalar write ignores LMUL: vd can be any register at any LMUL
+
+    vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {2};
+    }
+
+    vtype_lmul_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {3};
+    }
+
+    vd_all_reg_unaligned_lmul_2: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins divisible_by_2 = {5'b????0};
+    }
+
+    vd_all_reg_unaligned_lmul_4: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins divisible_by_4 = {5'b???00};
+    }
+
+    vd_all_reg_unaligned_lmul_8: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins divisible_by_8 = {5'b??000};
+    }
+
+    cp_custom_voffgroup_vd_lmul2:     cross std_vec, vtype_lmul_2, vd_all_reg_unaligned_lmul_2;
+    cp_custom_voffgroup_vd_lmul4:     cross std_vec, vtype_lmul_4, vd_all_reg_unaligned_lmul_4;
+    cp_custom_voffgroup_vd_lmul8:     cross std_vec, vtype_lmul_8, vd_all_reg_unaligned_lmul_8;
+
+//// end cp_custom_fmv_sf_vd_all_lmul ///////////////////////////////////////////////////////////////////////////
+
+    cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
+        // FS1 register assignment
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_fs1_edges_v_sew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_fs1_edges_v_sew64 : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
+        // FS1 edges (Double Precision)
+        bins pos0                   = {64'h0000000000000000};
+        bins neg0                   = {64'h8000000000000000};
+        bins pos1                   = {64'h3FF0000000000000};
+        bins neg1                   = {64'hBFF0000000000000};
+        bins posminnorm             = {64'h0010000000000000};
+        bins negmaxnorm             = {64'hFFEFFFFFFFFFFFFF};
+        bins posinfinity            = {64'h7FF0000000000000};
+        bins neginfinity            = {64'hFFF0000000000000};
+        bins pos0p5                 = {64'h3FE0000000000000};
+        bins pos1p5                 = {64'h3FF8000000000000};
+        bins neg2                   = {64'hC000000000000000};
+        bins pi                     = {64'h400921FB54442D18};
+        bins twoToEmax              = {64'h7FE0000000000000};   // 2^1023
+        bins onePulp                = {64'h3FF0000000000001};   // 1 + ULP
+        bins largestsubnorm         = {64'h000FFFFFFFFFFFFF};
+        bins negSubnormLeadingOne   = {64'h8008000000000000};
+        bins min_subnorm            = {64'h0000000000000001};
+        bins canonicalQNaN          = {64'h7FF8000000000000};   // quiet NaN, canonical payload
+        bins negNoncanonicalQNaN    = {[64'hFFF8000000000001:64'hFFFFFFFFFFFFFFFF]}; // other quiet NaNs
+        bins sNaN_payload1          = {64'h7FF0000000000001};   // signaling NaN with payload 1
+    }
+
+    //// end cp_fs1_edges_v_sew64////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vd
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vd : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.trap == 0 )  {
+        // VD register assignment
+    }
+
+    //// end cp_vd////////////////////////////////////////////////
+
+    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+    bins zero = {0};
+    }
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cr_vl_lmul_sew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vtype_lmul_all_sew64_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 3) {
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        bins one    = {0};
+        bins two    = {1};
+        bins four   = {2};
+        bins eight  = {3};
+    }
+
+    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
+        // Edges values of VL (vector length)
+        bins one        = {vl_one       };
+        bins vlmax      = {vl_vlmax     };
+        bins legal      = {vl_legal     };
+    }
+
+    cr_vl_lmul_sew64 : cross cp_csr_vtype_lmul_all_sew64_lmul_le_8, cp_csr_vl_edges {
+        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+
+    //// end cr_vl_lmul_sew64////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cr_vtype_agnostic_nomask
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+        // Value of VTYPE.vta (vector tail agnostic)
+        bins undisturbed = {0};
+        bins agnostic    = {1};
+    }
+
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+        // Value of VTYPE.vma (vector mask agnostic)
+        bins undisturbed = {0};
+        bins agnostic    = {1};
+    }
+
+    not_maskable: coverpoint ins.current.insn[25] {
+        // For instructions that cannot be masked (vm = 1)
+        bins enabled = {1'b1};
+    }
+
+    cr_vtype_agnostic_nomask : cross cp_csr_vtype_vta,cp_csr_vtype_vma,not_maskable iff (ins.trap == 0 )  {
+        // Cross coverage of vector tail and mask agnostic behaviors
+    }
+
+    //// end cr_vtype_agnostic_nomask////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup Zve64d_vfmv_v_f_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfmv.v.f"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -6226,7 +6578,7 @@ covergroup Zve64d_vfmv_v_f_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfncvt_f_f_w_sew32__cg with function sample(ins_t ins);
+covergroup Zve64d_vfncvt_f_f_w_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfncvt.f.f.w"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -6505,7 +6857,7 @@ covergroup Zve64d_vfncvt_f_f_w_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfncvt_rod_f_f_w_sew32__cg with function sample(ins_t ins);
+covergroup Zve64d_vfncvt_rod_f_f_w_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfncvt.rod.f.f.w"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -6794,7 +7146,7 @@ covergroup Zve64d_vfncvt_rod_f_f_w_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfncvt_rtz_x_f_w_sew32__cg with function sample(ins_t ins);
+covergroup Zve64d_vfncvt_rtz_x_f_w_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfncvt.rtz.x.f.w"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -7042,7 +7394,7 @@ covergroup Zve64d_vfncvt_rtz_x_f_w_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfncvt_rtz_xu_f_w_sew32__cg with function sample(ins_t ins);
+covergroup Zve64d_vfncvt_rtz_xu_f_w_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfncvt.rtz.xu.f.w"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -7290,7 +7642,7 @@ covergroup Zve64d_vfncvt_rtz_xu_f_w_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfncvt_x_f_w_sew32__cg with function sample(ins_t ins);
+covergroup Zve64d_vfncvt_x_f_w_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfncvt.x.f.w"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -7547,7 +7899,7 @@ covergroup Zve64d_vfncvt_x_f_w_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfncvt_xu_f_w_sew32__cg with function sample(ins_t ins);
+covergroup Zve64d_vfncvt_xu_f_w_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfncvt.xu.f.w"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -7804,7 +8156,7 @@ covergroup Zve64d_vfncvt_xu_f_w_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfnmacc_vf_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfnmacc_vf_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -8047,7 +8399,7 @@ covergroup Zve64d_vfnmacc_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfnmacc_vv_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfnmacc_vv_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -8326,7 +8678,7 @@ covergroup Zve64d_vfnmacc_vv_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfnmadd_vf_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfnmadd_vf_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -8569,7 +8921,7 @@ covergroup Zve64d_vfnmadd_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfnmadd_vv_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfnmadd_vv_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -8848,7 +9200,7 @@ covergroup Zve64d_vfnmadd_vv_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfnmsac_vf_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfnmsac_vf_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -9091,7 +9443,7 @@ covergroup Zve64d_vfnmsac_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfnmsac_vv_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfnmsac_vv_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -9370,7 +9722,7 @@ covergroup Zve64d_vfnmsac_vv_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfnmsub_vf_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfnmsub_vf_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -9613,7 +9965,7 @@ covergroup Zve64d_vfnmsub_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfnmsub_vv_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfnmsub_vv_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -9892,7 +10244,7 @@ covergroup Zve64d_vfnmsub_vv_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfrdiv_vf_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfrdiv_vf_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -10143,7 +10495,7 @@ covergroup Zve64d_vfrdiv_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfrec7_v_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfrec7_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -10396,7 +10748,7 @@ covergroup Zve64d_vfrec7_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfredmax_vs_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfredmax_vs_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -10660,7 +11012,7 @@ covergroup Zve64d_vfredmax_vs_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfredmin_vs_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfredmin_vs_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -10924,7 +11276,7 @@ covergroup Zve64d_vfredmin_vs_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfredosum_vs_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfredosum_vs_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -11257,7 +11609,7 @@ covergroup Zve64d_vfredosum_vs_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfredusum_vs_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfredusum_vs_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -11534,7 +11886,7 @@ covergroup Zve64d_vfredusum_vs_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfrsqrt7_v_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfrsqrt7_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -11816,7 +12168,7 @@ covergroup Zve64d_vfrsqrt7_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfrsub_vf_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfrsub_vf_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -12057,7 +12409,7 @@ covergroup Zve64d_vfrsub_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfsgnj_vf_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfsgnj_vf_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -12258,7 +12610,7 @@ covergroup Zve64d_vfsgnj_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfsgnj_vv_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfsgnj_vv_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -12495,7 +12847,7 @@ covergroup Zve64d_vfsgnj_vv_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfsgnjn_vf_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfsgnjn_vf_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -12696,7 +13048,7 @@ covergroup Zve64d_vfsgnjn_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfsgnjn_vv_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfsgnjn_vv_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -12933,7 +13285,7 @@ covergroup Zve64d_vfsgnjn_vv_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfsgnjx_vf_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfsgnjx_vf_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -13134,7 +13486,7 @@ covergroup Zve64d_vfsgnjx_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfsgnjx_vv_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfsgnjx_vv_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -13371,7 +13723,399 @@ covergroup Zve64d_vfsgnjx_vv_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfsqrt_v_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfslide1down_vf_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cmp_vd_vs2
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cmp_vd_vs2 : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.current.vd == ins.current.vs2 & ins.trap == 0 )  {
+        // Compare assignments of all 32 registers
+    }
+
+    //// end cmp_vd_vs2////////////////////////////////////////////////
+
+    cp_asm_count : coverpoint ins.ins_str == "vfslide1down.vf"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_vfp_NaN_input
+    //////////////////////////////////////////////////////////////////////////////////
+
+    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
+        bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
+    }
+
+    cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
+
+    //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
+
+    cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
+        // FS1 register assignment
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_fs1_edges_v_sew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_fs1_edges_v_sew64 : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
+        // FS1 edges (Double Precision)
+        bins pos0                   = {64'h0000000000000000};
+        bins neg0                   = {64'h8000000000000000};
+        bins pos1                   = {64'h3FF0000000000000};
+        bins neg1                   = {64'hBFF0000000000000};
+        bins posminnorm             = {64'h0010000000000000};
+        bins negmaxnorm             = {64'hFFEFFFFFFFFFFFFF};
+        bins posinfinity            = {64'h7FF0000000000000};
+        bins neginfinity            = {64'hFFF0000000000000};
+        bins pos0p5                 = {64'h3FE0000000000000};
+        bins pos1p5                 = {64'h3FF8000000000000};
+        bins neg2                   = {64'hC000000000000000};
+        bins pi                     = {64'h400921FB54442D18};
+        bins twoToEmax              = {64'h7FE0000000000000};   // 2^1023
+        bins onePulp                = {64'h3FF0000000000001};   // 1 + ULP
+        bins largestsubnorm         = {64'h000FFFFFFFFFFFFF};
+        bins negSubnormLeadingOne   = {64'h8008000000000000};
+        bins min_subnorm            = {64'h0000000000000001};
+        bins canonicalQNaN          = {64'h7FF8000000000000};   // quiet NaN, canonical payload
+        bins negNoncanonicalQNaN    = {[64'hFFF8000000000001:64'hFFFFFFFFFFFFFFFF]}; // other quiet NaNs
+        bins sNaN_payload1          = {64'h7FF0000000000001};   // signaling NaN with payload 1
+    }
+
+    //// end cp_fs1_edges_v_sew64////////////////////////////////////////////////
+
+    cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
+        // Edges values of v0 (vector mask register)
+        bins zero           = {mask_zero            };
+        bins ones           = {mask_ones            };
+        bins vlmaxm1ones    = {mask_vlmaxm1ones     };
+        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        bins random         = {mask_random          };
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vd
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vd : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.trap == 0 )  {
+        // VD register assignment
+    }
+
+    //// end cp_vd////////////////////////////////////////////////
+
+    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+    bins zero = {0};
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vs2
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vs2 : coverpoint ins.get_vr_reg(ins.current.vs2)  iff (ins.trap == 0 )  {
+        // VS2 register assignment
+    }
+
+    //// end cp_vs2////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vs2_edges_f_sew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vs2_edges_f_sew64 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val)[63:0]  iff (ins.trap == 0 )  {
+        // (Double Precision)
+        bins pos0                   = {64'h0000000000000000};
+        bins neg0                   = {64'h8000000000000000};
+        bins pos1                   = {64'h3FF0000000000000};
+        bins neg1                   = {64'hBFF0000000000000};
+        bins posminnorm             = {64'h0010000000000000};
+        bins negmaxnorm             = {64'hFFEFFFFFFFFFFFFF};
+        bins posinfinity            = {64'h7FF0000000000000};
+        bins neginfinity            = {64'hFFF0000000000000};
+        bins pos0p5                 = {64'h3FE0000000000000};
+        bins pos1p5                 = {64'h3FF8000000000000};
+        bins neg2                   = {64'hC000000000000000};
+        bins pi                     = {64'h400921FB54442D18};
+        bins twoToEmax              = {64'h7FE0000000000000};   // 2^1023
+        bins onePulp                = {64'h3FF0000000000001};   // 1 + ULP
+        bins largestsubnorm         = {64'h000FFFFFFFFFFFFF};
+        bins negSubnormLeadingOne   = {64'h8008000000000000};
+        bins min_subnorm            = {64'h0000000000000001};
+        bins canonicalQNaN          = {64'h7FF8000000000000};   // quiet NaN, canonical payload
+        bins negNoncanonicalQNaN    = {[64'hFFF8000000000001:64'hFFFFFFFFFFFFFFFF]}; // other quiet NaNs
+        bins sNaN_payload1          = {64'h7FF0000000000001};   // signaling NaN with payload 1
+    }
+
+    //// end cp_vs2_edges_f_sew64////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cr_vl_lmul_sew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vtype_lmul_all_sew64_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 3) {
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        bins one    = {0};
+        bins two    = {1};
+        bins four   = {2};
+        bins eight  = {3};
+    }
+
+    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
+        // Edges values of VL (vector length)
+        bins one        = {vl_one       };
+        bins vlmax      = {vl_vlmax     };
+        bins legal      = {vl_legal     };
+    }
+
+    cr_vl_lmul_sew64 : cross cp_csr_vtype_lmul_all_sew64_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 3)  {
+        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+
+    //// end cr_vl_lmul_sew64////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cr_vs2_fs1_edges_f_sew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cr_vs2_fs1_edges_f_sew64 : cross cp_vs2_edges_f_sew64,cp_fs1_edges_v_sew64  iff (ins.trap == 0 )  {
+        // Cross coverage of VS2 edges and FS1 edges
+    }
+
+    //// end cr_vs2_fs1_edges_f_sew64////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cr_vtype_agnostic
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+        // Value of VTYPE.vta (vector tail agnostic)
+        bins undisturbed = {0};
+        bins agnostic    = {1};
+    }
+
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+        // Value of VTYPE.vma (vector mask agnostic)
+        bins undisturbed = {0};
+        bins agnostic    = {1};
+    }
+
+    mask_enabled_agnostic: coverpoint ins.current.insn[25] {
+        bins enabled = {1'b0};
+    }
+
+    cr_vtype_agnostic : cross cp_csr_vtype_vta,cp_csr_vtype_vma,mask_enabled_agnostic iff (ins.trap == 0 )  {
+        // Cross coverage of vector tail and mask agnostic behaviors
+    }
+
+    //// end cr_vtype_agnostic////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup Zve64d_vfslide1up_vf_sew64_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    cp_asm_count : coverpoint ins.ins_str == "vfslide1up.vf"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_vfp_NaN_input
+    //////////////////////////////////////////////////////////////////////////////////
+
+    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
+        bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
+    }
+
+    cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
+
+    //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
+
+    cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
+        // FS1 register assignment
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_fs1_edges_v_sew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_fs1_edges_v_sew64 : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
+        // FS1 edges (Double Precision)
+        bins pos0                   = {64'h0000000000000000};
+        bins neg0                   = {64'h8000000000000000};
+        bins pos1                   = {64'h3FF0000000000000};
+        bins neg1                   = {64'hBFF0000000000000};
+        bins posminnorm             = {64'h0010000000000000};
+        bins negmaxnorm             = {64'hFFEFFFFFFFFFFFFF};
+        bins posinfinity            = {64'h7FF0000000000000};
+        bins neginfinity            = {64'hFFF0000000000000};
+        bins pos0p5                 = {64'h3FE0000000000000};
+        bins pos1p5                 = {64'h3FF8000000000000};
+        bins neg2                   = {64'hC000000000000000};
+        bins pi                     = {64'h400921FB54442D18};
+        bins twoToEmax              = {64'h7FE0000000000000};   // 2^1023
+        bins onePulp                = {64'h3FF0000000000001};   // 1 + ULP
+        bins largestsubnorm         = {64'h000FFFFFFFFFFFFF};
+        bins negSubnormLeadingOne   = {64'h8008000000000000};
+        bins min_subnorm            = {64'h0000000000000001};
+        bins canonicalQNaN          = {64'h7FF8000000000000};   // quiet NaN, canonical payload
+        bins negNoncanonicalQNaN    = {[64'hFFF8000000000001:64'hFFFFFFFFFFFFFFFF]}; // other quiet NaNs
+        bins sNaN_payload1          = {64'h7FF0000000000001};   // signaling NaN with payload 1
+    }
+
+    //// end cp_fs1_edges_v_sew64////////////////////////////////////////////////
+
+    cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
+        // Edges values of v0 (vector mask register)
+        bins zero           = {mask_zero            };
+        bins ones           = {mask_ones            };
+        bins vlmaxm1ones    = {mask_vlmaxm1ones     };
+        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        bins random         = {mask_random          };
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vd
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vd : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.trap == 0 )  {
+        // VD register assignment
+    }
+
+    //// end cp_vd////////////////////////////////////////////////
+
+    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+    bins zero = {0};
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vs2
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vs2 : coverpoint ins.get_vr_reg(ins.current.vs2)  iff (ins.trap == 0 )  {
+        // VS2 register assignment
+    }
+
+    //// end cp_vs2////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vs2_edges_f_sew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vs2_edges_f_sew64 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val)[63:0]  iff (ins.trap == 0 )  {
+        // (Double Precision)
+        bins pos0                   = {64'h0000000000000000};
+        bins neg0                   = {64'h8000000000000000};
+        bins pos1                   = {64'h3FF0000000000000};
+        bins neg1                   = {64'hBFF0000000000000};
+        bins posminnorm             = {64'h0010000000000000};
+        bins negmaxnorm             = {64'hFFEFFFFFFFFFFFFF};
+        bins posinfinity            = {64'h7FF0000000000000};
+        bins neginfinity            = {64'hFFF0000000000000};
+        bins pos0p5                 = {64'h3FE0000000000000};
+        bins pos1p5                 = {64'h3FF8000000000000};
+        bins neg2                   = {64'hC000000000000000};
+        bins pi                     = {64'h400921FB54442D18};
+        bins twoToEmax              = {64'h7FE0000000000000};   // 2^1023
+        bins onePulp                = {64'h3FF0000000000001};   // 1 + ULP
+        bins largestsubnorm         = {64'h000FFFFFFFFFFFFF};
+        bins negSubnormLeadingOne   = {64'h8008000000000000};
+        bins min_subnorm            = {64'h0000000000000001};
+        bins canonicalQNaN          = {64'h7FF8000000000000};   // quiet NaN, canonical payload
+        bins negNoncanonicalQNaN    = {[64'hFFF8000000000001:64'hFFFFFFFFFFFFFFFF]}; // other quiet NaNs
+        bins sNaN_payload1          = {64'h7FF0000000000001};   // signaling NaN with payload 1
+    }
+
+    //// end cp_vs2_edges_f_sew64////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cr_vl_lmul_sew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vtype_lmul_all_sew64_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 3) {
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        bins one    = {0};
+        bins two    = {1};
+        bins four   = {2};
+        bins eight  = {3};
+    }
+
+    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
+        // Edges values of VL (vector length)
+        bins one        = {vl_one       };
+        bins vlmax      = {vl_vlmax     };
+        bins legal      = {vl_legal     };
+    }
+
+    cr_vl_lmul_sew64 : cross cp_csr_vtype_lmul_all_sew64_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 3)  {
+        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+
+    //// end cr_vl_lmul_sew64////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cr_vs2_fs1_edges_f_sew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cr_vs2_fs1_edges_f_sew64 : cross cp_vs2_edges_f_sew64,cp_fs1_edges_v_sew64  iff (ins.trap == 0 )  {
+        // Cross coverage of VS2 edges and FS1 edges
+    }
+
+    //// end cr_vs2_fs1_edges_f_sew64////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cr_vtype_agnostic
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+        // Value of VTYPE.vta (vector tail agnostic)
+        bins undisturbed = {0};
+        bins agnostic    = {1};
+    }
+
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+        // Value of VTYPE.vma (vector mask agnostic)
+        bins undisturbed = {0};
+        bins agnostic    = {1};
+    }
+
+    mask_enabled_agnostic: coverpoint ins.current.insn[25] {
+        bins enabled = {1'b0};
+    }
+
+    cr_vtype_agnostic : cross cp_csr_vtype_vta,cp_csr_vtype_vma,mask_enabled_agnostic iff (ins.trap == 0 )  {
+        // Cross coverage of vector tail and mask agnostic behaviors
+    }
+
+    //// end cr_vtype_agnostic////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup Zve64d_vfsqrt_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -13566,7 +14310,7 @@ covergroup Zve64d_vfsqrt_v_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfsub_vf_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfsub_vf_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -13807,7 +14551,7 @@ covergroup Zve64d_vfsub_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfsub_vv_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vfsub_vv_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -14084,7 +14828,7 @@ covergroup Zve64d_vfsub_vv_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfwadd_vf_sew32__cg with function sample(ins_t ins);
+covergroup Zve64d_vfwadd_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfwadd.vf"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -14401,7 +15145,7 @@ covergroup Zve64d_vfwadd_vf_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfwadd_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve64d_vfwadd_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -14786,7 +15530,7 @@ covergroup Zve64d_vfwadd_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfwadd_wf_sew32__cg with function sample(ins_t ins);
+covergroup Zve64d_vfwadd_wf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_emul2
@@ -15075,7 +15819,7 @@ covergroup Zve64d_vfwadd_wf_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfwadd_wv_sew32__cg with function sample(ins_t ins);
+covergroup Zve64d_vfwadd_wv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_emul2
@@ -15452,7 +16196,7 @@ covergroup Zve64d_vfwadd_wv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfwcvt_f_f_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve64d_vfwcvt_f_f_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfwcvt.f.f.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -15644,7 +16388,7 @@ covergroup Zve64d_vfwcvt_f_f_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfwcvt_f_x_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve64d_vfwcvt_f_x_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfwcvt.f.x.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -15788,7 +16532,7 @@ covergroup Zve64d_vfwcvt_f_x_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfwcvt_f_xu_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve64d_vfwcvt_f_xu_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfwcvt.f.xu.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -15932,7 +16676,7 @@ covergroup Zve64d_vfwcvt_f_xu_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfwmacc_vf_sew32__cg with function sample(ins_t ins);
+covergroup Zve64d_vfwmacc_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfwmacc.vf"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -16179,7 +16923,7 @@ covergroup Zve64d_vfwmacc_vf_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfwmacc_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve64d_vfwmacc_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -16442,7 +17186,7 @@ covergroup Zve64d_vfwmacc_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfwmsac_vf_sew32__cg with function sample(ins_t ins);
+covergroup Zve64d_vfwmsac_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfwmsac.vf"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -16689,7 +17433,7 @@ covergroup Zve64d_vfwmsac_vf_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfwmsac_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve64d_vfwmsac_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -16952,7 +17696,7 @@ covergroup Zve64d_vfwmsac_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfwmul_vf_sew32__cg with function sample(ins_t ins);
+covergroup Zve64d_vfwmul_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfwmul.vf"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -17267,7 +18011,7 @@ covergroup Zve64d_vfwmul_vf_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfwmul_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve64d_vfwmul_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -17650,7 +18394,7 @@ covergroup Zve64d_vfwmul_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfwnmacc_vf_sew32__cg with function sample(ins_t ins);
+covergroup Zve64d_vfwnmacc_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfwnmacc.vf"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -17897,7 +18641,7 @@ covergroup Zve64d_vfwnmacc_vf_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfwnmacc_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve64d_vfwnmacc_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -18160,7 +18904,7 @@ covergroup Zve64d_vfwnmacc_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfwnmsac_vf_sew32__cg with function sample(ins_t ins);
+covergroup Zve64d_vfwnmsac_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfwnmsac.vf"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -18407,7 +19151,7 @@ covergroup Zve64d_vfwnmsac_vf_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfwnmsac_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve64d_vfwnmsac_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -18670,7 +19414,7 @@ covergroup Zve64d_vfwnmsac_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfwredosum_vs_sew32__cg with function sample(ins_t ins);
+covergroup Zve64d_vfwredosum_vs_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1_emul2
@@ -19098,7 +19842,7 @@ covergroup Zve64d_vfwredosum_vs_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfwredusum_vs_sew32__cg with function sample(ins_t ins);
+covergroup Zve64d_vfwredusum_vs_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1_emul2
@@ -19491,7 +20235,7 @@ covergroup Zve64d_vfwredusum_vs_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfwsub_vf_sew32__cg with function sample(ins_t ins);
+covergroup Zve64d_vfwsub_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfwsub.vf"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -19808,7 +20552,7 @@ covergroup Zve64d_vfwsub_vf_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfwsub_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve64d_vfwsub_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -20193,7 +20937,7 @@ covergroup Zve64d_vfwsub_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfwsub_wf_sew32__cg with function sample(ins_t ins);
+covergroup Zve64d_vfwsub_wf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_emul2
@@ -20482,7 +21226,7 @@ covergroup Zve64d_vfwsub_wf_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vfwsub_wv_sew32__cg with function sample(ins_t ins);
+covergroup Zve64d_vfwsub_wv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_emul2
@@ -20859,7 +21603,7 @@ covergroup Zve64d_vfwsub_wv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vmfeq_vf_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vmfeq_vf_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmfeq.vf"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -21077,7 +21821,7 @@ covergroup Zve64d_vmfeq_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vmfeq_vv_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vmfeq_vv_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -21311,7 +22055,7 @@ covergroup Zve64d_vmfeq_vv_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vmfge_vf_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vmfge_vf_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmfge.vf"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -21529,7 +22273,7 @@ covergroup Zve64d_vmfge_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vmfgt_vf_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vmfgt_vf_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmfgt.vf"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -21747,7 +22491,7 @@ covergroup Zve64d_vmfgt_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vmfle_vf_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vmfle_vf_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmfle.vf"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -21965,7 +22709,7 @@ covergroup Zve64d_vmfle_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vmfle_vv_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vmfle_vv_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -22199,7 +22943,7 @@ covergroup Zve64d_vmfle_vv_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vmflt_vf_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vmflt_vf_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmflt.vf"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -22417,7 +23161,7 @@ covergroup Zve64d_vmflt_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vmflt_vv_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vmflt_vv_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -22651,7 +23395,7 @@ covergroup Zve64d_vmflt_vv_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vmfne_vf_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vmfne_vf_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmfne.vf"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -22869,7 +23613,7 @@ covergroup Zve64d_vmfne_vf_sew64__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve64d_vmfne_vv_sew64__cg with function sample(ins_t ins);
+covergroup Zve64d_vmfne_vv_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -23129,91 +23873,91 @@ function void zve64d_sample(int hart, int issue, ins_t ins);
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
         "vfncvt.f.f.w"     : begin
-            Zve64d_vfncvt_f_f_w_cg.sample(ins);
+            Zve64d_vfncvt_f_f_w_sew@EFFEW@_cg.sample(ins);
         end
         "vfncvt.rod.f.f.w"     : begin
-            Zve64d_vfncvt_rod_f_f_w_cg.sample(ins);
+            Zve64d_vfncvt_rod_f_f_w_sew@EFFEW@_cg.sample(ins);
         end
         "vfncvt.rtz.x.f.w"     : begin
-            Zve64d_vfncvt_rtz_x_f_w_cg.sample(ins);
+            Zve64d_vfncvt_rtz_x_f_w_sew@EFFEW@_cg.sample(ins);
         end
         "vfncvt.rtz.xu.f.w"     : begin
-            Zve64d_vfncvt_rtz_xu_f_w_cg.sample(ins);
+            Zve64d_vfncvt_rtz_xu_f_w_sew@EFFEW@_cg.sample(ins);
         end
         "vfncvt.x.f.w"     : begin
-            Zve64d_vfncvt_x_f_w_cg.sample(ins);
+            Zve64d_vfncvt_x_f_w_sew@EFFEW@_cg.sample(ins);
         end
         "vfncvt.xu.f.w"     : begin
-            Zve64d_vfncvt_xu_f_w_cg.sample(ins);
+            Zve64d_vfncvt_xu_f_w_sew@EFFEW@_cg.sample(ins);
         end
         "vfwadd.vf"     : begin
-            Zve64d_vfwadd_vf_cg.sample(ins);
+            Zve64d_vfwadd_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfwadd.vv"     : begin
-            Zve64d_vfwadd_vv_cg.sample(ins);
+            Zve64d_vfwadd_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfwadd.wf"     : begin
-            Zve64d_vfwadd_wf_cg.sample(ins);
+            Zve64d_vfwadd_wf_sew@EFFEW@_cg.sample(ins);
         end
         "vfwadd.wv"     : begin
-            Zve64d_vfwadd_wv_cg.sample(ins);
+            Zve64d_vfwadd_wv_sew@EFFEW@_cg.sample(ins);
         end
         "vfwcvt.f.f.v"     : begin
-            Zve64d_vfwcvt_f_f_v_cg.sample(ins);
+            Zve64d_vfwcvt_f_f_v_sew@EFFEW@_cg.sample(ins);
         end
         "vfwcvt.f.x.v"     : begin
-            Zve64d_vfwcvt_f_x_v_cg.sample(ins);
+            Zve64d_vfwcvt_f_x_v_sew@EFFEW@_cg.sample(ins);
         end
         "vfwcvt.f.xu.v"     : begin
-            Zve64d_vfwcvt_f_xu_v_cg.sample(ins);
+            Zve64d_vfwcvt_f_xu_v_sew@EFFEW@_cg.sample(ins);
         end
         "vfwmacc.vf"     : begin
-            Zve64d_vfwmacc_vf_cg.sample(ins);
+            Zve64d_vfwmacc_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfwmacc.vv"     : begin
-            Zve64d_vfwmacc_vv_cg.sample(ins);
+            Zve64d_vfwmacc_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfwmsac.vf"     : begin
-            Zve64d_vfwmsac_vf_cg.sample(ins);
+            Zve64d_vfwmsac_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfwmsac.vv"     : begin
-            Zve64d_vfwmsac_vv_cg.sample(ins);
+            Zve64d_vfwmsac_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfwmul.vf"     : begin
-            Zve64d_vfwmul_vf_cg.sample(ins);
+            Zve64d_vfwmul_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfwmul.vv"     : begin
-            Zve64d_vfwmul_vv_cg.sample(ins);
+            Zve64d_vfwmul_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfwnmacc.vf"     : begin
-            Zve64d_vfwnmacc_vf_cg.sample(ins);
+            Zve64d_vfwnmacc_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfwnmacc.vv"     : begin
-            Zve64d_vfwnmacc_vv_cg.sample(ins);
+            Zve64d_vfwnmacc_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfwnmsac.vf"     : begin
-            Zve64d_vfwnmsac_vf_cg.sample(ins);
+            Zve64d_vfwnmsac_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfwnmsac.vv"     : begin
-            Zve64d_vfwnmsac_vv_cg.sample(ins);
+            Zve64d_vfwnmsac_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfwredosum.vs"     : begin
-            Zve64d_vfwredosum_vs_cg.sample(ins);
+            Zve64d_vfwredosum_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vfwredusum.vs"     : begin
-            Zve64d_vfwredusum_vs_cg.sample(ins);
+            Zve64d_vfwredusum_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vfwsub.vf"     : begin
-            Zve64d_vfwsub_vf_cg.sample(ins);
+            Zve64d_vfwsub_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfwsub.vv"     : begin
-            Zve64d_vfwsub_vv_cg.sample(ins);
+            Zve64d_vfwsub_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfwsub.wf"     : begin
-            Zve64d_vfwsub_wf_cg.sample(ins);
+            Zve64d_vfwsub_wf_sew@EFFEW@_cg.sample(ins);
         end
         "vfwsub.wv"     : begin
-            Zve64d_vfwsub_wv_cg.sample(ins);
+            Zve64d_vfwsub_wv_sew@EFFEW@_cg.sample(ins);
         end
             default: ; // a case needs at least one item, and some configurations select none
         endcase
@@ -23225,190 +23969,202 @@ function void zve64d_sample(int hart, int issue, ins_t ins);
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
         "vfadd.vf"     : begin
-            Zve64d_vfadd_vf_cg.sample(ins);
+            Zve64d_vfadd_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfadd.vv"     : begin
-            Zve64d_vfadd_vv_cg.sample(ins);
+            Zve64d_vfadd_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfclass.v"     : begin
-            Zve64d_vfclass_v_cg.sample(ins);
+            Zve64d_vfclass_v_sew@EFFEW@_cg.sample(ins);
         end
         "vfcvt.f.x.v"     : begin
-            Zve64d_vfcvt_f_x_v_cg.sample(ins);
+            Zve64d_vfcvt_f_x_v_sew@EFFEW@_cg.sample(ins);
         end
         "vfcvt.f.xu.v"     : begin
-            Zve64d_vfcvt_f_xu_v_cg.sample(ins);
+            Zve64d_vfcvt_f_xu_v_sew@EFFEW@_cg.sample(ins);
         end
         "vfcvt.rtz.x.f.v"     : begin
-            Zve64d_vfcvt_rtz_x_f_v_cg.sample(ins);
+            Zve64d_vfcvt_rtz_x_f_v_sew@EFFEW@_cg.sample(ins);
         end
         "vfcvt.rtz.xu.f.v"     : begin
-            Zve64d_vfcvt_rtz_xu_f_v_cg.sample(ins);
+            Zve64d_vfcvt_rtz_xu_f_v_sew@EFFEW@_cg.sample(ins);
         end
         "vfcvt.x.f.v"     : begin
-            Zve64d_vfcvt_x_f_v_cg.sample(ins);
+            Zve64d_vfcvt_x_f_v_sew@EFFEW@_cg.sample(ins);
         end
         "vfcvt.xu.f.v"     : begin
-            Zve64d_vfcvt_xu_f_v_cg.sample(ins);
+            Zve64d_vfcvt_xu_f_v_sew@EFFEW@_cg.sample(ins);
         end
         "vfdiv.vf"     : begin
-            Zve64d_vfdiv_vf_cg.sample(ins);
+            Zve64d_vfdiv_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfdiv.vv"     : begin
-            Zve64d_vfdiv_vv_cg.sample(ins);
+            Zve64d_vfdiv_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfmacc.vf"     : begin
-            Zve64d_vfmacc_vf_cg.sample(ins);
+            Zve64d_vfmacc_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfmacc.vv"     : begin
-            Zve64d_vfmacc_vv_cg.sample(ins);
+            Zve64d_vfmacc_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfmadd.vf"     : begin
-            Zve64d_vfmadd_vf_cg.sample(ins);
+            Zve64d_vfmadd_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfmadd.vv"     : begin
-            Zve64d_vfmadd_vv_cg.sample(ins);
+            Zve64d_vfmadd_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfmax.vf"     : begin
-            Zve64d_vfmax_vf_cg.sample(ins);
+            Zve64d_vfmax_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfmax.vv"     : begin
-            Zve64d_vfmax_vv_cg.sample(ins);
+            Zve64d_vfmax_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfmerge.vfm"     : begin
-            Zve64d_vfmerge_vfm_cg.sample(ins);
+            Zve64d_vfmerge_vfm_sew@EFFEW@_cg.sample(ins);
         end
         "vfmin.vf"     : begin
-            Zve64d_vfmin_vf_cg.sample(ins);
+            Zve64d_vfmin_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfmin.vv"     : begin
-            Zve64d_vfmin_vv_cg.sample(ins);
+            Zve64d_vfmin_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfmsac.vf"     : begin
-            Zve64d_vfmsac_vf_cg.sample(ins);
+            Zve64d_vfmsac_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfmsac.vv"     : begin
-            Zve64d_vfmsac_vv_cg.sample(ins);
+            Zve64d_vfmsac_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfmsub.vf"     : begin
-            Zve64d_vfmsub_vf_cg.sample(ins);
+            Zve64d_vfmsub_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfmsub.vv"     : begin
-            Zve64d_vfmsub_vv_cg.sample(ins);
+            Zve64d_vfmsub_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfmul.vf"     : begin
-            Zve64d_vfmul_vf_cg.sample(ins);
+            Zve64d_vfmul_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfmul.vv"     : begin
-            Zve64d_vfmul_vv_cg.sample(ins);
+            Zve64d_vfmul_vv_sew@EFFEW@_cg.sample(ins);
+        end
+        "vfmv.f.s"     : begin
+            Zve64d_vfmv_f_s_sew@EFFEW@_cg.sample(ins);
+        end
+        "vfmv.s.f"     : begin
+            Zve64d_vfmv_s_f_sew@EFFEW@_cg.sample(ins);
         end
         "vfmv.v.f"     : begin
-            Zve64d_vfmv_v_f_cg.sample(ins);
+            Zve64d_vfmv_v_f_sew@EFFEW@_cg.sample(ins);
         end
         "vfnmacc.vf"     : begin
-            Zve64d_vfnmacc_vf_cg.sample(ins);
+            Zve64d_vfnmacc_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfnmacc.vv"     : begin
-            Zve64d_vfnmacc_vv_cg.sample(ins);
+            Zve64d_vfnmacc_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfnmadd.vf"     : begin
-            Zve64d_vfnmadd_vf_cg.sample(ins);
+            Zve64d_vfnmadd_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfnmadd.vv"     : begin
-            Zve64d_vfnmadd_vv_cg.sample(ins);
+            Zve64d_vfnmadd_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfnmsac.vf"     : begin
-            Zve64d_vfnmsac_vf_cg.sample(ins);
+            Zve64d_vfnmsac_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfnmsac.vv"     : begin
-            Zve64d_vfnmsac_vv_cg.sample(ins);
+            Zve64d_vfnmsac_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfnmsub.vf"     : begin
-            Zve64d_vfnmsub_vf_cg.sample(ins);
+            Zve64d_vfnmsub_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfnmsub.vv"     : begin
-            Zve64d_vfnmsub_vv_cg.sample(ins);
+            Zve64d_vfnmsub_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfrdiv.vf"     : begin
-            Zve64d_vfrdiv_vf_cg.sample(ins);
+            Zve64d_vfrdiv_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfrec7.v"     : begin
-            Zve64d_vfrec7_v_cg.sample(ins);
+            Zve64d_vfrec7_v_sew@EFFEW@_cg.sample(ins);
         end
         "vfredmax.vs"     : begin
-            Zve64d_vfredmax_vs_cg.sample(ins);
+            Zve64d_vfredmax_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vfredmin.vs"     : begin
-            Zve64d_vfredmin_vs_cg.sample(ins);
+            Zve64d_vfredmin_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vfredosum.vs"     : begin
-            Zve64d_vfredosum_vs_cg.sample(ins);
+            Zve64d_vfredosum_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vfredusum.vs"     : begin
-            Zve64d_vfredusum_vs_cg.sample(ins);
+            Zve64d_vfredusum_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vfrsqrt7.v"     : begin
-            Zve64d_vfrsqrt7_v_cg.sample(ins);
+            Zve64d_vfrsqrt7_v_sew@EFFEW@_cg.sample(ins);
         end
         "vfrsub.vf"     : begin
-            Zve64d_vfrsub_vf_cg.sample(ins);
+            Zve64d_vfrsub_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfsgnj.vf"     : begin
-            Zve64d_vfsgnj_vf_cg.sample(ins);
+            Zve64d_vfsgnj_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfsgnj.vv"     : begin
-            Zve64d_vfsgnj_vv_cg.sample(ins);
+            Zve64d_vfsgnj_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfsgnjn.vf"     : begin
-            Zve64d_vfsgnjn_vf_cg.sample(ins);
+            Zve64d_vfsgnjn_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfsgnjn.vv"     : begin
-            Zve64d_vfsgnjn_vv_cg.sample(ins);
+            Zve64d_vfsgnjn_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfsgnjx.vf"     : begin
-            Zve64d_vfsgnjx_vf_cg.sample(ins);
+            Zve64d_vfsgnjx_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfsgnjx.vv"     : begin
-            Zve64d_vfsgnjx_vv_cg.sample(ins);
+            Zve64d_vfsgnjx_vv_sew@EFFEW@_cg.sample(ins);
+        end
+        "vfslide1down.vf"     : begin
+            Zve64d_vfslide1down_vf_sew@EFFEW@_cg.sample(ins);
+        end
+        "vfslide1up.vf"     : begin
+            Zve64d_vfslide1up_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfsqrt.v"     : begin
-            Zve64d_vfsqrt_v_cg.sample(ins);
+            Zve64d_vfsqrt_v_sew@EFFEW@_cg.sample(ins);
         end
         "vfsub.vf"     : begin
-            Zve64d_vfsub_vf_cg.sample(ins);
+            Zve64d_vfsub_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfsub.vv"     : begin
-            Zve64d_vfsub_vv_cg.sample(ins);
+            Zve64d_vfsub_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmfeq.vf"     : begin
-            Zve64d_vmfeq_vf_cg.sample(ins);
+            Zve64d_vmfeq_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vmfeq.vv"     : begin
-            Zve64d_vmfeq_vv_cg.sample(ins);
+            Zve64d_vmfeq_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmfge.vf"     : begin
-            Zve64d_vmfge_vf_cg.sample(ins);
+            Zve64d_vmfge_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vmfgt.vf"     : begin
-            Zve64d_vmfgt_vf_cg.sample(ins);
+            Zve64d_vmfgt_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vmfle.vf"     : begin
-            Zve64d_vmfle_vf_cg.sample(ins);
+            Zve64d_vmfle_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vmfle.vv"     : begin
-            Zve64d_vmfle_vv_cg.sample(ins);
+            Zve64d_vmfle_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmflt.vf"     : begin
-            Zve64d_vmflt_vf_cg.sample(ins);
+            Zve64d_vmflt_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vmflt.vv"     : begin
-            Zve64d_vmflt_vv_cg.sample(ins);
+            Zve64d_vmflt_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmfne.vf"     : begin
-            Zve64d_vmfne_vf_cg.sample(ins);
+            Zve64d_vmfne_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vmfne.vv"     : begin
-            Zve64d_vmfne_vv_cg.sample(ins);
+            Zve64d_vmfne_vv_sew@EFFEW@_cg.sample(ins);
         end
             default: ; // a case needs at least one item, and some configurations select none
         endcase

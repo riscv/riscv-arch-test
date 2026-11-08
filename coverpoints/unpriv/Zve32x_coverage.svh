@@ -12,7 +12,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_ZVE32X
-covergroup Zve32x_vaadd_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vaadd_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -232,7 +232,7 @@ covergroup Zve32x_vaadd_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vaadd_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vaadd_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -455,7 +455,7 @@ covergroup Zve32x_vaadd_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vaadd_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vaadd_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -681,7 +681,7 @@ covergroup Zve32x_vaadd_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vaadd_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vaadd_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -879,7 +879,7 @@ covergroup Zve32x_vaadd_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vaadd_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vaadd_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -1080,7 +1080,7 @@ covergroup Zve32x_vaadd_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vaadd_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vaadd_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -1284,7 +1284,7 @@ covergroup Zve32x_vaadd_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vaaddu_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vaaddu_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -1504,7 +1504,7 @@ covergroup Zve32x_vaaddu_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vaaddu_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vaaddu_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -1727,7 +1727,7 @@ covergroup Zve32x_vaaddu_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vaaddu_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vaaddu_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -1953,7 +1953,7 @@ covergroup Zve32x_vaaddu_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vaaddu_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vaaddu_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -2151,7 +2151,7 @@ covergroup Zve32x_vaaddu_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vaaddu_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vaaddu_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -2352,7 +2352,7 @@ covergroup Zve32x_vaaddu_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vaaddu_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vaaddu_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -2556,7 +2556,7 @@ covergroup Zve32x_vaaddu_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vadc_vim_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vadc_vim_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_nv0
@@ -2715,7 +2715,7 @@ covergroup Zve32x_vadc_vim_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vadc_vim_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vadc_vim_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_nv0
@@ -2877,7 +2877,7 @@ covergroup Zve32x_vadc_vim_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vadc_vim_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vadc_vim_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_nv0
@@ -3042,7 +3042,7 @@ covergroup Zve32x_vadc_vim_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vadc_vvm_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vadc_vvm_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1_nv0
@@ -3251,7 +3251,7 @@ covergroup Zve32x_vadc_vvm_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vadc_vvm_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vadc_vvm_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1_nv0
@@ -3463,7 +3463,7 @@ covergroup Zve32x_vadc_vvm_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vadc_vvm_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vadc_vvm_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1_nv0
@@ -3678,7 +3678,7 @@ covergroup Zve32x_vadc_vvm_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vadc_vxm_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vadc_vxm_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_nv0
@@ -3861,7 +3861,7 @@ covergroup Zve32x_vadc_vxm_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vadc_vxm_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vadc_vxm_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_nv0
@@ -4047,7 +4047,7 @@ covergroup Zve32x_vadc_vxm_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vadc_vxm_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vadc_vxm_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_nv0
@@ -4236,7 +4236,7 @@ covergroup Zve32x_vadc_vxm_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vadd_vi_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vadd_vi_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -4392,7 +4392,7 @@ covergroup Zve32x_vadd_vi_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vadd_vi_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vadd_vi_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -4551,7 +4551,7 @@ covergroup Zve32x_vadd_vi_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vadd_vi_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vadd_vi_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -4713,7 +4713,7 @@ covergroup Zve32x_vadd_vi_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vadd_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vadd_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -4915,7 +4915,7 @@ covergroup Zve32x_vadd_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vadd_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vadd_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -5120,7 +5120,7 @@ covergroup Zve32x_vadd_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vadd_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vadd_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -5328,7 +5328,7 @@ covergroup Zve32x_vadd_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vadd_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vadd_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -5508,7 +5508,7 @@ covergroup Zve32x_vadd_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vadd_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vadd_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -5691,7 +5691,7 @@ covergroup Zve32x_vadd_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vadd_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vadd_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -5877,7 +5877,7 @@ covergroup Zve32x_vadd_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vand_vi_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vand_vi_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -6033,7 +6033,7 @@ covergroup Zve32x_vand_vi_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vand_vi_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vand_vi_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -6192,7 +6192,7 @@ covergroup Zve32x_vand_vi_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vand_vi_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vand_vi_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -6354,7 +6354,7 @@ covergroup Zve32x_vand_vi_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vand_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vand_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -6556,7 +6556,7 @@ covergroup Zve32x_vand_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vand_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vand_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -6761,7 +6761,7 @@ covergroup Zve32x_vand_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vand_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vand_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -6969,7 +6969,7 @@ covergroup Zve32x_vand_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vand_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vand_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -7149,7 +7149,7 @@ covergroup Zve32x_vand_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vand_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vand_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -7332,7 +7332,7 @@ covergroup Zve32x_vand_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vand_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vand_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -7518,7 +7518,7 @@ covergroup Zve32x_vand_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vasub_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vasub_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -7738,7 +7738,7 @@ covergroup Zve32x_vasub_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vasub_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vasub_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -7961,7 +7961,7 @@ covergroup Zve32x_vasub_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vasub_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vasub_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -8187,7 +8187,7 @@ covergroup Zve32x_vasub_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vasub_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vasub_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -8385,7 +8385,7 @@ covergroup Zve32x_vasub_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vasub_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vasub_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -8586,7 +8586,7 @@ covergroup Zve32x_vasub_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vasub_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vasub_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -8790,7 +8790,7 @@ covergroup Zve32x_vasub_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vasubu_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vasubu_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -9010,7 +9010,7 @@ covergroup Zve32x_vasubu_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vasubu_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vasubu_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -9233,7 +9233,7 @@ covergroup Zve32x_vasubu_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vasubu_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vasubu_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -9459,7 +9459,7 @@ covergroup Zve32x_vasubu_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vasubu_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vasubu_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -9657,7 +9657,7 @@ covergroup Zve32x_vasubu_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vasubu_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vasubu_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -9858,7 +9858,7 @@ covergroup Zve32x_vasubu_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vasubu_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vasubu_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -10062,7 +10062,7 @@ covergroup Zve32x_vasubu_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vcompress_vm_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vcompress_vm_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vcompress.vm"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -10216,7 +10216,7 @@ covergroup Zve32x_vcompress_vm_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vcompress_vm_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vcompress_vm_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vcompress.vm"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -10373,7 +10373,7 @@ covergroup Zve32x_vcompress_vm_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vcompress_vm_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vcompress_vm_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vcompress.vm"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -10533,7 +10533,7 @@ covergroup Zve32x_vcompress_vm_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vcpop_m_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vcpop_m_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vcpop.m"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -10682,7 +10682,7 @@ covergroup Zve32x_vcpop_m_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vcpop_m_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vcpop_m_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vcpop.m"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -10834,7 +10834,7 @@ covergroup Zve32x_vcpop_m_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vcpop_m_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vcpop_m_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vcpop.m"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -10989,7 +10989,7 @@ covergroup Zve32x_vcpop_m_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vdiv_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vdiv_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -11191,7 +11191,7 @@ covergroup Zve32x_vdiv_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vdiv_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vdiv_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -11396,7 +11396,7 @@ covergroup Zve32x_vdiv_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vdiv_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vdiv_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -11604,7 +11604,7 @@ covergroup Zve32x_vdiv_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vdiv_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vdiv_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -11784,7 +11784,7 @@ covergroup Zve32x_vdiv_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vdiv_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vdiv_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -11967,7 +11967,7 @@ covergroup Zve32x_vdiv_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vdiv_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vdiv_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -12153,7 +12153,7 @@ covergroup Zve32x_vdiv_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vdivu_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vdivu_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -12355,7 +12355,7 @@ covergroup Zve32x_vdivu_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vdivu_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vdivu_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -12560,7 +12560,7 @@ covergroup Zve32x_vdivu_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vdivu_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vdivu_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -12768,7 +12768,7 @@ covergroup Zve32x_vdivu_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vdivu_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vdivu_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -12948,7 +12948,7 @@ covergroup Zve32x_vdivu_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vdivu_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vdivu_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -13131,7 +13131,7 @@ covergroup Zve32x_vdivu_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vdivu_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vdivu_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -13317,7 +13317,7 @@ covergroup Zve32x_vdivu_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vfirst_m_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vfirst_m_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfirst.m"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -13466,7 +13466,7 @@ covergroup Zve32x_vfirst_m_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vfirst_m_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vfirst_m_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfirst.m"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -13618,7 +13618,7 @@ covergroup Zve32x_vfirst_m_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vfirst_m_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vfirst_m_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfirst.m"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -13773,7 +13773,7 @@ covergroup Zve32x_vfirst_m_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vid_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vid_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vid.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -13861,7 +13861,7 @@ covergroup Zve32x_vid_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vid_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vid_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vid.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -13952,7 +13952,7 @@ covergroup Zve32x_vid_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vid_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vid_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vid.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -14046,7 +14046,7 @@ covergroup Zve32x_vid_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_viota_m_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_viota_m_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "viota.m"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -14166,7 +14166,7 @@ covergroup Zve32x_viota_m_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_viota_m_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_viota_m_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "viota.m"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -14289,7 +14289,7 @@ covergroup Zve32x_viota_m_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_viota_m_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_viota_m_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "viota.m"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -14415,7 +14415,7 @@ covergroup Zve32x_viota_m_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vl1re16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vl1re16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vl1re16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -14545,7 +14545,7 @@ covergroup Zve32x_vl1re16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vl1re16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vl1re16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vl1re16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -14678,7 +14678,7 @@ covergroup Zve32x_vl1re16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vl1re16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vl1re16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vl1re16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -14814,7 +14814,7 @@ covergroup Zve32x_vl1re16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vl1re32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vl1re32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vl1re32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -14944,7 +14944,7 @@ covergroup Zve32x_vl1re32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vl1re32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vl1re32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vl1re32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -15077,7 +15077,7 @@ covergroup Zve32x_vl1re32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vl1re32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vl1re32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vl1re32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -15213,7 +15213,7 @@ covergroup Zve32x_vl1re32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vl1re8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vl1re8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vl1re8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -15343,7 +15343,7 @@ covergroup Zve32x_vl1re8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vl1re8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vl1re8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vl1re8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -15476,7 +15476,7 @@ covergroup Zve32x_vl1re8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vl1re8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vl1re8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vl1re8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -15612,7 +15612,7 @@ covergroup Zve32x_vl1re8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vl2re16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vl2re16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vl2re16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -15746,7 +15746,7 @@ covergroup Zve32x_vl2re16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vl2re16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vl2re16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vl2re16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -15883,7 +15883,7 @@ covergroup Zve32x_vl2re16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vl2re16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vl2re16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vl2re16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -16023,7 +16023,7 @@ covergroup Zve32x_vl2re16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vl2re32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vl2re32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vl2re32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -16157,7 +16157,7 @@ covergroup Zve32x_vl2re32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vl2re32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vl2re32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vl2re32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -16294,7 +16294,7 @@ covergroup Zve32x_vl2re32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vl2re32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vl2re32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vl2re32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -16434,7 +16434,7 @@ covergroup Zve32x_vl2re32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vl2re8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vl2re8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vl2re8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -16568,7 +16568,7 @@ covergroup Zve32x_vl2re8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vl2re8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vl2re8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vl2re8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -16705,7 +16705,7 @@ covergroup Zve32x_vl2re8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vl2re8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vl2re8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vl2re8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -16845,7 +16845,7 @@ covergroup Zve32x_vl2re8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vl4re16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vl4re16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vl4re16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -16986,7 +16986,7 @@ covergroup Zve32x_vl4re16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vl4re16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vl4re16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vl4re16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -17130,7 +17130,7 @@ covergroup Zve32x_vl4re16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vl4re16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vl4re16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vl4re16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -17277,7 +17277,7 @@ covergroup Zve32x_vl4re16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vl4re32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vl4re32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vl4re32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -17418,7 +17418,7 @@ covergroup Zve32x_vl4re32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vl4re32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vl4re32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vl4re32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -17562,7 +17562,7 @@ covergroup Zve32x_vl4re32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vl4re32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vl4re32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vl4re32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -17709,7 +17709,7 @@ covergroup Zve32x_vl4re32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vl4re8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vl4re8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vl4re8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -17850,7 +17850,7 @@ covergroup Zve32x_vl4re8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vl4re8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vl4re8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vl4re8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -17994,7 +17994,7 @@ covergroup Zve32x_vl4re8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vl4re8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vl4re8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vl4re8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -18141,7 +18141,7 @@ covergroup Zve32x_vl4re8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vl8re16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vl8re16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vl8re16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -18285,7 +18285,7 @@ covergroup Zve32x_vl8re16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vl8re16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vl8re16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vl8re16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -18432,7 +18432,7 @@ covergroup Zve32x_vl8re16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vl8re16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vl8re16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vl8re16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -18582,7 +18582,7 @@ covergroup Zve32x_vl8re16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vl8re32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vl8re32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vl8re32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -18726,7 +18726,7 @@ covergroup Zve32x_vl8re32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vl8re32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vl8re32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vl8re32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -18873,7 +18873,7 @@ covergroup Zve32x_vl8re32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vl8re32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vl8re32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vl8re32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -19023,7 +19023,7 @@ covergroup Zve32x_vl8re32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vl8re8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vl8re8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vl8re8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -19167,7 +19167,7 @@ covergroup Zve32x_vl8re8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vl8re8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vl8re8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vl8re8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -19314,7 +19314,7 @@ covergroup Zve32x_vl8re8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vl8re8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vl8re8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vl8re8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -19464,7 +19464,7 @@ covergroup Zve32x_vl8re8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vle16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vle16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vle16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -19568,7 +19568,7 @@ covergroup Zve32x_vle16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vle16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vle16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vle16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -19675,7 +19675,7 @@ covergroup Zve32x_vle16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vle16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vle16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vle16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -19785,7 +19785,7 @@ covergroup Zve32x_vle16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vle16ff_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vle16ff_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vle16ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -19966,7 +19966,7 @@ covergroup Zve32x_vle16ff_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vle16ff_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vle16ff_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vle16ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -20150,7 +20150,7 @@ covergroup Zve32x_vle16ff_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vle16ff_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vle16ff_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vle16ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -20337,7 +20337,7 @@ covergroup Zve32x_vle16ff_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vle32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vle32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vle32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -20441,7 +20441,7 @@ covergroup Zve32x_vle32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vle32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vle32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vle32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -20548,7 +20548,7 @@ covergroup Zve32x_vle32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vle32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vle32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vle32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -20658,7 +20658,7 @@ covergroup Zve32x_vle32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vle32ff_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vle32ff_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vle32ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -20839,7 +20839,7 @@ covergroup Zve32x_vle32ff_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vle32ff_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vle32ff_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vle32ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -21023,7 +21023,7 @@ covergroup Zve32x_vle32ff_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vle32ff_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vle32ff_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vle32ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -21210,7 +21210,7 @@ covergroup Zve32x_vle32ff_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vle8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vle8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vle8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -21314,7 +21314,7 @@ covergroup Zve32x_vle8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vle8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vle8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vle8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -21421,7 +21421,7 @@ covergroup Zve32x_vle8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vle8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vle8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vle8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -21531,7 +21531,7 @@ covergroup Zve32x_vle8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vle8ff_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vle8ff_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vle8ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -21712,7 +21712,7 @@ covergroup Zve32x_vle8ff_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vle8ff_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vle8ff_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vle8ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -21896,7 +21896,7 @@ covergroup Zve32x_vle8ff_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vle8ff_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vle8ff_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vle8ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -22083,7 +22083,7 @@ covergroup Zve32x_vle8ff_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlm_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlm_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlm.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -22195,7 +22195,7 @@ covergroup Zve32x_vlm_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlm_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlm_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlm.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -22310,7 +22310,7 @@ covergroup Zve32x_vlm_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlm_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlm_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlm.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -22410,7 +22410,7 @@ covergroup Zve32x_vlm_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxei16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxei16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -22587,7 +22587,7 @@ covergroup Zve32x_vloxei16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxei16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxei16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -22757,7 +22757,7 @@ covergroup Zve32x_vloxei16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxei16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxei16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -22937,7 +22937,7 @@ covergroup Zve32x_vloxei16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxei32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxei32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -23104,7 +23104,7 @@ covergroup Zve32x_vloxei32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxei32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxei32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -23281,7 +23281,7 @@ covergroup Zve32x_vloxei32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxei32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxei32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -23453,7 +23453,7 @@ covergroup Zve32x_vloxei32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxei8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxei8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -23622,7 +23622,7 @@ covergroup Zve32x_vloxei8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxei8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxei8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -23802,7 +23802,7 @@ covergroup Zve32x_vloxei8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxei8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxei8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -23975,7 +23975,7 @@ covergroup Zve32x_vloxei8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg2ei16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg2ei16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg2ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -24140,7 +24140,7 @@ covergroup Zve32x_vloxseg2ei16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg2ei16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg2ei16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg2ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -24307,7 +24307,7 @@ covergroup Zve32x_vloxseg2ei16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg2ei16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg2ei16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg2ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -24477,7 +24477,7 @@ covergroup Zve32x_vloxseg2ei16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg2ei32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg2ei32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg2ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -24641,7 +24641,7 @@ covergroup Zve32x_vloxseg2ei32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg2ei32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg2ei32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg2ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -24808,7 +24808,7 @@ covergroup Zve32x_vloxseg2ei32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg2ei32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg2ei32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg2ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -24954,7 +24954,7 @@ covergroup Zve32x_vloxseg2ei32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg2ei8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg2ei8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg2ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -25118,7 +25118,7 @@ covergroup Zve32x_vloxseg2ei8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg2ei8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg2ei8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg2ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -25285,7 +25285,7 @@ covergroup Zve32x_vloxseg2ei8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg2ei8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg2ei8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg2ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -25455,7 +25455,7 @@ covergroup Zve32x_vloxseg2ei8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg3ei16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg3ei16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg3ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -25595,7 +25595,7 @@ covergroup Zve32x_vloxseg3ei16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg3ei16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg3ei16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg3ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -25738,7 +25738,7 @@ covergroup Zve32x_vloxseg3ei16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg3ei16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg3ei16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg3ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -25884,7 +25884,7 @@ covergroup Zve32x_vloxseg3ei16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg3ei32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg3ei32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg3ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -26024,7 +26024,7 @@ covergroup Zve32x_vloxseg3ei32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg3ei32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg3ei32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg3ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -26167,7 +26167,7 @@ covergroup Zve32x_vloxseg3ei32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg3ei32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg3ei32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg3ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -26313,7 +26313,7 @@ covergroup Zve32x_vloxseg3ei32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg3ei8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg3ei8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg3ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -26453,7 +26453,7 @@ covergroup Zve32x_vloxseg3ei8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg3ei8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg3ei8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg3ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -26596,7 +26596,7 @@ covergroup Zve32x_vloxseg3ei8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg3ei8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg3ei8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg3ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -26742,7 +26742,7 @@ covergroup Zve32x_vloxseg3ei8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg4ei16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg4ei16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg4ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -26907,7 +26907,7 @@ covergroup Zve32x_vloxseg4ei16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg4ei16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg4ei16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg4ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -27075,7 +27075,7 @@ covergroup Zve32x_vloxseg4ei16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg4ei16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg4ei16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg4ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -27246,7 +27246,7 @@ covergroup Zve32x_vloxseg4ei16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg4ei32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg4ei32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg4ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -27411,7 +27411,7 @@ covergroup Zve32x_vloxseg4ei32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg4ei32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg4ei32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg4ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -27579,7 +27579,7 @@ covergroup Zve32x_vloxseg4ei32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg4ei32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg4ei32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg4ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -27750,7 +27750,7 @@ covergroup Zve32x_vloxseg4ei32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg4ei8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg4ei8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg4ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -27915,7 +27915,7 @@ covergroup Zve32x_vloxseg4ei8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg4ei8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg4ei8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg4ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -28083,7 +28083,7 @@ covergroup Zve32x_vloxseg4ei8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg4ei8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg4ei8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg4ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -28254,7 +28254,7 @@ covergroup Zve32x_vloxseg4ei8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg5ei16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg5ei16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg5ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -28395,7 +28395,7 @@ covergroup Zve32x_vloxseg5ei16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg5ei16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg5ei16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg5ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -28539,7 +28539,7 @@ covergroup Zve32x_vloxseg5ei16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg5ei16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg5ei16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg5ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -28686,7 +28686,7 @@ covergroup Zve32x_vloxseg5ei16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg5ei32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg5ei32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg5ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -28827,7 +28827,7 @@ covergroup Zve32x_vloxseg5ei32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg5ei32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg5ei32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg5ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -28972,7 +28972,7 @@ covergroup Zve32x_vloxseg5ei32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg5ei32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg5ei32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg5ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -29118,7 +29118,7 @@ covergroup Zve32x_vloxseg5ei32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg5ei8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg5ei8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg5ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -29261,7 +29261,7 @@ covergroup Zve32x_vloxseg5ei8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg5ei8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg5ei8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg5ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -29407,7 +29407,7 @@ covergroup Zve32x_vloxseg5ei8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg5ei8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg5ei8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg5ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -29556,7 +29556,7 @@ covergroup Zve32x_vloxseg5ei8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg6ei16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg6ei16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg6ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -29698,7 +29698,7 @@ covergroup Zve32x_vloxseg6ei16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg6ei16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg6ei16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg6ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -29843,7 +29843,7 @@ covergroup Zve32x_vloxseg6ei16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg6ei16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg6ei16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg6ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -29991,7 +29991,7 @@ covergroup Zve32x_vloxseg6ei16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg6ei32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg6ei32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg6ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -30133,7 +30133,7 @@ covergroup Zve32x_vloxseg6ei32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg6ei32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg6ei32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg6ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -30279,7 +30279,7 @@ covergroup Zve32x_vloxseg6ei32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg6ei32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg6ei32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg6ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -30426,7 +30426,7 @@ covergroup Zve32x_vloxseg6ei32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg6ei8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg6ei8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg6ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -30570,7 +30570,7 @@ covergroup Zve32x_vloxseg6ei8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg6ei8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg6ei8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg6ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -30717,7 +30717,7 @@ covergroup Zve32x_vloxseg6ei8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg6ei8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg6ei8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg6ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -30867,7 +30867,7 @@ covergroup Zve32x_vloxseg6ei8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg7ei16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg7ei16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg7ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -31010,7 +31010,7 @@ covergroup Zve32x_vloxseg7ei16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg7ei16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg7ei16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg7ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -31156,7 +31156,7 @@ covergroup Zve32x_vloxseg7ei16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg7ei16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg7ei16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg7ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -31305,7 +31305,7 @@ covergroup Zve32x_vloxseg7ei16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg7ei32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg7ei32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg7ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -31448,7 +31448,7 @@ covergroup Zve32x_vloxseg7ei32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg7ei32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg7ei32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg7ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -31595,7 +31595,7 @@ covergroup Zve32x_vloxseg7ei32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg7ei32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg7ei32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg7ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -31743,7 +31743,7 @@ covergroup Zve32x_vloxseg7ei32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg7ei8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg7ei8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg7ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -31888,7 +31888,7 @@ covergroup Zve32x_vloxseg7ei8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg7ei8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg7ei8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg7ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -32036,7 +32036,7 @@ covergroup Zve32x_vloxseg7ei8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg7ei8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg7ei8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg7ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -32187,7 +32187,7 @@ covergroup Zve32x_vloxseg7ei8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg8ei16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg8ei16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg8ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -32355,7 +32355,7 @@ covergroup Zve32x_vloxseg8ei16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg8ei16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg8ei16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg8ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -32526,7 +32526,7 @@ covergroup Zve32x_vloxseg8ei16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg8ei16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg8ei16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg8ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -32700,7 +32700,7 @@ covergroup Zve32x_vloxseg8ei16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg8ei32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg8ei32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg8ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -32868,7 +32868,7 @@ covergroup Zve32x_vloxseg8ei32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg8ei32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg8ei32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg8ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -33040,7 +33040,7 @@ covergroup Zve32x_vloxseg8ei32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg8ei32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg8ei32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg8ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -33213,7 +33213,7 @@ covergroup Zve32x_vloxseg8ei32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg8ei8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg8ei8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg8ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -33383,7 +33383,7 @@ covergroup Zve32x_vloxseg8ei8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg8ei8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg8ei8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg8ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -33556,7 +33556,7 @@ covergroup Zve32x_vloxseg8ei8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vloxseg8ei8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vloxseg8ei8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vloxseg8ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -33732,7 +33732,7 @@ covergroup Zve32x_vloxseg8ei8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlse16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlse16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlse16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -33849,7 +33849,7 @@ covergroup Zve32x_vlse16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlse16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlse16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlse16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -33969,7 +33969,7 @@ covergroup Zve32x_vlse16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlse16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlse16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlse16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -34092,7 +34092,7 @@ covergroup Zve32x_vlse16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlse32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlse32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlse32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -34209,7 +34209,7 @@ covergroup Zve32x_vlse32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlse32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlse32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlse32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -34329,7 +34329,7 @@ covergroup Zve32x_vlse32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlse32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlse32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlse32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -34452,7 +34452,7 @@ covergroup Zve32x_vlse32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlse8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlse8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlse8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -34569,7 +34569,7 @@ covergroup Zve32x_vlse8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlse8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlse8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlse8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -34689,7 +34689,7 @@ covergroup Zve32x_vlse8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlse8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlse8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlse8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -34812,7 +34812,7 @@ covergroup Zve32x_vlse8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg2e16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg2e16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg2e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -34919,7 +34919,7 @@ covergroup Zve32x_vlseg2e16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg2e16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg2e16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg2e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -35028,7 +35028,7 @@ covergroup Zve32x_vlseg2e16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg2e16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg2e16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg2e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -35140,7 +35140,7 @@ covergroup Zve32x_vlseg2e16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg2e16ff_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg2e16ff_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg2e16ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -35324,7 +35324,7 @@ covergroup Zve32x_vlseg2e16ff_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg2e16ff_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg2e16ff_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg2e16ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -35510,7 +35510,7 @@ covergroup Zve32x_vlseg2e16ff_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg2e16ff_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg2e16ff_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg2e16ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -35699,7 +35699,7 @@ covergroup Zve32x_vlseg2e16ff_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg2e32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg2e32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg2e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -35805,7 +35805,7 @@ covergroup Zve32x_vlseg2e32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg2e32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg2e32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg2e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -35914,7 +35914,7 @@ covergroup Zve32x_vlseg2e32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg2e32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg2e32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg2e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -36026,7 +36026,7 @@ covergroup Zve32x_vlseg2e32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg2e32ff_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg2e32ff_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg2e32ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -36209,7 +36209,7 @@ covergroup Zve32x_vlseg2e32ff_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg2e32ff_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg2e32ff_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg2e32ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -36395,7 +36395,7 @@ covergroup Zve32x_vlseg2e32ff_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg2e32ff_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg2e32ff_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg2e32ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -36554,7 +36554,7 @@ covergroup Zve32x_vlseg2e32ff_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg2e8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg2e8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg2e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -36660,7 +36660,7 @@ covergroup Zve32x_vlseg2e8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg2e8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg2e8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg2e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -36769,7 +36769,7 @@ covergroup Zve32x_vlseg2e8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg2e8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg2e8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg2e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -36881,7 +36881,7 @@ covergroup Zve32x_vlseg2e8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg2e8ff_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg2e8ff_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg2e8ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -37064,7 +37064,7 @@ covergroup Zve32x_vlseg2e8ff_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg2e8ff_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg2e8ff_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg2e8ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -37250,7 +37250,7 @@ covergroup Zve32x_vlseg2e8ff_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg2e8ff_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg2e8ff_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg2e8ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -37439,7 +37439,7 @@ covergroup Zve32x_vlseg2e8ff_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg3e16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg3e16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg3e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -37545,7 +37545,7 @@ covergroup Zve32x_vlseg3e16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg3e16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg3e16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg3e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -37654,7 +37654,7 @@ covergroup Zve32x_vlseg3e16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg3e16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg3e16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg3e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -37766,7 +37766,7 @@ covergroup Zve32x_vlseg3e16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg3e16ff_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg3e16ff_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg3e16ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -37949,7 +37949,7 @@ covergroup Zve32x_vlseg3e16ff_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg3e16ff_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg3e16ff_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg3e16ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -38135,7 +38135,7 @@ covergroup Zve32x_vlseg3e16ff_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg3e16ff_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg3e16ff_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg3e16ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -38290,7 +38290,7 @@ covergroup Zve32x_vlseg3e16ff_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg3e32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg3e32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg3e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -38387,7 +38387,7 @@ covergroup Zve32x_vlseg3e32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg3e32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg3e32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg3e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -38487,7 +38487,7 @@ covergroup Zve32x_vlseg3e32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg3e32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg3e32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg3e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -38590,7 +38590,7 @@ covergroup Zve32x_vlseg3e32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg3e32ff_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg3e32ff_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg3e32ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -38646,6 +38646,33 @@ covergroup Zve32x_vlseg3e32ff_v_sew32__cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ffLS////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ffLS_update_vl
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Fault-only-first load setup: LMUL=2, vl=VLMAX, masked with v0=1
+
+    v0_eq_1: coverpoint unsigned'(ins.current.v0_val) {
+        bins one = {1};
+    }
+
+    mask_enabled: coverpoint ins.current.insn[25] {
+        bins unmasked = {1'b0};
+    }
+
+    vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
+                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+        bins target = {1'b1};
+    }
+
+    cp_custom_ffLS_update_vl : cross std_vec, vtype_lmul_2, vl_max, mask_enabled, v0_eq_1;
+
+    //// end cp_custom_ffLS_update_vl////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -38737,7 +38764,7 @@ covergroup Zve32x_vlseg3e32ff_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg3e32ff_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg3e32ff_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg3e32ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -38884,7 +38911,7 @@ covergroup Zve32x_vlseg3e32ff_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg3e32ff_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg3e32ff_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg3e32ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -39034,7 +39061,7 @@ covergroup Zve32x_vlseg3e32ff_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg3e8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg3e8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg3e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -39140,7 +39167,7 @@ covergroup Zve32x_vlseg3e8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg3e8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg3e8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg3e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -39249,7 +39276,7 @@ covergroup Zve32x_vlseg3e8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg3e8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg3e8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg3e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -39361,7 +39388,7 @@ covergroup Zve32x_vlseg3e8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg3e8ff_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg3e8ff_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg3e8ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -39544,7 +39571,7 @@ covergroup Zve32x_vlseg3e8ff_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg3e8ff_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg3e8ff_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg3e8ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -39730,7 +39757,7 @@ covergroup Zve32x_vlseg3e8ff_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg3e8ff_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg3e8ff_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg3e8ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -39919,7 +39946,7 @@ covergroup Zve32x_vlseg3e8ff_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg4e16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg4e16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg4e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -40026,7 +40053,7 @@ covergroup Zve32x_vlseg4e16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg4e16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg4e16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg4e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -40136,7 +40163,7 @@ covergroup Zve32x_vlseg4e16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg4e16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg4e16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg4e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -40249,7 +40276,7 @@ covergroup Zve32x_vlseg4e16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg4e16ff_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg4e16ff_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg4e16ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -40433,7 +40460,7 @@ covergroup Zve32x_vlseg4e16ff_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg4e16ff_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg4e16ff_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg4e16ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -40620,7 +40647,7 @@ covergroup Zve32x_vlseg4e16ff_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg4e16ff_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg4e16ff_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg4e16ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -40776,7 +40803,7 @@ covergroup Zve32x_vlseg4e16ff_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg4e32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg4e32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg4e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -40874,7 +40901,7 @@ covergroup Zve32x_vlseg4e32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg4e32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg4e32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg4e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -40975,7 +41002,7 @@ covergroup Zve32x_vlseg4e32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg4e32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg4e32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg4e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -41079,7 +41106,7 @@ covergroup Zve32x_vlseg4e32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg4e32ff_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg4e32ff_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg4e32ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -41263,7 +41290,7 @@ covergroup Zve32x_vlseg4e32ff_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg4e32ff_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg4e32ff_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg4e32ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -41420,7 +41447,7 @@ covergroup Zve32x_vlseg4e32ff_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg4e32ff_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg4e32ff_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg4e32ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -41580,7 +41607,7 @@ covergroup Zve32x_vlseg4e32ff_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg4e8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg4e8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg4e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -41687,7 +41714,7 @@ covergroup Zve32x_vlseg4e8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg4e8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg4e8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg4e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -41797,7 +41824,7 @@ covergroup Zve32x_vlseg4e8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg4e8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg4e8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg4e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -41910,7 +41937,7 @@ covergroup Zve32x_vlseg4e8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg4e8ff_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg4e8ff_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg4e8ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -42094,7 +42121,7 @@ covergroup Zve32x_vlseg4e8ff_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg4e8ff_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg4e8ff_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg4e8ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -42281,7 +42308,7 @@ covergroup Zve32x_vlseg4e8ff_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg4e8ff_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg4e8ff_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg4e8ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -42471,7 +42498,7 @@ covergroup Zve32x_vlseg4e8ff_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg5e16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg5e16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg5e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -42578,7 +42605,7 @@ covergroup Zve32x_vlseg5e16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg5e16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg5e16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg5e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -42688,7 +42715,7 @@ covergroup Zve32x_vlseg5e16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg5e16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg5e16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg5e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -42801,7 +42828,7 @@ covergroup Zve32x_vlseg5e16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg5e16ff_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg5e16ff_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg5e16ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -42985,7 +43012,7 @@ covergroup Zve32x_vlseg5e16ff_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg5e16ff_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg5e16ff_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg5e16ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -43138,7 +43165,7 @@ covergroup Zve32x_vlseg5e16ff_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg5e16ff_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg5e16ff_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg5e16ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -43294,7 +43321,7 @@ covergroup Zve32x_vlseg5e16ff_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg5e32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg5e32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg5e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -43401,7 +43428,7 @@ covergroup Zve32x_vlseg5e32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg5e32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg5e32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg5e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -43512,7 +43539,7 @@ covergroup Zve32x_vlseg5e32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg5e32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg5e32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg5e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -43624,7 +43651,7 @@ covergroup Zve32x_vlseg5e32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg5e32ff_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg5e32ff_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg5e32ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -43778,7 +43805,7 @@ covergroup Zve32x_vlseg5e32ff_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg5e32ff_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg5e32ff_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg5e32ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -43936,7 +43963,7 @@ covergroup Zve32x_vlseg5e32ff_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg5e32ff_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg5e32ff_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg5e32ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -44095,7 +44122,7 @@ covergroup Zve32x_vlseg5e32ff_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg5e8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg5e8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg5e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -44204,7 +44231,7 @@ covergroup Zve32x_vlseg5e8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg5e8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg5e8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg5e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -44316,7 +44343,7 @@ covergroup Zve32x_vlseg5e8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg5e8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg5e8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg5e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -44431,7 +44458,7 @@ covergroup Zve32x_vlseg5e8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg5e8ff_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg5e8ff_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg5e8ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -44617,7 +44644,7 @@ covergroup Zve32x_vlseg5e8ff_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg5e8ff_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg5e8ff_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg5e8ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -44806,7 +44833,7 @@ covergroup Zve32x_vlseg5e8ff_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg5e8ff_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg5e8ff_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg5e8ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -44964,7 +44991,7 @@ covergroup Zve32x_vlseg5e8ff_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg6e16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg6e16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg6e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -45072,7 +45099,7 @@ covergroup Zve32x_vlseg6e16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg6e16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg6e16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg6e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -45183,7 +45210,7 @@ covergroup Zve32x_vlseg6e16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg6e16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg6e16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg6e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -45297,7 +45324,7 @@ covergroup Zve32x_vlseg6e16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg6e16ff_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg6e16ff_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg6e16ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -45482,7 +45509,7 @@ covergroup Zve32x_vlseg6e16ff_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg6e16ff_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg6e16ff_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg6e16ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -45636,7 +45663,7 @@ covergroup Zve32x_vlseg6e16ff_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg6e16ff_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg6e16ff_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg6e16ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -45793,7 +45820,7 @@ covergroup Zve32x_vlseg6e16ff_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg6e32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg6e32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg6e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -45901,7 +45928,7 @@ covergroup Zve32x_vlseg6e32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg6e32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg6e32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg6e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -46013,7 +46040,7 @@ covergroup Zve32x_vlseg6e32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg6e32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg6e32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg6e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -46126,7 +46153,7 @@ covergroup Zve32x_vlseg6e32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg6e32ff_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg6e32ff_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg6e32ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -46281,7 +46308,7 @@ covergroup Zve32x_vlseg6e32ff_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg6e32ff_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg6e32ff_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg6e32ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -46440,7 +46467,7 @@ covergroup Zve32x_vlseg6e32ff_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg6e32ff_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg6e32ff_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg6e32ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -46600,7 +46627,7 @@ covergroup Zve32x_vlseg6e32ff_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg6e8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg6e8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg6e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -46710,7 +46737,7 @@ covergroup Zve32x_vlseg6e8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg6e8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg6e8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg6e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -46823,7 +46850,7 @@ covergroup Zve32x_vlseg6e8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg6e8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg6e8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg6e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -46939,7 +46966,7 @@ covergroup Zve32x_vlseg6e8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg6e8ff_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg6e8ff_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg6e8ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -47126,7 +47153,7 @@ covergroup Zve32x_vlseg6e8ff_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg6e8ff_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg6e8ff_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg6e8ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -47316,7 +47343,7 @@ covergroup Zve32x_vlseg6e8ff_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg6e8ff_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg6e8ff_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg6e8ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -47475,7 +47502,7 @@ covergroup Zve32x_vlseg6e8ff_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg7e16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg7e16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg7e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -47584,7 +47611,7 @@ covergroup Zve32x_vlseg7e16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg7e16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg7e16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg7e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -47696,7 +47723,7 @@ covergroup Zve32x_vlseg7e16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg7e16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg7e16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg7e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -47811,7 +47838,7 @@ covergroup Zve32x_vlseg7e16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg7e16ff_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg7e16ff_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg7e16ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -47997,7 +48024,7 @@ covergroup Zve32x_vlseg7e16ff_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg7e16ff_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg7e16ff_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg7e16ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -48152,7 +48179,7 @@ covergroup Zve32x_vlseg7e16ff_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg7e16ff_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg7e16ff_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg7e16ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -48310,7 +48337,7 @@ covergroup Zve32x_vlseg7e16ff_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg7e32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg7e32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg7e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -48419,7 +48446,7 @@ covergroup Zve32x_vlseg7e32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg7e32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg7e32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg7e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -48532,7 +48559,7 @@ covergroup Zve32x_vlseg7e32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg7e32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg7e32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg7e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -48646,7 +48673,7 @@ covergroup Zve32x_vlseg7e32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg7e32ff_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg7e32ff_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg7e32ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -48802,7 +48829,7 @@ covergroup Zve32x_vlseg7e32ff_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg7e32ff_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg7e32ff_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg7e32ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -48962,7 +48989,7 @@ covergroup Zve32x_vlseg7e32ff_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg7e32ff_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg7e32ff_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg7e32ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -49123,7 +49150,7 @@ covergroup Zve32x_vlseg7e32ff_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg7e8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg7e8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg7e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -49234,7 +49261,7 @@ covergroup Zve32x_vlseg7e8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg7e8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg7e8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg7e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -49348,7 +49375,7 @@ covergroup Zve32x_vlseg7e8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg7e8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg7e8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg7e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -49465,7 +49492,7 @@ covergroup Zve32x_vlseg7e8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg7e8ff_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg7e8ff_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg7e8ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -49653,7 +49680,7 @@ covergroup Zve32x_vlseg7e8ff_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg7e8ff_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg7e8ff_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg7e8ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -49844,7 +49871,7 @@ covergroup Zve32x_vlseg7e8ff_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg7e8ff_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg7e8ff_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg7e8ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -50004,7 +50031,7 @@ covergroup Zve32x_vlseg7e8ff_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg8e16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg8e16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg8e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -50114,7 +50141,7 @@ covergroup Zve32x_vlseg8e16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg8e16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg8e16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg8e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -50227,7 +50254,7 @@ covergroup Zve32x_vlseg8e16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg8e16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg8e16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg8e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -50343,7 +50370,7 @@ covergroup Zve32x_vlseg8e16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg8e16ff_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg8e16ff_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg8e16ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -50530,7 +50557,7 @@ covergroup Zve32x_vlseg8e16ff_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg8e16ff_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg8e16ff_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg8e16ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -50686,7 +50713,7 @@ covergroup Zve32x_vlseg8e16ff_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg8e16ff_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg8e16ff_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg8e16ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -50845,7 +50872,7 @@ covergroup Zve32x_vlseg8e16ff_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg8e32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg8e32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg8e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -50955,7 +50982,7 @@ covergroup Zve32x_vlseg8e32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg8e32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg8e32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg8e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -51069,7 +51096,7 @@ covergroup Zve32x_vlseg8e32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg8e32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg8e32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg8e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -51184,7 +51211,7 @@ covergroup Zve32x_vlseg8e32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg8e32ff_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg8e32ff_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg8e32ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -51341,7 +51368,7 @@ covergroup Zve32x_vlseg8e32ff_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg8e32ff_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg8e32ff_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg8e32ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -51502,7 +51529,7 @@ covergroup Zve32x_vlseg8e32ff_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg8e32ff_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg8e32ff_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg8e32ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -51664,7 +51691,7 @@ covergroup Zve32x_vlseg8e32ff_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg8e8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg8e8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg8e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -51776,7 +51803,7 @@ covergroup Zve32x_vlseg8e8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg8e8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg8e8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg8e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -51891,7 +51918,7 @@ covergroup Zve32x_vlseg8e8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg8e8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg8e8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg8e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -52009,7 +52036,7 @@ covergroup Zve32x_vlseg8e8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg8e8ff_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg8e8ff_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg8e8ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -52198,7 +52225,7 @@ covergroup Zve32x_vlseg8e8ff_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg8e8ff_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg8e8ff_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg8e8ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -52390,7 +52417,7 @@ covergroup Zve32x_vlseg8e8ff_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlseg8e8ff_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlseg8e8ff_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlseg8e8ff.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -52551,7 +52578,7 @@ covergroup Zve32x_vlseg8e8ff_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg2e16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg2e16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg2e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -52671,7 +52698,7 @@ covergroup Zve32x_vlsseg2e16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg2e16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg2e16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg2e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -52793,7 +52820,7 @@ covergroup Zve32x_vlsseg2e16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg2e16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg2e16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg2e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -52918,7 +52945,7 @@ covergroup Zve32x_vlsseg2e16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg2e32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg2e32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg2e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -53037,7 +53064,7 @@ covergroup Zve32x_vlsseg2e32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg2e32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg2e32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg2e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -53159,7 +53186,7 @@ covergroup Zve32x_vlsseg2e32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg2e32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg2e32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg2e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -53284,7 +53311,7 @@ covergroup Zve32x_vlsseg2e32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg2e8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg2e8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg2e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -53403,7 +53430,7 @@ covergroup Zve32x_vlsseg2e8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg2e8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg2e8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg2e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -53525,7 +53552,7 @@ covergroup Zve32x_vlsseg2e8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg2e8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg2e8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg2e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -53650,7 +53677,7 @@ covergroup Zve32x_vlsseg2e8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg3e16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg3e16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg3e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -53769,7 +53796,7 @@ covergroup Zve32x_vlsseg3e16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg3e16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg3e16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg3e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -53891,7 +53918,7 @@ covergroup Zve32x_vlsseg3e16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg3e16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg3e16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg3e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -54016,7 +54043,7 @@ covergroup Zve32x_vlsseg3e16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg3e32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg3e32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg3e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -54135,7 +54162,7 @@ covergroup Zve32x_vlsseg3e32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg3e32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg3e32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg3e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -54257,7 +54284,7 @@ covergroup Zve32x_vlsseg3e32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg3e32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg3e32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg3e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -54382,7 +54409,7 @@ covergroup Zve32x_vlsseg3e32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg3e8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg3e8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg3e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -54501,7 +54528,7 @@ covergroup Zve32x_vlsseg3e8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg3e8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg3e8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg3e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -54623,7 +54650,7 @@ covergroup Zve32x_vlsseg3e8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg3e8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg3e8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg3e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -54748,7 +54775,7 @@ covergroup Zve32x_vlsseg3e8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg4e16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg4e16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg4e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -54868,7 +54895,7 @@ covergroup Zve32x_vlsseg4e16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg4e16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg4e16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg4e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -54991,7 +55018,7 @@ covergroup Zve32x_vlsseg4e16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg4e16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg4e16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg4e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -55117,7 +55144,7 @@ covergroup Zve32x_vlsseg4e16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg4e32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg4e32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg4e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -55237,7 +55264,7 @@ covergroup Zve32x_vlsseg4e32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg4e32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg4e32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg4e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -55360,7 +55387,7 @@ covergroup Zve32x_vlsseg4e32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg4e32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg4e32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg4e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -55486,7 +55513,7 @@ covergroup Zve32x_vlsseg4e32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg4e8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg4e8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg4e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -55606,7 +55633,7 @@ covergroup Zve32x_vlsseg4e8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg4e8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg4e8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg4e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -55729,7 +55756,7 @@ covergroup Zve32x_vlsseg4e8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg4e8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg4e8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg4e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -55855,7 +55882,7 @@ covergroup Zve32x_vlsseg4e8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg5e16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg5e16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg5e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -55975,7 +56002,7 @@ covergroup Zve32x_vlsseg5e16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg5e16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg5e16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg5e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -56098,7 +56125,7 @@ covergroup Zve32x_vlsseg5e16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg5e16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg5e16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg5e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -56224,7 +56251,7 @@ covergroup Zve32x_vlsseg5e16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg5e32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg5e32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg5e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -56344,7 +56371,7 @@ covergroup Zve32x_vlsseg5e32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg5e32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg5e32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg5e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -56468,7 +56495,7 @@ covergroup Zve32x_vlsseg5e32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg5e32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg5e32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg5e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -56593,7 +56620,7 @@ covergroup Zve32x_vlsseg5e32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg5e8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg5e8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg5e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -56715,7 +56742,7 @@ covergroup Zve32x_vlsseg5e8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg5e8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg5e8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg5e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -56840,7 +56867,7 @@ covergroup Zve32x_vlsseg5e8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg5e8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg5e8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg5e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -56968,7 +56995,7 @@ covergroup Zve32x_vlsseg5e8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg6e16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg6e16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg6e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -57089,7 +57116,7 @@ covergroup Zve32x_vlsseg6e16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg6e16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg6e16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg6e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -57213,7 +57240,7 @@ covergroup Zve32x_vlsseg6e16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg6e16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg6e16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg6e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -57340,7 +57367,7 @@ covergroup Zve32x_vlsseg6e16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg6e32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg6e32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg6e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -57461,7 +57488,7 @@ covergroup Zve32x_vlsseg6e32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg6e32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg6e32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg6e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -57586,7 +57613,7 @@ covergroup Zve32x_vlsseg6e32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg6e32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg6e32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg6e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -57712,7 +57739,7 @@ covergroup Zve32x_vlsseg6e32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg6e8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg6e8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg6e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -57835,7 +57862,7 @@ covergroup Zve32x_vlsseg6e8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg6e8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg6e8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg6e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -57961,7 +57988,7 @@ covergroup Zve32x_vlsseg6e8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg6e8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg6e8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg6e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -58090,7 +58117,7 @@ covergroup Zve32x_vlsseg6e8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg7e16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg7e16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg7e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -58212,7 +58239,7 @@ covergroup Zve32x_vlsseg7e16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg7e16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg7e16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg7e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -58337,7 +58364,7 @@ covergroup Zve32x_vlsseg7e16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg7e16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg7e16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg7e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -58465,7 +58492,7 @@ covergroup Zve32x_vlsseg7e16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg7e32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg7e32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg7e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -58587,7 +58614,7 @@ covergroup Zve32x_vlsseg7e32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg7e32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg7e32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg7e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -58713,7 +58740,7 @@ covergroup Zve32x_vlsseg7e32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg7e32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg7e32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg7e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -58840,7 +58867,7 @@ covergroup Zve32x_vlsseg7e32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg7e8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg7e8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg7e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -58964,7 +58991,7 @@ covergroup Zve32x_vlsseg7e8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg7e8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg7e8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg7e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -59091,7 +59118,7 @@ covergroup Zve32x_vlsseg7e8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg7e8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg7e8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg7e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -59221,7 +59248,7 @@ covergroup Zve32x_vlsseg7e8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg8e16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg8e16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg8e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -59344,7 +59371,7 @@ covergroup Zve32x_vlsseg8e16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg8e16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg8e16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg8e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -59470,7 +59497,7 @@ covergroup Zve32x_vlsseg8e16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg8e16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg8e16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg8e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -59599,7 +59626,7 @@ covergroup Zve32x_vlsseg8e16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg8e32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg8e32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg8e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -59722,7 +59749,7 @@ covergroup Zve32x_vlsseg8e32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg8e32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg8e32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg8e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -59849,7 +59876,7 @@ covergroup Zve32x_vlsseg8e32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg8e32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg8e32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg8e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -59977,7 +60004,7 @@ covergroup Zve32x_vlsseg8e32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg8e8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg8e8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg8e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -60102,7 +60129,7 @@ covergroup Zve32x_vlsseg8e8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg8e8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg8e8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg8e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -60230,7 +60257,7 @@ covergroup Zve32x_vlsseg8e8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vlsseg8e8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vlsseg8e8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vlsseg8e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -60361,7 +60388,7 @@ covergroup Zve32x_vlsseg8e8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxei16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxei16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -60525,7 +60552,7 @@ covergroup Zve32x_vluxei16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxei16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxei16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -60682,7 +60709,7 @@ covergroup Zve32x_vluxei16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxei16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxei16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -60849,7 +60876,7 @@ covergroup Zve32x_vluxei16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxei32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxei32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -61003,7 +61030,7 @@ covergroup Zve32x_vluxei32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxei32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxei32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -61167,7 +61194,7 @@ covergroup Zve32x_vluxei32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxei32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxei32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -61326,7 +61353,7 @@ covergroup Zve32x_vluxei32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxei8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxei8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -61482,7 +61509,7 @@ covergroup Zve32x_vluxei8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxei8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxei8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -61649,7 +61676,7 @@ covergroup Zve32x_vluxei8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxei8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxei8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -61809,7 +61836,7 @@ covergroup Zve32x_vluxei8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg2ei16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg2ei16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg2ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -61961,7 +61988,7 @@ covergroup Zve32x_vluxseg2ei16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg2ei16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg2ei16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg2ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -62115,7 +62142,7 @@ covergroup Zve32x_vluxseg2ei16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg2ei16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg2ei16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg2ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -62272,7 +62299,7 @@ covergroup Zve32x_vluxseg2ei16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg2ei32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg2ei32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg2ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -62423,7 +62450,7 @@ covergroup Zve32x_vluxseg2ei32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg2ei32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg2ei32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg2ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -62577,7 +62604,7 @@ covergroup Zve32x_vluxseg2ei32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg2ei32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg2ei32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg2ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -62710,7 +62737,7 @@ covergroup Zve32x_vluxseg2ei32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg2ei8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg2ei8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg2ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -62861,7 +62888,7 @@ covergroup Zve32x_vluxseg2ei8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg2ei8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg2ei8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg2ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -63015,7 +63042,7 @@ covergroup Zve32x_vluxseg2ei8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg2ei8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg2ei8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg2ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -63172,7 +63199,7 @@ covergroup Zve32x_vluxseg2ei8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg3ei16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg3ei16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg3ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -63299,7 +63326,7 @@ covergroup Zve32x_vluxseg3ei16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg3ei16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg3ei16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg3ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -63429,7 +63456,7 @@ covergroup Zve32x_vluxseg3ei16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg3ei16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg3ei16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg3ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -63562,7 +63589,7 @@ covergroup Zve32x_vluxseg3ei16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg3ei32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg3ei32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg3ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -63689,7 +63716,7 @@ covergroup Zve32x_vluxseg3ei32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg3ei32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg3ei32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg3ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -63819,7 +63846,7 @@ covergroup Zve32x_vluxseg3ei32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg3ei32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg3ei32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg3ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -63952,7 +63979,7 @@ covergroup Zve32x_vluxseg3ei32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg3ei8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg3ei8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg3ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -64079,7 +64106,7 @@ covergroup Zve32x_vluxseg3ei8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg3ei8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg3ei8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg3ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -64209,7 +64236,7 @@ covergroup Zve32x_vluxseg3ei8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg3ei8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg3ei8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg3ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -64342,7 +64369,7 @@ covergroup Zve32x_vluxseg3ei8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg4ei16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg4ei16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg4ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -64494,7 +64521,7 @@ covergroup Zve32x_vluxseg4ei16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg4ei16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg4ei16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg4ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -64649,7 +64676,7 @@ covergroup Zve32x_vluxseg4ei16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg4ei16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg4ei16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg4ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -64807,7 +64834,7 @@ covergroup Zve32x_vluxseg4ei16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg4ei32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg4ei32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg4ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -64959,7 +64986,7 @@ covergroup Zve32x_vluxseg4ei32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg4ei32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg4ei32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg4ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -65114,7 +65141,7 @@ covergroup Zve32x_vluxseg4ei32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg4ei32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg4ei32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg4ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -65272,7 +65299,7 @@ covergroup Zve32x_vluxseg4ei32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg4ei8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg4ei8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg4ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -65424,7 +65451,7 @@ covergroup Zve32x_vluxseg4ei8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg4ei8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg4ei8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg4ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -65579,7 +65606,7 @@ covergroup Zve32x_vluxseg4ei8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg4ei8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg4ei8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg4ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -65737,7 +65764,7 @@ covergroup Zve32x_vluxseg4ei8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg5ei16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg5ei16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg5ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -65865,7 +65892,7 @@ covergroup Zve32x_vluxseg5ei16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg5ei16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg5ei16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg5ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -65996,7 +66023,7 @@ covergroup Zve32x_vluxseg5ei16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg5ei16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg5ei16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg5ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -66130,7 +66157,7 @@ covergroup Zve32x_vluxseg5ei16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg5ei32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg5ei32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg5ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -66258,7 +66285,7 @@ covergroup Zve32x_vluxseg5ei32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg5ei32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg5ei32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg5ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -66390,7 +66417,7 @@ covergroup Zve32x_vluxseg5ei32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg5ei32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg5ei32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg5ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -66523,7 +66550,7 @@ covergroup Zve32x_vluxseg5ei32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg5ei8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg5ei8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg5ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -66653,7 +66680,7 @@ covergroup Zve32x_vluxseg5ei8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg5ei8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg5ei8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg5ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -66786,7 +66813,7 @@ covergroup Zve32x_vluxseg5ei8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg5ei8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg5ei8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg5ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -66922,7 +66949,7 @@ covergroup Zve32x_vluxseg5ei8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg6ei16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg6ei16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg6ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -67051,7 +67078,7 @@ covergroup Zve32x_vluxseg6ei16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg6ei16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg6ei16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg6ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -67183,7 +67210,7 @@ covergroup Zve32x_vluxseg6ei16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg6ei16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg6ei16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg6ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -67318,7 +67345,7 @@ covergroup Zve32x_vluxseg6ei16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg6ei32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg6ei32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg6ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -67447,7 +67474,7 @@ covergroup Zve32x_vluxseg6ei32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg6ei32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg6ei32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg6ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -67580,7 +67607,7 @@ covergroup Zve32x_vluxseg6ei32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg6ei32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg6ei32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg6ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -67714,7 +67741,7 @@ covergroup Zve32x_vluxseg6ei32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg6ei8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg6ei8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg6ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -67845,7 +67872,7 @@ covergroup Zve32x_vluxseg6ei8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg6ei8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg6ei8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg6ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -67979,7 +68006,7 @@ covergroup Zve32x_vluxseg6ei8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg6ei8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg6ei8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg6ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -68116,7 +68143,7 @@ covergroup Zve32x_vluxseg6ei8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg7ei16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg7ei16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg7ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -68246,7 +68273,7 @@ covergroup Zve32x_vluxseg7ei16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg7ei16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg7ei16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg7ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -68379,7 +68406,7 @@ covergroup Zve32x_vluxseg7ei16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg7ei16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg7ei16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg7ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -68515,7 +68542,7 @@ covergroup Zve32x_vluxseg7ei16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg7ei32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg7ei32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg7ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -68645,7 +68672,7 @@ covergroup Zve32x_vluxseg7ei32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg7ei32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg7ei32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg7ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -68779,7 +68806,7 @@ covergroup Zve32x_vluxseg7ei32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg7ei32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg7ei32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg7ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -68914,7 +68941,7 @@ covergroup Zve32x_vluxseg7ei32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg7ei8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg7ei8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg7ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -69046,7 +69073,7 @@ covergroup Zve32x_vluxseg7ei8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg7ei8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg7ei8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg7ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -69181,7 +69208,7 @@ covergroup Zve32x_vluxseg7ei8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg7ei8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg7ei8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg7ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -69319,7 +69346,7 @@ covergroup Zve32x_vluxseg7ei8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg8ei16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg8ei16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg8ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -69474,7 +69501,7 @@ covergroup Zve32x_vluxseg8ei16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg8ei16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg8ei16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg8ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -69632,7 +69659,7 @@ covergroup Zve32x_vluxseg8ei16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg8ei16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg8ei16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg8ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -69793,7 +69820,7 @@ covergroup Zve32x_vluxseg8ei16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg8ei32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg8ei32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg8ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -69948,7 +69975,7 @@ covergroup Zve32x_vluxseg8ei32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg8ei32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg8ei32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg8ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -70107,7 +70134,7 @@ covergroup Zve32x_vluxseg8ei32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg8ei32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg8ei32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg8ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -70267,7 +70294,7 @@ covergroup Zve32x_vluxseg8ei32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg8ei8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg8ei8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg8ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -70424,7 +70451,7 @@ covergroup Zve32x_vluxseg8ei8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg8ei8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg8ei8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg8ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -70584,7 +70611,7 @@ covergroup Zve32x_vluxseg8ei8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vluxseg8ei8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vluxseg8ei8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vluxseg8ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -70747,7 +70774,7 @@ covergroup Zve32x_vluxseg8ei8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmacc_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmacc_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -70949,7 +70976,7 @@ covergroup Zve32x_vmacc_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmacc_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmacc_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -71154,7 +71181,7 @@ covergroup Zve32x_vmacc_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmacc_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmacc_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -71362,7 +71389,7 @@ covergroup Zve32x_vmacc_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmacc_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmacc_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -71542,7 +71569,7 @@ covergroup Zve32x_vmacc_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmacc_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmacc_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -71725,7 +71752,7 @@ covergroup Zve32x_vmacc_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmacc_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmacc_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -71911,7 +71938,7 @@ covergroup Zve32x_vmacc_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmadc_vi_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmadc_vi_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmadc.vi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -72082,7 +72109,7 @@ covergroup Zve32x_vmadc_vi_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmadc_vi_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmadc_vi_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmadc.vi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -72256,7 +72283,7 @@ covergroup Zve32x_vmadc_vi_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmadc_vi_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmadc_vi_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmadc.vi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -72433,7 +72460,7 @@ covergroup Zve32x_vmadc_vi_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmadc_vim_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmadc_vim_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmadc.vim"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -72622,7 +72649,7 @@ covergroup Zve32x_vmadc_vim_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmadc_vim_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmadc_vim_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmadc.vim"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -72814,7 +72841,7 @@ covergroup Zve32x_vmadc_vim_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmadc_vim_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmadc_vim_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmadc.vim"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -73009,7 +73036,7 @@ covergroup Zve32x_vmadc_vim_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmadc_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmadc_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -73206,7 +73233,7 @@ covergroup Zve32x_vmadc_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmadc_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmadc_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -73406,7 +73433,7 @@ covergroup Zve32x_vmadc_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmadc_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmadc_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -73609,7 +73636,7 @@ covergroup Zve32x_vmadc_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmadc_vvm_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmadc_vvm_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2_nv0
@@ -73826,7 +73853,7 @@ covergroup Zve32x_vmadc_vvm_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmadc_vvm_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmadc_vvm_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2_nv0
@@ -74046,7 +74073,7 @@ covergroup Zve32x_vmadc_vvm_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmadc_vvm_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmadc_vvm_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2_nv0
@@ -74269,7 +74296,7 @@ covergroup Zve32x_vmadc_vvm_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmadc_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmadc_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmadc.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -74464,7 +74491,7 @@ covergroup Zve32x_vmadc_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmadc_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmadc_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmadc.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -74662,7 +74689,7 @@ covergroup Zve32x_vmadc_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmadc_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmadc_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmadc.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -74863,7 +74890,7 @@ covergroup Zve32x_vmadc_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmadc_vxm_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmadc_vxm_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmadc.vxm"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -75076,7 +75103,7 @@ covergroup Zve32x_vmadc_vxm_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmadc_vxm_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmadc_vxm_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmadc.vxm"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -75292,7 +75319,7 @@ covergroup Zve32x_vmadc_vxm_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmadc_vxm_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmadc_vxm_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmadc.vxm"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -75511,7 +75538,7 @@ covergroup Zve32x_vmadc_vxm_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmadd_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmadd_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -75713,7 +75740,7 @@ covergroup Zve32x_vmadd_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmadd_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmadd_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -75918,7 +75945,7 @@ covergroup Zve32x_vmadd_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmadd_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmadd_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -76126,7 +76153,7 @@ covergroup Zve32x_vmadd_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmadd_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmadd_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -76306,7 +76333,7 @@ covergroup Zve32x_vmadd_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmadd_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmadd_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -76489,7 +76516,7 @@ covergroup Zve32x_vmadd_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmadd_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmadd_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -76675,7 +76702,7 @@ covergroup Zve32x_vmadd_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmand_mm_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmand_mm_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -76902,7 +76929,7 @@ covergroup Zve32x_vmand_mm_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmand_mm_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmand_mm_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -77132,7 +77159,7 @@ covergroup Zve32x_vmand_mm_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmand_mm_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmand_mm_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -77365,7 +77392,7 @@ covergroup Zve32x_vmand_mm_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmandn_mm_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmandn_mm_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -77592,7 +77619,7 @@ covergroup Zve32x_vmandn_mm_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmandn_mm_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmandn_mm_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -77822,7 +77849,7 @@ covergroup Zve32x_vmandn_mm_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmandn_mm_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmandn_mm_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -78055,7 +78082,7 @@ covergroup Zve32x_vmandn_mm_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmax_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmax_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -78257,7 +78284,7 @@ covergroup Zve32x_vmax_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmax_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmax_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -78462,7 +78489,7 @@ covergroup Zve32x_vmax_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmax_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmax_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -78670,7 +78697,7 @@ covergroup Zve32x_vmax_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmax_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmax_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -78850,7 +78877,7 @@ covergroup Zve32x_vmax_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmax_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmax_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -79033,7 +79060,7 @@ covergroup Zve32x_vmax_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmax_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmax_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -79219,7 +79246,7 @@ covergroup Zve32x_vmax_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmaxu_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmaxu_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -79421,7 +79448,7 @@ covergroup Zve32x_vmaxu_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmaxu_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmaxu_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -79626,7 +79653,7 @@ covergroup Zve32x_vmaxu_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmaxu_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmaxu_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -79834,7 +79861,7 @@ covergroup Zve32x_vmaxu_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmaxu_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmaxu_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -80014,7 +80041,7 @@ covergroup Zve32x_vmaxu_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmaxu_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmaxu_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -80197,7 +80224,7 @@ covergroup Zve32x_vmaxu_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmaxu_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmaxu_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -80383,7 +80410,7 @@ covergroup Zve32x_vmaxu_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmerge_vim_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmerge_vim_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_nv0
@@ -80542,7 +80569,7 @@ covergroup Zve32x_vmerge_vim_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmerge_vim_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmerge_vim_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_nv0
@@ -80704,7 +80731,7 @@ covergroup Zve32x_vmerge_vim_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmerge_vim_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmerge_vim_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_nv0
@@ -80869,7 +80896,7 @@ covergroup Zve32x_vmerge_vim_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmerge_vvm_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmerge_vvm_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1_nv0
@@ -81078,7 +81105,7 @@ covergroup Zve32x_vmerge_vvm_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmerge_vvm_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmerge_vvm_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1_nv0
@@ -81290,7 +81317,7 @@ covergroup Zve32x_vmerge_vvm_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmerge_vvm_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmerge_vvm_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1_nv0
@@ -81505,7 +81532,7 @@ covergroup Zve32x_vmerge_vvm_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmerge_vxm_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmerge_vxm_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_nv0
@@ -81688,7 +81715,7 @@ covergroup Zve32x_vmerge_vxm_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmerge_vxm_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmerge_vxm_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_nv0
@@ -81874,7 +81901,7 @@ covergroup Zve32x_vmerge_vxm_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmerge_vxm_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmerge_vxm_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_nv0
@@ -82063,7 +82090,7 @@ covergroup Zve32x_vmerge_vxm_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmin_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmin_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -82265,7 +82292,7 @@ covergroup Zve32x_vmin_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmin_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmin_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -82470,7 +82497,7 @@ covergroup Zve32x_vmin_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmin_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmin_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -82678,7 +82705,7 @@ covergroup Zve32x_vmin_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmin_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmin_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -82858,7 +82885,7 @@ covergroup Zve32x_vmin_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmin_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmin_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -83041,7 +83068,7 @@ covergroup Zve32x_vmin_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmin_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmin_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -83227,7 +83254,7 @@ covergroup Zve32x_vmin_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vminu_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vminu_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -83429,7 +83456,7 @@ covergroup Zve32x_vminu_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vminu_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vminu_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -83634,7 +83661,7 @@ covergroup Zve32x_vminu_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vminu_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vminu_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -83842,7 +83869,7 @@ covergroup Zve32x_vminu_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vminu_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vminu_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -84022,7 +84049,7 @@ covergroup Zve32x_vminu_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vminu_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vminu_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -84205,7 +84232,7 @@ covergroup Zve32x_vminu_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vminu_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vminu_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -84391,7 +84418,7 @@ covergroup Zve32x_vminu_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmnand_mm_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmnand_mm_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -84618,7 +84645,7 @@ covergroup Zve32x_vmnand_mm_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmnand_mm_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmnand_mm_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -84848,7 +84875,7 @@ covergroup Zve32x_vmnand_mm_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmnand_mm_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmnand_mm_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -85081,7 +85108,7 @@ covergroup Zve32x_vmnand_mm_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmnor_mm_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmnor_mm_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -85308,7 +85335,7 @@ covergroup Zve32x_vmnor_mm_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmnor_mm_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmnor_mm_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -85538,7 +85565,7 @@ covergroup Zve32x_vmnor_mm_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmnor_mm_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmnor_mm_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -85771,7 +85798,7 @@ covergroup Zve32x_vmnor_mm_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmor_mm_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmor_mm_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -85998,7 +86025,7 @@ covergroup Zve32x_vmor_mm_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmor_mm_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmor_mm_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -86228,7 +86255,7 @@ covergroup Zve32x_vmor_mm_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmor_mm_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmor_mm_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -86461,7 +86488,7 @@ covergroup Zve32x_vmor_mm_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmorn_mm_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmorn_mm_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -86688,7 +86715,7 @@ covergroup Zve32x_vmorn_mm_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmorn_mm_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmorn_mm_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -86918,7 +86945,7 @@ covergroup Zve32x_vmorn_mm_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmorn_mm_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmorn_mm_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -87151,7 +87178,7 @@ covergroup Zve32x_vmorn_mm_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsbc_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsbc_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -87348,7 +87375,7 @@ covergroup Zve32x_vmsbc_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsbc_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsbc_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -87548,7 +87575,7 @@ covergroup Zve32x_vmsbc_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsbc_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsbc_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -87751,7 +87778,7 @@ covergroup Zve32x_vmsbc_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsbc_vvm_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsbc_vvm_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2_nv0
@@ -87968,7 +87995,7 @@ covergroup Zve32x_vmsbc_vvm_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsbc_vvm_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsbc_vvm_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2_nv0
@@ -88188,7 +88215,7 @@ covergroup Zve32x_vmsbc_vvm_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsbc_vvm_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsbc_vvm_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2_nv0
@@ -88411,7 +88438,7 @@ covergroup Zve32x_vmsbc_vvm_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsbc_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsbc_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsbc.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -88606,7 +88633,7 @@ covergroup Zve32x_vmsbc_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsbc_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsbc_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsbc.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -88804,7 +88831,7 @@ covergroup Zve32x_vmsbc_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsbc_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsbc_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsbc.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -89005,7 +89032,7 @@ covergroup Zve32x_vmsbc_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsbc_vxm_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsbc_vxm_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsbc.vxm"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -89218,7 +89245,7 @@ covergroup Zve32x_vmsbc_vxm_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsbc_vxm_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsbc_vxm_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsbc.vxm"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -89434,7 +89461,7 @@ covergroup Zve32x_vmsbc_vxm_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsbc_vxm_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsbc_vxm_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsbc.vxm"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -89653,7 +89680,7 @@ covergroup Zve32x_vmsbc_vxm_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsbf_m_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsbf_m_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsbf.m"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -89806,7 +89833,7 @@ covergroup Zve32x_vmsbf_m_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsbf_m_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsbf_m_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsbf.m"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -89962,7 +89989,7 @@ covergroup Zve32x_vmsbf_m_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsbf_m_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsbf_m_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsbf.m"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -90121,7 +90148,7 @@ covergroup Zve32x_vmsbf_m_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmseq_vi_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmseq_vi_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmseq.vi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -90309,7 +90336,7 @@ covergroup Zve32x_vmseq_vi_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmseq_vi_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmseq_vi_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmseq.vi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -90500,7 +90527,7 @@ covergroup Zve32x_vmseq_vi_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmseq_vi_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmseq_vi_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmseq.vi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -90694,7 +90721,7 @@ covergroup Zve32x_vmseq_vi_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmseq_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmseq_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -90908,7 +90935,7 @@ covergroup Zve32x_vmseq_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmseq_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmseq_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -91125,7 +91152,7 @@ covergroup Zve32x_vmseq_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmseq_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmseq_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -91345,7 +91372,7 @@ covergroup Zve32x_vmseq_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmseq_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmseq_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmseq.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -91557,7 +91584,7 @@ covergroup Zve32x_vmseq_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmseq_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmseq_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmseq.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -91772,7 +91799,7 @@ covergroup Zve32x_vmseq_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmseq_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmseq_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmseq.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -91990,7 +92017,7 @@ covergroup Zve32x_vmseq_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsgt_vi_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsgt_vi_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsgt.vi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -92178,7 +92205,7 @@ covergroup Zve32x_vmsgt_vi_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsgt_vi_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsgt_vi_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsgt.vi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -92369,7 +92396,7 @@ covergroup Zve32x_vmsgt_vi_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsgt_vi_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsgt_vi_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsgt.vi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -92563,7 +92590,7 @@ covergroup Zve32x_vmsgt_vi_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsgt_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsgt_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsgt.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -92775,7 +92802,7 @@ covergroup Zve32x_vmsgt_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsgt_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsgt_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsgt.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -92990,7 +93017,7 @@ covergroup Zve32x_vmsgt_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsgt_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsgt_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsgt.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -93208,7 +93235,7 @@ covergroup Zve32x_vmsgt_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsgtu_vi_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsgtu_vi_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsgtu.vi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -93396,7 +93423,7 @@ covergroup Zve32x_vmsgtu_vi_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsgtu_vi_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsgtu_vi_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsgtu.vi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -93587,7 +93614,7 @@ covergroup Zve32x_vmsgtu_vi_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsgtu_vi_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsgtu_vi_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsgtu.vi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -93781,7 +93808,7 @@ covergroup Zve32x_vmsgtu_vi_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsgtu_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsgtu_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsgtu.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -93993,7 +94020,7 @@ covergroup Zve32x_vmsgtu_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsgtu_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsgtu_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsgtu.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -94208,7 +94235,7 @@ covergroup Zve32x_vmsgtu_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsgtu_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsgtu_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsgtu.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -94426,7 +94453,7 @@ covergroup Zve32x_vmsgtu_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsif_m_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsif_m_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsif.m"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -94579,7 +94606,7 @@ covergroup Zve32x_vmsif_m_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsif_m_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsif_m_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsif.m"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -94735,7 +94762,7 @@ covergroup Zve32x_vmsif_m_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsif_m_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsif_m_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsif.m"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -94894,7 +94921,7 @@ covergroup Zve32x_vmsif_m_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsle_vi_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsle_vi_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsle.vi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -95082,7 +95109,7 @@ covergroup Zve32x_vmsle_vi_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsle_vi_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsle_vi_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsle.vi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -95273,7 +95300,7 @@ covergroup Zve32x_vmsle_vi_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsle_vi_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsle_vi_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsle.vi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -95467,7 +95494,7 @@ covergroup Zve32x_vmsle_vi_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsle_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsle_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -95681,7 +95708,7 @@ covergroup Zve32x_vmsle_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsle_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsle_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -95898,7 +95925,7 @@ covergroup Zve32x_vmsle_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsle_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsle_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -96118,7 +96145,7 @@ covergroup Zve32x_vmsle_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsle_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsle_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsle.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -96330,7 +96357,7 @@ covergroup Zve32x_vmsle_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsle_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsle_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsle.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -96545,7 +96572,7 @@ covergroup Zve32x_vmsle_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsle_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsle_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsle.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -96763,7 +96790,7 @@ covergroup Zve32x_vmsle_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsleu_vi_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsleu_vi_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsleu.vi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -96951,7 +96978,7 @@ covergroup Zve32x_vmsleu_vi_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsleu_vi_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsleu_vi_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsleu.vi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -97142,7 +97169,7 @@ covergroup Zve32x_vmsleu_vi_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsleu_vi_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsleu_vi_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsleu.vi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -97336,7 +97363,7 @@ covergroup Zve32x_vmsleu_vi_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsleu_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsleu_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -97550,7 +97577,7 @@ covergroup Zve32x_vmsleu_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsleu_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsleu_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -97767,7 +97794,7 @@ covergroup Zve32x_vmsleu_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsleu_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsleu_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -97987,7 +98014,7 @@ covergroup Zve32x_vmsleu_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsleu_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsleu_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsleu.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -98199,7 +98226,7 @@ covergroup Zve32x_vmsleu_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsleu_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsleu_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsleu.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -98414,7 +98441,7 @@ covergroup Zve32x_vmsleu_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsleu_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsleu_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsleu.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -98632,7 +98659,7 @@ covergroup Zve32x_vmsleu_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmslt_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmslt_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -98846,7 +98873,7 @@ covergroup Zve32x_vmslt_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmslt_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmslt_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -99063,7 +99090,7 @@ covergroup Zve32x_vmslt_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmslt_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmslt_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -99283,7 +99310,7 @@ covergroup Zve32x_vmslt_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmslt_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmslt_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmslt.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -99495,7 +99522,7 @@ covergroup Zve32x_vmslt_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmslt_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmslt_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmslt.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -99710,7 +99737,7 @@ covergroup Zve32x_vmslt_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmslt_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmslt_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmslt.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -99928,7 +99955,7 @@ covergroup Zve32x_vmslt_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsltu_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsltu_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -100142,7 +100169,7 @@ covergroup Zve32x_vmsltu_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsltu_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsltu_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -100359,7 +100386,7 @@ covergroup Zve32x_vmsltu_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsltu_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsltu_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -100579,7 +100606,7 @@ covergroup Zve32x_vmsltu_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsltu_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsltu_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsltu.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -100791,7 +100818,7 @@ covergroup Zve32x_vmsltu_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsltu_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsltu_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsltu.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -101006,7 +101033,7 @@ covergroup Zve32x_vmsltu_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsltu_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsltu_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsltu.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -101224,7 +101251,7 @@ covergroup Zve32x_vmsltu_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsne_vi_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsne_vi_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsne.vi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -101412,7 +101439,7 @@ covergroup Zve32x_vmsne_vi_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsne_vi_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsne_vi_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsne.vi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -101603,7 +101630,7 @@ covergroup Zve32x_vmsne_vi_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsne_vi_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsne_vi_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsne.vi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -101797,7 +101824,7 @@ covergroup Zve32x_vmsne_vi_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsne_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsne_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -102011,7 +102038,7 @@ covergroup Zve32x_vmsne_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsne_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsne_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -102228,7 +102255,7 @@ covergroup Zve32x_vmsne_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsne_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsne_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -102448,7 +102475,7 @@ covergroup Zve32x_vmsne_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsne_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsne_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsne.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -102660,7 +102687,7 @@ covergroup Zve32x_vmsne_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsne_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsne_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsne.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -102875,7 +102902,7 @@ covergroup Zve32x_vmsne_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsne_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsne_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsne.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -103093,7 +103120,7 @@ covergroup Zve32x_vmsne_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsof_m_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsof_m_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsof.m"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -103246,7 +103273,7 @@ covergroup Zve32x_vmsof_m_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsof_m_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsof_m_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsof.m"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -103402,7 +103429,7 @@ covergroup Zve32x_vmsof_m_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmsof_m_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmsof_m_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmsof.m"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -103561,7 +103588,7 @@ covergroup Zve32x_vmsof_m_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmul_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmul_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -103763,7 +103790,7 @@ covergroup Zve32x_vmul_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmul_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmul_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -103968,7 +103995,7 @@ covergroup Zve32x_vmul_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmul_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmul_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -104176,7 +104203,7 @@ covergroup Zve32x_vmul_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmul_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmul_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -104356,7 +104383,7 @@ covergroup Zve32x_vmul_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmul_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmul_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -104539,7 +104566,7 @@ covergroup Zve32x_vmul_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmul_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmul_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -104725,7 +104752,7 @@ covergroup Zve32x_vmul_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmulh_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmulh_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -104927,7 +104954,7 @@ covergroup Zve32x_vmulh_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmulh_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmulh_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -105132,7 +105159,7 @@ covergroup Zve32x_vmulh_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmulh_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmulh_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -105340,7 +105367,7 @@ covergroup Zve32x_vmulh_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmulh_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmulh_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -105520,7 +105547,7 @@ covergroup Zve32x_vmulh_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmulh_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmulh_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -105703,7 +105730,7 @@ covergroup Zve32x_vmulh_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmulh_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmulh_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -105889,7 +105916,7 @@ covergroup Zve32x_vmulh_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmulhsu_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmulhsu_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -106091,7 +106118,7 @@ covergroup Zve32x_vmulhsu_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmulhsu_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmulhsu_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -106296,7 +106323,7 @@ covergroup Zve32x_vmulhsu_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmulhsu_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmulhsu_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -106504,7 +106531,7 @@ covergroup Zve32x_vmulhsu_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmulhsu_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmulhsu_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -106684,7 +106711,7 @@ covergroup Zve32x_vmulhsu_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmulhsu_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmulhsu_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -106867,7 +106894,7 @@ covergroup Zve32x_vmulhsu_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmulhsu_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmulhsu_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -107053,7 +107080,7 @@ covergroup Zve32x_vmulhsu_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmulhu_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmulhu_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -107255,7 +107282,7 @@ covergroup Zve32x_vmulhu_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmulhu_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmulhu_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -107460,7 +107487,7 @@ covergroup Zve32x_vmulhu_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmulhu_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmulhu_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -107668,7 +107695,7 @@ covergroup Zve32x_vmulhu_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmulhu_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmulhu_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -107848,7 +107875,7 @@ covergroup Zve32x_vmulhu_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmulhu_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmulhu_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -108031,7 +108058,7 @@ covergroup Zve32x_vmulhu_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmulhu_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmulhu_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -108217,7 +108244,7 @@ covergroup Zve32x_vmulhu_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmv_s_x_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmv_s_x_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmv.s.x"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -108384,7 +108411,7 @@ covergroup Zve32x_vmv_s_x_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmv_s_x_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmv_s_x_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmv.s.x"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -108554,7 +108581,7 @@ covergroup Zve32x_vmv_s_x_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmv_s_x_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmv_s_x_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmv.s.x"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -108727,7 +108754,7 @@ covergroup Zve32x_vmv_s_x_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmv_v_i_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmv_v_i_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmv.v.i"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -108811,7 +108838,7 @@ covergroup Zve32x_vmv_v_i_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmv_v_i_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmv_v_i_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmv.v.i"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -108898,7 +108925,7 @@ covergroup Zve32x_vmv_v_i_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmv_v_i_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmv_v_i_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmv.v.i"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -108988,7 +109015,7 @@ covergroup Zve32x_vmv_v_i_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmv_v_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmv_v_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -109110,7 +109137,7 @@ covergroup Zve32x_vmv_v_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmv_v_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmv_v_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -109235,7 +109262,7 @@ covergroup Zve32x_vmv_v_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmv_v_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmv_v_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -109363,7 +109390,7 @@ covergroup Zve32x_vmv_v_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmv_v_x_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmv_v_x_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmv.v.x"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -109483,7 +109510,7 @@ covergroup Zve32x_vmv_v_x_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmv_v_x_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmv_v_x_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmv.v.x"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -109606,7 +109633,7 @@ covergroup Zve32x_vmv_v_x_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmv_v_x_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmv_v_x_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmv.v.x"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -109732,7 +109759,7 @@ covergroup Zve32x_vmv_v_x_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmv_x_s_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmv_x_s_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmv.x.s"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -109907,7 +109934,7 @@ covergroup Zve32x_vmv_x_s_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmv_x_s_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmv_x_s_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmv.x.s"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -110085,7 +110112,7 @@ covergroup Zve32x_vmv_x_s_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmv_x_s_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmv_x_s_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vmv.x.s"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -110266,7 +110293,7 @@ covergroup Zve32x_vmv_x_s_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmv1r_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmv1r_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -110366,7 +110393,7 @@ covergroup Zve32x_vmv1r_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmv1r_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmv1r_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -110469,7 +110496,7 @@ covergroup Zve32x_vmv1r_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmv1r_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmv1r_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -110575,7 +110602,7 @@ covergroup Zve32x_vmv1r_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmv2r_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmv2r_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_emul2
@@ -110723,7 +110750,7 @@ covergroup Zve32x_vmv2r_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmv2r_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmv2r_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_emul2
@@ -110874,7 +110901,7 @@ covergroup Zve32x_vmv2r_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmv2r_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmv2r_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_emul2
@@ -111028,7 +111055,7 @@ covergroup Zve32x_vmv2r_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmv4r_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmv4r_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_emul4
@@ -111184,7 +111211,7 @@ covergroup Zve32x_vmv4r_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmv4r_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmv4r_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_emul4
@@ -111343,7 +111370,7 @@ covergroup Zve32x_vmv4r_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmv4r_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmv4r_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_emul4
@@ -111505,7 +111532,7 @@ covergroup Zve32x_vmv4r_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmv8r_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmv8r_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_emul8
@@ -111665,7 +111692,7 @@ covergroup Zve32x_vmv8r_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmv8r_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmv8r_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_emul8
@@ -111828,7 +111855,7 @@ covergroup Zve32x_vmv8r_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmv8r_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmv8r_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_emul8
@@ -111994,7 +112021,7 @@ covergroup Zve32x_vmv8r_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmxnor_mm_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmxnor_mm_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -112221,7 +112248,7 @@ covergroup Zve32x_vmxnor_mm_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmxnor_mm_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmxnor_mm_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -112451,7 +112478,7 @@ covergroup Zve32x_vmxnor_mm_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmxnor_mm_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmxnor_mm_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -112684,7 +112711,7 @@ covergroup Zve32x_vmxnor_mm_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmxor_mm_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vmxor_mm_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -112911,7 +112938,7 @@ covergroup Zve32x_vmxor_mm_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmxor_mm_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vmxor_mm_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -113141,7 +113168,7 @@ covergroup Zve32x_vmxor_mm_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vmxor_mm_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vmxor_mm_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -113374,7 +113401,7 @@ covergroup Zve32x_vmxor_mm_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vnclip_wi_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vnclip_wi_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vnclip.wi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -113690,7 +113717,7 @@ covergroup Zve32x_vnclip_wi_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vnclip_wi_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vnclip_wi_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vnclip.wi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -114009,7 +114036,7 @@ covergroup Zve32x_vnclip_wi_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vnclip_wv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vnclip_wv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -114287,7 +114314,7 @@ covergroup Zve32x_vnclip_wv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vnclip_wv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vnclip_wv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -114568,7 +114595,7 @@ covergroup Zve32x_vnclip_wv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vnclip_wx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vnclip_wx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vnclip.wx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -114849,7 +114876,7 @@ covergroup Zve32x_vnclip_wx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vnclip_wx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vnclip_wx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vnclip.wx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -115133,7 +115160,7 @@ covergroup Zve32x_vnclip_wx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vnclipu_wi_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vnclipu_wi_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vnclipu.wi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -115449,7 +115476,7 @@ covergroup Zve32x_vnclipu_wi_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vnclipu_wi_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vnclipu_wi_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vnclipu.wi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -115768,7 +115795,7 @@ covergroup Zve32x_vnclipu_wi_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vnclipu_wv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vnclipu_wv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -116046,7 +116073,7 @@ covergroup Zve32x_vnclipu_wv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vnclipu_wv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vnclipu_wv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -116327,7 +116354,7 @@ covergroup Zve32x_vnclipu_wv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vnclipu_wx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vnclipu_wx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vnclipu.wx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -116608,7 +116635,7 @@ covergroup Zve32x_vnclipu_wx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vnclipu_wx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vnclipu_wx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vnclipu.wx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -116892,7 +116919,209 @@ covergroup Zve32x_vnclipu_wx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vnmsac_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vnmsac_vv_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cmp_vd_vs1
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cmp_vd_vs1 : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.current.vd == ins.current.vs1 & ins.trap == 0 )  {
+        // Compare assignments of all 32 registers
+    }
+
+    //// end cmp_vd_vs1////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cmp_vd_vs1_vs2
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cmp_vd_vs1_vs2 : coverpoint ins.get_vr_reg(ins.current.vd) iff (ins.current.vd == ins.current.vs1 & ins.current.vd == ins.current.vs2 & ins.trap == 0 )  {
+        // Compare assignments of all 32 registers
+    }
+
+        //// end cmp_vd_vs1_vs2////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cmp_vd_vs2
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cmp_vd_vs2 : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.current.vd == ins.current.vs2 & ins.trap == 0 )  {
+        // Compare assignments of all 32 registers
+    }
+
+    //// end cmp_vd_vs2////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cmp_vs1_vs2
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cmp_vs1_vs2 : coverpoint ins.get_vr_reg(ins.current.vs1)  iff (ins.current.vs1 == ins.current.vs2 & ins.trap == 0 )  {
+        // Compare assignments of all 32 registers
+    }
+
+    //// eend cmp_vs1_vs2////////////////////////////////////////////////
+
+    cp_asm_count : coverpoint ins.ins_str == "vnmsac.vv"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+    cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
+        // Edges values of v0 (vector mask register)
+        bins zero           = {mask_zero            };
+        bins ones           = {mask_ones            };
+        bins vlmaxm1ones    = {mask_vlmaxm1ones     };
+        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        bins random         = {mask_random          };
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vd
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vd : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.trap == 0 )  {
+        // VD register assignment
+    }
+
+    //// end cp_vd////////////////////////////////////////////////
+
+    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+    bins zero = {0};
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vs1
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vs1 : coverpoint ins.get_vr_reg(ins.current.vs1)  iff (ins.trap == 0 )  {
+        // VS1 register assignment
+    }
+
+    //// end cp_vs1////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vs1_edges
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vs1_edges : coverpoint vs_edges_check(ins.hart, ins.issue, ins.current.vs1_val, "1")  iff (ins.trap == 0 )  {
+        // Edges values of vs1, assuming vl = 1
+        bins zero       = {vs_zero      };   //  = {(`SEW){1'b0}},
+        bins one        = {vs_one       };   //  = {(`SEW-1){1'b0}, {1'b1}},
+        bins two        = {vs_two       };   //  = {(`SEW-2){1'b0}, {2'b10}},
+        bins min        = {vs_min       };   //  = {{1'b1}, (`SEW-1){1'b0}},
+        bins minp1      = {vs_minp1     };   //  = {{1'b1}, (`SEW-2){1'b0}, {1'b1}},
+        bins max        = {vs_max       };   //  = {{1'b0}, (`SEW-1){1'b1}},
+        bins maxm1      = {vs_maxm1     };   //  = {{1'b0}, (`SEW-2){1'b1}, {1'b0}},
+        bins ones       = {vs_ones      };   //  = {(`SEW){1'b1}},
+        bins onesm1     = {vs_onesm1    };   //  = {(`SEW-1){1'b1}, {1'b0}},
+        bins walkodd    = {vs_walkodd   };   //  = {(`SEW/2){2'b10}},
+        bins walkeven   = {vs_walkeven  };   //  = {(`SEW/2){2'b01}},
+        bins random     = {vs_random    };   //  = {(SEW){random}}
+    }
+
+    //// end cp_vs1_edges////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vs2
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vs2 : coverpoint ins.get_vr_reg(ins.current.vs2)  iff (ins.trap == 0 )  {
+        // VS2 register assignment
+    }
+
+    //// end cp_vs2////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vs2_edges
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vs2_edges : coverpoint vs_edges_check(ins.hart, ins.issue, ins.current.vs2_val, "1")  iff (ins.trap == 0 )  {
+        // Edges values of vs2, assuming vl = 1
+        bins zero       = {vs_zero      };   //  = {(`SEW){1'b0}},
+        bins one        = {vs_one       };   //  = {(`SEW-1){1'b0}, {1'b1}},
+        bins two        = {vs_two       };   //  = {(`SEW-2){1'b0}, {2'b10}},
+        bins min        = {vs_min       };   //  = {{1'b1}, (`SEW-1){1'b0}},
+        bins minp1      = {vs_minp1     };   //  = {{1'b1}, (`SEW-2){1'b0}, {1'b1}},
+        bins max        = {vs_max       };   //  = {{1'b0}, (`SEW-1){1'b1}},
+        bins maxm1      = {vs_maxm1     };   //  = {{1'b0}, (`SEW-2){1'b1}, {1'b0}},
+        bins ones       = {vs_ones      };   //  = {(`SEW){1'b1}},
+        bins onesm1     = {vs_onesm1    };   //  = {(`SEW-1){1'b1}, {1'b0}},
+        bins walkodd    = {vs_walkodd   };   //  = {(`SEW/2){2'b10}},
+        bins walkeven   = {vs_walkeven  };   //  = {(`SEW/2){2'b01}},
+        bins random     = {vs_random    };   //  = {(SEW){random}}
+    }
+
+    //// end cp_vs2_edges////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cr_vl_lmul_sew32
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vtype_lmul_all_sew32_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2) {
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 32
+        `ifdef LMULf2_SUPPORTED
+            bins half   = {7};
+        `endif
+        bins one    = {0};
+        bins two    = {1};
+        bins four   = {2};
+        bins eight  = {3};
+    }
+
+    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
+        // Edges values of VL (vector length)
+        bins one        = {vl_one       };
+        bins vlmax      = {vl_vlmax     };
+        bins legal      = {vl_legal     };
+    }
+
+    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+        // Cross coverage all legal LMULs for SEW = 32 and vl edges (1, random, vlmax)
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+
+    //// end cr_vl_lmul_sew32////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cr_vs2_vs1_edges
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cr_vs2_vs1_edges : cross cp_vs2_edges,cp_vs1_edges  iff (ins.trap == 0 )  {
+        // Cross coverage of VS2 edges and VS1 edges
+    }
+
+    //// end cr_vs2_vs1_edges////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cr_vtype_agnostic
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+        // Value of VTYPE.vta (vector tail agnostic)
+        bins undisturbed = {0};
+        bins agnostic    = {1};
+    }
+
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+        // Value of VTYPE.vma (vector mask agnostic)
+        bins undisturbed = {0};
+        bins agnostic    = {1};
+    }
+
+    mask_enabled_agnostic: coverpoint ins.current.insn[25] {
+        bins enabled = {1'b0};
+    }
+
+    cr_vtype_agnostic : cross cp_csr_vtype_vta,cp_csr_vtype_vma,mask_enabled_agnostic iff (ins.trap == 0 )  {
+        // Cross coverage of vector tail and mask agnostic behaviors
+    }
+
+    //// end cr_vtype_agnostic////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup Zve32x_vnmsac_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -117097,7 +117326,7 @@ covergroup Zve32x_vnmsac_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vnmsac_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vnmsac_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -117305,7 +117534,187 @@ covergroup Zve32x_vnmsac_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vnmsac_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vnmsac_vx_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cmp_vd_vs2
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cmp_vd_vs2 : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.current.vd == ins.current.vs2 & ins.trap == 0 )  {
+        // Compare assignments of all 32 registers
+    }
+
+    //// end cmp_vd_vs2////////////////////////////////////////////////
+
+    cp_asm_count : coverpoint ins.ins_str == "vnmsac.vx"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+    cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
+        // Edges values of v0 (vector mask register)
+        bins zero           = {mask_zero            };
+        bins ones           = {mask_ones            };
+        bins vlmaxm1ones    = {mask_vlmaxm1ones     };
+        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        bins random         = {mask_random          };
+    }
+
+    cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
+        // RS1 register assignment
+    }
+
+    cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
+        `ifdef UDB_MXLEN_32
+            bins zero     = {0};
+            bins one      = {32'b00000000000000000000000000000001};
+            bins two      = {32'b00000000000000000000000000000010};
+            bins min      = {32'b10000000000000000000000000000000};
+            bins minp1    = {32'b10000000000000000000000000000001};
+            bins max      = {32'b01111111111111111111111111111111};
+            bins maxm1    = {32'b01111111111111111111111111111110};
+            bins ones     = {32'b11111111111111111111111111111111};
+            bins onesm1   = {32'b11111111111111111111111111111110};
+            bins walkodd  = {32'b10101010101010101010101010101010};
+            bins walkeven = {32'b01010101010101010101010101010101};
+            wildcard bins random = {32'b01???????????????????????????010};
+        `else
+            bins zero  = {0};
+            bins one      = {64'b0000000000000000000000000000000000000000000000000000000000000001};
+            bins two      = {64'b0000000000000000000000000000000000000000000000000000000000000010};
+            bins min      = {64'b1000000000000000000000000000000000000000000000000000000000000000};
+            bins minp1    = {64'b1000000000000000000000000000000000000000000000000000000000000001};
+            bins Wmax     = {64'b0000000000000000000000000000000011111111111111111111111111111111};
+            bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
+            bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
+            bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
+            bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
+            bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
+            bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
+            bins onesm1   = {64'b1111111111111111111111111111111111111111111111111111111111111110};
+            bins walkodd  = {64'b1010101010101010101010101010101010101010101010101010101010101010};
+            bins walkeven = {64'b0101010101010101010101010101010101010101010101010101010101010101};
+            wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
+        `endif
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vd
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vd : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.trap == 0 )  {
+        // VD register assignment
+    }
+
+    //// end cp_vd////////////////////////////////////////////////
+
+    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+    bins zero = {0};
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vs2
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vs2 : coverpoint ins.get_vr_reg(ins.current.vs2)  iff (ins.trap == 0 )  {
+        // VS2 register assignment
+    }
+
+    //// end cp_vs2////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vs2_edges
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vs2_edges : coverpoint vs_edges_check(ins.hart, ins.issue, ins.current.vs2_val, "1")  iff (ins.trap == 0 )  {
+        // Edges values of vs2, assuming vl = 1
+        bins zero       = {vs_zero      };   //  = {(`SEW){1'b0}},
+        bins one        = {vs_one       };   //  = {(`SEW-1){1'b0}, {1'b1}},
+        bins two        = {vs_two       };   //  = {(`SEW-2){1'b0}, {2'b10}},
+        bins min        = {vs_min       };   //  = {{1'b1}, (`SEW-1){1'b0}},
+        bins minp1      = {vs_minp1     };   //  = {{1'b1}, (`SEW-2){1'b0}, {1'b1}},
+        bins max        = {vs_max       };   //  = {{1'b0}, (`SEW-1){1'b1}},
+        bins maxm1      = {vs_maxm1     };   //  = {{1'b0}, (`SEW-2){1'b1}, {1'b0}},
+        bins ones       = {vs_ones      };   //  = {(`SEW){1'b1}},
+        bins onesm1     = {vs_onesm1    };   //  = {(`SEW-1){1'b1}, {1'b0}},
+        bins walkodd    = {vs_walkodd   };   //  = {(`SEW/2){2'b10}},
+        bins walkeven   = {vs_walkeven  };   //  = {(`SEW/2){2'b01}},
+        bins random     = {vs_random    };   //  = {(SEW){random}}
+    }
+
+    //// end cp_vs2_edges////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cr_vl_lmul_sew32
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vtype_lmul_all_sew32_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2) {
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 32
+        `ifdef LMULf2_SUPPORTED
+            bins half   = {7};
+        `endif
+        bins one    = {0};
+        bins two    = {1};
+        bins four   = {2};
+        bins eight  = {3};
+    }
+
+    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
+        // Edges values of VL (vector length)
+        bins one        = {vl_one       };
+        bins vlmax      = {vl_vlmax     };
+        bins legal      = {vl_legal     };
+    }
+
+    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+        // Cross coverage all legal LMULs for SEW = 32 and vl edges (1, random, vlmax)
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+
+    //// end cr_vl_lmul_sew32////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cr_vs2_rs1_edges
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cr_vs2_rs1_edges : cross cp_vs2_edges,cp_rs1_edges  iff (ins.trap == 0 )  {
+        // Cross coverage of VS2 edges and RS1 edges
+    }
+
+    //// end cr_vs2_rs1_edges////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cr_vtype_agnostic
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+        // Value of VTYPE.vta (vector tail agnostic)
+        bins undisturbed = {0};
+        bins agnostic    = {1};
+    }
+
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+        // Value of VTYPE.vma (vector mask agnostic)
+        bins undisturbed = {0};
+        bins agnostic    = {1};
+    }
+
+    mask_enabled_agnostic: coverpoint ins.current.insn[25] {
+        bins enabled = {1'b0};
+    }
+
+    cr_vtype_agnostic : cross cp_csr_vtype_vta,cp_csr_vtype_vma,mask_enabled_agnostic iff (ins.trap == 0 )  {
+        // Cross coverage of vector tail and mask agnostic behaviors
+    }
+
+    //// end cr_vtype_agnostic////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup Zve32x_vnmsac_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -117488,7 +117897,7 @@ covergroup Zve32x_vnmsac_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vnmsac_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vnmsac_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -117674,7 +118083,209 @@ covergroup Zve32x_vnmsac_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vnmsub_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vnmsub_vv_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cmp_vd_vs1
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cmp_vd_vs1 : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.current.vd == ins.current.vs1 & ins.trap == 0 )  {
+        // Compare assignments of all 32 registers
+    }
+
+    //// end cmp_vd_vs1////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cmp_vd_vs1_vs2
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cmp_vd_vs1_vs2 : coverpoint ins.get_vr_reg(ins.current.vd) iff (ins.current.vd == ins.current.vs1 & ins.current.vd == ins.current.vs2 & ins.trap == 0 )  {
+        // Compare assignments of all 32 registers
+    }
+
+        //// end cmp_vd_vs1_vs2////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cmp_vd_vs2
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cmp_vd_vs2 : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.current.vd == ins.current.vs2 & ins.trap == 0 )  {
+        // Compare assignments of all 32 registers
+    }
+
+    //// end cmp_vd_vs2////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cmp_vs1_vs2
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cmp_vs1_vs2 : coverpoint ins.get_vr_reg(ins.current.vs1)  iff (ins.current.vs1 == ins.current.vs2 & ins.trap == 0 )  {
+        // Compare assignments of all 32 registers
+    }
+
+    //// eend cmp_vs1_vs2////////////////////////////////////////////////
+
+    cp_asm_count : coverpoint ins.ins_str == "vnmsub.vv"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+    cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
+        // Edges values of v0 (vector mask register)
+        bins zero           = {mask_zero            };
+        bins ones           = {mask_ones            };
+        bins vlmaxm1ones    = {mask_vlmaxm1ones     };
+        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        bins random         = {mask_random          };
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vd
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vd : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.trap == 0 )  {
+        // VD register assignment
+    }
+
+    //// end cp_vd////////////////////////////////////////////////
+
+    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+    bins zero = {0};
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vs1
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vs1 : coverpoint ins.get_vr_reg(ins.current.vs1)  iff (ins.trap == 0 )  {
+        // VS1 register assignment
+    }
+
+    //// end cp_vs1////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vs1_edges
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vs1_edges : coverpoint vs_edges_check(ins.hart, ins.issue, ins.current.vs1_val, "1")  iff (ins.trap == 0 )  {
+        // Edges values of vs1, assuming vl = 1
+        bins zero       = {vs_zero      };   //  = {(`SEW){1'b0}},
+        bins one        = {vs_one       };   //  = {(`SEW-1){1'b0}, {1'b1}},
+        bins two        = {vs_two       };   //  = {(`SEW-2){1'b0}, {2'b10}},
+        bins min        = {vs_min       };   //  = {{1'b1}, (`SEW-1){1'b0}},
+        bins minp1      = {vs_minp1     };   //  = {{1'b1}, (`SEW-2){1'b0}, {1'b1}},
+        bins max        = {vs_max       };   //  = {{1'b0}, (`SEW-1){1'b1}},
+        bins maxm1      = {vs_maxm1     };   //  = {{1'b0}, (`SEW-2){1'b1}, {1'b0}},
+        bins ones       = {vs_ones      };   //  = {(`SEW){1'b1}},
+        bins onesm1     = {vs_onesm1    };   //  = {(`SEW-1){1'b1}, {1'b0}},
+        bins walkodd    = {vs_walkodd   };   //  = {(`SEW/2){2'b10}},
+        bins walkeven   = {vs_walkeven  };   //  = {(`SEW/2){2'b01}},
+        bins random     = {vs_random    };   //  = {(SEW){random}}
+    }
+
+    //// end cp_vs1_edges////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vs2
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vs2 : coverpoint ins.get_vr_reg(ins.current.vs2)  iff (ins.trap == 0 )  {
+        // VS2 register assignment
+    }
+
+    //// end cp_vs2////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vs2_edges
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vs2_edges : coverpoint vs_edges_check(ins.hart, ins.issue, ins.current.vs2_val, "1")  iff (ins.trap == 0 )  {
+        // Edges values of vs2, assuming vl = 1
+        bins zero       = {vs_zero      };   //  = {(`SEW){1'b0}},
+        bins one        = {vs_one       };   //  = {(`SEW-1){1'b0}, {1'b1}},
+        bins two        = {vs_two       };   //  = {(`SEW-2){1'b0}, {2'b10}},
+        bins min        = {vs_min       };   //  = {{1'b1}, (`SEW-1){1'b0}},
+        bins minp1      = {vs_minp1     };   //  = {{1'b1}, (`SEW-2){1'b0}, {1'b1}},
+        bins max        = {vs_max       };   //  = {{1'b0}, (`SEW-1){1'b1}},
+        bins maxm1      = {vs_maxm1     };   //  = {{1'b0}, (`SEW-2){1'b1}, {1'b0}},
+        bins ones       = {vs_ones      };   //  = {(`SEW){1'b1}},
+        bins onesm1     = {vs_onesm1    };   //  = {(`SEW-1){1'b1}, {1'b0}},
+        bins walkodd    = {vs_walkodd   };   //  = {(`SEW/2){2'b10}},
+        bins walkeven   = {vs_walkeven  };   //  = {(`SEW/2){2'b01}},
+        bins random     = {vs_random    };   //  = {(SEW){random}}
+    }
+
+    //// end cp_vs2_edges////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cr_vl_lmul_sew32
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vtype_lmul_all_sew32_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2) {
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 32
+        `ifdef LMULf2_SUPPORTED
+            bins half   = {7};
+        `endif
+        bins one    = {0};
+        bins two    = {1};
+        bins four   = {2};
+        bins eight  = {3};
+    }
+
+    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
+        // Edges values of VL (vector length)
+        bins one        = {vl_one       };
+        bins vlmax      = {vl_vlmax     };
+        bins legal      = {vl_legal     };
+    }
+
+    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+        // Cross coverage all legal LMULs for SEW = 32 and vl edges (1, random, vlmax)
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+
+    //// end cr_vl_lmul_sew32////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cr_vs2_vs1_edges
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cr_vs2_vs1_edges : cross cp_vs2_edges,cp_vs1_edges  iff (ins.trap == 0 )  {
+        // Cross coverage of VS2 edges and VS1 edges
+    }
+
+    //// end cr_vs2_vs1_edges////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cr_vtype_agnostic
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+        // Value of VTYPE.vta (vector tail agnostic)
+        bins undisturbed = {0};
+        bins agnostic    = {1};
+    }
+
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+        // Value of VTYPE.vma (vector mask agnostic)
+        bins undisturbed = {0};
+        bins agnostic    = {1};
+    }
+
+    mask_enabled_agnostic: coverpoint ins.current.insn[25] {
+        bins enabled = {1'b0};
+    }
+
+    cr_vtype_agnostic : cross cp_csr_vtype_vta,cp_csr_vtype_vma,mask_enabled_agnostic iff (ins.trap == 0 )  {
+        // Cross coverage of vector tail and mask agnostic behaviors
+    }
+
+    //// end cr_vtype_agnostic////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup Zve32x_vnmsub_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -117879,7 +118490,7 @@ covergroup Zve32x_vnmsub_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vnmsub_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vnmsub_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -118087,7 +118698,187 @@ covergroup Zve32x_vnmsub_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vnmsub_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vnmsub_vx_sew32_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cmp_vd_vs2
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cmp_vd_vs2 : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.current.vd == ins.current.vs2 & ins.trap == 0 )  {
+        // Compare assignments of all 32 registers
+    }
+
+    //// end cmp_vd_vs2////////////////////////////////////////////////
+
+    cp_asm_count : coverpoint ins.ins_str == "vnmsub.vx"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+    cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
+        // Edges values of v0 (vector mask register)
+        bins zero           = {mask_zero            };
+        bins ones           = {mask_ones            };
+        bins vlmaxm1ones    = {mask_vlmaxm1ones     };
+        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        bins random         = {mask_random          };
+    }
+
+    cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
+        // RS1 register assignment
+    }
+
+    cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
+        `ifdef UDB_MXLEN_32
+            bins zero     = {0};
+            bins one      = {32'b00000000000000000000000000000001};
+            bins two      = {32'b00000000000000000000000000000010};
+            bins min      = {32'b10000000000000000000000000000000};
+            bins minp1    = {32'b10000000000000000000000000000001};
+            bins max      = {32'b01111111111111111111111111111111};
+            bins maxm1    = {32'b01111111111111111111111111111110};
+            bins ones     = {32'b11111111111111111111111111111111};
+            bins onesm1   = {32'b11111111111111111111111111111110};
+            bins walkodd  = {32'b10101010101010101010101010101010};
+            bins walkeven = {32'b01010101010101010101010101010101};
+            wildcard bins random = {32'b01???????????????????????????010};
+        `else
+            bins zero  = {0};
+            bins one      = {64'b0000000000000000000000000000000000000000000000000000000000000001};
+            bins two      = {64'b0000000000000000000000000000000000000000000000000000000000000010};
+            bins min      = {64'b1000000000000000000000000000000000000000000000000000000000000000};
+            bins minp1    = {64'b1000000000000000000000000000000000000000000000000000000000000001};
+            bins Wmax     = {64'b0000000000000000000000000000000011111111111111111111111111111111};
+            bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
+            bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
+            bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
+            bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
+            bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
+            bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
+            bins onesm1   = {64'b1111111111111111111111111111111111111111111111111111111111111110};
+            bins walkodd  = {64'b1010101010101010101010101010101010101010101010101010101010101010};
+            bins walkeven = {64'b0101010101010101010101010101010101010101010101010101010101010101};
+            wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
+        `endif
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vd
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vd : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.trap == 0 )  {
+        // VD register assignment
+    }
+
+    //// end cp_vd////////////////////////////////////////////////
+
+    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+    bins zero = {0};
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vs2
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vs2 : coverpoint ins.get_vr_reg(ins.current.vs2)  iff (ins.trap == 0 )  {
+        // VS2 register assignment
+    }
+
+    //// end cp_vs2////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vs2_edges
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vs2_edges : coverpoint vs_edges_check(ins.hart, ins.issue, ins.current.vs2_val, "1")  iff (ins.trap == 0 )  {
+        // Edges values of vs2, assuming vl = 1
+        bins zero       = {vs_zero      };   //  = {(`SEW){1'b0}},
+        bins one        = {vs_one       };   //  = {(`SEW-1){1'b0}, {1'b1}},
+        bins two        = {vs_two       };   //  = {(`SEW-2){1'b0}, {2'b10}},
+        bins min        = {vs_min       };   //  = {{1'b1}, (`SEW-1){1'b0}},
+        bins minp1      = {vs_minp1     };   //  = {{1'b1}, (`SEW-2){1'b0}, {1'b1}},
+        bins max        = {vs_max       };   //  = {{1'b0}, (`SEW-1){1'b1}},
+        bins maxm1      = {vs_maxm1     };   //  = {{1'b0}, (`SEW-2){1'b1}, {1'b0}},
+        bins ones       = {vs_ones      };   //  = {(`SEW){1'b1}},
+        bins onesm1     = {vs_onesm1    };   //  = {(`SEW-1){1'b1}, {1'b0}},
+        bins walkodd    = {vs_walkodd   };   //  = {(`SEW/2){2'b10}},
+        bins walkeven   = {vs_walkeven  };   //  = {(`SEW/2){2'b01}},
+        bins random     = {vs_random    };   //  = {(SEW){random}}
+    }
+
+    //// end cp_vs2_edges////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cr_vl_lmul_sew32
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vtype_lmul_all_sew32_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2) {
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 32
+        `ifdef LMULf2_SUPPORTED
+            bins half   = {7};
+        `endif
+        bins one    = {0};
+        bins two    = {1};
+        bins four   = {2};
+        bins eight  = {3};
+    }
+
+    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
+        // Edges values of VL (vector length)
+        bins one        = {vl_one       };
+        bins vlmax      = {vl_vlmax     };
+        bins legal      = {vl_legal     };
+    }
+
+    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+        // Cross coverage all legal LMULs for SEW = 32 and vl edges (1, random, vlmax)
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+
+    //// end cr_vl_lmul_sew32////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cr_vs2_rs1_edges
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cr_vs2_rs1_edges : cross cp_vs2_edges,cp_rs1_edges  iff (ins.trap == 0 )  {
+        // Cross coverage of VS2 edges and RS1 edges
+    }
+
+    //// end cr_vs2_rs1_edges////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cr_vtype_agnostic
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+        // Value of VTYPE.vta (vector tail agnostic)
+        bins undisturbed = {0};
+        bins agnostic    = {1};
+    }
+
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+        // Value of VTYPE.vma (vector mask agnostic)
+        bins undisturbed = {0};
+        bins agnostic    = {1};
+    }
+
+    mask_enabled_agnostic: coverpoint ins.current.insn[25] {
+        bins enabled = {1'b0};
+    }
+
+    cr_vtype_agnostic : cross cp_csr_vtype_vta,cp_csr_vtype_vma,mask_enabled_agnostic iff (ins.trap == 0 )  {
+        // Cross coverage of vector tail and mask agnostic behaviors
+    }
+
+    //// end cr_vtype_agnostic////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup Zve32x_vnmsub_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -118270,7 +119061,7 @@ covergroup Zve32x_vnmsub_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vnmsub_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vnmsub_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -118456,7 +119247,7 @@ covergroup Zve32x_vnmsub_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vnsra_wi_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vnsra_wi_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vnsra.wi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -118753,7 +119544,7 @@ covergroup Zve32x_vnsra_wi_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vnsra_wi_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vnsra_wi_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vnsra.wi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -119053,7 +119844,7 @@ covergroup Zve32x_vnsra_wi_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vnsra_wv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vnsra_wv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -119313,7 +120104,7 @@ covergroup Zve32x_vnsra_wv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vnsra_wv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vnsra_wv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -119576,7 +120367,7 @@ covergroup Zve32x_vnsra_wv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vnsra_wx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vnsra_wx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vnsra.wx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -119839,7 +120630,7 @@ covergroup Zve32x_vnsra_wx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vnsra_wx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vnsra_wx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vnsra.wx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -120105,7 +120896,7 @@ covergroup Zve32x_vnsra_wx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vnsrl_wi_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vnsrl_wi_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vnsrl.wi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -120402,7 +121193,7 @@ covergroup Zve32x_vnsrl_wi_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vnsrl_wi_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vnsrl_wi_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vnsrl.wi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -120702,7 +121493,7 @@ covergroup Zve32x_vnsrl_wi_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vnsrl_wv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vnsrl_wv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -120962,7 +121753,7 @@ covergroup Zve32x_vnsrl_wv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vnsrl_wv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vnsrl_wv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -121225,7 +122016,7 @@ covergroup Zve32x_vnsrl_wv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vnsrl_wx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vnsrl_wx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vnsrl.wx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -121488,7 +122279,7 @@ covergroup Zve32x_vnsrl_wx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vnsrl_wx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vnsrl_wx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vnsrl.wx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -121754,7 +122545,7 @@ covergroup Zve32x_vnsrl_wx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vor_vi_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vor_vi_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -121910,7 +122701,7 @@ covergroup Zve32x_vor_vi_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vor_vi_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vor_vi_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -122069,7 +122860,7 @@ covergroup Zve32x_vor_vi_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vor_vi_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vor_vi_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -122231,7 +123022,7 @@ covergroup Zve32x_vor_vi_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vor_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vor_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -122433,7 +123224,7 @@ covergroup Zve32x_vor_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vor_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vor_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -122638,7 +123429,7 @@ covergroup Zve32x_vor_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vor_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vor_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -122846,7 +123637,7 @@ covergroup Zve32x_vor_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vor_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vor_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -123026,7 +123817,7 @@ covergroup Zve32x_vor_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vor_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vor_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -123209,7 +124000,7 @@ covergroup Zve32x_vor_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vor_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vor_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -123395,7 +124186,7 @@ covergroup Zve32x_vor_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vredand_vs_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vredand_vs_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -123723,7 +124514,7 @@ covergroup Zve32x_vredand_vs_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vredand_vs_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vredand_vs_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -124054,7 +124845,7 @@ covergroup Zve32x_vredand_vs_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vredand_vs_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vredand_vs_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -124388,7 +125179,7 @@ covergroup Zve32x_vredand_vs_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vredmax_vs_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vredmax_vs_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -124716,7 +125507,7 @@ covergroup Zve32x_vredmax_vs_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vredmax_vs_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vredmax_vs_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -125047,7 +125838,7 @@ covergroup Zve32x_vredmax_vs_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vredmax_vs_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vredmax_vs_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -125381,7 +126172,7 @@ covergroup Zve32x_vredmax_vs_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vredmaxu_vs_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vredmaxu_vs_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -125709,7 +126500,7 @@ covergroup Zve32x_vredmaxu_vs_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vredmaxu_vs_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vredmaxu_vs_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -126040,7 +126831,7 @@ covergroup Zve32x_vredmaxu_vs_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vredmaxu_vs_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vredmaxu_vs_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -126374,7 +127165,7 @@ covergroup Zve32x_vredmaxu_vs_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vredmin_vs_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vredmin_vs_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -126702,7 +127493,7 @@ covergroup Zve32x_vredmin_vs_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vredmin_vs_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vredmin_vs_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -127033,7 +127824,7 @@ covergroup Zve32x_vredmin_vs_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vredmin_vs_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vredmin_vs_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -127367,7 +128158,7 @@ covergroup Zve32x_vredmin_vs_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vredminu_vs_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vredminu_vs_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -127695,7 +128486,7 @@ covergroup Zve32x_vredminu_vs_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vredminu_vs_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vredminu_vs_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -128026,7 +128817,7 @@ covergroup Zve32x_vredminu_vs_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vredminu_vs_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vredminu_vs_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -128360,7 +129151,7 @@ covergroup Zve32x_vredminu_vs_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vredor_vs_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vredor_vs_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -128688,7 +129479,7 @@ covergroup Zve32x_vredor_vs_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vredor_vs_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vredor_vs_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -129019,7 +129810,7 @@ covergroup Zve32x_vredor_vs_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vredor_vs_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vredor_vs_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -129353,7 +130144,7 @@ covergroup Zve32x_vredor_vs_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vredsum_vs_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vredsum_vs_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -129681,7 +130472,7 @@ covergroup Zve32x_vredsum_vs_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vredsum_vs_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vredsum_vs_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -130012,7 +130803,7 @@ covergroup Zve32x_vredsum_vs_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vredsum_vs_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vredsum_vs_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -130346,7 +131137,7 @@ covergroup Zve32x_vredsum_vs_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vredxor_vs_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vredxor_vs_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -130674,7 +131465,7 @@ covergroup Zve32x_vredxor_vs_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vredxor_vs_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vredxor_vs_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -131005,7 +131796,7 @@ covergroup Zve32x_vredxor_vs_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vredxor_vs_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vredxor_vs_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -131339,7 +132130,7 @@ covergroup Zve32x_vredxor_vs_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vrem_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vrem_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -131541,7 +132332,7 @@ covergroup Zve32x_vrem_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vrem_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vrem_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -131746,7 +132537,7 @@ covergroup Zve32x_vrem_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vrem_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vrem_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -131954,7 +132745,7 @@ covergroup Zve32x_vrem_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vrem_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vrem_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -132134,7 +132925,7 @@ covergroup Zve32x_vrem_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vrem_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vrem_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -132317,7 +133108,7 @@ covergroup Zve32x_vrem_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vrem_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vrem_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -132503,7 +133294,7 @@ covergroup Zve32x_vrem_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vremu_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vremu_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -132705,7 +133496,7 @@ covergroup Zve32x_vremu_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vremu_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vremu_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -132910,7 +133701,7 @@ covergroup Zve32x_vremu_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vremu_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vremu_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -133118,7 +133909,7 @@ covergroup Zve32x_vremu_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vremu_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vremu_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -133298,7 +134089,7 @@ covergroup Zve32x_vremu_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vremu_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vremu_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -133481,7 +134272,7 @@ covergroup Zve32x_vremu_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vremu_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vremu_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -133667,7 +134458,7 @@ covergroup Zve32x_vremu_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vrgather_vi_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vrgather_vi_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vrgather.vi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -133811,7 +134602,7 @@ covergroup Zve32x_vrgather_vi_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vrgather_vi_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vrgather_vi_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vrgather.vi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -133958,7 +134749,7 @@ covergroup Zve32x_vrgather_vi_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vrgather_vi_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vrgather_vi_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vrgather.vi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -134108,7 +134899,7 @@ covergroup Zve32x_vrgather_vi_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vrgather_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vrgather_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -134351,7 +135142,7 @@ covergroup Zve32x_vrgather_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vrgather_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vrgather_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -134597,7 +135388,7 @@ covergroup Zve32x_vrgather_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vrgather_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vrgather_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -134846,7 +135637,7 @@ covergroup Zve32x_vrgather_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vrgather_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vrgather_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vrgather.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -135045,7 +135836,7 @@ covergroup Zve32x_vrgather_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vrgather_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vrgather_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vrgather.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -135259,7 +136050,7 @@ covergroup Zve32x_vrgather_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vrgather_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vrgather_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vrgather.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -135476,18 +136267,8 @@ covergroup Zve32x_vrgather_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vrgatherei16_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vrgatherei16_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs1_vs2
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs1_vs2 : coverpoint ins.get_vr_reg(ins.current.vs1)  iff (ins.current.vs1 == ins.current.vs2 & ins.trap == 0 )  {
-        // Compare assignments of all 32 registers
-    }
-
-    //// eend cmp_vs1_vs2////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vrgatherei16.vv"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -135721,7 +136502,7 @@ covergroup Zve32x_vrgatherei16_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vrgatherei16_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vrgatherei16_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -135969,18 +136750,8 @@ covergroup Zve32x_vrgatherei16_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vrgatherei16_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vrgatherei16_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs1_vs2
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs1_vs2 : coverpoint ins.get_vr_reg(ins.current.vs1)  iff (ins.current.vs1 == ins.current.vs2 & ins.trap == 0 )  {
-        // Compare assignments of all 32 registers
-    }
-
-    //// eend cmp_vs1_vs2////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vrgatherei16.vv"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -136220,7 +136991,7 @@ covergroup Zve32x_vrgatherei16_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vrsub_vi_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vrsub_vi_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -136376,7 +137147,7 @@ covergroup Zve32x_vrsub_vi_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vrsub_vi_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vrsub_vi_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -136535,7 +137306,7 @@ covergroup Zve32x_vrsub_vi_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vrsub_vi_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vrsub_vi_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -136697,7 +137468,7 @@ covergroup Zve32x_vrsub_vi_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vrsub_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vrsub_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -136877,7 +137648,7 @@ covergroup Zve32x_vrsub_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vrsub_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vrsub_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -137060,7 +137831,7 @@ covergroup Zve32x_vrsub_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vrsub_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vrsub_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -137246,7 +138017,7 @@ covergroup Zve32x_vrsub_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vs1r_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vs1r_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vs1r.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -137376,7 +138147,7 @@ covergroup Zve32x_vs1r_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vs1r_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vs1r_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vs1r.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -137509,7 +138280,7 @@ covergroup Zve32x_vs1r_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vs1r_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vs1r_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vs1r.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -137645,7 +138416,7 @@ covergroup Zve32x_vs1r_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vs2r_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vs2r_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vs2r.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -137791,7 +138562,7 @@ covergroup Zve32x_vs2r_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vs2r_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vs2r_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vs2r.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -137940,7 +138711,7 @@ covergroup Zve32x_vs2r_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vs2r_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vs2r_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vs2r.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -138092,7 +138863,7 @@ covergroup Zve32x_vs2r_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vs4r_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vs4r_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vs4r.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -138246,7 +139017,7 @@ covergroup Zve32x_vs4r_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vs4r_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vs4r_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vs4r.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -138403,7 +139174,7 @@ covergroup Zve32x_vs4r_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vs4r_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vs4r_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vs4r.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -138563,7 +139334,7 @@ covergroup Zve32x_vs4r_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vs8r_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vs8r_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vs8r.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -138721,7 +139492,7 @@ covergroup Zve32x_vs8r_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vs8r_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vs8r_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vs8r.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -138882,7 +139653,7 @@ covergroup Zve32x_vs8r_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vs8r_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vs8r_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vs8r.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -139046,7 +139817,7 @@ covergroup Zve32x_vs8r_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsadd_vi_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsadd_vi_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -139214,7 +139985,7 @@ covergroup Zve32x_vsadd_vi_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsadd_vi_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsadd_vi_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -139385,7 +140156,7 @@ covergroup Zve32x_vsadd_vi_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsadd_vi_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsadd_vi_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -139559,7 +140330,7 @@ covergroup Zve32x_vsadd_vi_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsadd_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsadd_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -139773,7 +140544,7 @@ covergroup Zve32x_vsadd_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsadd_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsadd_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -139990,7 +140761,7 @@ covergroup Zve32x_vsadd_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsadd_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsadd_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -140210,7 +140981,7 @@ covergroup Zve32x_vsadd_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsadd_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsadd_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -140402,7 +141173,7 @@ covergroup Zve32x_vsadd_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsadd_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsadd_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -140597,7 +141368,7 @@ covergroup Zve32x_vsadd_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsadd_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsadd_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -140795,7 +141566,7 @@ covergroup Zve32x_vsadd_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsaddu_vi_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsaddu_vi_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -140963,7 +141734,7 @@ covergroup Zve32x_vsaddu_vi_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsaddu_vi_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsaddu_vi_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -141134,7 +141905,7 @@ covergroup Zve32x_vsaddu_vi_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsaddu_vi_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsaddu_vi_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -141308,7 +142079,7 @@ covergroup Zve32x_vsaddu_vi_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsaddu_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsaddu_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -141522,7 +142293,7 @@ covergroup Zve32x_vsaddu_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsaddu_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsaddu_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -141739,7 +142510,7 @@ covergroup Zve32x_vsaddu_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsaddu_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsaddu_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -141959,7 +142730,7 @@ covergroup Zve32x_vsaddu_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsaddu_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsaddu_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -142151,7 +142922,7 @@ covergroup Zve32x_vsaddu_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsaddu_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsaddu_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -142346,7 +143117,7 @@ covergroup Zve32x_vsaddu_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsaddu_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsaddu_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -142544,7 +143315,7 @@ covergroup Zve32x_vsaddu_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsbc_vvm_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsbc_vvm_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1_nv0
@@ -142753,7 +143524,7 @@ covergroup Zve32x_vsbc_vvm_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsbc_vvm_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsbc_vvm_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1_nv0
@@ -142965,7 +143736,7 @@ covergroup Zve32x_vsbc_vvm_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsbc_vvm_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsbc_vvm_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1_nv0
@@ -143180,7 +143951,7 @@ covergroup Zve32x_vsbc_vvm_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsbc_vxm_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsbc_vxm_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_nv0
@@ -143363,7 +144134,7 @@ covergroup Zve32x_vsbc_vxm_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsbc_vxm_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsbc_vxm_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_nv0
@@ -143549,7 +144320,7 @@ covergroup Zve32x_vsbc_vxm_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsbc_vxm_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsbc_vxm_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_nv0
@@ -143738,7 +144509,7 @@ covergroup Zve32x_vsbc_vxm_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vse16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vse16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vse16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -143842,7 +144613,7 @@ covergroup Zve32x_vse16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vse16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vse16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vse16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -143949,7 +144720,7 @@ covergroup Zve32x_vse16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vse16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vse16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vse16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -144059,7 +144830,7 @@ covergroup Zve32x_vse16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vse32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vse32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vse32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -144163,7 +144934,7 @@ covergroup Zve32x_vse32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vse32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vse32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vse32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -144270,7 +145041,7 @@ covergroup Zve32x_vse32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vse32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vse32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vse32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -144380,7 +145151,7 @@ covergroup Zve32x_vse32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vse8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vse8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vse8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -144484,7 +145255,7 @@ covergroup Zve32x_vse8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vse8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vse8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vse8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -144591,7 +145362,7 @@ covergroup Zve32x_vse8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vse8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vse8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vse8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -144701,7 +145472,7 @@ covergroup Zve32x_vse8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsext_vf2_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsext_vf2_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsext.vf2"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -144880,7 +145651,7 @@ covergroup Zve32x_vsext_vf2_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsext_vf2_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsext_vf2_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsext.vf2"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -145062,7 +145833,7 @@ covergroup Zve32x_vsext_vf2_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsext_vf4_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsext_vf4_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsext.vf4"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -145228,7 +145999,7 @@ covergroup Zve32x_vsext_vf4_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vslide1down_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vslide1down_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -145408,7 +146179,7 @@ covergroup Zve32x_vslide1down_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vslide1down_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vslide1down_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -145591,7 +146362,7 @@ covergroup Zve32x_vslide1down_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vslide1down_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vslide1down_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -145777,7 +146548,7 @@ covergroup Zve32x_vslide1down_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vslide1up_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vslide1up_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vslide1up.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -145947,7 +146718,7 @@ covergroup Zve32x_vslide1up_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vslide1up_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vslide1up_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vslide1up.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -146120,7 +146891,7 @@ covergroup Zve32x_vslide1up_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vslide1up_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vslide1up_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vslide1up.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -146296,7 +147067,7 @@ covergroup Zve32x_vslide1up_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vslidedown_vi_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vslidedown_vi_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -146450,7 +147221,7 @@ covergroup Zve32x_vslidedown_vi_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vslidedown_vi_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vslidedown_vi_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -146607,7 +147378,7 @@ covergroup Zve32x_vslidedown_vi_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vslidedown_vi_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vslidedown_vi_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -146767,7 +147538,7 @@ covergroup Zve32x_vslidedown_vi_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vslidedown_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vslidedown_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -146976,7 +147747,7 @@ covergroup Zve32x_vslidedown_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vslidedown_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vslidedown_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -147200,7 +147971,7 @@ covergroup Zve32x_vslidedown_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vslidedown_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vslidedown_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -147427,7 +148198,7 @@ covergroup Zve32x_vslidedown_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vslideup_vi_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vslideup_vi_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vslideup.vi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -147571,7 +148342,7 @@ covergroup Zve32x_vslideup_vi_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vslideup_vi_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vslideup_vi_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vslideup.vi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -147718,7 +148489,7 @@ covergroup Zve32x_vslideup_vi_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vslideup_vi_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vslideup_vi_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vslideup.vi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -147868,7 +148639,7 @@ covergroup Zve32x_vslideup_vi_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vslideup_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vslideup_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vslideup.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -148038,7 +148809,7 @@ covergroup Zve32x_vslideup_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vslideup_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vslideup_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vslideup.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -148211,7 +148982,7 @@ covergroup Zve32x_vslideup_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vslideup_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vslideup_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vslideup.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -148387,7 +149158,7 @@ covergroup Zve32x_vslideup_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsll_vi_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsll_vi_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -148541,7 +149312,7 @@ covergroup Zve32x_vsll_vi_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsll_vi_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsll_vi_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -148698,7 +149469,7 @@ covergroup Zve32x_vsll_vi_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsll_vi_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsll_vi_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -148858,7 +149629,7 @@ covergroup Zve32x_vsll_vi_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsll_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsll_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -149086,7 +149857,7 @@ covergroup Zve32x_vsll_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsll_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsll_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -149317,7 +150088,7 @@ covergroup Zve32x_vsll_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsll_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsll_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -149551,7 +150322,7 @@ covergroup Zve32x_vsll_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsll_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsll_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -149762,7 +150533,7 @@ covergroup Zve32x_vsll_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsll_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsll_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -149976,7 +150747,7 @@ covergroup Zve32x_vsll_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsll_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsll_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -150193,7 +150964,7 @@ covergroup Zve32x_vsll_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsm_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsm_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsm.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -150305,7 +151076,7 @@ covergroup Zve32x_vsm_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsm_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsm_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsm.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -150420,7 +151191,7 @@ covergroup Zve32x_vsm_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsm_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsm_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsm.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -150520,7 +151291,7 @@ covergroup Zve32x_vsm_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsmul_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsmul_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -150752,7 +151523,7 @@ covergroup Zve32x_vsmul_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsmul_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsmul_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -150987,7 +151758,7 @@ covergroup Zve32x_vsmul_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsmul_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsmul_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -151225,7 +151996,7 @@ covergroup Zve32x_vsmul_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsmul_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsmul_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -151243,22 +152014,16 @@ covergroup Zve32x_vsmul_vx_sew32__cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_csr_vxsat_no_rv32_sew64
+    // cp_csr_vxsat
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
         // Value of VXSAT.vxsat (vector fixed-point saturation flag)
         bins zero = {1'b0};
         bins one  = {1'b1};
-
-        `ifdef UDB_MXLEN_32
-            `ifdef COVER_VX64
-                ignore_bins ignore_one = { 1'b1 };
-            `endif
-        `endif
     }
 
-    //// end cp_csr_vxsat_no_rv32_sew64 ////////////////////////////////////////////////
+    //// end cp_csr_vxsat ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -151441,7 +152206,7 @@ covergroup Zve32x_vsmul_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsmul_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsmul_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -151459,22 +152224,16 @@ covergroup Zve32x_vsmul_vx_sew16__cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_csr_vxsat_no_rv32_sew64
+    // cp_csr_vxsat
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
         // Value of VXSAT.vxsat (vector fixed-point saturation flag)
         bins zero = {1'b0};
         bins one  = {1'b1};
-
-        `ifdef UDB_MXLEN_32
-            `ifdef COVER_VX64
-                ignore_bins ignore_one = { 1'b1 };
-            `endif
-        `endif
     }
 
-    //// end cp_csr_vxsat_no_rv32_sew64 ////////////////////////////////////////////////
+    //// end cp_csr_vxsat ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -151660,7 +152419,7 @@ covergroup Zve32x_vsmul_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsmul_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsmul_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -151678,22 +152437,16 @@ covergroup Zve32x_vsmul_vx_sew8__cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_csr_vxsat_no_rv32_sew64
+    // cp_csr_vxsat
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
         // Value of VXSAT.vxsat (vector fixed-point saturation flag)
         bins zero = {1'b0};
         bins one  = {1'b1};
-
-        `ifdef UDB_MXLEN_32
-            `ifdef COVER_VX64
-                ignore_bins ignore_one = { 1'b1 };
-            `endif
-        `endif
     }
 
-    //// end cp_csr_vxsat_no_rv32_sew64 ////////////////////////////////////////////////
+    //// end cp_csr_vxsat ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -151882,7 +152635,7 @@ covergroup Zve32x_vsmul_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxei16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxei16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -152020,7 +152773,7 @@ covergroup Zve32x_vsoxei16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxei16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxei16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2
@@ -152171,7 +152924,7 @@ covergroup Zve32x_vsoxei16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxei16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxei16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -152315,7 +153068,7 @@ covergroup Zve32x_vsoxei16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxei32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxei32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2
@@ -152463,7 +153216,7 @@ covergroup Zve32x_vsoxei32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxei32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxei32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -152604,7 +153357,7 @@ covergroup Zve32x_vsoxei32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxei32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxei32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -152748,7 +153501,7 @@ covergroup Zve32x_vsoxei32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxei8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxei8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -152886,7 +153639,7 @@ covergroup Zve32x_vsoxei8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxei8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxei8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -153027,7 +153780,7 @@ covergroup Zve32x_vsoxei8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxei8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxei8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2
@@ -153181,7 +153934,7 @@ covergroup Zve32x_vsoxei8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg2ei16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg2ei16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg2ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -153346,7 +154099,7 @@ covergroup Zve32x_vsoxseg2ei16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg2ei16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg2ei16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte30
@@ -153523,7 +154276,7 @@ covergroup Zve32x_vsoxseg2ei16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg2ei16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg2ei16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg2ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -153693,7 +154446,7 @@ covergroup Zve32x_vsoxseg2ei16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg2ei32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg2ei32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte30
@@ -153867,7 +154620,7 @@ covergroup Zve32x_vsoxseg2ei32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg2ei32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg2ei32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg2ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -154034,7 +154787,7 @@ covergroup Zve32x_vsoxseg2ei32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg2ei32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg2ei32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg2ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -154180,7 +154933,7 @@ covergroup Zve32x_vsoxseg2ei32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg2ei8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg2ei8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg2ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -154344,7 +155097,7 @@ covergroup Zve32x_vsoxseg2ei8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg2ei8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg2ei8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg2ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -154511,7 +155264,7 @@ covergroup Zve32x_vsoxseg2ei8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg2ei8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg2ei8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte30
@@ -154691,7 +155444,7 @@ covergroup Zve32x_vsoxseg2ei8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg3ei16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg3ei16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg3ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -154831,7 +155584,7 @@ covergroup Zve32x_vsoxseg3ei16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg3ei16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg3ei16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte29
@@ -154985,7 +155738,7 @@ covergroup Zve32x_vsoxseg3ei16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg3ei16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg3ei16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg3ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -155131,7 +155884,7 @@ covergroup Zve32x_vsoxseg3ei16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg3ei32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg3ei32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte29
@@ -155282,7 +156035,7 @@ covergroup Zve32x_vsoxseg3ei32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg3ei32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg3ei32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg3ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -155425,7 +156178,7 @@ covergroup Zve32x_vsoxseg3ei32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg3ei32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg3ei32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg3ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -155571,7 +156324,7 @@ covergroup Zve32x_vsoxseg3ei32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg3ei8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg3ei8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg3ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -155711,7 +156464,7 @@ covergroup Zve32x_vsoxseg3ei8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg3ei8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg3ei8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg3ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -155854,7 +156607,7 @@ covergroup Zve32x_vsoxseg3ei8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg3ei8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg3ei8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte29
@@ -156011,7 +156764,7 @@ covergroup Zve32x_vsoxseg3ei8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg4ei16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg4ei16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg4ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -156176,7 +156929,7 @@ covergroup Zve32x_vsoxseg4ei16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg4ei16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg4ei16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte28
@@ -156356,7 +157109,7 @@ covergroup Zve32x_vsoxseg4ei16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg4ei16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg4ei16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg4ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -156527,7 +157280,7 @@ covergroup Zve32x_vsoxseg4ei16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg4ei32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg4ei32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte28
@@ -156704,7 +157457,7 @@ covergroup Zve32x_vsoxseg4ei32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg4ei32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg4ei32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg4ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -156872,7 +157625,7 @@ covergroup Zve32x_vsoxseg4ei32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg4ei32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg4ei32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg4ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -157043,7 +157796,7 @@ covergroup Zve32x_vsoxseg4ei32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg4ei8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg4ei8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg4ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -157208,7 +157961,7 @@ covergroup Zve32x_vsoxseg4ei8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg4ei8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg4ei8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg4ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -157376,7 +158129,7 @@ covergroup Zve32x_vsoxseg4ei8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg4ei8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg4ei8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte28
@@ -157559,7 +158312,7 @@ covergroup Zve32x_vsoxseg4ei8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg5ei16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg5ei16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg5ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -157700,7 +158453,7 @@ covergroup Zve32x_vsoxseg5ei16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg5ei16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg5ei16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte27
@@ -157857,7 +158610,7 @@ covergroup Zve32x_vsoxseg5ei16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg5ei16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg5ei16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg5ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -158004,7 +158757,7 @@ covergroup Zve32x_vsoxseg5ei16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg5ei32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg5ei32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte27
@@ -158158,7 +158911,7 @@ covergroup Zve32x_vsoxseg5ei32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg5ei32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg5ei32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg5ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -158303,7 +159056,7 @@ covergroup Zve32x_vsoxseg5ei32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg5ei32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg5ei32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg5ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -158449,7 +159202,7 @@ covergroup Zve32x_vsoxseg5ei32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg5ei8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg5ei8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg5ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -158592,7 +159345,7 @@ covergroup Zve32x_vsoxseg5ei8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg5ei8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg5ei8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg5ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -158738,7 +159491,7 @@ covergroup Zve32x_vsoxseg5ei8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg5ei8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg5ei8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte27
@@ -158900,7 +159653,7 @@ covergroup Zve32x_vsoxseg5ei8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg6ei16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg6ei16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg6ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -159042,7 +159795,7 @@ covergroup Zve32x_vsoxseg6ei16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg6ei16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg6ei16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte26
@@ -159201,7 +159954,7 @@ covergroup Zve32x_vsoxseg6ei16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg6ei16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg6ei16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg6ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -159349,7 +160102,7 @@ covergroup Zve32x_vsoxseg6ei16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg6ei32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg6ei32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte26
@@ -159505,7 +160258,7 @@ covergroup Zve32x_vsoxseg6ei32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg6ei32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg6ei32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg6ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -159651,7 +160404,7 @@ covergroup Zve32x_vsoxseg6ei32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg6ei32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg6ei32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg6ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -159798,7 +160551,7 @@ covergroup Zve32x_vsoxseg6ei32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg6ei8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg6ei8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg6ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -159942,7 +160695,7 @@ covergroup Zve32x_vsoxseg6ei8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg6ei8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg6ei8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg6ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -160089,7 +160842,7 @@ covergroup Zve32x_vsoxseg6ei8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg6ei8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg6ei8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte26
@@ -160253,7 +161006,7 @@ covergroup Zve32x_vsoxseg6ei8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg7ei16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg7ei16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg7ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -160396,7 +161149,7 @@ covergroup Zve32x_vsoxseg7ei16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg7ei16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg7ei16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte25
@@ -160557,7 +161310,7 @@ covergroup Zve32x_vsoxseg7ei16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg7ei16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg7ei16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg7ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -160706,7 +161459,7 @@ covergroup Zve32x_vsoxseg7ei16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg7ei32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg7ei32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte25
@@ -160864,7 +161617,7 @@ covergroup Zve32x_vsoxseg7ei32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg7ei32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg7ei32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg7ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -161011,7 +161764,7 @@ covergroup Zve32x_vsoxseg7ei32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg7ei32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg7ei32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg7ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -161159,7 +161912,7 @@ covergroup Zve32x_vsoxseg7ei32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg7ei8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg7ei8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg7ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -161304,7 +162057,7 @@ covergroup Zve32x_vsoxseg7ei8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg7ei8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg7ei8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg7ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -161452,7 +162205,7 @@ covergroup Zve32x_vsoxseg7ei8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg7ei8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg7ei8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte25
@@ -161618,7 +162371,7 @@ covergroup Zve32x_vsoxseg7ei8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg8ei16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg8ei16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg8ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -161786,7 +162539,7 @@ covergroup Zve32x_vsoxseg8ei16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg8ei16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg8ei16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte24
@@ -161973,7 +162726,7 @@ covergroup Zve32x_vsoxseg8ei16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg8ei16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg8ei16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg8ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -162147,7 +162900,7 @@ covergroup Zve32x_vsoxseg8ei16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg8ei32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg8ei32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte24
@@ -162331,7 +163084,7 @@ covergroup Zve32x_vsoxseg8ei32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg8ei32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg8ei32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg8ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -162503,7 +163256,7 @@ covergroup Zve32x_vsoxseg8ei32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg8ei32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg8ei32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg8ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -162676,7 +163429,7 @@ covergroup Zve32x_vsoxseg8ei32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg8ei8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg8ei8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg8ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -162846,7 +163599,7 @@ covergroup Zve32x_vsoxseg8ei8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg8ei8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg8ei8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg8ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -163019,7 +163772,7 @@ covergroup Zve32x_vsoxseg8ei8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsoxseg8ei8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsoxseg8ei8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte24
@@ -163211,7 +163964,7 @@ covergroup Zve32x_vsoxseg8ei8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsra_vi_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsra_vi_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -163365,7 +164118,7 @@ covergroup Zve32x_vsra_vi_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsra_vi_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsra_vi_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -163522,7 +164275,7 @@ covergroup Zve32x_vsra_vi_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsra_vi_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsra_vi_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -163682,7 +164435,7 @@ covergroup Zve32x_vsra_vi_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsra_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsra_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -163910,7 +164663,7 @@ covergroup Zve32x_vsra_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsra_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsra_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -164141,7 +164894,7 @@ covergroup Zve32x_vsra_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsra_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsra_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -164375,7 +165128,7 @@ covergroup Zve32x_vsra_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsra_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsra_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -164586,7 +165339,7 @@ covergroup Zve32x_vsra_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsra_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsra_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -164800,7 +165553,7 @@ covergroup Zve32x_vsra_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsra_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsra_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -165017,7 +165770,7 @@ covergroup Zve32x_vsra_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsrl_vi_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsrl_vi_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -165171,7 +165924,7 @@ covergroup Zve32x_vsrl_vi_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsrl_vi_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsrl_vi_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -165328,7 +166081,7 @@ covergroup Zve32x_vsrl_vi_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsrl_vi_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsrl_vi_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -165488,7 +166241,7 @@ covergroup Zve32x_vsrl_vi_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsrl_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsrl_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -165716,7 +166469,7 @@ covergroup Zve32x_vsrl_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsrl_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsrl_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -165947,7 +166700,7 @@ covergroup Zve32x_vsrl_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsrl_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsrl_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -166181,7 +166934,7 @@ covergroup Zve32x_vsrl_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsrl_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsrl_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -166392,7 +167145,7 @@ covergroup Zve32x_vsrl_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsrl_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsrl_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -166606,7 +167359,7 @@ covergroup Zve32x_vsrl_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsrl_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsrl_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -166823,7 +167576,7 @@ covergroup Zve32x_vsrl_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsse16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsse16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsse16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -166940,7 +167693,7 @@ covergroup Zve32x_vsse16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsse16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsse16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsse16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -167060,7 +167813,7 @@ covergroup Zve32x_vsse16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsse16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsse16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsse16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -167183,7 +167936,7 @@ covergroup Zve32x_vsse16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsse32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsse32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsse32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -167300,7 +168053,7 @@ covergroup Zve32x_vsse32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsse32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsse32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsse32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -167420,7 +168173,7 @@ covergroup Zve32x_vsse32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsse32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsse32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsse32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -167543,7 +168296,7 @@ covergroup Zve32x_vsse32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsse8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsse8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsse8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -167660,7 +168413,7 @@ covergroup Zve32x_vsse8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsse8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsse8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsse8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -167780,7 +168533,7 @@ covergroup Zve32x_vsse8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsse8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsse8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsse8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -167903,7 +168656,7 @@ covergroup Zve32x_vsse8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg2e16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg2e16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg2e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -168010,7 +168763,7 @@ covergroup Zve32x_vsseg2e16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg2e16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg2e16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg2e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -168119,7 +168872,7 @@ covergroup Zve32x_vsseg2e16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg2e16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg2e16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg2e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -168231,7 +168984,7 @@ covergroup Zve32x_vsseg2e16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg2e32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg2e32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg2e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -168337,7 +169090,7 @@ covergroup Zve32x_vsseg2e32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg2e32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg2e32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg2e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -168446,7 +169199,7 @@ covergroup Zve32x_vsseg2e32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg2e32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg2e32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg2e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -168558,7 +169311,7 @@ covergroup Zve32x_vsseg2e32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg2e8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg2e8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg2e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -168664,7 +169417,7 @@ covergroup Zve32x_vsseg2e8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg2e8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg2e8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg2e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -168773,7 +169526,7 @@ covergroup Zve32x_vsseg2e8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg2e8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg2e8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg2e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -168885,7 +169638,7 @@ covergroup Zve32x_vsseg2e8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg3e16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg3e16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg3e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -168991,7 +169744,7 @@ covergroup Zve32x_vsseg3e16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg3e16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg3e16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg3e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -169100,7 +169853,7 @@ covergroup Zve32x_vsseg3e16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg3e16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg3e16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg3e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -169212,7 +169965,7 @@ covergroup Zve32x_vsseg3e16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg3e32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg3e32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg3e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -169309,7 +170062,7 @@ covergroup Zve32x_vsseg3e32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg3e32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg3e32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg3e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -169409,7 +170162,7 @@ covergroup Zve32x_vsseg3e32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg3e32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg3e32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg3e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -169512,7 +170265,7 @@ covergroup Zve32x_vsseg3e32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg3e8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg3e8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg3e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -169618,7 +170371,7 @@ covergroup Zve32x_vsseg3e8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg3e8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg3e8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg3e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -169727,7 +170480,7 @@ covergroup Zve32x_vsseg3e8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg3e8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg3e8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg3e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -169839,7 +170592,7 @@ covergroup Zve32x_vsseg3e8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg4e16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg4e16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg4e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -169946,7 +170699,7 @@ covergroup Zve32x_vsseg4e16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg4e16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg4e16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg4e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -170056,7 +170809,7 @@ covergroup Zve32x_vsseg4e16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg4e16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg4e16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg4e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -170169,7 +170922,7 @@ covergroup Zve32x_vsseg4e16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg4e32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg4e32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg4e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -170276,7 +171029,7 @@ covergroup Zve32x_vsseg4e32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg4e32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg4e32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg4e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -170386,7 +171139,7 @@ covergroup Zve32x_vsseg4e32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg4e32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg4e32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg4e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -170499,7 +171252,7 @@ covergroup Zve32x_vsseg4e32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg4e8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg4e8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg4e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -170606,7 +171359,7 @@ covergroup Zve32x_vsseg4e8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg4e8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg4e8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg4e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -170716,7 +171469,7 @@ covergroup Zve32x_vsseg4e8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg4e8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg4e8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg4e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -170829,7 +171582,7 @@ covergroup Zve32x_vsseg4e8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg5e16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg5e16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg5e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -170936,7 +171689,7 @@ covergroup Zve32x_vsseg5e16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg5e16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg5e16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg5e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -171046,7 +171799,7 @@ covergroup Zve32x_vsseg5e16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg5e16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg5e16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg5e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -171159,7 +171912,7 @@ covergroup Zve32x_vsseg5e16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg5e32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg5e32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg5e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -171266,7 +172019,7 @@ covergroup Zve32x_vsseg5e32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg5e32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg5e32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg5e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -171377,7 +172130,7 @@ covergroup Zve32x_vsseg5e32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg5e32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg5e32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg5e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -171489,7 +172242,7 @@ covergroup Zve32x_vsseg5e32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg5e8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg5e8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg5e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -171598,7 +172351,7 @@ covergroup Zve32x_vsseg5e8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg5e8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg5e8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg5e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -171710,7 +172463,7 @@ covergroup Zve32x_vsseg5e8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg5e8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg5e8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg5e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -171825,7 +172578,7 @@ covergroup Zve32x_vsseg5e8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg6e16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg6e16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg6e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -171933,7 +172686,7 @@ covergroup Zve32x_vsseg6e16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg6e16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg6e16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg6e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -172044,7 +172797,7 @@ covergroup Zve32x_vsseg6e16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg6e16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg6e16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg6e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -172158,7 +172911,7 @@ covergroup Zve32x_vsseg6e16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg6e32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg6e32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg6e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -172266,7 +173019,7 @@ covergroup Zve32x_vsseg6e32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg6e32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg6e32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg6e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -172378,7 +173131,7 @@ covergroup Zve32x_vsseg6e32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg6e32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg6e32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg6e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -172491,7 +173244,7 @@ covergroup Zve32x_vsseg6e32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg6e8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg6e8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg6e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -172601,7 +173354,7 @@ covergroup Zve32x_vsseg6e8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg6e8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg6e8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg6e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -172714,7 +173467,7 @@ covergroup Zve32x_vsseg6e8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg6e8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg6e8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg6e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -172830,7 +173583,7 @@ covergroup Zve32x_vsseg6e8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg7e16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg7e16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg7e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -172939,7 +173692,7 @@ covergroup Zve32x_vsseg7e16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg7e16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg7e16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg7e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -173051,7 +173804,7 @@ covergroup Zve32x_vsseg7e16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg7e16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg7e16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg7e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -173166,7 +173919,7 @@ covergroup Zve32x_vsseg7e16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg7e32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg7e32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg7e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -173275,7 +174028,7 @@ covergroup Zve32x_vsseg7e32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg7e32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg7e32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg7e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -173388,7 +174141,7 @@ covergroup Zve32x_vsseg7e32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg7e32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg7e32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg7e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -173502,7 +174255,7 @@ covergroup Zve32x_vsseg7e32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg7e8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg7e8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg7e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -173613,7 +174366,7 @@ covergroup Zve32x_vsseg7e8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg7e8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg7e8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg7e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -173727,7 +174480,7 @@ covergroup Zve32x_vsseg7e8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg7e8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg7e8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg7e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -173844,7 +174597,7 @@ covergroup Zve32x_vsseg7e8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg8e16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg8e16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg8e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -173954,7 +174707,7 @@ covergroup Zve32x_vsseg8e16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg8e16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg8e16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg8e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -174067,7 +174820,7 @@ covergroup Zve32x_vsseg8e16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg8e16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg8e16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg8e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -174183,7 +174936,7 @@ covergroup Zve32x_vsseg8e16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg8e32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg8e32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg8e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -174293,7 +175046,7 @@ covergroup Zve32x_vsseg8e32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg8e32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg8e32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg8e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -174407,7 +175160,7 @@ covergroup Zve32x_vsseg8e32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg8e32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg8e32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg8e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -174522,7 +175275,7 @@ covergroup Zve32x_vsseg8e32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg8e8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg8e8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg8e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -174634,7 +175387,7 @@ covergroup Zve32x_vsseg8e8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg8e8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg8e8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg8e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -174749,7 +175502,7 @@ covergroup Zve32x_vsseg8e8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsseg8e8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsseg8e8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsseg8e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -174867,7 +175620,7 @@ covergroup Zve32x_vsseg8e8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssra_vi_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vssra_vi_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -175039,7 +175792,7 @@ covergroup Zve32x_vssra_vi_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssra_vi_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vssra_vi_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -175214,7 +175967,7 @@ covergroup Zve32x_vssra_vi_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssra_vi_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vssra_vi_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -175392,7 +176145,7 @@ covergroup Zve32x_vssra_vi_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssra_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vssra_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -175638,7 +176391,7 @@ covergroup Zve32x_vssra_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssra_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vssra_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -175887,7 +176640,7 @@ covergroup Zve32x_vssra_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssra_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vssra_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -176139,7 +176892,7 @@ covergroup Zve32x_vssra_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssra_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vssra_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -176368,7 +177121,7 @@ covergroup Zve32x_vssra_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssra_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vssra_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -176600,7 +177353,7 @@ covergroup Zve32x_vssra_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssra_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vssra_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -176835,7 +177588,7 @@ covergroup Zve32x_vssra_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssrl_vi_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vssrl_vi_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -177007,7 +177760,7 @@ covergroup Zve32x_vssrl_vi_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssrl_vi_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vssrl_vi_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -177182,7 +177935,7 @@ covergroup Zve32x_vssrl_vi_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssrl_vi_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vssrl_vi_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -177360,7 +178113,7 @@ covergroup Zve32x_vssrl_vi_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssrl_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vssrl_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -177606,7 +178359,7 @@ covergroup Zve32x_vssrl_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssrl_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vssrl_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -177855,7 +178608,7 @@ covergroup Zve32x_vssrl_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssrl_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vssrl_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -178107,7 +178860,7 @@ covergroup Zve32x_vssrl_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssrl_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vssrl_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -178336,7 +179089,7 @@ covergroup Zve32x_vssrl_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssrl_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vssrl_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -178568,7 +179321,7 @@ covergroup Zve32x_vssrl_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssrl_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vssrl_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -178803,7 +179556,7 @@ covergroup Zve32x_vssrl_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg2e16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg2e16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg2e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -178923,7 +179676,7 @@ covergroup Zve32x_vssseg2e16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg2e16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg2e16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg2e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -179045,7 +179798,7 @@ covergroup Zve32x_vssseg2e16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg2e16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg2e16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg2e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -179170,7 +179923,7 @@ covergroup Zve32x_vssseg2e16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg2e32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg2e32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg2e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -179289,7 +180042,7 @@ covergroup Zve32x_vssseg2e32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg2e32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg2e32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg2e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -179411,7 +180164,7 @@ covergroup Zve32x_vssseg2e32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg2e32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg2e32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg2e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -179536,7 +180289,7 @@ covergroup Zve32x_vssseg2e32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg2e8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg2e8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg2e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -179655,7 +180408,7 @@ covergroup Zve32x_vssseg2e8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg2e8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg2e8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg2e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -179777,7 +180530,7 @@ covergroup Zve32x_vssseg2e8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg2e8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg2e8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg2e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -179902,7 +180655,7 @@ covergroup Zve32x_vssseg2e8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg3e16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg3e16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg3e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -180021,7 +180774,7 @@ covergroup Zve32x_vssseg3e16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg3e16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg3e16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg3e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -180143,7 +180896,7 @@ covergroup Zve32x_vssseg3e16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg3e16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg3e16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg3e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -180268,7 +181021,7 @@ covergroup Zve32x_vssseg3e16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg3e32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg3e32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg3e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -180387,7 +181140,7 @@ covergroup Zve32x_vssseg3e32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg3e32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg3e32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg3e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -180509,7 +181262,7 @@ covergroup Zve32x_vssseg3e32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg3e32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg3e32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg3e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -180634,7 +181387,7 @@ covergroup Zve32x_vssseg3e32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg3e8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg3e8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg3e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -180753,7 +181506,7 @@ covergroup Zve32x_vssseg3e8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg3e8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg3e8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg3e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -180875,7 +181628,7 @@ covergroup Zve32x_vssseg3e8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg3e8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg3e8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg3e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -181000,7 +181753,7 @@ covergroup Zve32x_vssseg3e8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg4e16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg4e16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg4e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -181120,7 +181873,7 @@ covergroup Zve32x_vssseg4e16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg4e16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg4e16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg4e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -181243,7 +181996,7 @@ covergroup Zve32x_vssseg4e16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg4e16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg4e16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg4e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -181369,7 +182122,7 @@ covergroup Zve32x_vssseg4e16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg4e32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg4e32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg4e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -181489,7 +182242,7 @@ covergroup Zve32x_vssseg4e32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg4e32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg4e32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg4e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -181612,7 +182365,7 @@ covergroup Zve32x_vssseg4e32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg4e32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg4e32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg4e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -181738,7 +182491,7 @@ covergroup Zve32x_vssseg4e32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg4e8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg4e8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg4e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -181858,7 +182611,7 @@ covergroup Zve32x_vssseg4e8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg4e8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg4e8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg4e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -181981,7 +182734,7 @@ covergroup Zve32x_vssseg4e8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg4e8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg4e8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg4e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -182107,7 +182860,7 @@ covergroup Zve32x_vssseg4e8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg5e16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg5e16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg5e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -182227,7 +182980,7 @@ covergroup Zve32x_vssseg5e16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg5e16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg5e16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg5e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -182350,7 +183103,7 @@ covergroup Zve32x_vssseg5e16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg5e16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg5e16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg5e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -182476,7 +183229,7 @@ covergroup Zve32x_vssseg5e16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg5e32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg5e32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg5e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -182596,7 +183349,7 @@ covergroup Zve32x_vssseg5e32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg5e32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg5e32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg5e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -182720,7 +183473,7 @@ covergroup Zve32x_vssseg5e32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg5e32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg5e32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg5e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -182845,7 +183598,7 @@ covergroup Zve32x_vssseg5e32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg5e8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg5e8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg5e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -182967,7 +183720,7 @@ covergroup Zve32x_vssseg5e8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg5e8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg5e8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg5e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -183092,7 +183845,7 @@ covergroup Zve32x_vssseg5e8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg5e8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg5e8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg5e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -183220,7 +183973,7 @@ covergroup Zve32x_vssseg5e8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg6e16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg6e16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg6e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -183341,7 +184094,7 @@ covergroup Zve32x_vssseg6e16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg6e16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg6e16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg6e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -183465,7 +184218,7 @@ covergroup Zve32x_vssseg6e16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg6e16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg6e16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg6e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -183592,7 +184345,7 @@ covergroup Zve32x_vssseg6e16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg6e32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg6e32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg6e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -183713,7 +184466,7 @@ covergroup Zve32x_vssseg6e32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg6e32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg6e32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg6e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -183838,7 +184591,7 @@ covergroup Zve32x_vssseg6e32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg6e32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg6e32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg6e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -183964,7 +184717,7 @@ covergroup Zve32x_vssseg6e32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg6e8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg6e8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg6e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -184087,7 +184840,7 @@ covergroup Zve32x_vssseg6e8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg6e8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg6e8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg6e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -184213,7 +184966,7 @@ covergroup Zve32x_vssseg6e8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg6e8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg6e8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg6e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -184342,7 +185095,7 @@ covergroup Zve32x_vssseg6e8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg7e16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg7e16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg7e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -184464,7 +185217,7 @@ covergroup Zve32x_vssseg7e16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg7e16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg7e16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg7e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -184589,7 +185342,7 @@ covergroup Zve32x_vssseg7e16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg7e16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg7e16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg7e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -184717,7 +185470,7 @@ covergroup Zve32x_vssseg7e16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg7e32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg7e32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg7e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -184839,7 +185592,7 @@ covergroup Zve32x_vssseg7e32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg7e32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg7e32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg7e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -184965,7 +185718,7 @@ covergroup Zve32x_vssseg7e32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg7e32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg7e32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg7e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -185092,7 +185845,7 @@ covergroup Zve32x_vssseg7e32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg7e8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg7e8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg7e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -185216,7 +185969,7 @@ covergroup Zve32x_vssseg7e8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg7e8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg7e8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg7e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -185343,7 +186096,7 @@ covergroup Zve32x_vssseg7e8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg7e8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg7e8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg7e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -185473,7 +186226,7 @@ covergroup Zve32x_vssseg7e8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg8e16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg8e16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg8e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -185596,7 +186349,7 @@ covergroup Zve32x_vssseg8e16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg8e16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg8e16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg8e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -185722,7 +186475,7 @@ covergroup Zve32x_vssseg8e16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg8e16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg8e16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg8e16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -185851,7 +186604,7 @@ covergroup Zve32x_vssseg8e16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg8e32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg8e32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg8e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -185974,7 +186727,7 @@ covergroup Zve32x_vssseg8e32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg8e32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg8e32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg8e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -186101,7 +186854,7 @@ covergroup Zve32x_vssseg8e32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg8e32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg8e32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg8e32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -186229,7 +186982,7 @@ covergroup Zve32x_vssseg8e32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg8e8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg8e8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg8e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -186354,7 +187107,7 @@ covergroup Zve32x_vssseg8e8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg8e8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg8e8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg8e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -186482,7 +187235,7 @@ covergroup Zve32x_vssseg8e8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssseg8e8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vssseg8e8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vssseg8e8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -186613,7 +187366,7 @@ covergroup Zve32x_vssseg8e8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssub_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vssub_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -186827,7 +187580,7 @@ covergroup Zve32x_vssub_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssub_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vssub_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -187044,7 +187797,7 @@ covergroup Zve32x_vssub_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssub_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vssub_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -187264,7 +188017,7 @@ covergroup Zve32x_vssub_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssub_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vssub_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -187456,7 +188209,7 @@ covergroup Zve32x_vssub_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssub_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vssub_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -187651,7 +188404,7 @@ covergroup Zve32x_vssub_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssub_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vssub_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -187849,7 +188602,7 @@ covergroup Zve32x_vssub_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssubu_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vssubu_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -188063,7 +188816,7 @@ covergroup Zve32x_vssubu_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssubu_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vssubu_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -188280,7 +189033,7 @@ covergroup Zve32x_vssubu_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssubu_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vssubu_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -188500,7 +189253,7 @@ covergroup Zve32x_vssubu_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssubu_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vssubu_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -188692,7 +189445,7 @@ covergroup Zve32x_vssubu_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssubu_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vssubu_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -188887,7 +189640,7 @@ covergroup Zve32x_vssubu_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vssubu_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vssubu_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -189085,7 +189838,7 @@ covergroup Zve32x_vssubu_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsub_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsub_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -189287,7 +190040,7 @@ covergroup Zve32x_vsub_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsub_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsub_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -189492,7 +190245,7 @@ covergroup Zve32x_vsub_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsub_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsub_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -189700,7 +190453,7 @@ covergroup Zve32x_vsub_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsub_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsub_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -189880,7 +190633,7 @@ covergroup Zve32x_vsub_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsub_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsub_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -190063,7 +190816,7 @@ covergroup Zve32x_vsub_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsub_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsub_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -190249,7 +191002,7 @@ covergroup Zve32x_vsub_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxei16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxei16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -190374,7 +191127,7 @@ covergroup Zve32x_vsuxei16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxei16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxei16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2
@@ -190512,7 +191265,7 @@ covergroup Zve32x_vsuxei16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxei16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxei16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -190643,7 +191396,7 @@ covergroup Zve32x_vsuxei16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxei32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxei32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2
@@ -190778,7 +191531,7 @@ covergroup Zve32x_vsuxei32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxei32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxei32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -190906,7 +191659,7 @@ covergroup Zve32x_vsuxei32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxei32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxei32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -191037,7 +191790,7 @@ covergroup Zve32x_vsuxei32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxei8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxei8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -191162,7 +191915,7 @@ covergroup Zve32x_vsuxei8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxei8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxei8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -191290,7 +192043,7 @@ covergroup Zve32x_vsuxei8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxei8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxei8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2
@@ -191431,7 +192184,7 @@ covergroup Zve32x_vsuxei8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg2ei16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg2ei16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg2ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -191583,7 +192336,7 @@ covergroup Zve32x_vsuxseg2ei16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg2ei16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg2ei16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte30
@@ -191747,7 +192500,7 @@ covergroup Zve32x_vsuxseg2ei16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg2ei16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg2ei16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg2ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -191904,7 +192657,7 @@ covergroup Zve32x_vsuxseg2ei16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg2ei32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg2ei32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte30
@@ -192065,7 +192818,7 @@ covergroup Zve32x_vsuxseg2ei32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg2ei32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg2ei32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg2ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -192219,7 +192972,7 @@ covergroup Zve32x_vsuxseg2ei32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg2ei32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg2ei32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg2ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -192352,7 +193105,7 @@ covergroup Zve32x_vsuxseg2ei32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg2ei8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg2ei8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg2ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -192503,7 +193256,7 @@ covergroup Zve32x_vsuxseg2ei8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg2ei8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg2ei8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg2ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -192657,7 +193410,7 @@ covergroup Zve32x_vsuxseg2ei8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg2ei8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg2ei8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte30
@@ -192824,7 +193577,7 @@ covergroup Zve32x_vsuxseg2ei8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg3ei16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg3ei16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg3ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -192951,7 +193704,7 @@ covergroup Zve32x_vsuxseg3ei16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg3ei16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg3ei16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte29
@@ -193092,7 +193845,7 @@ covergroup Zve32x_vsuxseg3ei16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg3ei16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg3ei16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg3ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -193225,7 +193978,7 @@ covergroup Zve32x_vsuxseg3ei16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg3ei32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg3ei32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte29
@@ -193363,7 +194116,7 @@ covergroup Zve32x_vsuxseg3ei32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg3ei32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg3ei32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg3ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -193493,7 +194246,7 @@ covergroup Zve32x_vsuxseg3ei32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg3ei32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg3ei32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg3ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -193626,7 +194379,7 @@ covergroup Zve32x_vsuxseg3ei32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg3ei8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg3ei8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg3ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -193753,7 +194506,7 @@ covergroup Zve32x_vsuxseg3ei8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg3ei8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg3ei8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg3ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -193883,7 +194636,7 @@ covergroup Zve32x_vsuxseg3ei8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg3ei8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg3ei8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte29
@@ -194027,7 +194780,7 @@ covergroup Zve32x_vsuxseg3ei8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg4ei16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg4ei16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg4ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -194179,7 +194932,7 @@ covergroup Zve32x_vsuxseg4ei16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg4ei16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg4ei16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte28
@@ -194346,7 +195099,7 @@ covergroup Zve32x_vsuxseg4ei16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg4ei16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg4ei16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg4ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -194504,7 +195257,7 @@ covergroup Zve32x_vsuxseg4ei16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg4ei32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg4ei32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte28
@@ -194668,7 +195421,7 @@ covergroup Zve32x_vsuxseg4ei32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg4ei32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg4ei32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg4ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -194823,7 +195576,7 @@ covergroup Zve32x_vsuxseg4ei32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg4ei32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg4ei32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg4ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -194981,7 +195734,7 @@ covergroup Zve32x_vsuxseg4ei32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg4ei8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg4ei8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg4ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -195133,7 +195886,7 @@ covergroup Zve32x_vsuxseg4ei8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg4ei8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg4ei8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg4ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -195288,7 +196041,7 @@ covergroup Zve32x_vsuxseg4ei8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg4ei8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg4ei8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte28
@@ -195458,7 +196211,7 @@ covergroup Zve32x_vsuxseg4ei8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg5ei16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg5ei16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg5ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -195586,7 +196339,7 @@ covergroup Zve32x_vsuxseg5ei16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg5ei16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg5ei16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte27
@@ -195730,7 +196483,7 @@ covergroup Zve32x_vsuxseg5ei16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg5ei16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg5ei16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg5ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -195864,7 +196617,7 @@ covergroup Zve32x_vsuxseg5ei16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg5ei32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg5ei32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte27
@@ -196005,7 +196758,7 @@ covergroup Zve32x_vsuxseg5ei32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg5ei32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg5ei32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg5ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -196137,7 +196890,7 @@ covergroup Zve32x_vsuxseg5ei32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg5ei32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg5ei32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg5ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -196270,7 +197023,7 @@ covergroup Zve32x_vsuxseg5ei32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg5ei8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg5ei8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg5ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -196400,7 +197153,7 @@ covergroup Zve32x_vsuxseg5ei8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg5ei8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg5ei8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg5ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -196533,7 +197286,7 @@ covergroup Zve32x_vsuxseg5ei8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg5ei8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg5ei8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte27
@@ -196682,7 +197435,7 @@ covergroup Zve32x_vsuxseg5ei8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg6ei16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg6ei16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg6ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -196811,7 +197564,7 @@ covergroup Zve32x_vsuxseg6ei16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg6ei16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg6ei16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte26
@@ -196957,7 +197710,7 @@ covergroup Zve32x_vsuxseg6ei16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg6ei16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg6ei16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg6ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -197092,7 +197845,7 @@ covergroup Zve32x_vsuxseg6ei16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg6ei32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg6ei32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte26
@@ -197235,7 +197988,7 @@ covergroup Zve32x_vsuxseg6ei32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg6ei32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg6ei32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg6ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -197368,7 +198121,7 @@ covergroup Zve32x_vsuxseg6ei32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg6ei32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg6ei32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg6ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -197502,7 +198255,7 @@ covergroup Zve32x_vsuxseg6ei32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg6ei8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg6ei8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg6ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -197633,7 +198386,7 @@ covergroup Zve32x_vsuxseg6ei8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg6ei8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg6ei8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg6ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -197767,7 +198520,7 @@ covergroup Zve32x_vsuxseg6ei8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg6ei8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg6ei8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte26
@@ -197918,7 +198671,7 @@ covergroup Zve32x_vsuxseg6ei8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg7ei16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg7ei16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg7ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -198048,7 +198801,7 @@ covergroup Zve32x_vsuxseg7ei16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg7ei16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg7ei16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte25
@@ -198196,7 +198949,7 @@ covergroup Zve32x_vsuxseg7ei16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg7ei16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg7ei16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg7ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -198332,7 +199085,7 @@ covergroup Zve32x_vsuxseg7ei16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg7ei32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg7ei32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte25
@@ -198477,7 +199230,7 @@ covergroup Zve32x_vsuxseg7ei32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg7ei32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg7ei32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg7ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -198611,7 +199364,7 @@ covergroup Zve32x_vsuxseg7ei32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg7ei32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg7ei32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg7ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -198746,7 +199499,7 @@ covergroup Zve32x_vsuxseg7ei32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg7ei8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg7ei8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg7ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -198878,7 +199631,7 @@ covergroup Zve32x_vsuxseg7ei8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg7ei8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg7ei8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg7ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -199013,7 +199766,7 @@ covergroup Zve32x_vsuxseg7ei8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg7ei8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg7ei8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte25
@@ -199166,7 +199919,7 @@ covergroup Zve32x_vsuxseg7ei8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg8ei16_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg8ei16_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg8ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -199321,7 +200074,7 @@ covergroup Zve32x_vsuxseg8ei16_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg8ei16_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg8ei16_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte24
@@ -199495,7 +200248,7 @@ covergroup Zve32x_vsuxseg8ei16_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg8ei16_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg8ei16_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg8ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -199656,7 +200409,7 @@ covergroup Zve32x_vsuxseg8ei16_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg8ei32_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg8ei32_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte24
@@ -199827,7 +200580,7 @@ covergroup Zve32x_vsuxseg8ei32_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg8ei32_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg8ei32_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg8ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -199986,7 +200739,7 @@ covergroup Zve32x_vsuxseg8ei32_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg8ei32_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg8ei32_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg8ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -200146,7 +200899,7 @@ covergroup Zve32x_vsuxseg8ei32_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg8ei8_v_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg8ei8_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg8ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -200303,7 +201056,7 @@ covergroup Zve32x_vsuxseg8ei8_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg8ei8_v_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg8ei8_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg8ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -200463,7 +201216,7 @@ covergroup Zve32x_vsuxseg8ei8_v_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vsuxseg8ei8_v_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vsuxseg8ei8_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte24
@@ -200642,7 +201395,7 @@ covergroup Zve32x_vsuxseg8ei8_v_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwadd_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vwadd_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -200963,7 +201716,7 @@ covergroup Zve32x_vwadd_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwadd_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vwadd_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -201287,7 +202040,7 @@ covergroup Zve32x_vwadd_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwadd_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vwadd_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwadd.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -201554,7 +202307,7 @@ covergroup Zve32x_vwadd_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwadd_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vwadd_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwadd.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -201824,7 +202577,7 @@ covergroup Zve32x_vwadd_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwadd_wv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vwadd_wv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_emul2
@@ -202137,7 +202890,7 @@ covergroup Zve32x_vwadd_wv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwadd_wv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vwadd_wv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_emul2
@@ -202453,7 +203206,7 @@ covergroup Zve32x_vwadd_wv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwadd_wx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vwadd_wx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_emul2
@@ -202683,7 +203436,7 @@ covergroup Zve32x_vwadd_wx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwadd_wx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vwadd_wx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_emul2
@@ -202916,7 +203669,7 @@ covergroup Zve32x_vwadd_wx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwaddu_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vwaddu_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -203226,7 +203979,7 @@ covergroup Zve32x_vwaddu_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwaddu_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vwaddu_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -203539,7 +204292,7 @@ covergroup Zve32x_vwaddu_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwaddu_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vwaddu_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwaddu.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -203798,7 +204551,7 @@ covergroup Zve32x_vwaddu_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwaddu_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vwaddu_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwaddu.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -204060,7 +204813,7 @@ covergroup Zve32x_vwaddu_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwaddu_wv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vwaddu_wv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_emul2
@@ -204365,7 +205118,7 @@ covergroup Zve32x_vwaddu_wv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwaddu_wv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vwaddu_wv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_emul2
@@ -204673,7 +205426,7 @@ covergroup Zve32x_vwaddu_wv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwaddu_wx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vwaddu_wx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_emul2
@@ -204903,7 +205656,7 @@ covergroup Zve32x_vwaddu_wx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwaddu_wx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vwaddu_wx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_emul2
@@ -205136,7 +205889,7 @@ covergroup Zve32x_vwaddu_wx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwmacc_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vwmacc_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -205326,7 +206079,7 @@ covergroup Zve32x_vwmacc_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwmacc_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vwmacc_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -205519,7 +206272,7 @@ covergroup Zve32x_vwmacc_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwmacc_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vwmacc_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwmacc.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -205707,7 +206460,7 @@ covergroup Zve32x_vwmacc_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwmacc_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vwmacc_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwmacc.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -205898,7 +206651,7 @@ covergroup Zve32x_vwmacc_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwmaccsu_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vwmaccsu_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -206088,7 +206841,7 @@ covergroup Zve32x_vwmaccsu_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwmaccsu_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vwmaccsu_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -206281,7 +207034,7 @@ covergroup Zve32x_vwmaccsu_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwmaccsu_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vwmaccsu_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwmaccsu.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -206469,7 +207222,7 @@ covergroup Zve32x_vwmaccsu_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwmaccsu_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vwmaccsu_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwmaccsu.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -206660,7 +207413,7 @@ covergroup Zve32x_vwmaccsu_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwmaccu_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vwmaccu_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -206850,7 +207603,7 @@ covergroup Zve32x_vwmaccu_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwmaccu_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vwmaccu_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -207043,7 +207796,7 @@ covergroup Zve32x_vwmaccu_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwmaccu_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vwmaccu_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwmaccu.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -207231,7 +207984,7 @@ covergroup Zve32x_vwmaccu_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwmaccu_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vwmaccu_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwmaccu.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -207422,7 +208175,7 @@ covergroup Zve32x_vwmaccu_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwmaccus_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vwmaccus_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwmaccus.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -207610,7 +208363,7 @@ covergroup Zve32x_vwmaccus_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwmaccus_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vwmaccus_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwmaccus.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -207801,7 +208554,7 @@ covergroup Zve32x_vwmaccus_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwmul_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vwmul_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -208111,7 +208864,7 @@ covergroup Zve32x_vwmul_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwmul_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vwmul_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -208424,7 +209177,7 @@ covergroup Zve32x_vwmul_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwmul_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vwmul_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwmul.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -208683,7 +209436,7 @@ covergroup Zve32x_vwmul_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwmul_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vwmul_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwmul.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -208945,7 +209698,7 @@ covergroup Zve32x_vwmul_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwmulsu_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vwmulsu_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -209255,7 +210008,7 @@ covergroup Zve32x_vwmulsu_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwmulsu_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vwmulsu_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -209568,7 +210321,7 @@ covergroup Zve32x_vwmulsu_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwmulsu_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vwmulsu_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwmulsu.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -209827,7 +210580,7 @@ covergroup Zve32x_vwmulsu_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwmulsu_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vwmulsu_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwmulsu.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -210089,7 +210842,7 @@ covergroup Zve32x_vwmulsu_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwmulu_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vwmulu_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -210399,7 +211152,7 @@ covergroup Zve32x_vwmulu_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwmulu_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vwmulu_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -210712,7 +211465,7 @@ covergroup Zve32x_vwmulu_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwmulu_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vwmulu_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwmulu.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -210971,7 +211724,7 @@ covergroup Zve32x_vwmulu_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwmulu_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vwmulu_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwmulu.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -211233,7 +211986,7 @@ covergroup Zve32x_vwmulu_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwredsum_vs_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vwredsum_vs_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1_emul2
@@ -211589,7 +212342,7 @@ covergroup Zve32x_vwredsum_vs_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwredsum_vs_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vwredsum_vs_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1_emul2
@@ -211948,7 +212701,7 @@ covergroup Zve32x_vwredsum_vs_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwredsumu_vs_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vwredsumu_vs_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1_emul2
@@ -212304,7 +213057,7 @@ covergroup Zve32x_vwredsumu_vs_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwredsumu_vs_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vwredsumu_vs_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1_emul2
@@ -212663,7 +213416,7 @@ covergroup Zve32x_vwredsumu_vs_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwsub_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vwsub_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -212973,7 +213726,7 @@ covergroup Zve32x_vwsub_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwsub_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vwsub_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -213286,7 +214039,7 @@ covergroup Zve32x_vwsub_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwsub_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vwsub_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwsub.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -213545,7 +214298,7 @@ covergroup Zve32x_vwsub_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwsub_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vwsub_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwsub.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -213807,7 +214560,7 @@ covergroup Zve32x_vwsub_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwsub_wv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vwsub_wv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_emul2
@@ -214112,7 +214865,7 @@ covergroup Zve32x_vwsub_wv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwsub_wv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vwsub_wv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_emul2
@@ -214420,7 +215173,7 @@ covergroup Zve32x_vwsub_wv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwsub_wx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vwsub_wx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_emul2
@@ -214650,7 +215403,7 @@ covergroup Zve32x_vwsub_wx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwsub_wx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vwsub_wx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_emul2
@@ -214883,7 +215636,7 @@ covergroup Zve32x_vwsub_wx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwsubu_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vwsubu_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -215193,7 +215946,7 @@ covergroup Zve32x_vwsubu_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwsubu_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vwsubu_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
@@ -215506,7 +216259,7 @@ covergroup Zve32x_vwsubu_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwsubu_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vwsubu_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwsubu.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -215765,7 +216518,7 @@ covergroup Zve32x_vwsubu_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwsubu_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vwsubu_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwsubu.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -216027,7 +216780,7 @@ covergroup Zve32x_vwsubu_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwsubu_wv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vwsubu_wv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_emul2
@@ -216332,7 +217085,7 @@ covergroup Zve32x_vwsubu_wv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwsubu_wv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vwsubu_wv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_emul2
@@ -216640,7 +217393,7 @@ covergroup Zve32x_vwsubu_wv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwsubu_wx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vwsubu_wx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_emul2
@@ -216870,7 +217623,7 @@ covergroup Zve32x_vwsubu_wx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vwsubu_wx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vwsubu_wx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_emul2
@@ -217103,7 +217856,7 @@ covergroup Zve32x_vwsubu_wx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vxor_vi_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vxor_vi_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -217259,7 +218012,7 @@ covergroup Zve32x_vxor_vi_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vxor_vi_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vxor_vi_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -217418,7 +218171,7 @@ covergroup Zve32x_vxor_vi_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vxor_vi_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vxor_vi_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -217580,7 +218333,7 @@ covergroup Zve32x_vxor_vi_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vxor_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vxor_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -217782,7 +218535,7 @@ covergroup Zve32x_vxor_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vxor_vv_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vxor_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -217987,7 +218740,7 @@ covergroup Zve32x_vxor_vv_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vxor_vv_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vxor_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -218195,7 +218948,7 @@ covergroup Zve32x_vxor_vv_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vxor_vx_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vxor_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -218375,7 +219128,7 @@ covergroup Zve32x_vxor_vx_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vxor_vx_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vxor_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -218558,7 +219311,7 @@ covergroup Zve32x_vxor_vx_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vxor_vx_sew8__cg with function sample(ins_t ins);
+covergroup Zve32x_vxor_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -218744,7 +219497,7 @@ covergroup Zve32x_vxor_vx_sew8__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vzext_vf2_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vzext_vf2_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vzext.vf2"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -218923,7 +219676,7 @@ covergroup Zve32x_vzext_vf2_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vzext_vf2_sew16__cg with function sample(ins_t ins);
+covergroup Zve32x_vzext_vf2_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vzext.vf2"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -219105,7 +219858,7 @@ covergroup Zve32x_vzext_vf2_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zve32x_vzext_vf4_sew32__cg with function sample(ins_t ins);
+covergroup Zve32x_vzext_vf4_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vzext.vf4"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -219279,1327 +220032,1327 @@ function void zve32x_sample(int hart, int issue, ins_t ins);
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
         "vaadd.vv"     : begin
-            Zve32x_vaadd_vv_cg.sample(ins);
+            Zve32x_vaadd_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vaadd.vx"     : begin
-            Zve32x_vaadd_vx_cg.sample(ins);
+            Zve32x_vaadd_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vaaddu.vv"     : begin
-            Zve32x_vaaddu_vv_cg.sample(ins);
+            Zve32x_vaaddu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vaaddu.vx"     : begin
-            Zve32x_vaaddu_vx_cg.sample(ins);
+            Zve32x_vaaddu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vadc.vim"     : begin
-            Zve32x_vadc_vim_cg.sample(ins);
+            Zve32x_vadc_vim_sew@EFFEW@_cg.sample(ins);
         end
         "vadc.vvm"     : begin
-            Zve32x_vadc_vvm_cg.sample(ins);
+            Zve32x_vadc_vvm_sew@EFFEW@_cg.sample(ins);
         end
         "vadc.vxm"     : begin
-            Zve32x_vadc_vxm_cg.sample(ins);
+            Zve32x_vadc_vxm_sew@EFFEW@_cg.sample(ins);
         end
         "vadd.vi"     : begin
-            Zve32x_vadd_vi_cg.sample(ins);
+            Zve32x_vadd_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vadd.vv"     : begin
-            Zve32x_vadd_vv_cg.sample(ins);
+            Zve32x_vadd_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vadd.vx"     : begin
-            Zve32x_vadd_vx_cg.sample(ins);
+            Zve32x_vadd_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vand.vi"     : begin
-            Zve32x_vand_vi_cg.sample(ins);
+            Zve32x_vand_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vand.vv"     : begin
-            Zve32x_vand_vv_cg.sample(ins);
+            Zve32x_vand_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vand.vx"     : begin
-            Zve32x_vand_vx_cg.sample(ins);
+            Zve32x_vand_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vasub.vv"     : begin
-            Zve32x_vasub_vv_cg.sample(ins);
+            Zve32x_vasub_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vasub.vx"     : begin
-            Zve32x_vasub_vx_cg.sample(ins);
+            Zve32x_vasub_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vasubu.vv"     : begin
-            Zve32x_vasubu_vv_cg.sample(ins);
+            Zve32x_vasubu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vasubu.vx"     : begin
-            Zve32x_vasubu_vx_cg.sample(ins);
+            Zve32x_vasubu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vcompress.vm"     : begin
-            Zve32x_vcompress_vm_cg.sample(ins);
+            Zve32x_vcompress_vm_sew@EFFEW@_cg.sample(ins);
         end
         "vcpop.m"     : begin
-            Zve32x_vcpop_m_cg.sample(ins);
+            Zve32x_vcpop_m_sew@EFFEW@_cg.sample(ins);
         end
         "vdiv.vv"     : begin
-            Zve32x_vdiv_vv_cg.sample(ins);
+            Zve32x_vdiv_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vdiv.vx"     : begin
-            Zve32x_vdiv_vx_cg.sample(ins);
+            Zve32x_vdiv_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vdivu.vv"     : begin
-            Zve32x_vdivu_vv_cg.sample(ins);
+            Zve32x_vdivu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vdivu.vx"     : begin
-            Zve32x_vdivu_vx_cg.sample(ins);
+            Zve32x_vdivu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vfirst.m"     : begin
-            Zve32x_vfirst_m_cg.sample(ins);
+            Zve32x_vfirst_m_sew@EFFEW@_cg.sample(ins);
         end
         "vid.v"     : begin
-            Zve32x_vid_v_cg.sample(ins);
+            Zve32x_vid_v_sew@EFFEW@_cg.sample(ins);
         end
         "viota.m"     : begin
-            Zve32x_viota_m_cg.sample(ins);
+            Zve32x_viota_m_sew@EFFEW@_cg.sample(ins);
         end
         "vl1re16.v"     : begin
-            Zve32x_vl1re16_v_cg.sample(ins);
+            Zve32x_vl1re16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vl1re32.v"     : begin
-            Zve32x_vl1re32_v_cg.sample(ins);
+            Zve32x_vl1re32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vl1re8.v"     : begin
-            Zve32x_vl1re8_v_cg.sample(ins);
+            Zve32x_vl1re8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vl2re16.v"     : begin
-            Zve32x_vl2re16_v_cg.sample(ins);
+            Zve32x_vl2re16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vl2re32.v"     : begin
-            Zve32x_vl2re32_v_cg.sample(ins);
+            Zve32x_vl2re32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vl2re8.v"     : begin
-            Zve32x_vl2re8_v_cg.sample(ins);
+            Zve32x_vl2re8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vl4re16.v"     : begin
-            Zve32x_vl4re16_v_cg.sample(ins);
+            Zve32x_vl4re16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vl4re32.v"     : begin
-            Zve32x_vl4re32_v_cg.sample(ins);
+            Zve32x_vl4re32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vl4re8.v"     : begin
-            Zve32x_vl4re8_v_cg.sample(ins);
+            Zve32x_vl4re8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vl8re16.v"     : begin
-            Zve32x_vl8re16_v_cg.sample(ins);
+            Zve32x_vl8re16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vl8re32.v"     : begin
-            Zve32x_vl8re32_v_cg.sample(ins);
+            Zve32x_vl8re32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vl8re8.v"     : begin
-            Zve32x_vl8re8_v_cg.sample(ins);
+            Zve32x_vl8re8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vle16.v"     : begin
-            Zve32x_vle16_v_cg.sample(ins);
+            Zve32x_vle16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vle16ff.v"     : begin
-            Zve32x_vle16ff_v_cg.sample(ins);
+            Zve32x_vle16ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vle32.v"     : begin
-            Zve32x_vle32_v_cg.sample(ins);
+            Zve32x_vle32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vle32ff.v"     : begin
-            Zve32x_vle32ff_v_cg.sample(ins);
+            Zve32x_vle32ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vle8.v"     : begin
-            Zve32x_vle8_v_cg.sample(ins);
+            Zve32x_vle8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vle8ff.v"     : begin
-            Zve32x_vle8ff_v_cg.sample(ins);
+            Zve32x_vle8ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlm.v"     : begin
-            Zve32x_vlm_v_cg.sample(ins);
+            Zve32x_vlm_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxei16.v"     : begin
-            Zve32x_vloxei16_v_cg.sample(ins);
+            Zve32x_vloxei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxei32.v"     : begin
-            Zve32x_vloxei32_v_cg.sample(ins);
+            Zve32x_vloxei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxei8.v"     : begin
-            Zve32x_vloxei8_v_cg.sample(ins);
+            Zve32x_vloxei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg2ei16.v"     : begin
-            Zve32x_vloxseg2ei16_v_cg.sample(ins);
+            Zve32x_vloxseg2ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg2ei32.v"     : begin
-            Zve32x_vloxseg2ei32_v_cg.sample(ins);
+            Zve32x_vloxseg2ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg2ei8.v"     : begin
-            Zve32x_vloxseg2ei8_v_cg.sample(ins);
+            Zve32x_vloxseg2ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg3ei16.v"     : begin
-            Zve32x_vloxseg3ei16_v_cg.sample(ins);
+            Zve32x_vloxseg3ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg3ei32.v"     : begin
-            Zve32x_vloxseg3ei32_v_cg.sample(ins);
+            Zve32x_vloxseg3ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg3ei8.v"     : begin
-            Zve32x_vloxseg3ei8_v_cg.sample(ins);
+            Zve32x_vloxseg3ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg4ei16.v"     : begin
-            Zve32x_vloxseg4ei16_v_cg.sample(ins);
+            Zve32x_vloxseg4ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg4ei32.v"     : begin
-            Zve32x_vloxseg4ei32_v_cg.sample(ins);
+            Zve32x_vloxseg4ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg4ei8.v"     : begin
-            Zve32x_vloxseg4ei8_v_cg.sample(ins);
+            Zve32x_vloxseg4ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg5ei16.v"     : begin
-            Zve32x_vloxseg5ei16_v_cg.sample(ins);
+            Zve32x_vloxseg5ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg5ei32.v"     : begin
-            Zve32x_vloxseg5ei32_v_cg.sample(ins);
+            Zve32x_vloxseg5ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg5ei8.v"     : begin
-            Zve32x_vloxseg5ei8_v_cg.sample(ins);
+            Zve32x_vloxseg5ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg6ei16.v"     : begin
-            Zve32x_vloxseg6ei16_v_cg.sample(ins);
+            Zve32x_vloxseg6ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg6ei32.v"     : begin
-            Zve32x_vloxseg6ei32_v_cg.sample(ins);
+            Zve32x_vloxseg6ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg6ei8.v"     : begin
-            Zve32x_vloxseg6ei8_v_cg.sample(ins);
+            Zve32x_vloxseg6ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg7ei16.v"     : begin
-            Zve32x_vloxseg7ei16_v_cg.sample(ins);
+            Zve32x_vloxseg7ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg7ei32.v"     : begin
-            Zve32x_vloxseg7ei32_v_cg.sample(ins);
+            Zve32x_vloxseg7ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg7ei8.v"     : begin
-            Zve32x_vloxseg7ei8_v_cg.sample(ins);
+            Zve32x_vloxseg7ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg8ei16.v"     : begin
-            Zve32x_vloxseg8ei16_v_cg.sample(ins);
+            Zve32x_vloxseg8ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg8ei32.v"     : begin
-            Zve32x_vloxseg8ei32_v_cg.sample(ins);
+            Zve32x_vloxseg8ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg8ei8.v"     : begin
-            Zve32x_vloxseg8ei8_v_cg.sample(ins);
+            Zve32x_vloxseg8ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlse16.v"     : begin
-            Zve32x_vlse16_v_cg.sample(ins);
+            Zve32x_vlse16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlse32.v"     : begin
-            Zve32x_vlse32_v_cg.sample(ins);
+            Zve32x_vlse32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlse8.v"     : begin
-            Zve32x_vlse8_v_cg.sample(ins);
+            Zve32x_vlse8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg2e16.v"     : begin
-            Zve32x_vlseg2e16_v_cg.sample(ins);
+            Zve32x_vlseg2e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg2e16ff.v"     : begin
-            Zve32x_vlseg2e16ff_v_cg.sample(ins);
+            Zve32x_vlseg2e16ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg2e32.v"     : begin
-            Zve32x_vlseg2e32_v_cg.sample(ins);
+            Zve32x_vlseg2e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg2e32ff.v"     : begin
-            Zve32x_vlseg2e32ff_v_cg.sample(ins);
+            Zve32x_vlseg2e32ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg2e8.v"     : begin
-            Zve32x_vlseg2e8_v_cg.sample(ins);
+            Zve32x_vlseg2e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg2e8ff.v"     : begin
-            Zve32x_vlseg2e8ff_v_cg.sample(ins);
+            Zve32x_vlseg2e8ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg3e16.v"     : begin
-            Zve32x_vlseg3e16_v_cg.sample(ins);
+            Zve32x_vlseg3e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg3e16ff.v"     : begin
-            Zve32x_vlseg3e16ff_v_cg.sample(ins);
+            Zve32x_vlseg3e16ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg3e32.v"     : begin
-            Zve32x_vlseg3e32_v_cg.sample(ins);
+            Zve32x_vlseg3e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg3e32ff.v"     : begin
-            Zve32x_vlseg3e32ff_v_cg.sample(ins);
+            Zve32x_vlseg3e32ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg3e8.v"     : begin
-            Zve32x_vlseg3e8_v_cg.sample(ins);
+            Zve32x_vlseg3e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg3e8ff.v"     : begin
-            Zve32x_vlseg3e8ff_v_cg.sample(ins);
+            Zve32x_vlseg3e8ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg4e16.v"     : begin
-            Zve32x_vlseg4e16_v_cg.sample(ins);
+            Zve32x_vlseg4e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg4e16ff.v"     : begin
-            Zve32x_vlseg4e16ff_v_cg.sample(ins);
+            Zve32x_vlseg4e16ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg4e32.v"     : begin
-            Zve32x_vlseg4e32_v_cg.sample(ins);
+            Zve32x_vlseg4e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg4e32ff.v"     : begin
-            Zve32x_vlseg4e32ff_v_cg.sample(ins);
+            Zve32x_vlseg4e32ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg4e8.v"     : begin
-            Zve32x_vlseg4e8_v_cg.sample(ins);
+            Zve32x_vlseg4e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg4e8ff.v"     : begin
-            Zve32x_vlseg4e8ff_v_cg.sample(ins);
+            Zve32x_vlseg4e8ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg5e16.v"     : begin
-            Zve32x_vlseg5e16_v_cg.sample(ins);
+            Zve32x_vlseg5e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg5e16ff.v"     : begin
-            Zve32x_vlseg5e16ff_v_cg.sample(ins);
+            Zve32x_vlseg5e16ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg5e32.v"     : begin
-            Zve32x_vlseg5e32_v_cg.sample(ins);
+            Zve32x_vlseg5e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg5e32ff.v"     : begin
-            Zve32x_vlseg5e32ff_v_cg.sample(ins);
+            Zve32x_vlseg5e32ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg5e8.v"     : begin
-            Zve32x_vlseg5e8_v_cg.sample(ins);
+            Zve32x_vlseg5e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg5e8ff.v"     : begin
-            Zve32x_vlseg5e8ff_v_cg.sample(ins);
+            Zve32x_vlseg5e8ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg6e16.v"     : begin
-            Zve32x_vlseg6e16_v_cg.sample(ins);
+            Zve32x_vlseg6e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg6e16ff.v"     : begin
-            Zve32x_vlseg6e16ff_v_cg.sample(ins);
+            Zve32x_vlseg6e16ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg6e32.v"     : begin
-            Zve32x_vlseg6e32_v_cg.sample(ins);
+            Zve32x_vlseg6e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg6e32ff.v"     : begin
-            Zve32x_vlseg6e32ff_v_cg.sample(ins);
+            Zve32x_vlseg6e32ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg6e8.v"     : begin
-            Zve32x_vlseg6e8_v_cg.sample(ins);
+            Zve32x_vlseg6e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg6e8ff.v"     : begin
-            Zve32x_vlseg6e8ff_v_cg.sample(ins);
+            Zve32x_vlseg6e8ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg7e16.v"     : begin
-            Zve32x_vlseg7e16_v_cg.sample(ins);
+            Zve32x_vlseg7e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg7e16ff.v"     : begin
-            Zve32x_vlseg7e16ff_v_cg.sample(ins);
+            Zve32x_vlseg7e16ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg7e32.v"     : begin
-            Zve32x_vlseg7e32_v_cg.sample(ins);
+            Zve32x_vlseg7e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg7e32ff.v"     : begin
-            Zve32x_vlseg7e32ff_v_cg.sample(ins);
+            Zve32x_vlseg7e32ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg7e8.v"     : begin
-            Zve32x_vlseg7e8_v_cg.sample(ins);
+            Zve32x_vlseg7e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg7e8ff.v"     : begin
-            Zve32x_vlseg7e8ff_v_cg.sample(ins);
+            Zve32x_vlseg7e8ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg8e16.v"     : begin
-            Zve32x_vlseg8e16_v_cg.sample(ins);
+            Zve32x_vlseg8e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg8e16ff.v"     : begin
-            Zve32x_vlseg8e16ff_v_cg.sample(ins);
+            Zve32x_vlseg8e16ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg8e32.v"     : begin
-            Zve32x_vlseg8e32_v_cg.sample(ins);
+            Zve32x_vlseg8e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg8e32ff.v"     : begin
-            Zve32x_vlseg8e32ff_v_cg.sample(ins);
+            Zve32x_vlseg8e32ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg8e8.v"     : begin
-            Zve32x_vlseg8e8_v_cg.sample(ins);
+            Zve32x_vlseg8e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg8e8ff.v"     : begin
-            Zve32x_vlseg8e8ff_v_cg.sample(ins);
+            Zve32x_vlseg8e8ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg2e16.v"     : begin
-            Zve32x_vlsseg2e16_v_cg.sample(ins);
+            Zve32x_vlsseg2e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg2e32.v"     : begin
-            Zve32x_vlsseg2e32_v_cg.sample(ins);
+            Zve32x_vlsseg2e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg2e8.v"     : begin
-            Zve32x_vlsseg2e8_v_cg.sample(ins);
+            Zve32x_vlsseg2e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg3e16.v"     : begin
-            Zve32x_vlsseg3e16_v_cg.sample(ins);
+            Zve32x_vlsseg3e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg3e32.v"     : begin
-            Zve32x_vlsseg3e32_v_cg.sample(ins);
+            Zve32x_vlsseg3e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg3e8.v"     : begin
-            Zve32x_vlsseg3e8_v_cg.sample(ins);
+            Zve32x_vlsseg3e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg4e16.v"     : begin
-            Zve32x_vlsseg4e16_v_cg.sample(ins);
+            Zve32x_vlsseg4e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg4e32.v"     : begin
-            Zve32x_vlsseg4e32_v_cg.sample(ins);
+            Zve32x_vlsseg4e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg4e8.v"     : begin
-            Zve32x_vlsseg4e8_v_cg.sample(ins);
+            Zve32x_vlsseg4e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg5e16.v"     : begin
-            Zve32x_vlsseg5e16_v_cg.sample(ins);
+            Zve32x_vlsseg5e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg5e32.v"     : begin
-            Zve32x_vlsseg5e32_v_cg.sample(ins);
+            Zve32x_vlsseg5e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg5e8.v"     : begin
-            Zve32x_vlsseg5e8_v_cg.sample(ins);
+            Zve32x_vlsseg5e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg6e16.v"     : begin
-            Zve32x_vlsseg6e16_v_cg.sample(ins);
+            Zve32x_vlsseg6e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg6e32.v"     : begin
-            Zve32x_vlsseg6e32_v_cg.sample(ins);
+            Zve32x_vlsseg6e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg6e8.v"     : begin
-            Zve32x_vlsseg6e8_v_cg.sample(ins);
+            Zve32x_vlsseg6e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg7e16.v"     : begin
-            Zve32x_vlsseg7e16_v_cg.sample(ins);
+            Zve32x_vlsseg7e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg7e32.v"     : begin
-            Zve32x_vlsseg7e32_v_cg.sample(ins);
+            Zve32x_vlsseg7e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg7e8.v"     : begin
-            Zve32x_vlsseg7e8_v_cg.sample(ins);
+            Zve32x_vlsseg7e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg8e16.v"     : begin
-            Zve32x_vlsseg8e16_v_cg.sample(ins);
+            Zve32x_vlsseg8e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg8e32.v"     : begin
-            Zve32x_vlsseg8e32_v_cg.sample(ins);
+            Zve32x_vlsseg8e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg8e8.v"     : begin
-            Zve32x_vlsseg8e8_v_cg.sample(ins);
+            Zve32x_vlsseg8e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxei16.v"     : begin
-            Zve32x_vluxei16_v_cg.sample(ins);
+            Zve32x_vluxei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxei32.v"     : begin
-            Zve32x_vluxei32_v_cg.sample(ins);
+            Zve32x_vluxei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxei8.v"     : begin
-            Zve32x_vluxei8_v_cg.sample(ins);
+            Zve32x_vluxei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg2ei16.v"     : begin
-            Zve32x_vluxseg2ei16_v_cg.sample(ins);
+            Zve32x_vluxseg2ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg2ei32.v"     : begin
-            Zve32x_vluxseg2ei32_v_cg.sample(ins);
+            Zve32x_vluxseg2ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg2ei8.v"     : begin
-            Zve32x_vluxseg2ei8_v_cg.sample(ins);
+            Zve32x_vluxseg2ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg3ei16.v"     : begin
-            Zve32x_vluxseg3ei16_v_cg.sample(ins);
+            Zve32x_vluxseg3ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg3ei32.v"     : begin
-            Zve32x_vluxseg3ei32_v_cg.sample(ins);
+            Zve32x_vluxseg3ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg3ei8.v"     : begin
-            Zve32x_vluxseg3ei8_v_cg.sample(ins);
+            Zve32x_vluxseg3ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg4ei16.v"     : begin
-            Zve32x_vluxseg4ei16_v_cg.sample(ins);
+            Zve32x_vluxseg4ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg4ei32.v"     : begin
-            Zve32x_vluxseg4ei32_v_cg.sample(ins);
+            Zve32x_vluxseg4ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg4ei8.v"     : begin
-            Zve32x_vluxseg4ei8_v_cg.sample(ins);
+            Zve32x_vluxseg4ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg5ei16.v"     : begin
-            Zve32x_vluxseg5ei16_v_cg.sample(ins);
+            Zve32x_vluxseg5ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg5ei32.v"     : begin
-            Zve32x_vluxseg5ei32_v_cg.sample(ins);
+            Zve32x_vluxseg5ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg5ei8.v"     : begin
-            Zve32x_vluxseg5ei8_v_cg.sample(ins);
+            Zve32x_vluxseg5ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg6ei16.v"     : begin
-            Zve32x_vluxseg6ei16_v_cg.sample(ins);
+            Zve32x_vluxseg6ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg6ei32.v"     : begin
-            Zve32x_vluxseg6ei32_v_cg.sample(ins);
+            Zve32x_vluxseg6ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg6ei8.v"     : begin
-            Zve32x_vluxseg6ei8_v_cg.sample(ins);
+            Zve32x_vluxseg6ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg7ei16.v"     : begin
-            Zve32x_vluxseg7ei16_v_cg.sample(ins);
+            Zve32x_vluxseg7ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg7ei32.v"     : begin
-            Zve32x_vluxseg7ei32_v_cg.sample(ins);
+            Zve32x_vluxseg7ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg7ei8.v"     : begin
-            Zve32x_vluxseg7ei8_v_cg.sample(ins);
+            Zve32x_vluxseg7ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg8ei16.v"     : begin
-            Zve32x_vluxseg8ei16_v_cg.sample(ins);
+            Zve32x_vluxseg8ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg8ei32.v"     : begin
-            Zve32x_vluxseg8ei32_v_cg.sample(ins);
+            Zve32x_vluxseg8ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg8ei8.v"     : begin
-            Zve32x_vluxseg8ei8_v_cg.sample(ins);
+            Zve32x_vluxseg8ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vmacc.vv"     : begin
-            Zve32x_vmacc_vv_cg.sample(ins);
+            Zve32x_vmacc_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmacc.vx"     : begin
-            Zve32x_vmacc_vx_cg.sample(ins);
+            Zve32x_vmacc_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmadc.vi"     : begin
-            Zve32x_vmadc_vi_cg.sample(ins);
+            Zve32x_vmadc_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vmadc.vim"     : begin
-            Zve32x_vmadc_vim_cg.sample(ins);
+            Zve32x_vmadc_vim_sew@EFFEW@_cg.sample(ins);
         end
         "vmadc.vv"     : begin
-            Zve32x_vmadc_vv_cg.sample(ins);
+            Zve32x_vmadc_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmadc.vvm"     : begin
-            Zve32x_vmadc_vvm_cg.sample(ins);
+            Zve32x_vmadc_vvm_sew@EFFEW@_cg.sample(ins);
         end
         "vmadc.vx"     : begin
-            Zve32x_vmadc_vx_cg.sample(ins);
+            Zve32x_vmadc_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmadc.vxm"     : begin
-            Zve32x_vmadc_vxm_cg.sample(ins);
+            Zve32x_vmadc_vxm_sew@EFFEW@_cg.sample(ins);
         end
         "vmadd.vv"     : begin
-            Zve32x_vmadd_vv_cg.sample(ins);
+            Zve32x_vmadd_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmadd.vx"     : begin
-            Zve32x_vmadd_vx_cg.sample(ins);
+            Zve32x_vmadd_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmand.mm"     : begin
-            Zve32x_vmand_mm_cg.sample(ins);
+            Zve32x_vmand_mm_sew@EFFEW@_cg.sample(ins);
         end
         "vmandn.mm"     : begin
-            Zve32x_vmandn_mm_cg.sample(ins);
+            Zve32x_vmandn_mm_sew@EFFEW@_cg.sample(ins);
         end
         "vmax.vv"     : begin
-            Zve32x_vmax_vv_cg.sample(ins);
+            Zve32x_vmax_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmax.vx"     : begin
-            Zve32x_vmax_vx_cg.sample(ins);
+            Zve32x_vmax_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmaxu.vv"     : begin
-            Zve32x_vmaxu_vv_cg.sample(ins);
+            Zve32x_vmaxu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmaxu.vx"     : begin
-            Zve32x_vmaxu_vx_cg.sample(ins);
+            Zve32x_vmaxu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmerge.vim"     : begin
-            Zve32x_vmerge_vim_cg.sample(ins);
+            Zve32x_vmerge_vim_sew@EFFEW@_cg.sample(ins);
         end
         "vmerge.vvm"     : begin
-            Zve32x_vmerge_vvm_cg.sample(ins);
+            Zve32x_vmerge_vvm_sew@EFFEW@_cg.sample(ins);
         end
         "vmerge.vxm"     : begin
-            Zve32x_vmerge_vxm_cg.sample(ins);
+            Zve32x_vmerge_vxm_sew@EFFEW@_cg.sample(ins);
         end
         "vmin.vv"     : begin
-            Zve32x_vmin_vv_cg.sample(ins);
+            Zve32x_vmin_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmin.vx"     : begin
-            Zve32x_vmin_vx_cg.sample(ins);
+            Zve32x_vmin_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vminu.vv"     : begin
-            Zve32x_vminu_vv_cg.sample(ins);
+            Zve32x_vminu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vminu.vx"     : begin
-            Zve32x_vminu_vx_cg.sample(ins);
+            Zve32x_vminu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmnand.mm"     : begin
-            Zve32x_vmnand_mm_cg.sample(ins);
+            Zve32x_vmnand_mm_sew@EFFEW@_cg.sample(ins);
         end
         "vmnor.mm"     : begin
-            Zve32x_vmnor_mm_cg.sample(ins);
+            Zve32x_vmnor_mm_sew@EFFEW@_cg.sample(ins);
         end
         "vmor.mm"     : begin
-            Zve32x_vmor_mm_cg.sample(ins);
+            Zve32x_vmor_mm_sew@EFFEW@_cg.sample(ins);
         end
         "vmorn.mm"     : begin
-            Zve32x_vmorn_mm_cg.sample(ins);
+            Zve32x_vmorn_mm_sew@EFFEW@_cg.sample(ins);
         end
         "vmsbc.vv"     : begin
-            Zve32x_vmsbc_vv_cg.sample(ins);
+            Zve32x_vmsbc_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmsbc.vvm"     : begin
-            Zve32x_vmsbc_vvm_cg.sample(ins);
+            Zve32x_vmsbc_vvm_sew@EFFEW@_cg.sample(ins);
         end
         "vmsbc.vx"     : begin
-            Zve32x_vmsbc_vx_cg.sample(ins);
+            Zve32x_vmsbc_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmsbc.vxm"     : begin
-            Zve32x_vmsbc_vxm_cg.sample(ins);
+            Zve32x_vmsbc_vxm_sew@EFFEW@_cg.sample(ins);
         end
         "vmsbf.m"     : begin
-            Zve32x_vmsbf_m_cg.sample(ins);
+            Zve32x_vmsbf_m_sew@EFFEW@_cg.sample(ins);
         end
         "vmseq.vi"     : begin
-            Zve32x_vmseq_vi_cg.sample(ins);
+            Zve32x_vmseq_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vmseq.vv"     : begin
-            Zve32x_vmseq_vv_cg.sample(ins);
+            Zve32x_vmseq_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmseq.vx"     : begin
-            Zve32x_vmseq_vx_cg.sample(ins);
+            Zve32x_vmseq_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmsgt.vi"     : begin
-            Zve32x_vmsgt_vi_cg.sample(ins);
+            Zve32x_vmsgt_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vmsgt.vx"     : begin
-            Zve32x_vmsgt_vx_cg.sample(ins);
+            Zve32x_vmsgt_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmsgtu.vi"     : begin
-            Zve32x_vmsgtu_vi_cg.sample(ins);
+            Zve32x_vmsgtu_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vmsgtu.vx"     : begin
-            Zve32x_vmsgtu_vx_cg.sample(ins);
+            Zve32x_vmsgtu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmsif.m"     : begin
-            Zve32x_vmsif_m_cg.sample(ins);
+            Zve32x_vmsif_m_sew@EFFEW@_cg.sample(ins);
         end
         "vmsle.vi"     : begin
-            Zve32x_vmsle_vi_cg.sample(ins);
+            Zve32x_vmsle_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vmsle.vv"     : begin
-            Zve32x_vmsle_vv_cg.sample(ins);
+            Zve32x_vmsle_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmsle.vx"     : begin
-            Zve32x_vmsle_vx_cg.sample(ins);
+            Zve32x_vmsle_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmsleu.vi"     : begin
-            Zve32x_vmsleu_vi_cg.sample(ins);
+            Zve32x_vmsleu_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vmsleu.vv"     : begin
-            Zve32x_vmsleu_vv_cg.sample(ins);
+            Zve32x_vmsleu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmsleu.vx"     : begin
-            Zve32x_vmsleu_vx_cg.sample(ins);
+            Zve32x_vmsleu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmslt.vv"     : begin
-            Zve32x_vmslt_vv_cg.sample(ins);
+            Zve32x_vmslt_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmslt.vx"     : begin
-            Zve32x_vmslt_vx_cg.sample(ins);
+            Zve32x_vmslt_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmsltu.vv"     : begin
-            Zve32x_vmsltu_vv_cg.sample(ins);
+            Zve32x_vmsltu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmsltu.vx"     : begin
-            Zve32x_vmsltu_vx_cg.sample(ins);
+            Zve32x_vmsltu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmsne.vi"     : begin
-            Zve32x_vmsne_vi_cg.sample(ins);
+            Zve32x_vmsne_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vmsne.vv"     : begin
-            Zve32x_vmsne_vv_cg.sample(ins);
+            Zve32x_vmsne_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmsne.vx"     : begin
-            Zve32x_vmsne_vx_cg.sample(ins);
+            Zve32x_vmsne_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmsof.m"     : begin
-            Zve32x_vmsof_m_cg.sample(ins);
+            Zve32x_vmsof_m_sew@EFFEW@_cg.sample(ins);
         end
         "vmul.vv"     : begin
-            Zve32x_vmul_vv_cg.sample(ins);
+            Zve32x_vmul_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmul.vx"     : begin
-            Zve32x_vmul_vx_cg.sample(ins);
+            Zve32x_vmul_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmulh.vv"     : begin
-            Zve32x_vmulh_vv_cg.sample(ins);
+            Zve32x_vmulh_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmulh.vx"     : begin
-            Zve32x_vmulh_vx_cg.sample(ins);
+            Zve32x_vmulh_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmulhsu.vv"     : begin
-            Zve32x_vmulhsu_vv_cg.sample(ins);
+            Zve32x_vmulhsu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmulhsu.vx"     : begin
-            Zve32x_vmulhsu_vx_cg.sample(ins);
+            Zve32x_vmulhsu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmulhu.vv"     : begin
-            Zve32x_vmulhu_vv_cg.sample(ins);
+            Zve32x_vmulhu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmulhu.vx"     : begin
-            Zve32x_vmulhu_vx_cg.sample(ins);
+            Zve32x_vmulhu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmv.s.x"     : begin
-            Zve32x_vmv_s_x_cg.sample(ins);
+            Zve32x_vmv_s_x_sew@EFFEW@_cg.sample(ins);
         end
         "vmv.v.i"     : begin
-            Zve32x_vmv_v_i_cg.sample(ins);
+            Zve32x_vmv_v_i_sew@EFFEW@_cg.sample(ins);
         end
         "vmv.v.v"     : begin
-            Zve32x_vmv_v_v_cg.sample(ins);
+            Zve32x_vmv_v_v_sew@EFFEW@_cg.sample(ins);
         end
         "vmv.v.x"     : begin
-            Zve32x_vmv_v_x_cg.sample(ins);
+            Zve32x_vmv_v_x_sew@EFFEW@_cg.sample(ins);
         end
         "vmv.x.s"     : begin
-            Zve32x_vmv_x_s_cg.sample(ins);
+            Zve32x_vmv_x_s_sew@EFFEW@_cg.sample(ins);
         end
         "vmv1r.v"     : begin
-            Zve32x_vmv1r_v_cg.sample(ins);
+            Zve32x_vmv1r_v_sew@EFFEW@_cg.sample(ins);
         end
         "vmv2r.v"     : begin
-            Zve32x_vmv2r_v_cg.sample(ins);
+            Zve32x_vmv2r_v_sew@EFFEW@_cg.sample(ins);
         end
         "vmv4r.v"     : begin
-            Zve32x_vmv4r_v_cg.sample(ins);
+            Zve32x_vmv4r_v_sew@EFFEW@_cg.sample(ins);
         end
         "vmv8r.v"     : begin
-            Zve32x_vmv8r_v_cg.sample(ins);
+            Zve32x_vmv8r_v_sew@EFFEW@_cg.sample(ins);
         end
         "vmxnor.mm"     : begin
-            Zve32x_vmxnor_mm_cg.sample(ins);
+            Zve32x_vmxnor_mm_sew@EFFEW@_cg.sample(ins);
         end
         "vmxor.mm"     : begin
-            Zve32x_vmxor_mm_cg.sample(ins);
+            Zve32x_vmxor_mm_sew@EFFEW@_cg.sample(ins);
         end
         "vnclip.wi"     : begin
-            Zve32x_vnclip_wi_cg.sample(ins);
+            Zve32x_vnclip_wi_sew@EFFEW@_cg.sample(ins);
         end
         "vnclip.wv"     : begin
-            Zve32x_vnclip_wv_cg.sample(ins);
+            Zve32x_vnclip_wv_sew@EFFEW@_cg.sample(ins);
         end
         "vnclip.wx"     : begin
-            Zve32x_vnclip_wx_cg.sample(ins);
+            Zve32x_vnclip_wx_sew@EFFEW@_cg.sample(ins);
         end
         "vnclipu.wi"     : begin
-            Zve32x_vnclipu_wi_cg.sample(ins);
+            Zve32x_vnclipu_wi_sew@EFFEW@_cg.sample(ins);
         end
         "vnclipu.wv"     : begin
-            Zve32x_vnclipu_wv_cg.sample(ins);
+            Zve32x_vnclipu_wv_sew@EFFEW@_cg.sample(ins);
         end
         "vnclipu.wx"     : begin
-            Zve32x_vnclipu_wx_cg.sample(ins);
+            Zve32x_vnclipu_wx_sew@EFFEW@_cg.sample(ins);
         end
         "vnmsac.vv"     : begin
-            Zve32x_vnmsac_vv_cg.sample(ins);
+            Zve32x_vnmsac_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vnmsac.vx"     : begin
-            Zve32x_vnmsac_vx_cg.sample(ins);
+            Zve32x_vnmsac_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vnmsub.vv"     : begin
-            Zve32x_vnmsub_vv_cg.sample(ins);
+            Zve32x_vnmsub_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vnmsub.vx"     : begin
-            Zve32x_vnmsub_vx_cg.sample(ins);
+            Zve32x_vnmsub_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vnsra.wi"     : begin
-            Zve32x_vnsra_wi_cg.sample(ins);
+            Zve32x_vnsra_wi_sew@EFFEW@_cg.sample(ins);
         end
         "vnsra.wv"     : begin
-            Zve32x_vnsra_wv_cg.sample(ins);
+            Zve32x_vnsra_wv_sew@EFFEW@_cg.sample(ins);
         end
         "vnsra.wx"     : begin
-            Zve32x_vnsra_wx_cg.sample(ins);
+            Zve32x_vnsra_wx_sew@EFFEW@_cg.sample(ins);
         end
         "vnsrl.wi"     : begin
-            Zve32x_vnsrl_wi_cg.sample(ins);
+            Zve32x_vnsrl_wi_sew@EFFEW@_cg.sample(ins);
         end
         "vnsrl.wv"     : begin
-            Zve32x_vnsrl_wv_cg.sample(ins);
+            Zve32x_vnsrl_wv_sew@EFFEW@_cg.sample(ins);
         end
         "vnsrl.wx"     : begin
-            Zve32x_vnsrl_wx_cg.sample(ins);
+            Zve32x_vnsrl_wx_sew@EFFEW@_cg.sample(ins);
         end
         "vor.vi"     : begin
-            Zve32x_vor_vi_cg.sample(ins);
+            Zve32x_vor_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vor.vv"     : begin
-            Zve32x_vor_vv_cg.sample(ins);
+            Zve32x_vor_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vor.vx"     : begin
-            Zve32x_vor_vx_cg.sample(ins);
+            Zve32x_vor_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vredand.vs"     : begin
-            Zve32x_vredand_vs_cg.sample(ins);
+            Zve32x_vredand_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vredmax.vs"     : begin
-            Zve32x_vredmax_vs_cg.sample(ins);
+            Zve32x_vredmax_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vredmaxu.vs"     : begin
-            Zve32x_vredmaxu_vs_cg.sample(ins);
+            Zve32x_vredmaxu_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vredmin.vs"     : begin
-            Zve32x_vredmin_vs_cg.sample(ins);
+            Zve32x_vredmin_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vredminu.vs"     : begin
-            Zve32x_vredminu_vs_cg.sample(ins);
+            Zve32x_vredminu_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vredor.vs"     : begin
-            Zve32x_vredor_vs_cg.sample(ins);
+            Zve32x_vredor_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vredsum.vs"     : begin
-            Zve32x_vredsum_vs_cg.sample(ins);
+            Zve32x_vredsum_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vredxor.vs"     : begin
-            Zve32x_vredxor_vs_cg.sample(ins);
+            Zve32x_vredxor_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vrem.vv"     : begin
-            Zve32x_vrem_vv_cg.sample(ins);
+            Zve32x_vrem_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vrem.vx"     : begin
-            Zve32x_vrem_vx_cg.sample(ins);
+            Zve32x_vrem_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vremu.vv"     : begin
-            Zve32x_vremu_vv_cg.sample(ins);
+            Zve32x_vremu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vremu.vx"     : begin
-            Zve32x_vremu_vx_cg.sample(ins);
+            Zve32x_vremu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vrgather.vi"     : begin
-            Zve32x_vrgather_vi_cg.sample(ins);
+            Zve32x_vrgather_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vrgather.vv"     : begin
-            Zve32x_vrgather_vv_cg.sample(ins);
+            Zve32x_vrgather_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vrgather.vx"     : begin
-            Zve32x_vrgather_vx_cg.sample(ins);
+            Zve32x_vrgather_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vrgatherei16.vv"     : begin
-            Zve32x_vrgatherei16_vv_cg.sample(ins);
+            Zve32x_vrgatherei16_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vrsub.vi"     : begin
-            Zve32x_vrsub_vi_cg.sample(ins);
+            Zve32x_vrsub_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vrsub.vx"     : begin
-            Zve32x_vrsub_vx_cg.sample(ins);
+            Zve32x_vrsub_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vs1r.v"     : begin
-            Zve32x_vs1r_v_cg.sample(ins);
+            Zve32x_vs1r_v_sew@EFFEW@_cg.sample(ins);
         end
         "vs2r.v"     : begin
-            Zve32x_vs2r_v_cg.sample(ins);
+            Zve32x_vs2r_v_sew@EFFEW@_cg.sample(ins);
         end
         "vs4r.v"     : begin
-            Zve32x_vs4r_v_cg.sample(ins);
+            Zve32x_vs4r_v_sew@EFFEW@_cg.sample(ins);
         end
         "vs8r.v"     : begin
-            Zve32x_vs8r_v_cg.sample(ins);
+            Zve32x_vs8r_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsadd.vi"     : begin
-            Zve32x_vsadd_vi_cg.sample(ins);
+            Zve32x_vsadd_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vsadd.vv"     : begin
-            Zve32x_vsadd_vv_cg.sample(ins);
+            Zve32x_vsadd_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vsadd.vx"     : begin
-            Zve32x_vsadd_vx_cg.sample(ins);
+            Zve32x_vsadd_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vsaddu.vi"     : begin
-            Zve32x_vsaddu_vi_cg.sample(ins);
+            Zve32x_vsaddu_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vsaddu.vv"     : begin
-            Zve32x_vsaddu_vv_cg.sample(ins);
+            Zve32x_vsaddu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vsaddu.vx"     : begin
-            Zve32x_vsaddu_vx_cg.sample(ins);
+            Zve32x_vsaddu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vsbc.vvm"     : begin
-            Zve32x_vsbc_vvm_cg.sample(ins);
+            Zve32x_vsbc_vvm_sew@EFFEW@_cg.sample(ins);
         end
         "vsbc.vxm"     : begin
-            Zve32x_vsbc_vxm_cg.sample(ins);
+            Zve32x_vsbc_vxm_sew@EFFEW@_cg.sample(ins);
         end
         "vse16.v"     : begin
-            Zve32x_vse16_v_cg.sample(ins);
+            Zve32x_vse16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vse32.v"     : begin
-            Zve32x_vse32_v_cg.sample(ins);
+            Zve32x_vse32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vse8.v"     : begin
-            Zve32x_vse8_v_cg.sample(ins);
+            Zve32x_vse8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vslide1down.vx"     : begin
-            Zve32x_vslide1down_vx_cg.sample(ins);
+            Zve32x_vslide1down_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vslide1up.vx"     : begin
-            Zve32x_vslide1up_vx_cg.sample(ins);
+            Zve32x_vslide1up_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vslidedown.vi"     : begin
-            Zve32x_vslidedown_vi_cg.sample(ins);
+            Zve32x_vslidedown_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vslidedown.vx"     : begin
-            Zve32x_vslidedown_vx_cg.sample(ins);
+            Zve32x_vslidedown_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vslideup.vi"     : begin
-            Zve32x_vslideup_vi_cg.sample(ins);
+            Zve32x_vslideup_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vslideup.vx"     : begin
-            Zve32x_vslideup_vx_cg.sample(ins);
+            Zve32x_vslideup_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vsll.vi"     : begin
-            Zve32x_vsll_vi_cg.sample(ins);
+            Zve32x_vsll_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vsll.vv"     : begin
-            Zve32x_vsll_vv_cg.sample(ins);
+            Zve32x_vsll_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vsll.vx"     : begin
-            Zve32x_vsll_vx_cg.sample(ins);
+            Zve32x_vsll_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vsm.v"     : begin
-            Zve32x_vsm_v_cg.sample(ins);
+            Zve32x_vsm_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsmul.vv"     : begin
-            Zve32x_vsmul_vv_cg.sample(ins);
+            Zve32x_vsmul_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vsmul.vx"     : begin
-            Zve32x_vsmul_vx_cg.sample(ins);
+            Zve32x_vsmul_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxei16.v"     : begin
-            Zve32x_vsoxei16_v_cg.sample(ins);
+            Zve32x_vsoxei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxei32.v"     : begin
-            Zve32x_vsoxei32_v_cg.sample(ins);
+            Zve32x_vsoxei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxei8.v"     : begin
-            Zve32x_vsoxei8_v_cg.sample(ins);
+            Zve32x_vsoxei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg2ei16.v"     : begin
-            Zve32x_vsoxseg2ei16_v_cg.sample(ins);
+            Zve32x_vsoxseg2ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg2ei32.v"     : begin
-            Zve32x_vsoxseg2ei32_v_cg.sample(ins);
+            Zve32x_vsoxseg2ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg2ei8.v"     : begin
-            Zve32x_vsoxseg2ei8_v_cg.sample(ins);
+            Zve32x_vsoxseg2ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg3ei16.v"     : begin
-            Zve32x_vsoxseg3ei16_v_cg.sample(ins);
+            Zve32x_vsoxseg3ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg3ei32.v"     : begin
-            Zve32x_vsoxseg3ei32_v_cg.sample(ins);
+            Zve32x_vsoxseg3ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg3ei8.v"     : begin
-            Zve32x_vsoxseg3ei8_v_cg.sample(ins);
+            Zve32x_vsoxseg3ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg4ei16.v"     : begin
-            Zve32x_vsoxseg4ei16_v_cg.sample(ins);
+            Zve32x_vsoxseg4ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg4ei32.v"     : begin
-            Zve32x_vsoxseg4ei32_v_cg.sample(ins);
+            Zve32x_vsoxseg4ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg4ei8.v"     : begin
-            Zve32x_vsoxseg4ei8_v_cg.sample(ins);
+            Zve32x_vsoxseg4ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg5ei16.v"     : begin
-            Zve32x_vsoxseg5ei16_v_cg.sample(ins);
+            Zve32x_vsoxseg5ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg5ei32.v"     : begin
-            Zve32x_vsoxseg5ei32_v_cg.sample(ins);
+            Zve32x_vsoxseg5ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg5ei8.v"     : begin
-            Zve32x_vsoxseg5ei8_v_cg.sample(ins);
+            Zve32x_vsoxseg5ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg6ei16.v"     : begin
-            Zve32x_vsoxseg6ei16_v_cg.sample(ins);
+            Zve32x_vsoxseg6ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg6ei32.v"     : begin
-            Zve32x_vsoxseg6ei32_v_cg.sample(ins);
+            Zve32x_vsoxseg6ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg6ei8.v"     : begin
-            Zve32x_vsoxseg6ei8_v_cg.sample(ins);
+            Zve32x_vsoxseg6ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg7ei16.v"     : begin
-            Zve32x_vsoxseg7ei16_v_cg.sample(ins);
+            Zve32x_vsoxseg7ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg7ei32.v"     : begin
-            Zve32x_vsoxseg7ei32_v_cg.sample(ins);
+            Zve32x_vsoxseg7ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg7ei8.v"     : begin
-            Zve32x_vsoxseg7ei8_v_cg.sample(ins);
+            Zve32x_vsoxseg7ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg8ei16.v"     : begin
-            Zve32x_vsoxseg8ei16_v_cg.sample(ins);
+            Zve32x_vsoxseg8ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg8ei32.v"     : begin
-            Zve32x_vsoxseg8ei32_v_cg.sample(ins);
+            Zve32x_vsoxseg8ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg8ei8.v"     : begin
-            Zve32x_vsoxseg8ei8_v_cg.sample(ins);
+            Zve32x_vsoxseg8ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsra.vi"     : begin
-            Zve32x_vsra_vi_cg.sample(ins);
+            Zve32x_vsra_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vsra.vv"     : begin
-            Zve32x_vsra_vv_cg.sample(ins);
+            Zve32x_vsra_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vsra.vx"     : begin
-            Zve32x_vsra_vx_cg.sample(ins);
+            Zve32x_vsra_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vsrl.vi"     : begin
-            Zve32x_vsrl_vi_cg.sample(ins);
+            Zve32x_vsrl_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vsrl.vv"     : begin
-            Zve32x_vsrl_vv_cg.sample(ins);
+            Zve32x_vsrl_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vsrl.vx"     : begin
-            Zve32x_vsrl_vx_cg.sample(ins);
+            Zve32x_vsrl_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vsse16.v"     : begin
-            Zve32x_vsse16_v_cg.sample(ins);
+            Zve32x_vsse16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsse32.v"     : begin
-            Zve32x_vsse32_v_cg.sample(ins);
+            Zve32x_vsse32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsse8.v"     : begin
-            Zve32x_vsse8_v_cg.sample(ins);
+            Zve32x_vsse8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg2e16.v"     : begin
-            Zve32x_vsseg2e16_v_cg.sample(ins);
+            Zve32x_vsseg2e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg2e32.v"     : begin
-            Zve32x_vsseg2e32_v_cg.sample(ins);
+            Zve32x_vsseg2e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg2e8.v"     : begin
-            Zve32x_vsseg2e8_v_cg.sample(ins);
+            Zve32x_vsseg2e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg3e16.v"     : begin
-            Zve32x_vsseg3e16_v_cg.sample(ins);
+            Zve32x_vsseg3e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg3e32.v"     : begin
-            Zve32x_vsseg3e32_v_cg.sample(ins);
+            Zve32x_vsseg3e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg3e8.v"     : begin
-            Zve32x_vsseg3e8_v_cg.sample(ins);
+            Zve32x_vsseg3e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg4e16.v"     : begin
-            Zve32x_vsseg4e16_v_cg.sample(ins);
+            Zve32x_vsseg4e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg4e32.v"     : begin
-            Zve32x_vsseg4e32_v_cg.sample(ins);
+            Zve32x_vsseg4e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg4e8.v"     : begin
-            Zve32x_vsseg4e8_v_cg.sample(ins);
+            Zve32x_vsseg4e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg5e16.v"     : begin
-            Zve32x_vsseg5e16_v_cg.sample(ins);
+            Zve32x_vsseg5e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg5e32.v"     : begin
-            Zve32x_vsseg5e32_v_cg.sample(ins);
+            Zve32x_vsseg5e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg5e8.v"     : begin
-            Zve32x_vsseg5e8_v_cg.sample(ins);
+            Zve32x_vsseg5e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg6e16.v"     : begin
-            Zve32x_vsseg6e16_v_cg.sample(ins);
+            Zve32x_vsseg6e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg6e32.v"     : begin
-            Zve32x_vsseg6e32_v_cg.sample(ins);
+            Zve32x_vsseg6e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg6e8.v"     : begin
-            Zve32x_vsseg6e8_v_cg.sample(ins);
+            Zve32x_vsseg6e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg7e16.v"     : begin
-            Zve32x_vsseg7e16_v_cg.sample(ins);
+            Zve32x_vsseg7e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg7e32.v"     : begin
-            Zve32x_vsseg7e32_v_cg.sample(ins);
+            Zve32x_vsseg7e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg7e8.v"     : begin
-            Zve32x_vsseg7e8_v_cg.sample(ins);
+            Zve32x_vsseg7e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg8e16.v"     : begin
-            Zve32x_vsseg8e16_v_cg.sample(ins);
+            Zve32x_vsseg8e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg8e32.v"     : begin
-            Zve32x_vsseg8e32_v_cg.sample(ins);
+            Zve32x_vsseg8e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg8e8.v"     : begin
-            Zve32x_vsseg8e8_v_cg.sample(ins);
+            Zve32x_vsseg8e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssra.vi"     : begin
-            Zve32x_vssra_vi_cg.sample(ins);
+            Zve32x_vssra_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vssra.vv"     : begin
-            Zve32x_vssra_vv_cg.sample(ins);
+            Zve32x_vssra_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vssra.vx"     : begin
-            Zve32x_vssra_vx_cg.sample(ins);
+            Zve32x_vssra_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vssrl.vi"     : begin
-            Zve32x_vssrl_vi_cg.sample(ins);
+            Zve32x_vssrl_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vssrl.vv"     : begin
-            Zve32x_vssrl_vv_cg.sample(ins);
+            Zve32x_vssrl_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vssrl.vx"     : begin
-            Zve32x_vssrl_vx_cg.sample(ins);
+            Zve32x_vssrl_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg2e16.v"     : begin
-            Zve32x_vssseg2e16_v_cg.sample(ins);
+            Zve32x_vssseg2e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg2e32.v"     : begin
-            Zve32x_vssseg2e32_v_cg.sample(ins);
+            Zve32x_vssseg2e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg2e8.v"     : begin
-            Zve32x_vssseg2e8_v_cg.sample(ins);
+            Zve32x_vssseg2e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg3e16.v"     : begin
-            Zve32x_vssseg3e16_v_cg.sample(ins);
+            Zve32x_vssseg3e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg3e32.v"     : begin
-            Zve32x_vssseg3e32_v_cg.sample(ins);
+            Zve32x_vssseg3e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg3e8.v"     : begin
-            Zve32x_vssseg3e8_v_cg.sample(ins);
+            Zve32x_vssseg3e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg4e16.v"     : begin
-            Zve32x_vssseg4e16_v_cg.sample(ins);
+            Zve32x_vssseg4e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg4e32.v"     : begin
-            Zve32x_vssseg4e32_v_cg.sample(ins);
+            Zve32x_vssseg4e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg4e8.v"     : begin
-            Zve32x_vssseg4e8_v_cg.sample(ins);
+            Zve32x_vssseg4e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg5e16.v"     : begin
-            Zve32x_vssseg5e16_v_cg.sample(ins);
+            Zve32x_vssseg5e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg5e32.v"     : begin
-            Zve32x_vssseg5e32_v_cg.sample(ins);
+            Zve32x_vssseg5e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg5e8.v"     : begin
-            Zve32x_vssseg5e8_v_cg.sample(ins);
+            Zve32x_vssseg5e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg6e16.v"     : begin
-            Zve32x_vssseg6e16_v_cg.sample(ins);
+            Zve32x_vssseg6e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg6e32.v"     : begin
-            Zve32x_vssseg6e32_v_cg.sample(ins);
+            Zve32x_vssseg6e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg6e8.v"     : begin
-            Zve32x_vssseg6e8_v_cg.sample(ins);
+            Zve32x_vssseg6e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg7e16.v"     : begin
-            Zve32x_vssseg7e16_v_cg.sample(ins);
+            Zve32x_vssseg7e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg7e32.v"     : begin
-            Zve32x_vssseg7e32_v_cg.sample(ins);
+            Zve32x_vssseg7e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg7e8.v"     : begin
-            Zve32x_vssseg7e8_v_cg.sample(ins);
+            Zve32x_vssseg7e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg8e16.v"     : begin
-            Zve32x_vssseg8e16_v_cg.sample(ins);
+            Zve32x_vssseg8e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg8e32.v"     : begin
-            Zve32x_vssseg8e32_v_cg.sample(ins);
+            Zve32x_vssseg8e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg8e8.v"     : begin
-            Zve32x_vssseg8e8_v_cg.sample(ins);
+            Zve32x_vssseg8e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssub.vv"     : begin
-            Zve32x_vssub_vv_cg.sample(ins);
+            Zve32x_vssub_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vssub.vx"     : begin
-            Zve32x_vssub_vx_cg.sample(ins);
+            Zve32x_vssub_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vssubu.vv"     : begin
-            Zve32x_vssubu_vv_cg.sample(ins);
+            Zve32x_vssubu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vssubu.vx"     : begin
-            Zve32x_vssubu_vx_cg.sample(ins);
+            Zve32x_vssubu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vsub.vv"     : begin
-            Zve32x_vsub_vv_cg.sample(ins);
+            Zve32x_vsub_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vsub.vx"     : begin
-            Zve32x_vsub_vx_cg.sample(ins);
+            Zve32x_vsub_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxei16.v"     : begin
-            Zve32x_vsuxei16_v_cg.sample(ins);
+            Zve32x_vsuxei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxei32.v"     : begin
-            Zve32x_vsuxei32_v_cg.sample(ins);
+            Zve32x_vsuxei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxei8.v"     : begin
-            Zve32x_vsuxei8_v_cg.sample(ins);
+            Zve32x_vsuxei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg2ei16.v"     : begin
-            Zve32x_vsuxseg2ei16_v_cg.sample(ins);
+            Zve32x_vsuxseg2ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg2ei32.v"     : begin
-            Zve32x_vsuxseg2ei32_v_cg.sample(ins);
+            Zve32x_vsuxseg2ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg2ei8.v"     : begin
-            Zve32x_vsuxseg2ei8_v_cg.sample(ins);
+            Zve32x_vsuxseg2ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg3ei16.v"     : begin
-            Zve32x_vsuxseg3ei16_v_cg.sample(ins);
+            Zve32x_vsuxseg3ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg3ei32.v"     : begin
-            Zve32x_vsuxseg3ei32_v_cg.sample(ins);
+            Zve32x_vsuxseg3ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg3ei8.v"     : begin
-            Zve32x_vsuxseg3ei8_v_cg.sample(ins);
+            Zve32x_vsuxseg3ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg4ei16.v"     : begin
-            Zve32x_vsuxseg4ei16_v_cg.sample(ins);
+            Zve32x_vsuxseg4ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg4ei32.v"     : begin
-            Zve32x_vsuxseg4ei32_v_cg.sample(ins);
+            Zve32x_vsuxseg4ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg4ei8.v"     : begin
-            Zve32x_vsuxseg4ei8_v_cg.sample(ins);
+            Zve32x_vsuxseg4ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg5ei16.v"     : begin
-            Zve32x_vsuxseg5ei16_v_cg.sample(ins);
+            Zve32x_vsuxseg5ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg5ei32.v"     : begin
-            Zve32x_vsuxseg5ei32_v_cg.sample(ins);
+            Zve32x_vsuxseg5ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg5ei8.v"     : begin
-            Zve32x_vsuxseg5ei8_v_cg.sample(ins);
+            Zve32x_vsuxseg5ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg6ei16.v"     : begin
-            Zve32x_vsuxseg6ei16_v_cg.sample(ins);
+            Zve32x_vsuxseg6ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg6ei32.v"     : begin
-            Zve32x_vsuxseg6ei32_v_cg.sample(ins);
+            Zve32x_vsuxseg6ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg6ei8.v"     : begin
-            Zve32x_vsuxseg6ei8_v_cg.sample(ins);
+            Zve32x_vsuxseg6ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg7ei16.v"     : begin
-            Zve32x_vsuxseg7ei16_v_cg.sample(ins);
+            Zve32x_vsuxseg7ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg7ei32.v"     : begin
-            Zve32x_vsuxseg7ei32_v_cg.sample(ins);
+            Zve32x_vsuxseg7ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg7ei8.v"     : begin
-            Zve32x_vsuxseg7ei8_v_cg.sample(ins);
+            Zve32x_vsuxseg7ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg8ei16.v"     : begin
-            Zve32x_vsuxseg8ei16_v_cg.sample(ins);
+            Zve32x_vsuxseg8ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg8ei32.v"     : begin
-            Zve32x_vsuxseg8ei32_v_cg.sample(ins);
+            Zve32x_vsuxseg8ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg8ei8.v"     : begin
-            Zve32x_vsuxseg8ei8_v_cg.sample(ins);
+            Zve32x_vsuxseg8ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vwadd.vv"     : begin
-            Zve32x_vwadd_vv_cg.sample(ins);
+            Zve32x_vwadd_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vwadd.vx"     : begin
-            Zve32x_vwadd_vx_cg.sample(ins);
+            Zve32x_vwadd_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vwadd.wv"     : begin
-            Zve32x_vwadd_wv_cg.sample(ins);
+            Zve32x_vwadd_wv_sew@EFFEW@_cg.sample(ins);
         end
         "vwadd.wx"     : begin
-            Zve32x_vwadd_wx_cg.sample(ins);
+            Zve32x_vwadd_wx_sew@EFFEW@_cg.sample(ins);
         end
         "vwaddu.vv"     : begin
-            Zve32x_vwaddu_vv_cg.sample(ins);
+            Zve32x_vwaddu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vwaddu.vx"     : begin
-            Zve32x_vwaddu_vx_cg.sample(ins);
+            Zve32x_vwaddu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vwaddu.wv"     : begin
-            Zve32x_vwaddu_wv_cg.sample(ins);
+            Zve32x_vwaddu_wv_sew@EFFEW@_cg.sample(ins);
         end
         "vwaddu.wx"     : begin
-            Zve32x_vwaddu_wx_cg.sample(ins);
+            Zve32x_vwaddu_wx_sew@EFFEW@_cg.sample(ins);
         end
         "vwmacc.vv"     : begin
-            Zve32x_vwmacc_vv_cg.sample(ins);
+            Zve32x_vwmacc_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vwmacc.vx"     : begin
-            Zve32x_vwmacc_vx_cg.sample(ins);
+            Zve32x_vwmacc_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vwmaccsu.vv"     : begin
-            Zve32x_vwmaccsu_vv_cg.sample(ins);
+            Zve32x_vwmaccsu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vwmaccsu.vx"     : begin
-            Zve32x_vwmaccsu_vx_cg.sample(ins);
+            Zve32x_vwmaccsu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vwmaccu.vv"     : begin
-            Zve32x_vwmaccu_vv_cg.sample(ins);
+            Zve32x_vwmaccu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vwmaccu.vx"     : begin
-            Zve32x_vwmaccu_vx_cg.sample(ins);
+            Zve32x_vwmaccu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vwmaccus.vx"     : begin
-            Zve32x_vwmaccus_vx_cg.sample(ins);
+            Zve32x_vwmaccus_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vwmul.vv"     : begin
-            Zve32x_vwmul_vv_cg.sample(ins);
+            Zve32x_vwmul_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vwmul.vx"     : begin
-            Zve32x_vwmul_vx_cg.sample(ins);
+            Zve32x_vwmul_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vwmulsu.vv"     : begin
-            Zve32x_vwmulsu_vv_cg.sample(ins);
+            Zve32x_vwmulsu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vwmulsu.vx"     : begin
-            Zve32x_vwmulsu_vx_cg.sample(ins);
+            Zve32x_vwmulsu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vwmulu.vv"     : begin
-            Zve32x_vwmulu_vv_cg.sample(ins);
+            Zve32x_vwmulu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vwmulu.vx"     : begin
-            Zve32x_vwmulu_vx_cg.sample(ins);
+            Zve32x_vwmulu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vwredsum.vs"     : begin
-            Zve32x_vwredsum_vs_cg.sample(ins);
+            Zve32x_vwredsum_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vwredsumu.vs"     : begin
-            Zve32x_vwredsumu_vs_cg.sample(ins);
+            Zve32x_vwredsumu_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vwsub.vv"     : begin
-            Zve32x_vwsub_vv_cg.sample(ins);
+            Zve32x_vwsub_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vwsub.vx"     : begin
-            Zve32x_vwsub_vx_cg.sample(ins);
+            Zve32x_vwsub_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vwsub.wv"     : begin
-            Zve32x_vwsub_wv_cg.sample(ins);
+            Zve32x_vwsub_wv_sew@EFFEW@_cg.sample(ins);
         end
         "vwsub.wx"     : begin
-            Zve32x_vwsub_wx_cg.sample(ins);
+            Zve32x_vwsub_wx_sew@EFFEW@_cg.sample(ins);
         end
         "vwsubu.vv"     : begin
-            Zve32x_vwsubu_vv_cg.sample(ins);
+            Zve32x_vwsubu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vwsubu.vx"     : begin
-            Zve32x_vwsubu_vx_cg.sample(ins);
+            Zve32x_vwsubu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vwsubu.wv"     : begin
-            Zve32x_vwsubu_wv_cg.sample(ins);
+            Zve32x_vwsubu_wv_sew@EFFEW@_cg.sample(ins);
         end
         "vwsubu.wx"     : begin
-            Zve32x_vwsubu_wx_cg.sample(ins);
+            Zve32x_vwsubu_wx_sew@EFFEW@_cg.sample(ins);
         end
         "vxor.vi"     : begin
-            Zve32x_vxor_vi_cg.sample(ins);
+            Zve32x_vxor_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vxor.vv"     : begin
-            Zve32x_vxor_vv_cg.sample(ins);
+            Zve32x_vxor_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vxor.vx"     : begin
-            Zve32x_vxor_vx_cg.sample(ins);
+            Zve32x_vxor_vx_sew@EFFEW@_cg.sample(ins);
         end
             default: ; // a case needs at least one item, and some configurations select none
         endcase
@@ -220611,1333 +221364,1333 @@ function void zve32x_sample(int hart, int issue, ins_t ins);
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
         "vaadd.vv"     : begin
-            Zve32x_vaadd_vv_cg.sample(ins);
+            Zve32x_vaadd_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vaadd.vx"     : begin
-            Zve32x_vaadd_vx_cg.sample(ins);
+            Zve32x_vaadd_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vaaddu.vv"     : begin
-            Zve32x_vaaddu_vv_cg.sample(ins);
+            Zve32x_vaaddu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vaaddu.vx"     : begin
-            Zve32x_vaaddu_vx_cg.sample(ins);
+            Zve32x_vaaddu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vadc.vim"     : begin
-            Zve32x_vadc_vim_cg.sample(ins);
+            Zve32x_vadc_vim_sew@EFFEW@_cg.sample(ins);
         end
         "vadc.vvm"     : begin
-            Zve32x_vadc_vvm_cg.sample(ins);
+            Zve32x_vadc_vvm_sew@EFFEW@_cg.sample(ins);
         end
         "vadc.vxm"     : begin
-            Zve32x_vadc_vxm_cg.sample(ins);
+            Zve32x_vadc_vxm_sew@EFFEW@_cg.sample(ins);
         end
         "vadd.vi"     : begin
-            Zve32x_vadd_vi_cg.sample(ins);
+            Zve32x_vadd_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vadd.vv"     : begin
-            Zve32x_vadd_vv_cg.sample(ins);
+            Zve32x_vadd_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vadd.vx"     : begin
-            Zve32x_vadd_vx_cg.sample(ins);
+            Zve32x_vadd_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vand.vi"     : begin
-            Zve32x_vand_vi_cg.sample(ins);
+            Zve32x_vand_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vand.vv"     : begin
-            Zve32x_vand_vv_cg.sample(ins);
+            Zve32x_vand_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vand.vx"     : begin
-            Zve32x_vand_vx_cg.sample(ins);
+            Zve32x_vand_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vasub.vv"     : begin
-            Zve32x_vasub_vv_cg.sample(ins);
+            Zve32x_vasub_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vasub.vx"     : begin
-            Zve32x_vasub_vx_cg.sample(ins);
+            Zve32x_vasub_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vasubu.vv"     : begin
-            Zve32x_vasubu_vv_cg.sample(ins);
+            Zve32x_vasubu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vasubu.vx"     : begin
-            Zve32x_vasubu_vx_cg.sample(ins);
+            Zve32x_vasubu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vcompress.vm"     : begin
-            Zve32x_vcompress_vm_cg.sample(ins);
+            Zve32x_vcompress_vm_sew@EFFEW@_cg.sample(ins);
         end
         "vcpop.m"     : begin
-            Zve32x_vcpop_m_cg.sample(ins);
+            Zve32x_vcpop_m_sew@EFFEW@_cg.sample(ins);
         end
         "vdiv.vv"     : begin
-            Zve32x_vdiv_vv_cg.sample(ins);
+            Zve32x_vdiv_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vdiv.vx"     : begin
-            Zve32x_vdiv_vx_cg.sample(ins);
+            Zve32x_vdiv_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vdivu.vv"     : begin
-            Zve32x_vdivu_vv_cg.sample(ins);
+            Zve32x_vdivu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vdivu.vx"     : begin
-            Zve32x_vdivu_vx_cg.sample(ins);
+            Zve32x_vdivu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vfirst.m"     : begin
-            Zve32x_vfirst_m_cg.sample(ins);
+            Zve32x_vfirst_m_sew@EFFEW@_cg.sample(ins);
         end
         "vid.v"     : begin
-            Zve32x_vid_v_cg.sample(ins);
+            Zve32x_vid_v_sew@EFFEW@_cg.sample(ins);
         end
         "viota.m"     : begin
-            Zve32x_viota_m_cg.sample(ins);
+            Zve32x_viota_m_sew@EFFEW@_cg.sample(ins);
         end
         "vl1re16.v"     : begin
-            Zve32x_vl1re16_v_cg.sample(ins);
+            Zve32x_vl1re16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vl1re32.v"     : begin
-            Zve32x_vl1re32_v_cg.sample(ins);
+            Zve32x_vl1re32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vl1re8.v"     : begin
-            Zve32x_vl1re8_v_cg.sample(ins);
+            Zve32x_vl1re8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vl2re16.v"     : begin
-            Zve32x_vl2re16_v_cg.sample(ins);
+            Zve32x_vl2re16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vl2re32.v"     : begin
-            Zve32x_vl2re32_v_cg.sample(ins);
+            Zve32x_vl2re32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vl2re8.v"     : begin
-            Zve32x_vl2re8_v_cg.sample(ins);
+            Zve32x_vl2re8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vl4re16.v"     : begin
-            Zve32x_vl4re16_v_cg.sample(ins);
+            Zve32x_vl4re16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vl4re32.v"     : begin
-            Zve32x_vl4re32_v_cg.sample(ins);
+            Zve32x_vl4re32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vl4re8.v"     : begin
-            Zve32x_vl4re8_v_cg.sample(ins);
+            Zve32x_vl4re8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vl8re16.v"     : begin
-            Zve32x_vl8re16_v_cg.sample(ins);
+            Zve32x_vl8re16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vl8re32.v"     : begin
-            Zve32x_vl8re32_v_cg.sample(ins);
+            Zve32x_vl8re32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vl8re8.v"     : begin
-            Zve32x_vl8re8_v_cg.sample(ins);
+            Zve32x_vl8re8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vle16.v"     : begin
-            Zve32x_vle16_v_cg.sample(ins);
+            Zve32x_vle16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vle16ff.v"     : begin
-            Zve32x_vle16ff_v_cg.sample(ins);
+            Zve32x_vle16ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vle32.v"     : begin
-            Zve32x_vle32_v_cg.sample(ins);
+            Zve32x_vle32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vle32ff.v"     : begin
-            Zve32x_vle32ff_v_cg.sample(ins);
+            Zve32x_vle32ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vle8.v"     : begin
-            Zve32x_vle8_v_cg.sample(ins);
+            Zve32x_vle8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vle8ff.v"     : begin
-            Zve32x_vle8ff_v_cg.sample(ins);
+            Zve32x_vle8ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlm.v"     : begin
-            Zve32x_vlm_v_cg.sample(ins);
+            Zve32x_vlm_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxei16.v"     : begin
-            Zve32x_vloxei16_v_cg.sample(ins);
+            Zve32x_vloxei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxei32.v"     : begin
-            Zve32x_vloxei32_v_cg.sample(ins);
+            Zve32x_vloxei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxei8.v"     : begin
-            Zve32x_vloxei8_v_cg.sample(ins);
+            Zve32x_vloxei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg2ei16.v"     : begin
-            Zve32x_vloxseg2ei16_v_cg.sample(ins);
+            Zve32x_vloxseg2ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg2ei32.v"     : begin
-            Zve32x_vloxseg2ei32_v_cg.sample(ins);
+            Zve32x_vloxseg2ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg2ei8.v"     : begin
-            Zve32x_vloxseg2ei8_v_cg.sample(ins);
+            Zve32x_vloxseg2ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg3ei16.v"     : begin
-            Zve32x_vloxseg3ei16_v_cg.sample(ins);
+            Zve32x_vloxseg3ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg3ei32.v"     : begin
-            Zve32x_vloxseg3ei32_v_cg.sample(ins);
+            Zve32x_vloxseg3ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg3ei8.v"     : begin
-            Zve32x_vloxseg3ei8_v_cg.sample(ins);
+            Zve32x_vloxseg3ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg4ei16.v"     : begin
-            Zve32x_vloxseg4ei16_v_cg.sample(ins);
+            Zve32x_vloxseg4ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg4ei32.v"     : begin
-            Zve32x_vloxseg4ei32_v_cg.sample(ins);
+            Zve32x_vloxseg4ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg4ei8.v"     : begin
-            Zve32x_vloxseg4ei8_v_cg.sample(ins);
+            Zve32x_vloxseg4ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg5ei16.v"     : begin
-            Zve32x_vloxseg5ei16_v_cg.sample(ins);
+            Zve32x_vloxseg5ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg5ei32.v"     : begin
-            Zve32x_vloxseg5ei32_v_cg.sample(ins);
+            Zve32x_vloxseg5ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg5ei8.v"     : begin
-            Zve32x_vloxseg5ei8_v_cg.sample(ins);
+            Zve32x_vloxseg5ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg6ei16.v"     : begin
-            Zve32x_vloxseg6ei16_v_cg.sample(ins);
+            Zve32x_vloxseg6ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg6ei32.v"     : begin
-            Zve32x_vloxseg6ei32_v_cg.sample(ins);
+            Zve32x_vloxseg6ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg6ei8.v"     : begin
-            Zve32x_vloxseg6ei8_v_cg.sample(ins);
+            Zve32x_vloxseg6ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg7ei16.v"     : begin
-            Zve32x_vloxseg7ei16_v_cg.sample(ins);
+            Zve32x_vloxseg7ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg7ei32.v"     : begin
-            Zve32x_vloxseg7ei32_v_cg.sample(ins);
+            Zve32x_vloxseg7ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg7ei8.v"     : begin
-            Zve32x_vloxseg7ei8_v_cg.sample(ins);
+            Zve32x_vloxseg7ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg8ei16.v"     : begin
-            Zve32x_vloxseg8ei16_v_cg.sample(ins);
+            Zve32x_vloxseg8ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg8ei32.v"     : begin
-            Zve32x_vloxseg8ei32_v_cg.sample(ins);
+            Zve32x_vloxseg8ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg8ei8.v"     : begin
-            Zve32x_vloxseg8ei8_v_cg.sample(ins);
+            Zve32x_vloxseg8ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlse16.v"     : begin
-            Zve32x_vlse16_v_cg.sample(ins);
+            Zve32x_vlse16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlse32.v"     : begin
-            Zve32x_vlse32_v_cg.sample(ins);
+            Zve32x_vlse32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlse8.v"     : begin
-            Zve32x_vlse8_v_cg.sample(ins);
+            Zve32x_vlse8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg2e16.v"     : begin
-            Zve32x_vlseg2e16_v_cg.sample(ins);
+            Zve32x_vlseg2e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg2e16ff.v"     : begin
-            Zve32x_vlseg2e16ff_v_cg.sample(ins);
+            Zve32x_vlseg2e16ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg2e32.v"     : begin
-            Zve32x_vlseg2e32_v_cg.sample(ins);
+            Zve32x_vlseg2e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg2e32ff.v"     : begin
-            Zve32x_vlseg2e32ff_v_cg.sample(ins);
+            Zve32x_vlseg2e32ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg2e8.v"     : begin
-            Zve32x_vlseg2e8_v_cg.sample(ins);
+            Zve32x_vlseg2e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg2e8ff.v"     : begin
-            Zve32x_vlseg2e8ff_v_cg.sample(ins);
+            Zve32x_vlseg2e8ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg3e16.v"     : begin
-            Zve32x_vlseg3e16_v_cg.sample(ins);
+            Zve32x_vlseg3e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg3e16ff.v"     : begin
-            Zve32x_vlseg3e16ff_v_cg.sample(ins);
+            Zve32x_vlseg3e16ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg3e32.v"     : begin
-            Zve32x_vlseg3e32_v_cg.sample(ins);
+            Zve32x_vlseg3e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg3e32ff.v"     : begin
-            Zve32x_vlseg3e32ff_v_cg.sample(ins);
+            Zve32x_vlseg3e32ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg3e8.v"     : begin
-            Zve32x_vlseg3e8_v_cg.sample(ins);
+            Zve32x_vlseg3e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg3e8ff.v"     : begin
-            Zve32x_vlseg3e8ff_v_cg.sample(ins);
+            Zve32x_vlseg3e8ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg4e16.v"     : begin
-            Zve32x_vlseg4e16_v_cg.sample(ins);
+            Zve32x_vlseg4e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg4e16ff.v"     : begin
-            Zve32x_vlseg4e16ff_v_cg.sample(ins);
+            Zve32x_vlseg4e16ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg4e32.v"     : begin
-            Zve32x_vlseg4e32_v_cg.sample(ins);
+            Zve32x_vlseg4e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg4e32ff.v"     : begin
-            Zve32x_vlseg4e32ff_v_cg.sample(ins);
+            Zve32x_vlseg4e32ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg4e8.v"     : begin
-            Zve32x_vlseg4e8_v_cg.sample(ins);
+            Zve32x_vlseg4e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg4e8ff.v"     : begin
-            Zve32x_vlseg4e8ff_v_cg.sample(ins);
+            Zve32x_vlseg4e8ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg5e16.v"     : begin
-            Zve32x_vlseg5e16_v_cg.sample(ins);
+            Zve32x_vlseg5e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg5e16ff.v"     : begin
-            Zve32x_vlseg5e16ff_v_cg.sample(ins);
+            Zve32x_vlseg5e16ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg5e32.v"     : begin
-            Zve32x_vlseg5e32_v_cg.sample(ins);
+            Zve32x_vlseg5e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg5e32ff.v"     : begin
-            Zve32x_vlseg5e32ff_v_cg.sample(ins);
+            Zve32x_vlseg5e32ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg5e8.v"     : begin
-            Zve32x_vlseg5e8_v_cg.sample(ins);
+            Zve32x_vlseg5e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg5e8ff.v"     : begin
-            Zve32x_vlseg5e8ff_v_cg.sample(ins);
+            Zve32x_vlseg5e8ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg6e16.v"     : begin
-            Zve32x_vlseg6e16_v_cg.sample(ins);
+            Zve32x_vlseg6e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg6e16ff.v"     : begin
-            Zve32x_vlseg6e16ff_v_cg.sample(ins);
+            Zve32x_vlseg6e16ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg6e32.v"     : begin
-            Zve32x_vlseg6e32_v_cg.sample(ins);
+            Zve32x_vlseg6e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg6e32ff.v"     : begin
-            Zve32x_vlseg6e32ff_v_cg.sample(ins);
+            Zve32x_vlseg6e32ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg6e8.v"     : begin
-            Zve32x_vlseg6e8_v_cg.sample(ins);
+            Zve32x_vlseg6e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg6e8ff.v"     : begin
-            Zve32x_vlseg6e8ff_v_cg.sample(ins);
+            Zve32x_vlseg6e8ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg7e16.v"     : begin
-            Zve32x_vlseg7e16_v_cg.sample(ins);
+            Zve32x_vlseg7e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg7e16ff.v"     : begin
-            Zve32x_vlseg7e16ff_v_cg.sample(ins);
+            Zve32x_vlseg7e16ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg7e32.v"     : begin
-            Zve32x_vlseg7e32_v_cg.sample(ins);
+            Zve32x_vlseg7e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg7e32ff.v"     : begin
-            Zve32x_vlseg7e32ff_v_cg.sample(ins);
+            Zve32x_vlseg7e32ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg7e8.v"     : begin
-            Zve32x_vlseg7e8_v_cg.sample(ins);
+            Zve32x_vlseg7e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg7e8ff.v"     : begin
-            Zve32x_vlseg7e8ff_v_cg.sample(ins);
+            Zve32x_vlseg7e8ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg8e16.v"     : begin
-            Zve32x_vlseg8e16_v_cg.sample(ins);
+            Zve32x_vlseg8e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg8e16ff.v"     : begin
-            Zve32x_vlseg8e16ff_v_cg.sample(ins);
+            Zve32x_vlseg8e16ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg8e32.v"     : begin
-            Zve32x_vlseg8e32_v_cg.sample(ins);
+            Zve32x_vlseg8e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg8e32ff.v"     : begin
-            Zve32x_vlseg8e32ff_v_cg.sample(ins);
+            Zve32x_vlseg8e32ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg8e8.v"     : begin
-            Zve32x_vlseg8e8_v_cg.sample(ins);
+            Zve32x_vlseg8e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg8e8ff.v"     : begin
-            Zve32x_vlseg8e8ff_v_cg.sample(ins);
+            Zve32x_vlseg8e8ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg2e16.v"     : begin
-            Zve32x_vlsseg2e16_v_cg.sample(ins);
+            Zve32x_vlsseg2e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg2e32.v"     : begin
-            Zve32x_vlsseg2e32_v_cg.sample(ins);
+            Zve32x_vlsseg2e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg2e8.v"     : begin
-            Zve32x_vlsseg2e8_v_cg.sample(ins);
+            Zve32x_vlsseg2e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg3e16.v"     : begin
-            Zve32x_vlsseg3e16_v_cg.sample(ins);
+            Zve32x_vlsseg3e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg3e32.v"     : begin
-            Zve32x_vlsseg3e32_v_cg.sample(ins);
+            Zve32x_vlsseg3e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg3e8.v"     : begin
-            Zve32x_vlsseg3e8_v_cg.sample(ins);
+            Zve32x_vlsseg3e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg4e16.v"     : begin
-            Zve32x_vlsseg4e16_v_cg.sample(ins);
+            Zve32x_vlsseg4e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg4e32.v"     : begin
-            Zve32x_vlsseg4e32_v_cg.sample(ins);
+            Zve32x_vlsseg4e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg4e8.v"     : begin
-            Zve32x_vlsseg4e8_v_cg.sample(ins);
+            Zve32x_vlsseg4e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg5e16.v"     : begin
-            Zve32x_vlsseg5e16_v_cg.sample(ins);
+            Zve32x_vlsseg5e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg5e32.v"     : begin
-            Zve32x_vlsseg5e32_v_cg.sample(ins);
+            Zve32x_vlsseg5e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg5e8.v"     : begin
-            Zve32x_vlsseg5e8_v_cg.sample(ins);
+            Zve32x_vlsseg5e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg6e16.v"     : begin
-            Zve32x_vlsseg6e16_v_cg.sample(ins);
+            Zve32x_vlsseg6e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg6e32.v"     : begin
-            Zve32x_vlsseg6e32_v_cg.sample(ins);
+            Zve32x_vlsseg6e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg6e8.v"     : begin
-            Zve32x_vlsseg6e8_v_cg.sample(ins);
+            Zve32x_vlsseg6e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg7e16.v"     : begin
-            Zve32x_vlsseg7e16_v_cg.sample(ins);
+            Zve32x_vlsseg7e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg7e32.v"     : begin
-            Zve32x_vlsseg7e32_v_cg.sample(ins);
+            Zve32x_vlsseg7e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg7e8.v"     : begin
-            Zve32x_vlsseg7e8_v_cg.sample(ins);
+            Zve32x_vlsseg7e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg8e16.v"     : begin
-            Zve32x_vlsseg8e16_v_cg.sample(ins);
+            Zve32x_vlsseg8e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg8e32.v"     : begin
-            Zve32x_vlsseg8e32_v_cg.sample(ins);
+            Zve32x_vlsseg8e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg8e8.v"     : begin
-            Zve32x_vlsseg8e8_v_cg.sample(ins);
+            Zve32x_vlsseg8e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxei16.v"     : begin
-            Zve32x_vluxei16_v_cg.sample(ins);
+            Zve32x_vluxei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxei32.v"     : begin
-            Zve32x_vluxei32_v_cg.sample(ins);
+            Zve32x_vluxei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxei8.v"     : begin
-            Zve32x_vluxei8_v_cg.sample(ins);
+            Zve32x_vluxei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg2ei16.v"     : begin
-            Zve32x_vluxseg2ei16_v_cg.sample(ins);
+            Zve32x_vluxseg2ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg2ei32.v"     : begin
-            Zve32x_vluxseg2ei32_v_cg.sample(ins);
+            Zve32x_vluxseg2ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg2ei8.v"     : begin
-            Zve32x_vluxseg2ei8_v_cg.sample(ins);
+            Zve32x_vluxseg2ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg3ei16.v"     : begin
-            Zve32x_vluxseg3ei16_v_cg.sample(ins);
+            Zve32x_vluxseg3ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg3ei32.v"     : begin
-            Zve32x_vluxseg3ei32_v_cg.sample(ins);
+            Zve32x_vluxseg3ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg3ei8.v"     : begin
-            Zve32x_vluxseg3ei8_v_cg.sample(ins);
+            Zve32x_vluxseg3ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg4ei16.v"     : begin
-            Zve32x_vluxseg4ei16_v_cg.sample(ins);
+            Zve32x_vluxseg4ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg4ei32.v"     : begin
-            Zve32x_vluxseg4ei32_v_cg.sample(ins);
+            Zve32x_vluxseg4ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg4ei8.v"     : begin
-            Zve32x_vluxseg4ei8_v_cg.sample(ins);
+            Zve32x_vluxseg4ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg5ei16.v"     : begin
-            Zve32x_vluxseg5ei16_v_cg.sample(ins);
+            Zve32x_vluxseg5ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg5ei32.v"     : begin
-            Zve32x_vluxseg5ei32_v_cg.sample(ins);
+            Zve32x_vluxseg5ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg5ei8.v"     : begin
-            Zve32x_vluxseg5ei8_v_cg.sample(ins);
+            Zve32x_vluxseg5ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg6ei16.v"     : begin
-            Zve32x_vluxseg6ei16_v_cg.sample(ins);
+            Zve32x_vluxseg6ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg6ei32.v"     : begin
-            Zve32x_vluxseg6ei32_v_cg.sample(ins);
+            Zve32x_vluxseg6ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg6ei8.v"     : begin
-            Zve32x_vluxseg6ei8_v_cg.sample(ins);
+            Zve32x_vluxseg6ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg7ei16.v"     : begin
-            Zve32x_vluxseg7ei16_v_cg.sample(ins);
+            Zve32x_vluxseg7ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg7ei32.v"     : begin
-            Zve32x_vluxseg7ei32_v_cg.sample(ins);
+            Zve32x_vluxseg7ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg7ei8.v"     : begin
-            Zve32x_vluxseg7ei8_v_cg.sample(ins);
+            Zve32x_vluxseg7ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg8ei16.v"     : begin
-            Zve32x_vluxseg8ei16_v_cg.sample(ins);
+            Zve32x_vluxseg8ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg8ei32.v"     : begin
-            Zve32x_vluxseg8ei32_v_cg.sample(ins);
+            Zve32x_vluxseg8ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg8ei8.v"     : begin
-            Zve32x_vluxseg8ei8_v_cg.sample(ins);
+            Zve32x_vluxseg8ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vmacc.vv"     : begin
-            Zve32x_vmacc_vv_cg.sample(ins);
+            Zve32x_vmacc_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmacc.vx"     : begin
-            Zve32x_vmacc_vx_cg.sample(ins);
+            Zve32x_vmacc_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmadc.vi"     : begin
-            Zve32x_vmadc_vi_cg.sample(ins);
+            Zve32x_vmadc_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vmadc.vim"     : begin
-            Zve32x_vmadc_vim_cg.sample(ins);
+            Zve32x_vmadc_vim_sew@EFFEW@_cg.sample(ins);
         end
         "vmadc.vv"     : begin
-            Zve32x_vmadc_vv_cg.sample(ins);
+            Zve32x_vmadc_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmadc.vvm"     : begin
-            Zve32x_vmadc_vvm_cg.sample(ins);
+            Zve32x_vmadc_vvm_sew@EFFEW@_cg.sample(ins);
         end
         "vmadc.vx"     : begin
-            Zve32x_vmadc_vx_cg.sample(ins);
+            Zve32x_vmadc_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmadc.vxm"     : begin
-            Zve32x_vmadc_vxm_cg.sample(ins);
+            Zve32x_vmadc_vxm_sew@EFFEW@_cg.sample(ins);
         end
         "vmadd.vv"     : begin
-            Zve32x_vmadd_vv_cg.sample(ins);
+            Zve32x_vmadd_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmadd.vx"     : begin
-            Zve32x_vmadd_vx_cg.sample(ins);
+            Zve32x_vmadd_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmand.mm"     : begin
-            Zve32x_vmand_mm_cg.sample(ins);
+            Zve32x_vmand_mm_sew@EFFEW@_cg.sample(ins);
         end
         "vmandn.mm"     : begin
-            Zve32x_vmandn_mm_cg.sample(ins);
+            Zve32x_vmandn_mm_sew@EFFEW@_cg.sample(ins);
         end
         "vmax.vv"     : begin
-            Zve32x_vmax_vv_cg.sample(ins);
+            Zve32x_vmax_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmax.vx"     : begin
-            Zve32x_vmax_vx_cg.sample(ins);
+            Zve32x_vmax_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmaxu.vv"     : begin
-            Zve32x_vmaxu_vv_cg.sample(ins);
+            Zve32x_vmaxu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmaxu.vx"     : begin
-            Zve32x_vmaxu_vx_cg.sample(ins);
+            Zve32x_vmaxu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmerge.vim"     : begin
-            Zve32x_vmerge_vim_cg.sample(ins);
+            Zve32x_vmerge_vim_sew@EFFEW@_cg.sample(ins);
         end
         "vmerge.vvm"     : begin
-            Zve32x_vmerge_vvm_cg.sample(ins);
+            Zve32x_vmerge_vvm_sew@EFFEW@_cg.sample(ins);
         end
         "vmerge.vxm"     : begin
-            Zve32x_vmerge_vxm_cg.sample(ins);
+            Zve32x_vmerge_vxm_sew@EFFEW@_cg.sample(ins);
         end
         "vmin.vv"     : begin
-            Zve32x_vmin_vv_cg.sample(ins);
+            Zve32x_vmin_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmin.vx"     : begin
-            Zve32x_vmin_vx_cg.sample(ins);
+            Zve32x_vmin_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vminu.vv"     : begin
-            Zve32x_vminu_vv_cg.sample(ins);
+            Zve32x_vminu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vminu.vx"     : begin
-            Zve32x_vminu_vx_cg.sample(ins);
+            Zve32x_vminu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmnand.mm"     : begin
-            Zve32x_vmnand_mm_cg.sample(ins);
+            Zve32x_vmnand_mm_sew@EFFEW@_cg.sample(ins);
         end
         "vmnor.mm"     : begin
-            Zve32x_vmnor_mm_cg.sample(ins);
+            Zve32x_vmnor_mm_sew@EFFEW@_cg.sample(ins);
         end
         "vmor.mm"     : begin
-            Zve32x_vmor_mm_cg.sample(ins);
+            Zve32x_vmor_mm_sew@EFFEW@_cg.sample(ins);
         end
         "vmorn.mm"     : begin
-            Zve32x_vmorn_mm_cg.sample(ins);
+            Zve32x_vmorn_mm_sew@EFFEW@_cg.sample(ins);
         end
         "vmsbc.vv"     : begin
-            Zve32x_vmsbc_vv_cg.sample(ins);
+            Zve32x_vmsbc_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmsbc.vvm"     : begin
-            Zve32x_vmsbc_vvm_cg.sample(ins);
+            Zve32x_vmsbc_vvm_sew@EFFEW@_cg.sample(ins);
         end
         "vmsbc.vx"     : begin
-            Zve32x_vmsbc_vx_cg.sample(ins);
+            Zve32x_vmsbc_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmsbc.vxm"     : begin
-            Zve32x_vmsbc_vxm_cg.sample(ins);
+            Zve32x_vmsbc_vxm_sew@EFFEW@_cg.sample(ins);
         end
         "vmsbf.m"     : begin
-            Zve32x_vmsbf_m_cg.sample(ins);
+            Zve32x_vmsbf_m_sew@EFFEW@_cg.sample(ins);
         end
         "vmseq.vi"     : begin
-            Zve32x_vmseq_vi_cg.sample(ins);
+            Zve32x_vmseq_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vmseq.vv"     : begin
-            Zve32x_vmseq_vv_cg.sample(ins);
+            Zve32x_vmseq_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmseq.vx"     : begin
-            Zve32x_vmseq_vx_cg.sample(ins);
+            Zve32x_vmseq_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmsgt.vi"     : begin
-            Zve32x_vmsgt_vi_cg.sample(ins);
+            Zve32x_vmsgt_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vmsgt.vx"     : begin
-            Zve32x_vmsgt_vx_cg.sample(ins);
+            Zve32x_vmsgt_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmsgtu.vi"     : begin
-            Zve32x_vmsgtu_vi_cg.sample(ins);
+            Zve32x_vmsgtu_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vmsgtu.vx"     : begin
-            Zve32x_vmsgtu_vx_cg.sample(ins);
+            Zve32x_vmsgtu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmsif.m"     : begin
-            Zve32x_vmsif_m_cg.sample(ins);
+            Zve32x_vmsif_m_sew@EFFEW@_cg.sample(ins);
         end
         "vmsle.vi"     : begin
-            Zve32x_vmsle_vi_cg.sample(ins);
+            Zve32x_vmsle_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vmsle.vv"     : begin
-            Zve32x_vmsle_vv_cg.sample(ins);
+            Zve32x_vmsle_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmsle.vx"     : begin
-            Zve32x_vmsle_vx_cg.sample(ins);
+            Zve32x_vmsle_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmsleu.vi"     : begin
-            Zve32x_vmsleu_vi_cg.sample(ins);
+            Zve32x_vmsleu_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vmsleu.vv"     : begin
-            Zve32x_vmsleu_vv_cg.sample(ins);
+            Zve32x_vmsleu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmsleu.vx"     : begin
-            Zve32x_vmsleu_vx_cg.sample(ins);
+            Zve32x_vmsleu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmslt.vv"     : begin
-            Zve32x_vmslt_vv_cg.sample(ins);
+            Zve32x_vmslt_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmslt.vx"     : begin
-            Zve32x_vmslt_vx_cg.sample(ins);
+            Zve32x_vmslt_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmsltu.vv"     : begin
-            Zve32x_vmsltu_vv_cg.sample(ins);
+            Zve32x_vmsltu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmsltu.vx"     : begin
-            Zve32x_vmsltu_vx_cg.sample(ins);
+            Zve32x_vmsltu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmsne.vi"     : begin
-            Zve32x_vmsne_vi_cg.sample(ins);
+            Zve32x_vmsne_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vmsne.vv"     : begin
-            Zve32x_vmsne_vv_cg.sample(ins);
+            Zve32x_vmsne_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmsne.vx"     : begin
-            Zve32x_vmsne_vx_cg.sample(ins);
+            Zve32x_vmsne_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmsof.m"     : begin
-            Zve32x_vmsof_m_cg.sample(ins);
+            Zve32x_vmsof_m_sew@EFFEW@_cg.sample(ins);
         end
         "vmul.vv"     : begin
-            Zve32x_vmul_vv_cg.sample(ins);
+            Zve32x_vmul_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmul.vx"     : begin
-            Zve32x_vmul_vx_cg.sample(ins);
+            Zve32x_vmul_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmulh.vv"     : begin
-            Zve32x_vmulh_vv_cg.sample(ins);
+            Zve32x_vmulh_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmulh.vx"     : begin
-            Zve32x_vmulh_vx_cg.sample(ins);
+            Zve32x_vmulh_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmulhsu.vv"     : begin
-            Zve32x_vmulhsu_vv_cg.sample(ins);
+            Zve32x_vmulhsu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmulhsu.vx"     : begin
-            Zve32x_vmulhsu_vx_cg.sample(ins);
+            Zve32x_vmulhsu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmulhu.vv"     : begin
-            Zve32x_vmulhu_vv_cg.sample(ins);
+            Zve32x_vmulhu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmulhu.vx"     : begin
-            Zve32x_vmulhu_vx_cg.sample(ins);
+            Zve32x_vmulhu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmv.s.x"     : begin
-            Zve32x_vmv_s_x_cg.sample(ins);
+            Zve32x_vmv_s_x_sew@EFFEW@_cg.sample(ins);
         end
         "vmv.v.i"     : begin
-            Zve32x_vmv_v_i_cg.sample(ins);
+            Zve32x_vmv_v_i_sew@EFFEW@_cg.sample(ins);
         end
         "vmv.v.v"     : begin
-            Zve32x_vmv_v_v_cg.sample(ins);
+            Zve32x_vmv_v_v_sew@EFFEW@_cg.sample(ins);
         end
         "vmv.v.x"     : begin
-            Zve32x_vmv_v_x_cg.sample(ins);
+            Zve32x_vmv_v_x_sew@EFFEW@_cg.sample(ins);
         end
         "vmv.x.s"     : begin
-            Zve32x_vmv_x_s_cg.sample(ins);
+            Zve32x_vmv_x_s_sew@EFFEW@_cg.sample(ins);
         end
         "vmv1r.v"     : begin
-            Zve32x_vmv1r_v_cg.sample(ins);
+            Zve32x_vmv1r_v_sew@EFFEW@_cg.sample(ins);
         end
         "vmv2r.v"     : begin
-            Zve32x_vmv2r_v_cg.sample(ins);
+            Zve32x_vmv2r_v_sew@EFFEW@_cg.sample(ins);
         end
         "vmv4r.v"     : begin
-            Zve32x_vmv4r_v_cg.sample(ins);
+            Zve32x_vmv4r_v_sew@EFFEW@_cg.sample(ins);
         end
         "vmv8r.v"     : begin
-            Zve32x_vmv8r_v_cg.sample(ins);
+            Zve32x_vmv8r_v_sew@EFFEW@_cg.sample(ins);
         end
         "vmxnor.mm"     : begin
-            Zve32x_vmxnor_mm_cg.sample(ins);
+            Zve32x_vmxnor_mm_sew@EFFEW@_cg.sample(ins);
         end
         "vmxor.mm"     : begin
-            Zve32x_vmxor_mm_cg.sample(ins);
+            Zve32x_vmxor_mm_sew@EFFEW@_cg.sample(ins);
         end
         "vnclip.wi"     : begin
-            Zve32x_vnclip_wi_cg.sample(ins);
+            Zve32x_vnclip_wi_sew@EFFEW@_cg.sample(ins);
         end
         "vnclip.wv"     : begin
-            Zve32x_vnclip_wv_cg.sample(ins);
+            Zve32x_vnclip_wv_sew@EFFEW@_cg.sample(ins);
         end
         "vnclip.wx"     : begin
-            Zve32x_vnclip_wx_cg.sample(ins);
+            Zve32x_vnclip_wx_sew@EFFEW@_cg.sample(ins);
         end
         "vnclipu.wi"     : begin
-            Zve32x_vnclipu_wi_cg.sample(ins);
+            Zve32x_vnclipu_wi_sew@EFFEW@_cg.sample(ins);
         end
         "vnclipu.wv"     : begin
-            Zve32x_vnclipu_wv_cg.sample(ins);
+            Zve32x_vnclipu_wv_sew@EFFEW@_cg.sample(ins);
         end
         "vnclipu.wx"     : begin
-            Zve32x_vnclipu_wx_cg.sample(ins);
+            Zve32x_vnclipu_wx_sew@EFFEW@_cg.sample(ins);
         end
         "vnmsac.vv"     : begin
-            Zve32x_vnmsac_vv_cg.sample(ins);
+            Zve32x_vnmsac_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vnmsac.vx"     : begin
-            Zve32x_vnmsac_vx_cg.sample(ins);
+            Zve32x_vnmsac_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vnmsub.vv"     : begin
-            Zve32x_vnmsub_vv_cg.sample(ins);
+            Zve32x_vnmsub_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vnmsub.vx"     : begin
-            Zve32x_vnmsub_vx_cg.sample(ins);
+            Zve32x_vnmsub_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vnsra.wi"     : begin
-            Zve32x_vnsra_wi_cg.sample(ins);
+            Zve32x_vnsra_wi_sew@EFFEW@_cg.sample(ins);
         end
         "vnsra.wv"     : begin
-            Zve32x_vnsra_wv_cg.sample(ins);
+            Zve32x_vnsra_wv_sew@EFFEW@_cg.sample(ins);
         end
         "vnsra.wx"     : begin
-            Zve32x_vnsra_wx_cg.sample(ins);
+            Zve32x_vnsra_wx_sew@EFFEW@_cg.sample(ins);
         end
         "vnsrl.wi"     : begin
-            Zve32x_vnsrl_wi_cg.sample(ins);
+            Zve32x_vnsrl_wi_sew@EFFEW@_cg.sample(ins);
         end
         "vnsrl.wv"     : begin
-            Zve32x_vnsrl_wv_cg.sample(ins);
+            Zve32x_vnsrl_wv_sew@EFFEW@_cg.sample(ins);
         end
         "vnsrl.wx"     : begin
-            Zve32x_vnsrl_wx_cg.sample(ins);
+            Zve32x_vnsrl_wx_sew@EFFEW@_cg.sample(ins);
         end
         "vor.vi"     : begin
-            Zve32x_vor_vi_cg.sample(ins);
+            Zve32x_vor_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vor.vv"     : begin
-            Zve32x_vor_vv_cg.sample(ins);
+            Zve32x_vor_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vor.vx"     : begin
-            Zve32x_vor_vx_cg.sample(ins);
+            Zve32x_vor_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vredand.vs"     : begin
-            Zve32x_vredand_vs_cg.sample(ins);
+            Zve32x_vredand_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vredmax.vs"     : begin
-            Zve32x_vredmax_vs_cg.sample(ins);
+            Zve32x_vredmax_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vredmaxu.vs"     : begin
-            Zve32x_vredmaxu_vs_cg.sample(ins);
+            Zve32x_vredmaxu_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vredmin.vs"     : begin
-            Zve32x_vredmin_vs_cg.sample(ins);
+            Zve32x_vredmin_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vredminu.vs"     : begin
-            Zve32x_vredminu_vs_cg.sample(ins);
+            Zve32x_vredminu_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vredor.vs"     : begin
-            Zve32x_vredor_vs_cg.sample(ins);
+            Zve32x_vredor_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vredsum.vs"     : begin
-            Zve32x_vredsum_vs_cg.sample(ins);
+            Zve32x_vredsum_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vredxor.vs"     : begin
-            Zve32x_vredxor_vs_cg.sample(ins);
+            Zve32x_vredxor_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vrem.vv"     : begin
-            Zve32x_vrem_vv_cg.sample(ins);
+            Zve32x_vrem_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vrem.vx"     : begin
-            Zve32x_vrem_vx_cg.sample(ins);
+            Zve32x_vrem_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vremu.vv"     : begin
-            Zve32x_vremu_vv_cg.sample(ins);
+            Zve32x_vremu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vremu.vx"     : begin
-            Zve32x_vremu_vx_cg.sample(ins);
+            Zve32x_vremu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vrgather.vi"     : begin
-            Zve32x_vrgather_vi_cg.sample(ins);
+            Zve32x_vrgather_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vrgather.vv"     : begin
-            Zve32x_vrgather_vv_cg.sample(ins);
+            Zve32x_vrgather_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vrgather.vx"     : begin
-            Zve32x_vrgather_vx_cg.sample(ins);
+            Zve32x_vrgather_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vrgatherei16.vv"     : begin
-            Zve32x_vrgatherei16_vv_cg.sample(ins);
+            Zve32x_vrgatherei16_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vrsub.vi"     : begin
-            Zve32x_vrsub_vi_cg.sample(ins);
+            Zve32x_vrsub_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vrsub.vx"     : begin
-            Zve32x_vrsub_vx_cg.sample(ins);
+            Zve32x_vrsub_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vs1r.v"     : begin
-            Zve32x_vs1r_v_cg.sample(ins);
+            Zve32x_vs1r_v_sew@EFFEW@_cg.sample(ins);
         end
         "vs2r.v"     : begin
-            Zve32x_vs2r_v_cg.sample(ins);
+            Zve32x_vs2r_v_sew@EFFEW@_cg.sample(ins);
         end
         "vs4r.v"     : begin
-            Zve32x_vs4r_v_cg.sample(ins);
+            Zve32x_vs4r_v_sew@EFFEW@_cg.sample(ins);
         end
         "vs8r.v"     : begin
-            Zve32x_vs8r_v_cg.sample(ins);
+            Zve32x_vs8r_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsadd.vi"     : begin
-            Zve32x_vsadd_vi_cg.sample(ins);
+            Zve32x_vsadd_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vsadd.vv"     : begin
-            Zve32x_vsadd_vv_cg.sample(ins);
+            Zve32x_vsadd_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vsadd.vx"     : begin
-            Zve32x_vsadd_vx_cg.sample(ins);
+            Zve32x_vsadd_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vsaddu.vi"     : begin
-            Zve32x_vsaddu_vi_cg.sample(ins);
+            Zve32x_vsaddu_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vsaddu.vv"     : begin
-            Zve32x_vsaddu_vv_cg.sample(ins);
+            Zve32x_vsaddu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vsaddu.vx"     : begin
-            Zve32x_vsaddu_vx_cg.sample(ins);
+            Zve32x_vsaddu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vsbc.vvm"     : begin
-            Zve32x_vsbc_vvm_cg.sample(ins);
+            Zve32x_vsbc_vvm_sew@EFFEW@_cg.sample(ins);
         end
         "vsbc.vxm"     : begin
-            Zve32x_vsbc_vxm_cg.sample(ins);
+            Zve32x_vsbc_vxm_sew@EFFEW@_cg.sample(ins);
         end
         "vse16.v"     : begin
-            Zve32x_vse16_v_cg.sample(ins);
+            Zve32x_vse16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vse32.v"     : begin
-            Zve32x_vse32_v_cg.sample(ins);
+            Zve32x_vse32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vse8.v"     : begin
-            Zve32x_vse8_v_cg.sample(ins);
+            Zve32x_vse8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsext.vf2"     : begin
-            Zve32x_vsext_vf2_cg.sample(ins);
+            Zve32x_vsext_vf2_sew@EFFEW@_cg.sample(ins);
         end
         "vslide1down.vx"     : begin
-            Zve32x_vslide1down_vx_cg.sample(ins);
+            Zve32x_vslide1down_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vslide1up.vx"     : begin
-            Zve32x_vslide1up_vx_cg.sample(ins);
+            Zve32x_vslide1up_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vslidedown.vi"     : begin
-            Zve32x_vslidedown_vi_cg.sample(ins);
+            Zve32x_vslidedown_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vslidedown.vx"     : begin
-            Zve32x_vslidedown_vx_cg.sample(ins);
+            Zve32x_vslidedown_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vslideup.vi"     : begin
-            Zve32x_vslideup_vi_cg.sample(ins);
+            Zve32x_vslideup_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vslideup.vx"     : begin
-            Zve32x_vslideup_vx_cg.sample(ins);
+            Zve32x_vslideup_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vsll.vi"     : begin
-            Zve32x_vsll_vi_cg.sample(ins);
+            Zve32x_vsll_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vsll.vv"     : begin
-            Zve32x_vsll_vv_cg.sample(ins);
+            Zve32x_vsll_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vsll.vx"     : begin
-            Zve32x_vsll_vx_cg.sample(ins);
+            Zve32x_vsll_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vsm.v"     : begin
-            Zve32x_vsm_v_cg.sample(ins);
+            Zve32x_vsm_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsmul.vv"     : begin
-            Zve32x_vsmul_vv_cg.sample(ins);
+            Zve32x_vsmul_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vsmul.vx"     : begin
-            Zve32x_vsmul_vx_cg.sample(ins);
+            Zve32x_vsmul_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxei16.v"     : begin
-            Zve32x_vsoxei16_v_cg.sample(ins);
+            Zve32x_vsoxei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxei32.v"     : begin
-            Zve32x_vsoxei32_v_cg.sample(ins);
+            Zve32x_vsoxei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxei8.v"     : begin
-            Zve32x_vsoxei8_v_cg.sample(ins);
+            Zve32x_vsoxei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg2ei16.v"     : begin
-            Zve32x_vsoxseg2ei16_v_cg.sample(ins);
+            Zve32x_vsoxseg2ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg2ei32.v"     : begin
-            Zve32x_vsoxseg2ei32_v_cg.sample(ins);
+            Zve32x_vsoxseg2ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg2ei8.v"     : begin
-            Zve32x_vsoxseg2ei8_v_cg.sample(ins);
+            Zve32x_vsoxseg2ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg3ei16.v"     : begin
-            Zve32x_vsoxseg3ei16_v_cg.sample(ins);
+            Zve32x_vsoxseg3ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg3ei32.v"     : begin
-            Zve32x_vsoxseg3ei32_v_cg.sample(ins);
+            Zve32x_vsoxseg3ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg3ei8.v"     : begin
-            Zve32x_vsoxseg3ei8_v_cg.sample(ins);
+            Zve32x_vsoxseg3ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg4ei16.v"     : begin
-            Zve32x_vsoxseg4ei16_v_cg.sample(ins);
+            Zve32x_vsoxseg4ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg4ei32.v"     : begin
-            Zve32x_vsoxseg4ei32_v_cg.sample(ins);
+            Zve32x_vsoxseg4ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg4ei8.v"     : begin
-            Zve32x_vsoxseg4ei8_v_cg.sample(ins);
+            Zve32x_vsoxseg4ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg5ei16.v"     : begin
-            Zve32x_vsoxseg5ei16_v_cg.sample(ins);
+            Zve32x_vsoxseg5ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg5ei32.v"     : begin
-            Zve32x_vsoxseg5ei32_v_cg.sample(ins);
+            Zve32x_vsoxseg5ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg5ei8.v"     : begin
-            Zve32x_vsoxseg5ei8_v_cg.sample(ins);
+            Zve32x_vsoxseg5ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg6ei16.v"     : begin
-            Zve32x_vsoxseg6ei16_v_cg.sample(ins);
+            Zve32x_vsoxseg6ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg6ei32.v"     : begin
-            Zve32x_vsoxseg6ei32_v_cg.sample(ins);
+            Zve32x_vsoxseg6ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg6ei8.v"     : begin
-            Zve32x_vsoxseg6ei8_v_cg.sample(ins);
+            Zve32x_vsoxseg6ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg7ei16.v"     : begin
-            Zve32x_vsoxseg7ei16_v_cg.sample(ins);
+            Zve32x_vsoxseg7ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg7ei32.v"     : begin
-            Zve32x_vsoxseg7ei32_v_cg.sample(ins);
+            Zve32x_vsoxseg7ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg7ei8.v"     : begin
-            Zve32x_vsoxseg7ei8_v_cg.sample(ins);
+            Zve32x_vsoxseg7ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg8ei16.v"     : begin
-            Zve32x_vsoxseg8ei16_v_cg.sample(ins);
+            Zve32x_vsoxseg8ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg8ei32.v"     : begin
-            Zve32x_vsoxseg8ei32_v_cg.sample(ins);
+            Zve32x_vsoxseg8ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg8ei8.v"     : begin
-            Zve32x_vsoxseg8ei8_v_cg.sample(ins);
+            Zve32x_vsoxseg8ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsra.vi"     : begin
-            Zve32x_vsra_vi_cg.sample(ins);
+            Zve32x_vsra_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vsra.vv"     : begin
-            Zve32x_vsra_vv_cg.sample(ins);
+            Zve32x_vsra_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vsra.vx"     : begin
-            Zve32x_vsra_vx_cg.sample(ins);
+            Zve32x_vsra_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vsrl.vi"     : begin
-            Zve32x_vsrl_vi_cg.sample(ins);
+            Zve32x_vsrl_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vsrl.vv"     : begin
-            Zve32x_vsrl_vv_cg.sample(ins);
+            Zve32x_vsrl_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vsrl.vx"     : begin
-            Zve32x_vsrl_vx_cg.sample(ins);
+            Zve32x_vsrl_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vsse16.v"     : begin
-            Zve32x_vsse16_v_cg.sample(ins);
+            Zve32x_vsse16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsse32.v"     : begin
-            Zve32x_vsse32_v_cg.sample(ins);
+            Zve32x_vsse32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsse8.v"     : begin
-            Zve32x_vsse8_v_cg.sample(ins);
+            Zve32x_vsse8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg2e16.v"     : begin
-            Zve32x_vsseg2e16_v_cg.sample(ins);
+            Zve32x_vsseg2e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg2e32.v"     : begin
-            Zve32x_vsseg2e32_v_cg.sample(ins);
+            Zve32x_vsseg2e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg2e8.v"     : begin
-            Zve32x_vsseg2e8_v_cg.sample(ins);
+            Zve32x_vsseg2e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg3e16.v"     : begin
-            Zve32x_vsseg3e16_v_cg.sample(ins);
+            Zve32x_vsseg3e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg3e32.v"     : begin
-            Zve32x_vsseg3e32_v_cg.sample(ins);
+            Zve32x_vsseg3e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg3e8.v"     : begin
-            Zve32x_vsseg3e8_v_cg.sample(ins);
+            Zve32x_vsseg3e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg4e16.v"     : begin
-            Zve32x_vsseg4e16_v_cg.sample(ins);
+            Zve32x_vsseg4e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg4e32.v"     : begin
-            Zve32x_vsseg4e32_v_cg.sample(ins);
+            Zve32x_vsseg4e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg4e8.v"     : begin
-            Zve32x_vsseg4e8_v_cg.sample(ins);
+            Zve32x_vsseg4e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg5e16.v"     : begin
-            Zve32x_vsseg5e16_v_cg.sample(ins);
+            Zve32x_vsseg5e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg5e32.v"     : begin
-            Zve32x_vsseg5e32_v_cg.sample(ins);
+            Zve32x_vsseg5e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg5e8.v"     : begin
-            Zve32x_vsseg5e8_v_cg.sample(ins);
+            Zve32x_vsseg5e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg6e16.v"     : begin
-            Zve32x_vsseg6e16_v_cg.sample(ins);
+            Zve32x_vsseg6e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg6e32.v"     : begin
-            Zve32x_vsseg6e32_v_cg.sample(ins);
+            Zve32x_vsseg6e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg6e8.v"     : begin
-            Zve32x_vsseg6e8_v_cg.sample(ins);
+            Zve32x_vsseg6e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg7e16.v"     : begin
-            Zve32x_vsseg7e16_v_cg.sample(ins);
+            Zve32x_vsseg7e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg7e32.v"     : begin
-            Zve32x_vsseg7e32_v_cg.sample(ins);
+            Zve32x_vsseg7e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg7e8.v"     : begin
-            Zve32x_vsseg7e8_v_cg.sample(ins);
+            Zve32x_vsseg7e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg8e16.v"     : begin
-            Zve32x_vsseg8e16_v_cg.sample(ins);
+            Zve32x_vsseg8e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg8e32.v"     : begin
-            Zve32x_vsseg8e32_v_cg.sample(ins);
+            Zve32x_vsseg8e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg8e8.v"     : begin
-            Zve32x_vsseg8e8_v_cg.sample(ins);
+            Zve32x_vsseg8e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssra.vi"     : begin
-            Zve32x_vssra_vi_cg.sample(ins);
+            Zve32x_vssra_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vssra.vv"     : begin
-            Zve32x_vssra_vv_cg.sample(ins);
+            Zve32x_vssra_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vssra.vx"     : begin
-            Zve32x_vssra_vx_cg.sample(ins);
+            Zve32x_vssra_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vssrl.vi"     : begin
-            Zve32x_vssrl_vi_cg.sample(ins);
+            Zve32x_vssrl_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vssrl.vv"     : begin
-            Zve32x_vssrl_vv_cg.sample(ins);
+            Zve32x_vssrl_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vssrl.vx"     : begin
-            Zve32x_vssrl_vx_cg.sample(ins);
+            Zve32x_vssrl_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg2e16.v"     : begin
-            Zve32x_vssseg2e16_v_cg.sample(ins);
+            Zve32x_vssseg2e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg2e32.v"     : begin
-            Zve32x_vssseg2e32_v_cg.sample(ins);
+            Zve32x_vssseg2e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg2e8.v"     : begin
-            Zve32x_vssseg2e8_v_cg.sample(ins);
+            Zve32x_vssseg2e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg3e16.v"     : begin
-            Zve32x_vssseg3e16_v_cg.sample(ins);
+            Zve32x_vssseg3e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg3e32.v"     : begin
-            Zve32x_vssseg3e32_v_cg.sample(ins);
+            Zve32x_vssseg3e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg3e8.v"     : begin
-            Zve32x_vssseg3e8_v_cg.sample(ins);
+            Zve32x_vssseg3e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg4e16.v"     : begin
-            Zve32x_vssseg4e16_v_cg.sample(ins);
+            Zve32x_vssseg4e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg4e32.v"     : begin
-            Zve32x_vssseg4e32_v_cg.sample(ins);
+            Zve32x_vssseg4e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg4e8.v"     : begin
-            Zve32x_vssseg4e8_v_cg.sample(ins);
+            Zve32x_vssseg4e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg5e16.v"     : begin
-            Zve32x_vssseg5e16_v_cg.sample(ins);
+            Zve32x_vssseg5e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg5e32.v"     : begin
-            Zve32x_vssseg5e32_v_cg.sample(ins);
+            Zve32x_vssseg5e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg5e8.v"     : begin
-            Zve32x_vssseg5e8_v_cg.sample(ins);
+            Zve32x_vssseg5e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg6e16.v"     : begin
-            Zve32x_vssseg6e16_v_cg.sample(ins);
+            Zve32x_vssseg6e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg6e32.v"     : begin
-            Zve32x_vssseg6e32_v_cg.sample(ins);
+            Zve32x_vssseg6e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg6e8.v"     : begin
-            Zve32x_vssseg6e8_v_cg.sample(ins);
+            Zve32x_vssseg6e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg7e16.v"     : begin
-            Zve32x_vssseg7e16_v_cg.sample(ins);
+            Zve32x_vssseg7e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg7e32.v"     : begin
-            Zve32x_vssseg7e32_v_cg.sample(ins);
+            Zve32x_vssseg7e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg7e8.v"     : begin
-            Zve32x_vssseg7e8_v_cg.sample(ins);
+            Zve32x_vssseg7e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg8e16.v"     : begin
-            Zve32x_vssseg8e16_v_cg.sample(ins);
+            Zve32x_vssseg8e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg8e32.v"     : begin
-            Zve32x_vssseg8e32_v_cg.sample(ins);
+            Zve32x_vssseg8e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg8e8.v"     : begin
-            Zve32x_vssseg8e8_v_cg.sample(ins);
+            Zve32x_vssseg8e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssub.vv"     : begin
-            Zve32x_vssub_vv_cg.sample(ins);
+            Zve32x_vssub_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vssub.vx"     : begin
-            Zve32x_vssub_vx_cg.sample(ins);
+            Zve32x_vssub_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vssubu.vv"     : begin
-            Zve32x_vssubu_vv_cg.sample(ins);
+            Zve32x_vssubu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vssubu.vx"     : begin
-            Zve32x_vssubu_vx_cg.sample(ins);
+            Zve32x_vssubu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vsub.vv"     : begin
-            Zve32x_vsub_vv_cg.sample(ins);
+            Zve32x_vsub_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vsub.vx"     : begin
-            Zve32x_vsub_vx_cg.sample(ins);
+            Zve32x_vsub_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxei16.v"     : begin
-            Zve32x_vsuxei16_v_cg.sample(ins);
+            Zve32x_vsuxei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxei32.v"     : begin
-            Zve32x_vsuxei32_v_cg.sample(ins);
+            Zve32x_vsuxei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxei8.v"     : begin
-            Zve32x_vsuxei8_v_cg.sample(ins);
+            Zve32x_vsuxei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg2ei16.v"     : begin
-            Zve32x_vsuxseg2ei16_v_cg.sample(ins);
+            Zve32x_vsuxseg2ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg2ei32.v"     : begin
-            Zve32x_vsuxseg2ei32_v_cg.sample(ins);
+            Zve32x_vsuxseg2ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg2ei8.v"     : begin
-            Zve32x_vsuxseg2ei8_v_cg.sample(ins);
+            Zve32x_vsuxseg2ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg3ei16.v"     : begin
-            Zve32x_vsuxseg3ei16_v_cg.sample(ins);
+            Zve32x_vsuxseg3ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg3ei32.v"     : begin
-            Zve32x_vsuxseg3ei32_v_cg.sample(ins);
+            Zve32x_vsuxseg3ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg3ei8.v"     : begin
-            Zve32x_vsuxseg3ei8_v_cg.sample(ins);
+            Zve32x_vsuxseg3ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg4ei16.v"     : begin
-            Zve32x_vsuxseg4ei16_v_cg.sample(ins);
+            Zve32x_vsuxseg4ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg4ei32.v"     : begin
-            Zve32x_vsuxseg4ei32_v_cg.sample(ins);
+            Zve32x_vsuxseg4ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg4ei8.v"     : begin
-            Zve32x_vsuxseg4ei8_v_cg.sample(ins);
+            Zve32x_vsuxseg4ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg5ei16.v"     : begin
-            Zve32x_vsuxseg5ei16_v_cg.sample(ins);
+            Zve32x_vsuxseg5ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg5ei32.v"     : begin
-            Zve32x_vsuxseg5ei32_v_cg.sample(ins);
+            Zve32x_vsuxseg5ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg5ei8.v"     : begin
-            Zve32x_vsuxseg5ei8_v_cg.sample(ins);
+            Zve32x_vsuxseg5ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg6ei16.v"     : begin
-            Zve32x_vsuxseg6ei16_v_cg.sample(ins);
+            Zve32x_vsuxseg6ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg6ei32.v"     : begin
-            Zve32x_vsuxseg6ei32_v_cg.sample(ins);
+            Zve32x_vsuxseg6ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg6ei8.v"     : begin
-            Zve32x_vsuxseg6ei8_v_cg.sample(ins);
+            Zve32x_vsuxseg6ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg7ei16.v"     : begin
-            Zve32x_vsuxseg7ei16_v_cg.sample(ins);
+            Zve32x_vsuxseg7ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg7ei32.v"     : begin
-            Zve32x_vsuxseg7ei32_v_cg.sample(ins);
+            Zve32x_vsuxseg7ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg7ei8.v"     : begin
-            Zve32x_vsuxseg7ei8_v_cg.sample(ins);
+            Zve32x_vsuxseg7ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg8ei16.v"     : begin
-            Zve32x_vsuxseg8ei16_v_cg.sample(ins);
+            Zve32x_vsuxseg8ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg8ei32.v"     : begin
-            Zve32x_vsuxseg8ei32_v_cg.sample(ins);
+            Zve32x_vsuxseg8ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg8ei8.v"     : begin
-            Zve32x_vsuxseg8ei8_v_cg.sample(ins);
+            Zve32x_vsuxseg8ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vwadd.vv"     : begin
-            Zve32x_vwadd_vv_cg.sample(ins);
+            Zve32x_vwadd_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vwadd.vx"     : begin
-            Zve32x_vwadd_vx_cg.sample(ins);
+            Zve32x_vwadd_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vwadd.wv"     : begin
-            Zve32x_vwadd_wv_cg.sample(ins);
+            Zve32x_vwadd_wv_sew@EFFEW@_cg.sample(ins);
         end
         "vwadd.wx"     : begin
-            Zve32x_vwadd_wx_cg.sample(ins);
+            Zve32x_vwadd_wx_sew@EFFEW@_cg.sample(ins);
         end
         "vwaddu.vv"     : begin
-            Zve32x_vwaddu_vv_cg.sample(ins);
+            Zve32x_vwaddu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vwaddu.vx"     : begin
-            Zve32x_vwaddu_vx_cg.sample(ins);
+            Zve32x_vwaddu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vwaddu.wv"     : begin
-            Zve32x_vwaddu_wv_cg.sample(ins);
+            Zve32x_vwaddu_wv_sew@EFFEW@_cg.sample(ins);
         end
         "vwaddu.wx"     : begin
-            Zve32x_vwaddu_wx_cg.sample(ins);
+            Zve32x_vwaddu_wx_sew@EFFEW@_cg.sample(ins);
         end
         "vwmacc.vv"     : begin
-            Zve32x_vwmacc_vv_cg.sample(ins);
+            Zve32x_vwmacc_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vwmacc.vx"     : begin
-            Zve32x_vwmacc_vx_cg.sample(ins);
+            Zve32x_vwmacc_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vwmaccsu.vv"     : begin
-            Zve32x_vwmaccsu_vv_cg.sample(ins);
+            Zve32x_vwmaccsu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vwmaccsu.vx"     : begin
-            Zve32x_vwmaccsu_vx_cg.sample(ins);
+            Zve32x_vwmaccsu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vwmaccu.vv"     : begin
-            Zve32x_vwmaccu_vv_cg.sample(ins);
+            Zve32x_vwmaccu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vwmaccu.vx"     : begin
-            Zve32x_vwmaccu_vx_cg.sample(ins);
+            Zve32x_vwmaccu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vwmaccus.vx"     : begin
-            Zve32x_vwmaccus_vx_cg.sample(ins);
+            Zve32x_vwmaccus_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vwmul.vv"     : begin
-            Zve32x_vwmul_vv_cg.sample(ins);
+            Zve32x_vwmul_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vwmul.vx"     : begin
-            Zve32x_vwmul_vx_cg.sample(ins);
+            Zve32x_vwmul_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vwmulsu.vv"     : begin
-            Zve32x_vwmulsu_vv_cg.sample(ins);
+            Zve32x_vwmulsu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vwmulsu.vx"     : begin
-            Zve32x_vwmulsu_vx_cg.sample(ins);
+            Zve32x_vwmulsu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vwmulu.vv"     : begin
-            Zve32x_vwmulu_vv_cg.sample(ins);
+            Zve32x_vwmulu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vwmulu.vx"     : begin
-            Zve32x_vwmulu_vx_cg.sample(ins);
+            Zve32x_vwmulu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vwredsum.vs"     : begin
-            Zve32x_vwredsum_vs_cg.sample(ins);
+            Zve32x_vwredsum_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vwredsumu.vs"     : begin
-            Zve32x_vwredsumu_vs_cg.sample(ins);
+            Zve32x_vwredsumu_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vwsub.vv"     : begin
-            Zve32x_vwsub_vv_cg.sample(ins);
+            Zve32x_vwsub_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vwsub.vx"     : begin
-            Zve32x_vwsub_vx_cg.sample(ins);
+            Zve32x_vwsub_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vwsub.wv"     : begin
-            Zve32x_vwsub_wv_cg.sample(ins);
+            Zve32x_vwsub_wv_sew@EFFEW@_cg.sample(ins);
         end
         "vwsub.wx"     : begin
-            Zve32x_vwsub_wx_cg.sample(ins);
+            Zve32x_vwsub_wx_sew@EFFEW@_cg.sample(ins);
         end
         "vwsubu.vv"     : begin
-            Zve32x_vwsubu_vv_cg.sample(ins);
+            Zve32x_vwsubu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vwsubu.vx"     : begin
-            Zve32x_vwsubu_vx_cg.sample(ins);
+            Zve32x_vwsubu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vwsubu.wv"     : begin
-            Zve32x_vwsubu_wv_cg.sample(ins);
+            Zve32x_vwsubu_wv_sew@EFFEW@_cg.sample(ins);
         end
         "vwsubu.wx"     : begin
-            Zve32x_vwsubu_wx_cg.sample(ins);
+            Zve32x_vwsubu_wx_sew@EFFEW@_cg.sample(ins);
         end
         "vxor.vi"     : begin
-            Zve32x_vxor_vi_cg.sample(ins);
+            Zve32x_vxor_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vxor.vv"     : begin
-            Zve32x_vxor_vv_cg.sample(ins);
+            Zve32x_vxor_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vxor.vx"     : begin
-            Zve32x_vxor_vx_cg.sample(ins);
+            Zve32x_vxor_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vzext.vf2"     : begin
-            Zve32x_vzext_vf2_cg.sample(ins);
+            Zve32x_vzext_vf2_sew@EFFEW@_cg.sample(ins);
         end
             default: ; // a case needs at least one item, and some configurations select none
         endcase
@@ -221949,1198 +222702,1210 @@ function void zve32x_sample(int hart, int issue, ins_t ins);
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
         "vaadd.vv"     : begin
-            Zve32x_vaadd_vv_cg.sample(ins);
+            Zve32x_vaadd_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vaadd.vx"     : begin
-            Zve32x_vaadd_vx_cg.sample(ins);
+            Zve32x_vaadd_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vaaddu.vv"     : begin
-            Zve32x_vaaddu_vv_cg.sample(ins);
+            Zve32x_vaaddu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vaaddu.vx"     : begin
-            Zve32x_vaaddu_vx_cg.sample(ins);
+            Zve32x_vaaddu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vadc.vim"     : begin
-            Zve32x_vadc_vim_cg.sample(ins);
+            Zve32x_vadc_vim_sew@EFFEW@_cg.sample(ins);
         end
         "vadc.vvm"     : begin
-            Zve32x_vadc_vvm_cg.sample(ins);
+            Zve32x_vadc_vvm_sew@EFFEW@_cg.sample(ins);
         end
         "vadc.vxm"     : begin
-            Zve32x_vadc_vxm_cg.sample(ins);
+            Zve32x_vadc_vxm_sew@EFFEW@_cg.sample(ins);
         end
         "vadd.vi"     : begin
-            Zve32x_vadd_vi_cg.sample(ins);
+            Zve32x_vadd_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vadd.vv"     : begin
-            Zve32x_vadd_vv_cg.sample(ins);
+            Zve32x_vadd_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vadd.vx"     : begin
-            Zve32x_vadd_vx_cg.sample(ins);
+            Zve32x_vadd_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vand.vi"     : begin
-            Zve32x_vand_vi_cg.sample(ins);
+            Zve32x_vand_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vand.vv"     : begin
-            Zve32x_vand_vv_cg.sample(ins);
+            Zve32x_vand_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vand.vx"     : begin
-            Zve32x_vand_vx_cg.sample(ins);
+            Zve32x_vand_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vasub.vv"     : begin
-            Zve32x_vasub_vv_cg.sample(ins);
+            Zve32x_vasub_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vasub.vx"     : begin
-            Zve32x_vasub_vx_cg.sample(ins);
+            Zve32x_vasub_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vasubu.vv"     : begin
-            Zve32x_vasubu_vv_cg.sample(ins);
+            Zve32x_vasubu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vasubu.vx"     : begin
-            Zve32x_vasubu_vx_cg.sample(ins);
+            Zve32x_vasubu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vcompress.vm"     : begin
-            Zve32x_vcompress_vm_cg.sample(ins);
+            Zve32x_vcompress_vm_sew@EFFEW@_cg.sample(ins);
         end
         "vcpop.m"     : begin
-            Zve32x_vcpop_m_cg.sample(ins);
+            Zve32x_vcpop_m_sew@EFFEW@_cg.sample(ins);
         end
         "vdiv.vv"     : begin
-            Zve32x_vdiv_vv_cg.sample(ins);
+            Zve32x_vdiv_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vdiv.vx"     : begin
-            Zve32x_vdiv_vx_cg.sample(ins);
+            Zve32x_vdiv_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vdivu.vv"     : begin
-            Zve32x_vdivu_vv_cg.sample(ins);
+            Zve32x_vdivu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vdivu.vx"     : begin
-            Zve32x_vdivu_vx_cg.sample(ins);
+            Zve32x_vdivu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vfirst.m"     : begin
-            Zve32x_vfirst_m_cg.sample(ins);
+            Zve32x_vfirst_m_sew@EFFEW@_cg.sample(ins);
         end
         "vid.v"     : begin
-            Zve32x_vid_v_cg.sample(ins);
+            Zve32x_vid_v_sew@EFFEW@_cg.sample(ins);
         end
         "viota.m"     : begin
-            Zve32x_viota_m_cg.sample(ins);
+            Zve32x_viota_m_sew@EFFEW@_cg.sample(ins);
         end
         "vl1re16.v"     : begin
-            Zve32x_vl1re16_v_cg.sample(ins);
+            Zve32x_vl1re16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vl1re32.v"     : begin
-            Zve32x_vl1re32_v_cg.sample(ins);
+            Zve32x_vl1re32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vl1re8.v"     : begin
-            Zve32x_vl1re8_v_cg.sample(ins);
+            Zve32x_vl1re8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vl2re16.v"     : begin
-            Zve32x_vl2re16_v_cg.sample(ins);
+            Zve32x_vl2re16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vl2re32.v"     : begin
-            Zve32x_vl2re32_v_cg.sample(ins);
+            Zve32x_vl2re32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vl2re8.v"     : begin
-            Zve32x_vl2re8_v_cg.sample(ins);
+            Zve32x_vl2re8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vl4re16.v"     : begin
-            Zve32x_vl4re16_v_cg.sample(ins);
+            Zve32x_vl4re16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vl4re32.v"     : begin
-            Zve32x_vl4re32_v_cg.sample(ins);
+            Zve32x_vl4re32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vl4re8.v"     : begin
-            Zve32x_vl4re8_v_cg.sample(ins);
+            Zve32x_vl4re8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vl8re16.v"     : begin
-            Zve32x_vl8re16_v_cg.sample(ins);
+            Zve32x_vl8re16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vl8re32.v"     : begin
-            Zve32x_vl8re32_v_cg.sample(ins);
+            Zve32x_vl8re32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vl8re8.v"     : begin
-            Zve32x_vl8re8_v_cg.sample(ins);
+            Zve32x_vl8re8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vle16.v"     : begin
-            Zve32x_vle16_v_cg.sample(ins);
+            Zve32x_vle16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vle16ff.v"     : begin
-            Zve32x_vle16ff_v_cg.sample(ins);
+            Zve32x_vle16ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vle32.v"     : begin
-            Zve32x_vle32_v_cg.sample(ins);
+            Zve32x_vle32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vle32ff.v"     : begin
-            Zve32x_vle32ff_v_cg.sample(ins);
+            Zve32x_vle32ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vle8.v"     : begin
-            Zve32x_vle8_v_cg.sample(ins);
+            Zve32x_vle8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vle8ff.v"     : begin
-            Zve32x_vle8ff_v_cg.sample(ins);
+            Zve32x_vle8ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlm.v"     : begin
-            Zve32x_vlm_v_cg.sample(ins);
+            Zve32x_vlm_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxei16.v"     : begin
-            Zve32x_vloxei16_v_cg.sample(ins);
+            Zve32x_vloxei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxei32.v"     : begin
-            Zve32x_vloxei32_v_cg.sample(ins);
+            Zve32x_vloxei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxei8.v"     : begin
-            Zve32x_vloxei8_v_cg.sample(ins);
+            Zve32x_vloxei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg2ei16.v"     : begin
-            Zve32x_vloxseg2ei16_v_cg.sample(ins);
+            Zve32x_vloxseg2ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg2ei32.v"     : begin
-            Zve32x_vloxseg2ei32_v_cg.sample(ins);
+            Zve32x_vloxseg2ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg2ei8.v"     : begin
-            Zve32x_vloxseg2ei8_v_cg.sample(ins);
+            Zve32x_vloxseg2ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg3ei16.v"     : begin
-            Zve32x_vloxseg3ei16_v_cg.sample(ins);
+            Zve32x_vloxseg3ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg3ei32.v"     : begin
-            Zve32x_vloxseg3ei32_v_cg.sample(ins);
+            Zve32x_vloxseg3ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg3ei8.v"     : begin
-            Zve32x_vloxseg3ei8_v_cg.sample(ins);
+            Zve32x_vloxseg3ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg4ei16.v"     : begin
-            Zve32x_vloxseg4ei16_v_cg.sample(ins);
+            Zve32x_vloxseg4ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg4ei32.v"     : begin
-            Zve32x_vloxseg4ei32_v_cg.sample(ins);
+            Zve32x_vloxseg4ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg4ei8.v"     : begin
-            Zve32x_vloxseg4ei8_v_cg.sample(ins);
+            Zve32x_vloxseg4ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg5ei16.v"     : begin
-            Zve32x_vloxseg5ei16_v_cg.sample(ins);
+            Zve32x_vloxseg5ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg5ei32.v"     : begin
-            Zve32x_vloxseg5ei32_v_cg.sample(ins);
+            Zve32x_vloxseg5ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg5ei8.v"     : begin
-            Zve32x_vloxseg5ei8_v_cg.sample(ins);
+            Zve32x_vloxseg5ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg6ei16.v"     : begin
-            Zve32x_vloxseg6ei16_v_cg.sample(ins);
+            Zve32x_vloxseg6ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg6ei32.v"     : begin
-            Zve32x_vloxseg6ei32_v_cg.sample(ins);
+            Zve32x_vloxseg6ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg6ei8.v"     : begin
-            Zve32x_vloxseg6ei8_v_cg.sample(ins);
+            Zve32x_vloxseg6ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg7ei16.v"     : begin
-            Zve32x_vloxseg7ei16_v_cg.sample(ins);
+            Zve32x_vloxseg7ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg7ei32.v"     : begin
-            Zve32x_vloxseg7ei32_v_cg.sample(ins);
+            Zve32x_vloxseg7ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg7ei8.v"     : begin
-            Zve32x_vloxseg7ei8_v_cg.sample(ins);
+            Zve32x_vloxseg7ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg8ei16.v"     : begin
-            Zve32x_vloxseg8ei16_v_cg.sample(ins);
+            Zve32x_vloxseg8ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg8ei32.v"     : begin
-            Zve32x_vloxseg8ei32_v_cg.sample(ins);
+            Zve32x_vloxseg8ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vloxseg8ei8.v"     : begin
-            Zve32x_vloxseg8ei8_v_cg.sample(ins);
+            Zve32x_vloxseg8ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlse16.v"     : begin
-            Zve32x_vlse16_v_cg.sample(ins);
+            Zve32x_vlse16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlse32.v"     : begin
-            Zve32x_vlse32_v_cg.sample(ins);
+            Zve32x_vlse32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlse8.v"     : begin
-            Zve32x_vlse8_v_cg.sample(ins);
+            Zve32x_vlse8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg2e16.v"     : begin
-            Zve32x_vlseg2e16_v_cg.sample(ins);
+            Zve32x_vlseg2e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg2e16ff.v"     : begin
-            Zve32x_vlseg2e16ff_v_cg.sample(ins);
+            Zve32x_vlseg2e16ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg2e32.v"     : begin
-            Zve32x_vlseg2e32_v_cg.sample(ins);
+            Zve32x_vlseg2e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg2e32ff.v"     : begin
-            Zve32x_vlseg2e32ff_v_cg.sample(ins);
+            Zve32x_vlseg2e32ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg2e8.v"     : begin
-            Zve32x_vlseg2e8_v_cg.sample(ins);
+            Zve32x_vlseg2e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg2e8ff.v"     : begin
-            Zve32x_vlseg2e8ff_v_cg.sample(ins);
+            Zve32x_vlseg2e8ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg3e16.v"     : begin
-            Zve32x_vlseg3e16_v_cg.sample(ins);
+            Zve32x_vlseg3e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg3e16ff.v"     : begin
-            Zve32x_vlseg3e16ff_v_cg.sample(ins);
+            Zve32x_vlseg3e16ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg3e32.v"     : begin
-            Zve32x_vlseg3e32_v_cg.sample(ins);
+            Zve32x_vlseg3e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg3e32ff.v"     : begin
-            Zve32x_vlseg3e32ff_v_cg.sample(ins);
+            Zve32x_vlseg3e32ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg3e8.v"     : begin
-            Zve32x_vlseg3e8_v_cg.sample(ins);
+            Zve32x_vlseg3e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg3e8ff.v"     : begin
-            Zve32x_vlseg3e8ff_v_cg.sample(ins);
+            Zve32x_vlseg3e8ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg4e16.v"     : begin
-            Zve32x_vlseg4e16_v_cg.sample(ins);
+            Zve32x_vlseg4e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg4e16ff.v"     : begin
-            Zve32x_vlseg4e16ff_v_cg.sample(ins);
+            Zve32x_vlseg4e16ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg4e32.v"     : begin
-            Zve32x_vlseg4e32_v_cg.sample(ins);
+            Zve32x_vlseg4e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg4e32ff.v"     : begin
-            Zve32x_vlseg4e32ff_v_cg.sample(ins);
+            Zve32x_vlseg4e32ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg4e8.v"     : begin
-            Zve32x_vlseg4e8_v_cg.sample(ins);
+            Zve32x_vlseg4e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg4e8ff.v"     : begin
-            Zve32x_vlseg4e8ff_v_cg.sample(ins);
+            Zve32x_vlseg4e8ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg5e16.v"     : begin
-            Zve32x_vlseg5e16_v_cg.sample(ins);
+            Zve32x_vlseg5e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg5e16ff.v"     : begin
-            Zve32x_vlseg5e16ff_v_cg.sample(ins);
+            Zve32x_vlseg5e16ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg5e32.v"     : begin
-            Zve32x_vlseg5e32_v_cg.sample(ins);
+            Zve32x_vlseg5e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg5e32ff.v"     : begin
-            Zve32x_vlseg5e32ff_v_cg.sample(ins);
+            Zve32x_vlseg5e32ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg5e8.v"     : begin
-            Zve32x_vlseg5e8_v_cg.sample(ins);
+            Zve32x_vlseg5e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg5e8ff.v"     : begin
-            Zve32x_vlseg5e8ff_v_cg.sample(ins);
+            Zve32x_vlseg5e8ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg6e16.v"     : begin
-            Zve32x_vlseg6e16_v_cg.sample(ins);
+            Zve32x_vlseg6e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg6e16ff.v"     : begin
-            Zve32x_vlseg6e16ff_v_cg.sample(ins);
+            Zve32x_vlseg6e16ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg6e32.v"     : begin
-            Zve32x_vlseg6e32_v_cg.sample(ins);
+            Zve32x_vlseg6e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg6e32ff.v"     : begin
-            Zve32x_vlseg6e32ff_v_cg.sample(ins);
+            Zve32x_vlseg6e32ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg6e8.v"     : begin
-            Zve32x_vlseg6e8_v_cg.sample(ins);
+            Zve32x_vlseg6e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg6e8ff.v"     : begin
-            Zve32x_vlseg6e8ff_v_cg.sample(ins);
+            Zve32x_vlseg6e8ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg7e16.v"     : begin
-            Zve32x_vlseg7e16_v_cg.sample(ins);
+            Zve32x_vlseg7e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg7e16ff.v"     : begin
-            Zve32x_vlseg7e16ff_v_cg.sample(ins);
+            Zve32x_vlseg7e16ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg7e32.v"     : begin
-            Zve32x_vlseg7e32_v_cg.sample(ins);
+            Zve32x_vlseg7e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg7e32ff.v"     : begin
-            Zve32x_vlseg7e32ff_v_cg.sample(ins);
+            Zve32x_vlseg7e32ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg7e8.v"     : begin
-            Zve32x_vlseg7e8_v_cg.sample(ins);
+            Zve32x_vlseg7e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg7e8ff.v"     : begin
-            Zve32x_vlseg7e8ff_v_cg.sample(ins);
+            Zve32x_vlseg7e8ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg8e16.v"     : begin
-            Zve32x_vlseg8e16_v_cg.sample(ins);
+            Zve32x_vlseg8e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg8e16ff.v"     : begin
-            Zve32x_vlseg8e16ff_v_cg.sample(ins);
+            Zve32x_vlseg8e16ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg8e32.v"     : begin
-            Zve32x_vlseg8e32_v_cg.sample(ins);
+            Zve32x_vlseg8e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg8e32ff.v"     : begin
-            Zve32x_vlseg8e32ff_v_cg.sample(ins);
+            Zve32x_vlseg8e32ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg8e8.v"     : begin
-            Zve32x_vlseg8e8_v_cg.sample(ins);
+            Zve32x_vlseg8e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlseg8e8ff.v"     : begin
-            Zve32x_vlseg8e8ff_v_cg.sample(ins);
+            Zve32x_vlseg8e8ff_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg2e16.v"     : begin
-            Zve32x_vlsseg2e16_v_cg.sample(ins);
+            Zve32x_vlsseg2e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg2e32.v"     : begin
-            Zve32x_vlsseg2e32_v_cg.sample(ins);
+            Zve32x_vlsseg2e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg2e8.v"     : begin
-            Zve32x_vlsseg2e8_v_cg.sample(ins);
+            Zve32x_vlsseg2e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg3e16.v"     : begin
-            Zve32x_vlsseg3e16_v_cg.sample(ins);
+            Zve32x_vlsseg3e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg3e32.v"     : begin
-            Zve32x_vlsseg3e32_v_cg.sample(ins);
+            Zve32x_vlsseg3e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg3e8.v"     : begin
-            Zve32x_vlsseg3e8_v_cg.sample(ins);
+            Zve32x_vlsseg3e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg4e16.v"     : begin
-            Zve32x_vlsseg4e16_v_cg.sample(ins);
+            Zve32x_vlsseg4e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg4e32.v"     : begin
-            Zve32x_vlsseg4e32_v_cg.sample(ins);
+            Zve32x_vlsseg4e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg4e8.v"     : begin
-            Zve32x_vlsseg4e8_v_cg.sample(ins);
+            Zve32x_vlsseg4e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg5e16.v"     : begin
-            Zve32x_vlsseg5e16_v_cg.sample(ins);
+            Zve32x_vlsseg5e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg5e32.v"     : begin
-            Zve32x_vlsseg5e32_v_cg.sample(ins);
+            Zve32x_vlsseg5e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg5e8.v"     : begin
-            Zve32x_vlsseg5e8_v_cg.sample(ins);
+            Zve32x_vlsseg5e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg6e16.v"     : begin
-            Zve32x_vlsseg6e16_v_cg.sample(ins);
+            Zve32x_vlsseg6e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg6e32.v"     : begin
-            Zve32x_vlsseg6e32_v_cg.sample(ins);
+            Zve32x_vlsseg6e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg6e8.v"     : begin
-            Zve32x_vlsseg6e8_v_cg.sample(ins);
+            Zve32x_vlsseg6e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg7e16.v"     : begin
-            Zve32x_vlsseg7e16_v_cg.sample(ins);
+            Zve32x_vlsseg7e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg7e32.v"     : begin
-            Zve32x_vlsseg7e32_v_cg.sample(ins);
+            Zve32x_vlsseg7e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg7e8.v"     : begin
-            Zve32x_vlsseg7e8_v_cg.sample(ins);
+            Zve32x_vlsseg7e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg8e16.v"     : begin
-            Zve32x_vlsseg8e16_v_cg.sample(ins);
+            Zve32x_vlsseg8e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg8e32.v"     : begin
-            Zve32x_vlsseg8e32_v_cg.sample(ins);
+            Zve32x_vlsseg8e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vlsseg8e8.v"     : begin
-            Zve32x_vlsseg8e8_v_cg.sample(ins);
+            Zve32x_vlsseg8e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxei16.v"     : begin
-            Zve32x_vluxei16_v_cg.sample(ins);
+            Zve32x_vluxei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxei32.v"     : begin
-            Zve32x_vluxei32_v_cg.sample(ins);
+            Zve32x_vluxei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxei8.v"     : begin
-            Zve32x_vluxei8_v_cg.sample(ins);
+            Zve32x_vluxei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg2ei16.v"     : begin
-            Zve32x_vluxseg2ei16_v_cg.sample(ins);
+            Zve32x_vluxseg2ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg2ei32.v"     : begin
-            Zve32x_vluxseg2ei32_v_cg.sample(ins);
+            Zve32x_vluxseg2ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg2ei8.v"     : begin
-            Zve32x_vluxseg2ei8_v_cg.sample(ins);
+            Zve32x_vluxseg2ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg3ei16.v"     : begin
-            Zve32x_vluxseg3ei16_v_cg.sample(ins);
+            Zve32x_vluxseg3ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg3ei32.v"     : begin
-            Zve32x_vluxseg3ei32_v_cg.sample(ins);
+            Zve32x_vluxseg3ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg3ei8.v"     : begin
-            Zve32x_vluxseg3ei8_v_cg.sample(ins);
+            Zve32x_vluxseg3ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg4ei16.v"     : begin
-            Zve32x_vluxseg4ei16_v_cg.sample(ins);
+            Zve32x_vluxseg4ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg4ei32.v"     : begin
-            Zve32x_vluxseg4ei32_v_cg.sample(ins);
+            Zve32x_vluxseg4ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg4ei8.v"     : begin
-            Zve32x_vluxseg4ei8_v_cg.sample(ins);
+            Zve32x_vluxseg4ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg5ei16.v"     : begin
-            Zve32x_vluxseg5ei16_v_cg.sample(ins);
+            Zve32x_vluxseg5ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg5ei32.v"     : begin
-            Zve32x_vluxseg5ei32_v_cg.sample(ins);
+            Zve32x_vluxseg5ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg5ei8.v"     : begin
-            Zve32x_vluxseg5ei8_v_cg.sample(ins);
+            Zve32x_vluxseg5ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg6ei16.v"     : begin
-            Zve32x_vluxseg6ei16_v_cg.sample(ins);
+            Zve32x_vluxseg6ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg6ei32.v"     : begin
-            Zve32x_vluxseg6ei32_v_cg.sample(ins);
+            Zve32x_vluxseg6ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg6ei8.v"     : begin
-            Zve32x_vluxseg6ei8_v_cg.sample(ins);
+            Zve32x_vluxseg6ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg7ei16.v"     : begin
-            Zve32x_vluxseg7ei16_v_cg.sample(ins);
+            Zve32x_vluxseg7ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg7ei32.v"     : begin
-            Zve32x_vluxseg7ei32_v_cg.sample(ins);
+            Zve32x_vluxseg7ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg7ei8.v"     : begin
-            Zve32x_vluxseg7ei8_v_cg.sample(ins);
+            Zve32x_vluxseg7ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg8ei16.v"     : begin
-            Zve32x_vluxseg8ei16_v_cg.sample(ins);
+            Zve32x_vluxseg8ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg8ei32.v"     : begin
-            Zve32x_vluxseg8ei32_v_cg.sample(ins);
+            Zve32x_vluxseg8ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vluxseg8ei8.v"     : begin
-            Zve32x_vluxseg8ei8_v_cg.sample(ins);
+            Zve32x_vluxseg8ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vmacc.vv"     : begin
-            Zve32x_vmacc_vv_cg.sample(ins);
+            Zve32x_vmacc_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmacc.vx"     : begin
-            Zve32x_vmacc_vx_cg.sample(ins);
+            Zve32x_vmacc_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmadc.vi"     : begin
-            Zve32x_vmadc_vi_cg.sample(ins);
+            Zve32x_vmadc_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vmadc.vim"     : begin
-            Zve32x_vmadc_vim_cg.sample(ins);
+            Zve32x_vmadc_vim_sew@EFFEW@_cg.sample(ins);
         end
         "vmadc.vv"     : begin
-            Zve32x_vmadc_vv_cg.sample(ins);
+            Zve32x_vmadc_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmadc.vvm"     : begin
-            Zve32x_vmadc_vvm_cg.sample(ins);
+            Zve32x_vmadc_vvm_sew@EFFEW@_cg.sample(ins);
         end
         "vmadc.vx"     : begin
-            Zve32x_vmadc_vx_cg.sample(ins);
+            Zve32x_vmadc_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmadc.vxm"     : begin
-            Zve32x_vmadc_vxm_cg.sample(ins);
+            Zve32x_vmadc_vxm_sew@EFFEW@_cg.sample(ins);
         end
         "vmadd.vv"     : begin
-            Zve32x_vmadd_vv_cg.sample(ins);
+            Zve32x_vmadd_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmadd.vx"     : begin
-            Zve32x_vmadd_vx_cg.sample(ins);
+            Zve32x_vmadd_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmand.mm"     : begin
-            Zve32x_vmand_mm_cg.sample(ins);
+            Zve32x_vmand_mm_sew@EFFEW@_cg.sample(ins);
         end
         "vmandn.mm"     : begin
-            Zve32x_vmandn_mm_cg.sample(ins);
+            Zve32x_vmandn_mm_sew@EFFEW@_cg.sample(ins);
         end
         "vmax.vv"     : begin
-            Zve32x_vmax_vv_cg.sample(ins);
+            Zve32x_vmax_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmax.vx"     : begin
-            Zve32x_vmax_vx_cg.sample(ins);
+            Zve32x_vmax_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmaxu.vv"     : begin
-            Zve32x_vmaxu_vv_cg.sample(ins);
+            Zve32x_vmaxu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmaxu.vx"     : begin
-            Zve32x_vmaxu_vx_cg.sample(ins);
+            Zve32x_vmaxu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmerge.vim"     : begin
-            Zve32x_vmerge_vim_cg.sample(ins);
+            Zve32x_vmerge_vim_sew@EFFEW@_cg.sample(ins);
         end
         "vmerge.vvm"     : begin
-            Zve32x_vmerge_vvm_cg.sample(ins);
+            Zve32x_vmerge_vvm_sew@EFFEW@_cg.sample(ins);
         end
         "vmerge.vxm"     : begin
-            Zve32x_vmerge_vxm_cg.sample(ins);
+            Zve32x_vmerge_vxm_sew@EFFEW@_cg.sample(ins);
         end
         "vmin.vv"     : begin
-            Zve32x_vmin_vv_cg.sample(ins);
+            Zve32x_vmin_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmin.vx"     : begin
-            Zve32x_vmin_vx_cg.sample(ins);
+            Zve32x_vmin_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vminu.vv"     : begin
-            Zve32x_vminu_vv_cg.sample(ins);
+            Zve32x_vminu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vminu.vx"     : begin
-            Zve32x_vminu_vx_cg.sample(ins);
+            Zve32x_vminu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmnand.mm"     : begin
-            Zve32x_vmnand_mm_cg.sample(ins);
+            Zve32x_vmnand_mm_sew@EFFEW@_cg.sample(ins);
         end
         "vmnor.mm"     : begin
-            Zve32x_vmnor_mm_cg.sample(ins);
+            Zve32x_vmnor_mm_sew@EFFEW@_cg.sample(ins);
         end
         "vmor.mm"     : begin
-            Zve32x_vmor_mm_cg.sample(ins);
+            Zve32x_vmor_mm_sew@EFFEW@_cg.sample(ins);
         end
         "vmorn.mm"     : begin
-            Zve32x_vmorn_mm_cg.sample(ins);
+            Zve32x_vmorn_mm_sew@EFFEW@_cg.sample(ins);
         end
         "vmsbc.vv"     : begin
-            Zve32x_vmsbc_vv_cg.sample(ins);
+            Zve32x_vmsbc_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmsbc.vvm"     : begin
-            Zve32x_vmsbc_vvm_cg.sample(ins);
+            Zve32x_vmsbc_vvm_sew@EFFEW@_cg.sample(ins);
         end
         "vmsbc.vx"     : begin
-            Zve32x_vmsbc_vx_cg.sample(ins);
+            Zve32x_vmsbc_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmsbc.vxm"     : begin
-            Zve32x_vmsbc_vxm_cg.sample(ins);
+            Zve32x_vmsbc_vxm_sew@EFFEW@_cg.sample(ins);
         end
         "vmsbf.m"     : begin
-            Zve32x_vmsbf_m_cg.sample(ins);
+            Zve32x_vmsbf_m_sew@EFFEW@_cg.sample(ins);
         end
         "vmseq.vi"     : begin
-            Zve32x_vmseq_vi_cg.sample(ins);
+            Zve32x_vmseq_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vmseq.vv"     : begin
-            Zve32x_vmseq_vv_cg.sample(ins);
+            Zve32x_vmseq_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmseq.vx"     : begin
-            Zve32x_vmseq_vx_cg.sample(ins);
+            Zve32x_vmseq_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmsgt.vi"     : begin
-            Zve32x_vmsgt_vi_cg.sample(ins);
+            Zve32x_vmsgt_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vmsgt.vx"     : begin
-            Zve32x_vmsgt_vx_cg.sample(ins);
+            Zve32x_vmsgt_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmsgtu.vi"     : begin
-            Zve32x_vmsgtu_vi_cg.sample(ins);
+            Zve32x_vmsgtu_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vmsgtu.vx"     : begin
-            Zve32x_vmsgtu_vx_cg.sample(ins);
+            Zve32x_vmsgtu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmsif.m"     : begin
-            Zve32x_vmsif_m_cg.sample(ins);
+            Zve32x_vmsif_m_sew@EFFEW@_cg.sample(ins);
         end
         "vmsle.vi"     : begin
-            Zve32x_vmsle_vi_cg.sample(ins);
+            Zve32x_vmsle_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vmsle.vv"     : begin
-            Zve32x_vmsle_vv_cg.sample(ins);
+            Zve32x_vmsle_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmsle.vx"     : begin
-            Zve32x_vmsle_vx_cg.sample(ins);
+            Zve32x_vmsle_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmsleu.vi"     : begin
-            Zve32x_vmsleu_vi_cg.sample(ins);
+            Zve32x_vmsleu_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vmsleu.vv"     : begin
-            Zve32x_vmsleu_vv_cg.sample(ins);
+            Zve32x_vmsleu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmsleu.vx"     : begin
-            Zve32x_vmsleu_vx_cg.sample(ins);
+            Zve32x_vmsleu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmslt.vv"     : begin
-            Zve32x_vmslt_vv_cg.sample(ins);
+            Zve32x_vmslt_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmslt.vx"     : begin
-            Zve32x_vmslt_vx_cg.sample(ins);
+            Zve32x_vmslt_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmsltu.vv"     : begin
-            Zve32x_vmsltu_vv_cg.sample(ins);
+            Zve32x_vmsltu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmsltu.vx"     : begin
-            Zve32x_vmsltu_vx_cg.sample(ins);
+            Zve32x_vmsltu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmsne.vi"     : begin
-            Zve32x_vmsne_vi_cg.sample(ins);
+            Zve32x_vmsne_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vmsne.vv"     : begin
-            Zve32x_vmsne_vv_cg.sample(ins);
+            Zve32x_vmsne_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmsne.vx"     : begin
-            Zve32x_vmsne_vx_cg.sample(ins);
+            Zve32x_vmsne_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmsof.m"     : begin
-            Zve32x_vmsof_m_cg.sample(ins);
+            Zve32x_vmsof_m_sew@EFFEW@_cg.sample(ins);
         end
         "vmul.vv"     : begin
-            Zve32x_vmul_vv_cg.sample(ins);
+            Zve32x_vmul_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmul.vx"     : begin
-            Zve32x_vmul_vx_cg.sample(ins);
+            Zve32x_vmul_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmulh.vv"     : begin
-            Zve32x_vmulh_vv_cg.sample(ins);
+            Zve32x_vmulh_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmulh.vx"     : begin
-            Zve32x_vmulh_vx_cg.sample(ins);
+            Zve32x_vmulh_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmulhsu.vv"     : begin
-            Zve32x_vmulhsu_vv_cg.sample(ins);
+            Zve32x_vmulhsu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmulhsu.vx"     : begin
-            Zve32x_vmulhsu_vx_cg.sample(ins);
+            Zve32x_vmulhsu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmulhu.vv"     : begin
-            Zve32x_vmulhu_vv_cg.sample(ins);
+            Zve32x_vmulhu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmulhu.vx"     : begin
-            Zve32x_vmulhu_vx_cg.sample(ins);
+            Zve32x_vmulhu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vmv.s.x"     : begin
-            Zve32x_vmv_s_x_cg.sample(ins);
+            Zve32x_vmv_s_x_sew@EFFEW@_cg.sample(ins);
         end
         "vmv.v.i"     : begin
-            Zve32x_vmv_v_i_cg.sample(ins);
+            Zve32x_vmv_v_i_sew@EFFEW@_cg.sample(ins);
         end
         "vmv.v.v"     : begin
-            Zve32x_vmv_v_v_cg.sample(ins);
+            Zve32x_vmv_v_v_sew@EFFEW@_cg.sample(ins);
         end
         "vmv.v.x"     : begin
-            Zve32x_vmv_v_x_cg.sample(ins);
+            Zve32x_vmv_v_x_sew@EFFEW@_cg.sample(ins);
         end
         "vmv.x.s"     : begin
-            Zve32x_vmv_x_s_cg.sample(ins);
+            Zve32x_vmv_x_s_sew@EFFEW@_cg.sample(ins);
         end
         "vmv1r.v"     : begin
-            Zve32x_vmv1r_v_cg.sample(ins);
+            Zve32x_vmv1r_v_sew@EFFEW@_cg.sample(ins);
         end
         "vmv2r.v"     : begin
-            Zve32x_vmv2r_v_cg.sample(ins);
+            Zve32x_vmv2r_v_sew@EFFEW@_cg.sample(ins);
         end
         "vmv4r.v"     : begin
-            Zve32x_vmv4r_v_cg.sample(ins);
+            Zve32x_vmv4r_v_sew@EFFEW@_cg.sample(ins);
         end
         "vmv8r.v"     : begin
-            Zve32x_vmv8r_v_cg.sample(ins);
+            Zve32x_vmv8r_v_sew@EFFEW@_cg.sample(ins);
         end
         "vmxnor.mm"     : begin
-            Zve32x_vmxnor_mm_cg.sample(ins);
+            Zve32x_vmxnor_mm_sew@EFFEW@_cg.sample(ins);
         end
         "vmxor.mm"     : begin
-            Zve32x_vmxor_mm_cg.sample(ins);
+            Zve32x_vmxor_mm_sew@EFFEW@_cg.sample(ins);
+        end
+        "vnmsac.vv"     : begin
+            Zve32x_vnmsac_vv_sew@EFFEW@_cg.sample(ins);
+        end
+        "vnmsac.vx"     : begin
+            Zve32x_vnmsac_vx_sew@EFFEW@_cg.sample(ins);
+        end
+        "vnmsub.vv"     : begin
+            Zve32x_vnmsub_vv_sew@EFFEW@_cg.sample(ins);
+        end
+        "vnmsub.vx"     : begin
+            Zve32x_vnmsub_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vor.vi"     : begin
-            Zve32x_vor_vi_cg.sample(ins);
+            Zve32x_vor_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vor.vv"     : begin
-            Zve32x_vor_vv_cg.sample(ins);
+            Zve32x_vor_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vor.vx"     : begin
-            Zve32x_vor_vx_cg.sample(ins);
+            Zve32x_vor_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vredand.vs"     : begin
-            Zve32x_vredand_vs_cg.sample(ins);
+            Zve32x_vredand_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vredmax.vs"     : begin
-            Zve32x_vredmax_vs_cg.sample(ins);
+            Zve32x_vredmax_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vredmaxu.vs"     : begin
-            Zve32x_vredmaxu_vs_cg.sample(ins);
+            Zve32x_vredmaxu_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vredmin.vs"     : begin
-            Zve32x_vredmin_vs_cg.sample(ins);
+            Zve32x_vredmin_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vredminu.vs"     : begin
-            Zve32x_vredminu_vs_cg.sample(ins);
+            Zve32x_vredminu_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vredor.vs"     : begin
-            Zve32x_vredor_vs_cg.sample(ins);
+            Zve32x_vredor_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vredsum.vs"     : begin
-            Zve32x_vredsum_vs_cg.sample(ins);
+            Zve32x_vredsum_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vredxor.vs"     : begin
-            Zve32x_vredxor_vs_cg.sample(ins);
+            Zve32x_vredxor_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vrem.vv"     : begin
-            Zve32x_vrem_vv_cg.sample(ins);
+            Zve32x_vrem_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vrem.vx"     : begin
-            Zve32x_vrem_vx_cg.sample(ins);
+            Zve32x_vrem_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vremu.vv"     : begin
-            Zve32x_vremu_vv_cg.sample(ins);
+            Zve32x_vremu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vremu.vx"     : begin
-            Zve32x_vremu_vx_cg.sample(ins);
+            Zve32x_vremu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vrgather.vi"     : begin
-            Zve32x_vrgather_vi_cg.sample(ins);
+            Zve32x_vrgather_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vrgather.vv"     : begin
-            Zve32x_vrgather_vv_cg.sample(ins);
+            Zve32x_vrgather_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vrgather.vx"     : begin
-            Zve32x_vrgather_vx_cg.sample(ins);
+            Zve32x_vrgather_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vrgatherei16.vv"     : begin
-            Zve32x_vrgatherei16_vv_cg.sample(ins);
+            Zve32x_vrgatherei16_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vrsub.vi"     : begin
-            Zve32x_vrsub_vi_cg.sample(ins);
+            Zve32x_vrsub_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vrsub.vx"     : begin
-            Zve32x_vrsub_vx_cg.sample(ins);
+            Zve32x_vrsub_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vs1r.v"     : begin
-            Zve32x_vs1r_v_cg.sample(ins);
+            Zve32x_vs1r_v_sew@EFFEW@_cg.sample(ins);
         end
         "vs2r.v"     : begin
-            Zve32x_vs2r_v_cg.sample(ins);
+            Zve32x_vs2r_v_sew@EFFEW@_cg.sample(ins);
         end
         "vs4r.v"     : begin
-            Zve32x_vs4r_v_cg.sample(ins);
+            Zve32x_vs4r_v_sew@EFFEW@_cg.sample(ins);
         end
         "vs8r.v"     : begin
-            Zve32x_vs8r_v_cg.sample(ins);
+            Zve32x_vs8r_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsadd.vi"     : begin
-            Zve32x_vsadd_vi_cg.sample(ins);
+            Zve32x_vsadd_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vsadd.vv"     : begin
-            Zve32x_vsadd_vv_cg.sample(ins);
+            Zve32x_vsadd_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vsadd.vx"     : begin
-            Zve32x_vsadd_vx_cg.sample(ins);
+            Zve32x_vsadd_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vsaddu.vi"     : begin
-            Zve32x_vsaddu_vi_cg.sample(ins);
+            Zve32x_vsaddu_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vsaddu.vv"     : begin
-            Zve32x_vsaddu_vv_cg.sample(ins);
+            Zve32x_vsaddu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vsaddu.vx"     : begin
-            Zve32x_vsaddu_vx_cg.sample(ins);
+            Zve32x_vsaddu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vsbc.vvm"     : begin
-            Zve32x_vsbc_vvm_cg.sample(ins);
+            Zve32x_vsbc_vvm_sew@EFFEW@_cg.sample(ins);
         end
         "vsbc.vxm"     : begin
-            Zve32x_vsbc_vxm_cg.sample(ins);
+            Zve32x_vsbc_vxm_sew@EFFEW@_cg.sample(ins);
         end
         "vse16.v"     : begin
-            Zve32x_vse16_v_cg.sample(ins);
+            Zve32x_vse16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vse32.v"     : begin
-            Zve32x_vse32_v_cg.sample(ins);
+            Zve32x_vse32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vse8.v"     : begin
-            Zve32x_vse8_v_cg.sample(ins);
+            Zve32x_vse8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsext.vf2"     : begin
-            Zve32x_vsext_vf2_cg.sample(ins);
+            Zve32x_vsext_vf2_sew@EFFEW@_cg.sample(ins);
         end
         "vsext.vf4"     : begin
-            Zve32x_vsext_vf4_cg.sample(ins);
+            Zve32x_vsext_vf4_sew@EFFEW@_cg.sample(ins);
         end
         "vslide1down.vx"     : begin
-            Zve32x_vslide1down_vx_cg.sample(ins);
+            Zve32x_vslide1down_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vslide1up.vx"     : begin
-            Zve32x_vslide1up_vx_cg.sample(ins);
+            Zve32x_vslide1up_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vslidedown.vi"     : begin
-            Zve32x_vslidedown_vi_cg.sample(ins);
+            Zve32x_vslidedown_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vslidedown.vx"     : begin
-            Zve32x_vslidedown_vx_cg.sample(ins);
+            Zve32x_vslidedown_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vslideup.vi"     : begin
-            Zve32x_vslideup_vi_cg.sample(ins);
+            Zve32x_vslideup_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vslideup.vx"     : begin
-            Zve32x_vslideup_vx_cg.sample(ins);
+            Zve32x_vslideup_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vsll.vi"     : begin
-            Zve32x_vsll_vi_cg.sample(ins);
+            Zve32x_vsll_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vsll.vv"     : begin
-            Zve32x_vsll_vv_cg.sample(ins);
+            Zve32x_vsll_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vsll.vx"     : begin
-            Zve32x_vsll_vx_cg.sample(ins);
+            Zve32x_vsll_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vsm.v"     : begin
-            Zve32x_vsm_v_cg.sample(ins);
+            Zve32x_vsm_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsmul.vv"     : begin
-            Zve32x_vsmul_vv_cg.sample(ins);
+            Zve32x_vsmul_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vsmul.vx"     : begin
-            Zve32x_vsmul_vx_cg.sample(ins);
+            Zve32x_vsmul_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxei16.v"     : begin
-            Zve32x_vsoxei16_v_cg.sample(ins);
+            Zve32x_vsoxei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxei32.v"     : begin
-            Zve32x_vsoxei32_v_cg.sample(ins);
+            Zve32x_vsoxei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxei8.v"     : begin
-            Zve32x_vsoxei8_v_cg.sample(ins);
+            Zve32x_vsoxei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg2ei16.v"     : begin
-            Zve32x_vsoxseg2ei16_v_cg.sample(ins);
+            Zve32x_vsoxseg2ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg2ei32.v"     : begin
-            Zve32x_vsoxseg2ei32_v_cg.sample(ins);
+            Zve32x_vsoxseg2ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg2ei8.v"     : begin
-            Zve32x_vsoxseg2ei8_v_cg.sample(ins);
+            Zve32x_vsoxseg2ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg3ei16.v"     : begin
-            Zve32x_vsoxseg3ei16_v_cg.sample(ins);
+            Zve32x_vsoxseg3ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg3ei32.v"     : begin
-            Zve32x_vsoxseg3ei32_v_cg.sample(ins);
+            Zve32x_vsoxseg3ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg3ei8.v"     : begin
-            Zve32x_vsoxseg3ei8_v_cg.sample(ins);
+            Zve32x_vsoxseg3ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg4ei16.v"     : begin
-            Zve32x_vsoxseg4ei16_v_cg.sample(ins);
+            Zve32x_vsoxseg4ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg4ei32.v"     : begin
-            Zve32x_vsoxseg4ei32_v_cg.sample(ins);
+            Zve32x_vsoxseg4ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg4ei8.v"     : begin
-            Zve32x_vsoxseg4ei8_v_cg.sample(ins);
+            Zve32x_vsoxseg4ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg5ei16.v"     : begin
-            Zve32x_vsoxseg5ei16_v_cg.sample(ins);
+            Zve32x_vsoxseg5ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg5ei32.v"     : begin
-            Zve32x_vsoxseg5ei32_v_cg.sample(ins);
+            Zve32x_vsoxseg5ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg5ei8.v"     : begin
-            Zve32x_vsoxseg5ei8_v_cg.sample(ins);
+            Zve32x_vsoxseg5ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg6ei16.v"     : begin
-            Zve32x_vsoxseg6ei16_v_cg.sample(ins);
+            Zve32x_vsoxseg6ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg6ei32.v"     : begin
-            Zve32x_vsoxseg6ei32_v_cg.sample(ins);
+            Zve32x_vsoxseg6ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg6ei8.v"     : begin
-            Zve32x_vsoxseg6ei8_v_cg.sample(ins);
+            Zve32x_vsoxseg6ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg7ei16.v"     : begin
-            Zve32x_vsoxseg7ei16_v_cg.sample(ins);
+            Zve32x_vsoxseg7ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg7ei32.v"     : begin
-            Zve32x_vsoxseg7ei32_v_cg.sample(ins);
+            Zve32x_vsoxseg7ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg7ei8.v"     : begin
-            Zve32x_vsoxseg7ei8_v_cg.sample(ins);
+            Zve32x_vsoxseg7ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg8ei16.v"     : begin
-            Zve32x_vsoxseg8ei16_v_cg.sample(ins);
+            Zve32x_vsoxseg8ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg8ei32.v"     : begin
-            Zve32x_vsoxseg8ei32_v_cg.sample(ins);
+            Zve32x_vsoxseg8ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsoxseg8ei8.v"     : begin
-            Zve32x_vsoxseg8ei8_v_cg.sample(ins);
+            Zve32x_vsoxseg8ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsra.vi"     : begin
-            Zve32x_vsra_vi_cg.sample(ins);
+            Zve32x_vsra_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vsra.vv"     : begin
-            Zve32x_vsra_vv_cg.sample(ins);
+            Zve32x_vsra_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vsra.vx"     : begin
-            Zve32x_vsra_vx_cg.sample(ins);
+            Zve32x_vsra_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vsrl.vi"     : begin
-            Zve32x_vsrl_vi_cg.sample(ins);
+            Zve32x_vsrl_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vsrl.vv"     : begin
-            Zve32x_vsrl_vv_cg.sample(ins);
+            Zve32x_vsrl_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vsrl.vx"     : begin
-            Zve32x_vsrl_vx_cg.sample(ins);
+            Zve32x_vsrl_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vsse16.v"     : begin
-            Zve32x_vsse16_v_cg.sample(ins);
+            Zve32x_vsse16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsse32.v"     : begin
-            Zve32x_vsse32_v_cg.sample(ins);
+            Zve32x_vsse32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsse8.v"     : begin
-            Zve32x_vsse8_v_cg.sample(ins);
+            Zve32x_vsse8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg2e16.v"     : begin
-            Zve32x_vsseg2e16_v_cg.sample(ins);
+            Zve32x_vsseg2e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg2e32.v"     : begin
-            Zve32x_vsseg2e32_v_cg.sample(ins);
+            Zve32x_vsseg2e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg2e8.v"     : begin
-            Zve32x_vsseg2e8_v_cg.sample(ins);
+            Zve32x_vsseg2e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg3e16.v"     : begin
-            Zve32x_vsseg3e16_v_cg.sample(ins);
+            Zve32x_vsseg3e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg3e32.v"     : begin
-            Zve32x_vsseg3e32_v_cg.sample(ins);
+            Zve32x_vsseg3e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg3e8.v"     : begin
-            Zve32x_vsseg3e8_v_cg.sample(ins);
+            Zve32x_vsseg3e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg4e16.v"     : begin
-            Zve32x_vsseg4e16_v_cg.sample(ins);
+            Zve32x_vsseg4e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg4e32.v"     : begin
-            Zve32x_vsseg4e32_v_cg.sample(ins);
+            Zve32x_vsseg4e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg4e8.v"     : begin
-            Zve32x_vsseg4e8_v_cg.sample(ins);
+            Zve32x_vsseg4e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg5e16.v"     : begin
-            Zve32x_vsseg5e16_v_cg.sample(ins);
+            Zve32x_vsseg5e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg5e32.v"     : begin
-            Zve32x_vsseg5e32_v_cg.sample(ins);
+            Zve32x_vsseg5e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg5e8.v"     : begin
-            Zve32x_vsseg5e8_v_cg.sample(ins);
+            Zve32x_vsseg5e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg6e16.v"     : begin
-            Zve32x_vsseg6e16_v_cg.sample(ins);
+            Zve32x_vsseg6e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg6e32.v"     : begin
-            Zve32x_vsseg6e32_v_cg.sample(ins);
+            Zve32x_vsseg6e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg6e8.v"     : begin
-            Zve32x_vsseg6e8_v_cg.sample(ins);
+            Zve32x_vsseg6e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg7e16.v"     : begin
-            Zve32x_vsseg7e16_v_cg.sample(ins);
+            Zve32x_vsseg7e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg7e32.v"     : begin
-            Zve32x_vsseg7e32_v_cg.sample(ins);
+            Zve32x_vsseg7e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg7e8.v"     : begin
-            Zve32x_vsseg7e8_v_cg.sample(ins);
+            Zve32x_vsseg7e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg8e16.v"     : begin
-            Zve32x_vsseg8e16_v_cg.sample(ins);
+            Zve32x_vsseg8e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg8e32.v"     : begin
-            Zve32x_vsseg8e32_v_cg.sample(ins);
+            Zve32x_vsseg8e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsseg8e8.v"     : begin
-            Zve32x_vsseg8e8_v_cg.sample(ins);
+            Zve32x_vsseg8e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssra.vi"     : begin
-            Zve32x_vssra_vi_cg.sample(ins);
+            Zve32x_vssra_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vssra.vv"     : begin
-            Zve32x_vssra_vv_cg.sample(ins);
+            Zve32x_vssra_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vssra.vx"     : begin
-            Zve32x_vssra_vx_cg.sample(ins);
+            Zve32x_vssra_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vssrl.vi"     : begin
-            Zve32x_vssrl_vi_cg.sample(ins);
+            Zve32x_vssrl_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vssrl.vv"     : begin
-            Zve32x_vssrl_vv_cg.sample(ins);
+            Zve32x_vssrl_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vssrl.vx"     : begin
-            Zve32x_vssrl_vx_cg.sample(ins);
+            Zve32x_vssrl_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg2e16.v"     : begin
-            Zve32x_vssseg2e16_v_cg.sample(ins);
+            Zve32x_vssseg2e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg2e32.v"     : begin
-            Zve32x_vssseg2e32_v_cg.sample(ins);
+            Zve32x_vssseg2e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg2e8.v"     : begin
-            Zve32x_vssseg2e8_v_cg.sample(ins);
+            Zve32x_vssseg2e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg3e16.v"     : begin
-            Zve32x_vssseg3e16_v_cg.sample(ins);
+            Zve32x_vssseg3e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg3e32.v"     : begin
-            Zve32x_vssseg3e32_v_cg.sample(ins);
+            Zve32x_vssseg3e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg3e8.v"     : begin
-            Zve32x_vssseg3e8_v_cg.sample(ins);
+            Zve32x_vssseg3e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg4e16.v"     : begin
-            Zve32x_vssseg4e16_v_cg.sample(ins);
+            Zve32x_vssseg4e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg4e32.v"     : begin
-            Zve32x_vssseg4e32_v_cg.sample(ins);
+            Zve32x_vssseg4e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg4e8.v"     : begin
-            Zve32x_vssseg4e8_v_cg.sample(ins);
+            Zve32x_vssseg4e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg5e16.v"     : begin
-            Zve32x_vssseg5e16_v_cg.sample(ins);
+            Zve32x_vssseg5e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg5e32.v"     : begin
-            Zve32x_vssseg5e32_v_cg.sample(ins);
+            Zve32x_vssseg5e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg5e8.v"     : begin
-            Zve32x_vssseg5e8_v_cg.sample(ins);
+            Zve32x_vssseg5e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg6e16.v"     : begin
-            Zve32x_vssseg6e16_v_cg.sample(ins);
+            Zve32x_vssseg6e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg6e32.v"     : begin
-            Zve32x_vssseg6e32_v_cg.sample(ins);
+            Zve32x_vssseg6e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg6e8.v"     : begin
-            Zve32x_vssseg6e8_v_cg.sample(ins);
+            Zve32x_vssseg6e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg7e16.v"     : begin
-            Zve32x_vssseg7e16_v_cg.sample(ins);
+            Zve32x_vssseg7e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg7e32.v"     : begin
-            Zve32x_vssseg7e32_v_cg.sample(ins);
+            Zve32x_vssseg7e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg7e8.v"     : begin
-            Zve32x_vssseg7e8_v_cg.sample(ins);
+            Zve32x_vssseg7e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg8e16.v"     : begin
-            Zve32x_vssseg8e16_v_cg.sample(ins);
+            Zve32x_vssseg8e16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg8e32.v"     : begin
-            Zve32x_vssseg8e32_v_cg.sample(ins);
+            Zve32x_vssseg8e32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssseg8e8.v"     : begin
-            Zve32x_vssseg8e8_v_cg.sample(ins);
+            Zve32x_vssseg8e8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vssub.vv"     : begin
-            Zve32x_vssub_vv_cg.sample(ins);
+            Zve32x_vssub_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vssub.vx"     : begin
-            Zve32x_vssub_vx_cg.sample(ins);
+            Zve32x_vssub_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vssubu.vv"     : begin
-            Zve32x_vssubu_vv_cg.sample(ins);
+            Zve32x_vssubu_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vssubu.vx"     : begin
-            Zve32x_vssubu_vx_cg.sample(ins);
+            Zve32x_vssubu_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vsub.vv"     : begin
-            Zve32x_vsub_vv_cg.sample(ins);
+            Zve32x_vsub_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vsub.vx"     : begin
-            Zve32x_vsub_vx_cg.sample(ins);
+            Zve32x_vsub_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxei16.v"     : begin
-            Zve32x_vsuxei16_v_cg.sample(ins);
+            Zve32x_vsuxei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxei32.v"     : begin
-            Zve32x_vsuxei32_v_cg.sample(ins);
+            Zve32x_vsuxei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxei8.v"     : begin
-            Zve32x_vsuxei8_v_cg.sample(ins);
+            Zve32x_vsuxei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg2ei16.v"     : begin
-            Zve32x_vsuxseg2ei16_v_cg.sample(ins);
+            Zve32x_vsuxseg2ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg2ei32.v"     : begin
-            Zve32x_vsuxseg2ei32_v_cg.sample(ins);
+            Zve32x_vsuxseg2ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg2ei8.v"     : begin
-            Zve32x_vsuxseg2ei8_v_cg.sample(ins);
+            Zve32x_vsuxseg2ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg3ei16.v"     : begin
-            Zve32x_vsuxseg3ei16_v_cg.sample(ins);
+            Zve32x_vsuxseg3ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg3ei32.v"     : begin
-            Zve32x_vsuxseg3ei32_v_cg.sample(ins);
+            Zve32x_vsuxseg3ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg3ei8.v"     : begin
-            Zve32x_vsuxseg3ei8_v_cg.sample(ins);
+            Zve32x_vsuxseg3ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg4ei16.v"     : begin
-            Zve32x_vsuxseg4ei16_v_cg.sample(ins);
+            Zve32x_vsuxseg4ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg4ei32.v"     : begin
-            Zve32x_vsuxseg4ei32_v_cg.sample(ins);
+            Zve32x_vsuxseg4ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg4ei8.v"     : begin
-            Zve32x_vsuxseg4ei8_v_cg.sample(ins);
+            Zve32x_vsuxseg4ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg5ei16.v"     : begin
-            Zve32x_vsuxseg5ei16_v_cg.sample(ins);
+            Zve32x_vsuxseg5ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg5ei32.v"     : begin
-            Zve32x_vsuxseg5ei32_v_cg.sample(ins);
+            Zve32x_vsuxseg5ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg5ei8.v"     : begin
-            Zve32x_vsuxseg5ei8_v_cg.sample(ins);
+            Zve32x_vsuxseg5ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg6ei16.v"     : begin
-            Zve32x_vsuxseg6ei16_v_cg.sample(ins);
+            Zve32x_vsuxseg6ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg6ei32.v"     : begin
-            Zve32x_vsuxseg6ei32_v_cg.sample(ins);
+            Zve32x_vsuxseg6ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg6ei8.v"     : begin
-            Zve32x_vsuxseg6ei8_v_cg.sample(ins);
+            Zve32x_vsuxseg6ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg7ei16.v"     : begin
-            Zve32x_vsuxseg7ei16_v_cg.sample(ins);
+            Zve32x_vsuxseg7ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg7ei32.v"     : begin
-            Zve32x_vsuxseg7ei32_v_cg.sample(ins);
+            Zve32x_vsuxseg7ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg7ei8.v"     : begin
-            Zve32x_vsuxseg7ei8_v_cg.sample(ins);
+            Zve32x_vsuxseg7ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg8ei16.v"     : begin
-            Zve32x_vsuxseg8ei16_v_cg.sample(ins);
+            Zve32x_vsuxseg8ei16_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg8ei32.v"     : begin
-            Zve32x_vsuxseg8ei32_v_cg.sample(ins);
+            Zve32x_vsuxseg8ei32_v_sew@EFFEW@_cg.sample(ins);
         end
         "vsuxseg8ei8.v"     : begin
-            Zve32x_vsuxseg8ei8_v_cg.sample(ins);
+            Zve32x_vsuxseg8ei8_v_sew@EFFEW@_cg.sample(ins);
         end
         "vxor.vi"     : begin
-            Zve32x_vxor_vi_cg.sample(ins);
+            Zve32x_vxor_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vxor.vv"     : begin
-            Zve32x_vxor_vv_cg.sample(ins);
+            Zve32x_vxor_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vxor.vx"     : begin
-            Zve32x_vxor_vx_cg.sample(ins);
+            Zve32x_vxor_vx_sew@EFFEW@_cg.sample(ins);
         end
         "vzext.vf2"     : begin
-            Zve32x_vzext_vf2_cg.sample(ins);
+            Zve32x_vzext_vf2_sew@EFFEW@_cg.sample(ins);
         end
         "vzext.vf4"     : begin
-            Zve32x_vzext_vf4_cg.sample(ins);
+            Zve32x_vzext_vf4_sew@EFFEW@_cg.sample(ins);
         end
             default: ; // a case needs at least one item, and some configurations select none
         endcase

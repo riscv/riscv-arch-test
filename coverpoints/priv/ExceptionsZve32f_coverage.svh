@@ -12,7 +12,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_EXCEPTIONSZVE32F
-covergroup ExceptionsZve32f_vfadd_vf_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfadd_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -173,7 +173,7 @@ covergroup ExceptionsZve32f_vfadd_vf_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfadd_vv_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfadd_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -334,7 +334,7 @@ covergroup ExceptionsZve32f_vfadd_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfclass_v_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfclass_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -495,7 +495,7 @@ covergroup ExceptionsZve32f_vfclass_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfcvt_f_x_v_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfcvt_f_x_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -656,7 +656,7 @@ covergroup ExceptionsZve32f_vfcvt_f_x_v_sew32__cg with function sample(ins_t ins
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfcvt_f_xu_v_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfcvt_f_xu_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -817,7 +817,7 @@ covergroup ExceptionsZve32f_vfcvt_f_xu_v_sew32__cg with function sample(ins_t in
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfcvt_rtz_x_f_v_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfcvt_rtz_x_f_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -978,7 +978,7 @@ covergroup ExceptionsZve32f_vfcvt_rtz_x_f_v_sew32__cg with function sample(ins_t
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfcvt_rtz_xu_f_v_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfcvt_rtz_xu_f_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -1139,7 +1139,7 @@ covergroup ExceptionsZve32f_vfcvt_rtz_xu_f_v_sew32__cg with function sample(ins_
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfcvt_x_f_v_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfcvt_x_f_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -1300,7 +1300,7 @@ covergroup ExceptionsZve32f_vfcvt_x_f_v_sew32__cg with function sample(ins_t ins
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfcvt_xu_f_v_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfcvt_xu_f_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -1461,7 +1461,7 @@ covergroup ExceptionsZve32f_vfcvt_xu_f_v_sew32__cg with function sample(ins_t in
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfdiv_vf_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfdiv_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -1622,7 +1622,7 @@ covergroup ExceptionsZve32f_vfdiv_vf_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfdiv_vv_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfdiv_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -1783,7 +1783,7 @@ covergroup ExceptionsZve32f_vfdiv_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfmacc_vf_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfmacc_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -1944,7 +1944,7 @@ covergroup ExceptionsZve32f_vfmacc_vf_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfmacc_vv_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfmacc_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -2105,7 +2105,7 @@ covergroup ExceptionsZve32f_vfmacc_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfmadd_vf_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfmadd_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -2266,7 +2266,7 @@ covergroup ExceptionsZve32f_vfmadd_vf_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfmadd_vv_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfmadd_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -2427,7 +2427,7 @@ covergroup ExceptionsZve32f_vfmadd_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfmax_vf_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfmax_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -2588,7 +2588,7 @@ covergroup ExceptionsZve32f_vfmax_vf_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfmax_vv_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfmax_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -2749,7 +2749,7 @@ covergroup ExceptionsZve32f_vfmax_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfmerge_vfm_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfmerge_vfm_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -2910,7 +2910,7 @@ covergroup ExceptionsZve32f_vfmerge_vfm_sew32__cg with function sample(ins_t ins
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfmin_vf_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfmin_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -3071,7 +3071,7 @@ covergroup ExceptionsZve32f_vfmin_vf_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfmin_vv_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfmin_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -3232,7 +3232,7 @@ covergroup ExceptionsZve32f_vfmin_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfmsac_vf_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfmsac_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -3393,7 +3393,7 @@ covergroup ExceptionsZve32f_vfmsac_vf_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfmsac_vv_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfmsac_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -3554,7 +3554,7 @@ covergroup ExceptionsZve32f_vfmsac_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfmsub_vf_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfmsub_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -3715,7 +3715,7 @@ covergroup ExceptionsZve32f_vfmsub_vf_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfmsub_vv_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfmsub_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -3876,7 +3876,7 @@ covergroup ExceptionsZve32f_vfmsub_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfmul_vf_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfmul_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -4037,7 +4037,7 @@ covergroup ExceptionsZve32f_vfmul_vf_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfmul_vv_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfmul_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -4198,7 +4198,7 @@ covergroup ExceptionsZve32f_vfmul_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfmv_f_s_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfmv_f_s_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -4359,7 +4359,7 @@ covergroup ExceptionsZve32f_vfmv_f_s_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfmv_s_f_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfmv_s_f_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -4520,7 +4520,7 @@ covergroup ExceptionsZve32f_vfmv_s_f_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfmv_v_f_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfmv_v_f_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -4681,7 +4681,7 @@ covergroup ExceptionsZve32f_vfmv_v_f_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfncvt_rtz_x_f_w_sew16__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfncvt_rtz_x_f_w_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -4842,7 +4842,7 @@ covergroup ExceptionsZve32f_vfncvt_rtz_x_f_w_sew16__cg with function sample(ins_
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfncvt_rtz_xu_f_w_sew16__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfncvt_rtz_xu_f_w_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -5003,7 +5003,7 @@ covergroup ExceptionsZve32f_vfncvt_rtz_xu_f_w_sew16__cg with function sample(ins
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfncvt_x_f_w_sew16__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfncvt_x_f_w_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -5164,7 +5164,7 @@ covergroup ExceptionsZve32f_vfncvt_x_f_w_sew16__cg with function sample(ins_t in
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfncvt_xu_f_w_sew16__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfncvt_xu_f_w_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -5325,7 +5325,7 @@ covergroup ExceptionsZve32f_vfncvt_xu_f_w_sew16__cg with function sample(ins_t i
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfnmacc_vf_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfnmacc_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -5486,7 +5486,7 @@ covergroup ExceptionsZve32f_vfnmacc_vf_sew32__cg with function sample(ins_t ins)
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfnmacc_vv_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfnmacc_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -5647,7 +5647,7 @@ covergroup ExceptionsZve32f_vfnmacc_vv_sew32__cg with function sample(ins_t ins)
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfnmadd_vf_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfnmadd_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -5808,7 +5808,7 @@ covergroup ExceptionsZve32f_vfnmadd_vf_sew32__cg with function sample(ins_t ins)
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfnmadd_vv_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfnmadd_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -5969,7 +5969,7 @@ covergroup ExceptionsZve32f_vfnmadd_vv_sew32__cg with function sample(ins_t ins)
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfnmsac_vf_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfnmsac_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -6130,7 +6130,7 @@ covergroup ExceptionsZve32f_vfnmsac_vf_sew32__cg with function sample(ins_t ins)
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfnmsac_vv_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfnmsac_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -6291,7 +6291,7 @@ covergroup ExceptionsZve32f_vfnmsac_vv_sew32__cg with function sample(ins_t ins)
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfnmsub_vf_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfnmsub_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -6452,7 +6452,7 @@ covergroup ExceptionsZve32f_vfnmsub_vf_sew32__cg with function sample(ins_t ins)
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfnmsub_vv_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfnmsub_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -6613,7 +6613,7 @@ covergroup ExceptionsZve32f_vfnmsub_vv_sew32__cg with function sample(ins_t ins)
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfrdiv_vf_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfrdiv_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -6774,7 +6774,7 @@ covergroup ExceptionsZve32f_vfrdiv_vf_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfrec7_v_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfrec7_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -6935,7 +6935,7 @@ covergroup ExceptionsZve32f_vfrec7_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfredmax_vs_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfredmax_vs_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -7096,7 +7096,7 @@ covergroup ExceptionsZve32f_vfredmax_vs_sew32__cg with function sample(ins_t ins
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfredmin_vs_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfredmin_vs_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -7257,7 +7257,7 @@ covergroup ExceptionsZve32f_vfredmin_vs_sew32__cg with function sample(ins_t ins
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfredosum_vs_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfredosum_vs_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -7418,7 +7418,7 @@ covergroup ExceptionsZve32f_vfredosum_vs_sew32__cg with function sample(ins_t in
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfredusum_vs_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfredusum_vs_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -7579,7 +7579,7 @@ covergroup ExceptionsZve32f_vfredusum_vs_sew32__cg with function sample(ins_t in
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfrsqrt7_v_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfrsqrt7_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -7740,7 +7740,7 @@ covergroup ExceptionsZve32f_vfrsqrt7_v_sew32__cg with function sample(ins_t ins)
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfrsub_vf_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfrsub_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -7901,7 +7901,7 @@ covergroup ExceptionsZve32f_vfrsub_vf_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfsgnj_vf_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfsgnj_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -8062,7 +8062,7 @@ covergroup ExceptionsZve32f_vfsgnj_vf_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfsgnj_vv_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfsgnj_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -8223,7 +8223,7 @@ covergroup ExceptionsZve32f_vfsgnj_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfsgnjn_vf_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfsgnjn_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -8384,7 +8384,7 @@ covergroup ExceptionsZve32f_vfsgnjn_vf_sew32__cg with function sample(ins_t ins)
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfsgnjn_vv_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfsgnjn_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -8545,7 +8545,7 @@ covergroup ExceptionsZve32f_vfsgnjn_vv_sew32__cg with function sample(ins_t ins)
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfsgnjx_vf_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfsgnjx_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -8706,7 +8706,7 @@ covergroup ExceptionsZve32f_vfsgnjx_vf_sew32__cg with function sample(ins_t ins)
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfsgnjx_vv_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfsgnjx_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -8867,7 +8867,7 @@ covergroup ExceptionsZve32f_vfsgnjx_vv_sew32__cg with function sample(ins_t ins)
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfslide1down_vf_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfslide1down_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -9028,7 +9028,7 @@ covergroup ExceptionsZve32f_vfslide1down_vf_sew32__cg with function sample(ins_t
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfslide1up_vf_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfslide1up_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -9189,7 +9189,7 @@ covergroup ExceptionsZve32f_vfslide1up_vf_sew32__cg with function sample(ins_t i
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfsqrt_v_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfsqrt_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -9350,7 +9350,7 @@ covergroup ExceptionsZve32f_vfsqrt_v_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfsub_vf_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfsub_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -9511,7 +9511,7 @@ covergroup ExceptionsZve32f_vfsub_vf_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfsub_vv_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfsub_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -9672,7 +9672,7 @@ covergroup ExceptionsZve32f_vfsub_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfwcvt_f_x_v_sew16__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfwcvt_f_x_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -9833,7 +9833,7 @@ covergroup ExceptionsZve32f_vfwcvt_f_x_v_sew16__cg with function sample(ins_t in
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vfwcvt_f_xu_v_sew16__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vfwcvt_f_xu_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -9994,7 +9994,7 @@ covergroup ExceptionsZve32f_vfwcvt_f_xu_v_sew16__cg with function sample(ins_t i
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vmfeq_vf_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vmfeq_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -10155,7 +10155,7 @@ covergroup ExceptionsZve32f_vmfeq_vf_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vmfeq_vv_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vmfeq_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -10316,7 +10316,7 @@ covergroup ExceptionsZve32f_vmfeq_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vmfge_vf_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vmfge_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -10477,7 +10477,7 @@ covergroup ExceptionsZve32f_vmfge_vf_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vmfgt_vf_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vmfgt_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -10638,7 +10638,7 @@ covergroup ExceptionsZve32f_vmfgt_vf_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vmfle_vf_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vmfle_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -10799,7 +10799,7 @@ covergroup ExceptionsZve32f_vmfle_vf_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vmfle_vv_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vmfle_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -10960,7 +10960,7 @@ covergroup ExceptionsZve32f_vmfle_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vmflt_vf_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vmflt_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -11121,7 +11121,7 @@ covergroup ExceptionsZve32f_vmflt_vf_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vmflt_vv_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vmflt_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -11282,7 +11282,7 @@ covergroup ExceptionsZve32f_vmflt_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vmfne_vf_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vmfne_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -11443,7 +11443,7 @@ covergroup ExceptionsZve32f_vmfne_vf_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve32f_vmfne_vv_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve32f_vmfne_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -11621,22 +11621,22 @@ function void exceptionszve32f_sample(int hart, int issue, ins_t ins);
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
         "vfncvt.rtz.x.f.w"     : begin
-            ExceptionsZve32f_vfncvt_rtz_x_f_w_cg.sample(ins);
+            ExceptionsZve32f_vfncvt_rtz_x_f_w_sew@EFFEW@_cg.sample(ins);
         end
         "vfncvt.rtz.xu.f.w"     : begin
-            ExceptionsZve32f_vfncvt_rtz_xu_f_w_cg.sample(ins);
+            ExceptionsZve32f_vfncvt_rtz_xu_f_w_sew@EFFEW@_cg.sample(ins);
         end
         "vfncvt.x.f.w"     : begin
-            ExceptionsZve32f_vfncvt_x_f_w_cg.sample(ins);
+            ExceptionsZve32f_vfncvt_x_f_w_sew@EFFEW@_cg.sample(ins);
         end
         "vfncvt.xu.f.w"     : begin
-            ExceptionsZve32f_vfncvt_xu_f_w_cg.sample(ins);
+            ExceptionsZve32f_vfncvt_xu_f_w_sew@EFFEW@_cg.sample(ins);
         end
         "vfwcvt.f.x.v"     : begin
-            ExceptionsZve32f_vfwcvt_f_x_v_cg.sample(ins);
+            ExceptionsZve32f_vfwcvt_f_x_v_sew@EFFEW@_cg.sample(ins);
         end
         "vfwcvt.f.xu.v"     : begin
-            ExceptionsZve32f_vfwcvt_f_xu_v_cg.sample(ins);
+            ExceptionsZve32f_vfwcvt_f_xu_v_sew@EFFEW@_cg.sample(ins);
         end
             default: ; // a case needs at least one item, and some configurations select none
         endcase
@@ -11648,202 +11648,202 @@ function void exceptionszve32f_sample(int hart, int issue, ins_t ins);
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
         "vfadd.vf"     : begin
-            ExceptionsZve32f_vfadd_vf_cg.sample(ins);
+            ExceptionsZve32f_vfadd_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfadd.vv"     : begin
-            ExceptionsZve32f_vfadd_vv_cg.sample(ins);
+            ExceptionsZve32f_vfadd_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfclass.v"     : begin
-            ExceptionsZve32f_vfclass_v_cg.sample(ins);
+            ExceptionsZve32f_vfclass_v_sew@EFFEW@_cg.sample(ins);
         end
         "vfcvt.f.x.v"     : begin
-            ExceptionsZve32f_vfcvt_f_x_v_cg.sample(ins);
+            ExceptionsZve32f_vfcvt_f_x_v_sew@EFFEW@_cg.sample(ins);
         end
         "vfcvt.f.xu.v"     : begin
-            ExceptionsZve32f_vfcvt_f_xu_v_cg.sample(ins);
+            ExceptionsZve32f_vfcvt_f_xu_v_sew@EFFEW@_cg.sample(ins);
         end
         "vfcvt.rtz.x.f.v"     : begin
-            ExceptionsZve32f_vfcvt_rtz_x_f_v_cg.sample(ins);
+            ExceptionsZve32f_vfcvt_rtz_x_f_v_sew@EFFEW@_cg.sample(ins);
         end
         "vfcvt.rtz.xu.f.v"     : begin
-            ExceptionsZve32f_vfcvt_rtz_xu_f_v_cg.sample(ins);
+            ExceptionsZve32f_vfcvt_rtz_xu_f_v_sew@EFFEW@_cg.sample(ins);
         end
         "vfcvt.x.f.v"     : begin
-            ExceptionsZve32f_vfcvt_x_f_v_cg.sample(ins);
+            ExceptionsZve32f_vfcvt_x_f_v_sew@EFFEW@_cg.sample(ins);
         end
         "vfcvt.xu.f.v"     : begin
-            ExceptionsZve32f_vfcvt_xu_f_v_cg.sample(ins);
+            ExceptionsZve32f_vfcvt_xu_f_v_sew@EFFEW@_cg.sample(ins);
         end
         "vfdiv.vf"     : begin
-            ExceptionsZve32f_vfdiv_vf_cg.sample(ins);
+            ExceptionsZve32f_vfdiv_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfdiv.vv"     : begin
-            ExceptionsZve32f_vfdiv_vv_cg.sample(ins);
+            ExceptionsZve32f_vfdiv_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfmacc.vf"     : begin
-            ExceptionsZve32f_vfmacc_vf_cg.sample(ins);
+            ExceptionsZve32f_vfmacc_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfmacc.vv"     : begin
-            ExceptionsZve32f_vfmacc_vv_cg.sample(ins);
+            ExceptionsZve32f_vfmacc_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfmadd.vf"     : begin
-            ExceptionsZve32f_vfmadd_vf_cg.sample(ins);
+            ExceptionsZve32f_vfmadd_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfmadd.vv"     : begin
-            ExceptionsZve32f_vfmadd_vv_cg.sample(ins);
+            ExceptionsZve32f_vfmadd_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfmax.vf"     : begin
-            ExceptionsZve32f_vfmax_vf_cg.sample(ins);
+            ExceptionsZve32f_vfmax_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfmax.vv"     : begin
-            ExceptionsZve32f_vfmax_vv_cg.sample(ins);
+            ExceptionsZve32f_vfmax_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfmerge.vfm"     : begin
-            ExceptionsZve32f_vfmerge_vfm_cg.sample(ins);
+            ExceptionsZve32f_vfmerge_vfm_sew@EFFEW@_cg.sample(ins);
         end
         "vfmin.vf"     : begin
-            ExceptionsZve32f_vfmin_vf_cg.sample(ins);
+            ExceptionsZve32f_vfmin_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfmin.vv"     : begin
-            ExceptionsZve32f_vfmin_vv_cg.sample(ins);
+            ExceptionsZve32f_vfmin_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfmsac.vf"     : begin
-            ExceptionsZve32f_vfmsac_vf_cg.sample(ins);
+            ExceptionsZve32f_vfmsac_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfmsac.vv"     : begin
-            ExceptionsZve32f_vfmsac_vv_cg.sample(ins);
+            ExceptionsZve32f_vfmsac_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfmsub.vf"     : begin
-            ExceptionsZve32f_vfmsub_vf_cg.sample(ins);
+            ExceptionsZve32f_vfmsub_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfmsub.vv"     : begin
-            ExceptionsZve32f_vfmsub_vv_cg.sample(ins);
+            ExceptionsZve32f_vfmsub_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfmul.vf"     : begin
-            ExceptionsZve32f_vfmul_vf_cg.sample(ins);
+            ExceptionsZve32f_vfmul_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfmul.vv"     : begin
-            ExceptionsZve32f_vfmul_vv_cg.sample(ins);
+            ExceptionsZve32f_vfmul_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfmv.f.s"     : begin
-            ExceptionsZve32f_vfmv_f_s_cg.sample(ins);
+            ExceptionsZve32f_vfmv_f_s_sew@EFFEW@_cg.sample(ins);
         end
         "vfmv.s.f"     : begin
-            ExceptionsZve32f_vfmv_s_f_cg.sample(ins);
+            ExceptionsZve32f_vfmv_s_f_sew@EFFEW@_cg.sample(ins);
         end
         "vfmv.v.f"     : begin
-            ExceptionsZve32f_vfmv_v_f_cg.sample(ins);
+            ExceptionsZve32f_vfmv_v_f_sew@EFFEW@_cg.sample(ins);
         end
         "vfnmacc.vf"     : begin
-            ExceptionsZve32f_vfnmacc_vf_cg.sample(ins);
+            ExceptionsZve32f_vfnmacc_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfnmacc.vv"     : begin
-            ExceptionsZve32f_vfnmacc_vv_cg.sample(ins);
+            ExceptionsZve32f_vfnmacc_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfnmadd.vf"     : begin
-            ExceptionsZve32f_vfnmadd_vf_cg.sample(ins);
+            ExceptionsZve32f_vfnmadd_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfnmadd.vv"     : begin
-            ExceptionsZve32f_vfnmadd_vv_cg.sample(ins);
+            ExceptionsZve32f_vfnmadd_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfnmsac.vf"     : begin
-            ExceptionsZve32f_vfnmsac_vf_cg.sample(ins);
+            ExceptionsZve32f_vfnmsac_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfnmsac.vv"     : begin
-            ExceptionsZve32f_vfnmsac_vv_cg.sample(ins);
+            ExceptionsZve32f_vfnmsac_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfnmsub.vf"     : begin
-            ExceptionsZve32f_vfnmsub_vf_cg.sample(ins);
+            ExceptionsZve32f_vfnmsub_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfnmsub.vv"     : begin
-            ExceptionsZve32f_vfnmsub_vv_cg.sample(ins);
+            ExceptionsZve32f_vfnmsub_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfrdiv.vf"     : begin
-            ExceptionsZve32f_vfrdiv_vf_cg.sample(ins);
+            ExceptionsZve32f_vfrdiv_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfrec7.v"     : begin
-            ExceptionsZve32f_vfrec7_v_cg.sample(ins);
+            ExceptionsZve32f_vfrec7_v_sew@EFFEW@_cg.sample(ins);
         end
         "vfredmax.vs"     : begin
-            ExceptionsZve32f_vfredmax_vs_cg.sample(ins);
+            ExceptionsZve32f_vfredmax_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vfredmin.vs"     : begin
-            ExceptionsZve32f_vfredmin_vs_cg.sample(ins);
+            ExceptionsZve32f_vfredmin_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vfredosum.vs"     : begin
-            ExceptionsZve32f_vfredosum_vs_cg.sample(ins);
+            ExceptionsZve32f_vfredosum_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vfredusum.vs"     : begin
-            ExceptionsZve32f_vfredusum_vs_cg.sample(ins);
+            ExceptionsZve32f_vfredusum_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vfrsqrt7.v"     : begin
-            ExceptionsZve32f_vfrsqrt7_v_cg.sample(ins);
+            ExceptionsZve32f_vfrsqrt7_v_sew@EFFEW@_cg.sample(ins);
         end
         "vfrsub.vf"     : begin
-            ExceptionsZve32f_vfrsub_vf_cg.sample(ins);
+            ExceptionsZve32f_vfrsub_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfsgnj.vf"     : begin
-            ExceptionsZve32f_vfsgnj_vf_cg.sample(ins);
+            ExceptionsZve32f_vfsgnj_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfsgnj.vv"     : begin
-            ExceptionsZve32f_vfsgnj_vv_cg.sample(ins);
+            ExceptionsZve32f_vfsgnj_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfsgnjn.vf"     : begin
-            ExceptionsZve32f_vfsgnjn_vf_cg.sample(ins);
+            ExceptionsZve32f_vfsgnjn_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfsgnjn.vv"     : begin
-            ExceptionsZve32f_vfsgnjn_vv_cg.sample(ins);
+            ExceptionsZve32f_vfsgnjn_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfsgnjx.vf"     : begin
-            ExceptionsZve32f_vfsgnjx_vf_cg.sample(ins);
+            ExceptionsZve32f_vfsgnjx_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfsgnjx.vv"     : begin
-            ExceptionsZve32f_vfsgnjx_vv_cg.sample(ins);
+            ExceptionsZve32f_vfsgnjx_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vfslide1down.vf"     : begin
-            ExceptionsZve32f_vfslide1down_vf_cg.sample(ins);
+            ExceptionsZve32f_vfslide1down_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfslide1up.vf"     : begin
-            ExceptionsZve32f_vfslide1up_vf_cg.sample(ins);
+            ExceptionsZve32f_vfslide1up_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfsqrt.v"     : begin
-            ExceptionsZve32f_vfsqrt_v_cg.sample(ins);
+            ExceptionsZve32f_vfsqrt_v_sew@EFFEW@_cg.sample(ins);
         end
         "vfsub.vf"     : begin
-            ExceptionsZve32f_vfsub_vf_cg.sample(ins);
+            ExceptionsZve32f_vfsub_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vfsub.vv"     : begin
-            ExceptionsZve32f_vfsub_vv_cg.sample(ins);
+            ExceptionsZve32f_vfsub_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmfeq.vf"     : begin
-            ExceptionsZve32f_vmfeq_vf_cg.sample(ins);
+            ExceptionsZve32f_vmfeq_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vmfeq.vv"     : begin
-            ExceptionsZve32f_vmfeq_vv_cg.sample(ins);
+            ExceptionsZve32f_vmfeq_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmfge.vf"     : begin
-            ExceptionsZve32f_vmfge_vf_cg.sample(ins);
+            ExceptionsZve32f_vmfge_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vmfgt.vf"     : begin
-            ExceptionsZve32f_vmfgt_vf_cg.sample(ins);
+            ExceptionsZve32f_vmfgt_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vmfle.vf"     : begin
-            ExceptionsZve32f_vmfle_vf_cg.sample(ins);
+            ExceptionsZve32f_vmfle_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vmfle.vv"     : begin
-            ExceptionsZve32f_vmfle_vv_cg.sample(ins);
+            ExceptionsZve32f_vmfle_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmflt.vf"     : begin
-            ExceptionsZve32f_vmflt_vf_cg.sample(ins);
+            ExceptionsZve32f_vmflt_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vmflt.vv"     : begin
-            ExceptionsZve32f_vmflt_vv_cg.sample(ins);
+            ExceptionsZve32f_vmflt_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vmfne.vf"     : begin
-            ExceptionsZve32f_vmfne_vf_cg.sample(ins);
+            ExceptionsZve32f_vmfne_vf_sew@EFFEW@_cg.sample(ins);
         end
         "vmfne.vv"     : begin
-            ExceptionsZve32f_vmfne_vv_cg.sample(ins);
+            ExceptionsZve32f_vmfne_vv_sew@EFFEW@_cg.sample(ins);
         end
             default: ; // a case needs at least one item, and some configurations select none
         endcase

@@ -718,12 +718,16 @@
     ExceptionsZve32x_vnclipu_wv_sew8_cg = new(); ExceptionsZve32x_vnclipu_wv_cg.set_inst_name("obj_ExceptionsZve32x_vnclipu_wv");
     ExceptionsZve32x_vnclipu_wx_sew16_cg = new(); ExceptionsZve32x_vnclipu_wx_cg.set_inst_name("obj_ExceptionsZve32x_vnclipu_wx");
     ExceptionsZve32x_vnclipu_wx_sew8_cg = new(); ExceptionsZve32x_vnclipu_wx_cg.set_inst_name("obj_ExceptionsZve32x_vnclipu_wx");
+    ExceptionsZve32x_vnmsac_vv_sew32_cg = new(); ExceptionsZve32x_vnmsac_vv_cg.set_inst_name("obj_ExceptionsZve32x_vnmsac_vv");
     ExceptionsZve32x_vnmsac_vv_sew16_cg = new(); ExceptionsZve32x_vnmsac_vv_cg.set_inst_name("obj_ExceptionsZve32x_vnmsac_vv");
     ExceptionsZve32x_vnmsac_vv_sew8_cg = new(); ExceptionsZve32x_vnmsac_vv_cg.set_inst_name("obj_ExceptionsZve32x_vnmsac_vv");
+    ExceptionsZve32x_vnmsac_vx_sew32_cg = new(); ExceptionsZve32x_vnmsac_vx_cg.set_inst_name("obj_ExceptionsZve32x_vnmsac_vx");
     ExceptionsZve32x_vnmsac_vx_sew16_cg = new(); ExceptionsZve32x_vnmsac_vx_cg.set_inst_name("obj_ExceptionsZve32x_vnmsac_vx");
     ExceptionsZve32x_vnmsac_vx_sew8_cg = new(); ExceptionsZve32x_vnmsac_vx_cg.set_inst_name("obj_ExceptionsZve32x_vnmsac_vx");
+    ExceptionsZve32x_vnmsub_vv_sew32_cg = new(); ExceptionsZve32x_vnmsub_vv_cg.set_inst_name("obj_ExceptionsZve32x_vnmsub_vv");
     ExceptionsZve32x_vnmsub_vv_sew16_cg = new(); ExceptionsZve32x_vnmsub_vv_cg.set_inst_name("obj_ExceptionsZve32x_vnmsub_vv");
     ExceptionsZve32x_vnmsub_vv_sew8_cg = new(); ExceptionsZve32x_vnmsub_vv_cg.set_inst_name("obj_ExceptionsZve32x_vnmsub_vv");
+    ExceptionsZve32x_vnmsub_vx_sew32_cg = new(); ExceptionsZve32x_vnmsub_vx_cg.set_inst_name("obj_ExceptionsZve32x_vnmsub_vx");
     ExceptionsZve32x_vnmsub_vx_sew16_cg = new(); ExceptionsZve32x_vnmsub_vx_cg.set_inst_name("obj_ExceptionsZve32x_vnmsub_vx");
     ExceptionsZve32x_vnmsub_vx_sew8_cg = new(); ExceptionsZve32x_vnmsub_vx_cg.set_inst_name("obj_ExceptionsZve32x_vnmsub_vx");
     ExceptionsZve32x_vnsra_wi_sew16_cg = new(); ExceptionsZve32x_vnsra_wi_cg.set_inst_name("obj_ExceptionsZve32x_vnsra_wi");
@@ -794,6 +798,7 @@
     ExceptionsZve32x_vrgather_vx_sew8_cg = new(); ExceptionsZve32x_vrgather_vx_cg.set_inst_name("obj_ExceptionsZve32x_vrgather_vx");
     ExceptionsZve32x_vrgatherei16_vv_sew32_cg = new(); ExceptionsZve32x_vrgatherei16_vv_cg.set_inst_name("obj_ExceptionsZve32x_vrgatherei16_vv");
     ExceptionsZve32x_vrgatherei16_vv_sew16_cg = new(); ExceptionsZve32x_vrgatherei16_vv_cg.set_inst_name("obj_ExceptionsZve32x_vrgatherei16_vv");
+    ExceptionsZve32x_vrgatherei16_vv_sew8_cg = new(); ExceptionsZve32x_vrgatherei16_vv_cg.set_inst_name("obj_ExceptionsZve32x_vrgatherei16_vv");
     ExceptionsZve32x_vrsub_vi_sew32_cg = new(); ExceptionsZve32x_vrsub_vi_cg.set_inst_name("obj_ExceptionsZve32x_vrsub_vi");
     ExceptionsZve32x_vrsub_vi_sew16_cg = new(); ExceptionsZve32x_vrsub_vi_cg.set_inst_name("obj_ExceptionsZve32x_vrsub_vi");
     ExceptionsZve32x_vrsub_vi_sew8_cg = new(); ExceptionsZve32x_vrsub_vi_cg.set_inst_name("obj_ExceptionsZve32x_vrsub_vi");

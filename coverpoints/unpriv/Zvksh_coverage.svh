@@ -12,7 +12,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_ZVKSH
-covergroup Zvksh_vsm3c_vi_sew32__cg with function sample(ins_t ins);
+covergroup Zvksh_vsm3c_vi_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsm3c.vi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -268,7 +268,7 @@ covergroup Zvksh_vsm3c_vi_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zvksh_vsm3me_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zvksh_vsm3me_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1_egs8
@@ -685,10 +685,10 @@ function void zvksh_sample(int hart, int issue, ins_t ins);
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
         "vsm3c.vi"     : begin
-            Zvksh_vsm3c_vi_cg.sample(ins);
+            Zvksh_vsm3c_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vsm3me.vv"     : begin
-            Zvksh_vsm3me_vv_cg.sample(ins);
+            Zvksh_vsm3me_vv_sew@EFFEW@_cg.sample(ins);
         end
             default: ; // a case needs at least one item, and some configurations select none
         endcase

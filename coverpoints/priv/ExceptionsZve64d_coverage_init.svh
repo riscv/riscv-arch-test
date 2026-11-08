@@ -36,6 +36,8 @@
     ExceptionsZve64d_vfmsub_vv_sew64_cg = new(); ExceptionsZve64d_vfmsub_vv_cg.set_inst_name("obj_ExceptionsZve64d_vfmsub_vv");
     ExceptionsZve64d_vfmul_vf_sew64_cg = new(); ExceptionsZve64d_vfmul_vf_cg.set_inst_name("obj_ExceptionsZve64d_vfmul_vf");
     ExceptionsZve64d_vfmul_vv_sew64_cg = new(); ExceptionsZve64d_vfmul_vv_cg.set_inst_name("obj_ExceptionsZve64d_vfmul_vv");
+    ExceptionsZve64d_vfmv_f_s_sew64_cg = new(); ExceptionsZve64d_vfmv_f_s_cg.set_inst_name("obj_ExceptionsZve64d_vfmv_f_s");
+    ExceptionsZve64d_vfmv_s_f_sew64_cg = new(); ExceptionsZve64d_vfmv_s_f_cg.set_inst_name("obj_ExceptionsZve64d_vfmv_s_f");
     ExceptionsZve64d_vfmv_v_f_sew64_cg = new(); ExceptionsZve64d_vfmv_v_f_cg.set_inst_name("obj_ExceptionsZve64d_vfmv_v_f");
     ExceptionsZve64d_vfncvt_f_f_w_sew32_cg = new(); ExceptionsZve64d_vfncvt_f_f_w_cg.set_inst_name("obj_ExceptionsZve64d_vfncvt_f_f_w");
     ExceptionsZve64d_vfncvt_rod_f_f_w_sew32_cg = new(); ExceptionsZve64d_vfncvt_rod_f_f_w_cg.set_inst_name("obj_ExceptionsZve64d_vfncvt_rod_f_f_w");
@@ -65,6 +67,8 @@
     ExceptionsZve64d_vfsgnjn_vv_sew64_cg = new(); ExceptionsZve64d_vfsgnjn_vv_cg.set_inst_name("obj_ExceptionsZve64d_vfsgnjn_vv");
     ExceptionsZve64d_vfsgnjx_vf_sew64_cg = new(); ExceptionsZve64d_vfsgnjx_vf_cg.set_inst_name("obj_ExceptionsZve64d_vfsgnjx_vf");
     ExceptionsZve64d_vfsgnjx_vv_sew64_cg = new(); ExceptionsZve64d_vfsgnjx_vv_cg.set_inst_name("obj_ExceptionsZve64d_vfsgnjx_vv");
+    ExceptionsZve64d_vfslide1down_vf_sew64_cg = new(); ExceptionsZve64d_vfslide1down_vf_cg.set_inst_name("obj_ExceptionsZve64d_vfslide1down_vf");
+    ExceptionsZve64d_vfslide1up_vf_sew64_cg = new(); ExceptionsZve64d_vfslide1up_vf_cg.set_inst_name("obj_ExceptionsZve64d_vfslide1up_vf");
     ExceptionsZve64d_vfsqrt_v_sew64_cg = new(); ExceptionsZve64d_vfsqrt_v_cg.set_inst_name("obj_ExceptionsZve64d_vfsqrt_v");
     ExceptionsZve64d_vfsub_vf_sew64_cg = new(); ExceptionsZve64d_vfsub_vf_cg.set_inst_name("obj_ExceptionsZve64d_vfsub_vf");
     ExceptionsZve64d_vfsub_vv_sew64_cg = new(); ExceptionsZve64d_vfsub_vv_cg.set_inst_name("obj_ExceptionsZve64d_vfsub_vv");
@@ -72,6 +76,7 @@
     ExceptionsZve64d_vfwadd_vv_sew32_cg = new(); ExceptionsZve64d_vfwadd_vv_cg.set_inst_name("obj_ExceptionsZve64d_vfwadd_vv");
     ExceptionsZve64d_vfwadd_wf_sew32_cg = new(); ExceptionsZve64d_vfwadd_wf_cg.set_inst_name("obj_ExceptionsZve64d_vfwadd_wf");
     ExceptionsZve64d_vfwadd_wv_sew32_cg = new(); ExceptionsZve64d_vfwadd_wv_cg.set_inst_name("obj_ExceptionsZve64d_vfwadd_wv");
+    ExceptionsZve64d_vfwcvt_f_f_v_sew32_cg = new(); ExceptionsZve64d_vfwcvt_f_f_v_cg.set_inst_name("obj_ExceptionsZve64d_vfwcvt_f_f_v");
     ExceptionsZve64d_vfwcvt_f_x_v_sew32_cg = new(); ExceptionsZve64d_vfwcvt_f_x_v_cg.set_inst_name("obj_ExceptionsZve64d_vfwcvt_f_x_v");
     ExceptionsZve64d_vfwcvt_f_xu_v_sew32_cg = new(); ExceptionsZve64d_vfwcvt_f_xu_v_cg.set_inst_name("obj_ExceptionsZve64d_vfwcvt_f_xu_v");
     ExceptionsZve64d_vfwmacc_vf_sew32_cg = new(); ExceptionsZve64d_vfwmacc_vf_cg.set_inst_name("obj_ExceptionsZve64d_vfwmacc_vf");

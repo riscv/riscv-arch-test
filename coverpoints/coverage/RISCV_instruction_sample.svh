@@ -2808,13 +2808,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-        "vloxei64.v"     : begin
-            ins.add_vd(0);
-            ins.add_rs1(1);
-            ins.add_vs2(2);
-            ins.add_vm(3);
-            ins.add_v0();
-        end
         "vloxei8.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -2830,13 +2823,6 @@
             ins.add_v0();
         end
         "vloxseg2ei32.v"     : begin
-            ins.add_vd(0);
-            ins.add_rs1(1);
-            ins.add_vs2(2);
-            ins.add_vm(3);
-            ins.add_v0();
-        end
-        "vloxseg2ei64.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vs2(2);
@@ -2864,13 +2850,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-        "vloxseg3ei64.v"     : begin
-            ins.add_vd(0);
-            ins.add_rs1(1);
-            ins.add_vs2(2);
-            ins.add_vm(3);
-            ins.add_v0();
-        end
         "vloxseg3ei8.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -2886,13 +2865,6 @@
             ins.add_v0();
         end
         "vloxseg4ei32.v"     : begin
-            ins.add_vd(0);
-            ins.add_rs1(1);
-            ins.add_vs2(2);
-            ins.add_vm(3);
-            ins.add_v0();
-        end
-        "vloxseg4ei64.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vs2(2);
@@ -2920,13 +2892,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-        "vloxseg5ei64.v"     : begin
-            ins.add_vd(0);
-            ins.add_rs1(1);
-            ins.add_vs2(2);
-            ins.add_vm(3);
-            ins.add_v0();
-        end
         "vloxseg5ei8.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -2942,13 +2907,6 @@
             ins.add_v0();
         end
         "vloxseg6ei32.v"     : begin
-            ins.add_vd(0);
-            ins.add_rs1(1);
-            ins.add_vs2(2);
-            ins.add_vm(3);
-            ins.add_v0();
-        end
-        "vloxseg6ei64.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vs2(2);
@@ -2976,13 +2934,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-        "vloxseg7ei64.v"     : begin
-            ins.add_vd(0);
-            ins.add_rs1(1);
-            ins.add_vs2(2);
-            ins.add_vm(3);
-            ins.add_v0();
-        end
         "vloxseg7ei8.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -2998,13 +2949,6 @@
             ins.add_v0();
         end
         "vloxseg8ei32.v"     : begin
-            ins.add_vd(0);
-            ins.add_rs1(1);
-            ins.add_vs2(2);
-            ins.add_vm(3);
-            ins.add_v0();
-        end
-        "vloxseg8ei64.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vs2(2);
@@ -3592,13 +3536,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-        "vluxei64.v"     : begin
-            ins.add_vd(0);
-            ins.add_rs1(1);
-            ins.add_vs2(2);
-            ins.add_vm(3);
-            ins.add_v0();
-        end
         "vluxei8.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -3614,13 +3551,6 @@
             ins.add_v0();
         end
         "vluxseg2ei32.v"     : begin
-            ins.add_vd(0);
-            ins.add_rs1(1);
-            ins.add_vs2(2);
-            ins.add_vm(3);
-            ins.add_v0();
-        end
-        "vluxseg2ei64.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vs2(2);
@@ -3648,13 +3578,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-        "vluxseg3ei64.v"     : begin
-            ins.add_vd(0);
-            ins.add_rs1(1);
-            ins.add_vs2(2);
-            ins.add_vm(3);
-            ins.add_v0();
-        end
         "vluxseg3ei8.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -3670,13 +3593,6 @@
             ins.add_v0();
         end
         "vluxseg4ei32.v"     : begin
-            ins.add_vd(0);
-            ins.add_rs1(1);
-            ins.add_vs2(2);
-            ins.add_vm(3);
-            ins.add_v0();
-        end
-        "vluxseg4ei64.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vs2(2);
@@ -3704,13 +3620,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-        "vluxseg5ei64.v"     : begin
-            ins.add_vd(0);
-            ins.add_rs1(1);
-            ins.add_vs2(2);
-            ins.add_vm(3);
-            ins.add_v0();
-        end
         "vluxseg5ei8.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -3726,13 +3635,6 @@
             ins.add_v0();
         end
         "vluxseg6ei32.v"     : begin
-            ins.add_vd(0);
-            ins.add_rs1(1);
-            ins.add_vs2(2);
-            ins.add_vm(3);
-            ins.add_v0();
-        end
-        "vluxseg6ei64.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vs2(2);
@@ -3760,13 +3662,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-        "vluxseg7ei64.v"     : begin
-            ins.add_vd(0);
-            ins.add_rs1(1);
-            ins.add_vs2(2);
-            ins.add_vm(3);
-            ins.add_v0();
-        end
         "vluxseg7ei8.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -3782,13 +3677,6 @@
             ins.add_v0();
         end
         "vluxseg8ei32.v"     : begin
-            ins.add_vd(0);
-            ins.add_rs1(1);
-            ins.add_vs2(2);
-            ins.add_vm(3);
-            ins.add_v0();
-        end
-        "vluxseg8ei64.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vs2(2);
@@ -4874,13 +4762,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-        "vsoxei64.v"     : begin
-            ins.add_vs3(0);
-            ins.add_rs1(1);
-            ins.add_vs2(2);
-            ins.add_vm(3);
-            ins.add_v0();
-        end
         "vsoxei8.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -4896,13 +4777,6 @@
             ins.add_v0();
         end
         "vsoxseg2ei32.v"     : begin
-            ins.add_vs3(0);
-            ins.add_rs1(1);
-            ins.add_vs2(2);
-            ins.add_vm(3);
-            ins.add_v0();
-        end
-        "vsoxseg2ei64.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
             ins.add_vs2(2);
@@ -4930,13 +4804,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-        "vsoxseg3ei64.v"     : begin
-            ins.add_vs3(0);
-            ins.add_rs1(1);
-            ins.add_vs2(2);
-            ins.add_vm(3);
-            ins.add_v0();
-        end
         "vsoxseg3ei8.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -4952,13 +4819,6 @@
             ins.add_v0();
         end
         "vsoxseg4ei32.v"     : begin
-            ins.add_vs3(0);
-            ins.add_rs1(1);
-            ins.add_vs2(2);
-            ins.add_vm(3);
-            ins.add_v0();
-        end
-        "vsoxseg4ei64.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
             ins.add_vs2(2);
@@ -4986,13 +4846,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-        "vsoxseg5ei64.v"     : begin
-            ins.add_vs3(0);
-            ins.add_rs1(1);
-            ins.add_vs2(2);
-            ins.add_vm(3);
-            ins.add_v0();
-        end
         "vsoxseg5ei8.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -5008,13 +4861,6 @@
             ins.add_v0();
         end
         "vsoxseg6ei32.v"     : begin
-            ins.add_vs3(0);
-            ins.add_rs1(1);
-            ins.add_vs2(2);
-            ins.add_vm(3);
-            ins.add_v0();
-        end
-        "vsoxseg6ei64.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
             ins.add_vs2(2);
@@ -5042,13 +4888,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-        "vsoxseg7ei64.v"     : begin
-            ins.add_vs3(0);
-            ins.add_rs1(1);
-            ins.add_vs2(2);
-            ins.add_vm(3);
-            ins.add_v0();
-        end
         "vsoxseg7ei8.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -5064,13 +4903,6 @@
             ins.add_v0();
         end
         "vsoxseg8ei32.v"     : begin
-            ins.add_vs3(0);
-            ins.add_rs1(1);
-            ins.add_vs2(2);
-            ins.add_vm(3);
-            ins.add_v0();
-        end
-        "vsoxseg8ei64.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
             ins.add_vs2(2);
@@ -5616,13 +5448,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-        "vsuxei64.v"     : begin
-            ins.add_vs3(0);
-            ins.add_rs1(1);
-            ins.add_vs2(2);
-            ins.add_vm(3);
-            ins.add_v0();
-        end
         "vsuxei8.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -5638,13 +5463,6 @@
             ins.add_v0();
         end
         "vsuxseg2ei32.v"     : begin
-            ins.add_vs3(0);
-            ins.add_rs1(1);
-            ins.add_vs2(2);
-            ins.add_vm(3);
-            ins.add_v0();
-        end
-        "vsuxseg2ei64.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
             ins.add_vs2(2);
@@ -5672,13 +5490,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-        "vsuxseg3ei64.v"     : begin
-            ins.add_vs3(0);
-            ins.add_rs1(1);
-            ins.add_vs2(2);
-            ins.add_vm(3);
-            ins.add_v0();
-        end
         "vsuxseg3ei8.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -5694,13 +5505,6 @@
             ins.add_v0();
         end
         "vsuxseg4ei32.v"     : begin
-            ins.add_vs3(0);
-            ins.add_rs1(1);
-            ins.add_vs2(2);
-            ins.add_vm(3);
-            ins.add_v0();
-        end
-        "vsuxseg4ei64.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
             ins.add_vs2(2);
@@ -5728,13 +5532,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-        "vsuxseg5ei64.v"     : begin
-            ins.add_vs3(0);
-            ins.add_rs1(1);
-            ins.add_vs2(2);
-            ins.add_vm(3);
-            ins.add_v0();
-        end
         "vsuxseg5ei8.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -5750,13 +5547,6 @@
             ins.add_v0();
         end
         "vsuxseg6ei32.v"     : begin
-            ins.add_vs3(0);
-            ins.add_rs1(1);
-            ins.add_vs2(2);
-            ins.add_vm(3);
-            ins.add_v0();
-        end
-        "vsuxseg6ei64.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
             ins.add_vs2(2);
@@ -5784,13 +5574,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-        "vsuxseg7ei64.v"     : begin
-            ins.add_vs3(0);
-            ins.add_rs1(1);
-            ins.add_vs2(2);
-            ins.add_vm(3);
-            ins.add_v0();
-        end
         "vsuxseg7ei8.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -5806,13 +5589,6 @@
             ins.add_v0();
         end
         "vsuxseg8ei32.v"     : begin
-            ins.add_vs3(0);
-            ins.add_rs1(1);
-            ins.add_vs2(2);
-            ins.add_vm(3);
-            ins.add_v0();
-        end
-        "vsuxseg8ei64.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
             ins.add_vs2(2);
@@ -6238,6 +6014,230 @@
         "unzip"     : begin
             ins.add_rd(0);
             ins.add_rs1(1);
+        end
+        "vloxei64.v"     : begin
+            ins.add_vd(0);
+            ins.add_rs1(1);
+            ins.add_vs2(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vloxseg2ei64.v"     : begin
+            ins.add_vd(0);
+            ins.add_rs1(1);
+            ins.add_vs2(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vloxseg3ei64.v"     : begin
+            ins.add_vd(0);
+            ins.add_rs1(1);
+            ins.add_vs2(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vloxseg4ei64.v"     : begin
+            ins.add_vd(0);
+            ins.add_rs1(1);
+            ins.add_vs2(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vloxseg5ei64.v"     : begin
+            ins.add_vd(0);
+            ins.add_rs1(1);
+            ins.add_vs2(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vloxseg6ei64.v"     : begin
+            ins.add_vd(0);
+            ins.add_rs1(1);
+            ins.add_vs2(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vloxseg7ei64.v"     : begin
+            ins.add_vd(0);
+            ins.add_rs1(1);
+            ins.add_vs2(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vloxseg8ei64.v"     : begin
+            ins.add_vd(0);
+            ins.add_rs1(1);
+            ins.add_vs2(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vluxei64.v"     : begin
+            ins.add_vd(0);
+            ins.add_rs1(1);
+            ins.add_vs2(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vluxseg2ei64.v"     : begin
+            ins.add_vd(0);
+            ins.add_rs1(1);
+            ins.add_vs2(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vluxseg3ei64.v"     : begin
+            ins.add_vd(0);
+            ins.add_rs1(1);
+            ins.add_vs2(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vluxseg4ei64.v"     : begin
+            ins.add_vd(0);
+            ins.add_rs1(1);
+            ins.add_vs2(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vluxseg5ei64.v"     : begin
+            ins.add_vd(0);
+            ins.add_rs1(1);
+            ins.add_vs2(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vluxseg6ei64.v"     : begin
+            ins.add_vd(0);
+            ins.add_rs1(1);
+            ins.add_vs2(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vluxseg7ei64.v"     : begin
+            ins.add_vd(0);
+            ins.add_rs1(1);
+            ins.add_vs2(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vluxseg8ei64.v"     : begin
+            ins.add_vd(0);
+            ins.add_rs1(1);
+            ins.add_vs2(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vsoxei64.v"     : begin
+            ins.add_vs3(0);
+            ins.add_rs1(1);
+            ins.add_vs2(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vsoxseg2ei64.v"     : begin
+            ins.add_vs3(0);
+            ins.add_rs1(1);
+            ins.add_vs2(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vsoxseg3ei64.v"     : begin
+            ins.add_vs3(0);
+            ins.add_rs1(1);
+            ins.add_vs2(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vsoxseg4ei64.v"     : begin
+            ins.add_vs3(0);
+            ins.add_rs1(1);
+            ins.add_vs2(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vsoxseg5ei64.v"     : begin
+            ins.add_vs3(0);
+            ins.add_rs1(1);
+            ins.add_vs2(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vsoxseg6ei64.v"     : begin
+            ins.add_vs3(0);
+            ins.add_rs1(1);
+            ins.add_vs2(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vsoxseg7ei64.v"     : begin
+            ins.add_vs3(0);
+            ins.add_rs1(1);
+            ins.add_vs2(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vsoxseg8ei64.v"     : begin
+            ins.add_vs3(0);
+            ins.add_rs1(1);
+            ins.add_vs2(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vsuxei64.v"     : begin
+            ins.add_vs3(0);
+            ins.add_rs1(1);
+            ins.add_vs2(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vsuxseg2ei64.v"     : begin
+            ins.add_vs3(0);
+            ins.add_rs1(1);
+            ins.add_vs2(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vsuxseg3ei64.v"     : begin
+            ins.add_vs3(0);
+            ins.add_rs1(1);
+            ins.add_vs2(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vsuxseg4ei64.v"     : begin
+            ins.add_vs3(0);
+            ins.add_rs1(1);
+            ins.add_vs2(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vsuxseg5ei64.v"     : begin
+            ins.add_vs3(0);
+            ins.add_rs1(1);
+            ins.add_vs2(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vsuxseg6ei64.v"     : begin
+            ins.add_vs3(0);
+            ins.add_rs1(1);
+            ins.add_vs2(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vsuxseg7ei64.v"     : begin
+            ins.add_vs3(0);
+            ins.add_rs1(1);
+            ins.add_vs2(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vsuxseg8ei64.v"     : begin
+            ins.add_vs3(0);
+            ins.add_rs1(1);
+            ins.add_vs2(2);
+            ins.add_vm(3);
+            ins.add_v0();
         end
         "zip"     : begin
             ins.add_rd(0);

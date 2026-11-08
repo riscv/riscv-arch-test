@@ -688,12 +688,16 @@
     SsstrictZve32x_vnclipu_wv_sew8_cg = new(); SsstrictZve32x_vnclipu_wv_cg.set_inst_name("obj_SsstrictZve32x_vnclipu_wv");
     SsstrictZve32x_vnclipu_wx_sew16_cg = new(); SsstrictZve32x_vnclipu_wx_cg.set_inst_name("obj_SsstrictZve32x_vnclipu_wx");
     SsstrictZve32x_vnclipu_wx_sew8_cg = new(); SsstrictZve32x_vnclipu_wx_cg.set_inst_name("obj_SsstrictZve32x_vnclipu_wx");
+    SsstrictZve32x_vnmsac_vv_sew32_cg = new(); SsstrictZve32x_vnmsac_vv_cg.set_inst_name("obj_SsstrictZve32x_vnmsac_vv");
     SsstrictZve32x_vnmsac_vv_sew16_cg = new(); SsstrictZve32x_vnmsac_vv_cg.set_inst_name("obj_SsstrictZve32x_vnmsac_vv");
     SsstrictZve32x_vnmsac_vv_sew8_cg = new(); SsstrictZve32x_vnmsac_vv_cg.set_inst_name("obj_SsstrictZve32x_vnmsac_vv");
+    SsstrictZve32x_vnmsac_vx_sew32_cg = new(); SsstrictZve32x_vnmsac_vx_cg.set_inst_name("obj_SsstrictZve32x_vnmsac_vx");
     SsstrictZve32x_vnmsac_vx_sew16_cg = new(); SsstrictZve32x_vnmsac_vx_cg.set_inst_name("obj_SsstrictZve32x_vnmsac_vx");
     SsstrictZve32x_vnmsac_vx_sew8_cg = new(); SsstrictZve32x_vnmsac_vx_cg.set_inst_name("obj_SsstrictZve32x_vnmsac_vx");
+    SsstrictZve32x_vnmsub_vv_sew32_cg = new(); SsstrictZve32x_vnmsub_vv_cg.set_inst_name("obj_SsstrictZve32x_vnmsub_vv");
     SsstrictZve32x_vnmsub_vv_sew16_cg = new(); SsstrictZve32x_vnmsub_vv_cg.set_inst_name("obj_SsstrictZve32x_vnmsub_vv");
     SsstrictZve32x_vnmsub_vv_sew8_cg = new(); SsstrictZve32x_vnmsub_vv_cg.set_inst_name("obj_SsstrictZve32x_vnmsub_vv");
+    SsstrictZve32x_vnmsub_vx_sew32_cg = new(); SsstrictZve32x_vnmsub_vx_cg.set_inst_name("obj_SsstrictZve32x_vnmsub_vx");
     SsstrictZve32x_vnmsub_vx_sew16_cg = new(); SsstrictZve32x_vnmsub_vx_cg.set_inst_name("obj_SsstrictZve32x_vnmsub_vx");
     SsstrictZve32x_vnmsub_vx_sew8_cg = new(); SsstrictZve32x_vnmsub_vx_cg.set_inst_name("obj_SsstrictZve32x_vnmsub_vx");
     SsstrictZve32x_vnsra_wi_sew16_cg = new(); SsstrictZve32x_vnsra_wi_cg.set_inst_name("obj_SsstrictZve32x_vnsra_wi");

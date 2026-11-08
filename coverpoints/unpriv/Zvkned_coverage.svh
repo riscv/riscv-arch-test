@@ -12,7 +12,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_ZVKNED
-covergroup Zvkned_vaesdf_vs_sew32__cg with function sample(ins_t ins);
+covergroup Zvkned_vaesdf_vs_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vaesdf.vs"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -327,7 +327,7 @@ covergroup Zvkned_vaesdf_vs_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zvkned_vaesdf_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zvkned_vaesdf_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_egs4
@@ -681,7 +681,7 @@ covergroup Zvkned_vaesdf_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zvkned_vaesdm_vs_sew32__cg with function sample(ins_t ins);
+covergroup Zvkned_vaesdm_vs_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vaesdm.vs"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -996,7 +996,7 @@ covergroup Zvkned_vaesdm_vs_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zvkned_vaesdm_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zvkned_vaesdm_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_egs4
@@ -1350,7 +1350,7 @@ covergroup Zvkned_vaesdm_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zvkned_vaesef_vs_sew32__cg with function sample(ins_t ins);
+covergroup Zvkned_vaesef_vs_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vaesef.vs"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -1665,7 +1665,7 @@ covergroup Zvkned_vaesef_vs_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zvkned_vaesef_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zvkned_vaesef_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_egs4
@@ -2019,7 +2019,7 @@ covergroup Zvkned_vaesef_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zvkned_vaesem_vs_sew32__cg with function sample(ins_t ins);
+covergroup Zvkned_vaesem_vs_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vaesem.vs"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -2334,7 +2334,7 @@ covergroup Zvkned_vaesem_vs_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zvkned_vaesem_vv_sew32__cg with function sample(ins_t ins);
+covergroup Zvkned_vaesem_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_egs4
@@ -2688,7 +2688,7 @@ covergroup Zvkned_vaesem_vv_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zvkned_vaeskf1_vi_sew32__cg with function sample(ins_t ins);
+covergroup Zvkned_vaeskf1_vi_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_egs4
@@ -3011,7 +3011,7 @@ covergroup Zvkned_vaeskf1_vi_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zvkned_vaeskf2_vi_sew32__cg with function sample(ins_t ins);
+covergroup Zvkned_vaeskf2_vi_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_egs4
@@ -3374,7 +3374,7 @@ covergroup Zvkned_vaeskf2_vi_sew32__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zvkned_vaesz_vs_sew32__cg with function sample(ins_t ins);
+covergroup Zvkned_vaesz_vs_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vaesz.vs"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -3632,37 +3632,37 @@ function void zvkned_sample(int hart, int issue, ins_t ins);
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
         "vaesdf.vs"     : begin
-            Zvkned_vaesdf_vs_cg.sample(ins);
+            Zvkned_vaesdf_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vaesdf.vv"     : begin
-            Zvkned_vaesdf_vv_cg.sample(ins);
+            Zvkned_vaesdf_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vaesdm.vs"     : begin
-            Zvkned_vaesdm_vs_cg.sample(ins);
+            Zvkned_vaesdm_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vaesdm.vv"     : begin
-            Zvkned_vaesdm_vv_cg.sample(ins);
+            Zvkned_vaesdm_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vaesef.vs"     : begin
-            Zvkned_vaesef_vs_cg.sample(ins);
+            Zvkned_vaesef_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vaesef.vv"     : begin
-            Zvkned_vaesef_vv_cg.sample(ins);
+            Zvkned_vaesef_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vaesem.vs"     : begin
-            Zvkned_vaesem_vs_cg.sample(ins);
+            Zvkned_vaesem_vs_sew@EFFEW@_cg.sample(ins);
         end
         "vaesem.vv"     : begin
-            Zvkned_vaesem_vv_cg.sample(ins);
+            Zvkned_vaesem_vv_sew@EFFEW@_cg.sample(ins);
         end
         "vaeskf1.vi"     : begin
-            Zvkned_vaeskf1_vi_cg.sample(ins);
+            Zvkned_vaeskf1_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vaeskf2.vi"     : begin
-            Zvkned_vaeskf2_vi_cg.sample(ins);
+            Zvkned_vaeskf2_vi_sew@EFFEW@_cg.sample(ins);
         end
         "vaesz.vs"     : begin
-            Zvkned_vaesz_vs_cg.sample(ins);
+            Zvkned_vaesz_vs_sew@EFFEW@_cg.sample(ins);
         end
             default: ; // a case needs at least one item, and some configurations select none
         endcase

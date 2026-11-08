@@ -1,3 +1,1 @@
-            "@INSTR@"     : begin
-                @ARCHCASE@_@INSTRNODOT@_cg.sample(ins);
-            end
+            @ARCHCASE@_@INSTRNODOT@_sew@EFFEW@_cg.sample(ins);

@@ -12,7 +12,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_EXCEPTIONSZVE64F
-covergroup ExceptionsZve64f_vfncvt_f_x_w_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve64f_vfncvt_f_x_w_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -173,7 +173,7 @@ covergroup ExceptionsZve64f_vfncvt_f_x_w_sew32__cg with function sample(ins_t in
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve64f_vfncvt_f_xu_w_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve64f_vfncvt_f_xu_w_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -334,7 +334,7 @@ covergroup ExceptionsZve64f_vfncvt_f_xu_w_sew32__cg with function sample(ins_t i
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve64f_vfwcvt_rtz_x_f_v_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve64f_vfwcvt_rtz_x_f_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -495,7 +495,7 @@ covergroup ExceptionsZve64f_vfwcvt_rtz_x_f_v_sew32__cg with function sample(ins_
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve64f_vfwcvt_rtz_xu_f_v_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve64f_vfwcvt_rtz_xu_f_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -656,7 +656,7 @@ covergroup ExceptionsZve64f_vfwcvt_rtz_xu_f_v_sew32__cg with function sample(ins
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve64f_vfwcvt_x_f_v_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve64f_vfwcvt_x_f_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -817,7 +817,7 @@ covergroup ExceptionsZve64f_vfwcvt_x_f_v_sew32__cg with function sample(ins_t in
 
 endgroup
 // ---------------------
-covergroup ExceptionsZve64f_vfwcvt_xu_f_v_sew32__cg with function sample(ins_t ins);
+covergroup ExceptionsZve64f_vfwcvt_xu_f_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_fs_off
@@ -1004,22 +1004,22 @@ function void exceptionszve64f_sample(int hart, int issue, ins_t ins);
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
         "vfncvt.f.x.w"     : begin
-            ExceptionsZve64f_vfncvt_f_x_w_cg.sample(ins);
+            ExceptionsZve64f_vfncvt_f_x_w_sew@EFFEW@_cg.sample(ins);
         end
         "vfncvt.f.xu.w"     : begin
-            ExceptionsZve64f_vfncvt_f_xu_w_cg.sample(ins);
+            ExceptionsZve64f_vfncvt_f_xu_w_sew@EFFEW@_cg.sample(ins);
         end
         "vfwcvt.rtz.x.f.v"     : begin
-            ExceptionsZve64f_vfwcvt_rtz_x_f_v_cg.sample(ins);
+            ExceptionsZve64f_vfwcvt_rtz_x_f_v_sew@EFFEW@_cg.sample(ins);
         end
         "vfwcvt.rtz.xu.f.v"     : begin
-            ExceptionsZve64f_vfwcvt_rtz_xu_f_v_cg.sample(ins);
+            ExceptionsZve64f_vfwcvt_rtz_xu_f_v_sew@EFFEW@_cg.sample(ins);
         end
         "vfwcvt.x.f.v"     : begin
-            ExceptionsZve64f_vfwcvt_x_f_v_cg.sample(ins);
+            ExceptionsZve64f_vfwcvt_x_f_v_sew@EFFEW@_cg.sample(ins);
         end
         "vfwcvt.xu.f.v"     : begin
-            ExceptionsZve64f_vfwcvt_xu_f_v_cg.sample(ins);
+            ExceptionsZve64f_vfwcvt_xu_f_v_sew@EFFEW@_cg.sample(ins);
         end
             default: ; // a case needs at least one item, and some configurations select none
         endcase

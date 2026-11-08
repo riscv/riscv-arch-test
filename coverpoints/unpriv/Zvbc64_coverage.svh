@@ -12,14 +12,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_ZVBC64
-`define COVER_ZVBCCUSTOM64
-`ifdef UDB_ELEN_64
-    `define SEW_64_EQ_ELEN
-`endif
-`ifdef UDB_ELEN_128
-    `define SEW_64_EQ_ELEN_DIV_2
-`endif
-covergroup Zvbc64_vclmul_vv_cg with function sample(ins_t ins);
+covergroup Zvbc64_vclmul_vv_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -218,7 +211,7 @@ covergroup Zvbc64_vclmul_vv_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zvbc64_vclmul_vx_cg with function sample(ins_t ins);
+covergroup Zvbc64_vclmul_vx_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -395,7 +388,7 @@ covergroup Zvbc64_vclmul_vx_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zvbc64_vclmulh_vv_cg with function sample(ins_t ins);
+covergroup Zvbc64_vclmulh_vv_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
@@ -594,7 +587,7 @@ covergroup Zvbc64_vclmulh_vv_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zvbc64_vclmulh_vx_cg with function sample(ins_t ins);
+covergroup Zvbc64_vclmulh_vx_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
@@ -775,21 +768,48 @@ function void zvbc64_sample(int hart, int issue, ins_t ins);
     // Want to sample only if the SEW matches the target SEW of the file, some tests require
     // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
     // associated sew with these tests
+    if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 0 ||
+        get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
+        case (traceDataQ[hart][issue][0].inst_name)
+            default: ; // a case needs at least one item, and some configurations select none
+        endcase
+    end
+    // Want to sample only if the SEW matches the target SEW of the file, some tests require
+    // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
+    // associated sew with these tests
+    if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1 ||
+        get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
+        case (traceDataQ[hart][issue][0].inst_name)
+            default: ; // a case needs at least one item, and some configurations select none
+        endcase
+    end
+    // Want to sample only if the SEW matches the target SEW of the file, some tests require
+    // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
+    // associated sew with these tests
+    if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2 ||
+        get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
+        case (traceDataQ[hart][issue][0].inst_name)
+            default: ; // a case needs at least one item, and some configurations select none
+        endcase
+    end
+    // Want to sample only if the SEW matches the target SEW of the file, some tests require
+    // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
+    // associated sew with these tests
     if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 3 ||
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
-            "vclmul.vv"     : begin
-                Zvbc64_vclmul_vv_cg.sample(ins);
-            end
-            "vclmul.vx"     : begin
-                Zvbc64_vclmul_vx_cg.sample(ins);
-            end
-            "vclmulh.vv"     : begin
-                Zvbc64_vclmulh_vv_cg.sample(ins);
-            end
-            "vclmulh.vx"     : begin
-                Zvbc64_vclmulh_vx_cg.sample(ins);
-            end
+        "vclmul.vv"     : begin
+            Zvbc64_vclmul_vv_sew@EFFEW@_cg.sample(ins);
+        end
+        "vclmul.vx"     : begin
+            Zvbc64_vclmul_vx_sew@EFFEW@_cg.sample(ins);
+        end
+        "vclmulh.vv"     : begin
+            Zvbc64_vclmulh_vv_sew@EFFEW@_cg.sample(ins);
+        end
+        "vclmulh.vx"     : begin
+            Zvbc64_vclmulh_vx_sew@EFFEW@_cg.sample(ins);
+        end
             default: ; // a case needs at least one item, and some configurations select none
         endcase
     end

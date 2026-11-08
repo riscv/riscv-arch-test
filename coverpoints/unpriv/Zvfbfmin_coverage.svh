@@ -12,7 +12,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_ZVFBFMIN
-covergroup Zvfbfmin_vfncvtbf16_f_f_w_sew16__cg with function sample(ins_t ins);
+covergroup Zvfbfmin_vfncvtbf16_f_f_w_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfncvtbf16.f.f.w"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -215,7 +215,7 @@ covergroup Zvfbfmin_vfncvtbf16_f_f_w_sew16__cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zvfbfmin_vfwcvtbf16_f_f_v_sew16__cg with function sample(ins_t ins);
+covergroup Zvfbfmin_vfwcvtbf16_f_f_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfwcvtbf16.f.f.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -387,10 +387,10 @@ function void zvfbfmin_sample(int hart, int issue, ins_t ins);
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
         "vfncvtbf16.f.f.w"     : begin
-            Zvfbfmin_vfncvtbf16_f_f_w_cg.sample(ins);
+            Zvfbfmin_vfncvtbf16_f_f_w_sew@EFFEW@_cg.sample(ins);
         end
         "vfwcvtbf16.f.f.v"     : begin
-            Zvfbfmin_vfwcvtbf16_f_f_v_cg.sample(ins);
+            Zvfbfmin_vfwcvtbf16_f_f_v_sew@EFFEW@_cg.sample(ins);
         end
             default: ; // a case needs at least one item, and some configurations select none
         endcase

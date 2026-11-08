@@ -1,0 +1,7 @@
+Instruction,Type,RV32,RV64,cp_vill,cp_vstart,cp_vstart_gt_vl,cp_mstatus_vs_off,cp_mstatus_fs_off,cp_vectorfp_mstatus_fs_state,cp_vectorfp_mstatus_fs_state_nonaffecting,cp_vectorfp_mstatus_fs_state_affecting_register,cp_vectorfp_mstatus_fs_state_affecting_csr
+vfwcvt.xu.f.v,FVV,x,x,32,32,32,32,32,32,32,32,32
+vfwcvt.x.f.v,FVV,x,x,32,32,32,32,32,32,32,32,32
+vfwcvt.rtz.xu.f.v,FVV,x,x,32,32,32,32,32,32,32,32,32
+vfwcvt.rtz.x.f.v,FVV,x,x,32,32,32,32,32,32,32,32,32
+vfncvt.f.xu.w,FVV,x,x,32,32,32,32,32,32,32,32,32
+vfncvt.f.x.w,FVV,x,x,32,32,32,32,32,32,32,32,32

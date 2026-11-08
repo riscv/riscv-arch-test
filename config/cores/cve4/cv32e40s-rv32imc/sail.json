@@ -22,7 +22,8 @@
       // This bits in this value control whether the corresponding
       // bits of the CSR are writable.  Note that bit 1 cannot be written
       // to as it is read-only zero.
-      "writable_bits": { "len": 32, "value": "0xFFFF_FFFD" }
+      // Only CY and IR are writable: NUM_MHPMCOUNTERS = 0
+      "writable_bits": { "len": 32, "value": "0x0000_0005" }
     },
     "writable_fiom": false, // menvcfg is read-only zero
     "writable_hpm_counters": {
@@ -437,6 +438,8 @@
     "Zifencei": { "supported": true },
     "Zihintntl": { "supported": false },
     "Zihintpause": { "supported": false },
+    // no hpmcounter3-31 CSRs; mhpmcounter3-31(h) and mhpmevent3-31 are hard-wired to 0,
+    // which Sail 0.16 provides without Zihpm (User Manual, Performance Counters)
     "Zihpm": { "supported": false },
     "Zimop": { "supported": false },
     "Zmmul": { "supported": true },

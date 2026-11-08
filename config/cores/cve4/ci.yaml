@@ -12,9 +12,8 @@ exclude_extensions:
   - Exceptions_Zalrsc
   - Exceptions_Zaamo
 exclude_configs:
-  # With PMP_NUM_REGIONS = 0, every CV32E40S U-mode access fails the PMP check, because no
-  # region matches it, so the tests, which run in U-mode, cannot run. Sail cannot model PMP
-  # entries that exist but are read-only zero.
+  # With PMP_NUM_REGIONS = 0, CV32E40S implements 64 read-only-zero PMP entries, so no rule can
+  # grant U-mode access; ACT runs unprivileged tests in U-mode and requires >= 8 usable PMP entries.
   - cv32e40s-rv32imc
   - cv32e40s-rv32imc-pma
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"

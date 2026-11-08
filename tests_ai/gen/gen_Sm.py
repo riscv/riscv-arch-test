@@ -84,6 +84,8 @@ MUTANTS: dict[str, str] = {
     "mtvec_mode2": "mtvec.MODE reads back whatever was written, including the reserved 2 and 3",
     "mie_s_bits_no_s": "S-level mie bits writable without S-mode",
     "mip_m_writable": "a machine-level mip bit is writable",
+    "hpm_event0_counts": "an hpm counter whose selector holds event 0 still counts",
+    "mip_pending_clearable": "csrc clears a machine-level mip bit while its source is pending",
     "mip_clear_ignored": "writing 0 to mip.SSIP does not clear it",
     "seip_rmw_or": "csrrs/csrrc of mip write back the platform's SEI signal into the software SEIP bit",
     "tw0_traps": "S-mode wfi traps with TW = 0",
@@ -2602,9 +2604,17 @@ def gen_ints2(suite: str) -> list[TestFile]:
     ):
         t = new(suite, rule)
         sr = L.SRC[src]
+        mei = src == "MEI"
         describe(
             t,
-            context=f"Needs the platform {src} source ({sr.cond}).",
+            context=f"Needs the platform {src} source ({sr.cond})."
+            + (
+                " Some configurations define RVMODEL_SET_MEXT_INT as an empty macro because the platform has no "
+                "external interrupt source, so mip.MEIP is polled after raising it, and steps 2-3 run only if it "
+                "became 1."
+                if mei
+                else ""
+            ),
             plan=f"1. With {src} not pending: csrs mip bit {bit} leaves it 0.\n2. With {src} pending: csrc mip bit "
             f"{bit} leaves it 1.\n3. Clearing the source clears the bit.",
         )
@@ -2620,14 +2630,25 @@ def gen_ints2(suite: str) -> list[TestFile]:
             t.check_masked(
                 "x7", 1 << bit, 1 << bit if mut() == "mip_m_writable" else 0, lab, f"mip bit {bit} not set by csrs"
             )
-            sr.raise_(t)
-            t.li("x6", 1 << bit)
-            t.emit("csrc mip, x6")
-            t.emit("csrr x7, mip")
-            t.check_masked("x7", 1 << bit, 1 << bit, lab, f"mip bit {bit} not cleared by csrc while pending")
-            sr.clear(t)
-            t.emit("csrr x7, mip")
-            t.check_masked("x7", 1 << bit, 0, lab, f"mip bit {bit} clears with its source")
+            sr.raise_(t)  # polls mip until the bit is 1 (bounded)
+
+            def pending(lab: str = lab, bit: int = bit, sr: L.Src = sr, t: TestFile = t) -> None:
+                t.li("x6", 1 << bit)
+                t.emit("csrc mip, x6")
+                t.emit("csrr x7, mip")
+                kept = 0 if mut() == "mip_pending_clearable" else 1 << bit
+                t.check_masked("x7", 1 << bit, kept, lab, f"mip bit {bit} not cleared by csrc while pending")
+                sr.clear(t)
+                t.emit("csrr x7, mip")
+                t.check_masked("x7", 1 << bit, 0, lab, f"mip bit {bit} clears with its source")
+
+            if mei:
+                t.emit("csrr x9, mip")
+                t.emit(f"srli x9, x9, {bit}")
+                t.emit("andi x9, x9, 1  // the platform raised MEI")
+                L.either(t, "x9", pending, lambda sr=sr, t=t: sr.clear(t))
+            else:
+                pending()
         tests.append(t)
 
     for rule, bit, name in (
@@ -3328,15 +3349,20 @@ def gen_counters(suite: str) -> list[TestFile]:
     t = new(suite, "mhpmevent_enc")
     describe(
         t,
-        context="mhpmcounter3-31 may be read-only 0; the value read right after the write is the reference.",
-        plan="1. For n = 3, 4, 17, 31: mhpmevent_n = 0 (no event), mhpmcounter_n = 0x5A: the counter reads the same "
-        "value before and after 30 instructions.",
+        context="mhpmcounter3-31 may be read-only 0; the value read right after the write is the reference. "
+        "mhpmevent3-31 are WARL (mhpmevent_sz_warl_op), so a selector may not hold 0 (e.g. it is hardwired to "
+        "an event): it is read back after the write, and the counter is required not to count only when the "
+        "selector reads 0. On RV32 with Sscofpmf, mhpmevent_nh is written 0 and read back too.",
+        plan="1. For n = 3, 4, 17, 31: mhpmevent_n = 0 (no event), mhpmcounter_n = 0x5A: if mhpmevent_n reads 0, the "
+        "counter reads the same value before and after 30 instructions.",
     )
     for n in (3, 4, 17, 31):
         lab = t.label(f"h{n}")
         t.li("x6", 0x5A)
         t.emit(f"{lab}:", 0)
         t.emit(f"csrw {hex(0x320 + n)}, x0  // mhpmevent{n} = 0")
+        with t.rv32_only(), t.only_if("defined(SSCOFPMF_SUPPORTED)"):
+            t.emit(f"csrw {hex(0x720 + n)}, x0  // mhpmevent{n}h = 0")
         with t.rv32_only():
             t.emit(f"csrw {hex(0xB80 + n)}, x0  // mhpmcounter{n}h")
         t.emit(f"csrw {hex(0xB00 + n)}, x6  // mhpmcounter{n}")
@@ -3344,8 +3370,18 @@ def gen_counters(suite: str) -> list[TestFile]:
         for _ in range(30):
             t.emit("nop")
         t.emit(f"csrr x8, {hex(0xB00 + n)}")
+        t.emit(f"csrr x9, {hex(0x320 + n)}  // the selector actually held")
+        with t.rv32_only(), t.only_if("defined(SSCOFPMF_SUPPORTED)"):
+            t.emit(f"csrr x5, {hex(0x720 + n)}")
+            t.emit("or x9, x9, x5")
         t.emit("sub x8, x8, x7")
-        t.check("x8", 0, lab, f"mhpmcounter{n} does not count with event 0")
+        if mut() == "hpm_event0_counts":
+            t.emit("snez x8, x8  // (mutant) event 0 counts")
+        else:
+            t.emit("seqz x8, x8  // did not count")
+        t.emit("snez x9, x9  // the selector is not event 0")
+        t.emit("or x8, x8, x9")
+        t.check_bool("x8", lab, f"mhpmcounter{n} does not count while mhpmevent{n} reads 0 (no event)")
     tests.append(t)
 
     t = new(suite, "mcounteren_inc_inaccessible", [*L.REQ, "U"])
@@ -3394,6 +3430,10 @@ def menvcfg_bits(t: TestFile, on: bool, lo: int = 0, hi: int = 0) -> None:
             t.emit(f"{op} menvcfgh, x5")
 
 
+SM1P12 = "defined(SM1P12P0_OR_LATER_SUPPORTED)"
+ENVCFG_VER = "menvcfg exists from Sm 1.12 (SM1P12P0_OR_LATER_SUPPORTED); on earlier harts the test is empty."
+
+
 def gen_envcfg(suite: str) -> list[TestFile]:
     tests = []
 
@@ -3410,20 +3450,22 @@ def gen_envcfg(suite: str) -> list[TestFile]:
     t = new(suite, "menvcfg_mandatory_u_mode", [*L.REQ, "U"])
     describe(
         t,
+        context=ENVCFG_VER,
         plan="1. With U-mode: menvcfg reads, and is written with its own value, without a trap (every "
         "form that writes its current value).",
     )
-    t.emit("csrr x6, menvcfg")
-    for f in L.FORMS:
-        if "0x15" in f[0]:
-            continue
-        L.csr_window(t, "M", 0x30A, "menvcfg", f, "ok", "U-mode hart")
+    with t.only_if(SM1P12):
+        t.emit("csrr x6, menvcfg")
+        for f in L.FORMS:
+            if "0x15" in f[0]:
+                continue
+            L.csr_window(t, "M", 0x30A, "menvcfg", f, "ok", "U-mode hart")
     tests.append(t)
 
     t = new(suite, "menvcfgh_sz_acc_op", [*L.REQ, "U"])
     describe(
         t,
-        context="menvcfg is restored after each write, before any trap.",
+        context="menvcfg is restored after each write, before any trap. " + ENVCFG_VER,
         plan="1. RV64: menvcfgh (0x31A) raises illegal instruction for reads and writes.\n2. RV32: a write of all ones "
         "to menvcfgh leaves menvcfg (bits 31:0) unchanged; menvcfgh reads back the same high bits as a second "
         "identical write.",
@@ -3432,7 +3474,7 @@ def gen_envcfg(suite: str) -> list[TestFile]:
         t.li("x6", 0)
         for f in (L.FORMS[0], L.FORMS[1]):
             L.csr_window(t, "M", 0x31A, "menvcfgh", f, "illegal", "RV64")
-    with t.rv32_only():
+    with t.rv32_only(), t.only_if(SM1P12):
         lab = t.label("h")
         t.emit("csrr x8, menvcfg")
         t.emit("csrr x9, menvcfgh")
@@ -3460,10 +3502,10 @@ def gen_envcfg(suite: str) -> list[TestFile]:
         describe(
             t,
             context="All other menvcfg bits are written with their current values; menvcfg is restored before any "
-            "trap.",
+            "trap. " + ENVCFG_VER,
             plan=f"1. Without {ext}: after csrs of {name}, the field reads 0.",
         )
-        with t.only_if(cond):
+        with t.only_if(f"({cond}) && {SM1P12}"):
             lab = t.label("f")
             t.emit("csrr x8, menvcfg")
             with t.rv32_only():
@@ -4069,6 +4111,8 @@ def gen_mstatus2(suite: str) -> list[TestFile]:
             t,
             context=f"{name} is WARL (often read-only 0); the test sets it and runs only if it reads back 1. "
             + ("No trap happens while MBE = 1." if name == "MBE" else f"{mode}-mode code runs with {name} = 1.")
+            + " MBE, SBE and UBE (and RV32 mstatush, which holds MBE and SBE) exist from Sm 1.12, so the test is "
+            "empty on earlier harts (SM1P12P0_OR_LATER_SUPPORTED)."
             + " Instruction fetch stays little-endian (endianness_inst_fetch_little), which the code itself relies on.",
             plan=f"1. {name} = 1: lw in {mode}-mode of the word stored as 0x11223344 (little-endian) reads "
             "0x44332211; sw in that mode of 0x55667788 is read back by M-mode (MBE = 0) as 0x88776655.\n2. "
@@ -4128,7 +4172,8 @@ def gen_mstatus2(suite: str) -> list[TestFile]:
             L.either(t, "x9", run, lambda: None)
             setbit(False)
 
-        guard(t, cond, be)
+        with t.only_if(SM1P12):
+            guard(t, cond, be)
         tests.append(t)
     return tests
 

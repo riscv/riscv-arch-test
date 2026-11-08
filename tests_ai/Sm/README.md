@@ -28,7 +28,9 @@ misaligned-portion mtval, the variable-length fetch xepc/xtval) and the Smepmp `
   interrupts are released together and their order read back from the trap log; the trap log's vector field shows
   whether mtvec Direct/Vectored entered at BASE or BASE + 4 x cause.
 - **Counters.** mcycle/minstret writes (a written minstret is read back exactly), the carry into bit 32, the RV32 high
-  halves, mcountinhibit, mhpmevent = 0, and mcounteren from S and U (with scounteren = all ones).
+  halves, mcountinhibit, mhpmevent = 0 (the selector is WARL and may not hold 0, e.g. cv32e20 hardwires
+  mhpmevent_n = 1 << n, so "no event" is required only when it reads back 0), and mcounteren from S and U (with
+  scounteren = all ones).
 - **misa.** MXL, E/I, reserved letters, the reset value of every letter, disabling M, F, D and C (C at a 2 mod 4
   address must be suppressed), and the F/D dependency.
 - **Mutation check.** `MUTANTS` in `gen_Sm.py` (and `pmplib.MUTANTS`) are expectation switches read through
@@ -89,6 +91,12 @@ misaligned-portion mtval, the variable-length fetch xepc/xtval) and the Smepmp `
 - After a T-SBI GOTO back to M-mode the framework leaves mstatus.MIE = 1, so every interrupt case clears MIE before
   making anything pending.
 - While mstatus.MBE = 1 no table load may run (AI_LOAD would read big-endian), so the test clears MBE with `li`.
+- Sm 1.11 harts (cv32e40p, VeeR) have no mstatush, menvcfg, MBE/SBE/UBE or mconfigptr: these appeared in Sm 1.12
+  (priv preface, "compatible changes since version 1.11"). Tests and cases that use them run only with
+  `SM1P12P0_OR_LATER_SUPPORTED` (the endianness tests, the menvcfg tests that assume U-mode).
+- `mip_meip_rdonly`: several configurations (cv32e40s, spike/qemu RVI20U) define `RVMODEL_SET_MEXT_INT` as an empty
+  macro because the platform has no external interrupt source. After raising it the test polls mip.MEIP and runs the
+  pending-state checks only if it became 1.
 - `Zmmul_misa_m`: with Zmmul, multiplication stays legal while misa.M is clear
   ([#1711](https://github.com/riscv/riscv-isa-manual/issues/1711)); a config that lists Zmmul must run the DUT with
   it.

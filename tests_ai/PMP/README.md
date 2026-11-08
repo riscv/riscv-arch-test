@@ -15,7 +15,10 @@ rest of the machine level is in [`../Sm`](../Sm/README.md).
 - **Probing.** The PMP CSRs are first read in a trap window (a hart with no entries may not implement them). The grain
   is probed on entry 7: with A = OFF, all ones reads back r and z = (r ^ (r - 1)) >> 1 = 2^G - 1. Tests needing
   4 KiB regions run when entry 7 is implemented, U-mode exists and G <= 10; NA4, 8-byte NAPOT and partial-match cases
-  need G = 0; TOR cases need TOR (probed on entry 5).
+  need G = 0. All PMP fields are WARL, so a hart may offer any subset of the address-matching modes: TOR, NAPOT and
+  NA4 are each written to entry 5 and read back. Tests and cases that program NAPOT, TOR or NA4 entries run only when
+  that mode is selectable. The lock tests choose their layout from the modes: TOR + NAPOT, TOR only (a second TOR
+  entry on top of the first), or NAPOT only.
 - **Expected outcomes** come from a reference model of the matching rules in `pmplib.model()`: the lowest-numbered
   entry that matches any byte decides; a partial match fails; M-mode passes an unlocked entry; no match fails S/U
   only. Mutants change the model (highest entry wins, partial match allowed, TOR top inclusive, half-size NAPOT,
@@ -61,3 +64,5 @@ rest of the machine level is in [`../Sm`](../Sm/README.md).
 - A cache-block management instruction is permitted when a load or a store would be; with only execute permission the
   outcome is UNSPECIFIED (cmo.adoc `cbm_access`).
 - With Smepmp, mseccfg.RLB must be 0 for the lock tests (its reset value); a hart with RLB = 1 runs them as no-ops.
+- A hart may refuse an A value (e.g. cv32a65x has TOR-only PMP: writing NAPOT keeps the old A, and L and RWX are still
+  written), so NAPOT/NA4/TOR support is probed rather than assumed (`pmp_csrs_warl_access`).

@@ -140,6 +140,8 @@ def buffer(t: TestFile, overrides: dict[int, int] | None = None) -> None:
         "pmp_ok: .dword 0",
         "pmp_z: .dword 0",
         "pmp_tor: .dword 0",
+        "pmp_napot: .dword 0",
+        "pmp_na4: .dword 0",
         "pmp_csr: .dword 0",
     ]
     t.extra_data += out
@@ -184,7 +186,8 @@ def cfgs_off(t: TestFile) -> None:
 
 def probe(t: TestFile, need_u: bool = True) -> None:
     """Save the PMP state, then probe entry 7: pmp_ok = entries 1-7 OFF and no entry locked, entry 7 implemented, G <= 10 and U-mode
-    exists; pmp_z = 2^G - 1; pmp_tor = TOR selectable (on entry 5). Leaves entries 5 and 7 OFF with address 0.
+    exists; pmp_z = 2^G - 1; pmp_tor / pmp_napot / pmp_na4 = A = TOR / NAPOT / NA4 selectable (on entry 5; all PMP
+    fields are WARL, so a hart may offer any subset). Leaves entries 5 and 7 OFF with address 0.
     A hart without PMP entries may not implement the PMP CSRs at all: the first access is in a trap window, and
     pmp_csr = 1 only if it did not trap."""
     skip = t.label("busy")
@@ -231,31 +234,32 @@ def probe(t: TestFile, need_u: bool = True) -> None:
             t.emit("li x7, 0")
     t.la("x8", "pmp_ok")
     t.emit("SREG x7, 0(x8)")
-    # TOR selectable? (entry 5, pmpaddr4 = pmpaddr5 = 0, no permissions: matches nothing)
+    # A = TOR / NAPOT / NA4 selectable? (WARL: a hart may support any subset.) Each is written on entry 5 with no
+    # permissions and read back: TOR with pmpaddr4 = pmpaddr5 = 0 matches nothing, NAPOT [0, 8) and NA4 [0, 4) with
+    # pmpaddr5 = 0 match only bytes nothing accesses, and M-mode ignores unlocked entries.
     t.emit("csrw pmpaddr5, x0")
-    with t.rv64_only():
-        t.emit("csrr x9, pmpaddr4")
-        t.emit("csrw pmpaddr4, x0")
-        t.emit("li x6, 8")
-        t.emit("slli x6, x6, 40")
-        t.emit("csrs pmpcfg0, x6")
-        t.emit("csrr x7, pmpcfg0")
-        t.emit("csrc pmpcfg0, x6")
-        t.emit("srli x7, x7, 43")
-    with t.rv32_only():
-        t.emit("csrr x9, pmpaddr4")
-        t.emit("csrw pmpaddr4, x0")
-        t.emit("li x6, 0x800")
-        t.emit("csrs pmpcfg1, x6")
-        t.emit("csrr x7, pmpcfg1")
-        t.emit("csrc pmpcfg1, x6")
-        t.emit("srli x7, x7, 11")
+    t.emit("csrr x9, pmpaddr4")
+    t.emit("csrw pmpaddr4, x0")
+    for a, sym in ((1, "pmp_tor"), (3, "pmp_napot"), (2, "pmp_na4")):
+        with t.rv64_only():
+            t.emit(f"li x6, {a << 3}")
+            t.emit("slli x6, x6, 40")
+            t.emit("csrs pmpcfg0, x6")
+            t.emit("csrr x7, pmpcfg0")
+            t.emit("csrc pmpcfg0, x6")
+            t.emit("srli x7, x7, 43")
+        with t.rv32_only():
+            t.emit(f"li x6, {hex(a << 11)}")
+            t.emit("csrs pmpcfg1, x6")
+            t.emit("csrr x7, pmpcfg1")
+            t.emit("csrc pmpcfg1, x6")
+            t.emit("srli x7, x7, 11")
+        t.emit("andi x7, x7, 3")
+        t.emit(f"addi x7, x7, -{a}")
+        t.emit(f"seqz x7, x7  // A = {list(A)[a]} reads back")
+        t.la("x8", sym)
+        t.emit("SREG x7, 0(x8)")
     t.emit("csrw pmpaddr4, x9")
-    t.emit("andi x7, x7, 3")
-    t.emit("addi x7, x7, -1")
-    t.emit("seqz x7, x7")
-    t.la("x8", "pmp_tor")
-    t.emit("SREG x7, 0(x8)")
     t.emit(f"{skip}:", 0)
 
 
@@ -273,8 +277,10 @@ def program(t: TestFile, entries: Sequence[E | None], bg: bool = True) -> None:
             continue
         if e.a == "TOR" and not e.base0:
             prev = entries[i - 1]
-            assert i > 0 and (prev is None or prev.a == "OFF"), "TOR base must be an OFF entry"
-            addr[i - 1] = ("tor", e.lo)
+            chained = prev is not None and prev.a == "TOR" and prev.hi == e.lo  # base = the previous TOR's top
+            assert i > 0 and (prev is None or prev.a == "OFF" or chained), "TOR base must be an OFF entry"
+            if not chained:
+                addr[i - 1] = ("tor", e.lo)
         if e.a == "TOR":
             addr[i] = ("all",) if e.top_all else ("tor", e.hi)
         elif e.a == "NAPOT":
@@ -647,7 +653,8 @@ def gen(suite: str) -> list[TestFile]:
     ):
         t = nt(rule, ["I", "Sm"])
         describe(t, context=addr_ctx.replace("U-mode exists and ", ""), plan=plan)
-        pmp_test(t, lambda t=t, which=which: addr_body(t, which), need_u=False)
+        napot = ["pmp_napot"] if which in ("napot", "retention") else None
+        pmp_test(t, lambda t=t, which=which: addr_body(t, which), need_u=False, extra=napot)
         tests.append(t)
 
     # ---- pmp_rwx_warl / pmp_rw01_rsv ----
@@ -727,7 +734,7 @@ def gen(suite: str) -> list[TestFile]:
                 if more:
                     extra(t, ents)
 
-        pmp_test(t, body)
+        pmp_test(t, body, extra=["pmp_napot"])
         tests.append(t)
 
     perm_rule(
@@ -799,7 +806,7 @@ def gen(suite: str) -> list[TestFile]:
         t.li("x6", 0x70)
         t.emit("csrc menvcfg, x6")
 
-    pmp_test(t, cbm_body)
+    pmp_test(t, cbm_body, extra=["pmp_napot"])
     tests.append(t)
 
     # ---- address matching ----
@@ -814,9 +821,17 @@ def gen(suite: str) -> list[TestFile]:
 
     def off_body() -> None:
         for a in ("OFF", "NAPOT"):
-            ents = [E(a, PAGE, 2 * PAGE, "")]
-            program(t, ents)
-            sweep(t, ents, [(PAGE + 8, "rwx")], ("S", "U"), desc=f"A = {a}")
+
+            def leg(a: str = a) -> None:
+                ents = [E(a, PAGE, 2 * PAGE, "")]
+                program(t, ents)
+                sweep(t, ents, [(PAGE + 8, "rwx")], ("S", "U"), desc=f"A = {a}")
+
+            if a == "OFF":
+                leg()
+            else:
+                flag(t, "x9", "pmp_napot")
+                L.either(t, "x9", leg, lambda: None)
 
     pmp_test(t, off_body)
     tests.append(t)
@@ -890,6 +905,8 @@ def gen(suite: str) -> list[TestFile]:
             ]
             sweep(t, ents, pts, ("S", "U"), desc="NAPOT 4K/8K/16K")
             zflag(t, "x9", 0)
+            flag(t, "x6", "pmp_na4")
+            t.emit("and x9, x9, x6  // G = 0 and NA4 selectable")
 
             def fine() -> None:
                 ents2 = [E("NA4", PAGE + 0x10, PAGE + 0x14, ""), E("NAPOT", PAGE + 0x20, PAGE + 0x28, "")]
@@ -899,7 +916,7 @@ def gen(suite: str) -> list[TestFile]:
 
             L.either(t, "x9", fine, lambda: None)
 
-        pmp_test(t, napot_body)
+        pmp_test(t, napot_body, extra=["pmp_napot"])
         tests.append(t)
 
     t = nt("pmp_entry_priority")
@@ -922,7 +939,7 @@ def gen(suite: str) -> list[TestFile]:
                 desc=f"{p0 or '-'} over {p1 or '-'}",
             )
 
-    pmp_test(t, pri_body)
+    pmp_test(t, pri_body, extra=["pmp_napot"])
     tests.append(t)
 
     t = nt("pmp_full_match_required")
@@ -939,6 +956,8 @@ def gen(suite: str) -> list[TestFile]:
 
     def full_body() -> None:
         zflag(t, "x9", 0)
+        flag(t, "x6", "pmp_na4")
+        t.emit("and x9, x9, x6  // G = 0 and NA4 selectable")
 
         def fine() -> None:
             for p0, p1 in (("rwx", ""), ("", "rwx")):
@@ -968,7 +987,7 @@ def gen(suite: str) -> list[TestFile]:
 
         L.either(t, "x9", fine, lambda: None)
 
-    pmp_test(t, full_body)
+    pmp_test(t, full_body, extra=["pmp_napot"])
     tests.append(t)
 
     t = nt("pmp_no_entry_match")
@@ -1052,7 +1071,7 @@ def gen(suite: str) -> list[TestFile]:
             if rule != "mstatus_mprv_inst_xlat_op":
                 sweep(t, ents, [(PAGE + 0x50, "rw")], ("M", "S", "U"), desc="MPRV = 0")
 
-        pmp_test(t, mprv_body)
+        pmp_test(t, mprv_body, extra=["pmp_napot"])
         tests.append(t)
 
     t = nt("mstatus_mxr_sum_op_acc_fault", [*REQ_U, "S"])
@@ -1077,7 +1096,7 @@ def gen(suite: str) -> list[TestFile]:
         t.li("x5", MXR | SUM)
         t.emit("csrc mstatus, x5")
 
-    pmp_test(t, mxr_body)
+    pmp_test(t, mxr_body, extra=["pmp_napot"])
     tests.append(t)
 
     # ---- misaligned accesses and fetches across a PMP boundary ----
@@ -1163,7 +1182,7 @@ def gen(suite: str) -> list[TestFile]:
     ):
         t = nt(rule)
         describe(t, context=mis_ctx, plan=plan)
-        pmp_test(t, lambda t=t: mis_body(t))
+        pmp_test(t, lambda t=t: mis_body(t), extra=["pmp_napot"])
         tests.append(t)
 
     for rule in ("mtval_varlen_wr", "mepc_varlen_wr"):
@@ -1200,28 +1219,82 @@ def gen(suite: str) -> list[TestFile]:
                     guard(t, L.MODE_COND[mode], m)
 
         with t.only_if("defined(C_SUPPORTED)"):
-            pmp_test(t, vl_body)
+            pmp_test(t, vl_body, extra=["pmp_napot"])
         tests.append(t)
 
     # ---- locking (at the end of each test: locks last until reset) ----
     lock_ctx = (
-        CTX + " Locks cannot be undone, so they are set last. Entry 5 is NAPOT P1 with R only and entry 4 "
-        "TOR [P2, P3) with RW (its base pmpaddr3 = P2, entry 3 OFF), both L = 1. The final restore puts the "
-        "framework's entry 0 back, which matches everything first, so the end-of-test code is unaffected. With "
-        "Smepmp the test runs only when mseccfg.RLB = 0 (its reset value)."
+        CTX + " Locks cannot be undone, so they are set last. Two locked entries: entry 4 RW over page P2 and entry 5 "
+        "R only over page PR, both L = 1. Which address-matching modes the hart offers is probed (all PMP fields are "
+        "WARL), and the layout follows: with TOR and NAPOT, entry 4 is TOR [P2, P3) (base pmpaddr3 = P2, entry 3 OFF) "
+        "and entry 5 NAPOT PR = P1; with TOR only, entry 5 is TOR [P3, P3 + 4 KiB) on top of entry 4, so PR = P3; "
+        "with NAPOT only, entry 4 is NAPOT P2 and entry 5 NAPOT PR = P1. With neither the test is skipped. The "
+        "final restore puts the framework's entry 0 back, which matches everything first, so the end-of-test code "
+        "is unaffected. With Smepmp the test runs only when mseccfg.RLB = 0 (its reset value)."
     )
 
-    def lock_setup(t: TestFile) -> list[E | None]:
-        ents: list[E | None] = [
-            None,
-            None,
-            None,
-            E("OFF"),
-            E("TOR", 2 * PAGE, 3 * PAGE, "rw", lock=True),
-            E("NAPOT", PAGE, 2 * PAGE, "r", lock=True),
-        ]
-        program(t, ents)
-        return ents
+    # name -> (entries, PR offset, entry 4 is TOR)
+    lock_layouts: dict[str, tuple[list[E | None], int, bool]] = {
+        "TOR and NAPOT": (
+            [
+                None,
+                None,
+                None,
+                E("OFF"),
+                E("TOR", 2 * PAGE, 3 * PAGE, "rw", lock=True),
+                E("NAPOT", PAGE, 2 * PAGE, "r", lock=True),
+            ],
+            PAGE,
+            True,
+        ),
+        "TOR only": (
+            [
+                None,
+                None,
+                None,
+                E("OFF"),
+                E("TOR", 2 * PAGE, 3 * PAGE, "rw", lock=True),
+                E("TOR", 3 * PAGE, 4 * PAGE, "r", lock=True),
+            ],
+            3 * PAGE,
+            True,
+        ),
+        "NAPOT only": (
+            [
+                None,
+                None,
+                None,
+                None,
+                E("NAPOT", 2 * PAGE, 3 * PAGE, "rw", lock=True),
+                E("NAPOT", PAGE, 2 * PAGE, "r", lock=True),
+            ],
+            PAGE,
+            False,
+        ),
+    }
+
+    def lock_layout(t: TestFile, body: Callable[[str, list[E | None], int, bool], object]) -> None:
+        """Run body(layout name, entries, PR offset, entry 4 is TOR) for the layout the probed A modes allow."""
+
+        def run(name: str) -> Callable[[], object]:
+            def go() -> None:
+                ents, pr, tor4 = lock_layouts[name]
+                t.comment(f"lock layout: {name}")
+                program(t, ents)
+                body(name, ents, pr, tor4)
+
+            return go
+
+        def with_tor() -> None:
+            flag(t, "x6", "pmp_napot")
+            L.either(t, "x6", run("TOR and NAPOT"), run("TOR only"))
+
+        def without_tor() -> None:
+            flag(t, "x6", "pmp_napot")
+            L.either(t, "x6", run("NAPOT only"), lambda: None)
+
+        flag(t, "x6", "pmp_tor")
+        L.either(t, "x6", with_tor, without_tor)
 
     def rlb_zero(t: TestFile) -> None:
         with t.only_if("defined(SMEPMP_SUPPORTED)"):
@@ -1237,7 +1310,7 @@ def gen(suite: str) -> list[TestFile]:
         (
             "pmp_l_bit_m_mode_enforcement",
             (
-                "1. M-mode: load in P1 succeeds, store and fetch in P1 fault; load and store "
+                "1. M-mode: load in PR succeeds, store and fetch in PR fault; load and store "
                 "in P2 succeed, fetch faults.\n2. S and U see the same permissions."
             ),
         ),
@@ -1246,22 +1319,23 @@ def gen(suite: str) -> list[TestFile]:
             "pmp_l_bit_function",
             (
                 "1. Writes to pmp5cfg (clearing L, setting A = NAPOT with W) and to pmpaddr5 are "
-                "ignored; an M-mode store to P1 still faults."
+                "ignored; an M-mode store to PR still faults."
             ),
         ),
         (
             "pmp_locked_until_reset",
             (
                 "1. After locking, M-mode writes of 0 to pmpcfg are ignored for the locked "
-                "entries, which keep enforcing (an M-mode store to P1 and a fetch from P2 still fault)."
+                "entries, which keep enforcing (an M-mode store to PR and a fetch from P2 still fault)."
             ),
         ),
         (
             "pmp_l_bit_write_protection",
             (
-                "1. Writes to pmpaddr5 and pmpaddr4 are ignored.\n2. Entry 4 is locked TOR, so "
-                "writes to pmpaddr3 are ignored too; pmpaddr2 stays writable.\n3. A pmpcfg write that clears "
-                "pmp4cfg/pmp5cfg and sets pmp6cfg = R leaves the locked bytes unchanged and writes pmp6cfg."
+                "1. Writes to pmpaddr5 and pmpaddr4 are ignored.\n2. When entry 4 is locked TOR, "
+                "writes to pmpaddr3 are ignored too (otherwise pmpaddr3 is writable); pmpaddr2 stays writable.\n3. A "
+                "pmpcfg write that clears pmp4cfg/pmp5cfg and sets pmp6cfg = R leaves the locked bytes unchanged and "
+                "writes pmp6cfg."
             ),
         ),
     ):
@@ -1269,70 +1343,74 @@ def gen(suite: str) -> list[TestFile]:
         describe(t, context=lock_ctx.replace("U-mode exists and ", ""), plan=plan)
 
         def lk(t: TestFile = t, rule: str = rule) -> None:
-            ents = lock_setup(t)
-            if rule in ("pmp_l_bit_m_mode_enforcement", "pmp_mmode_locking"):
-                sweep(t, ents, [(PAGE + 0x70, "rwx"), (2 * PAGE + 0x70, "rwx")], ("M", "S", "U"), desc="locked")
-            elif rule == "pmp_l_bit_function":
-                lab = t.label("lf")
-                t.emit("csrr x9, pmpaddr5")
-                read_cfg_byte(t, "x8", 5)
-                t.emit(f"{lab}:", 0)
-                set_cfg_byte(t, 5, 0x1B)
-                read_cfg_byte(t, "x7", 5)
-                t.emit("sub x7, x7, x8")
-                t.check("x7", 0, lab, "pmp5cfg unchanged")
-                t.emit("li x6, -1")
-                t.emit("csrw pmpaddr5, x6")
-                t.emit("csrr x7, pmpaddr5")
-                t.emit("sub x7, x7, x9")
-                t.check("x7", 0, lab, "pmpaddr5 unchanged")
-                access(t, "M", "w", PAGE + 0x70, model(ents, "M", PAGE + 0x70, 4, "w"), "after write attempts")
-            elif rule == "pmp_locked_until_reset":
-                cfgs_off(t)
-                sfence(t)
-                access(t, "M", "w", PAGE + 0x70, model(ents, "M", PAGE + 0x70, 4, "w"), "after writing pmpcfg = 0")
-                access(
-                    t, "M", "x", 2 * PAGE + 0x70, model(ents, "M", 2 * PAGE + 0x70, 4, "x"), "after writing pmpcfg = 0"
-                )
-            else:
-                lab = t.label("wp")
-                t.emit(f"{lab}:", 0)
-                for i in (5, 4, 3, 2):
-                    t.emit(f"csrr x9, pmpaddr{i}")
-                    t.emit("LI(x6, 4096)", 2)
-                    t.emit("add x6, x9, x6")
-                    t.emit(f"csrw pmpaddr{i}, x6")
-                    t.emit(f"csrr x7, pmpaddr{i}")
+            def body(name: str, ents: list[E | None], pr: int, tor4: bool) -> None:
+                if rule in ("pmp_l_bit_m_mode_enforcement", "pmp_mmode_locking"):
+                    sweep(t, ents, [(pr + 0x70, "rwx"), (2 * PAGE + 0x70, "rwx")], ("M", "S", "U"), desc=name)
+                elif rule == "pmp_l_bit_function":
+                    lab = t.label("lf")
+                    t.emit("csrr x9, pmpaddr5")
+                    read_cfg_byte(t, "x8", 5)
+                    t.emit(f"{lab}:", 0)
+                    set_cfg_byte(t, 5, 0x1B)
+                    read_cfg_byte(t, "x7", 5)
+                    t.emit("sub x7, x7, x8")
+                    t.check("x7", 0, lab, f"{name}: pmp5cfg unchanged")
+                    t.emit("li x6, -1")
+                    t.emit("csrw pmpaddr5, x6")
+                    t.emit("csrr x7, pmpaddr5")
                     t.emit("sub x7, x7, x9")
-                    locked = i >= 3
-                    if mut() == "pmp_lock_addr_writable" and i == 5:
-                        locked = False
-                    if mut() == "pmp_tor_base_writable" and i == 3:
-                        locked = False
-                    t.check(
-                        "x7", 0 if locked else 4096, lab, f"pmpaddr{i} {'unchanged (locked)' if locked else 'writable'}"
-                    )
-                    t.emit(f"csrw pmpaddr{i}, x9")
-                read_cfg_byte(t, "x8", 4)
-                read_cfg_byte(t, "x9", 5)
-                t.emit("slli x9, x9, 8")
-                t.emit("or x8, x8, x9  // locked pmp4cfg/pmp5cfg")
-                t.emit("li x6, 1")
-                with t.rv64_only():
-                    t.emit("slli x6, x6, 48")
-                    t.emit("csrw pmpcfg0, x6  // L cleared in bytes 4 and 5, byte 6 = R")
-                with t.rv32_only():
-                    t.emit("slli x6, x6, 16")
-                    t.emit("csrw pmpcfg1, x6  // L cleared in bytes 0 and 1 (entries 4, 5), byte 2 = R")
-                read_cfg_byte(t, "x7", 4)
-                read_cfg_byte(t, "x9", 5)
-                t.emit("slli x9, x9, 8")
-                t.emit("or x7, x7, x9")
-                t.emit("sub x7, x7, x8")
-                t.check("x7", 0, lab, "locked pmp4cfg and pmp5cfg unchanged by a pmpcfg write")
-                read_cfg_byte(t, "x7", 6)
-                t.check("x7", 1, lab, "the unlocked pmp6cfg in the same pmpcfg register is written")
-                set_cfg_byte(t, 6, None)
+                    t.check("x7", 0, lab, f"{name}: pmpaddr5 unchanged")
+                    access(t, "M", "w", pr + 0x70, model(ents, "M", pr + 0x70, 4, "w"), f"{name}: after write attempts")
+                elif rule == "pmp_locked_until_reset":
+                    cfgs_off(t)
+                    sfence(t)
+                    d = f"{name}: after writing pmpcfg = 0"
+                    access(t, "M", "w", pr + 0x70, model(ents, "M", pr + 0x70, 4, "w"), d)
+                    access(t, "M", "x", 2 * PAGE + 0x70, model(ents, "M", 2 * PAGE + 0x70, 4, "x"), d)
+                else:
+                    lab = t.label("wp")
+                    t.emit(f"{lab}:", 0)
+                    for i in (5, 4, 3, 2):
+                        t.emit(f"csrr x9, pmpaddr{i}")
+                        t.emit("LI(x6, 4096)", 2)
+                        t.emit("add x6, x9, x6")
+                        t.emit(f"csrw pmpaddr{i}, x6")
+                        t.emit(f"csrr x7, pmpaddr{i}")
+                        t.emit("sub x7, x7, x9")
+                        locked = i >= 4 or (i == 3 and tor4)
+                        if mut() == "pmp_lock_addr_writable" and i == 5:
+                            locked = False
+                        if mut() == "pmp_tor_base_writable" and i == 3:
+                            locked = False
+                        t.check(
+                            "x7",
+                            0 if locked else 4096,
+                            lab,
+                            f"{name}: pmpaddr{i} {'unchanged (locked)' if locked else 'writable'}",
+                        )
+                        t.emit(f"csrw pmpaddr{i}, x9")
+                    read_cfg_byte(t, "x8", 4)
+                    read_cfg_byte(t, "x9", 5)
+                    t.emit("slli x9, x9, 8")
+                    t.emit("or x8, x8, x9  // locked pmp4cfg/pmp5cfg")
+                    t.emit("li x6, 1")
+                    with t.rv64_only():
+                        t.emit("slli x6, x6, 48")
+                        t.emit("csrw pmpcfg0, x6  // L cleared in bytes 4 and 5, byte 6 = R")
+                    with t.rv32_only():
+                        t.emit("slli x6, x6, 16")
+                        t.emit("csrw pmpcfg1, x6  // L cleared in bytes 0 and 1 (entries 4, 5), byte 2 = R")
+                    read_cfg_byte(t, "x7", 4)
+                    read_cfg_byte(t, "x9", 5)
+                    t.emit("slli x9, x9, 8")
+                    t.emit("or x7, x7, x9")
+                    t.emit("sub x7, x7, x8")
+                    t.check("x7", 0, lab, f"{name}: locked pmp4cfg and pmp5cfg unchanged by a pmpcfg write")
+                    read_cfg_byte(t, "x7", 6)
+                    t.check("x7", 1, lab, f"{name}: the unlocked pmp6cfg in the same pmpcfg register is written")
+                    set_cfg_byte(t, 6, None)
+
+            lock_layout(t, body)
 
         probe(t, need_u=False)
         rlb_zero(t)
@@ -1393,7 +1471,7 @@ def gen(suite: str) -> list[TestFile]:
 
         L.either(t, "x9", with_rlb, lambda: t.emit("csrci 0x747, 4"))
 
-    pmp_test(t, rlb_body)
+    pmp_test(t, rlb_body, extra=["pmp_napot"])
     tests.append(t)
 
     t = nt("mseccfg_mmwp_op_warl", [*REQ_U, "Smepmp"])
@@ -1463,7 +1541,7 @@ def gen(suite: str) -> list[TestFile]:
 
             guard(t, L.MODE_COND[mode], m)
 
-    pmp_test(t, precise)
+    pmp_test(t, precise, extra=["pmp_napot"])
     tests.append(t)
 
     # ---- pmpcfg layout for entries 8-15 ----
@@ -1566,6 +1644,6 @@ def gen(suite: str) -> list[TestFile]:
             L.either(t, "x9", run, lambda: None)
 
         with t.only_if(f"__riscv_xlen == {xl}"):
-            pmp_test(t, layout)
+            pmp_test(t, layout, extra=["pmp_napot"])
         tests.append(t)
     return tests

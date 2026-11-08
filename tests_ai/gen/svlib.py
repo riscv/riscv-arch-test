@@ -290,6 +290,57 @@ class SvPT:
             if depth < self.levels - 1:
                 tab = child
 
+    def split_rt(self, lab: str, target: str, perms: int = LEAF) -> None:
+        """Map the 4 KiB page at label lab's run-time address (inside the image) to target, keeping the rest of the
+        image identity-mapped: the identity superpage holding lab is replaced, level by level, by tables whose
+        leaves identity-map all of it (filled by setup loops), and lab's 4 KiB leaf then selects target. Call after
+        identity(), with satp Bare. Clobbers x6-x9."""
+        t = self.t
+        t.comment(f"{self.name}: split the identity superpage holding {lab}; {lab} (run-time address) -> {target}")
+        parent = self.pointer(IMG, self.id_depth)
+        for depth in range(self.id_depth, self.levels - 1):
+            shift = self.geo[depth][0]
+            cshift, cbits = self.geo[depth + 1]
+            child = t.pt_table(f"{self.name}_split{depth + 1}")
+            n = 1 << cbits
+            t.comment(f"{child}: {n} identity leaves of {1 << cshift:#x} bytes covering {lab}'s {1 << shift:#x} bytes")
+            t.la("x6", lab)
+            t.emit(f"srli x6, x6, {shift}")
+            t.emit(f"slli x6, x6, {shift - 2}  // PTE PPN field of the region's base")
+            t.emit(f"li x7, {hex(perms)}")
+            t.emit("or x6, x6, x7")
+            t.la("x8", child)
+            t.emit(f"li x9, {n}")
+            t.emit(f"li x7, {hex(1 << (cshift - 2))}  // PPN step of one leaf")
+            loop = t.label("split")
+            t.emit(f"{loop}:", 0)
+            t.emit("SREG x6, 0(x8)", n)
+            t.emit("add x6, x6, x7", n)
+            t.emit(f"addi x8, x8, {self.pte}", n)
+            t.emit("addi x9, x9, -1", n)
+            t.emit(f"bnez x9, {loop}", n)
+            self._slot_rt(lab, depth, parent, child, 1, "pointer to the identity table")
+            parent = child
+        self._slot_rt(lab, self.levels - 1, parent, target, perms, f"{lab} -> {target}")
+
+    def _slot_rt(self, lab: str, depth: int, tab: str, target: str, perms: int, note: str) -> None:
+        """Entry for lab's run-time address in table tab (at `depth`) = a PTE selecting target with perms."""
+        t = self.t
+        shift, bits = self.geo[depth]
+        t.la("x9", lab)
+        t.emit(f"srli x9, x9, {shift}")
+        t.emit(f"slli x9, x9, {self.xlen - bits}")
+        t.emit(f"srli x9, x9, {self.xlen - bits}")
+        t.emit(f"slli x9, x9, {2 if self.pte == 4 else 3}")
+        t.la("x6", target)
+        t.emit("srli x6, x6, 12")
+        t.emit("slli x6, x6, 10")
+        t.emit(f"li x7, {hex(perms)}")
+        t.emit("or x6, x6, x7")
+        t.la("x8", tab)
+        t.emit("add x8, x8, x9")
+        t.emit(f"SREG x6, 0(x8)  // {note}")
+
     def pte_addr(self, addr: int, depth: int, reg: str = "x8") -> None:
         """reg = address of the PTE for addr in the table at `depth` (which must exist). Clobbers x7."""
         tab = self.pointer(addr, depth)

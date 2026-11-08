@@ -117,6 +117,7 @@ MUTANTS = {
     "load_sets_d": "a load sets D",
     "misaligned_superpage_ok": "a superpage with nonzero low PPN bits translates",
     "mode_needs_fence": "satp.MODE -> Bare takes effect only after a fence (VA still translated)",
+    "bare_still_translated": "with satp.MODE = Bare, loads are still translated through the last table",
     "napot_any_low": "N=1 with ppn[3:0]=0000 is treated as a 64 KiB page",
     "napot_fence_by_base": "SFENCE.VMA of page 5 does not remove a NAPOT entry created from page 0",
     "napot_no_subst": "the NAPOT PPN low bits are used as written (no vpn substitution)",
@@ -1504,10 +1505,11 @@ def gen_satp() -> list[SvTest]:
         context="Each scheme's table maps the same VA to a different page, and the walks differ in depth (2, 3, 4, "
         "5 levels), so a MODE decoded as the wrong scheme reads the wrong page or faults.",
         plan="For each paged MODE the hart accepts (probed): satp = that MODE with its own table; lw of the common "
-        "VA reads that table's page. Then MODE=0: no translation (the VA is not mapped to any of the pages: the "
-        "lw either faults with an access fault or reads something else).",
+        "VA reads that table's page, and lw of page Q's address (which each table maps to its page) reads that "
+        "page too. Then MODE=0: no translation (lw of Q's address reads Q itself; Q is in the image, so no access "
+        "leaves known memory).",
     )
-    for n in ("P32", "P39", "P48", "P57"):
+    for n in ("P32", "P39", "P48", "P57", "Q"):
         t.page(n)
 
     def enc_body(xlen: int) -> None:
@@ -1517,6 +1519,7 @@ def gen_satp() -> list[SvTest]:
             pt = SvPT(t, f"e{sch}", sch)
             pt.identity()
             pt.leaf(va, t.page("P" + sch[2:]), LEAF)
+            pt.split_rt("ai_pg_Q", t.page("P" + sch[2:]))
             probe(t, pt)
 
             def run(pt: SvPT = pt, sch: str = sch) -> None:
@@ -1525,10 +1528,11 @@ def gen_satp() -> list[SvTest]:
                 if MUT == "sv48_as_sv39" and sch == "sv48":
                     pid = t.page_id("P39")
                 s_load(t, va, pid, f"MODE {MODE[sch]} translates with the {sch} table")
+                q_load(t, t.page_id("P" + sch[2:]), f"MODE {MODE[sch]}: Q's address maps to P{sch[2:]}")
                 satp_off(t)
 
             guard(t, "x1", run)
-        bare_not(t, va, [t.page_id("P" + s[2:]) for s in schemes], "MODE=0: no translation")
+        bare_not(t, t.page_id("P" + schemes[-1][2:]), "MODE=0: no translation")
 
     both(t, enc_body)
     tests.append(t)
@@ -1573,24 +1577,24 @@ def gen_satp() -> list[SvTest]:
         "SXLEN=32, or bits 59-0 when SXLEN=64).",
         context="A software obligation; what is observable is that the conforming write (all zeros) selects Bare "
         "with all fields zero, from any previous value.",
-        plan="From satp = Sv39/Sv32 | ASID all ones | PPN(root) (probed), csrw satp, x0: satp reads 0 and the next "
-        "lw of a VA mapped only by the table is not translated (it faults with an access fault or reads other "
-        "data).",
+        plan="The table maps page Q's address to page P (the rest of the image stays identity-mapped). From satp = "
+        "Sv39/Sv32 | ASID all ones | PPN(root) (probed; lw of Q's address reads P), csrw satp, x0 (no fence): satp "
+        "reads 0 and the next lw of Q's address is not translated (it reads Q).",
     )
     t.page("P")
+    t.page("Q")
 
     def bz_body(xlen: int) -> None:
         def inner(pt: SvPT) -> None:
-            va = pt.va_t + 0x12000
-            pt.leaf(va, t.page("P"), LEAF)
+            pt.split_rt("ai_pg_Q", t.page("P"))
             pt.on(asid=0xFFFF if xlen == 64 else 0x1FF)
-            s_load(t, va, t.page_id("P"), "translated before")
+            q_load(t, t.page_id("P"), "translated before: Q's address maps to P")
             lab = t.label("z")
             t.emit(f"{lab}:", 0)
             t.emit("csrw satp, x0")
             t.emit("csrr x7, satp")
             t.check("x7", 0, lab, "satp reads 0")
-            bare_not(t, va, [t.page_id("P")], "after writing 0")
+            bare_not(t, t.page_id("P"), "after writing 0")
 
         with_vm(t, xlen, inner)
 
@@ -1604,10 +1608,11 @@ def gen_satp() -> list[SvTest]:
         rule_text="If an implementation supports the Svbare extension, then the satp register's MODE field must be "
         "capable of holding the value Bare.",
         context="Requires Svbare. Bare is written after a paged mode (probed) and from reset state.",
-        plan="1. satp = 0: reads MODE 0.\n2. From Sv39/Sv32 with a table: write 0, satp.MODE reads 0, and a VA mapped "
-        "only by the table is no longer translated.",
+        plan="1. satp = 0: reads MODE 0.\n2. From Sv39/Sv32 with a table that maps page Q's address to page P: write "
+        "0, satp.MODE reads 0, and lw of Q's address is no longer translated (it reads Q).",
     )
     t.page("P")
+    t.page("Q")
 
     def sb_body(xlen: int) -> None:
         lab = t.label("b0")
@@ -1618,17 +1623,16 @@ def gen_satp() -> list[SvTest]:
         t.check("x7", 0, lab, "satp.MODE holds Bare")
 
         def inner(pt: SvPT) -> None:
-            va = pt.va_t + 0x12000
-            pt.leaf(va, t.page("P"), LEAF)
+            pt.split_rt("ai_pg_Q", t.page("P"))
             pt.on()
-            s_load(t, va, t.page_id("P"), "translated in the paged mode")
+            q_load(t, t.page_id("P"), "translated in the paged mode: Q's address maps to P")
             lab = t.label("b1")
             t.emit(f"{lab}:", 0)
             t.emit("csrw satp, x0")
             t.emit("csrr x7, satp")
             t.emit(f"srli x7, x7, {60 if xlen == 64 else 31}")
             t.check("x7", 0, lab, "satp.MODE holds Bare after a paged mode")
-            bare_not(t, va, [t.page_id("P")], "after selecting Bare")
+            bare_not(t, t.page_id("P"), "after selecting Bare")
 
         with_vm(t, xlen, inner)
 
@@ -2126,19 +2130,22 @@ def high_ppn_load(t: SvTest, va: int, pid: int, note: str) -> None:
     t.check_bool("x8", lab, f"{note}: does not alias the page below")
 
 
-def bare_not(t: SvTest, va: int, pids: list, desc: str) -> None:
-    """With translation off, lw of va (a VA mapped only by page tables) must not be translated: an access fault,
-    or data other than the mapped pages' signatures."""
-    t.load("x7", 0, "preset")
-    t.emit(f"li x6, {hex(va)}")
-    lab = win(t, None, "S", ["lw x7, 0(x6)"], ["ok", AF["load"]], f"{desc}: lw of {hex(va)}", tval=[0, va])
-    t.emit("li x9, 1")
-    for p in pids:
-        t.load("x8", lsig(p), "a page's signature")
-        t.emit("xor x8, x8, x7")
-        t.emit("snez x8, x8")
-        t.emit("and x9, x9, x8")
-    t.check_bool("x9", lab, f"{desc}: not translated")
+def q_load(t: SvTest, pid: int, desc: str) -> str:
+    """S-mode lw of page Q's own (physical) address that must succeed (no trap window: a trap fails the test) and
+    read page pid."""
+    lab = t.label("ldq")
+    t.la("x6", "ai_pg_Q")
+    t.emit(f"{lab}:", 0)
+    t.emit("lw x7, 0(x6)")
+    t.check("x7", lsig(pid), lab, desc)
+    return lab
+
+
+def bare_not(t: SvTest, mapped: int, desc: str) -> None:
+    """With translation off, lw of page Q's address, which the paged table mapped to page `mapped` (split_rt), is
+    not translated: VA = PA, so it reads Q itself. Q is inside the image, so the access is to known memory."""
+    pid = mapped if MUT == "bare_still_translated" else t.page_id("Q")
+    q_load(t, pid, f"{desc}: lw of Q's address reads Q (VA = PA), not the page the table maps it to")
 
 
 def alt_table(t: SvTest, pt: SvPT, va: int, page: str, name: str) -> str:
@@ -2782,27 +2789,27 @@ def gen_sfence() -> list[SvTest]:
         "sfence_vma_mode_effect",
         "Changing satp.MODE from Bare to other modes and vice versa also takes effect immediately, without the need "
         "to execute an SFENCE.VMA instruction.",
-        "The VA is mapped only by the table; as a physical address it is not page A (bare_not: access fault or "
-        "other data).",
-        "1. Bare -> Sv39/Sv32 (no fence): the next lw of the VA reads A.\n"
-        "2. -> Bare (no fence): the next lw of the VA is not translated.\n"
+        "The table maps page Q's address to page A and identity-maps the rest of the image, so lw of Q's address "
+        "reads A when translated and Q under Bare.",
+        "1. Bare -> Sv39/Sv32 (no fence): the next lw of Q's address reads A.\n"
+        "2. -> Bare (no fence): the next lw of Q's address is not translated (reads Q).\n"
         "3. -> Sv39/Sv32 again (no fence): A.",
     )
+    t.page("Q")
 
     def mode_eff_body(xlen: int) -> None:
         def inner(pt: SvPT) -> None:
-            va = pt.va_t + 0x31000
-            pt.leaf(va, t.page("A"), LEAF)
+            pt.split_rt("ai_pg_Q", t.page("A"))
             t.emit(SFENCE)
             for i in range(2):
                 pt.on(fence=False)
-                s_load(t, va, t.page_id("A"), f"Bare -> paged ({i + 1})")
+                q_load(t, t.page_id("A"), f"Bare -> paged ({i + 1})")
                 if i == 0:
                     t.emit("csrw satp, x0")
                     if MUT == "mode_needs_fence":
-                        s_load(t, va, t.page_id("A"), "paged -> Bare (mutant: still translated)")
+                        q_load(t, t.page_id("A"), "paged -> Bare (mutant: still translated)")
                     else:
-                        bare_not(t, va, [t.page_id("A")], "paged -> Bare")
+                        bare_not(t, t.page_id("A"), "paged -> Bare")
 
         with_vm(t, xlen, inner)
 

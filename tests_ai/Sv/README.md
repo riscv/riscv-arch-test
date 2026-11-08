@@ -13,6 +13,12 @@ all of them. Mutants are named `Sv:<mutant>`.
   on Sv48/57. S-mode code, the trap handlers and the data keep running once `satp` is written. Test pages sit at
   constant VAs away from the image, so every expected `stval` is a constant. Superpage accesses go to a data page's
   offset inside the superpage, computed at run time, and `stval` is then checked against that address.
+- **Bare.** Tests never touch physical memory outside the image: with translation off, a constant VA would be an
+  arbitrary physical address (a device, or nothing, on a real platform). Tests of Bare (`satp_mode_enc`,
+  `satp_mode_bare_zero_fields`, `svbare_satp_mode_bare`, `sfence_vma_mode_effect`) instead map data page Q's own
+  address to another page: the identity superpage holding Q is split into tables that identity-map all of it at
+  4 KiB (filled by setup loops), except Q's entry. Translated, a load of Q's address reads the other page; under
+  Bare it must read Q.
 - **Data pages.** Every data page holds a signature at offset 0 and a stub at 0x100 (`addi x7, x0, id; jalr x0,
 0(x1)`). A load, a fetch or a store through any mapping shows which physical page it reached. A faulting store is
   checked not to have written.

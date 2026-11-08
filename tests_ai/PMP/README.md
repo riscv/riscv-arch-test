@@ -66,3 +66,5 @@ rest of the machine level is in [`../Sm`](../Sm/README.md).
 - With Smepmp, mseccfg.RLB must be 0 for the lock tests (its reset value); a hart with RLB = 1 runs them as no-ops.
 - A hart may refuse an A value (e.g. cv32a65x has TOR-only PMP: writing NAPOT keeps the old A, and L and RWX are still
   written), so NAPOT/NA4/TOR support is probed rather than assumed (`pmp_csrs_warl_access`).
+- QEMU stores the reserved R = 0, W = 1 pmpcfg encoding with mseccfg.MML = 0, so `pmp_rw01_rsv` fails there
+  ([qemu#4820](https://gitlab.com/qemu-project/qemu/-/work_items/4820)).

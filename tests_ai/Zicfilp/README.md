@@ -37,3 +37,8 @@ Subtleties:
 - The framework's own failure path and trap entries begin with `lpad 0`, and its internal jumps go through x7 (software-guarded), so tests may leave landing pads enabled in the handler's mode. Tests clear every enable at the end.
 - A VS-mode write of sstatus.SPELP is checked in vsstatus only: whether it left mstatus.SPELP alone is not observable, because leaving VS is an ecall into HS, which rewrites mstatus.SPELP.
 - A run-time branch (`TestFile.either`) cannot hold `#ifdef ZCA_SUPPORTED` table entries, so the hedeleg/medeleg-probed cases use a mismatched label instead of a misaligned lpad.
+- QEMU bugs the SPELP/xPELP tests catch: with H, SPELP uses the wrong sstatus/vsstatus copy on traps into HS-mode,
+  on SRET into VS/VU-mode and with henvcfg.LPE = 0 ([qemu#4822](https://gitlab.com/qemu-project/qemu/-/work_items/4822));
+  a trap leaves xPELP unchanged when the trapping mode's LPE is 0
+  ([qemu#4823](https://gitlab.com/qemu-project/qemu/-/work_items/4823)).
+- Imperas accepts AUIPC with rd ≠ x0 as a landing pad when ELP = LP_EXPECTED (Imperas SolvNet case 500WQ00002HbTRgYAN).

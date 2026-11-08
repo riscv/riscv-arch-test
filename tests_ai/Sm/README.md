@@ -108,3 +108,8 @@ misaligned-portion mtval, the variable-length fetch xepc/xtval) and the Smepmp `
 - A misaligned AMO is accepted inside a 16-byte granule (Zama16b), so the AMO case crosses one.
 - mtvec's vector number comes from the framework's trap log (word 0, bits 10:6), computed in `gen_Sm.vect()` from
   the trampoline layout in `tests/env/rvtest_trap_handler.h`.
+- QEMU (RV64 with S) lets mstatus.UXL be set larger than SXL, so `mstatus_uxl_legal_vals_smode` fails there
+  ([qemu#4821](https://gitlab.com/qemu-project/qemu/-/work_items/4821)).
+- Whisper RV32 reads back mstatush.SBE = 1 but keeps S-mode loads and stores little-endian after MRET, so
+  `mstatus_sbe_op` fails on whisper-rv32-max ([whisper#234](https://github.com/tenstorrent/whisper/issues/234), fix
+  [whisper#236](https://github.com/tenstorrent/whisper/pull/236)).

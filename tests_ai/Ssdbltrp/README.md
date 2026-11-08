@@ -65,10 +65,11 @@ The Ssdbltrp chapter (`src/priv/ssdbltrp.adoc`) names the fields (`menvcfg.DTE`,
   ([#3057](https://github.com/riscv/riscv-isa-manual/issues/3057)).
 - A VS-mode double trap goes to M-mode: medeleg[16] is read-only zero.
 - DUT findings (`~/act-wt/dbltrp-findings.md`):
-  - Spike: with DTE=0 after SDT was 1, SIE cannot be set (`menvcfg_dte_op`); the fix for
+  - Spike: with DTE=0 after SDT was 1, SIE cannot be set (`menvcfg_dte_op`, [riscv-isa-sim#2534](https://github.com/riscv-software-src/riscv-isa-sim/issues/2534)); the fix for
     [riscv-isa-sim#2374](https://github.com/riscv-software-src/riscv-isa-sim/issues/2374) covers only the sstatus proxy.
   - Whisper: a trap into VS-mode does not set vsstatus.SDT, a VS trap with vsstatus.SDT=1 is not a double trap, and
-    MRET/MNRET to VU leave vsstatus.SDT (`vsstatus_sdt_op`, `vsstatus_sdt_clr_*_Sm`); SRET is
+    MRET/MNRET to VU leave vsstatus.SDT (`vsstatus_sdt_op`, `vsstatus_sdt_clr_*_Sm`; [whisper#238](https://github.com/tenstorrent/whisper/issues/238), fix in
+    [whisper#240](https://github.com/tenstorrent/whisper/pull/240)); SRET is
     [whisper#228](https://github.com/tenstorrent/whisper/issues/228).
   - QEMU: RV32 henvcfgh accesses raise illegal instruction
     ([qemu#4611](https://gitlab.com/qemu-project/qemu/-/issues/4611)); mstatus.MPV is read-only zero

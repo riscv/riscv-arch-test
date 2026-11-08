@@ -140,38 +140,41 @@ Temporary copies with these changes are in `~/act-wt/ext-cfg/`. The DUT bugs bel
 
 ## Model bugs found
 
-These are candidates, not yet filed. Reproducers are in `~/repros/2026-11-07-<topic>.tar.gz`.
+Each is filed as linked below. Reproducers are in `~/repros/2026-11-07-<topic>.tar.gz`.
 
 - **QEMU** 11.1.2; all four also on 11.1.3 and master 76fdb33:
-  - `qemu-scountinhibit-nondeleg-write`: an scountinhibit write clears the non-delegated mcountinhibit bits.
+  - `qemu-scountinhibit-nondeleg-write`: an scountinhibit write clears the non-delegated mcountinhibit bits
+    ([qemu#4831](https://gitlab.com/qemu-project/qemu/-/work_items/4831)).
   - `qemu-vs-sireg-cde0-virtual`: VS-mode sireg* with vsiselect 0x40-0x5F and CDE=0 raises virtual instead of
-    illegal.
+    illegal ([qemu#4830](https://gitlab.com/qemu-project/qemu/-/work_items/4830)).
   - `qemu-sireg2-cyclecfg-minh`: on RV64, a sireg2 read of cyclecfg/instretcfg clears mcyclecfg.MINH (`&=`). On
-    RV32, sireg5 reads MINH.
+    RV32, sireg5 reads MINH ([qemu#4832](https://gitlab.com/qemu-project/qemu/-/work_items/4832)).
   - `qemu-sireg-counter-rmw`: csrrw through sireg on a delegated counter does not return the old value, and
-    csrrs/csrrc with rs1 != x0 raise illegal instruction.
+    csrrs/csrrc with rs1 != x0 raise illegal instruction
+    ([qemu#4833](https://gitlab.com/qemu-project/qemu/-/work_items/4833)).
 - **QEMU, known issues:**
   - mvien[13]/hvien[13] read-only zero:
     [qemu#3969](https://gitlab.com/qemu-project/qemu/-/work_items/3969), fixed in 11.1.3.
   - RV32 cycle through sireg/sireg4:
     [qemu#4724](https://gitlab.com/qemu-project/qemu/-/work_items/4724) and
-    [#4219](https://gitlab.com/qemu-project/qemu/-/work_items/4219), fixed on master by 57b484e2d232, not in 11.1.x.
+    [qemu#4219](https://gitlab.com/qemu-project/qemu/-/work_items/4219), fixed on master by 57b484e2d232, not in 11.1.x.
 - **Spike** f90d5af:
   - `spike-sireg-counter-write`: any write to a delegated counter or hpmevent through sireg* raises illegal (the
-    proxies are the read-only user counters).
-  - `spike-scountinhibit-nondeleg-write`: the same scountinhibit write bug as QEMU.
+    proxies are the read-only user counters; [riscv-isa-sim#2535](https://github.com/riscv-software-src/riscv-isa-sim/issues/2535)).
+  - `spike-scountinhibit-nondeleg-write`: the same scountinhibit write bug as QEMU ([riscv-isa-sim#2536](https://github.com/riscv-software-src/riscv-isa-sim/issues/2536)).
   - `spike-scountinhibit-vs-vu-cause`: a VS access with CDE=1 does not trap, and a VU access with CDE=0 raises
-    virtual instead of illegal.
-  - `spike-mvien-hvien-lcofi`: mvien[13] and hvien[13] are read-only zero.
-  - `spike-rv32-sireg5-hpmevent31h`: sireg5 at 0x5F raises illegal (off-by-one loop).
-  - `spike-sireg2-cyclecfg-minh`: sireg2/sireg5 show cyclecfg MINH.
+    virtual instead of illegal ([riscv-isa-sim#2537](https://github.com/riscv-software-src/riscv-isa-sim/issues/2537)).
+  - `spike-mvien-hvien-lcofi`: mvien[13] and hvien[13] are read-only zero ([riscv-isa-sim#2538](https://github.com/riscv-software-src/riscv-isa-sim/issues/2538)).
+  - `spike-rv32-sireg5-hpmevent31h`: sireg5 at 0x5F raises illegal (off-by-one loop; [riscv-isa-sim#2539](https://github.com/riscv-software-src/riscv-isa-sim/issues/2539)).
+  - `spike-sireg2-cyclecfg-minh`: sireg2/sireg5 show cyclecfg MINH ([riscv-isa-sim#2540](https://github.com/riscv-software-src/riscv-isa-sim/issues/2540)).
 - **Whisper** 6b8cce1, RV32 only:
   - `whisper-rv32-menvcfgh-cde`: setting menvcfgh.CDE does not enable scountinhibit, because updateSmcdeleg is not
-    called on MENVCFGH writes.
-  - `whisper-rv32-sireg4-not-delegated`: sireg4/sireg5 ignore mcounteren.
-  - `whisper-rv32-sireg5-write-ignored`: sireg5 writes are dropped.
+    called on MENVCFGH writes ([whisper#242](https://github.com/tenstorrent/whisper/issues/242), fix in [whisper#246](https://github.com/tenstorrent/whisper/pull/246)).
+  - `whisper-rv32-sireg4-not-delegated`: sireg4/sireg5 ignore mcounteren ([whisper#243](https://github.com/tenstorrent/whisper/issues/243), fix in [whisper#247](https://github.com/tenstorrent/whisper/pull/247)).
+  - `whisper-rv32-sireg5-write-ignored`: sireg5 writes are dropped ([whisper#244](https://github.com/tenstorrent/whisper/issues/244), fix in [whisper#248](https://github.com/tenstorrent/whisper/pull/248)).
   - `whisper-rv32-vs-siselect-hstateen0h`: VS-mode siselect raises virtual instruction because read64 misses the
     unpaired hstateen0h/mstateen0h. This is the same root cause as the Sscsrind suite's
-    `whisper-rv32-hstateen0h-csrind`.
+    `whisper-rv32-hstateen0h-csrind` ([whisper#237](https://github.com/tenstorrent/whisper/issues/237), fix in [whisper#239](https://github.com/tenstorrent/whisper/pull/239)).
 - **Imperas**, engineering build:
-  - `imperas-cyclecfg-without-smcntrpmf`: sireg2 at 0x40/0x42 does not trap on a hart without Smcntrpmf.
+  - `imperas-cyclecfg-without-smcntrpmf`: sireg2 at 0x40/0x42 does not trap on a hart without Smcntrpmf
+    (Imperas SolvNet case 500WQ00002Hes3lYAB).

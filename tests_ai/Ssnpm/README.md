@@ -37,6 +37,6 @@ to HS-mode (the framework clears hedeleg).
 
 - For VS/VU, MXR is in effect when sstatus.MXR or vsstatus.MXR is 1
   ([#1915](https://github.com/riscv/riscv-isa-manual/issues/1915)). QEMU misses the HS-level case (it keeps HS's MXR
-  in a shadow register while V=1); not yet reported.
+  in a shadow register while V=1; [qemu#4819](https://gitlab.com/qemu-project/qemu/-/work_items/4819)).
 - The hypervisor should HFENCE.GVMA when PMLEN changes with hgatp Sv57x4/Sv48x4 (pm-two-stage); the tests use
   Sv39x4, where XLEN-PMLEN is never below the GPA width, so no fence is needed.

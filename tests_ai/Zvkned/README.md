@@ -56,7 +56,7 @@ One test per `norm:` rule of `src/unpriv/zvk.adoc` for Zvkned, plus the cross-cu
   has its own EMUL (e.g. v12-v13 for VLEN=64) and is broadcast to every vd group; vaeskf1/vaeskf2 are not
   vector-scalar (vs2 is a vector of element groups).
 - The engineering Imperas build processes the prestart group of `.vs` instructions (vaesem.vs, vsm4r.vs) when
-  vstart = 4, so `Zvkned_vstart` fails there (not yet reported upstream). The `.vv` forms are correct.
+  vstart = 4, so `Zvkned_vstart` fails there (Imperas SolvNet case 500WQ00002HfCLoYAN). The `.vv` forms are correct.
 - Spike raises illegal-instruction for a nonzero vstart on these instructions, which `vstart_vtype_dep` permits.
 - vaesz's pseudocode raises illegal-instruction when vstart is not a multiple of EGS; the normative text calls that
   case reserved, so it is not tested.

@@ -15,7 +15,7 @@ smctr/ssctr enabled. Spike and Imperas have no CTR.
 - **Delegation.** medeleg[3] and [8..10] are cleared, so ebreaks and the T-SBI ecalls that leave U, S, VS and VU trap
   to M-mode. With mctrctl.M = 0 the M-mode handler is not recorded.
 - **VS/VU windows.** VS/VU-mode is entered by a T-SBI GOTO_SMODE to HS-mode and an sret, because MRET into V=1 is
-  not usable on QEMU (qemu#4588, #4620). Each window is left with a T-SBI GOTO_MMODE.
+  not usable on QEMU ([qemu#4588](https://gitlab.com/qemu-project/qemu/-/work_items/4588), [qemu#4620](https://gitlab.com/qemu-project/qemu/-/work_items/4620)). Each window is left with a T-SBI GOTO_MMODE.
 - **mctrctl.**
   - Field sweep: U, S, M and BPFRZ are mandatory, and LCOFIFRZ is mandatory with Sscofpmf.
   - The 64-bit read/write behaviour, and the mapping of sctrctl onto mctrctl (M and MTE kept).
@@ -45,7 +45,7 @@ smctr/ssctr enabled. Spike and Imperas have no CTR.
 
 - **LCOFIs come from a real overflow.** mhpmcounter = all ones and the DUT event from `RVMODEL_MHPMEVENT_*`, with no
   xINH bits. QEMU loses counts when xINH filtering is used
-  (`~/repros/2026-11-06-qemu-sscofpmf-xinh-stop-loses-count.tar.gz`). The overflow may already happen during the
+  ([qemu#4817](https://gitlab.com/qemu-project/qemu/-/work_items/4817)). The overflow may already happen during the
   M-mode setup; LCOFIP then stays pending until the window enables the interrupt in the target mode. The wait in the
   target mode is a bounded loop, because QEMU's overflow interrupt arrives late. When that mode is enabled for
   recording, the loop's branches before the interrupt are recorded. Then only FROZEN and "the last record is not
@@ -57,10 +57,10 @@ smctr/ssctr enabled. Spike and Imperas have no CTR.
 
 See `tests_ai/Ssctr/README.md`. Here:
 
-- **Whisper:** the HS->VS sret enable bug (`exttrap_vsm_Sm`, `exttrap_requirements_Sm`,
-  `mstateen_ctr0_qualified_transfer_Sm`). On RV32 also whisper#237 (`sctrdepth_mode_Sm`,
+- **Whisper:** the HS->VS sret enable bug, [whisper#241](https://github.com/tenstorrent/whisper/issues/241) (`exttrap_vsm_Sm`, `exttrap_requirements_Sm`,
+  `mstateen_ctr0_qualified_transfer_Sm`). On RV32 also [whisper#237](https://github.com/tenstorrent/whisper/issues/237) (`sctrdepth_mode_Sm`,
   `mstateen_ctr0_except_indirect_access_Sm`).
 - **QEMU:**
-  - #4433 (`exttrap_vsm_Sm`, `exttrap_requirements_Sm`);
-  - the new sireg stateen bug (`mstateen_ctr0_except_indirect_access_Sm`);
-  - on RV32, #4723 (`sctrstatus_frozen_set_Sm`, `mctrctl_lcofifrz_op_Sm`).
+  - [qemu#4433](https://gitlab.com/qemu-project/qemu/-/work_items/4433) (`exttrap_vsm_Sm`, `exttrap_requirements_Sm`);
+  - the sireg stateen bug, [qemu#4834](https://gitlab.com/qemu-project/qemu/-/work_items/4834) (`mstateen_ctr0_except_indirect_access_Sm`);
+  - on RV32, [qemu#4723](https://gitlab.com/qemu-project/qemu/-/work_items/4723) (`sctrstatus_frozen_set_Sm`, `mctrctl_lcofifrz_op_Sm`).

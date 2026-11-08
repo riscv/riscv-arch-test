@@ -83,7 +83,6 @@ Subtleties:
   ([qemu#4495](https://gitlab.com/qemu-project/qemu/-/work_items/4495)) and ENVCFG/CSRIND/AIA/IMSIC writable without S
   ([qemu#4655](https://gitlab.com/qemu-project/qemu/-/work_items/4655)); on RV32 a write to `mstateen0` clears
   `mstateen0h.ENVCFG` ([qemu#4611](https://gitlab.com/qemu-project/qemu/-/issues/4611)). Imperas let P1P13 be written
-  on RV64 and kept `hstateen` bit 63 read-only; both are fixed in the engineering build. New (see
-  `~/act-wt/smstateen-findings.md`): Whisper RV32 raises virtual-instruction for VS-mode `siselect` with
-  `hstateen0h.CSRIND` = 1; with Zfinx, Sail raises illegal- instead of virtual-instruction for `fcsr` blocked by
-  `hstateen0`/`sstateen0` from VS/VU.
+  on RV64 and kept `hstateen` bit 63 read-only; both are fixed in the engineering build. Whisper RV32 raises
+  virtual-instruction for VS-mode `siselect` with `hstateen0h.CSRIND` = 1 ([whisper#237](https://github.com/tenstorrent/whisper/issues/237)). With Zfinx, Sail raises
+  illegal- instead of virtual-instruction for `fcsr` blocked by `hstateen0`/`sstateen0` from VS/VU ([sail-riscv#2089](https://github.com/riscv/sail-riscv/issues/2089)).

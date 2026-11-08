@@ -49,7 +49,7 @@ The Smdbltrp chapter (`src/priv/smdbltrp.adoc`) only names the extension. The ru
 - The MRET/SRET paragraph applies to MRET, and to SRET executed in M-mode; its U/VS/VU clause is qualified by
   execution in M-mode ([#2870](https://github.com/riscv/riscv-isa-manual/issues/2870)).
 - QEMU RV32: any write of mstatus clears mstatush.MDT, and with MDT=1 csrsi sets MIE (`mstatus_mdt_sz_warl`,
-  `mstatus_mie_set_mdt_0` fail); the same mechanism as
+  `mstatus_mie_set_mdt_0` fail; [qemu#4827](https://gitlab.com/qemu-project/qemu/-/work_items/4827)); the same mechanism as
   [qemu#4488](https://gitlab.com/qemu-project/qemu/-/issues/4488) for MPELP, which mentions MDT as unchecked.
   QEMU's mstatus.MPV is read-only zero ([qemu#4588](https://gitlab.com/qemu-project/qemu/-/work_items/4588)), so the
   VS/VU parts of `mstatus_mdt_clr_mret_sret` fail there.

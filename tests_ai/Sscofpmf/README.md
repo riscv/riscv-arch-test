@@ -127,6 +127,6 @@ There is one test per `norm:` rule about Sscofpmf. The rules come from `src/priv
   - QEMU 11.1.3 on RV32:
     - overflows are lost after a two-half preset ([qemu#4723](https://gitlab.com/qemu-project/qemu/-/work_items/4723));
     - `mhpmcounterh` readback is wrong ([qemu#4724](https://gitlab.com/qemu-project/qemu/-/work_items/4724)).
-  - QEMU 11.1.3 and master on both XLENs, not yet reported: stopping a counter by setting an xINH bit discards the
-    counts it made. Reproducer: `~/repros/2026-11-06-qemu-sscofpmf-xinh-stop-loses-count.tar.gz`. This fails
+  - QEMU 11.1.3 and master on both XLENs: stopping a counter by setting an xINH bit discards the counts it made
+    ([qemu#4817](https://gitlab.com/qemu-project/qemu/-/work_items/4817)). This fails
     `mhpmevent_inh_op`, `mhpmevent_inh_op_Sm` and `hpmcounter_overflow`.

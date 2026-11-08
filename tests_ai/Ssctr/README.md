@@ -88,19 +88,20 @@ DUT bug (list below). With those bugs patched in Whisper, the whole suite passes
 
 ## Model bugs found by this suite
 
-- **Whisper** (not yet filed; reproducers in `~/repros/`):
+- **Whisper** (reproducers in `~/repros/`):
   - On an sret from HS-mode into VS/VU-mode, whether the HS source mode is enabled is decided from vsctrctl.S instead
     of sctrctl.S. `ctrRecordingEnabled` reads SCTRCTL with `peekCsr` after V is set, and SCTRCTL maps to VSCTRCTL then.
-    This fails 14 Ssctr and 3 Smctr tests on both XLENs (`2026-11-07-whisper-ctr-sret-hs-to-vs.tar.gz`).
+    This fails 14 Ssctr and 3 Smctr tests on both XLENs ([whisper#241](https://github.com/tenstorrent/whisper/issues/241), fix in [whisper#245](https://github.com/tenstorrent/whisper/pull/245);
+    `2026-11-07-whisper-ctr-sret-hs-to-vs.tar.gz`).
   - RV32: VS-mode sctrdepth raises illegal-instruction instead of virtual-instruction, and vsireg CTR accesses trap.
     This is [whisper#237](https://github.com/tenstorrent/whisper/issues/237) (high halves of mstateen0h/hstateen0h
-    are lost), fixed by draft PR #239 (`2026-11-07-whisper-rv32-ctr-stateen-high.tar.gz`).
-- **QEMU, new** (`2026-11-07-qemu-ctr-sireg-stateen.tar.gz`): sireg*/vsireg* accesses with siselect in 0x200..0x2FF
+    are lost), fixed by draft PR [whisper#239](https://github.com/tenstorrent/whisper/pull/239) (`2026-11-07-whisper-rv32-ctr-stateen-high.tar.gz`).
+- **QEMU, new** ([qemu#4834](https://gitlab.com/qemu-project/qemu/-/work_items/4834); `2026-11-07-qemu-ctr-sireg-stateen.tar.gz`): sireg*/vsireg* accesses with siselect in 0x200..0x2FF
   ignore mstateen0.CTR and hstateen0.CTR (`hstateen_vs`, `mstateen_ctr0_except_indirect_access_Sm`).
 - **QEMU, already reported:**
-  - [#4433](https://gitlab.com/qemu-project/qemu/-/work_items/4433): VS external traps require vsctrctl.STE
+  - [qemu#4433](https://gitlab.com/qemu-project/qemu/-/work_items/4433): VS external traps require vsctrctl.STE
     (`exttrap_vshs`, `exttrap_ctrtarget0`, `exttrap_vsm_Sm`, `exttrap_requirements_Sm`).
-  - [#4434](https://gitlab.com/qemu-project/qemu/-/work_items/4434): V-transition traps use mctrctl filters
+  - [qemu#4434](https://gitlab.com/qemu-project/qemu/-/work_items/4434): V-transition traps use mctrctl filters
     (`ctr_behavior_criteria_transfer_type`).
-  - RV32: [#4611](https://gitlab.com/qemu-project/qemu/-/work_items/4611) (hstateen0h SE0 cleared) and
-    [#4723](https://gitlab.com/qemu-project/qemu/-/work_items/4723) (overflows lost).
+  - RV32: [qemu#4611](https://gitlab.com/qemu-project/qemu/-/work_items/4611) (hstateen0h SE0 cleared) and
+    [qemu#4723](https://gitlab.com/qemu-project/qemu/-/work_items/4723) (overflows lost).

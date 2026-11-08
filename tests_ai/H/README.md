@@ -131,19 +131,32 @@ tables, memory-fault checks).
 ## Model bugs found by this suite
 
 - **Whisper:**
-  - [#227](https://github.com/tenstorrent/whisper/issues/227): with TVM=1, a VS/VU write of hgatp/satp raises
+  - [whisper#227](https://github.com/tenstorrent/whisper/issues/227): with TVM=1, a VS/VU write of hgatp/satp raises
     illegal- instead of virtual-instruction.
-  - [#228](https://github.com/tenstorrent/whisper/issues/228): SRET does not clear vsstatus.SDT.
-  - [#229](https://github.com/tenstorrent/whisper/issues/229): HFENCE uses all of rs2 as the VMID/ASID.
+  - [whisper#228](https://github.com/tenstorrent/whisper/issues/228): SRET does not clear vsstatus.SDT.
+  - [whisper#229](https://github.com/tenstorrent/whisper/issues/229): HFENCE uses all of rs2 as the VMID/ASID.
     Ignoring bits above VMIDMAX/ASIDMAX is only recommended ("should"), so the tests accept either outcome there;
     the mandatory part (bits MAX-1:LEN) runs only on harts with LEN < MAX.
 - **Spike:** [riscv-isa-sim#2531](https://github.com/riscv-software-src/riscv-isa-sim/issues/2531): hip.VSEIP stays
   set after VGEIN changes to 0.
 - **QEMU, new:**
-  - [#4812](https://gitlab.com/qemu-project/qemu/-/work_items/4812): VS-mode FP/vector CSR writes do not dirty
+  - [qemu#4812](https://gitlab.com/qemu-project/qemu/-/work_items/4812): VS-mode FP/vector CSR writes do not dirty
     sstatus.FS/VS.
-  - [#4813](https://gitlab.com/qemu-project/qemu/-/work_items/4813): a VS ebreak leaves hstatus.GVA=0.
-  - [#4814](https://gitlab.com/qemu-project/qemu/-/work_items/4814): hideleg bits 63:16 are writable.
-  - [#4815](https://gitlab.com/qemu-project/qemu/-/work_items/4815): HLV/HSV ignore henvcfg.ADUE/PBMTE.
-- **QEMU, already reported:** #4420, #4588, #4589, #4591, #4592, #4594, #4595, #4597, #4611, #4612, #4615, #4620,
-  #4787, #4809, #3621.
+  - [qemu#4813](https://gitlab.com/qemu-project/qemu/-/work_items/4813): a VS ebreak leaves hstatus.GVA=0.
+  - [qemu#4814](https://gitlab.com/qemu-project/qemu/-/work_items/4814): hideleg bits 63:16 are writable.
+  - [qemu#4815](https://gitlab.com/qemu-project/qemu/-/work_items/4815): HLV/HSV ignore henvcfg.ADUE/PBMTE.
+- **QEMU, already reported:** [qemu#4420](https://gitlab.com/qemu-project/qemu/-/work_items/4420),
+  [qemu#4588](https://gitlab.com/qemu-project/qemu/-/work_items/4588),
+  [qemu#4589](https://gitlab.com/qemu-project/qemu/-/work_items/4589),
+  [qemu#4591](https://gitlab.com/qemu-project/qemu/-/work_items/4591),
+  [qemu#4592](https://gitlab.com/qemu-project/qemu/-/work_items/4592),
+  [qemu#4594](https://gitlab.com/qemu-project/qemu/-/work_items/4594),
+  [qemu#4595](https://gitlab.com/qemu-project/qemu/-/work_items/4595),
+  [qemu#4597](https://gitlab.com/qemu-project/qemu/-/work_items/4597),
+  [qemu#4611](https://gitlab.com/qemu-project/qemu/-/work_items/4611),
+  [qemu#4612](https://gitlab.com/qemu-project/qemu/-/work_items/4612),
+  [qemu#4615](https://gitlab.com/qemu-project/qemu/-/work_items/4615),
+  [qemu#4620](https://gitlab.com/qemu-project/qemu/-/work_items/4620),
+  [qemu#4787](https://gitlab.com/qemu-project/qemu/-/work_items/4787),
+  [qemu#4809](https://gitlab.com/qemu-project/qemu/-/work_items/4809),
+  [qemu#3621](https://gitlab.com/qemu-project/qemu/-/work_items/3621).

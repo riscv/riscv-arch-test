@@ -29,7 +29,7 @@ M-mode and writes mseccfg.PMM directly.
 ## Subtleties
 
 - QEMU: mseccfg.PMM cannot be cleared once set (it is treated as an Smepmp sticky bit), and a write of 01 is
-  stored and aborts QEMU on the next access (not yet reported; reproducer in the findings).
+  stored and aborts QEMU on the next access ([qemu#4818](https://gitlab.com/qemu-project/qemu/-/work_items/4818)).
 
 - MXR is never in effect for M-mode ([#3313](https://github.com/riscv/riscv-isa-manual/issues/3313)).
 - Zero versus sign extension of a physical address is observable only when bit XLEN-PMLEN-1 is set, which makes the

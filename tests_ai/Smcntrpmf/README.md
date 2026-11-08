@@ -35,6 +35,6 @@ for unimplemented modes (run on M-only and M/U harts too).
   returns the value before its own retirement; `instret_xret` relies on both.
 - mcounteren does not exist on M-only harts; the instret reads below M are guarded by U_SUPPORTED.
 - QEMU: VS/VU are never entered from M-mode (mstatus.MPV read-only zero,
-  <https://gitlab.com/qemu-project/qemu/-/work_items/4588>, #4620), so the VS/VU cases of the counting tests
-  fail there. mcyclecfg OF writable is <https://gitlab.com/qemu-project/qemu/-/work_items/4441>; RV32 minstretcfg
-  write clears minstretcfgh is #4617.
+  [qemu#4588](https://gitlab.com/qemu-project/qemu/-/work_items/4588), [qemu#4620](https://gitlab.com/qemu-project/qemu/-/work_items/4620)), so the VS/VU cases of the counting tests
+  fail there. mcyclecfg OF writable is [qemu#4441](https://gitlab.com/qemu-project/qemu/-/work_items/4441); RV32 minstretcfg
+  write clears minstretcfgh is [qemu#4617](https://gitlab.com/qemu-project/qemu/-/work_items/4617).

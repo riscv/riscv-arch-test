@@ -43,6 +43,6 @@ One test per `norm:` rule of `src/unpriv/zvk.adoc` for Zvknhb, plus the cross-cu
 - VLEN, ELEN and LMUL support are read at run time: EGW cases with fractional LMUL are illegal at VLEN=128 but legal
   at VLEN=1024 (mf2 with SEW=32), and vill LMULs must trap too.
 - Sail 0.16 does not raise illegal-instruction for vsha2ch/vsha2cl/vsha2ms when LMUL*VLEN < EGW
-  (`zvknhab_check_encdec` passes SEW as the EGW; not yet reported upstream), so `veccrypto_lmul_egwconstr` fails on
+  (`zvknhab_check_encdec` passes SEW as the EGW; [sail-riscv#2088](https://github.com/riscv/sail-riscv/issues/2088)), so `veccrypto_lmul_egwconstr` fails on
   VLEN=128 Sail configurations such as `sail-RVB23S64-optional`. The VLEN=1024 max configurations never reach the
   case.

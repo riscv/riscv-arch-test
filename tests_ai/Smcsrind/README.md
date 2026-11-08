@@ -98,16 +98,18 @@ model bugs listed at the end.
 
 ## Model bugs found by this suite
 
-- **QEMU** (new, not reported): with mstateen0.CSRIND = 0, VS/VU accesses to vsiselect/vsireg* and VU accesses to
+- **QEMU:** with mstateen0.CSRIND = 0, VS/VU accesses to vsiselect/vsireg* and VU accesses to
   siselect/sireg* raise virtual- instead of illegal-instruction; the stateen check runs after the privilege check
-  (the CSRIND counterpart of [qemu#4614](https://gitlab.com/qemu-project/qemu/-/issues/4614)).
+  (the CSRIND counterpart of [qemu#4614](https://gitlab.com/qemu-project/qemu/-/issues/4614), reported there in
+  [a comment](https://gitlab.com/qemu-project/qemu/-/work_items/4614#note_4184181856)).
   `Sscsrind_csrs_access_control` fails on both XLENs. On RV32, three more tests fail from the known
   [qemu#4611](https://gitlab.com/qemu-project/qemu/-/issues/4611) (HS-mode loses hstateen0h after the boot).
 - **Spike:** with mstateen0.CSRIND = 0, VU-mode sireg* raises virtual- instead of illegal-instruction
   ([riscv-isa-sim#2082](https://github.com/riscv-software-src/riscv-isa-sim/issues/2082), closed but still present on
-  master). The older Spike also raised virtual-instruction for VU-mode mireg
+  master; reopening requested in
+  [a comment](https://github.com/riscv-software-src/riscv-isa-sim/issues/2082#issuecomment-6708414832)). The older Spike also raised virtual-instruction for VU-mode mireg
   ([riscv-isa-sim#2501](https://github.com/riscv-software-src/riscv-isa-sim/issues/2501), fixed).
 - **Whisper RV32:** the CSRIND checks read mstateen0/hstateen0 without their high halves, so VS-mode siselect/sireg
   trap with hstateen0h.CSRIND = 1, and a VS sireg access with hstateen0.CSRIND = 0 and vsiselect = 0x40 raises
   illegal-instruction ([whisper#237](https://github.com/tenstorrent/whisper/issues/237)); seven tests fail, and all
-  pass with the fix in draft PR #239.
+  pass with the fix in draft PR [whisper#239](https://github.com/tenstorrent/whisper/pull/239).

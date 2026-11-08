@@ -10,5 +10,5 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
-    ExceptionsZvfhmin_vfncvt_f_f_w_sew16_cg = new(); ExceptionsZvfhmin_vfncvt_f_f_w_cg.set_inst_name("obj_ExceptionsZvfhmin_vfncvt_f_f_w");
-    ExceptionsZvfhmin_vfwcvt_f_f_v_sew16_cg = new(); ExceptionsZvfhmin_vfwcvt_f_f_v_cg.set_inst_name("obj_ExceptionsZvfhmin_vfwcvt_f_f_v");
+    ExceptionsZvfhmin_vfncvt_f_f_w_sew16_cg = new(); ExceptionsZvfhmin_vfncvt_f_f_w_sew16_cg.set_inst_name("obj_ExceptionsZvfhmin_vfncvt_f_f_w_sew16");
+    ExceptionsZvfhmin_vfwcvt_f_f_v_sew16_cg = new(); ExceptionsZvfhmin_vfwcvt_f_f_v_sew16_cg.set_inst_name("obj_ExceptionsZvfhmin_vfwcvt_f_f_v_sew16");

@@ -20679,100 +20679,100 @@ function void exceptionsv_sample(int hart, int issue, ins_t ins);
         case (traceDataQ[hart][issue][0].inst_name)
 `ifdef UDB_MXLEN_32
         "vloxei64.v"     : begin
-            ExceptionsV_vloxei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vloxei64_v_sew8_cg.sample(ins);
         end
         "vloxseg2ei64.v"     : begin
-            ExceptionsV_vloxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vloxseg2ei64_v_sew8_cg.sample(ins);
         end
         "vloxseg3ei64.v"     : begin
-            ExceptionsV_vloxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vloxseg3ei64_v_sew8_cg.sample(ins);
         end
         "vloxseg4ei64.v"     : begin
-            ExceptionsV_vloxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vloxseg4ei64_v_sew8_cg.sample(ins);
         end
         "vloxseg5ei64.v"     : begin
-            ExceptionsV_vloxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vloxseg5ei64_v_sew8_cg.sample(ins);
         end
         "vloxseg6ei64.v"     : begin
-            ExceptionsV_vloxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vloxseg6ei64_v_sew8_cg.sample(ins);
         end
         "vloxseg7ei64.v"     : begin
-            ExceptionsV_vloxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vloxseg7ei64_v_sew8_cg.sample(ins);
         end
         "vloxseg8ei64.v"     : begin
-            ExceptionsV_vloxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vloxseg8ei64_v_sew8_cg.sample(ins);
         end
         "vluxei64.v"     : begin
-            ExceptionsV_vluxei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vluxei64_v_sew8_cg.sample(ins);
         end
         "vluxseg2ei64.v"     : begin
-            ExceptionsV_vluxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vluxseg2ei64_v_sew8_cg.sample(ins);
         end
         "vluxseg3ei64.v"     : begin
-            ExceptionsV_vluxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vluxseg3ei64_v_sew8_cg.sample(ins);
         end
         "vluxseg4ei64.v"     : begin
-            ExceptionsV_vluxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vluxseg4ei64_v_sew8_cg.sample(ins);
         end
         "vluxseg5ei64.v"     : begin
-            ExceptionsV_vluxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vluxseg5ei64_v_sew8_cg.sample(ins);
         end
         "vluxseg6ei64.v"     : begin
-            ExceptionsV_vluxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vluxseg6ei64_v_sew8_cg.sample(ins);
         end
         "vluxseg7ei64.v"     : begin
-            ExceptionsV_vluxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vluxseg7ei64_v_sew8_cg.sample(ins);
         end
         "vluxseg8ei64.v"     : begin
-            ExceptionsV_vluxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vluxseg8ei64_v_sew8_cg.sample(ins);
         end
         "vsoxei64.v"     : begin
-            ExceptionsV_vsoxei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsoxei64_v_sew8_cg.sample(ins);
         end
         "vsoxseg2ei64.v"     : begin
-            ExceptionsV_vsoxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsoxseg2ei64_v_sew8_cg.sample(ins);
         end
         "vsoxseg3ei64.v"     : begin
-            ExceptionsV_vsoxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsoxseg3ei64_v_sew8_cg.sample(ins);
         end
         "vsoxseg4ei64.v"     : begin
-            ExceptionsV_vsoxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsoxseg4ei64_v_sew8_cg.sample(ins);
         end
         "vsoxseg5ei64.v"     : begin
-            ExceptionsV_vsoxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsoxseg5ei64_v_sew8_cg.sample(ins);
         end
         "vsoxseg6ei64.v"     : begin
-            ExceptionsV_vsoxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsoxseg6ei64_v_sew8_cg.sample(ins);
         end
         "vsoxseg7ei64.v"     : begin
-            ExceptionsV_vsoxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsoxseg7ei64_v_sew8_cg.sample(ins);
         end
         "vsoxseg8ei64.v"     : begin
-            ExceptionsV_vsoxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsoxseg8ei64_v_sew8_cg.sample(ins);
         end
         "vsuxei64.v"     : begin
-            ExceptionsV_vsuxei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsuxei64_v_sew8_cg.sample(ins);
         end
         "vsuxseg2ei64.v"     : begin
-            ExceptionsV_vsuxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsuxseg2ei64_v_sew8_cg.sample(ins);
         end
         "vsuxseg3ei64.v"     : begin
-            ExceptionsV_vsuxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsuxseg3ei64_v_sew8_cg.sample(ins);
         end
         "vsuxseg4ei64.v"     : begin
-            ExceptionsV_vsuxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsuxseg4ei64_v_sew8_cg.sample(ins);
         end
         "vsuxseg5ei64.v"     : begin
-            ExceptionsV_vsuxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsuxseg5ei64_v_sew8_cg.sample(ins);
         end
         "vsuxseg6ei64.v"     : begin
-            ExceptionsV_vsuxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsuxseg6ei64_v_sew8_cg.sample(ins);
         end
         "vsuxseg7ei64.v"     : begin
-            ExceptionsV_vsuxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsuxseg7ei64_v_sew8_cg.sample(ins);
         end
         "vsuxseg8ei64.v"     : begin
-            ExceptionsV_vsuxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsuxseg8ei64_v_sew8_cg.sample(ins);
         end
 `endif
             default: ; // a case needs at least one item, and some configurations select none
@@ -20786,100 +20786,100 @@ function void exceptionsv_sample(int hart, int issue, ins_t ins);
         case (traceDataQ[hart][issue][0].inst_name)
 `ifdef UDB_MXLEN_32
         "vloxei64.v"     : begin
-            ExceptionsV_vloxei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vloxei64_v_sew16_cg.sample(ins);
         end
         "vloxseg2ei64.v"     : begin
-            ExceptionsV_vloxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vloxseg2ei64_v_sew16_cg.sample(ins);
         end
         "vloxseg3ei64.v"     : begin
-            ExceptionsV_vloxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vloxseg3ei64_v_sew16_cg.sample(ins);
         end
         "vloxseg4ei64.v"     : begin
-            ExceptionsV_vloxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vloxseg4ei64_v_sew16_cg.sample(ins);
         end
         "vloxseg5ei64.v"     : begin
-            ExceptionsV_vloxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vloxseg5ei64_v_sew16_cg.sample(ins);
         end
         "vloxseg6ei64.v"     : begin
-            ExceptionsV_vloxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vloxseg6ei64_v_sew16_cg.sample(ins);
         end
         "vloxseg7ei64.v"     : begin
-            ExceptionsV_vloxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vloxseg7ei64_v_sew16_cg.sample(ins);
         end
         "vloxseg8ei64.v"     : begin
-            ExceptionsV_vloxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vloxseg8ei64_v_sew16_cg.sample(ins);
         end
         "vluxei64.v"     : begin
-            ExceptionsV_vluxei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vluxei64_v_sew16_cg.sample(ins);
         end
         "vluxseg2ei64.v"     : begin
-            ExceptionsV_vluxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vluxseg2ei64_v_sew16_cg.sample(ins);
         end
         "vluxseg3ei64.v"     : begin
-            ExceptionsV_vluxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vluxseg3ei64_v_sew16_cg.sample(ins);
         end
         "vluxseg4ei64.v"     : begin
-            ExceptionsV_vluxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vluxseg4ei64_v_sew16_cg.sample(ins);
         end
         "vluxseg5ei64.v"     : begin
-            ExceptionsV_vluxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vluxseg5ei64_v_sew16_cg.sample(ins);
         end
         "vluxseg6ei64.v"     : begin
-            ExceptionsV_vluxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vluxseg6ei64_v_sew16_cg.sample(ins);
         end
         "vluxseg7ei64.v"     : begin
-            ExceptionsV_vluxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vluxseg7ei64_v_sew16_cg.sample(ins);
         end
         "vluxseg8ei64.v"     : begin
-            ExceptionsV_vluxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vluxseg8ei64_v_sew16_cg.sample(ins);
         end
         "vsoxei64.v"     : begin
-            ExceptionsV_vsoxei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsoxei64_v_sew16_cg.sample(ins);
         end
         "vsoxseg2ei64.v"     : begin
-            ExceptionsV_vsoxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsoxseg2ei64_v_sew16_cg.sample(ins);
         end
         "vsoxseg3ei64.v"     : begin
-            ExceptionsV_vsoxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsoxseg3ei64_v_sew16_cg.sample(ins);
         end
         "vsoxseg4ei64.v"     : begin
-            ExceptionsV_vsoxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsoxseg4ei64_v_sew16_cg.sample(ins);
         end
         "vsoxseg5ei64.v"     : begin
-            ExceptionsV_vsoxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsoxseg5ei64_v_sew16_cg.sample(ins);
         end
         "vsoxseg6ei64.v"     : begin
-            ExceptionsV_vsoxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsoxseg6ei64_v_sew16_cg.sample(ins);
         end
         "vsoxseg7ei64.v"     : begin
-            ExceptionsV_vsoxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsoxseg7ei64_v_sew16_cg.sample(ins);
         end
         "vsoxseg8ei64.v"     : begin
-            ExceptionsV_vsoxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsoxseg8ei64_v_sew16_cg.sample(ins);
         end
         "vsuxei64.v"     : begin
-            ExceptionsV_vsuxei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsuxei64_v_sew16_cg.sample(ins);
         end
         "vsuxseg2ei64.v"     : begin
-            ExceptionsV_vsuxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsuxseg2ei64_v_sew16_cg.sample(ins);
         end
         "vsuxseg3ei64.v"     : begin
-            ExceptionsV_vsuxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsuxseg3ei64_v_sew16_cg.sample(ins);
         end
         "vsuxseg4ei64.v"     : begin
-            ExceptionsV_vsuxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsuxseg4ei64_v_sew16_cg.sample(ins);
         end
         "vsuxseg5ei64.v"     : begin
-            ExceptionsV_vsuxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsuxseg5ei64_v_sew16_cg.sample(ins);
         end
         "vsuxseg6ei64.v"     : begin
-            ExceptionsV_vsuxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsuxseg6ei64_v_sew16_cg.sample(ins);
         end
         "vsuxseg7ei64.v"     : begin
-            ExceptionsV_vsuxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsuxseg7ei64_v_sew16_cg.sample(ins);
         end
         "vsuxseg8ei64.v"     : begin
-            ExceptionsV_vsuxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsuxseg8ei64_v_sew16_cg.sample(ins);
         end
 `endif
             default: ; // a case needs at least one item, and some configurations select none
@@ -20893,100 +20893,100 @@ function void exceptionsv_sample(int hart, int issue, ins_t ins);
         case (traceDataQ[hart][issue][0].inst_name)
 `ifdef UDB_MXLEN_32
         "vloxei64.v"     : begin
-            ExceptionsV_vloxei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vloxei64_v_sew32_cg.sample(ins);
         end
         "vloxseg2ei64.v"     : begin
-            ExceptionsV_vloxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vloxseg2ei64_v_sew32_cg.sample(ins);
         end
         "vloxseg3ei64.v"     : begin
-            ExceptionsV_vloxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vloxseg3ei64_v_sew32_cg.sample(ins);
         end
         "vloxseg4ei64.v"     : begin
-            ExceptionsV_vloxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vloxseg4ei64_v_sew32_cg.sample(ins);
         end
         "vloxseg5ei64.v"     : begin
-            ExceptionsV_vloxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vloxseg5ei64_v_sew32_cg.sample(ins);
         end
         "vloxseg6ei64.v"     : begin
-            ExceptionsV_vloxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vloxseg6ei64_v_sew32_cg.sample(ins);
         end
         "vloxseg7ei64.v"     : begin
-            ExceptionsV_vloxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vloxseg7ei64_v_sew32_cg.sample(ins);
         end
         "vloxseg8ei64.v"     : begin
-            ExceptionsV_vloxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vloxseg8ei64_v_sew32_cg.sample(ins);
         end
         "vluxei64.v"     : begin
-            ExceptionsV_vluxei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vluxei64_v_sew32_cg.sample(ins);
         end
         "vluxseg2ei64.v"     : begin
-            ExceptionsV_vluxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vluxseg2ei64_v_sew32_cg.sample(ins);
         end
         "vluxseg3ei64.v"     : begin
-            ExceptionsV_vluxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vluxseg3ei64_v_sew32_cg.sample(ins);
         end
         "vluxseg4ei64.v"     : begin
-            ExceptionsV_vluxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vluxseg4ei64_v_sew32_cg.sample(ins);
         end
         "vluxseg5ei64.v"     : begin
-            ExceptionsV_vluxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vluxseg5ei64_v_sew32_cg.sample(ins);
         end
         "vluxseg6ei64.v"     : begin
-            ExceptionsV_vluxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vluxseg6ei64_v_sew32_cg.sample(ins);
         end
         "vluxseg7ei64.v"     : begin
-            ExceptionsV_vluxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vluxseg7ei64_v_sew32_cg.sample(ins);
         end
         "vluxseg8ei64.v"     : begin
-            ExceptionsV_vluxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vluxseg8ei64_v_sew32_cg.sample(ins);
         end
         "vsoxei64.v"     : begin
-            ExceptionsV_vsoxei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsoxei64_v_sew32_cg.sample(ins);
         end
         "vsoxseg2ei64.v"     : begin
-            ExceptionsV_vsoxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsoxseg2ei64_v_sew32_cg.sample(ins);
         end
         "vsoxseg3ei64.v"     : begin
-            ExceptionsV_vsoxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsoxseg3ei64_v_sew32_cg.sample(ins);
         end
         "vsoxseg4ei64.v"     : begin
-            ExceptionsV_vsoxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsoxseg4ei64_v_sew32_cg.sample(ins);
         end
         "vsoxseg5ei64.v"     : begin
-            ExceptionsV_vsoxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsoxseg5ei64_v_sew32_cg.sample(ins);
         end
         "vsoxseg6ei64.v"     : begin
-            ExceptionsV_vsoxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsoxseg6ei64_v_sew32_cg.sample(ins);
         end
         "vsoxseg7ei64.v"     : begin
-            ExceptionsV_vsoxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsoxseg7ei64_v_sew32_cg.sample(ins);
         end
         "vsoxseg8ei64.v"     : begin
-            ExceptionsV_vsoxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsoxseg8ei64_v_sew32_cg.sample(ins);
         end
         "vsuxei64.v"     : begin
-            ExceptionsV_vsuxei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsuxei64_v_sew32_cg.sample(ins);
         end
         "vsuxseg2ei64.v"     : begin
-            ExceptionsV_vsuxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsuxseg2ei64_v_sew32_cg.sample(ins);
         end
         "vsuxseg3ei64.v"     : begin
-            ExceptionsV_vsuxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsuxseg3ei64_v_sew32_cg.sample(ins);
         end
         "vsuxseg4ei64.v"     : begin
-            ExceptionsV_vsuxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsuxseg4ei64_v_sew32_cg.sample(ins);
         end
         "vsuxseg5ei64.v"     : begin
-            ExceptionsV_vsuxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsuxseg5ei64_v_sew32_cg.sample(ins);
         end
         "vsuxseg6ei64.v"     : begin
-            ExceptionsV_vsuxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsuxseg6ei64_v_sew32_cg.sample(ins);
         end
         "vsuxseg7ei64.v"     : begin
-            ExceptionsV_vsuxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsuxseg7ei64_v_sew32_cg.sample(ins);
         end
         "vsuxseg8ei64.v"     : begin
-            ExceptionsV_vsuxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsuxseg8ei64_v_sew32_cg.sample(ins);
         end
 `endif
             default: ; // a case needs at least one item, and some configurations select none
@@ -20999,125 +20999,125 @@ function void exceptionsv_sample(int hart, int issue, ins_t ins);
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
         "vmulh.vv"     : begin
-            ExceptionsV_vmulh_vv_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vmulh_vv_sew64_cg.sample(ins);
         end
         "vmulh.vx"     : begin
-            ExceptionsV_vmulh_vx_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vmulh_vx_sew64_cg.sample(ins);
         end
         "vmulhsu.vv"     : begin
-            ExceptionsV_vmulhsu_vv_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vmulhsu_vv_sew64_cg.sample(ins);
         end
         "vmulhsu.vx"     : begin
-            ExceptionsV_vmulhsu_vx_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vmulhsu_vx_sew64_cg.sample(ins);
         end
         "vmulhu.vv"     : begin
-            ExceptionsV_vmulhu_vv_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vmulhu_vv_sew64_cg.sample(ins);
         end
         "vmulhu.vx"     : begin
-            ExceptionsV_vmulhu_vx_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vmulhu_vx_sew64_cg.sample(ins);
         end
         "vsmul.vv"     : begin
-            ExceptionsV_vsmul_vv_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsmul_vv_sew64_cg.sample(ins);
         end
         "vsmul.vx"     : begin
-            ExceptionsV_vsmul_vx_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsmul_vx_sew64_cg.sample(ins);
         end
 `ifdef UDB_MXLEN_32
         "vloxei64.v"     : begin
-            ExceptionsV_vloxei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vloxei64_v_sew64_cg.sample(ins);
         end
         "vloxseg2ei64.v"     : begin
-            ExceptionsV_vloxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vloxseg2ei64_v_sew64_cg.sample(ins);
         end
         "vloxseg3ei64.v"     : begin
-            ExceptionsV_vloxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vloxseg3ei64_v_sew64_cg.sample(ins);
         end
         "vloxseg4ei64.v"     : begin
-            ExceptionsV_vloxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vloxseg4ei64_v_sew64_cg.sample(ins);
         end
         "vloxseg5ei64.v"     : begin
-            ExceptionsV_vloxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vloxseg5ei64_v_sew64_cg.sample(ins);
         end
         "vloxseg6ei64.v"     : begin
-            ExceptionsV_vloxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vloxseg6ei64_v_sew64_cg.sample(ins);
         end
         "vloxseg7ei64.v"     : begin
-            ExceptionsV_vloxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vloxseg7ei64_v_sew64_cg.sample(ins);
         end
         "vloxseg8ei64.v"     : begin
-            ExceptionsV_vloxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vloxseg8ei64_v_sew64_cg.sample(ins);
         end
         "vluxei64.v"     : begin
-            ExceptionsV_vluxei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vluxei64_v_sew64_cg.sample(ins);
         end
         "vluxseg2ei64.v"     : begin
-            ExceptionsV_vluxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vluxseg2ei64_v_sew64_cg.sample(ins);
         end
         "vluxseg3ei64.v"     : begin
-            ExceptionsV_vluxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vluxseg3ei64_v_sew64_cg.sample(ins);
         end
         "vluxseg4ei64.v"     : begin
-            ExceptionsV_vluxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vluxseg4ei64_v_sew64_cg.sample(ins);
         end
         "vluxseg5ei64.v"     : begin
-            ExceptionsV_vluxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vluxseg5ei64_v_sew64_cg.sample(ins);
         end
         "vluxseg6ei64.v"     : begin
-            ExceptionsV_vluxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vluxseg6ei64_v_sew64_cg.sample(ins);
         end
         "vluxseg7ei64.v"     : begin
-            ExceptionsV_vluxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vluxseg7ei64_v_sew64_cg.sample(ins);
         end
         "vluxseg8ei64.v"     : begin
-            ExceptionsV_vluxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vluxseg8ei64_v_sew64_cg.sample(ins);
         end
         "vsoxei64.v"     : begin
-            ExceptionsV_vsoxei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsoxei64_v_sew64_cg.sample(ins);
         end
         "vsoxseg2ei64.v"     : begin
-            ExceptionsV_vsoxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsoxseg2ei64_v_sew64_cg.sample(ins);
         end
         "vsoxseg3ei64.v"     : begin
-            ExceptionsV_vsoxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsoxseg3ei64_v_sew64_cg.sample(ins);
         end
         "vsoxseg4ei64.v"     : begin
-            ExceptionsV_vsoxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsoxseg4ei64_v_sew64_cg.sample(ins);
         end
         "vsoxseg5ei64.v"     : begin
-            ExceptionsV_vsoxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsoxseg5ei64_v_sew64_cg.sample(ins);
         end
         "vsoxseg6ei64.v"     : begin
-            ExceptionsV_vsoxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsoxseg6ei64_v_sew64_cg.sample(ins);
         end
         "vsoxseg7ei64.v"     : begin
-            ExceptionsV_vsoxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsoxseg7ei64_v_sew64_cg.sample(ins);
         end
         "vsoxseg8ei64.v"     : begin
-            ExceptionsV_vsoxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsoxseg8ei64_v_sew64_cg.sample(ins);
         end
         "vsuxei64.v"     : begin
-            ExceptionsV_vsuxei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsuxei64_v_sew64_cg.sample(ins);
         end
         "vsuxseg2ei64.v"     : begin
-            ExceptionsV_vsuxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsuxseg2ei64_v_sew64_cg.sample(ins);
         end
         "vsuxseg3ei64.v"     : begin
-            ExceptionsV_vsuxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsuxseg3ei64_v_sew64_cg.sample(ins);
         end
         "vsuxseg4ei64.v"     : begin
-            ExceptionsV_vsuxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsuxseg4ei64_v_sew64_cg.sample(ins);
         end
         "vsuxseg5ei64.v"     : begin
-            ExceptionsV_vsuxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsuxseg5ei64_v_sew64_cg.sample(ins);
         end
         "vsuxseg6ei64.v"     : begin
-            ExceptionsV_vsuxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsuxseg6ei64_v_sew64_cg.sample(ins);
         end
         "vsuxseg7ei64.v"     : begin
-            ExceptionsV_vsuxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsuxseg7ei64_v_sew64_cg.sample(ins);
         end
         "vsuxseg8ei64.v"     : begin
-            ExceptionsV_vsuxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsV_vsuxseg8ei64_v_sew64_cg.sample(ins);
         end
 `endif
             default: ; // a case needs at least one item, and some configurations select none

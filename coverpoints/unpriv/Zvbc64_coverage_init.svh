@@ -10,7 +10,7 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
-    Zvbc64_vclmul_vv_sew64_cg = new(); Zvbc64_vclmul_vv_cg.set_inst_name("obj_Zvbc64_vclmul_vv");
-    Zvbc64_vclmul_vx_sew64_cg = new(); Zvbc64_vclmul_vx_cg.set_inst_name("obj_Zvbc64_vclmul_vx");
-    Zvbc64_vclmulh_vv_sew64_cg = new(); Zvbc64_vclmulh_vv_cg.set_inst_name("obj_Zvbc64_vclmulh_vv");
-    Zvbc64_vclmulh_vx_sew64_cg = new(); Zvbc64_vclmulh_vx_cg.set_inst_name("obj_Zvbc64_vclmulh_vx");
+    Zvbc64_vclmul_vv_sew64_cg = new(); Zvbc64_vclmul_vv_sew64_cg.set_inst_name("obj_Zvbc64_vclmul_vv_sew64");
+    Zvbc64_vclmul_vx_sew64_cg = new(); Zvbc64_vclmul_vx_sew64_cg.set_inst_name("obj_Zvbc64_vclmul_vx_sew64");
+    Zvbc64_vclmulh_vv_sew64_cg = new(); Zvbc64_vclmulh_vv_sew64_cg.set_inst_name("obj_Zvbc64_vclmulh_vv_sew64");
+    Zvbc64_vclmulh_vx_sew64_cg = new(); Zvbc64_vclmulh_vx_sew64_cg.set_inst_name("obj_Zvbc64_vclmulh_vx_sew64");

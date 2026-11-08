@@ -10,9 +10,9 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
-    SsstrictZve64f_vfncvt_f_x_w_sew32_cg = new(); SsstrictZve64f_vfncvt_f_x_w_cg.set_inst_name("obj_SsstrictZve64f_vfncvt_f_x_w");
-    SsstrictZve64f_vfncvt_f_xu_w_sew32_cg = new(); SsstrictZve64f_vfncvt_f_xu_w_cg.set_inst_name("obj_SsstrictZve64f_vfncvt_f_xu_w");
-    SsstrictZve64f_vfwcvt_rtz_x_f_v_sew32_cg = new(); SsstrictZve64f_vfwcvt_rtz_x_f_v_cg.set_inst_name("obj_SsstrictZve64f_vfwcvt_rtz_x_f_v");
-    SsstrictZve64f_vfwcvt_rtz_xu_f_v_sew32_cg = new(); SsstrictZve64f_vfwcvt_rtz_xu_f_v_cg.set_inst_name("obj_SsstrictZve64f_vfwcvt_rtz_xu_f_v");
-    SsstrictZve64f_vfwcvt_x_f_v_sew32_cg = new(); SsstrictZve64f_vfwcvt_x_f_v_cg.set_inst_name("obj_SsstrictZve64f_vfwcvt_x_f_v");
-    SsstrictZve64f_vfwcvt_xu_f_v_sew32_cg = new(); SsstrictZve64f_vfwcvt_xu_f_v_cg.set_inst_name("obj_SsstrictZve64f_vfwcvt_xu_f_v");
+    SsstrictZve64f_vfncvt_f_x_w_sew32_cg = new(); SsstrictZve64f_vfncvt_f_x_w_sew32_cg.set_inst_name("obj_SsstrictZve64f_vfncvt_f_x_w_sew32");
+    SsstrictZve64f_vfncvt_f_xu_w_sew32_cg = new(); SsstrictZve64f_vfncvt_f_xu_w_sew32_cg.set_inst_name("obj_SsstrictZve64f_vfncvt_f_xu_w_sew32");
+    SsstrictZve64f_vfwcvt_rtz_x_f_v_sew32_cg = new(); SsstrictZve64f_vfwcvt_rtz_x_f_v_sew32_cg.set_inst_name("obj_SsstrictZve64f_vfwcvt_rtz_x_f_v_sew32");
+    SsstrictZve64f_vfwcvt_rtz_xu_f_v_sew32_cg = new(); SsstrictZve64f_vfwcvt_rtz_xu_f_v_sew32_cg.set_inst_name("obj_SsstrictZve64f_vfwcvt_rtz_xu_f_v_sew32");
+    SsstrictZve64f_vfwcvt_x_f_v_sew32_cg = new(); SsstrictZve64f_vfwcvt_x_f_v_sew32_cg.set_inst_name("obj_SsstrictZve64f_vfwcvt_x_f_v_sew32");
+    SsstrictZve64f_vfwcvt_xu_f_v_sew32_cg = new(); SsstrictZve64f_vfwcvt_xu_f_v_sew32_cg.set_inst_name("obj_SsstrictZve64f_vfwcvt_xu_f_v_sew32");

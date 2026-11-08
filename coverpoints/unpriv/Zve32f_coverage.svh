@@ -14,6 +14,15 @@
 `define COVER_ZVE32F
 covergroup Zve32f_vfadd_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -179,15 +188,6 @@ covergroup Zve32f_vfadd_vf_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -258,6 +258,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfadd_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
     //////////////////////////////////////////////////////////////////////////////////
@@ -459,15 +468,6 @@ covergroup Zve32f_vfadd_vv_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -538,6 +538,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfclass_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -642,15 +651,6 @@ covergroup Zve32f_vfclass_v_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -711,6 +711,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfcvt_f_x_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -799,15 +808,6 @@ covergroup Zve32f_vfcvt_f_x_v_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -868,6 +868,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfcvt_f_xu_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -956,15 +965,6 @@ covergroup Zve32f_vfcvt_f_xu_v_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -1025,6 +1025,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfcvt_rtz_x_f_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -1145,15 +1154,6 @@ covergroup Zve32f_vfcvt_rtz_x_f_v_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -1214,6 +1214,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfcvt_rtz_xu_f_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -1334,15 +1343,6 @@ covergroup Zve32f_vfcvt_rtz_xu_f_v_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -1403,6 +1403,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfcvt_x_f_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -1532,15 +1541,6 @@ covergroup Zve32f_vfcvt_x_f_v_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -1601,6 +1601,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfcvt_xu_f_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -1730,15 +1739,6 @@ covergroup Zve32f_vfcvt_xu_f_v_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -1799,6 +1799,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfdiv_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -1974,15 +1983,6 @@ covergroup Zve32f_vfdiv_vf_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -2053,6 +2053,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfdiv_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
     //////////////////////////////////////////////////////////////////////////////////
@@ -2264,15 +2273,6 @@ covergroup Zve32f_vfdiv_vv_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -2343,6 +2343,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfmacc_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -2510,15 +2519,6 @@ covergroup Zve32f_vfmacc_vf_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -2589,6 +2589,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfmacc_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
     //////////////////////////////////////////////////////////////////////////////////
@@ -2792,15 +2801,6 @@ covergroup Zve32f_vfmacc_vv_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -2871,6 +2871,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfmadd_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -3038,15 +3047,6 @@ covergroup Zve32f_vfmadd_vf_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -3117,6 +3117,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfmadd_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
     //////////////////////////////////////////////////////////////////////////////////
@@ -3320,15 +3329,6 @@ covergroup Zve32f_vfmadd_vv_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -3399,6 +3399,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfmax_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -3551,15 +3560,6 @@ covergroup Zve32f_vfmax_vf_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -3630,6 +3630,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfmax_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
     //////////////////////////////////////////////////////////////////////////////////
@@ -3818,15 +3827,6 @@ covergroup Zve32f_vfmax_vv_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -3897,6 +3897,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfmerge_vfm_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_nv0
     //////////////////////////////////////////////////////////////////////////////////
@@ -4025,15 +4034,6 @@ covergroup Zve32f_vfmerge_vfm_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_nv0////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -4104,6 +4104,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfmin_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -4256,15 +4265,6 @@ covergroup Zve32f_vfmin_vf_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -4335,6 +4335,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfmin_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
     //////////////////////////////////////////////////////////////////////////////////
@@ -4523,15 +4532,6 @@ covergroup Zve32f_vfmin_vv_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -4602,6 +4602,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfmsac_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -4769,15 +4778,6 @@ covergroup Zve32f_vfmsac_vf_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -4848,6 +4848,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfmsac_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
     //////////////////////////////////////////////////////////////////////////////////
@@ -5051,15 +5060,6 @@ covergroup Zve32f_vfmsac_vv_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -5130,6 +5130,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfmsub_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -5297,15 +5306,6 @@ covergroup Zve32f_vfmsub_vf_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -5376,6 +5376,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfmsub_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
     //////////////////////////////////////////////////////////////////////////////////
@@ -5579,15 +5588,6 @@ covergroup Zve32f_vfmsub_vv_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -5658,6 +5658,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfmul_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -5825,15 +5834,6 @@ covergroup Zve32f_vfmul_vf_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -5904,6 +5904,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfmul_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
     //////////////////////////////////////////////////////////////////////////////////
@@ -6107,15 +6116,6 @@ covergroup Zve32f_vfmul_vv_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -6186,6 +6186,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfmv_f_s_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vfmv.f.s"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -6315,15 +6324,6 @@ covergroup Zve32f_vfmv_f_s_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -6385,6 +6385,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfmv_s_f_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vfmv.s.f"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -6474,15 +6483,6 @@ covergroup Zve32f_vfmv_s_f_sew32_cg with function sample(ins_t ins);
     bins zero = {0};
     }
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -6544,6 +6544,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfmv_v_f_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vfmv.v.f"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -6595,15 +6604,6 @@ covergroup Zve32f_vfmv_v_f_sew32_cg with function sample(ins_t ins);
 
     cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
     bins zero = {0};
-    }
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -6667,6 +6667,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfncvt_rtz_x_f_w_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vfncvt.rtz.x.f.w"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -6847,15 +6856,6 @@ covergroup Zve32f_vfncvt_rtz_x_f_w_sew16_cg with function sample(ins_t ins);
 
     //// end cp_vs2_emul2////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
@@ -6918,6 +6918,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfncvt_rtz_xu_f_w_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vfncvt.rtz.xu.f.w"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -7098,15 +7107,6 @@ covergroup Zve32f_vfncvt_rtz_xu_f_w_sew16_cg with function sample(ins_t ins);
 
     //// end cp_vs2_emul2////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
@@ -7169,6 +7169,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfncvt_x_f_w_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vfncvt.x.f.w"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -7358,15 +7367,6 @@ covergroup Zve32f_vfncvt_x_f_w_sew16_cg with function sample(ins_t ins);
 
     //// end cp_vs2_emul2////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
@@ -7429,6 +7429,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfncvt_xu_f_w_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vfncvt.xu.f.w"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -7618,15 +7627,6 @@ covergroup Zve32f_vfncvt_xu_f_w_sew16_cg with function sample(ins_t ins);
 
     //// end cp_vs2_emul2////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
@@ -7689,6 +7689,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfnmacc_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -7856,15 +7865,6 @@ covergroup Zve32f_vfnmacc_vf_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -7935,6 +7935,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfnmacc_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
     //////////////////////////////////////////////////////////////////////////////////
@@ -8138,15 +8147,6 @@ covergroup Zve32f_vfnmacc_vv_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -8217,6 +8217,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfnmadd_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -8384,15 +8393,6 @@ covergroup Zve32f_vfnmadd_vf_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -8463,6 +8463,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfnmadd_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
     //////////////////////////////////////////////////////////////////////////////////
@@ -8666,15 +8675,6 @@ covergroup Zve32f_vfnmadd_vv_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -8745,6 +8745,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfnmsac_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -8912,15 +8921,6 @@ covergroup Zve32f_vfnmsac_vf_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -8991,6 +8991,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfnmsac_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
     //////////////////////////////////////////////////////////////////////////////////
@@ -9194,15 +9203,6 @@ covergroup Zve32f_vfnmsac_vv_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -9273,6 +9273,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfnmsub_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -9440,15 +9449,6 @@ covergroup Zve32f_vfnmsub_vf_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -9519,6 +9519,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfnmsub_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
     //////////////////////////////////////////////////////////////////////////////////
@@ -9722,15 +9731,6 @@ covergroup Zve32f_vfnmsub_vv_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -9801,6 +9801,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfrdiv_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -9976,15 +9985,6 @@ covergroup Zve32f_vfrdiv_vf_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -10055,6 +10055,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfrec7_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -10242,15 +10251,6 @@ covergroup Zve32f_vfrec7_v_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -10311,6 +10311,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfredmax_vs_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
     //////////////////////////////////////////////////////////////////////////////////
@@ -10499,15 +10508,6 @@ covergroup Zve32f_vfredmax_vs_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -10578,6 +10578,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfredmin_vs_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
     //////////////////////////////////////////////////////////////////////////////////
@@ -10766,15 +10775,6 @@ covergroup Zve32f_vfredmin_vs_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -10845,6 +10845,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfredosum_vs_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
     //////////////////////////////////////////////////////////////////////////////////
@@ -11106,15 +11115,6 @@ covergroup Zve32f_vfredosum_vs_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -11185,6 +11185,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfredusum_vs_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
     //////////////////////////////////////////////////////////////////////////////////
@@ -11386,15 +11395,6 @@ covergroup Zve32f_vfredusum_vs_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -11465,6 +11465,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfrsqrt7_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -11681,15 +11690,6 @@ covergroup Zve32f_vfrsqrt7_v_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -11750,6 +11750,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfrsub_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -11915,15 +11924,6 @@ covergroup Zve32f_vfrsub_vf_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -11994,6 +11994,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfsgnj_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -12119,15 +12128,6 @@ covergroup Zve32f_vfsgnj_vf_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -12198,6 +12198,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfsgnj_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
     //////////////////////////////////////////////////////////////////////////////////
@@ -12359,15 +12368,6 @@ covergroup Zve32f_vfsgnj_vv_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -12438,6 +12438,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfsgnjn_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -12563,15 +12572,6 @@ covergroup Zve32f_vfsgnjn_vf_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -12642,6 +12642,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfsgnjn_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
     //////////////////////////////////////////////////////////////////////////////////
@@ -12803,15 +12812,6 @@ covergroup Zve32f_vfsgnjn_vv_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -12882,6 +12882,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfsgnjx_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -13007,15 +13016,6 @@ covergroup Zve32f_vfsgnjx_vf_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -13086,6 +13086,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfsgnjx_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
     //////////////////////////////////////////////////////////////////////////////////
@@ -13247,15 +13256,6 @@ covergroup Zve32f_vfsgnjx_vv_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -13326,6 +13326,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfslide1down_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -13451,15 +13460,6 @@ covergroup Zve32f_vfslide1down_vf_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -13530,6 +13530,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfslide1up_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vfslide1up.vf"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -13645,15 +13654,6 @@ covergroup Zve32f_vfslide1up_vf_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -13724,6 +13724,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfsqrt_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -13853,15 +13862,6 @@ covergroup Zve32f_vfsqrt_v_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -13922,6 +13922,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfsub_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -14087,15 +14096,6 @@ covergroup Zve32f_vfsub_vf_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -14166,6 +14166,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfsub_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1
     //////////////////////////////////////////////////////////////////////////////////
@@ -14367,15 +14376,6 @@ covergroup Zve32f_vfsub_vv_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -14446,6 +14446,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfwcvt_f_x_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vfwcvt.f.x.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -14522,15 +14531,6 @@ covergroup Zve32f_vfwcvt_f_x_v_sew16_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
@@ -14593,6 +14593,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vfwcvt_f_xu_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vfwcvt.f.xu.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -14669,15 +14678,6 @@ covergroup Zve32f_vfwcvt_f_xu_v_sew16_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
@@ -14740,6 +14740,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vmfeq_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vmfeq.vf"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -14882,15 +14891,6 @@ covergroup Zve32f_vmfeq_vf_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -14961,6 +14961,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vmfeq_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -15119,15 +15128,6 @@ covergroup Zve32f_vmfeq_vv_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -15198,6 +15198,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vmfge_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vmfge.vf"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -15340,15 +15349,6 @@ covergroup Zve32f_vmfge_vf_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -15419,6 +15419,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vmfgt_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vmfgt.vf"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -15561,15 +15570,6 @@ covergroup Zve32f_vmfgt_vf_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -15640,6 +15640,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vmfle_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vmfle.vf"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -15782,15 +15791,6 @@ covergroup Zve32f_vmfle_vf_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -15861,6 +15861,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vmfle_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -16019,15 +16028,6 @@ covergroup Zve32f_vmfle_vv_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -16098,6 +16098,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vmflt_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vmflt.vf"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -16240,15 +16249,6 @@ covergroup Zve32f_vmflt_vf_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -16319,6 +16319,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vmflt_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -16477,15 +16486,6 @@ covergroup Zve32f_vmflt_vv_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -16556,6 +16556,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vmfne_vf_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vmfne.vf"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -16698,15 +16707,6 @@ covergroup Zve32f_vmfne_vf_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -16777,6 +16777,15 @@ endgroup
 // ---------------------
 covergroup Zve32f_vmfne_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -16935,15 +16944,6 @@ covergroup Zve32f_vmfne_vv_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
     //////////////////////////////////////////////////////////////////////////////////
@@ -17029,22 +17029,22 @@ function void zve32f_sample(int hart, int issue, ins_t ins);
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
         "vfncvt.rtz.x.f.w"     : begin
-            Zve32f_vfncvt_rtz_x_f_w_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfncvt_rtz_x_f_w_sew16_cg.sample(ins);
         end
         "vfncvt.rtz.xu.f.w"     : begin
-            Zve32f_vfncvt_rtz_xu_f_w_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfncvt_rtz_xu_f_w_sew16_cg.sample(ins);
         end
         "vfncvt.x.f.w"     : begin
-            Zve32f_vfncvt_x_f_w_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfncvt_x_f_w_sew16_cg.sample(ins);
         end
         "vfncvt.xu.f.w"     : begin
-            Zve32f_vfncvt_xu_f_w_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfncvt_xu_f_w_sew16_cg.sample(ins);
         end
         "vfwcvt.f.x.v"     : begin
-            Zve32f_vfwcvt_f_x_v_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfwcvt_f_x_v_sew16_cg.sample(ins);
         end
         "vfwcvt.f.xu.v"     : begin
-            Zve32f_vfwcvt_f_xu_v_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfwcvt_f_xu_v_sew16_cg.sample(ins);
         end
             default: ; // a case needs at least one item, and some configurations select none
         endcase
@@ -17056,202 +17056,202 @@ function void zve32f_sample(int hart, int issue, ins_t ins);
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
         "vfadd.vf"     : begin
-            Zve32f_vfadd_vf_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfadd_vf_sew32_cg.sample(ins);
         end
         "vfadd.vv"     : begin
-            Zve32f_vfadd_vv_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfadd_vv_sew32_cg.sample(ins);
         end
         "vfclass.v"     : begin
-            Zve32f_vfclass_v_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfclass_v_sew32_cg.sample(ins);
         end
         "vfcvt.f.x.v"     : begin
-            Zve32f_vfcvt_f_x_v_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfcvt_f_x_v_sew32_cg.sample(ins);
         end
         "vfcvt.f.xu.v"     : begin
-            Zve32f_vfcvt_f_xu_v_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfcvt_f_xu_v_sew32_cg.sample(ins);
         end
         "vfcvt.rtz.x.f.v"     : begin
-            Zve32f_vfcvt_rtz_x_f_v_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfcvt_rtz_x_f_v_sew32_cg.sample(ins);
         end
         "vfcvt.rtz.xu.f.v"     : begin
-            Zve32f_vfcvt_rtz_xu_f_v_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfcvt_rtz_xu_f_v_sew32_cg.sample(ins);
         end
         "vfcvt.x.f.v"     : begin
-            Zve32f_vfcvt_x_f_v_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfcvt_x_f_v_sew32_cg.sample(ins);
         end
         "vfcvt.xu.f.v"     : begin
-            Zve32f_vfcvt_xu_f_v_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfcvt_xu_f_v_sew32_cg.sample(ins);
         end
         "vfdiv.vf"     : begin
-            Zve32f_vfdiv_vf_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfdiv_vf_sew32_cg.sample(ins);
         end
         "vfdiv.vv"     : begin
-            Zve32f_vfdiv_vv_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfdiv_vv_sew32_cg.sample(ins);
         end
         "vfmacc.vf"     : begin
-            Zve32f_vfmacc_vf_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfmacc_vf_sew32_cg.sample(ins);
         end
         "vfmacc.vv"     : begin
-            Zve32f_vfmacc_vv_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfmacc_vv_sew32_cg.sample(ins);
         end
         "vfmadd.vf"     : begin
-            Zve32f_vfmadd_vf_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfmadd_vf_sew32_cg.sample(ins);
         end
         "vfmadd.vv"     : begin
-            Zve32f_vfmadd_vv_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfmadd_vv_sew32_cg.sample(ins);
         end
         "vfmax.vf"     : begin
-            Zve32f_vfmax_vf_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfmax_vf_sew32_cg.sample(ins);
         end
         "vfmax.vv"     : begin
-            Zve32f_vfmax_vv_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfmax_vv_sew32_cg.sample(ins);
         end
         "vfmerge.vfm"     : begin
-            Zve32f_vfmerge_vfm_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfmerge_vfm_sew32_cg.sample(ins);
         end
         "vfmin.vf"     : begin
-            Zve32f_vfmin_vf_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfmin_vf_sew32_cg.sample(ins);
         end
         "vfmin.vv"     : begin
-            Zve32f_vfmin_vv_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfmin_vv_sew32_cg.sample(ins);
         end
         "vfmsac.vf"     : begin
-            Zve32f_vfmsac_vf_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfmsac_vf_sew32_cg.sample(ins);
         end
         "vfmsac.vv"     : begin
-            Zve32f_vfmsac_vv_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfmsac_vv_sew32_cg.sample(ins);
         end
         "vfmsub.vf"     : begin
-            Zve32f_vfmsub_vf_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfmsub_vf_sew32_cg.sample(ins);
         end
         "vfmsub.vv"     : begin
-            Zve32f_vfmsub_vv_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfmsub_vv_sew32_cg.sample(ins);
         end
         "vfmul.vf"     : begin
-            Zve32f_vfmul_vf_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfmul_vf_sew32_cg.sample(ins);
         end
         "vfmul.vv"     : begin
-            Zve32f_vfmul_vv_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfmul_vv_sew32_cg.sample(ins);
         end
         "vfmv.f.s"     : begin
-            Zve32f_vfmv_f_s_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfmv_f_s_sew32_cg.sample(ins);
         end
         "vfmv.s.f"     : begin
-            Zve32f_vfmv_s_f_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfmv_s_f_sew32_cg.sample(ins);
         end
         "vfmv.v.f"     : begin
-            Zve32f_vfmv_v_f_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfmv_v_f_sew32_cg.sample(ins);
         end
         "vfnmacc.vf"     : begin
-            Zve32f_vfnmacc_vf_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfnmacc_vf_sew32_cg.sample(ins);
         end
         "vfnmacc.vv"     : begin
-            Zve32f_vfnmacc_vv_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfnmacc_vv_sew32_cg.sample(ins);
         end
         "vfnmadd.vf"     : begin
-            Zve32f_vfnmadd_vf_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfnmadd_vf_sew32_cg.sample(ins);
         end
         "vfnmadd.vv"     : begin
-            Zve32f_vfnmadd_vv_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfnmadd_vv_sew32_cg.sample(ins);
         end
         "vfnmsac.vf"     : begin
-            Zve32f_vfnmsac_vf_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfnmsac_vf_sew32_cg.sample(ins);
         end
         "vfnmsac.vv"     : begin
-            Zve32f_vfnmsac_vv_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfnmsac_vv_sew32_cg.sample(ins);
         end
         "vfnmsub.vf"     : begin
-            Zve32f_vfnmsub_vf_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfnmsub_vf_sew32_cg.sample(ins);
         end
         "vfnmsub.vv"     : begin
-            Zve32f_vfnmsub_vv_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfnmsub_vv_sew32_cg.sample(ins);
         end
         "vfrdiv.vf"     : begin
-            Zve32f_vfrdiv_vf_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfrdiv_vf_sew32_cg.sample(ins);
         end
         "vfrec7.v"     : begin
-            Zve32f_vfrec7_v_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfrec7_v_sew32_cg.sample(ins);
         end
         "vfredmax.vs"     : begin
-            Zve32f_vfredmax_vs_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfredmax_vs_sew32_cg.sample(ins);
         end
         "vfredmin.vs"     : begin
-            Zve32f_vfredmin_vs_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfredmin_vs_sew32_cg.sample(ins);
         end
         "vfredosum.vs"     : begin
-            Zve32f_vfredosum_vs_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfredosum_vs_sew32_cg.sample(ins);
         end
         "vfredusum.vs"     : begin
-            Zve32f_vfredusum_vs_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfredusum_vs_sew32_cg.sample(ins);
         end
         "vfrsqrt7.v"     : begin
-            Zve32f_vfrsqrt7_v_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfrsqrt7_v_sew32_cg.sample(ins);
         end
         "vfrsub.vf"     : begin
-            Zve32f_vfrsub_vf_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfrsub_vf_sew32_cg.sample(ins);
         end
         "vfsgnj.vf"     : begin
-            Zve32f_vfsgnj_vf_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfsgnj_vf_sew32_cg.sample(ins);
         end
         "vfsgnj.vv"     : begin
-            Zve32f_vfsgnj_vv_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfsgnj_vv_sew32_cg.sample(ins);
         end
         "vfsgnjn.vf"     : begin
-            Zve32f_vfsgnjn_vf_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfsgnjn_vf_sew32_cg.sample(ins);
         end
         "vfsgnjn.vv"     : begin
-            Zve32f_vfsgnjn_vv_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfsgnjn_vv_sew32_cg.sample(ins);
         end
         "vfsgnjx.vf"     : begin
-            Zve32f_vfsgnjx_vf_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfsgnjx_vf_sew32_cg.sample(ins);
         end
         "vfsgnjx.vv"     : begin
-            Zve32f_vfsgnjx_vv_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfsgnjx_vv_sew32_cg.sample(ins);
         end
         "vfslide1down.vf"     : begin
-            Zve32f_vfslide1down_vf_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfslide1down_vf_sew32_cg.sample(ins);
         end
         "vfslide1up.vf"     : begin
-            Zve32f_vfslide1up_vf_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfslide1up_vf_sew32_cg.sample(ins);
         end
         "vfsqrt.v"     : begin
-            Zve32f_vfsqrt_v_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfsqrt_v_sew32_cg.sample(ins);
         end
         "vfsub.vf"     : begin
-            Zve32f_vfsub_vf_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfsub_vf_sew32_cg.sample(ins);
         end
         "vfsub.vv"     : begin
-            Zve32f_vfsub_vv_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vfsub_vv_sew32_cg.sample(ins);
         end
         "vmfeq.vf"     : begin
-            Zve32f_vmfeq_vf_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vmfeq_vf_sew32_cg.sample(ins);
         end
         "vmfeq.vv"     : begin
-            Zve32f_vmfeq_vv_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vmfeq_vv_sew32_cg.sample(ins);
         end
         "vmfge.vf"     : begin
-            Zve32f_vmfge_vf_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vmfge_vf_sew32_cg.sample(ins);
         end
         "vmfgt.vf"     : begin
-            Zve32f_vmfgt_vf_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vmfgt_vf_sew32_cg.sample(ins);
         end
         "vmfle.vf"     : begin
-            Zve32f_vmfle_vf_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vmfle_vf_sew32_cg.sample(ins);
         end
         "vmfle.vv"     : begin
-            Zve32f_vmfle_vv_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vmfle_vv_sew32_cg.sample(ins);
         end
         "vmflt.vf"     : begin
-            Zve32f_vmflt_vf_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vmflt_vf_sew32_cg.sample(ins);
         end
         "vmflt.vv"     : begin
-            Zve32f_vmflt_vv_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vmflt_vv_sew32_cg.sample(ins);
         end
         "vmfne.vf"     : begin
-            Zve32f_vmfne_vf_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vmfne_vf_sew32_cg.sample(ins);
         end
         "vmfne.vv"     : begin
-            Zve32f_vmfne_vv_sew@EFFEW@_cg.sample(ins);
+            Zve32f_vmfne_vv_sew32_cg.sample(ins);
         end
             default: ; // a case needs at least one item, and some configurations select none
         endcase

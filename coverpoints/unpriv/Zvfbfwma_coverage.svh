@@ -473,10 +473,10 @@ function void zvfbfwma_sample(int hart, int issue, ins_t ins);
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
         "vfwmaccbf16.vf"     : begin
-            Zvfbfwma_vfwmaccbf16_vf_sew@EFFEW@_cg.sample(ins);
+            Zvfbfwma_vfwmaccbf16_vf_sew16_cg.sample(ins);
         end
         "vfwmaccbf16.vv"     : begin
-            Zvfbfwma_vfwmaccbf16_vv_sew@EFFEW@_cg.sample(ins);
+            Zvfbfwma_vfwmaccbf16_vv_sew16_cg.sample(ins);
         end
             default: ; // a case needs at least one item, and some configurations select none
         endcase

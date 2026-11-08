@@ -6418,31 +6418,31 @@ function void zvkb32_sample(int hart, int issue, ins_t ins);
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
         "vandn.vv"     : begin
-            Zvkb32_vandn_vv_sew@EFFEW@_cg.sample(ins);
+            Zvkb32_vandn_vv_sew8_cg.sample(ins);
         end
         "vandn.vx"     : begin
-            Zvkb32_vandn_vx_sew@EFFEW@_cg.sample(ins);
+            Zvkb32_vandn_vx_sew8_cg.sample(ins);
         end
         "vbrev8.v"     : begin
-            Zvkb32_vbrev8_v_sew@EFFEW@_cg.sample(ins);
+            Zvkb32_vbrev8_v_sew8_cg.sample(ins);
         end
         "vrev8.v"     : begin
-            Zvkb32_vrev8_v_sew@EFFEW@_cg.sample(ins);
+            Zvkb32_vrev8_v_sew8_cg.sample(ins);
         end
         "vrol.vv"     : begin
-            Zvkb32_vrol_vv_sew@EFFEW@_cg.sample(ins);
+            Zvkb32_vrol_vv_sew8_cg.sample(ins);
         end
         "vrol.vx"     : begin
-            Zvkb32_vrol_vx_sew@EFFEW@_cg.sample(ins);
+            Zvkb32_vrol_vx_sew8_cg.sample(ins);
         end
         "vror.vi"     : begin
-            Zvkb32_vror_vi_sew@EFFEW@_cg.sample(ins);
+            Zvkb32_vror_vi_sew8_cg.sample(ins);
         end
         "vror.vv"     : begin
-            Zvkb32_vror_vv_sew@EFFEW@_cg.sample(ins);
+            Zvkb32_vror_vv_sew8_cg.sample(ins);
         end
         "vror.vx"     : begin
-            Zvkb32_vror_vx_sew@EFFEW@_cg.sample(ins);
+            Zvkb32_vror_vx_sew8_cg.sample(ins);
         end
             default: ; // a case needs at least one item, and some configurations select none
         endcase
@@ -6454,31 +6454,31 @@ function void zvkb32_sample(int hart, int issue, ins_t ins);
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
         "vandn.vv"     : begin
-            Zvkb32_vandn_vv_sew@EFFEW@_cg.sample(ins);
+            Zvkb32_vandn_vv_sew16_cg.sample(ins);
         end
         "vandn.vx"     : begin
-            Zvkb32_vandn_vx_sew@EFFEW@_cg.sample(ins);
+            Zvkb32_vandn_vx_sew16_cg.sample(ins);
         end
         "vbrev8.v"     : begin
-            Zvkb32_vbrev8_v_sew@EFFEW@_cg.sample(ins);
+            Zvkb32_vbrev8_v_sew16_cg.sample(ins);
         end
         "vrev8.v"     : begin
-            Zvkb32_vrev8_v_sew@EFFEW@_cg.sample(ins);
+            Zvkb32_vrev8_v_sew16_cg.sample(ins);
         end
         "vrol.vv"     : begin
-            Zvkb32_vrol_vv_sew@EFFEW@_cg.sample(ins);
+            Zvkb32_vrol_vv_sew16_cg.sample(ins);
         end
         "vrol.vx"     : begin
-            Zvkb32_vrol_vx_sew@EFFEW@_cg.sample(ins);
+            Zvkb32_vrol_vx_sew16_cg.sample(ins);
         end
         "vror.vi"     : begin
-            Zvkb32_vror_vi_sew@EFFEW@_cg.sample(ins);
+            Zvkb32_vror_vi_sew16_cg.sample(ins);
         end
         "vror.vv"     : begin
-            Zvkb32_vror_vv_sew@EFFEW@_cg.sample(ins);
+            Zvkb32_vror_vv_sew16_cg.sample(ins);
         end
         "vror.vx"     : begin
-            Zvkb32_vror_vx_sew@EFFEW@_cg.sample(ins);
+            Zvkb32_vror_vx_sew16_cg.sample(ins);
         end
             default: ; // a case needs at least one item, and some configurations select none
         endcase
@@ -6490,31 +6490,31 @@ function void zvkb32_sample(int hart, int issue, ins_t ins);
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
         "vandn.vv"     : begin
-            Zvkb32_vandn_vv_sew@EFFEW@_cg.sample(ins);
+            Zvkb32_vandn_vv_sew32_cg.sample(ins);
         end
         "vandn.vx"     : begin
-            Zvkb32_vandn_vx_sew@EFFEW@_cg.sample(ins);
+            Zvkb32_vandn_vx_sew32_cg.sample(ins);
         end
         "vbrev8.v"     : begin
-            Zvkb32_vbrev8_v_sew@EFFEW@_cg.sample(ins);
+            Zvkb32_vbrev8_v_sew32_cg.sample(ins);
         end
         "vrev8.v"     : begin
-            Zvkb32_vrev8_v_sew@EFFEW@_cg.sample(ins);
+            Zvkb32_vrev8_v_sew32_cg.sample(ins);
         end
         "vrol.vv"     : begin
-            Zvkb32_vrol_vv_sew@EFFEW@_cg.sample(ins);
+            Zvkb32_vrol_vv_sew32_cg.sample(ins);
         end
         "vrol.vx"     : begin
-            Zvkb32_vrol_vx_sew@EFFEW@_cg.sample(ins);
+            Zvkb32_vrol_vx_sew32_cg.sample(ins);
         end
         "vror.vi"     : begin
-            Zvkb32_vror_vi_sew@EFFEW@_cg.sample(ins);
+            Zvkb32_vror_vi_sew32_cg.sample(ins);
         end
         "vror.vv"     : begin
-            Zvkb32_vror_vv_sew@EFFEW@_cg.sample(ins);
+            Zvkb32_vror_vv_sew32_cg.sample(ins);
         end
         "vror.vx"     : begin
-            Zvkb32_vror_vx_sew@EFFEW@_cg.sample(ins);
+            Zvkb32_vror_vx_sew32_cg.sample(ins);
         end
             default: ; // a case needs at least one item, and some configurations select none
         endcase
@@ -6526,31 +6526,31 @@ function void zvkb32_sample(int hart, int issue, ins_t ins);
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
         "vandn.vv"     : begin
-            Zvkb32_vandn_vv_sew@EFFEW@_cg.sample(ins);
+            Zvkb32_vandn_vv_sew64_cg.sample(ins);
         end
         "vandn.vx"     : begin
-            Zvkb32_vandn_vx_sew@EFFEW@_cg.sample(ins);
+            Zvkb32_vandn_vx_sew64_cg.sample(ins);
         end
         "vbrev8.v"     : begin
-            Zvkb32_vbrev8_v_sew@EFFEW@_cg.sample(ins);
+            Zvkb32_vbrev8_v_sew64_cg.sample(ins);
         end
         "vrev8.v"     : begin
-            Zvkb32_vrev8_v_sew@EFFEW@_cg.sample(ins);
+            Zvkb32_vrev8_v_sew64_cg.sample(ins);
         end
         "vrol.vv"     : begin
-            Zvkb32_vrol_vv_sew@EFFEW@_cg.sample(ins);
+            Zvkb32_vrol_vv_sew64_cg.sample(ins);
         end
         "vrol.vx"     : begin
-            Zvkb32_vrol_vx_sew@EFFEW@_cg.sample(ins);
+            Zvkb32_vrol_vx_sew64_cg.sample(ins);
         end
         "vror.vi"     : begin
-            Zvkb32_vror_vi_sew@EFFEW@_cg.sample(ins);
+            Zvkb32_vror_vi_sew64_cg.sample(ins);
         end
         "vror.vv"     : begin
-            Zvkb32_vror_vv_sew@EFFEW@_cg.sample(ins);
+            Zvkb32_vror_vv_sew64_cg.sample(ins);
         end
         "vror.vx"     : begin
-            Zvkb32_vror_vx_sew@EFFEW@_cg.sample(ins);
+            Zvkb32_vror_vx_sew64_cg.sample(ins);
         end
             default: ; // a case needs at least one item, and some configurations select none
         endcase

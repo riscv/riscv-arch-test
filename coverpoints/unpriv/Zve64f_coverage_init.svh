@@ -10,9 +10,9 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
-    Zve64f_vfncvt_f_x_w_sew32_cg = new(); Zve64f_vfncvt_f_x_w_cg.set_inst_name("obj_Zve64f_vfncvt_f_x_w");
-    Zve64f_vfncvt_f_xu_w_sew32_cg = new(); Zve64f_vfncvt_f_xu_w_cg.set_inst_name("obj_Zve64f_vfncvt_f_xu_w");
-    Zve64f_vfwcvt_rtz_x_f_v_sew32_cg = new(); Zve64f_vfwcvt_rtz_x_f_v_cg.set_inst_name("obj_Zve64f_vfwcvt_rtz_x_f_v");
-    Zve64f_vfwcvt_rtz_xu_f_v_sew32_cg = new(); Zve64f_vfwcvt_rtz_xu_f_v_cg.set_inst_name("obj_Zve64f_vfwcvt_rtz_xu_f_v");
-    Zve64f_vfwcvt_x_f_v_sew32_cg = new(); Zve64f_vfwcvt_x_f_v_cg.set_inst_name("obj_Zve64f_vfwcvt_x_f_v");
-    Zve64f_vfwcvt_xu_f_v_sew32_cg = new(); Zve64f_vfwcvt_xu_f_v_cg.set_inst_name("obj_Zve64f_vfwcvt_xu_f_v");
+    Zve64f_vfncvt_f_x_w_sew32_cg = new(); Zve64f_vfncvt_f_x_w_sew32_cg.set_inst_name("obj_Zve64f_vfncvt_f_x_w_sew32");
+    Zve64f_vfncvt_f_xu_w_sew32_cg = new(); Zve64f_vfncvt_f_xu_w_sew32_cg.set_inst_name("obj_Zve64f_vfncvt_f_xu_w_sew32");
+    Zve64f_vfwcvt_rtz_x_f_v_sew32_cg = new(); Zve64f_vfwcvt_rtz_x_f_v_sew32_cg.set_inst_name("obj_Zve64f_vfwcvt_rtz_x_f_v_sew32");
+    Zve64f_vfwcvt_rtz_xu_f_v_sew32_cg = new(); Zve64f_vfwcvt_rtz_xu_f_v_sew32_cg.set_inst_name("obj_Zve64f_vfwcvt_rtz_xu_f_v_sew32");
+    Zve64f_vfwcvt_x_f_v_sew32_cg = new(); Zve64f_vfwcvt_x_f_v_sew32_cg.set_inst_name("obj_Zve64f_vfwcvt_x_f_v_sew32");
+    Zve64f_vfwcvt_xu_f_v_sew32_cg = new(); Zve64f_vfwcvt_xu_f_v_sew32_cg.set_inst_name("obj_Zve64f_vfwcvt_xu_f_v_sew32");

@@ -772,10 +772,10 @@ function void zvkg_sample(int hart, int issue, ins_t ins);
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
         "vghsh.vv"     : begin
-            Zvkg_vghsh_vv_sew@EFFEW@_cg.sample(ins);
+            Zvkg_vghsh_vv_sew32_cg.sample(ins);
         end
         "vgmul.vv"     : begin
-            Zvkg_vgmul_vv_sew@EFFEW@_cg.sample(ins);
+            Zvkg_vgmul_vv_sew32_cg.sample(ins);
         end
             default: ; // a case needs at least one item, and some configurations select none
         endcase

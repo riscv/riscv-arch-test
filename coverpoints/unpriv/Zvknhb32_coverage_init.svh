@@ -10,9 +10,9 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
-    Zvknhb32_vsha2ch_vv_sew64_cg = new(); Zvknhb32_vsha2ch_vv_cg.set_inst_name("obj_Zvknhb32_vsha2ch_vv");
-    Zvknhb32_vsha2ch_vv_sew32_cg = new(); Zvknhb32_vsha2ch_vv_cg.set_inst_name("obj_Zvknhb32_vsha2ch_vv");
-    Zvknhb32_vsha2cl_vv_sew64_cg = new(); Zvknhb32_vsha2cl_vv_cg.set_inst_name("obj_Zvknhb32_vsha2cl_vv");
-    Zvknhb32_vsha2cl_vv_sew32_cg = new(); Zvknhb32_vsha2cl_vv_cg.set_inst_name("obj_Zvknhb32_vsha2cl_vv");
-    Zvknhb32_vsha2ms_vv_sew64_cg = new(); Zvknhb32_vsha2ms_vv_cg.set_inst_name("obj_Zvknhb32_vsha2ms_vv");
-    Zvknhb32_vsha2ms_vv_sew32_cg = new(); Zvknhb32_vsha2ms_vv_cg.set_inst_name("obj_Zvknhb32_vsha2ms_vv");
+    Zvknhb32_vsha2ch_vv_sew64_cg = new(); Zvknhb32_vsha2ch_vv_sew64_cg.set_inst_name("obj_Zvknhb32_vsha2ch_vv_sew64");
+    Zvknhb32_vsha2ch_vv_sew32_cg = new(); Zvknhb32_vsha2ch_vv_sew32_cg.set_inst_name("obj_Zvknhb32_vsha2ch_vv_sew32");
+    Zvknhb32_vsha2cl_vv_sew64_cg = new(); Zvknhb32_vsha2cl_vv_sew64_cg.set_inst_name("obj_Zvknhb32_vsha2cl_vv_sew64");
+    Zvknhb32_vsha2cl_vv_sew32_cg = new(); Zvknhb32_vsha2cl_vv_sew32_cg.set_inst_name("obj_Zvknhb32_vsha2cl_vv_sew32");
+    Zvknhb32_vsha2ms_vv_sew64_cg = new(); Zvknhb32_vsha2ms_vv_sew64_cg.set_inst_name("obj_Zvknhb32_vsha2ms_vv_sew64");
+    Zvknhb32_vsha2ms_vv_sew32_cg = new(); Zvknhb32_vsha2ms_vv_sew32_cg.set_inst_name("obj_Zvknhb32_vsha2ms_vv_sew32");

@@ -641,13 +641,15 @@ def _gen_instrs(
             # ±1MiB JAL range. Other priv vector arches (ExceptionsVx/Vls/Vf)
             # intentionally use a small, focused set of coverpoints (cp_vill /
             # cp_vstart / cp_vstart_gt_vl) and must not pull in either header.
-            if arch.startswith("SsstrictV"):
+            if arch.startswith(("SsstrictV", "SsstrictZv")):
                 covergroup_lines.append('    `include "general/RISCV_coverage_ssstrictv_helpers.svh"\n')
 
             # Coverpoint entries (skip metadata columns: sample_*, RV32, RV64, EFFEW*)
             # VCS requires coverpoints to be declared before cross references.
-            early_cps = {"cp_frm_2", "cp_frm_3", "cp_frm_4", "std_vec"}
-            ordered_cps = sorted(cps, key=lambda cp: (0 if cp in early_cps else 2 if cp.startswith("cr_") else 1, cp))
+            early_cps = ("cp_frm_2", "cp_frm_3", "cp_frm_4", "std_vec")
+            ordered_cps = sorted(
+                cps, key=lambda cp: (0 if cp.startswith(early_cps) else 2 if cp.startswith("cr_") else 1, cp)
+            )
             # Per-operand cross filtering depends only on the instruction, so resolve
             # its operand presence and max LMUL once rather than per coverpoint.
             has_vd, has_vs1, has_vs2 = _operand_presence(_instr_type)
@@ -698,6 +700,7 @@ def _gen_covergroup_samples(
     has_rv32: bool,
     has_rv64: bool,
     extras: dict[tuple[str, ...], Testplan],
+    effew: str = "",
 ) -> str:
     """Generate covergroup sample function calls for matching instructions and ExtraExtensions rows."""
     lines: list[str] = []
@@ -710,9 +713,10 @@ def _gen_covergroup_samples(
             continue
 
         if extra_rows:
-            base_calls = [customize_template(templates, template, arch, instr)] if key in tp else []
+            base_calls = [customize_template(templates, template, arch, instr, effew=effew)] if key in tp else []
             extra_calls = {
-                ext: customize_template(templates, template, _extra_name(arch, ext), instr) for ext in extra_rows
+                ext: customize_template(templates, template, _extra_name(arch, ext), instr, effew=effew)
+                for ext in extra_rows
             }
             if not base_calls and len(extra_calls) == 1:
                 ((ext, call),) = extra_calls.items()
@@ -727,7 +731,7 @@ def _gen_covergroup_samples(
             idx_eew, macro_prefix = gate
             lines.append(f"`ifdef {macro_prefix}{idx_eew}\n")
 
-        call = customize_template(templates, template, arch, instr)
+        call = customize_template(templates, template, arch, instr, effew=effew)
         lines.append(_gen_sample_arm(templates, instr, [call]))
 
         if gate:
@@ -814,12 +818,16 @@ def _write_extension_files(
             relevant_instrs = [instr for instr, cps in all_rows.items() if sew in _get_test_sews(cps)]
 
             lines.append(customize_template(templates, "covergroup_case_header_vector", arch, effew=str(sew)))
-            lines.append(_gen_covergroup_samples(relevant_instrs, templates, tp, arch, True, True, extras=extras))
+            lines.append(
+                _gen_covergroup_samples(relevant_instrs, templates, tp, arch, True, True, extras=extras, effew=str(sew))
+            )
             for rv32, rv64, exclude_marker in ((True, False, "RV64"), (False, True, "RV32")):
                 if _any_xlen_exclusion(exclude_marker, all_keys, all_rows):
                     lines.append(customize_template(templates, "RV32" if rv32 else "RV64", arch))
                     lines.append(
-                        _gen_covergroup_samples(relevant_instrs, templates, tp, arch, rv32, rv64, extras=extras)
+                        _gen_covergroup_samples(
+                            relevant_instrs, templates, tp, arch, rv32, rv64, extras=extras, effew=str(sew)
+                        )
                     )
                     lines.append(customize_template(templates, "end", arch))
             lines.append(customize_template(templates, "covergroup_case_end_vector", arch))

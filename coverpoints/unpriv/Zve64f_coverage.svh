@@ -14,6 +14,15 @@
 `define COVER_ZVE64F
 covergroup Zve64f_vfncvt_f_x_w_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vfncvt.f.x.w"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -162,15 +171,6 @@ covergroup Zve64f_vfncvt_f_x_w_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_emul2////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
@@ -230,6 +230,15 @@ endgroup
 // ---------------------
 covergroup Zve64f_vfncvt_f_xu_w_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vfncvt.f.xu.w"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -378,15 +387,6 @@ covergroup Zve64f_vfncvt_f_xu_w_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_emul2////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
@@ -446,6 +446,15 @@ endgroup
 // ---------------------
 covergroup Zve64f_vfwcvt_rtz_x_f_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vfwcvt.rtz.x.f.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -572,15 +581,6 @@ covergroup Zve64f_vfwcvt_rtz_x_f_v_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
@@ -640,6 +640,15 @@ endgroup
 // ---------------------
 covergroup Zve64f_vfwcvt_rtz_xu_f_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vfwcvt.rtz.xu.f.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -766,15 +775,6 @@ covergroup Zve64f_vfwcvt_rtz_xu_f_v_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
@@ -834,6 +834,15 @@ endgroup
 // ---------------------
 covergroup Zve64f_vfwcvt_x_f_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vfwcvt.x.f.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -969,15 +978,6 @@ covergroup Zve64f_vfwcvt_x_f_v_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
@@ -1037,6 +1037,15 @@ endgroup
 // ---------------------
 covergroup Zve64f_vfwcvt_xu_f_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vfwcvt.xu.f.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -1172,15 +1181,6 @@ covergroup Zve64f_vfwcvt_xu_f_v_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
@@ -1264,22 +1264,22 @@ function void zve64f_sample(int hart, int issue, ins_t ins);
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
         "vfncvt.f.x.w"     : begin
-            Zve64f_vfncvt_f_x_w_sew@EFFEW@_cg.sample(ins);
+            Zve64f_vfncvt_f_x_w_sew32_cg.sample(ins);
         end
         "vfncvt.f.xu.w"     : begin
-            Zve64f_vfncvt_f_xu_w_sew@EFFEW@_cg.sample(ins);
+            Zve64f_vfncvt_f_xu_w_sew32_cg.sample(ins);
         end
         "vfwcvt.rtz.x.f.v"     : begin
-            Zve64f_vfwcvt_rtz_x_f_v_sew@EFFEW@_cg.sample(ins);
+            Zve64f_vfwcvt_rtz_x_f_v_sew32_cg.sample(ins);
         end
         "vfwcvt.rtz.xu.f.v"     : begin
-            Zve64f_vfwcvt_rtz_xu_f_v_sew@EFFEW@_cg.sample(ins);
+            Zve64f_vfwcvt_rtz_xu_f_v_sew32_cg.sample(ins);
         end
         "vfwcvt.x.f.v"     : begin
-            Zve64f_vfwcvt_x_f_v_sew@EFFEW@_cg.sample(ins);
+            Zve64f_vfwcvt_x_f_v_sew32_cg.sample(ins);
         end
         "vfwcvt.xu.f.v"     : begin
-            Zve64f_vfwcvt_xu_f_v_sew@EFFEW@_cg.sample(ins);
+            Zve64f_vfwcvt_xu_f_v_sew32_cg.sample(ins);
         end
             default: ; // a case needs at least one item, and some configurations select none
         endcase

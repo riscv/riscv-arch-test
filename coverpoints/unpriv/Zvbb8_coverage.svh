@@ -8516,6 +8516,15 @@ endgroup
 // ---------------------
 covergroup Zvbb8_vwsll_vi_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vwsll.vi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -8665,15 +8674,6 @@ covergroup Zvbb8_vwsll_vi_sew32_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32_lmul4max
@@ -8754,6 +8754,15 @@ endgroup
 // ---------------------
 covergroup Zvbb8_vwsll_vi_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vwsll.vi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -8903,15 +8912,6 @@ covergroup Zvbb8_vwsll_vi_sew16_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
@@ -8995,6 +8995,15 @@ endgroup
 // ---------------------
 covergroup Zvbb8_vwsll_vi_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vwsll.vi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -9144,15 +9153,6 @@ covergroup Zvbb8_vwsll_vi_sew8_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew8_lmul4max
@@ -9239,6 +9239,15 @@ endgroup
 // ---------------------
 covergroup Zvbb8_vwsll_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -9478,15 +9487,6 @@ covergroup Zvbb8_vwsll_vv_sew32_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32_lmul4max
@@ -9557,6 +9557,15 @@ endgroup
 // ---------------------
 covergroup Zvbb8_vwsll_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -9796,15 +9805,6 @@ covergroup Zvbb8_vwsll_vv_sew16_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
@@ -9878,6 +9878,15 @@ endgroup
 // ---------------------
 covergroup Zvbb8_vwsll_vv_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs1_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -10117,15 +10126,6 @@ covergroup Zvbb8_vwsll_vv_sew8_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew8_lmul4max
@@ -10202,6 +10202,15 @@ endgroup
 // ---------------------
 covergroup Zvbb8_vwsll_vx_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vwsll.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -10387,15 +10396,6 @@ covergroup Zvbb8_vwsll_vx_sew32_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32_lmul4max
@@ -10466,6 +10466,15 @@ endgroup
 // ---------------------
 covergroup Zvbb8_vwsll_vx_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vwsll.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -10651,15 +10660,6 @@ covergroup Zvbb8_vwsll_vx_sew16_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
@@ -10733,6 +10733,15 @@ endgroup
 // ---------------------
 covergroup Zvbb8_vwsll_vx_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vwsll.vx"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -10918,15 +10927,6 @@ covergroup Zvbb8_vwsll_vx_sew8_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew8_lmul4max
@@ -11009,52 +11009,52 @@ function void zvbb8_sample(int hart, int issue, ins_t ins);
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
         "vandn.vv"     : begin
-            Zvbb8_vandn_vv_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vandn_vv_sew8_cg.sample(ins);
         end
         "vandn.vx"     : begin
-            Zvbb8_vandn_vx_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vandn_vx_sew8_cg.sample(ins);
         end
         "vbrev.v"     : begin
-            Zvbb8_vbrev_v_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vbrev_v_sew8_cg.sample(ins);
         end
         "vbrev8.v"     : begin
-            Zvbb8_vbrev8_v_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vbrev8_v_sew8_cg.sample(ins);
         end
         "vclz.v"     : begin
-            Zvbb8_vclz_v_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vclz_v_sew8_cg.sample(ins);
         end
         "vcpop.v"     : begin
-            Zvbb8_vcpop_v_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vcpop_v_sew8_cg.sample(ins);
         end
         "vctz.v"     : begin
-            Zvbb8_vctz_v_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vctz_v_sew8_cg.sample(ins);
         end
         "vrev8.v"     : begin
-            Zvbb8_vrev8_v_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vrev8_v_sew8_cg.sample(ins);
         end
         "vrol.vv"     : begin
-            Zvbb8_vrol_vv_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vrol_vv_sew8_cg.sample(ins);
         end
         "vrol.vx"     : begin
-            Zvbb8_vrol_vx_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vrol_vx_sew8_cg.sample(ins);
         end
         "vror.vi"     : begin
-            Zvbb8_vror_vi_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vror_vi_sew8_cg.sample(ins);
         end
         "vror.vv"     : begin
-            Zvbb8_vror_vv_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vror_vv_sew8_cg.sample(ins);
         end
         "vror.vx"     : begin
-            Zvbb8_vror_vx_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vror_vx_sew8_cg.sample(ins);
         end
         "vwsll.vi"     : begin
-            Zvbb8_vwsll_vi_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vwsll_vi_sew8_cg.sample(ins);
         end
         "vwsll.vv"     : begin
-            Zvbb8_vwsll_vv_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vwsll_vv_sew8_cg.sample(ins);
         end
         "vwsll.vx"     : begin
-            Zvbb8_vwsll_vx_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vwsll_vx_sew8_cg.sample(ins);
         end
             default: ; // a case needs at least one item, and some configurations select none
         endcase
@@ -11066,52 +11066,52 @@ function void zvbb8_sample(int hart, int issue, ins_t ins);
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
         "vandn.vv"     : begin
-            Zvbb8_vandn_vv_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vandn_vv_sew16_cg.sample(ins);
         end
         "vandn.vx"     : begin
-            Zvbb8_vandn_vx_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vandn_vx_sew16_cg.sample(ins);
         end
         "vbrev.v"     : begin
-            Zvbb8_vbrev_v_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vbrev_v_sew16_cg.sample(ins);
         end
         "vbrev8.v"     : begin
-            Zvbb8_vbrev8_v_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vbrev8_v_sew16_cg.sample(ins);
         end
         "vclz.v"     : begin
-            Zvbb8_vclz_v_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vclz_v_sew16_cg.sample(ins);
         end
         "vcpop.v"     : begin
-            Zvbb8_vcpop_v_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vcpop_v_sew16_cg.sample(ins);
         end
         "vctz.v"     : begin
-            Zvbb8_vctz_v_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vctz_v_sew16_cg.sample(ins);
         end
         "vrev8.v"     : begin
-            Zvbb8_vrev8_v_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vrev8_v_sew16_cg.sample(ins);
         end
         "vrol.vv"     : begin
-            Zvbb8_vrol_vv_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vrol_vv_sew16_cg.sample(ins);
         end
         "vrol.vx"     : begin
-            Zvbb8_vrol_vx_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vrol_vx_sew16_cg.sample(ins);
         end
         "vror.vi"     : begin
-            Zvbb8_vror_vi_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vror_vi_sew16_cg.sample(ins);
         end
         "vror.vv"     : begin
-            Zvbb8_vror_vv_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vror_vv_sew16_cg.sample(ins);
         end
         "vror.vx"     : begin
-            Zvbb8_vror_vx_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vror_vx_sew16_cg.sample(ins);
         end
         "vwsll.vi"     : begin
-            Zvbb8_vwsll_vi_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vwsll_vi_sew16_cg.sample(ins);
         end
         "vwsll.vv"     : begin
-            Zvbb8_vwsll_vv_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vwsll_vv_sew16_cg.sample(ins);
         end
         "vwsll.vx"     : begin
-            Zvbb8_vwsll_vx_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vwsll_vx_sew16_cg.sample(ins);
         end
             default: ; // a case needs at least one item, and some configurations select none
         endcase
@@ -11123,52 +11123,52 @@ function void zvbb8_sample(int hart, int issue, ins_t ins);
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
         "vandn.vv"     : begin
-            Zvbb8_vandn_vv_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vandn_vv_sew32_cg.sample(ins);
         end
         "vandn.vx"     : begin
-            Zvbb8_vandn_vx_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vandn_vx_sew32_cg.sample(ins);
         end
         "vbrev.v"     : begin
-            Zvbb8_vbrev_v_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vbrev_v_sew32_cg.sample(ins);
         end
         "vbrev8.v"     : begin
-            Zvbb8_vbrev8_v_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vbrev8_v_sew32_cg.sample(ins);
         end
         "vclz.v"     : begin
-            Zvbb8_vclz_v_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vclz_v_sew32_cg.sample(ins);
         end
         "vcpop.v"     : begin
-            Zvbb8_vcpop_v_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vcpop_v_sew32_cg.sample(ins);
         end
         "vctz.v"     : begin
-            Zvbb8_vctz_v_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vctz_v_sew32_cg.sample(ins);
         end
         "vrev8.v"     : begin
-            Zvbb8_vrev8_v_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vrev8_v_sew32_cg.sample(ins);
         end
         "vrol.vv"     : begin
-            Zvbb8_vrol_vv_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vrol_vv_sew32_cg.sample(ins);
         end
         "vrol.vx"     : begin
-            Zvbb8_vrol_vx_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vrol_vx_sew32_cg.sample(ins);
         end
         "vror.vi"     : begin
-            Zvbb8_vror_vi_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vror_vi_sew32_cg.sample(ins);
         end
         "vror.vv"     : begin
-            Zvbb8_vror_vv_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vror_vv_sew32_cg.sample(ins);
         end
         "vror.vx"     : begin
-            Zvbb8_vror_vx_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vror_vx_sew32_cg.sample(ins);
         end
         "vwsll.vi"     : begin
-            Zvbb8_vwsll_vi_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vwsll_vi_sew32_cg.sample(ins);
         end
         "vwsll.vv"     : begin
-            Zvbb8_vwsll_vv_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vwsll_vv_sew32_cg.sample(ins);
         end
         "vwsll.vx"     : begin
-            Zvbb8_vwsll_vx_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vwsll_vx_sew32_cg.sample(ins);
         end
             default: ; // a case needs at least one item, and some configurations select none
         endcase
@@ -11180,43 +11180,43 @@ function void zvbb8_sample(int hart, int issue, ins_t ins);
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
         "vandn.vv"     : begin
-            Zvbb8_vandn_vv_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vandn_vv_sew64_cg.sample(ins);
         end
         "vandn.vx"     : begin
-            Zvbb8_vandn_vx_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vandn_vx_sew64_cg.sample(ins);
         end
         "vbrev.v"     : begin
-            Zvbb8_vbrev_v_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vbrev_v_sew64_cg.sample(ins);
         end
         "vbrev8.v"     : begin
-            Zvbb8_vbrev8_v_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vbrev8_v_sew64_cg.sample(ins);
         end
         "vclz.v"     : begin
-            Zvbb8_vclz_v_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vclz_v_sew64_cg.sample(ins);
         end
         "vcpop.v"     : begin
-            Zvbb8_vcpop_v_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vcpop_v_sew64_cg.sample(ins);
         end
         "vctz.v"     : begin
-            Zvbb8_vctz_v_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vctz_v_sew64_cg.sample(ins);
         end
         "vrev8.v"     : begin
-            Zvbb8_vrev8_v_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vrev8_v_sew64_cg.sample(ins);
         end
         "vrol.vv"     : begin
-            Zvbb8_vrol_vv_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vrol_vv_sew64_cg.sample(ins);
         end
         "vrol.vx"     : begin
-            Zvbb8_vrol_vx_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vrol_vx_sew64_cg.sample(ins);
         end
         "vror.vi"     : begin
-            Zvbb8_vror_vi_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vror_vi_sew64_cg.sample(ins);
         end
         "vror.vv"     : begin
-            Zvbb8_vror_vv_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vror_vv_sew64_cg.sample(ins);
         end
         "vror.vx"     : begin
-            Zvbb8_vror_vx_sew@EFFEW@_cg.sample(ins);
+            Zvbb8_vror_vx_sew64_cg.sample(ins);
         end
             default: ; // a case needs at least one item, and some configurations select none
         endcase

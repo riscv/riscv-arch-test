@@ -3632,37 +3632,37 @@ function void zvkned_sample(int hart, int issue, ins_t ins);
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
         "vaesdf.vs"     : begin
-            Zvkned_vaesdf_vs_sew@EFFEW@_cg.sample(ins);
+            Zvkned_vaesdf_vs_sew32_cg.sample(ins);
         end
         "vaesdf.vv"     : begin
-            Zvkned_vaesdf_vv_sew@EFFEW@_cg.sample(ins);
+            Zvkned_vaesdf_vv_sew32_cg.sample(ins);
         end
         "vaesdm.vs"     : begin
-            Zvkned_vaesdm_vs_sew@EFFEW@_cg.sample(ins);
+            Zvkned_vaesdm_vs_sew32_cg.sample(ins);
         end
         "vaesdm.vv"     : begin
-            Zvkned_vaesdm_vv_sew@EFFEW@_cg.sample(ins);
+            Zvkned_vaesdm_vv_sew32_cg.sample(ins);
         end
         "vaesef.vs"     : begin
-            Zvkned_vaesef_vs_sew@EFFEW@_cg.sample(ins);
+            Zvkned_vaesef_vs_sew32_cg.sample(ins);
         end
         "vaesef.vv"     : begin
-            Zvkned_vaesef_vv_sew@EFFEW@_cg.sample(ins);
+            Zvkned_vaesef_vv_sew32_cg.sample(ins);
         end
         "vaesem.vs"     : begin
-            Zvkned_vaesem_vs_sew@EFFEW@_cg.sample(ins);
+            Zvkned_vaesem_vs_sew32_cg.sample(ins);
         end
         "vaesem.vv"     : begin
-            Zvkned_vaesem_vv_sew@EFFEW@_cg.sample(ins);
+            Zvkned_vaesem_vv_sew32_cg.sample(ins);
         end
         "vaeskf1.vi"     : begin
-            Zvkned_vaeskf1_vi_sew@EFFEW@_cg.sample(ins);
+            Zvkned_vaeskf1_vi_sew32_cg.sample(ins);
         end
         "vaeskf2.vi"     : begin
-            Zvkned_vaeskf2_vi_sew@EFFEW@_cg.sample(ins);
+            Zvkned_vaeskf2_vi_sew32_cg.sample(ins);
         end
         "vaesz.vs"     : begin
-            Zvkned_vaesz_vs_sew@EFFEW@_cg.sample(ins);
+            Zvkned_vaesz_vs_sew32_cg.sample(ins);
         end
             default: ; // a case needs at least one item, and some configurations select none
         endcase

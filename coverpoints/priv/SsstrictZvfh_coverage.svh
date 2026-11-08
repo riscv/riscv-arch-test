@@ -14,6 +14,7 @@
 `define COVER_SSSTRICTZVFH
 covergroup SsstrictZvfh_vfadd_vf_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -38,6 +39,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfadd_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -72,6 +74,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfclass_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -96,6 +99,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfcvt_f_x_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -120,6 +124,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfcvt_f_xu_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -144,6 +149,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfcvt_rtz_x_f_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -168,6 +174,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfcvt_rtz_xu_f_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -192,6 +199,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfcvt_x_f_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -216,6 +224,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfcvt_xu_f_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -240,6 +249,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfdiv_vf_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -264,6 +274,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfdiv_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -298,6 +309,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfmacc_vf_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -322,6 +334,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfmacc_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vs1_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -346,6 +359,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfmadd_vf_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -370,6 +384,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfmadd_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vs1_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -394,6 +409,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfmax_vf_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -418,6 +434,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfmax_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -452,6 +469,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfmerge_vfm_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -476,6 +494,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfmin_vf_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -500,6 +519,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfmin_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -534,6 +554,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfmsac_vf_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -558,6 +579,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfmsac_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vs1_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -582,6 +604,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfmsub_vf_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -606,6 +629,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfmsub_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vs1_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -630,6 +654,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfmul_vf_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -654,6 +679,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfmul_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -688,6 +714,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfmv_f_s_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_vfmv_fs_sf_vm0_reserved
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -714,6 +741,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfmv_s_f_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_vfmv_fs_sf_vm0_reserved
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -740,6 +768,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfmv_v_f_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_vfmv_vs2_not_v0_reserved
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -758,6 +787,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfncvt_f_x_w_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -793,6 +823,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfncvt_f_xu_w_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -828,6 +859,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfncvt_rod_f_f_w_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -863,6 +895,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfncvt_rtz_x_f_w_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -898,6 +931,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfncvt_rtz_xu_f_w_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -933,6 +967,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfncvt_x_f_w_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -968,6 +1003,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfncvt_xu_f_w_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1003,6 +1039,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfnmacc_vf_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1027,6 +1064,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfnmacc_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vs1_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1051,6 +1089,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfnmadd_vf_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1075,6 +1114,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfnmadd_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vs1_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1099,6 +1139,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfnmsac_vf_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1123,6 +1164,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfnmsac_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vs1_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1147,6 +1189,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfnmsub_vf_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1171,6 +1214,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfnmsub_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vs1_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1195,6 +1239,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfrdiv_vf_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1219,6 +1264,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfrec7_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1243,6 +1289,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfredmax_vs_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1277,6 +1324,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfredmin_vs_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1311,6 +1359,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfredosum_vs_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1345,6 +1394,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfredusum_vs_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1379,6 +1429,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfrsqrt7_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1403,6 +1454,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfrsub_vf_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1427,6 +1479,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfsgnj_vf_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1451,6 +1504,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfsgnj_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1485,6 +1539,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfsgnjn_vf_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1509,6 +1564,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfsgnjn_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1543,6 +1599,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfsgnjx_vf_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1567,6 +1624,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfsgnjx_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1601,6 +1659,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfslide1down_vf_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1625,6 +1684,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfslide1up_vf_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1669,6 +1729,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfsqrt_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1693,6 +1754,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfsub_vf_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1717,6 +1779,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfsub_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1751,6 +1814,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfwadd_vf_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1786,6 +1850,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfwadd_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1842,6 +1907,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfwadd_wf_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1866,6 +1932,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfwadd_wv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1929,6 +1996,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfwcvt_f_x_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1953,6 +2021,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfwcvt_f_xu_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1977,6 +2046,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfwcvt_rtz_x_f_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2001,6 +2071,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfwcvt_rtz_xu_f_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2025,6 +2096,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfwcvt_x_f_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2049,6 +2121,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfwcvt_xu_f_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2073,6 +2146,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfwmacc_vf_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2108,6 +2182,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfwmacc_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vs1_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2154,6 +2229,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfwmsac_vf_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2189,6 +2265,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfwmsac_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vs1_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2235,6 +2312,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfwmul_vf_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2270,6 +2348,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfwmul_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2326,6 +2405,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfwnmacc_vf_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2361,6 +2441,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfwnmacc_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vs1_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2407,6 +2488,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfwnmsac_vf_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2442,6 +2524,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfwnmsac_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vs1_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2488,6 +2571,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfwredosum_vs_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2522,6 +2606,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfwredusum_vs_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2556,6 +2641,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfwsub_vf_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2591,6 +2677,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfwsub_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2647,6 +2734,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfwsub_wf_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2671,6 +2759,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vfwsub_wv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2734,6 +2823,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vmfeq_vf_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2758,6 +2848,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vmfeq_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2792,6 +2883,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vmfge_vf_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2816,6 +2908,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vmfgt_vf_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2840,6 +2933,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vmfle_vf_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2864,6 +2958,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vmfle_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2898,6 +2993,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vmflt_vf_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2922,6 +3018,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vmflt_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2956,6 +3053,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vmfne_vf_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2980,6 +3078,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZvfh_vmfne_vv_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3020,22 +3119,22 @@ function void ssstrictzvfh_sample(int hart, int issue, ins_t ins);
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
         "vfncvt.rtz.x.f.w"     : begin
-            SsstrictZvfh_vfncvt_rtz_x_f_w_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfncvt_rtz_x_f_w_sew8_cg.sample(ins);
         end
         "vfncvt.rtz.xu.f.w"     : begin
-            SsstrictZvfh_vfncvt_rtz_xu_f_w_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfncvt_rtz_xu_f_w_sew8_cg.sample(ins);
         end
         "vfncvt.x.f.w"     : begin
-            SsstrictZvfh_vfncvt_x_f_w_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfncvt_x_f_w_sew8_cg.sample(ins);
         end
         "vfncvt.xu.f.w"     : begin
-            SsstrictZvfh_vfncvt_xu_f_w_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfncvt_xu_f_w_sew8_cg.sample(ins);
         end
         "vfwcvt.f.x.v"     : begin
-            SsstrictZvfh_vfwcvt_f_x_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfwcvt_f_x_v_sew8_cg.sample(ins);
         end
         "vfwcvt.f.xu.v"     : begin
-            SsstrictZvfh_vfwcvt_f_xu_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfwcvt_f_xu_v_sew8_cg.sample(ins);
         end
             default: ; // a case needs at least one item, and some configurations select none
         endcase
@@ -3047,283 +3146,283 @@ function void ssstrictzvfh_sample(int hart, int issue, ins_t ins);
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
         "vfadd.vf"     : begin
-            SsstrictZvfh_vfadd_vf_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfadd_vf_sew16_cg.sample(ins);
         end
         "vfadd.vv"     : begin
-            SsstrictZvfh_vfadd_vv_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfadd_vv_sew16_cg.sample(ins);
         end
         "vfclass.v"     : begin
-            SsstrictZvfh_vfclass_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfclass_v_sew16_cg.sample(ins);
         end
         "vfcvt.f.x.v"     : begin
-            SsstrictZvfh_vfcvt_f_x_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfcvt_f_x_v_sew16_cg.sample(ins);
         end
         "vfcvt.f.xu.v"     : begin
-            SsstrictZvfh_vfcvt_f_xu_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfcvt_f_xu_v_sew16_cg.sample(ins);
         end
         "vfcvt.rtz.x.f.v"     : begin
-            SsstrictZvfh_vfcvt_rtz_x_f_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfcvt_rtz_x_f_v_sew16_cg.sample(ins);
         end
         "vfcvt.rtz.xu.f.v"     : begin
-            SsstrictZvfh_vfcvt_rtz_xu_f_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfcvt_rtz_xu_f_v_sew16_cg.sample(ins);
         end
         "vfcvt.x.f.v"     : begin
-            SsstrictZvfh_vfcvt_x_f_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfcvt_x_f_v_sew16_cg.sample(ins);
         end
         "vfcvt.xu.f.v"     : begin
-            SsstrictZvfh_vfcvt_xu_f_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfcvt_xu_f_v_sew16_cg.sample(ins);
         end
         "vfdiv.vf"     : begin
-            SsstrictZvfh_vfdiv_vf_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfdiv_vf_sew16_cg.sample(ins);
         end
         "vfdiv.vv"     : begin
-            SsstrictZvfh_vfdiv_vv_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfdiv_vv_sew16_cg.sample(ins);
         end
         "vfmacc.vf"     : begin
-            SsstrictZvfh_vfmacc_vf_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfmacc_vf_sew16_cg.sample(ins);
         end
         "vfmacc.vv"     : begin
-            SsstrictZvfh_vfmacc_vv_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfmacc_vv_sew16_cg.sample(ins);
         end
         "vfmadd.vf"     : begin
-            SsstrictZvfh_vfmadd_vf_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfmadd_vf_sew16_cg.sample(ins);
         end
         "vfmadd.vv"     : begin
-            SsstrictZvfh_vfmadd_vv_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfmadd_vv_sew16_cg.sample(ins);
         end
         "vfmax.vf"     : begin
-            SsstrictZvfh_vfmax_vf_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfmax_vf_sew16_cg.sample(ins);
         end
         "vfmax.vv"     : begin
-            SsstrictZvfh_vfmax_vv_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfmax_vv_sew16_cg.sample(ins);
         end
         "vfmerge.vfm"     : begin
-            SsstrictZvfh_vfmerge_vfm_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfmerge_vfm_sew16_cg.sample(ins);
         end
         "vfmin.vf"     : begin
-            SsstrictZvfh_vfmin_vf_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfmin_vf_sew16_cg.sample(ins);
         end
         "vfmin.vv"     : begin
-            SsstrictZvfh_vfmin_vv_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfmin_vv_sew16_cg.sample(ins);
         end
         "vfmsac.vf"     : begin
-            SsstrictZvfh_vfmsac_vf_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfmsac_vf_sew16_cg.sample(ins);
         end
         "vfmsac.vv"     : begin
-            SsstrictZvfh_vfmsac_vv_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfmsac_vv_sew16_cg.sample(ins);
         end
         "vfmsub.vf"     : begin
-            SsstrictZvfh_vfmsub_vf_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfmsub_vf_sew16_cg.sample(ins);
         end
         "vfmsub.vv"     : begin
-            SsstrictZvfh_vfmsub_vv_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfmsub_vv_sew16_cg.sample(ins);
         end
         "vfmul.vf"     : begin
-            SsstrictZvfh_vfmul_vf_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfmul_vf_sew16_cg.sample(ins);
         end
         "vfmul.vv"     : begin
-            SsstrictZvfh_vfmul_vv_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfmul_vv_sew16_cg.sample(ins);
         end
         "vfmv.f.s"     : begin
-            SsstrictZvfh_vfmv_f_s_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfmv_f_s_sew16_cg.sample(ins);
         end
         "vfmv.s.f"     : begin
-            SsstrictZvfh_vfmv_s_f_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfmv_s_f_sew16_cg.sample(ins);
         end
         "vfmv.v.f"     : begin
-            SsstrictZvfh_vfmv_v_f_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfmv_v_f_sew16_cg.sample(ins);
         end
         "vfncvt.f.x.w"     : begin
-            SsstrictZvfh_vfncvt_f_x_w_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfncvt_f_x_w_sew16_cg.sample(ins);
         end
         "vfncvt.f.xu.w"     : begin
-            SsstrictZvfh_vfncvt_f_xu_w_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfncvt_f_xu_w_sew16_cg.sample(ins);
         end
         "vfncvt.rod.f.f.w"     : begin
-            SsstrictZvfh_vfncvt_rod_f_f_w_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfncvt_rod_f_f_w_sew16_cg.sample(ins);
         end
         "vfnmacc.vf"     : begin
-            SsstrictZvfh_vfnmacc_vf_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfnmacc_vf_sew16_cg.sample(ins);
         end
         "vfnmacc.vv"     : begin
-            SsstrictZvfh_vfnmacc_vv_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfnmacc_vv_sew16_cg.sample(ins);
         end
         "vfnmadd.vf"     : begin
-            SsstrictZvfh_vfnmadd_vf_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfnmadd_vf_sew16_cg.sample(ins);
         end
         "vfnmadd.vv"     : begin
-            SsstrictZvfh_vfnmadd_vv_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfnmadd_vv_sew16_cg.sample(ins);
         end
         "vfnmsac.vf"     : begin
-            SsstrictZvfh_vfnmsac_vf_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfnmsac_vf_sew16_cg.sample(ins);
         end
         "vfnmsac.vv"     : begin
-            SsstrictZvfh_vfnmsac_vv_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfnmsac_vv_sew16_cg.sample(ins);
         end
         "vfnmsub.vf"     : begin
-            SsstrictZvfh_vfnmsub_vf_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfnmsub_vf_sew16_cg.sample(ins);
         end
         "vfnmsub.vv"     : begin
-            SsstrictZvfh_vfnmsub_vv_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfnmsub_vv_sew16_cg.sample(ins);
         end
         "vfrdiv.vf"     : begin
-            SsstrictZvfh_vfrdiv_vf_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfrdiv_vf_sew16_cg.sample(ins);
         end
         "vfrec7.v"     : begin
-            SsstrictZvfh_vfrec7_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfrec7_v_sew16_cg.sample(ins);
         end
         "vfredmax.vs"     : begin
-            SsstrictZvfh_vfredmax_vs_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfredmax_vs_sew16_cg.sample(ins);
         end
         "vfredmin.vs"     : begin
-            SsstrictZvfh_vfredmin_vs_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfredmin_vs_sew16_cg.sample(ins);
         end
         "vfredosum.vs"     : begin
-            SsstrictZvfh_vfredosum_vs_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfredosum_vs_sew16_cg.sample(ins);
         end
         "vfredusum.vs"     : begin
-            SsstrictZvfh_vfredusum_vs_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfredusum_vs_sew16_cg.sample(ins);
         end
         "vfrsqrt7.v"     : begin
-            SsstrictZvfh_vfrsqrt7_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfrsqrt7_v_sew16_cg.sample(ins);
         end
         "vfrsub.vf"     : begin
-            SsstrictZvfh_vfrsub_vf_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfrsub_vf_sew16_cg.sample(ins);
         end
         "vfsgnj.vf"     : begin
-            SsstrictZvfh_vfsgnj_vf_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfsgnj_vf_sew16_cg.sample(ins);
         end
         "vfsgnj.vv"     : begin
-            SsstrictZvfh_vfsgnj_vv_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfsgnj_vv_sew16_cg.sample(ins);
         end
         "vfsgnjn.vf"     : begin
-            SsstrictZvfh_vfsgnjn_vf_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfsgnjn_vf_sew16_cg.sample(ins);
         end
         "vfsgnjn.vv"     : begin
-            SsstrictZvfh_vfsgnjn_vv_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfsgnjn_vv_sew16_cg.sample(ins);
         end
         "vfsgnjx.vf"     : begin
-            SsstrictZvfh_vfsgnjx_vf_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfsgnjx_vf_sew16_cg.sample(ins);
         end
         "vfsgnjx.vv"     : begin
-            SsstrictZvfh_vfsgnjx_vv_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfsgnjx_vv_sew16_cg.sample(ins);
         end
         "vfslide1down.vf"     : begin
-            SsstrictZvfh_vfslide1down_vf_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfslide1down_vf_sew16_cg.sample(ins);
         end
         "vfslide1up.vf"     : begin
-            SsstrictZvfh_vfslide1up_vf_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfslide1up_vf_sew16_cg.sample(ins);
         end
         "vfsqrt.v"     : begin
-            SsstrictZvfh_vfsqrt_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfsqrt_v_sew16_cg.sample(ins);
         end
         "vfsub.vf"     : begin
-            SsstrictZvfh_vfsub_vf_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfsub_vf_sew16_cg.sample(ins);
         end
         "vfsub.vv"     : begin
-            SsstrictZvfh_vfsub_vv_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfsub_vv_sew16_cg.sample(ins);
         end
         "vfwadd.vf"     : begin
-            SsstrictZvfh_vfwadd_vf_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfwadd_vf_sew16_cg.sample(ins);
         end
         "vfwadd.vv"     : begin
-            SsstrictZvfh_vfwadd_vv_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfwadd_vv_sew16_cg.sample(ins);
         end
         "vfwadd.wf"     : begin
-            SsstrictZvfh_vfwadd_wf_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfwadd_wf_sew16_cg.sample(ins);
         end
         "vfwadd.wv"     : begin
-            SsstrictZvfh_vfwadd_wv_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfwadd_wv_sew16_cg.sample(ins);
         end
         "vfwcvt.rtz.x.f.v"     : begin
-            SsstrictZvfh_vfwcvt_rtz_x_f_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfwcvt_rtz_x_f_v_sew16_cg.sample(ins);
         end
         "vfwcvt.rtz.xu.f.v"     : begin
-            SsstrictZvfh_vfwcvt_rtz_xu_f_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfwcvt_rtz_xu_f_v_sew16_cg.sample(ins);
         end
         "vfwcvt.x.f.v"     : begin
-            SsstrictZvfh_vfwcvt_x_f_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfwcvt_x_f_v_sew16_cg.sample(ins);
         end
         "vfwcvt.xu.f.v"     : begin
-            SsstrictZvfh_vfwcvt_xu_f_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfwcvt_xu_f_v_sew16_cg.sample(ins);
         end
         "vfwmacc.vf"     : begin
-            SsstrictZvfh_vfwmacc_vf_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfwmacc_vf_sew16_cg.sample(ins);
         end
         "vfwmacc.vv"     : begin
-            SsstrictZvfh_vfwmacc_vv_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfwmacc_vv_sew16_cg.sample(ins);
         end
         "vfwmsac.vf"     : begin
-            SsstrictZvfh_vfwmsac_vf_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfwmsac_vf_sew16_cg.sample(ins);
         end
         "vfwmsac.vv"     : begin
-            SsstrictZvfh_vfwmsac_vv_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfwmsac_vv_sew16_cg.sample(ins);
         end
         "vfwmul.vf"     : begin
-            SsstrictZvfh_vfwmul_vf_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfwmul_vf_sew16_cg.sample(ins);
         end
         "vfwmul.vv"     : begin
-            SsstrictZvfh_vfwmul_vv_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfwmul_vv_sew16_cg.sample(ins);
         end
         "vfwnmacc.vf"     : begin
-            SsstrictZvfh_vfwnmacc_vf_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfwnmacc_vf_sew16_cg.sample(ins);
         end
         "vfwnmacc.vv"     : begin
-            SsstrictZvfh_vfwnmacc_vv_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfwnmacc_vv_sew16_cg.sample(ins);
         end
         "vfwnmsac.vf"     : begin
-            SsstrictZvfh_vfwnmsac_vf_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfwnmsac_vf_sew16_cg.sample(ins);
         end
         "vfwnmsac.vv"     : begin
-            SsstrictZvfh_vfwnmsac_vv_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfwnmsac_vv_sew16_cg.sample(ins);
         end
         "vfwredosum.vs"     : begin
-            SsstrictZvfh_vfwredosum_vs_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfwredosum_vs_sew16_cg.sample(ins);
         end
         "vfwredusum.vs"     : begin
-            SsstrictZvfh_vfwredusum_vs_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfwredusum_vs_sew16_cg.sample(ins);
         end
         "vfwsub.vf"     : begin
-            SsstrictZvfh_vfwsub_vf_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfwsub_vf_sew16_cg.sample(ins);
         end
         "vfwsub.vv"     : begin
-            SsstrictZvfh_vfwsub_vv_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfwsub_vv_sew16_cg.sample(ins);
         end
         "vfwsub.wf"     : begin
-            SsstrictZvfh_vfwsub_wf_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfwsub_wf_sew16_cg.sample(ins);
         end
         "vfwsub.wv"     : begin
-            SsstrictZvfh_vfwsub_wv_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vfwsub_wv_sew16_cg.sample(ins);
         end
         "vmfeq.vf"     : begin
-            SsstrictZvfh_vmfeq_vf_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vmfeq_vf_sew16_cg.sample(ins);
         end
         "vmfeq.vv"     : begin
-            SsstrictZvfh_vmfeq_vv_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vmfeq_vv_sew16_cg.sample(ins);
         end
         "vmfge.vf"     : begin
-            SsstrictZvfh_vmfge_vf_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vmfge_vf_sew16_cg.sample(ins);
         end
         "vmfgt.vf"     : begin
-            SsstrictZvfh_vmfgt_vf_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vmfgt_vf_sew16_cg.sample(ins);
         end
         "vmfle.vf"     : begin
-            SsstrictZvfh_vmfle_vf_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vmfle_vf_sew16_cg.sample(ins);
         end
         "vmfle.vv"     : begin
-            SsstrictZvfh_vmfle_vv_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vmfle_vv_sew16_cg.sample(ins);
         end
         "vmflt.vf"     : begin
-            SsstrictZvfh_vmflt_vf_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vmflt_vf_sew16_cg.sample(ins);
         end
         "vmflt.vv"     : begin
-            SsstrictZvfh_vmflt_vv_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vmflt_vv_sew16_cg.sample(ins);
         end
         "vmfne.vf"     : begin
-            SsstrictZvfh_vmfne_vf_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vmfne_vf_sew16_cg.sample(ins);
         end
         "vmfne.vv"     : begin
-            SsstrictZvfh_vmfne_vv_sew@EFFEW@_cg.sample(ins);
+            SsstrictZvfh_vmfne_vv_sew16_cg.sample(ins);
         end
             default: ; // a case needs at least one item, and some configurations select none
         endcase

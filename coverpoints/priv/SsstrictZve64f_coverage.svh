@@ -14,6 +14,7 @@
 `define COVER_SSSTRICTZVE64F
 covergroup SsstrictZve64f_vfncvt_f_x_w_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -49,6 +50,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZve64f_vfncvt_f_xu_w_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -84,6 +86,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZve64f_vfwcvt_rtz_x_f_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -108,6 +111,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZve64f_vfwcvt_rtz_xu_f_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -132,6 +136,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZve64f_vfwcvt_x_f_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -156,6 +161,7 @@ endgroup
 // ---------------------
 covergroup SsstrictZve64f_vfwcvt_xu_f_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vd_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -204,22 +210,22 @@ function void ssstrictzve64f_sample(int hart, int issue, ins_t ins);
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
         "vfncvt.f.x.w"     : begin
-            SsstrictZve64f_vfncvt_f_x_w_sew@EFFEW@_cg.sample(ins);
+            SsstrictZve64f_vfncvt_f_x_w_sew32_cg.sample(ins);
         end
         "vfncvt.f.xu.w"     : begin
-            SsstrictZve64f_vfncvt_f_xu_w_sew@EFFEW@_cg.sample(ins);
+            SsstrictZve64f_vfncvt_f_xu_w_sew32_cg.sample(ins);
         end
         "vfwcvt.rtz.x.f.v"     : begin
-            SsstrictZve64f_vfwcvt_rtz_x_f_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictZve64f_vfwcvt_rtz_x_f_v_sew32_cg.sample(ins);
         end
         "vfwcvt.rtz.xu.f.v"     : begin
-            SsstrictZve64f_vfwcvt_rtz_xu_f_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictZve64f_vfwcvt_rtz_xu_f_v_sew32_cg.sample(ins);
         end
         "vfwcvt.x.f.v"     : begin
-            SsstrictZve64f_vfwcvt_x_f_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictZve64f_vfwcvt_x_f_v_sew32_cg.sample(ins);
         end
         "vfwcvt.xu.f.v"     : begin
-            SsstrictZve64f_vfwcvt_xu_f_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictZve64f_vfwcvt_xu_f_v_sew32_cg.sample(ins);
         end
             default: ; // a case needs at least one item, and some configurations select none
         endcase

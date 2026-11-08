@@ -16647,100 +16647,100 @@ function void ssstrictv_sample(int hart, int issue, ins_t ins);
         case (traceDataQ[hart][issue][0].inst_name)
 `ifdef UDB_MXLEN_32
         "vloxei64.v"     : begin
-            SsstrictV_vloxei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vloxei64_v_sew8_cg.sample(ins);
         end
         "vloxseg2ei64.v"     : begin
-            SsstrictV_vloxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vloxseg2ei64_v_sew8_cg.sample(ins);
         end
         "vloxseg3ei64.v"     : begin
-            SsstrictV_vloxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vloxseg3ei64_v_sew8_cg.sample(ins);
         end
         "vloxseg4ei64.v"     : begin
-            SsstrictV_vloxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vloxseg4ei64_v_sew8_cg.sample(ins);
         end
         "vloxseg5ei64.v"     : begin
-            SsstrictV_vloxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vloxseg5ei64_v_sew8_cg.sample(ins);
         end
         "vloxseg6ei64.v"     : begin
-            SsstrictV_vloxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vloxseg6ei64_v_sew8_cg.sample(ins);
         end
         "vloxseg7ei64.v"     : begin
-            SsstrictV_vloxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vloxseg7ei64_v_sew8_cg.sample(ins);
         end
         "vloxseg8ei64.v"     : begin
-            SsstrictV_vloxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vloxseg8ei64_v_sew8_cg.sample(ins);
         end
         "vluxei64.v"     : begin
-            SsstrictV_vluxei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vluxei64_v_sew8_cg.sample(ins);
         end
         "vluxseg2ei64.v"     : begin
-            SsstrictV_vluxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vluxseg2ei64_v_sew8_cg.sample(ins);
         end
         "vluxseg3ei64.v"     : begin
-            SsstrictV_vluxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vluxseg3ei64_v_sew8_cg.sample(ins);
         end
         "vluxseg4ei64.v"     : begin
-            SsstrictV_vluxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vluxseg4ei64_v_sew8_cg.sample(ins);
         end
         "vluxseg5ei64.v"     : begin
-            SsstrictV_vluxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vluxseg5ei64_v_sew8_cg.sample(ins);
         end
         "vluxseg6ei64.v"     : begin
-            SsstrictV_vluxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vluxseg6ei64_v_sew8_cg.sample(ins);
         end
         "vluxseg7ei64.v"     : begin
-            SsstrictV_vluxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vluxseg7ei64_v_sew8_cg.sample(ins);
         end
         "vluxseg8ei64.v"     : begin
-            SsstrictV_vluxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vluxseg8ei64_v_sew8_cg.sample(ins);
         end
         "vsoxei64.v"     : begin
-            SsstrictV_vsoxei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsoxei64_v_sew8_cg.sample(ins);
         end
         "vsoxseg2ei64.v"     : begin
-            SsstrictV_vsoxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsoxseg2ei64_v_sew8_cg.sample(ins);
         end
         "vsoxseg3ei64.v"     : begin
-            SsstrictV_vsoxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsoxseg3ei64_v_sew8_cg.sample(ins);
         end
         "vsoxseg4ei64.v"     : begin
-            SsstrictV_vsoxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsoxseg4ei64_v_sew8_cg.sample(ins);
         end
         "vsoxseg5ei64.v"     : begin
-            SsstrictV_vsoxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsoxseg5ei64_v_sew8_cg.sample(ins);
         end
         "vsoxseg6ei64.v"     : begin
-            SsstrictV_vsoxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsoxseg6ei64_v_sew8_cg.sample(ins);
         end
         "vsoxseg7ei64.v"     : begin
-            SsstrictV_vsoxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsoxseg7ei64_v_sew8_cg.sample(ins);
         end
         "vsoxseg8ei64.v"     : begin
-            SsstrictV_vsoxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsoxseg8ei64_v_sew8_cg.sample(ins);
         end
         "vsuxei64.v"     : begin
-            SsstrictV_vsuxei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsuxei64_v_sew8_cg.sample(ins);
         end
         "vsuxseg2ei64.v"     : begin
-            SsstrictV_vsuxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsuxseg2ei64_v_sew8_cg.sample(ins);
         end
         "vsuxseg3ei64.v"     : begin
-            SsstrictV_vsuxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsuxseg3ei64_v_sew8_cg.sample(ins);
         end
         "vsuxseg4ei64.v"     : begin
-            SsstrictV_vsuxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsuxseg4ei64_v_sew8_cg.sample(ins);
         end
         "vsuxseg5ei64.v"     : begin
-            SsstrictV_vsuxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsuxseg5ei64_v_sew8_cg.sample(ins);
         end
         "vsuxseg6ei64.v"     : begin
-            SsstrictV_vsuxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsuxseg6ei64_v_sew8_cg.sample(ins);
         end
         "vsuxseg7ei64.v"     : begin
-            SsstrictV_vsuxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsuxseg7ei64_v_sew8_cg.sample(ins);
         end
         "vsuxseg8ei64.v"     : begin
-            SsstrictV_vsuxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsuxseg8ei64_v_sew8_cg.sample(ins);
         end
 `endif
             default: ; // a case needs at least one item, and some configurations select none
@@ -16754,100 +16754,100 @@ function void ssstrictv_sample(int hart, int issue, ins_t ins);
         case (traceDataQ[hart][issue][0].inst_name)
 `ifdef UDB_MXLEN_32
         "vloxei64.v"     : begin
-            SsstrictV_vloxei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vloxei64_v_sew16_cg.sample(ins);
         end
         "vloxseg2ei64.v"     : begin
-            SsstrictV_vloxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vloxseg2ei64_v_sew16_cg.sample(ins);
         end
         "vloxseg3ei64.v"     : begin
-            SsstrictV_vloxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vloxseg3ei64_v_sew16_cg.sample(ins);
         end
         "vloxseg4ei64.v"     : begin
-            SsstrictV_vloxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vloxseg4ei64_v_sew16_cg.sample(ins);
         end
         "vloxseg5ei64.v"     : begin
-            SsstrictV_vloxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vloxseg5ei64_v_sew16_cg.sample(ins);
         end
         "vloxseg6ei64.v"     : begin
-            SsstrictV_vloxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vloxseg6ei64_v_sew16_cg.sample(ins);
         end
         "vloxseg7ei64.v"     : begin
-            SsstrictV_vloxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vloxseg7ei64_v_sew16_cg.sample(ins);
         end
         "vloxseg8ei64.v"     : begin
-            SsstrictV_vloxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vloxseg8ei64_v_sew16_cg.sample(ins);
         end
         "vluxei64.v"     : begin
-            SsstrictV_vluxei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vluxei64_v_sew16_cg.sample(ins);
         end
         "vluxseg2ei64.v"     : begin
-            SsstrictV_vluxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vluxseg2ei64_v_sew16_cg.sample(ins);
         end
         "vluxseg3ei64.v"     : begin
-            SsstrictV_vluxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vluxseg3ei64_v_sew16_cg.sample(ins);
         end
         "vluxseg4ei64.v"     : begin
-            SsstrictV_vluxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vluxseg4ei64_v_sew16_cg.sample(ins);
         end
         "vluxseg5ei64.v"     : begin
-            SsstrictV_vluxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vluxseg5ei64_v_sew16_cg.sample(ins);
         end
         "vluxseg6ei64.v"     : begin
-            SsstrictV_vluxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vluxseg6ei64_v_sew16_cg.sample(ins);
         end
         "vluxseg7ei64.v"     : begin
-            SsstrictV_vluxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vluxseg7ei64_v_sew16_cg.sample(ins);
         end
         "vluxseg8ei64.v"     : begin
-            SsstrictV_vluxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vluxseg8ei64_v_sew16_cg.sample(ins);
         end
         "vsoxei64.v"     : begin
-            SsstrictV_vsoxei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsoxei64_v_sew16_cg.sample(ins);
         end
         "vsoxseg2ei64.v"     : begin
-            SsstrictV_vsoxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsoxseg2ei64_v_sew16_cg.sample(ins);
         end
         "vsoxseg3ei64.v"     : begin
-            SsstrictV_vsoxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsoxseg3ei64_v_sew16_cg.sample(ins);
         end
         "vsoxseg4ei64.v"     : begin
-            SsstrictV_vsoxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsoxseg4ei64_v_sew16_cg.sample(ins);
         end
         "vsoxseg5ei64.v"     : begin
-            SsstrictV_vsoxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsoxseg5ei64_v_sew16_cg.sample(ins);
         end
         "vsoxseg6ei64.v"     : begin
-            SsstrictV_vsoxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsoxseg6ei64_v_sew16_cg.sample(ins);
         end
         "vsoxseg7ei64.v"     : begin
-            SsstrictV_vsoxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsoxseg7ei64_v_sew16_cg.sample(ins);
         end
         "vsoxseg8ei64.v"     : begin
-            SsstrictV_vsoxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsoxseg8ei64_v_sew16_cg.sample(ins);
         end
         "vsuxei64.v"     : begin
-            SsstrictV_vsuxei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsuxei64_v_sew16_cg.sample(ins);
         end
         "vsuxseg2ei64.v"     : begin
-            SsstrictV_vsuxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsuxseg2ei64_v_sew16_cg.sample(ins);
         end
         "vsuxseg3ei64.v"     : begin
-            SsstrictV_vsuxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsuxseg3ei64_v_sew16_cg.sample(ins);
         end
         "vsuxseg4ei64.v"     : begin
-            SsstrictV_vsuxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsuxseg4ei64_v_sew16_cg.sample(ins);
         end
         "vsuxseg5ei64.v"     : begin
-            SsstrictV_vsuxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsuxseg5ei64_v_sew16_cg.sample(ins);
         end
         "vsuxseg6ei64.v"     : begin
-            SsstrictV_vsuxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsuxseg6ei64_v_sew16_cg.sample(ins);
         end
         "vsuxseg7ei64.v"     : begin
-            SsstrictV_vsuxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsuxseg7ei64_v_sew16_cg.sample(ins);
         end
         "vsuxseg8ei64.v"     : begin
-            SsstrictV_vsuxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsuxseg8ei64_v_sew16_cg.sample(ins);
         end
 `endif
             default: ; // a case needs at least one item, and some configurations select none
@@ -16861,100 +16861,100 @@ function void ssstrictv_sample(int hart, int issue, ins_t ins);
         case (traceDataQ[hart][issue][0].inst_name)
 `ifdef UDB_MXLEN_32
         "vloxei64.v"     : begin
-            SsstrictV_vloxei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vloxei64_v_sew32_cg.sample(ins);
         end
         "vloxseg2ei64.v"     : begin
-            SsstrictV_vloxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vloxseg2ei64_v_sew32_cg.sample(ins);
         end
         "vloxseg3ei64.v"     : begin
-            SsstrictV_vloxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vloxseg3ei64_v_sew32_cg.sample(ins);
         end
         "vloxseg4ei64.v"     : begin
-            SsstrictV_vloxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vloxseg4ei64_v_sew32_cg.sample(ins);
         end
         "vloxseg5ei64.v"     : begin
-            SsstrictV_vloxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vloxseg5ei64_v_sew32_cg.sample(ins);
         end
         "vloxseg6ei64.v"     : begin
-            SsstrictV_vloxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vloxseg6ei64_v_sew32_cg.sample(ins);
         end
         "vloxseg7ei64.v"     : begin
-            SsstrictV_vloxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vloxseg7ei64_v_sew32_cg.sample(ins);
         end
         "vloxseg8ei64.v"     : begin
-            SsstrictV_vloxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vloxseg8ei64_v_sew32_cg.sample(ins);
         end
         "vluxei64.v"     : begin
-            SsstrictV_vluxei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vluxei64_v_sew32_cg.sample(ins);
         end
         "vluxseg2ei64.v"     : begin
-            SsstrictV_vluxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vluxseg2ei64_v_sew32_cg.sample(ins);
         end
         "vluxseg3ei64.v"     : begin
-            SsstrictV_vluxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vluxseg3ei64_v_sew32_cg.sample(ins);
         end
         "vluxseg4ei64.v"     : begin
-            SsstrictV_vluxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vluxseg4ei64_v_sew32_cg.sample(ins);
         end
         "vluxseg5ei64.v"     : begin
-            SsstrictV_vluxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vluxseg5ei64_v_sew32_cg.sample(ins);
         end
         "vluxseg6ei64.v"     : begin
-            SsstrictV_vluxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vluxseg6ei64_v_sew32_cg.sample(ins);
         end
         "vluxseg7ei64.v"     : begin
-            SsstrictV_vluxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vluxseg7ei64_v_sew32_cg.sample(ins);
         end
         "vluxseg8ei64.v"     : begin
-            SsstrictV_vluxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vluxseg8ei64_v_sew32_cg.sample(ins);
         end
         "vsoxei64.v"     : begin
-            SsstrictV_vsoxei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsoxei64_v_sew32_cg.sample(ins);
         end
         "vsoxseg2ei64.v"     : begin
-            SsstrictV_vsoxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsoxseg2ei64_v_sew32_cg.sample(ins);
         end
         "vsoxseg3ei64.v"     : begin
-            SsstrictV_vsoxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsoxseg3ei64_v_sew32_cg.sample(ins);
         end
         "vsoxseg4ei64.v"     : begin
-            SsstrictV_vsoxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsoxseg4ei64_v_sew32_cg.sample(ins);
         end
         "vsoxseg5ei64.v"     : begin
-            SsstrictV_vsoxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsoxseg5ei64_v_sew32_cg.sample(ins);
         end
         "vsoxseg6ei64.v"     : begin
-            SsstrictV_vsoxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsoxseg6ei64_v_sew32_cg.sample(ins);
         end
         "vsoxseg7ei64.v"     : begin
-            SsstrictV_vsoxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsoxseg7ei64_v_sew32_cg.sample(ins);
         end
         "vsoxseg8ei64.v"     : begin
-            SsstrictV_vsoxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsoxseg8ei64_v_sew32_cg.sample(ins);
         end
         "vsuxei64.v"     : begin
-            SsstrictV_vsuxei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsuxei64_v_sew32_cg.sample(ins);
         end
         "vsuxseg2ei64.v"     : begin
-            SsstrictV_vsuxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsuxseg2ei64_v_sew32_cg.sample(ins);
         end
         "vsuxseg3ei64.v"     : begin
-            SsstrictV_vsuxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsuxseg3ei64_v_sew32_cg.sample(ins);
         end
         "vsuxseg4ei64.v"     : begin
-            SsstrictV_vsuxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsuxseg4ei64_v_sew32_cg.sample(ins);
         end
         "vsuxseg5ei64.v"     : begin
-            SsstrictV_vsuxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsuxseg5ei64_v_sew32_cg.sample(ins);
         end
         "vsuxseg6ei64.v"     : begin
-            SsstrictV_vsuxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsuxseg6ei64_v_sew32_cg.sample(ins);
         end
         "vsuxseg7ei64.v"     : begin
-            SsstrictV_vsuxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsuxseg7ei64_v_sew32_cg.sample(ins);
         end
         "vsuxseg8ei64.v"     : begin
-            SsstrictV_vsuxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsuxseg8ei64_v_sew32_cg.sample(ins);
         end
 `endif
             default: ; // a case needs at least one item, and some configurations select none
@@ -16967,125 +16967,125 @@ function void ssstrictv_sample(int hart, int issue, ins_t ins);
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
         "vmulh.vv"     : begin
-            SsstrictV_vmulh_vv_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vmulh_vv_sew64_cg.sample(ins);
         end
         "vmulh.vx"     : begin
-            SsstrictV_vmulh_vx_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vmulh_vx_sew64_cg.sample(ins);
         end
         "vmulhsu.vv"     : begin
-            SsstrictV_vmulhsu_vv_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vmulhsu_vv_sew64_cg.sample(ins);
         end
         "vmulhsu.vx"     : begin
-            SsstrictV_vmulhsu_vx_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vmulhsu_vx_sew64_cg.sample(ins);
         end
         "vmulhu.vv"     : begin
-            SsstrictV_vmulhu_vv_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vmulhu_vv_sew64_cg.sample(ins);
         end
         "vmulhu.vx"     : begin
-            SsstrictV_vmulhu_vx_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vmulhu_vx_sew64_cg.sample(ins);
         end
         "vsmul.vv"     : begin
-            SsstrictV_vsmul_vv_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsmul_vv_sew64_cg.sample(ins);
         end
         "vsmul.vx"     : begin
-            SsstrictV_vsmul_vx_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsmul_vx_sew64_cg.sample(ins);
         end
 `ifdef UDB_MXLEN_32
         "vloxei64.v"     : begin
-            SsstrictV_vloxei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vloxei64_v_sew64_cg.sample(ins);
         end
         "vloxseg2ei64.v"     : begin
-            SsstrictV_vloxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vloxseg2ei64_v_sew64_cg.sample(ins);
         end
         "vloxseg3ei64.v"     : begin
-            SsstrictV_vloxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vloxseg3ei64_v_sew64_cg.sample(ins);
         end
         "vloxseg4ei64.v"     : begin
-            SsstrictV_vloxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vloxseg4ei64_v_sew64_cg.sample(ins);
         end
         "vloxseg5ei64.v"     : begin
-            SsstrictV_vloxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vloxseg5ei64_v_sew64_cg.sample(ins);
         end
         "vloxseg6ei64.v"     : begin
-            SsstrictV_vloxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vloxseg6ei64_v_sew64_cg.sample(ins);
         end
         "vloxseg7ei64.v"     : begin
-            SsstrictV_vloxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vloxseg7ei64_v_sew64_cg.sample(ins);
         end
         "vloxseg8ei64.v"     : begin
-            SsstrictV_vloxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vloxseg8ei64_v_sew64_cg.sample(ins);
         end
         "vluxei64.v"     : begin
-            SsstrictV_vluxei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vluxei64_v_sew64_cg.sample(ins);
         end
         "vluxseg2ei64.v"     : begin
-            SsstrictV_vluxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vluxseg2ei64_v_sew64_cg.sample(ins);
         end
         "vluxseg3ei64.v"     : begin
-            SsstrictV_vluxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vluxseg3ei64_v_sew64_cg.sample(ins);
         end
         "vluxseg4ei64.v"     : begin
-            SsstrictV_vluxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vluxseg4ei64_v_sew64_cg.sample(ins);
         end
         "vluxseg5ei64.v"     : begin
-            SsstrictV_vluxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vluxseg5ei64_v_sew64_cg.sample(ins);
         end
         "vluxseg6ei64.v"     : begin
-            SsstrictV_vluxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vluxseg6ei64_v_sew64_cg.sample(ins);
         end
         "vluxseg7ei64.v"     : begin
-            SsstrictV_vluxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vluxseg7ei64_v_sew64_cg.sample(ins);
         end
         "vluxseg8ei64.v"     : begin
-            SsstrictV_vluxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vluxseg8ei64_v_sew64_cg.sample(ins);
         end
         "vsoxei64.v"     : begin
-            SsstrictV_vsoxei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsoxei64_v_sew64_cg.sample(ins);
         end
         "vsoxseg2ei64.v"     : begin
-            SsstrictV_vsoxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsoxseg2ei64_v_sew64_cg.sample(ins);
         end
         "vsoxseg3ei64.v"     : begin
-            SsstrictV_vsoxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsoxseg3ei64_v_sew64_cg.sample(ins);
         end
         "vsoxseg4ei64.v"     : begin
-            SsstrictV_vsoxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsoxseg4ei64_v_sew64_cg.sample(ins);
         end
         "vsoxseg5ei64.v"     : begin
-            SsstrictV_vsoxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsoxseg5ei64_v_sew64_cg.sample(ins);
         end
         "vsoxseg6ei64.v"     : begin
-            SsstrictV_vsoxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsoxseg6ei64_v_sew64_cg.sample(ins);
         end
         "vsoxseg7ei64.v"     : begin
-            SsstrictV_vsoxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsoxseg7ei64_v_sew64_cg.sample(ins);
         end
         "vsoxseg8ei64.v"     : begin
-            SsstrictV_vsoxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsoxseg8ei64_v_sew64_cg.sample(ins);
         end
         "vsuxei64.v"     : begin
-            SsstrictV_vsuxei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsuxei64_v_sew64_cg.sample(ins);
         end
         "vsuxseg2ei64.v"     : begin
-            SsstrictV_vsuxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsuxseg2ei64_v_sew64_cg.sample(ins);
         end
         "vsuxseg3ei64.v"     : begin
-            SsstrictV_vsuxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsuxseg3ei64_v_sew64_cg.sample(ins);
         end
         "vsuxseg4ei64.v"     : begin
-            SsstrictV_vsuxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsuxseg4ei64_v_sew64_cg.sample(ins);
         end
         "vsuxseg5ei64.v"     : begin
-            SsstrictV_vsuxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsuxseg5ei64_v_sew64_cg.sample(ins);
         end
         "vsuxseg6ei64.v"     : begin
-            SsstrictV_vsuxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsuxseg6ei64_v_sew64_cg.sample(ins);
         end
         "vsuxseg7ei64.v"     : begin
-            SsstrictV_vsuxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsuxseg7ei64_v_sew64_cg.sample(ins);
         end
         "vsuxseg8ei64.v"     : begin
-            SsstrictV_vsuxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            SsstrictV_vsuxseg8ei64_v_sew64_cg.sample(ins);
         end
 `endif
             default: ; // a case needs at least one item, and some configurations select none

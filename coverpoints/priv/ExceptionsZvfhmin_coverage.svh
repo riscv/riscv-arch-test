@@ -351,10 +351,10 @@ function void exceptionszvfhmin_sample(int hart, int issue, ins_t ins);
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
         "vfncvt.f.f.w"     : begin
-            ExceptionsZvfhmin_vfncvt_f_f_w_sew@EFFEW@_cg.sample(ins);
+            ExceptionsZvfhmin_vfncvt_f_f_w_sew16_cg.sample(ins);
         end
         "vfwcvt.f.f.v"     : begin
-            ExceptionsZvfhmin_vfwcvt_f_f_v_sew@EFFEW@_cg.sample(ins);
+            ExceptionsZvfhmin_vfwcvt_f_f_v_sew16_cg.sample(ins);
         end
             default: ; // a case needs at least one item, and some configurations select none
         endcase

@@ -10,5 +10,5 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
-    Zvfbfwma_vfwmaccbf16_vf_sew16_cg = new(); Zvfbfwma_vfwmaccbf16_vf_cg.set_inst_name("obj_Zvfbfwma_vfwmaccbf16_vf");
-    Zvfbfwma_vfwmaccbf16_vv_sew16_cg = new(); Zvfbfwma_vfwmaccbf16_vv_cg.set_inst_name("obj_Zvfbfwma_vfwmaccbf16_vv");
+    Zvfbfwma_vfwmaccbf16_vf_sew16_cg = new(); Zvfbfwma_vfwmaccbf16_vf_sew16_cg.set_inst_name("obj_Zvfbfwma_vfwmaccbf16_vf_sew16");
+    Zvfbfwma_vfwmaccbf16_vv_sew16_cg = new(); Zvfbfwma_vfwmaccbf16_vv_sew16_cg.set_inst_name("obj_Zvfbfwma_vfwmaccbf16_vv_sew16");

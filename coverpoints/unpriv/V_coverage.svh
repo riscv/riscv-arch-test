@@ -1585,6 +1585,15 @@ endgroup
 `ifdef UDB_MXLEN_32
 covergroup V_vloxei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -1695,15 +1704,6 @@ covergroup V_vloxei64_v_sew64_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -1765,6 +1765,15 @@ endgroup
 // ---------------------
 covergroup V_vloxei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vloxei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -1882,15 +1891,6 @@ covergroup V_vloxei64_v_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -1953,6 +1953,15 @@ endgroup
 // ---------------------
 covergroup V_vloxei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vloxei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -2058,15 +2067,6 @@ covergroup V_vloxei64_v_sew8_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -2135,6 +2135,15 @@ endgroup
 // ---------------------
 covergroup V_vloxei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vloxei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -2244,15 +2253,6 @@ covergroup V_vloxei64_v_sew16_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -2318,6 +2318,15 @@ endgroup
 // ---------------------
 covergroup V_vloxseg2ei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vloxseg2ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -2423,15 +2432,6 @@ covergroup V_vloxseg2ei64_v_sew64_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -2495,6 +2495,15 @@ endgroup
 // ---------------------
 covergroup V_vloxseg2ei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vloxseg2ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -2600,15 +2609,6 @@ covergroup V_vloxseg2ei64_v_sew32_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -2673,6 +2673,15 @@ endgroup
 // ---------------------
 covergroup V_vloxseg2ei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vloxseg2ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -2754,15 +2763,6 @@ covergroup V_vloxseg2ei64_v_sew8_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -2833,6 +2833,15 @@ endgroup
 // ---------------------
 covergroup V_vloxseg2ei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vloxseg2ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -2915,15 +2924,6 @@ covergroup V_vloxseg2ei64_v_sew16_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -2990,6 +2990,15 @@ endgroup
 // ---------------------
 covergroup V_vloxseg3ei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vloxseg3ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -3072,15 +3081,6 @@ covergroup V_vloxseg3ei64_v_sew64_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -3144,6 +3144,15 @@ endgroup
 // ---------------------
 covergroup V_vloxseg3ei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vloxseg3ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -3226,15 +3235,6 @@ covergroup V_vloxseg3ei64_v_sew32_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -3298,6 +3298,15 @@ endgroup
 // ---------------------
 covergroup V_vloxseg3ei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vloxseg3ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -3380,15 +3389,6 @@ covergroup V_vloxseg3ei64_v_sew8_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -3457,6 +3457,15 @@ endgroup
 // ---------------------
 covergroup V_vloxseg3ei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vloxseg3ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -3540,15 +3549,6 @@ covergroup V_vloxseg3ei64_v_sew16_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -3613,6 +3613,15 @@ endgroup
 // ---------------------
 covergroup V_vloxseg4ei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vloxseg4ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -3720,15 +3729,6 @@ covergroup V_vloxseg4ei64_v_sew64_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -3792,6 +3792,15 @@ endgroup
 // ---------------------
 covergroup V_vloxseg4ei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vloxseg4ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -3900,15 +3909,6 @@ covergroup V_vloxseg4ei64_v_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -3971,6 +3971,15 @@ endgroup
 // ---------------------
 covergroup V_vloxseg4ei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vloxseg4ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -4054,15 +4063,6 @@ covergroup V_vloxseg4ei64_v_sew8_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -4131,6 +4131,15 @@ endgroup
 // ---------------------
 covergroup V_vloxseg4ei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vloxseg4ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -4239,15 +4248,6 @@ covergroup V_vloxseg4ei64_v_sew16_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -4312,6 +4312,15 @@ endgroup
 // ---------------------
 covergroup V_vloxseg5ei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vloxseg5ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -4396,15 +4405,6 @@ covergroup V_vloxseg5ei64_v_sew64_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -4467,6 +4467,15 @@ endgroup
 // ---------------------
 covergroup V_vloxseg5ei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vloxseg5ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -4551,15 +4560,6 @@ covergroup V_vloxseg5ei64_v_sew32_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -4622,6 +4622,15 @@ endgroup
 // ---------------------
 covergroup V_vloxseg5ei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vloxseg5ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -4706,15 +4715,6 @@ covergroup V_vloxseg5ei64_v_sew8_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -4779,6 +4779,15 @@ endgroup
 // ---------------------
 covergroup V_vloxseg5ei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vloxseg5ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -4864,15 +4873,6 @@ covergroup V_vloxseg5ei64_v_sew16_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -4935,6 +4935,15 @@ endgroup
 // ---------------------
 covergroup V_vloxseg6ei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vloxseg6ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -5020,15 +5029,6 @@ covergroup V_vloxseg6ei64_v_sew64_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -5091,6 +5091,15 @@ endgroup
 // ---------------------
 covergroup V_vloxseg6ei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vloxseg6ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -5176,15 +5185,6 @@ covergroup V_vloxseg6ei64_v_sew32_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -5247,6 +5247,15 @@ endgroup
 // ---------------------
 covergroup V_vloxseg6ei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vloxseg6ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -5332,15 +5341,6 @@ covergroup V_vloxseg6ei64_v_sew8_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -5405,6 +5405,15 @@ endgroup
 // ---------------------
 covergroup V_vloxseg6ei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vloxseg6ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -5491,15 +5500,6 @@ covergroup V_vloxseg6ei64_v_sew16_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -5562,6 +5562,15 @@ endgroup
 // ---------------------
 covergroup V_vloxseg7ei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vloxseg7ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -5648,15 +5657,6 @@ covergroup V_vloxseg7ei64_v_sew64_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -5719,6 +5719,15 @@ endgroup
 // ---------------------
 covergroup V_vloxseg7ei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vloxseg7ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -5805,15 +5814,6 @@ covergroup V_vloxseg7ei64_v_sew32_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -5876,6 +5876,15 @@ endgroup
 // ---------------------
 covergroup V_vloxseg7ei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vloxseg7ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -5962,15 +5971,6 @@ covergroup V_vloxseg7ei64_v_sew8_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -6035,6 +6035,15 @@ endgroup
 // ---------------------
 covergroup V_vloxseg7ei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vloxseg7ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -6122,15 +6131,6 @@ covergroup V_vloxseg7ei64_v_sew16_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -6193,6 +6193,15 @@ endgroup
 // ---------------------
 covergroup V_vloxseg8ei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vloxseg8ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -6304,15 +6313,6 @@ covergroup V_vloxseg8ei64_v_sew64_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -6375,6 +6375,15 @@ endgroup
 // ---------------------
 covergroup V_vloxseg8ei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vloxseg8ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -6486,15 +6495,6 @@ covergroup V_vloxseg8ei64_v_sew32_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -6557,6 +6557,15 @@ endgroup
 // ---------------------
 covergroup V_vloxseg8ei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vloxseg8ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -6668,15 +6677,6 @@ covergroup V_vloxseg8ei64_v_sew8_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -6741,6 +6741,15 @@ endgroup
 // ---------------------
 covergroup V_vloxseg8ei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vloxseg8ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -6853,15 +6862,6 @@ covergroup V_vloxseg8ei64_v_sew16_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -6924,6 +6924,15 @@ endgroup
 // ---------------------
 covergroup V_vluxei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -7021,15 +7030,6 @@ covergroup V_vluxei64_v_sew64_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -7091,6 +7091,15 @@ endgroup
 // ---------------------
 covergroup V_vluxei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vluxei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -7195,15 +7204,6 @@ covergroup V_vluxei64_v_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -7266,6 +7266,15 @@ endgroup
 // ---------------------
 covergroup V_vluxei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vluxei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -7358,15 +7367,6 @@ covergroup V_vluxei64_v_sew8_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -7435,6 +7435,15 @@ endgroup
 // ---------------------
 covergroup V_vluxei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vluxei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -7531,15 +7540,6 @@ covergroup V_vluxei64_v_sew16_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -7605,6 +7605,15 @@ endgroup
 // ---------------------
 covergroup V_vluxseg2ei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vluxseg2ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -7697,15 +7706,6 @@ covergroup V_vluxseg2ei64_v_sew64_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -7769,6 +7769,15 @@ endgroup
 // ---------------------
 covergroup V_vluxseg2ei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vluxseg2ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -7861,15 +7870,6 @@ covergroup V_vluxseg2ei64_v_sew32_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -7934,6 +7934,15 @@ endgroup
 // ---------------------
 covergroup V_vluxseg2ei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vluxseg2ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -8002,15 +8011,6 @@ covergroup V_vluxseg2ei64_v_sew8_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -8081,6 +8081,15 @@ endgroup
 // ---------------------
 covergroup V_vluxseg2ei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vluxseg2ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -8150,15 +8159,6 @@ covergroup V_vluxseg2ei64_v_sew16_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -8225,6 +8225,15 @@ endgroup
 // ---------------------
 covergroup V_vluxseg3ei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vluxseg3ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -8294,15 +8303,6 @@ covergroup V_vluxseg3ei64_v_sew64_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -8366,6 +8366,15 @@ endgroup
 // ---------------------
 covergroup V_vluxseg3ei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vluxseg3ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -8435,15 +8444,6 @@ covergroup V_vluxseg3ei64_v_sew32_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -8507,6 +8507,15 @@ endgroup
 // ---------------------
 covergroup V_vluxseg3ei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vluxseg3ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -8576,15 +8585,6 @@ covergroup V_vluxseg3ei64_v_sew8_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -8653,6 +8653,15 @@ endgroup
 // ---------------------
 covergroup V_vluxseg3ei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vluxseg3ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -8723,15 +8732,6 @@ covergroup V_vluxseg3ei64_v_sew16_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -8796,6 +8796,15 @@ endgroup
 // ---------------------
 covergroup V_vluxseg4ei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vluxseg4ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -8890,15 +8899,6 @@ covergroup V_vluxseg4ei64_v_sew64_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -8962,6 +8962,15 @@ endgroup
 // ---------------------
 covergroup V_vluxseg4ei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vluxseg4ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -9057,15 +9066,6 @@ covergroup V_vluxseg4ei64_v_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -9128,6 +9128,15 @@ endgroup
 // ---------------------
 covergroup V_vluxseg4ei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vluxseg4ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -9198,15 +9207,6 @@ covergroup V_vluxseg4ei64_v_sew8_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -9275,6 +9275,15 @@ endgroup
 // ---------------------
 covergroup V_vluxseg4ei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vluxseg4ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -9370,15 +9379,6 @@ covergroup V_vluxseg4ei64_v_sew16_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -9443,6 +9443,15 @@ endgroup
 // ---------------------
 covergroup V_vluxseg5ei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vluxseg5ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -9514,15 +9523,6 @@ covergroup V_vluxseg5ei64_v_sew64_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -9585,6 +9585,15 @@ endgroup
 // ---------------------
 covergroup V_vluxseg5ei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vluxseg5ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -9656,15 +9665,6 @@ covergroup V_vluxseg5ei64_v_sew32_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -9727,6 +9727,15 @@ endgroup
 // ---------------------
 covergroup V_vluxseg5ei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vluxseg5ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -9798,15 +9807,6 @@ covergroup V_vluxseg5ei64_v_sew8_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -9871,6 +9871,15 @@ endgroup
 // ---------------------
 covergroup V_vluxseg5ei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vluxseg5ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -9943,15 +9952,6 @@ covergroup V_vluxseg5ei64_v_sew16_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -10014,6 +10014,15 @@ endgroup
 // ---------------------
 covergroup V_vluxseg6ei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vluxseg6ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -10086,15 +10095,6 @@ covergroup V_vluxseg6ei64_v_sew64_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -10157,6 +10157,15 @@ endgroup
 // ---------------------
 covergroup V_vluxseg6ei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vluxseg6ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -10229,15 +10238,6 @@ covergroup V_vluxseg6ei64_v_sew32_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -10300,6 +10300,15 @@ endgroup
 // ---------------------
 covergroup V_vluxseg6ei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vluxseg6ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -10372,15 +10381,6 @@ covergroup V_vluxseg6ei64_v_sew8_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -10445,6 +10445,15 @@ endgroup
 // ---------------------
 covergroup V_vluxseg6ei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vluxseg6ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -10518,15 +10527,6 @@ covergroup V_vluxseg6ei64_v_sew16_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -10589,6 +10589,15 @@ endgroup
 // ---------------------
 covergroup V_vluxseg7ei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vluxseg7ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -10662,15 +10671,6 @@ covergroup V_vluxseg7ei64_v_sew64_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -10733,6 +10733,15 @@ endgroup
 // ---------------------
 covergroup V_vluxseg7ei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vluxseg7ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -10806,15 +10815,6 @@ covergroup V_vluxseg7ei64_v_sew32_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -10877,6 +10877,15 @@ endgroup
 // ---------------------
 covergroup V_vluxseg7ei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vluxseg7ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -10950,15 +10959,6 @@ covergroup V_vluxseg7ei64_v_sew8_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -11023,6 +11023,15 @@ endgroup
 // ---------------------
 covergroup V_vluxseg7ei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vluxseg7ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -11097,15 +11106,6 @@ covergroup V_vluxseg7ei64_v_sew16_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -11168,6 +11168,15 @@ endgroup
 // ---------------------
 covergroup V_vluxseg8ei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vluxseg8ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -11266,15 +11275,6 @@ covergroup V_vluxseg8ei64_v_sew64_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -11337,6 +11337,15 @@ endgroup
 // ---------------------
 covergroup V_vluxseg8ei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vluxseg8ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -11435,15 +11444,6 @@ covergroup V_vluxseg8ei64_v_sew32_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -11506,6 +11506,15 @@ endgroup
 // ---------------------
 covergroup V_vluxseg8ei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vluxseg8ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -11604,15 +11613,6 @@ covergroup V_vluxseg8ei64_v_sew8_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -11677,6 +11677,15 @@ endgroup
 // ---------------------
 covergroup V_vluxseg8ei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vluxseg8ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -11776,15 +11785,6 @@ covergroup V_vluxseg8ei64_v_sew16_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_ls////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -11847,6 +11847,15 @@ endgroup
 // ---------------------
 covergroup V_vsoxei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -11938,15 +11947,6 @@ covergroup V_vsoxei64_v_sew64_cg with function sample(ins_t ins);
 
     //// end cp_vs3////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -12008,6 +12008,15 @@ endgroup
 // ---------------------
 covergroup V_vsoxei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsoxei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -12088,15 +12097,6 @@ covergroup V_vsoxei64_v_sew32_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs3////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -12160,6 +12160,15 @@ endgroup
 // ---------------------
 covergroup V_vsoxei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsoxei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -12240,15 +12249,6 @@ covergroup V_vsoxei64_v_sew8_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs3////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -12318,6 +12318,15 @@ endgroup
 // ---------------------
 covergroup V_vsoxei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsoxei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -12399,15 +12408,6 @@ covergroup V_vsoxei64_v_sew16_cg with function sample(ins_t ins);
 
     //// end cp_vs3////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -12473,6 +12473,15 @@ endgroup
 // ---------------------
 covergroup V_vsoxseg2ei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte30
     //////////////////////////////////////////////////////////////////////////////////
@@ -12589,15 +12598,6 @@ covergroup V_vsoxseg2ei64_v_sew64_cg with function sample(ins_t ins);
 
     //// end cp_vs3_lte30////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -12660,6 +12660,15 @@ endgroup
 // ---------------------
 covergroup V_vsoxseg2ei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg2ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -12766,15 +12775,6 @@ covergroup V_vsoxseg2ei64_v_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs3_lte30////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -12838,6 +12838,15 @@ endgroup
 // ---------------------
 covergroup V_vsoxseg2ei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg2ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -12919,15 +12928,6 @@ covergroup V_vsoxseg2ei64_v_sew8_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs3_lte30////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -12998,6 +12998,15 @@ endgroup
 // ---------------------
 covergroup V_vsoxseg2ei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg2ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -13080,15 +13089,6 @@ covergroup V_vsoxseg2ei64_v_sew16_cg with function sample(ins_t ins);
 
     //// end cp_vs3_lte30////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -13155,6 +13155,15 @@ endgroup
 // ---------------------
 covergroup V_vsoxseg3ei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte29
     //////////////////////////////////////////////////////////////////////////////////
@@ -13249,15 +13258,6 @@ covergroup V_vsoxseg3ei64_v_sew64_cg with function sample(ins_t ins);
 
     //// end cp_vs3_lte29////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -13320,6 +13320,15 @@ endgroup
 // ---------------------
 covergroup V_vsoxseg3ei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg3ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -13402,15 +13411,6 @@ covergroup V_vsoxseg3ei64_v_sew32_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs3_lte29////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -13474,6 +13474,15 @@ endgroup
 // ---------------------
 covergroup V_vsoxseg3ei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg3ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -13556,15 +13565,6 @@ covergroup V_vsoxseg3ei64_v_sew8_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs3_lte29////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -13633,6 +13633,15 @@ endgroup
 // ---------------------
 covergroup V_vsoxseg3ei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg3ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -13716,15 +13725,6 @@ covergroup V_vsoxseg3ei64_v_sew16_cg with function sample(ins_t ins);
 
     //// end cp_vs3_lte29////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -13789,6 +13789,15 @@ endgroup
 // ---------------------
 covergroup V_vsoxseg4ei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte28
     //////////////////////////////////////////////////////////////////////////////////
@@ -13909,15 +13918,6 @@ covergroup V_vsoxseg4ei64_v_sew64_cg with function sample(ins_t ins);
 
     //// end cp_vs3_lte28////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -13980,6 +13980,15 @@ endgroup
 // ---------------------
 covergroup V_vsoxseg4ei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg4ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -14088,15 +14097,6 @@ covergroup V_vsoxseg4ei64_v_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs3_lte28////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -14159,6 +14159,15 @@ endgroup
 // ---------------------
 covergroup V_vsoxseg4ei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg4ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -14242,15 +14251,6 @@ covergroup V_vsoxseg4ei64_v_sew8_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs3_lte28////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -14319,6 +14319,15 @@ endgroup
 // ---------------------
 covergroup V_vsoxseg4ei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg4ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -14427,15 +14436,6 @@ covergroup V_vsoxseg4ei64_v_sew16_cg with function sample(ins_t ins);
 
     //// end cp_vs3_lte28////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -14500,6 +14500,15 @@ endgroup
 // ---------------------
 covergroup V_vsoxseg5ei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte27
     //////////////////////////////////////////////////////////////////////////////////
@@ -14598,15 +14607,6 @@ covergroup V_vsoxseg5ei64_v_sew64_cg with function sample(ins_t ins);
 
     //// end cp_vs3_lte27////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -14668,6 +14668,15 @@ endgroup
 // ---------------------
 covergroup V_vsoxseg5ei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg5ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -14752,15 +14761,6 @@ covergroup V_vsoxseg5ei64_v_sew32_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs3_lte27////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -14823,6 +14823,15 @@ endgroup
 // ---------------------
 covergroup V_vsoxseg5ei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg5ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -14907,15 +14916,6 @@ covergroup V_vsoxseg5ei64_v_sew8_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs3_lte27////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -14980,6 +14980,15 @@ endgroup
 // ---------------------
 covergroup V_vsoxseg5ei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg5ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -15065,15 +15074,6 @@ covergroup V_vsoxseg5ei64_v_sew16_cg with function sample(ins_t ins);
 
     //// end cp_vs3_lte27////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -15136,6 +15136,15 @@ endgroup
 // ---------------------
 covergroup V_vsoxseg6ei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte26
     //////////////////////////////////////////////////////////////////////////////////
@@ -15236,15 +15245,6 @@ covergroup V_vsoxseg6ei64_v_sew64_cg with function sample(ins_t ins);
 
     //// end cp_vs3_lte26////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -15306,6 +15306,15 @@ endgroup
 // ---------------------
 covergroup V_vsoxseg6ei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg6ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -15391,15 +15400,6 @@ covergroup V_vsoxseg6ei64_v_sew32_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs3_lte26////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -15462,6 +15462,15 @@ endgroup
 // ---------------------
 covergroup V_vsoxseg6ei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg6ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -15547,15 +15556,6 @@ covergroup V_vsoxseg6ei64_v_sew8_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs3_lte26////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -15620,6 +15620,15 @@ endgroup
 // ---------------------
 covergroup V_vsoxseg6ei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg6ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -15706,15 +15715,6 @@ covergroup V_vsoxseg6ei64_v_sew16_cg with function sample(ins_t ins);
 
     //// end cp_vs3_lte26////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -15777,6 +15777,15 @@ endgroup
 // ---------------------
 covergroup V_vsoxseg7ei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte25
     //////////////////////////////////////////////////////////////////////////////////
@@ -15879,15 +15888,6 @@ covergroup V_vsoxseg7ei64_v_sew64_cg with function sample(ins_t ins);
 
     //// end cp_vs3_lte25////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -15949,6 +15949,15 @@ endgroup
 // ---------------------
 covergroup V_vsoxseg7ei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg7ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -16035,15 +16044,6 @@ covergroup V_vsoxseg7ei64_v_sew32_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs3_lte25////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -16106,6 +16106,15 @@ endgroup
 // ---------------------
 covergroup V_vsoxseg7ei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg7ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -16192,15 +16201,6 @@ covergroup V_vsoxseg7ei64_v_sew8_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs3_lte25////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -16265,6 +16265,15 @@ endgroup
 // ---------------------
 covergroup V_vsoxseg7ei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg7ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -16352,15 +16361,6 @@ covergroup V_vsoxseg7ei64_v_sew16_cg with function sample(ins_t ins);
 
     //// end cp_vs3_lte25////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -16423,6 +16423,15 @@ endgroup
 // ---------------------
 covergroup V_vsoxseg8ei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte24
     //////////////////////////////////////////////////////////////////////////////////
@@ -16551,15 +16560,6 @@ covergroup V_vsoxseg8ei64_v_sew64_cg with function sample(ins_t ins);
 
     //// end cp_vs3_lte24////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -16621,6 +16621,15 @@ endgroup
 // ---------------------
 covergroup V_vsoxseg8ei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg8ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -16732,15 +16741,6 @@ covergroup V_vsoxseg8ei64_v_sew32_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs3_lte24////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -16803,6 +16803,15 @@ endgroup
 // ---------------------
 covergroup V_vsoxseg8ei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg8ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -16914,15 +16923,6 @@ covergroup V_vsoxseg8ei64_v_sew8_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs3_lte24////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -16987,6 +16987,15 @@ endgroup
 // ---------------------
 covergroup V_vsoxseg8ei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg8ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -17099,15 +17108,6 @@ covergroup V_vsoxseg8ei64_v_sew16_cg with function sample(ins_t ins);
 
     //// end cp_vs3_lte24////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -17170,6 +17170,15 @@ endgroup
 // ---------------------
 covergroup V_vsuxei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -17248,15 +17257,6 @@ covergroup V_vsuxei64_v_sew64_cg with function sample(ins_t ins);
 
     //// end cp_vs3////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -17318,6 +17318,15 @@ endgroup
 // ---------------------
 covergroup V_vsuxei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsuxei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -17385,15 +17394,6 @@ covergroup V_vsuxei64_v_sew32_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs3////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -17457,6 +17457,15 @@ endgroup
 // ---------------------
 covergroup V_vsuxei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsuxei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -17524,15 +17533,6 @@ covergroup V_vsuxei64_v_sew8_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs3////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -17602,6 +17602,15 @@ endgroup
 // ---------------------
 covergroup V_vsuxei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsuxei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -17670,15 +17679,6 @@ covergroup V_vsuxei64_v_sew16_cg with function sample(ins_t ins);
 
     //// end cp_vs3////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -17744,6 +17744,15 @@ endgroup
 // ---------------------
 covergroup V_vsuxseg2ei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte30
     //////////////////////////////////////////////////////////////////////////////////
@@ -17847,15 +17856,6 @@ covergroup V_vsuxseg2ei64_v_sew64_cg with function sample(ins_t ins);
 
     //// end cp_vs3_lte30////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -17918,6 +17918,15 @@ endgroup
 // ---------------------
 covergroup V_vsuxseg2ei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg2ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -18011,15 +18020,6 @@ covergroup V_vsuxseg2ei64_v_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs3_lte30////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -18083,6 +18083,15 @@ endgroup
 // ---------------------
 covergroup V_vsuxseg2ei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg2ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -18151,15 +18160,6 @@ covergroup V_vsuxseg2ei64_v_sew8_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs3_lte30////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -18230,6 +18230,15 @@ endgroup
 // ---------------------
 covergroup V_vsuxseg2ei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg2ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -18299,15 +18308,6 @@ covergroup V_vsuxseg2ei64_v_sew16_cg with function sample(ins_t ins);
 
     //// end cp_vs3_lte30////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -18374,6 +18374,15 @@ endgroup
 // ---------------------
 covergroup V_vsuxseg3ei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte29
     //////////////////////////////////////////////////////////////////////////////////
@@ -18455,15 +18464,6 @@ covergroup V_vsuxseg3ei64_v_sew64_cg with function sample(ins_t ins);
 
     //// end cp_vs3_lte29////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -18526,6 +18526,15 @@ endgroup
 // ---------------------
 covergroup V_vsuxseg3ei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg3ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -18595,15 +18604,6 @@ covergroup V_vsuxseg3ei64_v_sew32_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs3_lte29////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -18667,6 +18667,15 @@ endgroup
 // ---------------------
 covergroup V_vsuxseg3ei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg3ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -18736,15 +18745,6 @@ covergroup V_vsuxseg3ei64_v_sew8_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs3_lte29////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -18813,6 +18813,15 @@ endgroup
 // ---------------------
 covergroup V_vsuxseg3ei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg3ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -18883,15 +18892,6 @@ covergroup V_vsuxseg3ei64_v_sew16_cg with function sample(ins_t ins);
 
     //// end cp_vs3_lte29////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -18956,6 +18956,15 @@ endgroup
 // ---------------------
 covergroup V_vsuxseg4ei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte28
     //////////////////////////////////////////////////////////////////////////////////
@@ -19063,15 +19072,6 @@ covergroup V_vsuxseg4ei64_v_sew64_cg with function sample(ins_t ins);
 
     //// end cp_vs3_lte28////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -19134,6 +19134,15 @@ endgroup
 // ---------------------
 covergroup V_vsuxseg4ei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg4ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -19229,15 +19238,6 @@ covergroup V_vsuxseg4ei64_v_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vs3_lte28////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -19300,6 +19300,15 @@ endgroup
 // ---------------------
 covergroup V_vsuxseg4ei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg4ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -19370,15 +19379,6 @@ covergroup V_vsuxseg4ei64_v_sew8_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs3_lte28////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -19447,6 +19447,15 @@ endgroup
 // ---------------------
 covergroup V_vsuxseg4ei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg4ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -19542,15 +19551,6 @@ covergroup V_vsuxseg4ei64_v_sew16_cg with function sample(ins_t ins);
 
     //// end cp_vs3_lte28////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -19615,6 +19615,15 @@ endgroup
 // ---------------------
 covergroup V_vsuxseg5ei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte27
     //////////////////////////////////////////////////////////////////////////////////
@@ -19700,15 +19709,6 @@ covergroup V_vsuxseg5ei64_v_sew64_cg with function sample(ins_t ins);
 
     //// end cp_vs3_lte27////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -19770,6 +19770,15 @@ endgroup
 // ---------------------
 covergroup V_vsuxseg5ei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg5ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -19841,15 +19850,6 @@ covergroup V_vsuxseg5ei64_v_sew32_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs3_lte27////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -19912,6 +19912,15 @@ endgroup
 // ---------------------
 covergroup V_vsuxseg5ei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg5ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -19983,15 +19992,6 @@ covergroup V_vsuxseg5ei64_v_sew8_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs3_lte27////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -20056,6 +20056,15 @@ endgroup
 // ---------------------
 covergroup V_vsuxseg5ei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg5ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -20128,15 +20137,6 @@ covergroup V_vsuxseg5ei64_v_sew16_cg with function sample(ins_t ins);
 
     //// end cp_vs3_lte27////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -20199,6 +20199,15 @@ endgroup
 // ---------------------
 covergroup V_vsuxseg6ei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte26
     //////////////////////////////////////////////////////////////////////////////////
@@ -20286,15 +20295,6 @@ covergroup V_vsuxseg6ei64_v_sew64_cg with function sample(ins_t ins);
 
     //// end cp_vs3_lte26////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -20356,6 +20356,15 @@ endgroup
 // ---------------------
 covergroup V_vsuxseg6ei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg6ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -20428,15 +20437,6 @@ covergroup V_vsuxseg6ei64_v_sew32_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs3_lte26////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -20499,6 +20499,15 @@ endgroup
 // ---------------------
 covergroup V_vsuxseg6ei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg6ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -20571,15 +20580,6 @@ covergroup V_vsuxseg6ei64_v_sew8_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs3_lte26////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -20644,6 +20644,15 @@ endgroup
 // ---------------------
 covergroup V_vsuxseg6ei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg6ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -20717,15 +20726,6 @@ covergroup V_vsuxseg6ei64_v_sew16_cg with function sample(ins_t ins);
 
     //// end cp_vs3_lte26////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -20788,6 +20788,15 @@ endgroup
 // ---------------------
 covergroup V_vsuxseg7ei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte25
     //////////////////////////////////////////////////////////////////////////////////
@@ -20877,15 +20886,6 @@ covergroup V_vsuxseg7ei64_v_sew64_cg with function sample(ins_t ins);
 
     //// end cp_vs3_lte25////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -20947,6 +20947,15 @@ endgroup
 // ---------------------
 covergroup V_vsuxseg7ei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg7ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -21020,15 +21029,6 @@ covergroup V_vsuxseg7ei64_v_sew32_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs3_lte25////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -21091,6 +21091,15 @@ endgroup
 // ---------------------
 covergroup V_vsuxseg7ei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg7ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -21164,15 +21173,6 @@ covergroup V_vsuxseg7ei64_v_sew8_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs3_lte25////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -21237,6 +21237,15 @@ endgroup
 // ---------------------
 covergroup V_vsuxseg7ei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg7ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -21311,15 +21320,6 @@ covergroup V_vsuxseg7ei64_v_sew16_cg with function sample(ins_t ins);
 
     //// end cp_vs3_lte25////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -21382,6 +21382,15 @@ endgroup
 // ---------------------
 covergroup V_vsuxseg8ei64_v_sew64_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vs3_vs2_lte24
     //////////////////////////////////////////////////////////////////////////////////
@@ -21497,15 +21506,6 @@ covergroup V_vsuxseg8ei64_v_sew64_cg with function sample(ins_t ins);
 
     //// end cp_vs3_lte24////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -21567,6 +21567,15 @@ endgroup
 // ---------------------
 covergroup V_vsuxseg8ei64_v_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg8ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -21665,15 +21674,6 @@ covergroup V_vsuxseg8ei64_v_sew32_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs3_lte24////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -21736,6 +21736,15 @@ endgroup
 // ---------------------
 covergroup V_vsuxseg8ei64_v_sew8_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg8ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -21834,15 +21843,6 @@ covergroup V_vsuxseg8ei64_v_sew8_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs3_lte24////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -21907,6 +21907,15 @@ endgroup
 // ---------------------
 covergroup V_vsuxseg8ei64_v_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg8ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -22005,15 +22014,6 @@ covergroup V_vsuxseg8ei64_v_sew16_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs3_lte24////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
 
 
@@ -22085,100 +22085,100 @@ function void v_sample(int hart, int issue, ins_t ins);
         case (traceDataQ[hart][issue][0].inst_name)
 `ifdef UDB_MXLEN_32
         "vloxei64.v"     : begin
-            V_vloxei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vloxei64_v_sew8_cg.sample(ins);
         end
         "vloxseg2ei64.v"     : begin
-            V_vloxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vloxseg2ei64_v_sew8_cg.sample(ins);
         end
         "vloxseg3ei64.v"     : begin
-            V_vloxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vloxseg3ei64_v_sew8_cg.sample(ins);
         end
         "vloxseg4ei64.v"     : begin
-            V_vloxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vloxseg4ei64_v_sew8_cg.sample(ins);
         end
         "vloxseg5ei64.v"     : begin
-            V_vloxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vloxseg5ei64_v_sew8_cg.sample(ins);
         end
         "vloxseg6ei64.v"     : begin
-            V_vloxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vloxseg6ei64_v_sew8_cg.sample(ins);
         end
         "vloxseg7ei64.v"     : begin
-            V_vloxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vloxseg7ei64_v_sew8_cg.sample(ins);
         end
         "vloxseg8ei64.v"     : begin
-            V_vloxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vloxseg8ei64_v_sew8_cg.sample(ins);
         end
         "vluxei64.v"     : begin
-            V_vluxei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vluxei64_v_sew8_cg.sample(ins);
         end
         "vluxseg2ei64.v"     : begin
-            V_vluxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vluxseg2ei64_v_sew8_cg.sample(ins);
         end
         "vluxseg3ei64.v"     : begin
-            V_vluxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vluxseg3ei64_v_sew8_cg.sample(ins);
         end
         "vluxseg4ei64.v"     : begin
-            V_vluxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vluxseg4ei64_v_sew8_cg.sample(ins);
         end
         "vluxseg5ei64.v"     : begin
-            V_vluxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vluxseg5ei64_v_sew8_cg.sample(ins);
         end
         "vluxseg6ei64.v"     : begin
-            V_vluxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vluxseg6ei64_v_sew8_cg.sample(ins);
         end
         "vluxseg7ei64.v"     : begin
-            V_vluxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vluxseg7ei64_v_sew8_cg.sample(ins);
         end
         "vluxseg8ei64.v"     : begin
-            V_vluxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vluxseg8ei64_v_sew8_cg.sample(ins);
         end
         "vsoxei64.v"     : begin
-            V_vsoxei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsoxei64_v_sew8_cg.sample(ins);
         end
         "vsoxseg2ei64.v"     : begin
-            V_vsoxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsoxseg2ei64_v_sew8_cg.sample(ins);
         end
         "vsoxseg3ei64.v"     : begin
-            V_vsoxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsoxseg3ei64_v_sew8_cg.sample(ins);
         end
         "vsoxseg4ei64.v"     : begin
-            V_vsoxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsoxseg4ei64_v_sew8_cg.sample(ins);
         end
         "vsoxseg5ei64.v"     : begin
-            V_vsoxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsoxseg5ei64_v_sew8_cg.sample(ins);
         end
         "vsoxseg6ei64.v"     : begin
-            V_vsoxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsoxseg6ei64_v_sew8_cg.sample(ins);
         end
         "vsoxseg7ei64.v"     : begin
-            V_vsoxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsoxseg7ei64_v_sew8_cg.sample(ins);
         end
         "vsoxseg8ei64.v"     : begin
-            V_vsoxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsoxseg8ei64_v_sew8_cg.sample(ins);
         end
         "vsuxei64.v"     : begin
-            V_vsuxei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsuxei64_v_sew8_cg.sample(ins);
         end
         "vsuxseg2ei64.v"     : begin
-            V_vsuxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsuxseg2ei64_v_sew8_cg.sample(ins);
         end
         "vsuxseg3ei64.v"     : begin
-            V_vsuxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsuxseg3ei64_v_sew8_cg.sample(ins);
         end
         "vsuxseg4ei64.v"     : begin
-            V_vsuxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsuxseg4ei64_v_sew8_cg.sample(ins);
         end
         "vsuxseg5ei64.v"     : begin
-            V_vsuxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsuxseg5ei64_v_sew8_cg.sample(ins);
         end
         "vsuxseg6ei64.v"     : begin
-            V_vsuxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsuxseg6ei64_v_sew8_cg.sample(ins);
         end
         "vsuxseg7ei64.v"     : begin
-            V_vsuxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsuxseg7ei64_v_sew8_cg.sample(ins);
         end
         "vsuxseg8ei64.v"     : begin
-            V_vsuxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsuxseg8ei64_v_sew8_cg.sample(ins);
         end
 `endif
             default: ; // a case needs at least one item, and some configurations select none
@@ -22192,100 +22192,100 @@ function void v_sample(int hart, int issue, ins_t ins);
         case (traceDataQ[hart][issue][0].inst_name)
 `ifdef UDB_MXLEN_32
         "vloxei64.v"     : begin
-            V_vloxei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vloxei64_v_sew16_cg.sample(ins);
         end
         "vloxseg2ei64.v"     : begin
-            V_vloxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vloxseg2ei64_v_sew16_cg.sample(ins);
         end
         "vloxseg3ei64.v"     : begin
-            V_vloxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vloxseg3ei64_v_sew16_cg.sample(ins);
         end
         "vloxseg4ei64.v"     : begin
-            V_vloxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vloxseg4ei64_v_sew16_cg.sample(ins);
         end
         "vloxseg5ei64.v"     : begin
-            V_vloxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vloxseg5ei64_v_sew16_cg.sample(ins);
         end
         "vloxseg6ei64.v"     : begin
-            V_vloxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vloxseg6ei64_v_sew16_cg.sample(ins);
         end
         "vloxseg7ei64.v"     : begin
-            V_vloxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vloxseg7ei64_v_sew16_cg.sample(ins);
         end
         "vloxseg8ei64.v"     : begin
-            V_vloxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vloxseg8ei64_v_sew16_cg.sample(ins);
         end
         "vluxei64.v"     : begin
-            V_vluxei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vluxei64_v_sew16_cg.sample(ins);
         end
         "vluxseg2ei64.v"     : begin
-            V_vluxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vluxseg2ei64_v_sew16_cg.sample(ins);
         end
         "vluxseg3ei64.v"     : begin
-            V_vluxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vluxseg3ei64_v_sew16_cg.sample(ins);
         end
         "vluxseg4ei64.v"     : begin
-            V_vluxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vluxseg4ei64_v_sew16_cg.sample(ins);
         end
         "vluxseg5ei64.v"     : begin
-            V_vluxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vluxseg5ei64_v_sew16_cg.sample(ins);
         end
         "vluxseg6ei64.v"     : begin
-            V_vluxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vluxseg6ei64_v_sew16_cg.sample(ins);
         end
         "vluxseg7ei64.v"     : begin
-            V_vluxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vluxseg7ei64_v_sew16_cg.sample(ins);
         end
         "vluxseg8ei64.v"     : begin
-            V_vluxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vluxseg8ei64_v_sew16_cg.sample(ins);
         end
         "vsoxei64.v"     : begin
-            V_vsoxei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsoxei64_v_sew16_cg.sample(ins);
         end
         "vsoxseg2ei64.v"     : begin
-            V_vsoxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsoxseg2ei64_v_sew16_cg.sample(ins);
         end
         "vsoxseg3ei64.v"     : begin
-            V_vsoxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsoxseg3ei64_v_sew16_cg.sample(ins);
         end
         "vsoxseg4ei64.v"     : begin
-            V_vsoxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsoxseg4ei64_v_sew16_cg.sample(ins);
         end
         "vsoxseg5ei64.v"     : begin
-            V_vsoxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsoxseg5ei64_v_sew16_cg.sample(ins);
         end
         "vsoxseg6ei64.v"     : begin
-            V_vsoxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsoxseg6ei64_v_sew16_cg.sample(ins);
         end
         "vsoxseg7ei64.v"     : begin
-            V_vsoxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsoxseg7ei64_v_sew16_cg.sample(ins);
         end
         "vsoxseg8ei64.v"     : begin
-            V_vsoxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsoxseg8ei64_v_sew16_cg.sample(ins);
         end
         "vsuxei64.v"     : begin
-            V_vsuxei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsuxei64_v_sew16_cg.sample(ins);
         end
         "vsuxseg2ei64.v"     : begin
-            V_vsuxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsuxseg2ei64_v_sew16_cg.sample(ins);
         end
         "vsuxseg3ei64.v"     : begin
-            V_vsuxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsuxseg3ei64_v_sew16_cg.sample(ins);
         end
         "vsuxseg4ei64.v"     : begin
-            V_vsuxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsuxseg4ei64_v_sew16_cg.sample(ins);
         end
         "vsuxseg5ei64.v"     : begin
-            V_vsuxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsuxseg5ei64_v_sew16_cg.sample(ins);
         end
         "vsuxseg6ei64.v"     : begin
-            V_vsuxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsuxseg6ei64_v_sew16_cg.sample(ins);
         end
         "vsuxseg7ei64.v"     : begin
-            V_vsuxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsuxseg7ei64_v_sew16_cg.sample(ins);
         end
         "vsuxseg8ei64.v"     : begin
-            V_vsuxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsuxseg8ei64_v_sew16_cg.sample(ins);
         end
 `endif
             default: ; // a case needs at least one item, and some configurations select none
@@ -22299,100 +22299,100 @@ function void v_sample(int hart, int issue, ins_t ins);
         case (traceDataQ[hart][issue][0].inst_name)
 `ifdef UDB_MXLEN_32
         "vloxei64.v"     : begin
-            V_vloxei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vloxei64_v_sew32_cg.sample(ins);
         end
         "vloxseg2ei64.v"     : begin
-            V_vloxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vloxseg2ei64_v_sew32_cg.sample(ins);
         end
         "vloxseg3ei64.v"     : begin
-            V_vloxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vloxseg3ei64_v_sew32_cg.sample(ins);
         end
         "vloxseg4ei64.v"     : begin
-            V_vloxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vloxseg4ei64_v_sew32_cg.sample(ins);
         end
         "vloxseg5ei64.v"     : begin
-            V_vloxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vloxseg5ei64_v_sew32_cg.sample(ins);
         end
         "vloxseg6ei64.v"     : begin
-            V_vloxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vloxseg6ei64_v_sew32_cg.sample(ins);
         end
         "vloxseg7ei64.v"     : begin
-            V_vloxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vloxseg7ei64_v_sew32_cg.sample(ins);
         end
         "vloxseg8ei64.v"     : begin
-            V_vloxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vloxseg8ei64_v_sew32_cg.sample(ins);
         end
         "vluxei64.v"     : begin
-            V_vluxei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vluxei64_v_sew32_cg.sample(ins);
         end
         "vluxseg2ei64.v"     : begin
-            V_vluxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vluxseg2ei64_v_sew32_cg.sample(ins);
         end
         "vluxseg3ei64.v"     : begin
-            V_vluxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vluxseg3ei64_v_sew32_cg.sample(ins);
         end
         "vluxseg4ei64.v"     : begin
-            V_vluxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vluxseg4ei64_v_sew32_cg.sample(ins);
         end
         "vluxseg5ei64.v"     : begin
-            V_vluxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vluxseg5ei64_v_sew32_cg.sample(ins);
         end
         "vluxseg6ei64.v"     : begin
-            V_vluxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vluxseg6ei64_v_sew32_cg.sample(ins);
         end
         "vluxseg7ei64.v"     : begin
-            V_vluxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vluxseg7ei64_v_sew32_cg.sample(ins);
         end
         "vluxseg8ei64.v"     : begin
-            V_vluxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vluxseg8ei64_v_sew32_cg.sample(ins);
         end
         "vsoxei64.v"     : begin
-            V_vsoxei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsoxei64_v_sew32_cg.sample(ins);
         end
         "vsoxseg2ei64.v"     : begin
-            V_vsoxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsoxseg2ei64_v_sew32_cg.sample(ins);
         end
         "vsoxseg3ei64.v"     : begin
-            V_vsoxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsoxseg3ei64_v_sew32_cg.sample(ins);
         end
         "vsoxseg4ei64.v"     : begin
-            V_vsoxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsoxseg4ei64_v_sew32_cg.sample(ins);
         end
         "vsoxseg5ei64.v"     : begin
-            V_vsoxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsoxseg5ei64_v_sew32_cg.sample(ins);
         end
         "vsoxseg6ei64.v"     : begin
-            V_vsoxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsoxseg6ei64_v_sew32_cg.sample(ins);
         end
         "vsoxseg7ei64.v"     : begin
-            V_vsoxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsoxseg7ei64_v_sew32_cg.sample(ins);
         end
         "vsoxseg8ei64.v"     : begin
-            V_vsoxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsoxseg8ei64_v_sew32_cg.sample(ins);
         end
         "vsuxei64.v"     : begin
-            V_vsuxei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsuxei64_v_sew32_cg.sample(ins);
         end
         "vsuxseg2ei64.v"     : begin
-            V_vsuxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsuxseg2ei64_v_sew32_cg.sample(ins);
         end
         "vsuxseg3ei64.v"     : begin
-            V_vsuxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsuxseg3ei64_v_sew32_cg.sample(ins);
         end
         "vsuxseg4ei64.v"     : begin
-            V_vsuxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsuxseg4ei64_v_sew32_cg.sample(ins);
         end
         "vsuxseg5ei64.v"     : begin
-            V_vsuxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsuxseg5ei64_v_sew32_cg.sample(ins);
         end
         "vsuxseg6ei64.v"     : begin
-            V_vsuxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsuxseg6ei64_v_sew32_cg.sample(ins);
         end
         "vsuxseg7ei64.v"     : begin
-            V_vsuxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsuxseg7ei64_v_sew32_cg.sample(ins);
         end
         "vsuxseg8ei64.v"     : begin
-            V_vsuxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsuxseg8ei64_v_sew32_cg.sample(ins);
         end
 `endif
             default: ; // a case needs at least one item, and some configurations select none
@@ -22405,125 +22405,125 @@ function void v_sample(int hart, int issue, ins_t ins);
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
         "vmulh.vv"     : begin
-            V_vmulh_vv_sew@EFFEW@_cg.sample(ins);
+            V_vmulh_vv_sew64_cg.sample(ins);
         end
         "vmulh.vx"     : begin
-            V_vmulh_vx_sew@EFFEW@_cg.sample(ins);
+            V_vmulh_vx_sew64_cg.sample(ins);
         end
         "vmulhsu.vv"     : begin
-            V_vmulhsu_vv_sew@EFFEW@_cg.sample(ins);
+            V_vmulhsu_vv_sew64_cg.sample(ins);
         end
         "vmulhsu.vx"     : begin
-            V_vmulhsu_vx_sew@EFFEW@_cg.sample(ins);
+            V_vmulhsu_vx_sew64_cg.sample(ins);
         end
         "vmulhu.vv"     : begin
-            V_vmulhu_vv_sew@EFFEW@_cg.sample(ins);
+            V_vmulhu_vv_sew64_cg.sample(ins);
         end
         "vmulhu.vx"     : begin
-            V_vmulhu_vx_sew@EFFEW@_cg.sample(ins);
+            V_vmulhu_vx_sew64_cg.sample(ins);
         end
         "vsmul.vv"     : begin
-            V_vsmul_vv_sew@EFFEW@_cg.sample(ins);
+            V_vsmul_vv_sew64_cg.sample(ins);
         end
         "vsmul.vx"     : begin
-            V_vsmul_vx_sew@EFFEW@_cg.sample(ins);
+            V_vsmul_vx_sew64_cg.sample(ins);
         end
 `ifdef UDB_MXLEN_32
         "vloxei64.v"     : begin
-            V_vloxei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vloxei64_v_sew64_cg.sample(ins);
         end
         "vloxseg2ei64.v"     : begin
-            V_vloxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vloxseg2ei64_v_sew64_cg.sample(ins);
         end
         "vloxseg3ei64.v"     : begin
-            V_vloxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vloxseg3ei64_v_sew64_cg.sample(ins);
         end
         "vloxseg4ei64.v"     : begin
-            V_vloxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vloxseg4ei64_v_sew64_cg.sample(ins);
         end
         "vloxseg5ei64.v"     : begin
-            V_vloxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vloxseg5ei64_v_sew64_cg.sample(ins);
         end
         "vloxseg6ei64.v"     : begin
-            V_vloxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vloxseg6ei64_v_sew64_cg.sample(ins);
         end
         "vloxseg7ei64.v"     : begin
-            V_vloxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vloxseg7ei64_v_sew64_cg.sample(ins);
         end
         "vloxseg8ei64.v"     : begin
-            V_vloxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vloxseg8ei64_v_sew64_cg.sample(ins);
         end
         "vluxei64.v"     : begin
-            V_vluxei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vluxei64_v_sew64_cg.sample(ins);
         end
         "vluxseg2ei64.v"     : begin
-            V_vluxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vluxseg2ei64_v_sew64_cg.sample(ins);
         end
         "vluxseg3ei64.v"     : begin
-            V_vluxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vluxseg3ei64_v_sew64_cg.sample(ins);
         end
         "vluxseg4ei64.v"     : begin
-            V_vluxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vluxseg4ei64_v_sew64_cg.sample(ins);
         end
         "vluxseg5ei64.v"     : begin
-            V_vluxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vluxseg5ei64_v_sew64_cg.sample(ins);
         end
         "vluxseg6ei64.v"     : begin
-            V_vluxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vluxseg6ei64_v_sew64_cg.sample(ins);
         end
         "vluxseg7ei64.v"     : begin
-            V_vluxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vluxseg7ei64_v_sew64_cg.sample(ins);
         end
         "vluxseg8ei64.v"     : begin
-            V_vluxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vluxseg8ei64_v_sew64_cg.sample(ins);
         end
         "vsoxei64.v"     : begin
-            V_vsoxei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsoxei64_v_sew64_cg.sample(ins);
         end
         "vsoxseg2ei64.v"     : begin
-            V_vsoxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsoxseg2ei64_v_sew64_cg.sample(ins);
         end
         "vsoxseg3ei64.v"     : begin
-            V_vsoxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsoxseg3ei64_v_sew64_cg.sample(ins);
         end
         "vsoxseg4ei64.v"     : begin
-            V_vsoxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsoxseg4ei64_v_sew64_cg.sample(ins);
         end
         "vsoxseg5ei64.v"     : begin
-            V_vsoxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsoxseg5ei64_v_sew64_cg.sample(ins);
         end
         "vsoxseg6ei64.v"     : begin
-            V_vsoxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsoxseg6ei64_v_sew64_cg.sample(ins);
         end
         "vsoxseg7ei64.v"     : begin
-            V_vsoxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsoxseg7ei64_v_sew64_cg.sample(ins);
         end
         "vsoxseg8ei64.v"     : begin
-            V_vsoxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsoxseg8ei64_v_sew64_cg.sample(ins);
         end
         "vsuxei64.v"     : begin
-            V_vsuxei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsuxei64_v_sew64_cg.sample(ins);
         end
         "vsuxseg2ei64.v"     : begin
-            V_vsuxseg2ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsuxseg2ei64_v_sew64_cg.sample(ins);
         end
         "vsuxseg3ei64.v"     : begin
-            V_vsuxseg3ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsuxseg3ei64_v_sew64_cg.sample(ins);
         end
         "vsuxseg4ei64.v"     : begin
-            V_vsuxseg4ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsuxseg4ei64_v_sew64_cg.sample(ins);
         end
         "vsuxseg5ei64.v"     : begin
-            V_vsuxseg5ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsuxseg5ei64_v_sew64_cg.sample(ins);
         end
         "vsuxseg6ei64.v"     : begin
-            V_vsuxseg6ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsuxseg6ei64_v_sew64_cg.sample(ins);
         end
         "vsuxseg7ei64.v"     : begin
-            V_vsuxseg7ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsuxseg7ei64_v_sew64_cg.sample(ins);
         end
         "vsuxseg8ei64.v"     : begin
-            V_vsuxseg8ei64_v_sew@EFFEW@_cg.sample(ins);
+            V_vsuxseg8ei64_v_sew64_cg.sample(ins);
         end
 `endif
             default: ; // a case needs at least one item, and some configurations select none

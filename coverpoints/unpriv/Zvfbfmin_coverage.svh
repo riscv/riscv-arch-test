@@ -14,6 +14,15 @@
 `define COVER_ZVFBFMIN
 covergroup Zvfbfmin_vfncvtbf16_f_f_w_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vfncvtbf16.f.f.w"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -145,15 +154,6 @@ covergroup Zvfbfmin_vfncvtbf16_f_f_w_sew16_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_emul2////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
@@ -387,10 +387,10 @@ function void zvfbfmin_sample(int hart, int issue, ins_t ins);
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
         "vfncvtbf16.f.f.w"     : begin
-            Zvfbfmin_vfncvtbf16_f_f_w_sew@EFFEW@_cg.sample(ins);
+            Zvfbfmin_vfncvtbf16_f_f_w_sew16_cg.sample(ins);
         end
         "vfwcvtbf16.f.f.v"     : begin
-            Zvfbfmin_vfwcvtbf16_f_f_v_sew@EFFEW@_cg.sample(ins);
+            Zvfbfmin_vfwcvtbf16_f_f_v_sew16_cg.sample(ins);
         end
             default: ; // a case needs at least one item, and some configurations select none
         endcase

@@ -397,6 +397,9 @@
     `ifdef COVER_ZVBC64
         zvbc64_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_ZVE32X
+        zve32x_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_ZVFBFMIN
         zvfbfmin_sample(hart, issue, ins);
     `endif

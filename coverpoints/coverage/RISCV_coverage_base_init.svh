@@ -526,6 +526,10 @@
         `cover_info("//      Zvbc64 - Enabled");
         `include "Zvbc64_coverage_init.svh"
     `endif
+    `ifdef COVER_ZVE32X
+        `cover_info("//      Zve32x - Enabled");
+        `include "Zve32x_coverage_init.svh"
+    `endif
     `ifdef COVER_ZVFBFMIN
         `cover_info("//      Zvfbfmin - Enabled");
         `include "Zvfbfmin_coverage_init.svh"

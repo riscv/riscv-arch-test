@@ -432,21 +432,6 @@ def customize_template(templates: dict[str, str], name: str, arch: str = "", ins
     return result
 
 
-def _get_effew(arch: str) -> str:
-    """Extract the effective element width (SEW) from an architecture name.
-
-    Examples: "Vx32" -> "32", "Zvfhmin" -> "16"
-    """
-    match = re.search(r"(\d+)$", arch)
-    if match:
-        return match.group(1)
-    if arch in ("Zvfhmin", "Zvfbfmin", "Zvfbfwma"):
-        return "16"
-    if arch.startswith("Zvk"):
-        return "32"
-    raise ValueError(f"Arch does not contain an expected integer: '{arch}'")
-
-
 def _is_vector(arch: str) -> bool:
     return arch.startswith(VECTOR_PREFIXES)
 
@@ -454,25 +439,6 @@ def _is_vector(arch: str) -> bool:
 def _is_priv_vector(arch: str) -> bool:
     """Priv testplans whose covergroups need vector helpers but no SEW expansion."""
     return arch.startswith(PRIV_VECTOR_PREFIXES)
-
-
-def _is_vector_widen(arch: str, instr: str) -> bool:
-    """Check if this is a vector widening instruction."""
-    return arch.startswith(VECTOR_WIDEN_PREFIXES) and (instr.startswith(("vw", "vfw")) or ".w" in instr)
-
-
-def _has_effew_suffix(arch: str) -> bool:
-    """Whether *arch* uses the per-SEW EFFEW{N} testplan filter."""
-    return _is_vector(arch) or bool(re.match(r"ExceptionsVf\d+$", arch))
-
-
-def _get_sorted_instr_keys(tp: dict[tuple[str, str], list[str]], arch: str) -> list[tuple[str, str]]:
-    """Get sorted instruction keys, filtering by EFFEW for vector/per-SEW priv arches."""
-    keys = sorted(tp.keys())
-    if _has_effew_suffix(arch):
-        effew = _get_effew(arch)
-        keys = [k for k in keys if f"EFFEW{effew}" in tp[k]]
-    return keys
 
 
 def _matches_xlen(cps: list[str], has_rv32: bool, has_rv64: bool) -> bool:
@@ -550,7 +516,7 @@ def _ffLS_feasible(instr: str, sew: int) -> bool:
 ##################################
 
 
-def _resolve_coverpoint(cp: str, arch: str, instr: str) -> str | None:
+def _resolve_coverpoint(cp: str, instr: str, sew: int | None, templates: dict[str, str]) -> str | None:
     """Resolve a raw testplan coverpoint to its final template name, or None to skip it.
 
     Applies, in order: metadata-column skips, the SsstrictV skip table, the
@@ -561,14 +527,18 @@ def _resolve_coverpoint(cp: str, arch: str, instr: str) -> str | None:
     if cp.startswith(("sample_", "EFFEW", "cp_ibm")) or cp in {"RV32", "RV64"}:
         return None
 
-    # SsstrictV: honor the curated (column, instruction) skip table that records
-    # simulator-failure / unimplemented combinations. Skipping here removes the
-    # bins from the covergroup so they do not count as missing coverage.
-    if arch.startswith("SsstrictV") and instr in SSSTRICTV_SKIP_COMBINATIONS.get(cp, ()):
+    if sew is None:
+        return cp
+
+    tested_sews, cleaned_cp = _extract_sews(cp)
+    if sew not in tested_sews:
         return None
 
+    # Strip the SEW suffix
+    cp = cleaned_cp
+
     # cp_custom_ffLS requires LMUL=2; Use a fallback when this isn't possible
-    if cp == "cp_custom_ffLS" and _is_vector(arch) and not _ffLS_feasible(instr, int(_get_effew(arch))):
+    if cp == "cp_custom_ffLS" and not _ffLS_feasible(instr, sew):
         cp = "cp_custom_ffLS_lmul_lt2"
 
         eew_m = re.search(r"e(\d+)ff", instr)
@@ -576,33 +546,42 @@ def _resolve_coverpoint(cp: str, arch: str, instr: str) -> str | None:
         if eew >= 32:
             cp += f"_eew{eew}"
 
-    # _sew_ge{N}: only applies when arch SEW >= N; strip the suffix when it does.
-    ge_match = re.search(r"_sew_ge(\d+)$", cp)
-    if ge_match:
-        if not _is_vector(arch) or int(_get_effew(arch)) < int(ge_match.group(1)):
-            return None
-        cp = re.sub(r"_sew_ge\d+$", "", cp)
-
     # Append SEW suffix for SEW-dependent coverpoints.
-    if any(sew_cp in cp and cp not in SEW_INDEPENDENT_CPS for sew_cp in SEW_DEPENDENT_CPS):
-        cp = cp + "_sew" + _get_effew(arch)
-
-    # _eew_eq_sew[_lte{N}]: only emit when the indexed-LS EEW equals the arch SEW.
-    if re.search(r"_eew_eq_sew(?:_lte\d+)?$", cp):
-        eew = _indexed_ls_eew(instr)
-        if eew is not None and _is_vector(arch) and int(_get_effew(arch)) != eew:
-            return None
-
-    # _sew_lte_{N}: only emit when arch SEW <= N; strip the suffix when it does.
-    # Exclude `_eew_eq_sew_lte{N}` which is a vs3-range variant, not a SEW gate.
-    if re.search(r"_sew_lte_?\d+$", cp) and not re.search(r"_eew_eq_sew_lte\d+$", cp):
-        digits = re.search(r"(\d+)$", cp)
-        if digits:
-            if int(_get_effew(arch)) > int(digits.group(1)):
-                return None
-            cp = re.sub(r"_sew_lte_\d+", "", cp)
+    if cp not in templates:
+        retry_cp = f"{cp}_sew{sew}"
+        if retry_cp in templates:
+            cp = retry_cp
+        # Otherwise let the error be handled in customize template where a better error message
+        # will be generated
 
     return cp
+
+
+def _get_test_sews(cps: list[str]) -> list[int]:
+    available_sews: set[int] = set()
+    for cp in cps:
+        if cp.startswith(("sample_", "RV32", "RV64")):
+            continue
+        extracted_sews, _ = _extract_sews(cp)
+        if not extracted_sews:
+            raise ValueError(f"Could not parse vector SEWs to test in coverpoint: {cp}")
+        available_sews |= extracted_sews
+
+    return list(available_sews)
+
+
+def _extract_sews(cp: str) -> tuple[set[int], str]:
+    parts = cp.split("_")
+
+    available_sews = set()
+    i = len(parts)
+    for cp_part in parts[::-1]:
+        if not cp_part.isnumeric() or cp_part == "0":
+            break
+        available_sews.add(int(cp_part))
+        i -= 1
+
+    return available_sews, "_".join(parts[:i])
 
 
 def _gen_instrs(
@@ -626,66 +605,66 @@ def _gen_instrs(
         if not _matches_xlen(cps, has_rv32, has_rv64):
             continue
 
-        vectorwiden = _is_vector_widen(arch, instr)
+        is_vector = _is_vector(arch)
+        sews = [None] if not is_vector else _get_test_sews(cps)
 
-        # Gate indexed LS covergroups by MAXINDEXEEW for unpriv per-SEW
-        # Vls{N} arches, and by XLEN for priv MisalignV / ExceptionsVls.
-        # Priv ei64 covergroups are suppressed on RV32 because Sail RV32
-        # takes illegal-instruction on EEW=64 indexed LS while other sims
-        # take a load access fault (see sail-riscv issue 1719). Vx (vrgather)
-        # never gates.
-        gate = _should_gate_maxindexeew(arch, instr)
-        if gate:
-            idx_eew, macro_prefix = gate
-            covergroup_lines.append(f"`ifdef {macro_prefix}{idx_eew}\n")
-            init_lines.append(f"`ifdef {macro_prefix}{idx_eew}\n")
+        for sew in sews:
+            # Gate indexed LS covergroups by MAXINDEXEEW for unpriv per-SEW
+            # Vls{N} arches, and by XLEN for priv MisalignV / ExceptionsVls.
+            # Priv ei64 covergroups are suppressed on RV32 because Sail RV32
+            # takes illegal-instruction on EEW=64 indexed LS while other sims
+            # take a load access fault (see sail-riscv issue 1719). Vx (vrgather)
+            # never gates.
+            gate = _should_gate_maxindexeew(arch, instr)
+            if gate:
+                idx_eew, macro_prefix = gate
+                covergroup_lines.append(f"`ifdef {macro_prefix}{idx_eew}\n")
+                init_lines.append(f"`ifdef {macro_prefix}{idx_eew}\n")
 
-        # Instruction header
-        if vectorwiden:
-            effew = _get_effew(arch)
-            covergroup_lines.append(customize_template(templates, "instruction_vector_widen", name, instr, effew=effew))
-            init_lines.append(customize_template(templates, "init_vector_widen", name, instr, effew=effew))
-        else:
-            covergroup_lines.append(customize_template(templates, "instruction", name, instr))
-            init_lines.append(customize_template(templates, "init", name, instr))
+            # Instruction header
+            if is_vector:
+                covergroup_lines.append(
+                    customize_template(templates, "instruction_vector", name, instr, effew=str(sew))
+                )
+                init_lines.append(customize_template(templates, "init_vector", name, instr, effew=str(sew)))
+            else:
+                covergroup_lines.append(customize_template(templates, "instruction", name, instr))
+                init_lines.append(customize_template(templates, "init", name, instr))
 
-        # SsstrictV templates reference a small set of helpers (vtype_lmul_*,
-        # std_trap_vec, mask_enabled, vd_v0, vd/vs1/vs2_all_reg_unaligned_lmul_*,
-        # vstart_zero, vl_nonzero, vtype_prev_vill_*, vtype_all_lmulge1).
-        # We include a SsstrictV-scoped header rather than the full standard
-        # vector header so the SsstrictV covergroups don't pick up dozens of
-        # unrelated 32-bin sweeps (vd_all_reg, vs1_all_reg, etc.) that aren't in
-        # SsstrictV's testplan and would inflate the corpus past the linker's
-        # ±1MiB JAL range. Other priv vector arches (ExceptionsVx/Vls/Vf)
-        # intentionally use a small, focused set of coverpoints (cp_vill /
-        # cp_vstart / cp_vstart_gt_vl) and must not pull in either header.
-        if arch.startswith("SsstrictV"):
-            covergroup_lines.append('    `include "general/RISCV_coverage_ssstrictv_helpers.svh"\n')
+            # SsstrictV templates reference a small set of helpers (vtype_lmul_*,
+            # std_trap_vec, mask_enabled, vd_v0, vd/vs1/vs2_all_reg_unaligned_lmul_*,
+            # vstart_zero, vl_nonzero, vtype_prev_vill_*, vtype_all_lmulge1).
+            # We include a SsstrictV-scoped header rather than the full standard
+            # vector header so the SsstrictV covergroups don't pick up dozens of
+            # unrelated 32-bin sweeps (vd_all_reg, vs1_all_reg, etc.) that aren't in
+            # SsstrictV's testplan and would inflate the corpus past the linker's
+            # ±1MiB JAL range. Other priv vector arches (ExceptionsVx/Vls/Vf)
+            # intentionally use a small, focused set of coverpoints (cp_vill /
+            # cp_vstart / cp_vstart_gt_vl) and must not pull in either header.
+            if arch.startswith("SsstrictV"):
+                covergroup_lines.append('    `include "general/RISCV_coverage_ssstrictv_helpers.svh"\n')
 
-        # Coverpoint entries (skip metadata columns: sample_*, RV32, RV64, EFFEW*)
-        # VCS requires coverpoints to be declared before cross references.
-        early_cps = {"cp_frm_2", "cp_frm_3", "cp_frm_4", "std_vec"}
-        ordered_cps = sorted(cps, key=lambda cp: (0 if cp in early_cps else 2 if cp.startswith("cr_") else 1, cp))
-        # Per-operand cross filtering depends only on the instruction, so resolve
-        # its operand presence and max LMUL once rather than per coverpoint.
-        has_vd, has_vs1, has_vs2 = _operand_presence(_instr_type)
-        max_lmul = _max_legal_lmul_for_instruction(instr)
-        for cp in ordered_cps:
-            resolved = _resolve_coverpoint(cp, arch, instr)
-            if resolved is None:
-                continue
-            rendered = customize_template(templates, resolved, arch, instr) + "\n"
-            covergroup_lines.append(_filter_per_operand_crosses(rendered, has_vd, has_vs1, has_vs2, max_lmul))
+            # Coverpoint entries (skip metadata columns: sample_*, RV32, RV64, EFFEW*)
+            # VCS requires coverpoints to be declared before cross references.
+            early_cps = {"cp_frm_2", "cp_frm_3", "cp_frm_4", "std_vec"}
+            ordered_cps = sorted(cps, key=lambda cp: (0 if cp in early_cps else 2 if cp.startswith("cr_") else 1, cp))
+            # Per-operand cross filtering depends only on the instruction, so resolve
+            # its operand presence and max LMUL once rather than per coverpoint.
+            has_vd, has_vs1, has_vs2 = _operand_presence(_instr_type)
+            max_lmul = _max_legal_lmul_for_instruction(instr)
+            for cp in ordered_cps:
+                resolved = _resolve_coverpoint(cp, instr, sew, templates)
+                if resolved is None:
+                    continue
+                rendered = customize_template(templates, resolved, arch, instr) + "\n"
+                covergroup_lines.append(_filter_per_operand_crosses(rendered, has_vd, has_vs1, has_vs2, max_lmul))
 
-        # Instruction footer
-        if vectorwiden:
-            covergroup_lines.append(customize_template(templates, "endgroup_vector_widen", name, instr))
-        else:
+            # Instruction footer
             covergroup_lines.append(customize_template(templates, "endgroup", name, instr))
 
-        if gate:
-            covergroup_lines.append("`endif\n")
-            init_lines.append("`endif\n")
+            if gate:
+                covergroup_lines.append("`endif\n")
+                init_lines.append("`endif\n")
 
     return "".join(covergroup_lines), "".join(init_lines)
 
@@ -719,7 +698,6 @@ def _gen_covergroup_samples(
     has_rv32: bool,
     has_rv64: bool,
     extras: dict[tuple[str, ...], Testplan],
-    vector_sample: bool = False,
 ) -> str:
     """Generate covergroup sample function calls for matching instructions and ExtraExtensions rows."""
     lines: list[str] = []
@@ -749,17 +727,8 @@ def _gen_covergroup_samples(
             idx_eew, macro_prefix = gate
             lines.append(f"`ifdef {macro_prefix}{idx_eew}\n")
 
-        if arch.startswith(VECTOR_WIDEN_PREFIXES):
-            if _is_vector_widen(arch, instr):
-                effew = _get_effew(arch)
-                lines.append(customize_template(templates, "covergroup_sample_vector_widen", arch, instr, effew=effew))
-            else:
-                lines.append(customize_template(templates, "covergroup_sample_vector", arch, instr))
-        elif vector_sample:
-            lines.append(customize_template(templates, "covergroup_sample_vector", arch, instr))
-        else:
-            call = customize_template(templates, "covergroup_case_sample", arch, instr)
-            lines.append(_gen_sample_arm(templates, instr, [call]))
+        call = customize_template(templates, "covergroup_case_sample", arch, instr)
+        lines.append(_gen_sample_arm(templates, instr, [call]))
 
         if gate:
             lines.append("`endif\n")
@@ -807,25 +776,13 @@ def _write_extension_files(
     ExtraExtensions rows by extension; their covergroups follow the base
     covergroups inside `ifdef <EXT>_SUPPORTED guards.
     """
-    per_sew = vector or _has_effew_suffix(arch)
-    effew = ""
-    if per_sew:
-        try:
-            effew = _get_effew(arch)
-        except ValueError:
-            # Priv vector archs (SsstrictV, ExceptionsV*, MisalignV) have no SEW expansion or EFFEW.
-            effew = ""
-    instr_keys = _get_sorted_instr_keys(tp, arch) if per_sew else sorted(tp.keys())
+    instr_keys = sorted(tp.keys())
 
-    # Priv vector archs (SsstrictV, ExceptionsV*, MisalignV) don't expand per-SEW, so
-    # neither the EFFEW defines in header_vector nor the EFFVSEW gate in the vector
-    # sample header/end apply — use the non-vector templates for them.
-    use_vector_sample = vector and bool(effew)
-    header_tmpl = "header_vector" if use_vector_sample else "header"
-    sample_header_tmpl = "covergroup_sample_header_vector" if use_vector_sample else "covergroup_sample_header"
-    sample_end_tmpl = "covergroup_sample_end_vector" if use_vector_sample else "covergroup_sample_end"
+    header_tmpl = "header"
+    sample_header_tmpl = "covergroup_sample_header_vector" if vector else "covergroup_sample_header"
+    sample_end_tmpl = "covergroup_sample_end_vector" if vector else "covergroup_sample_end"
 
-    lines: list[str] = [customize_template(templates, header_tmpl, arch, effew=effew)]
+    lines: list[str] = [customize_template(templates, header_tmpl, arch)]
     init_lines: list[str] = [customize_template(templates, "initheader", arch)]
 
     # Covergroup definitions: common instructions, then RV32-only, then RV64-only;
@@ -849,22 +806,32 @@ def _write_extension_files(
     # Covergroup sample functions with the same XLEN ifdef structure
     all_rows = {key: cps for group in [tp, *extras.values()] for key, cps in group.items()}
     all_keys = sorted(set(instr_keys).union(*extras.values()))
-    lines.append(customize_template(templates, sample_header_tmpl, arch, effew=effew))
-    lines.append(
-        _gen_covergroup_samples(
-            instr_keys, templates, tp, arch, True, True, extras=extras, vector_sample=use_vector_sample
-        )
-    )
-    for rv32, rv64, exclude_marker in ((True, False, "RV64"), (False, True, "RV32")):
-        if _any_xlen_exclusion(exclude_marker, all_keys, all_rows):
-            lines.append(customize_template(templates, "RV32" if rv32 else "RV64", arch))
-            lines.append(
-                _gen_covergroup_samples(
-                    instr_keys, templates, tp, arch, rv32, rv64, extras=extras, vector_sample=use_vector_sample
-                )
-            )
-            lines.append(customize_template(templates, "end", arch))
-    lines.append(customize_template(templates, sample_end_tmpl, arch))
+
+    lines.append(customize_template(templates, sample_header_tmpl, arch))
+    if vector:
+        all_sews = [8, 16, 32, 64]
+        for sew in all_sews:
+            relevant_instrs = [instr for instr, cps in all_rows.items() if sew in _get_test_sews(cps)]
+
+            lines.append(customize_template(templates, "covergroup_case_header_vector", arch, effew=str(sew)))
+            lines.append(_gen_covergroup_samples(relevant_instrs, templates, tp, arch, True, True, extras=extras))
+            for rv32, rv64, exclude_marker in ((True, False, "RV64"), (False, True, "RV32")):
+                if _any_xlen_exclusion(exclude_marker, all_keys, all_rows):
+                    lines.append(customize_template(templates, "RV32" if rv32 else "RV64", arch))
+                    lines.append(
+                        _gen_covergroup_samples(relevant_instrs, templates, tp, arch, rv32, rv64, extras=extras)
+                    )
+                    lines.append(customize_template(templates, "end", arch))
+            lines.append(customize_template(templates, "covergroup_case_end_vector", arch))
+        lines.append(customize_template(templates, sample_end_tmpl, arch))
+    else:
+        lines.append(_gen_covergroup_samples(instr_keys, templates, tp, arch, True, True, extras=extras))
+        for rv32, rv64, exclude_marker in ((True, False, "RV64"), (False, True, "RV32")):
+            if _any_xlen_exclusion(exclude_marker, all_keys, all_rows):
+                lines.append(customize_template(templates, "RV32" if rv32 else "RV64", arch))
+                lines.append(_gen_covergroup_samples(instr_keys, templates, tp, arch, rv32, rv64, extras=extras))
+                lines.append(customize_template(templates, "end", arch))
+        lines.append(customize_template(templates, sample_end_tmpl, arch))
 
     _write_if_changed(output_dir / f"{arch}_coverage.svh", "".join(lines))
     _write_if_changed(output_dir / f"{arch}_coverage_init.svh", "".join(init_lines))
@@ -948,7 +915,7 @@ def _merge_instruction_testplans(
         if arch == "E":
             continue  # E is a duplicate of I
         tp = test_plans[arch]
-        for key in _get_sorted_instr_keys(tp, arch):
+        for key in sorted(tp.keys()):
             if key not in merged:
                 merged[key] = tp[key]
     # Instructions that appear only in ExtraExtensions rows

@@ -398,6 +398,9 @@
 `ifdef ZVBC64_COVERAGE
   `include "Zvbc64_coverage.svh"
 `endif
+`ifdef ZVE32X_COVERAGE
+  `include "Zve32x_coverage.svh"
+`endif
 `ifdef ZVFBFMIN_COVERAGE
   `include "Zvfbfmin_coverage.svh"
 `endif
